@@ -61,7 +61,7 @@ def callback(ch, method, properties, body):
         print "Processed Data:\n'%s'" % repr(writeString)
     except:
         print "Processed unprintable."
-    write_to_file(writeString.replace('\n', '\\n') + '\n', RAW_DATA_FILE)
+    write_to_file(writeString.replace('\n', '\\n') + '\n', SENSOR_DATA_EXCHANGE_FILE)
 
     print "End   %.4f" % time.time()
     ch.basic_ack(delivery_tag = method.delivery_tag)

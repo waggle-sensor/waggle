@@ -10,8 +10,12 @@ import time
 from localconfig import *
 
 sensors_list = ["BMP180.Bosch.2_5-2013","D6T-44L-06.Omron.2012","DS18B20.Maxim.2008","GA1A1S201WP.Sharp.2007","HIH4030.Honeywell.2008","HIH6130.Honeywell.2011","HMC5883.Honeywell.2013","HTU21D.MeasSpec.2013","MAX4466.Maxim.2001","MLX90614ESF-DAA.Melexis.008-2013","MMA8452Q.Freescale.8_1-2013","PDV_P8104.API.2006","RHT03.Maxdetect.2011","SHT15.Sensirion.4_3-2010","SHT75.Sensirion.5_2011","TMP102.Texas_Instruments.2008","TMP421.Texas_Instruments.2012","Thermistor_NTC_PR103J2.US_Sensor.2003"]
-sensor_current_data=["BMP180.Bosch.2_5-2013","D6T-44L-06.Omron.2012","DS18B20.Maxim.2008","GA1A1S201WP.Sharp.2007","HIH4030.Honeywell.2008","HIH6130.Honeywell.2011","HMC5883.Honeywell.2013","HTU21D.MeasSpec.2013","MAX4466.Maxim.2001","MLX90614ESF-DAA.Melexis.008-2013","MMA8452Q.Freescale.8_1-2013","PDV_P8104.API.2006","RHT03.Maxdetect.2011","SHT15.Sensirion.4_3-2010","SHT75.Sensirion.5_2011","TMP102.Texas_Instruments.2008","TMP421.Texas_Instruments.2012","Thermistor_NTC_PR103J2.US_Sensor.2003"]
+sensor_current_data=["BMP180.Bosch.2_5-2013\n","D6T-44L-06.Omron.2012\n","DS18B20.Maxim.2008\n","GA1A1S201WP.Sharp.2007\n","HIH4030.Honeywell.2008\n","HIH6130.Honeywell.2011\n","HMC5883.Honeywell.2013,03/04/15 22:09:17,MagneticField;0.24;gauss;X,MagneticField;0.48;gauss;Y,MagneticField;0.20;gauss;Z\n","HTU21D.MeasSpec.2013,03/04/15 22:09:17,Temperature;28.37;C;none,Humidity;11.29;%RH;RH\n","MAX4466.Maxim.2001\n","MLX90614ESF-DAA.Melexis.008-2013\n","MMA8452Q.Freescale.8_1-2013\n","PDV_P8104.API.2006\n","RHT03.Maxdetect.2011\n","SHT15.Sensirion.4_3-2010\n","SHT75.Sensirion.5_2011\n","TMP102.Texas_Instruments.2008\n","TMP421.Texas_Instruments.2012\n","Thermistor_NTC_PR103J2.US_Sensor.2003\n"]
 
+SNAPSHOT_FREQ = 5 #time ins seconds when a snapshot file will be written
+
+snapshot_time = 0
+sensorConnected = 0
 
 
 def nullify(a):
@@ -37,7 +41,7 @@ def safe_string(a):
 
 def update_current(payload):
     # Update current values of a sensor
-    file_location = INPUT_PREFIX + payload.inst_id + ".in"
+    file_location = WORKING_CACHE_DIR + payload.inst_id + ".in"
     current_values = read_current(file_location)
 
     for i in xrange(len(payload.data_name)):
@@ -78,8 +82,7 @@ def update_value(dic, keys, value):
 
 
 def log_payload(payload):
-    bash("mkdir -p " + WWW_PREFIX + payload.inst_id)
-    f = open(WWW_PREFIX + payload.inst_id +"/Waggle_" + filename_timestamp(payload.read_tm) + ".csv", 'a')
+    f = open(WWW_PREFIX + payload.inst_id +"/Waggle_" + filename_timestamp(payload.read_tm) + ".txt", 'a')
     payload.read_tm = pretty_time(payload.read_tm)
     f.write(to_easy_parse_string(payload))
 
@@ -95,7 +98,7 @@ def pretty_time(time):
 
 
 def gen_page(inst_id):
-    cfg = read_current(INPUT_PREFIX + payload.inst_id + ".in")
+    cfg = read_current(WORKING_CACHE_DIR + payload.inst_id + ".in")
     f = open(WWW_PREFIX + inst_id + "/current.txt", 'w')
     touch(WWW_PREFIX + inst_id)
 
@@ -145,6 +148,8 @@ i = 0
 bash('mkdir '+LOCAL_DIR)
 bash('mkdir '+WORKING_CACHE_DIR)
 bash('touch '+SENSOR_DATA_EXCHANGE_FILE)
+bash("echo '0' > "+COUNTER_FILE)
+
 
 while 1:
     #checking how many lines have been processed
@@ -152,12 +157,12 @@ while 1:
         linecache.checkcache(COUNTER_FILE)
         lines_proc = int(linecache.getline(COUNTER_FILE, 1))
     except:
-        bash("echo '0' > /tmp/wag/lines_processed.in")
+        bash("echo '0' > "+COUNTER_FILE)
         lines_proc = 0
 
     totalData = file_len(SENSOR_DATA_EXCHANGE_FILE)
     linesToProcess = max(totalData - lines_proc, 0)
-    print linesToProcess, lines_proc
+    #print linesToProcess,"--",lines_proc
     if linesToProcess > 0:
         rawHandler = open(SENSOR_DATA_EXCHANGE_FILE,'r')
         #do not process already processed lines, seek the appropriate line.
@@ -169,19 +174,53 @@ while 1:
             lines_proc = lines_proc + 1
             msg = Message.decode(line)
             if int(msg.header.message_type) == DataPayload.PAYLOAD_ID:
+                
                 for payload in msg.payloads:
+                 
                     payload.inst_id = safe_string(payload.inst_id)
-                    bash("mkdir -p" + WWW_PREFIX + str(payload.inst_id))
-                    update_current(payload)
-                    log_payload(payload)
+                    sensorConnected = 1
+                    try:
+                        print to_easy_parse_string(payload).split(',')[0]
+                        sensor_current_data[sensors_list.index(to_easy_parse_string(payload).split(',')[0])] = to_easy_parse_string(payload)
+                    except:
+                        print "**************"
 
-            if lines_proc % 10000 == 0:
-                print linesToProcess,lines_proc,time.asctime()
+                    try:
+                        log_payload(payload)
+                    except:
+                        print "New device, creating directory structure..."
+                        bash("mkdir -p " + WWW_PREFIX + payload.inst_id)
+                        log_payload(payload)
+                    
+            #write every now and then if batch processing messages...
+            if lines_proc % 1000 == 0:
                 f = open(COUNTER_FILE, 'w')
                 f.write(str(lines_proc))
                 f.close()
+                
+                
         f = open(COUNTER_FILE, 'w')
         f.write(str(lines_proc))
         f.close()
+        
     else:
         time.sleep(1)
+        snapshot_time = snapshot_time + 1
+
+    if snapshot_time > SNAPSHOT_FREQ:
+        #print time.asctime()
+        snapshot = ''
+        for i in range(len(sensor_current_data)):
+            snapshot = snapshot + sensor_current_data[i]
+        #print snapshot
+        if  sensorConnected == 1:
+	    try:
+                snapShotFH = open (WWW_PREFIX + payload.inst_id + '/current.txt', 'w')
+            except:
+                print 'creaing current snapshot file'
+                bash('touch '+WWW_PREFIX + payload.inst_id + '/current.txt')
+                snapShotFH = open (WWW_PREFIX + payload.inst_id + '/current.txt', 'w')
+            snapShotFH.write(snapshot)
+            snapShotFH.close() 
+        snapshot_time = 0
+        

@@ -71,7 +71,7 @@
 // #define WindVel_ADD 17
 
 
-#define MMA_Buff_size 400 //460
+#define MMA_Buff_size 40 //460
 #define Communication_Rate 57600
 
 
