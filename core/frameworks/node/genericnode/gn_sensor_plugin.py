@@ -16,7 +16,7 @@ from config_file_functions import initialize_config_file, ConfigObj
 class sensor_plugin_class():
     
     # Specifies the path from where sensor modules are imported
-    watchdir = '../sensormodules/weatherwx0.3' #'/nfs2/nkarimi/Desktop/internal_API/2014/nikhat/sensor_modules'
+    watchdir = '../sensormodules/envsenseV1/' 
         
     ############################################################################## 
     def __init__(self, output_buffer):
