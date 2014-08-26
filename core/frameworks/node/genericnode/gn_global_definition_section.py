@@ -1,26 +1,14 @@
-import sys, traceback
-from threading import Thread
-import threading                                                                                                                # used for multithreading
+import os
 import Queue                                                                                                                    # to implement thread safe queues for Inter thread communication
 import time
-import os
-import copy
-import asyncore                                                                                                                 # required for aynchronous sockets
-import asynchat                                                                                                                 # required for aynchronous sockets
-import socket                                                                                                                   # required for sockets
-import datetime
-from collections import namedtuple
-from collections import defaultdict                                                                                             # used to store sensors information in the hierarchical dictionary provided by this module
-from config_file_functions import *
-from waggle.common.messaging_d import *
-from waggle.common.util import get_current_time
-from waggle.common.util import get_instance_id
-from logging_module import set_logging_level
+import logging
+from global_imports import threading
+from collections import namedtuple                                                                                           # used to store sensors information in the hierarchical dictionary provided by this module
 
 #logging.basicConfig(filename = 'GN_output.log', level=logging.INFO,format='%(name)s: %(message)s',)
 #logging.basicConfig(level=logging.INFO,format='%(asctime)s %(name)s: %(message)s',)
-
-logger = set_logging_level("GN_global_definition_section")
+logging.basicConfig(level=logging.INFO,format='%(name)s: %(message)s',)
+logger = logging.getLogger(None)
 
 # Message retrieved/stored in the buffer_mngr's buffer will use this tuple
 buffered_msg = namedtuple('buffered_msg', ['internal_msg_header', 'msg_type', 'seq_no', 'reply_id', 'msg'])
@@ -125,9 +113,6 @@ def get_msg_info_and_delete_from_output_buffer(output_buffer, seq_no):
 def add_to_current_time(seconds):
     d1 = time.time() + seconds
     logger.debug ("Added to current time: "+str(seconds)+ "\n\n")
-    #time1 = datetime.datetime.strptime(time1, "%Y.%m.%d.%H.%M.%S")
-    #return (time1 + datetime.timedelta(0, time2))
-    # d1 = time.time() + seconds
     return d1
 
 
@@ -135,8 +120,6 @@ def add_to_current_time(seconds):
 # TODO: Make addition of any time magnitude possible, curently only supports adding secs           
 def add_time(time1, time2):
     d1 = time1 + time2
-    #time1 = datetime.datetime.strptime(time1, "%Y.%m.%d.%H.%M.%S")
-    #return (time1 + datetime.timedelta(0, time2))
     logger.debug ("Added two timings."+ "\n\n")
     return d1
 

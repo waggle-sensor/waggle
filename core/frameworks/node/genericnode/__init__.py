@@ -1,7 +1,7 @@
 from commands import getoutput
 #getoutput("rm -f lshw_result.xml")
 getoutput("rm -f gn.cfg")
-getoutput("rm -f GN_msg_log")
+#getoutput("rm -f GN_msg_log")
 getoutput("rm -f GN_output.log")
 getoutput("rm -f *sensor1c")
 """

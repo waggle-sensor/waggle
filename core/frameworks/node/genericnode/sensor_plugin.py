@@ -1,10 +1,11 @@
 import imp
-from gn_global_definition_section import *    
+from threading import Thread
+from gn_global_definition_section import add_to_thread_buffer,  buffered_msg,  msg_to_nc,  sensors_info_saved_event,  data_type,  no_reply,  sensor_thread_list, config_file_name, logger    
+from global_imports import *
  
 class sensor_plugin_class():
     
     watchdir = '../sensormodules/weatherwx0.3' #'/nfs2/nkarimi/Desktop/internal_API/2014/nikhat/sensor_modules'
-    logger = set_logging_level("sensor_plugin")
         
     ############################################################################## 
     def __init__(self, output_buffer):
@@ -30,18 +31,18 @@ class sensor_plugin_class():
         try:
             module_names = self.extract_module_names(self.list_dir())
             if module_names:
-                self.logger.debug ("Sensor Modules:"+"\n\n")
+                logger.debug ("Sensor Modules:"+"\n\n")
                 for module_name in module_names:
                     f, filename, description = imp.find_module(module_name)
-                    self.logger.debug('Desc: ' + str(description) + '\n ' + 'Filename:' + str(filename) + '\n' + 'File Desc:' + str(f)+"\n\n")
+                    logger.debug('Desc: ' + str(description) + '\n ' + 'Filename:' + str(filename) + '\n' + 'File Desc:' + str(f)+"\n\n")
                     module = imp.load_module(filename, f, module_name, description)
                     sensor_modules.append(module) 
-                    self.logger.debug('New module loaded.'+"\n\n")
+                    logger.debug('New module loaded.'+"\n\n")
                 return (sensor_modules, module_names)
-            self.logger.debug('No new nodules.'+"\n\n")
+            logger.debug('No new nodules.'+"\n\n")
             return None, None
         except Exception as inst:
-            self.logger.critical("Exception in import_new_sensor_modules: " + str(inst)+"\n\n")
+            logger.critical("Exception in import_new_sensor_modules: " + str(inst)+"\n\n")
             
         
     ############################################################################## 
@@ -65,10 +66,10 @@ class sensor_plugin_class():
                     module = module.split('.')
                     if self.is_source_module(module) and self.is_new_module(module[0]): #if os.path.isdir(module): 
                         module_names.append(module[0])
-            self.logger.debug("New module names extracted."+"\n\n")
+            logger.debug("New module names extracted."+"\n\n")
             return module_names
         except Exception as inst:
-            self.logger.critical("Exception in extract_module_names: " + str(inst)+"\n\n")
+            logger.critical("Exception in extract_module_names: " + str(inst)+"\n\n")
     
     
         
@@ -101,7 +102,7 @@ class sensor_plugin_class():
             sensor_modules, sensor_class_names = self.import_new_sensor_modules()
             #for sensor_class_name in sensor_class_names:
             #imp.find_module("sensor_code.py", sensor_class_name.__path__)
-            self.logger.debug("Module extracted from package."+"\n\n")
+            logger.debug("Module extracted from package."+"\n\n")
             if sensor_class_names:    
                 sensor_class_objcts = []
                 for module_name, sensor_class_name in zip(sensor_modules, sensor_class_names):
@@ -111,18 +112,18 @@ class sensor_plugin_class():
                             sensor_class_obj = sensor_class_name()
                             sensor_class_objcts.append(sensor_class_obj)
                         except Exception as inst:
-                            self.logger.critical("Exception in plugin loop: " + str(inst)+"\n\n")
+                            logger.critical("Exception in plugin loop: " + str(inst)+"\n\n")
                 self.register_modules(sensor_class_objcts)
                 for sensor_class_name in sensor_class_names :
                     self.sensorid_input_buffer_map[sensor_class_name] = Queue.Queue()
-                self.logger.debug("Sensors added to registered sensors' list and their input buffers created."+"\n\n")
+                logger.debug("Sensors added to registered sensors' list and their input buffers created."+"\n\n")
                 if not sensors_info_saved_event.is_set():
                     sensors_info_saved_event.set()
-                    self.logger.debug("Sensors_info_saved_event set."+"\n\n")
+                    logger.debug("Sensors_info_saved_event set."+"\n\n")
                 self.start_sensors(sensor_class_objcts, sensor_class_names)
                 return
         except Exception as inst:
-            self.logger.critical("Exception in plugin_sensors: " + str(inst)+"\n\n")
+            logger.critical("Exception in plugin_sensors: " + str(inst)+"\n\n")
             
         
     ##############################################################################     
@@ -133,7 +134,7 @@ class sensor_plugin_class():
                     sensor_class_obj.register()
             self.update_last_registration__time()
         except Exception as inst:
-            self.logger.critical("Exception in register_modules: " + str(inst)+"\n\n")
+            logger.critical("Exception in register_modules: " + str(inst)+"\n\n")
          
     
     ##############################################################################     
@@ -145,7 +146,7 @@ class sensor_plugin_class():
                    return True
             return False 
         except Exception as inst:
-            self.logger.critical("Exception in update_registered_sensors_list: " + str(inst)+"\n\n")
+            logger.critical("Exception in update_registered_sensors_list: " + str(inst)+"\n\n")
     
     
     
@@ -156,9 +157,9 @@ class sensor_plugin_class():
                 t = Thread(target=self.start_sensor, args = (sensor_class_obj,self.sensorid_input_buffer_map[sensor_class_name], self.sensors_output_buffer))
                 self.update_sensor_thread_list(t)
                 t.start()
-            self.logger.debug("New sensors started."+"\n\n")
+            logger.debug("New sensors started."+"\n\n")
         except Exception as inst:
-            self.logger.critical("Exception in start_sensors: " + str(inst)+"\n\n")
+            logger.critical("Exception in start_sensors: " + str(inst)+"\n\n")
          
         
     ############################################################################## 
@@ -166,13 +167,13 @@ class sensor_plugin_class():
         try:
             sensor_class_obj.start(input_buffer, output_buffer)
         except Exception as inst:
-            self.logger.critical("Exception in start_sensor: " + str(inst)+"\n\n")
+            logger.critical("Exception in start_sensor: " + str(inst)+"\n\n")
         
         
     ##############################################################################     
     def update_sensor_thread_list(self, thread):
         sensor_thread_list.append(thread)
-        self.logger.debug("Thread added: " + str(sensor_thread_list) + "\n\n")
+        logger.debug("Thread added: " + str(sensor_thread_list) + "\n\n")
         
     ############################################################################## 
     def get_sensor_msgs(self):
@@ -188,10 +189,10 @@ class sensor_plugin_class():
                     item[6] = "Error in registering sensor."
                 msg = item
                 add_to_thread_buffer(self.sensor_controller_output_buffer, buffered_msg(msg_to_nc, msg_type, None, reply_id, msg), "Sensor Controller")                                 # Sends registration msg by adding to the buffer_mngr's buffer
-                self.logger.debug("Msg sent to sensor_controller_output_buffer." + str(msg)+"\n\n")
-            self.logger.debug("Msg sending to sensor_controller's buffer done."+"\n\n")    
+                logger.debug("Msg sent to sensor_controller_output_buffer." + str(msg)+"\n\n")
+            logger.debug("Msg sending to sensor_controller's buffer done."+"\n\n")    
         except Exception as inst:
-            self.logger.critical("Exception in get_sensor_msgs: " + str(inst)+"\n\n")
+            logger.critical("Exception in get_sensor_msgs: " + str(inst)+"\n\n")
          
         
     ##############################################################################      
