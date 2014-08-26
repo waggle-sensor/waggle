@@ -1,0 +1,29 @@
+
+= Creating a CA
+
+http://www.phildev.net/ssl/creating_ca.html
+
+
+= Managing a CA
+
+http://www.phildev.net/ssl/managing_ca.html
+
+
+= Modify a CA
+
+http://www.phildev.net/ssl/modifying_ca.html
+
+
+= Example Usage
+
+== Generate certification authority
+
+./bootstrap.sh GEN_CA
+
+== Request certification signing
+
+./bootstrap.sh SERVER_CSR
+
+== Sign server certification
+
+./bootstrap.sh SERVER_SIGN

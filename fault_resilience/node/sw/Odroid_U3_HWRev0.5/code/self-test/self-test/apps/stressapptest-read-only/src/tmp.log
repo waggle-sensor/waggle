@@ -1,0 +1,287 @@
+2000/01/05-01:15:39(UTC) Log: Commandline - ./stressapptest -s 20 -v 20 -M 1024 -m 4 -i 4 -C 4 -W -l tmp.log
+2000/01/05-01:15:39(UTC) Stats: SAT revision 1.0.7_autoconf, 32 bit binary
+2000/01/05-01:15:39(UTC) Log: root @ linaro-nano-george on Tue Jan  4 03:59:16 UTC 2000 from open source release
+2000/01/05-01:15:39(UTC) Log: 1 nodes, 4 cpus.
+2000/01/05-01:15:39(UTC) Log: Flooring memory allocation to multiple of 4: 1024MB
+2000/01/05-01:15:39(UTC) Log: /proc/sys/vm/nr_hugepages read did not provide data
+2000/01/05-01:15:39(UTC) Log: Prefer plain malloc memory allocation.
+2000/01/05-01:15:39(UTC) Log: Using mmap() allocation at 0x76523000.
+2000/01/05-01:15:39(UTC) Stats: Starting SAT, 1024M, 20 seconds
+2000/01/05-01:15:39(UTC) Log: initialized 120 data patterns
+2000/01/05-01:15:39(UTC) Log: Allocating pages, Total: 1024 Free: 408
+2000/01/05-01:15:39(UTC) Starting Fill threads: 8 threads, 0 pages
+2000/01/05-01:15:39(UTC) Starting Fill Threads 0: 0 pages
+2000/01/05-01:15:39(UTC) Starting Fill Threads 1: 0 pages
+2000/01/05-01:15:39(UTC) Starting Fill Threads 2: 0 pages
+2000/01/05-01:15:39(UTC) Starting Fill Threads 3: 0 pages
+2000/01/05-01:15:39(UTC) Starting Fill Threads 4: 0 pages
+2000/01/05-01:15:39(UTC) Starting Fill Threads 5: 0 pages
+2000/01/05-01:15:39(UTC) Starting Fill Threads 6: 0 pages
+2000/01/05-01:15:39(UTC) Starting Fill Threads 7: 0 pages
+2000/01/05-01:15:39(UTC) Log: Thread 0 running on core ID 3 mask F (F).
+2000/01/05-01:15:39(UTC) Log: Thread 1 running on core ID 1 mask F (F).
+2000/01/05-01:15:39(UTC) Log: Starting fill thread 0
+2000/01/05-01:15:39(UTC) Log: Starting fill thread 1
+2000/01/05-01:15:39(UTC) Log: Thread 2 running on core ID 3 mask F (F).
+2000/01/05-01:15:39(UTC) Log: Starting fill thread 2
+2000/01/05-01:15:39(UTC) Log: Thread 3 running on core ID 2 mask F (F).
+2000/01/05-01:15:39(UTC) Log: Starting fill thread 3
+2000/01/05-01:15:39(UTC) Log: Thread 4 running on core ID 1 mask F (F).
+2000/01/05-01:15:39(UTC) Log: Starting fill thread 4
+2000/01/05-01:15:39(UTC) Log: Thread 5 running on core ID 0 mask F (F).
+2000/01/05-01:15:39(UTC) Log: Starting fill thread 5
+2000/01/05-01:15:39(UTC) Log: Thread 7 running on core ID 1 mask F (F).
+2000/01/05-01:15:39(UTC) Log: Starting fill thread 7
+2000/01/05-01:15:39(UTC) Log: Thread 6 running on core ID 0 mask F (F).
+2000/01/05-01:15:39(UTC) Log: Starting fill thread 6
+2000/01/05-01:15:40(UTC) Log: Completed 4: Fill thread. Status 1, 128 pages filled
+2000/01/05-01:15:40(UTC) Log: Completed 6: Fill thread. Status 1, 128 pages filled
+2000/01/05-01:15:40(UTC) Log: Completed 7: Fill thread. Status 1, 128 pages filled
+2000/01/05-01:15:40(UTC) Log: Completed 5: Fill thread. Status 1, 128 pages filled
+2000/01/05-01:15:40(UTC) Log: Completed 1: Fill thread. Status 1, 128 pages filled
+2000/01/05-01:15:40(UTC) Log: Completed 0: Fill thread. Status 1, 128 pages filled
+2000/01/05-01:15:40(UTC) Log: Completed 2: Fill thread. Status 1, 128 pages filled
+2000/01/05-01:15:40(UTC) Log: Completed 3: Fill thread. Status 1, 128 pages filled
+2000/01/05-01:15:40(UTC) Log: Done filling pages.
+2000/01/05-01:15:40(UTC) Log: Allocating pages.
+2000/01/05-01:15:40(UTC) Log: region number 2 exceeds region count 1
+2000/01/05-01:15:40(UTC) Log: Done allocating pages.
+2000/01/05-01:15:40(UTC) Log: Region 0: 1024.
+2000/01/05-01:15:40(UTC) Log: Region mask: 0x1
+2000/01/05-01:15:40(UTC) Log: Installing signal handlers
+2000/01/05-01:15:40(UTC) Log: Launching worker threads
+2000/01/05-01:15:40(UTC) Log: Starting worker threads
+2000/01/05-01:15:40(UTC) Log: Starting invert threads
+2000/01/05-01:15:40(UTC) Log: Starting disk stress threads
+2000/01/05-01:15:40(UTC) Log: Starting cpu stress threads
+2000/01/05-01:15:40(UTC) Log: Initializing WorkerStatus objects
+2000/01/05-01:15:40(UTC) Log: Spawning worker threads
+2000/01/05-01:15:40(UTC) Log: Spawning thread 1
+2000/01/05-01:15:40(UTC) Log: Spawning thread 2
+2000/01/05-01:15:40(UTC) Log: Spawning thread 3
+2000/01/05-01:15:40(UTC) Log: Spawning thread 4
+2000/01/05-01:15:40(UTC) Log: Thread 1 running on core ID 3 mask F (F).
+2000/01/05-01:15:40(UTC) Log: Spawning thread 5
+2000/01/05-01:15:40(UTC) Log: Thread 2 running on core ID 0 mask F (F).
+2000/01/05-01:15:40(UTC) Log: Spawning thread 6
+2000/01/05-01:15:40(UTC) Log: Thread 3 running on core ID 1 mask F (F).
+2000/01/05-01:15:40(UTC) Log: Starting copy thread 2: cpu F, mem ffffffff
+2000/01/05-01:15:40(UTC) Log: Starting copy thread 3: cpu F, mem ffffffff
+2000/01/05-01:15:40(UTC) Log: Thread 5 running on core ID 3 mask F (F).
+2000/01/05-01:15:40(UTC) Log: Starting invert thread 5
+2000/01/05-01:15:40(UTC) Log: Spawning thread 7
+2000/01/05-01:15:40(UTC) Log: Spawning thread 8
+2000/01/05-01:15:40(UTC) Log: Spawning thread 9
+2000/01/05-01:15:40(UTC) Log: Spawning thread 10
+2000/01/05-01:15:40(UTC) Log: Spawning thread 11
+2000/01/05-01:15:40(UTC) Log: Spawning thread 12
+2000/01/05-01:15:40(UTC) Log: Spawning thread 0
+2000/01/05-01:15:40(UTC) Log: Starting countdown with 20 seconds
+2000/01/05-01:15:40(UTC) Log: Thread 6 running on core ID 2 mask F (F).
+2000/01/05-01:15:40(UTC) Log: Thread 7 running on core ID 1 mask F (F).
+2000/01/05-01:15:40(UTC) Log: Starting invert thread 6
+2000/01/05-01:15:40(UTC) Log: Starting invert thread 7
+2000/01/05-01:15:40(UTC) Log: Starting copy thread 1: cpu F, mem ffffffff
+2000/01/05-01:15:40(UTC) Log: Thread 0 running on core ID 2 mask F (F).
+2000/01/05-01:15:40(UTC) Log: Starting system error poll thread 0
+2000/01/05-01:15:40(UTC) Log: Thread 9 running on core ID 2 mask F (F).
+2000/01/05-01:15:40(UTC) Log: Starting CPU stress thread 9
+2000/01/05-01:15:40(UTC) Log: Thread 4 running on core ID 0 mask F (F).
+2000/01/05-01:15:40(UTC) Log: Starting copy thread 4: cpu F, mem ffffffff
+2000/01/05-01:15:40(UTC) Log: Thread 10 running on core ID 3 mask F (F).
+2000/01/05-01:15:40(UTC) Log: Starting CPU stress thread 10
+2000/01/05-01:15:40(UTC) Log: Thread 12 running on core ID 1 mask F (F).
+2000/01/05-01:15:40(UTC) Log: Starting CPU stress thread 12
+2000/01/05-01:15:40(UTC) Log: Thread 8 running on core ID 1 mask F (F).
+2000/01/05-01:15:40(UTC) Log: Starting invert thread 8
+2000/01/05-01:15:40(UTC) Log: Thread 11 running on core ID 0 mask F (F).
+2000/01/05-01:15:40(UTC) Log: Starting CPU stress thread 11
+2000/01/05-01:15:50(UTC) Log: Seconds remaining: 10
+2000/01/05-01:16:00(UTC) Log: Joining worker threads
+2000/01/05-01:16:00(UTC) Log: Joining thread 1
+2000/01/05-01:16:00(UTC) Log: Completed 3: Copy thread. Status 1, 2965 pages copied
+2000/01/05-01:16:00(UTC) Log: Completed 2: Copy thread. Status 1, 2786 pages copied
+2000/01/05-01:16:00(UTC) Log: Completed 1: Copy thread. Status 1, 2689 pages copied
+2000/01/05-01:16:00(UTC) Log: Joining thread 2
+2000/01/05-01:16:00(UTC) Log: Joining thread 3
+2000/01/05-01:16:00(UTC) Log: Joining thread 4
+2000/01/05-01:16:00(UTC) Log: Finished system error poll thread 0: 1 errors
+2000/01/05-01:16:00(UTC) Log: Completed 8: Copy thread. Status 1, 1582 pages copied
+2000/01/05-01:16:00(UTC) Log: Completed 6: Copy thread. Status 1, 1352 pages copied
+2000/01/05-01:16:00(UTC) Log: Completed 4: Copy thread. Status 1, 2774 pages copied
+2000/01/05-01:16:00(UTC) Log: Joining thread 5
+2000/01/05-01:16:00(UTC) Log: Completed 7: Copy thread. Status 1, 1580 pages copied
+2000/01/05-01:16:00(UTC) Log: Completed 5: Copy thread. Status 1, 1452 pages copied
+2000/01/05-01:16:00(UTC) Log: Joining thread 6
+2000/01/05-01:16:00(UTC) Log: Joining thread 7
+2000/01/05-01:16:00(UTC) Log: Joining thread 8
+2000/01/05-01:16:00(UTC) Log: Joining thread 9
+2000/01/05-01:16:02(UTC) Log: Finished CPU stress thread 9:
+2000/01/05-01:16:02(UTC) Log: Joining thread 10
+2000/01/05-01:16:02(UTC) Log: Finished CPU stress thread 10:
+2000/01/05-01:16:02(UTC) Log: Joining thread 11
+2000/01/05-01:16:02(UTC) Log: Finished CPU stress thread 12:
+2000/01/05-01:16:02(UTC) Log: Finished CPU stress thread 11:
+2000/01/05-01:16:02(UTC) Log: Joining thread 12
+2000/01/05-01:16:02(UTC) Log: Joining thread 0
+2000/01/05-01:16:02(UTC) Log:  Reads per page histogram
+2000/01/05-01:16:02(UTC) Log:             8 -           16:          615
+2000/01/05-01:16:02(UTC) Log:            16 -           32:          409
+2000/01/05-01:16:02(UTC) Log: Finished countdown, begin to result check
+2000/01/05-01:16:02(UTC) Log: Finished countdown, begin to result check
+2000/01/05-01:16:02(UTC) Log: Finished countdown, begin to result check
+2000/01/05-01:16:02(UTC) Log: Finished countdown, begin to result check
+2000/01/05-01:16:02(UTC) Log: Finished countdown, begin to result check
+2000/01/05-01:16:02(UTC) Log: Finished countdown, begin to result check
+2000/01/05-01:16:02(UTC) Log: Finished countdown, begin to result check
+2000/01/05-01:16:02(UTC) Log: Finished countdown, begin to result check
+2000/01/05-01:16:02(UTC) Log: Finished countdown, begin to result check
+2000/01/05-01:16:02(UTC) Log: Spawning thread 13
+2000/01/05-01:16:02(UTC) Log: Spawning thread 14
+2000/01/05-01:16:02(UTC) Log: Spawning thread 15
+2000/01/05-01:16:02(UTC) Log: Spawning thread 16
+2000/01/05-01:16:02(UTC) Log: Spawning thread 17
+2000/01/05-01:16:02(UTC) Log: Thread 13 running on core ID 3 mask F (F).
+2000/01/05-01:16:02(UTC) Log: Spawning thread 18
+2000/01/05-01:16:02(UTC) Log: Thread 14 running on core ID 0 mask F (F).
+2000/01/05-01:16:02(UTC) Log: Starting Check thread 14
+2000/01/05-01:16:02(UTC) Log: Thread 15 running on core ID 1 mask F (F).
+2000/01/05-01:16:02(UTC) Log: Starting Check thread 15
+2000/01/05-01:16:02(UTC) Log: Thread 17 running on core ID 3 mask F (F).
+2000/01/05-01:16:02(UTC) Log: Spawning thread 19
+2000/01/05-01:16:02(UTC) Log: Starting Check thread 17
+2000/01/05-01:16:02(UTC) Log: Spawning thread 20
+2000/01/05-01:16:02(UTC) Log: Thread 18 running on core ID 0 mask F (F).
+2000/01/05-01:16:02(UTC) Log: Starting Check thread 18
+2000/01/05-01:16:02(UTC) Log: Joining thread 13
+2000/01/05-01:16:02(UTC) Log: Thread 19 running on core ID 1 mask F (F).
+2000/01/05-01:16:02(UTC) Log: Starting Check thread 19
+2000/01/05-01:16:02(UTC) Log: Thread 20 running on core ID 2 mask F (F).
+2000/01/05-01:16:02(UTC) Log: Starting Check thread 20
+2000/01/05-01:16:02(UTC) Log: Thread 16 running on core ID 2 mask F (F).
+2000/01/05-01:16:02(UTC) Log: Starting Check thread 16
+2000/01/05-01:16:02(UTC) Log: Starting Check thread 13
+2000/01/05-01:16:02(UTC) Log: Completed 14: Check thread. Status 1, 76 pages checked
+2000/01/05-01:16:02(UTC) Log: Completed 13: Check thread. Status 1, 76 pages checked
+2000/01/05-01:16:02(UTC) Log: Joining thread 14
+2000/01/05-01:16:02(UTC) Log: Joining thread 15
+2000/01/05-01:16:02(UTC) Log: Completed 17: Check thread. Status 1, 79 pages checked
+2000/01/05-01:16:02(UTC) Log: Completed 18: Check thread. Status 1, 77 pages checked
+2000/01/05-01:16:02(UTC) Log: Completed 20: Check thread. Status 1, 76 pages checked
+2000/01/05-01:16:02(UTC) Log: Completed 16: Check thread. Status 1, 78 pages checked
+2000/01/05-01:16:02(UTC) Log: Completed 19: Check thread. Status 1, 76 pages checked
+2000/01/05-01:16:02(UTC) Log: Completed 15: Check thread. Status 1, 78 pages checked
+2000/01/05-01:16:02(UTC) Log: Joining thread 16
+2000/01/05-01:16:02(UTC) Log: Joining thread 17
+2000/01/05-01:16:02(UTC) Log: Joining thread 18
+2000/01/05-01:16:02(UTC) Log: Joining thread 19
+2000/01/05-01:16:02(UTC) Log: Joining thread 20
+2000/01/05-01:16:02(UTC) Log: Join all outstanding threads
+2000/01/05-01:16:02(UTC) Log: Reaping thread status 1
+2000/01/05-01:16:02(UTC) Log: Thread 1 found 0 hardware incidents
+2000/01/05-01:16:02(UTC) Log: Reaping thread status 2
+2000/01/05-01:16:02(UTC) Log: Thread 2 found 0 hardware incidents
+2000/01/05-01:16:02(UTC) Log: Reaping thread status 3
+2000/01/05-01:16:02(UTC) Log: Thread 3 found 0 hardware incidents
+2000/01/05-01:16:02(UTC) Log: Reaping thread status 4
+2000/01/05-01:16:02(UTC) Log: Thread 4 found 0 hardware incidents
+2000/01/05-01:16:02(UTC) Log: Reaping thread status 5
+2000/01/05-01:16:02(UTC) Log: Thread 5 found 0 hardware incidents
+2000/01/05-01:16:02(UTC) Log: Reaping thread status 6
+2000/01/05-01:16:02(UTC) Log: Thread 6 found 0 hardware incidents
+2000/01/05-01:16:02(UTC) Log: Reaping thread status 7
+2000/01/05-01:16:02(UTC) Log: Thread 7 found 0 hardware incidents
+2000/01/05-01:16:02(UTC) Log: Reaping thread status 8
+2000/01/05-01:16:02(UTC) Log: Thread 8 found 0 hardware incidents
+2000/01/05-01:16:02(UTC) Log: Reaping thread status 9
+2000/01/05-01:16:02(UTC) Log: Thread 9 found 0 hardware incidents
+2000/01/05-01:16:02(UTC) Log: Reaping thread status 10
+2000/01/05-01:16:02(UTC) Log: Thread 10 found 0 hardware incidents
+2000/01/05-01:16:02(UTC) Log: Reaping thread status 11
+2000/01/05-01:16:02(UTC) Log: Thread 11 found 0 hardware incidents
+2000/01/05-01:16:02(UTC) Log: Reaping thread status 12
+2000/01/05-01:16:02(UTC) Log: Thread 12 found 0 hardware incidents
+2000/01/05-01:16:02(UTC) Log: Reaping thread status 0
+2000/01/05-01:16:02(UTC) Log: Thread 0 found 0 hardware incidents
+2000/01/05-01:16:02(UTC) Log: Reaping thread status 13
+2000/01/05-01:16:02(UTC) Log: Thread 13 found 0 hardware incidents
+2000/01/05-01:16:02(UTC) Log: Reaping thread status 14
+2000/01/05-01:16:02(UTC) Log: Thread 14 found 0 hardware incidents
+2000/01/05-01:16:02(UTC) Log: Reaping thread status 15
+2000/01/05-01:16:02(UTC) Log: Thread 15 found 0 hardware incidents
+2000/01/05-01:16:02(UTC) Log: Reaping thread status 16
+2000/01/05-01:16:02(UTC) Log: Thread 16 found 0 hardware incidents
+2000/01/05-01:16:02(UTC) Log: Reaping thread status 17
+2000/01/05-01:16:02(UTC) Log: Thread 17 found 0 hardware incidents
+2000/01/05-01:16:02(UTC) Log: Reaping thread status 18
+2000/01/05-01:16:02(UTC) Log: Thread 18 found 0 hardware incidents
+2000/01/05-01:16:02(UTC) Log: Reaping thread status 19
+2000/01/05-01:16:02(UTC) Log: Thread 19 found 0 hardware incidents
+2000/01/05-01:16:02(UTC) Log: Reaping thread status 20
+2000/01/05-01:16:02(UTC) Log: Thread 20 found 0 hardware incidents
+2000/01/05-01:16:02(UTC) Stats: Found 0 hardware incidents
+2000/01/05-01:16:02(UTC) Stats: Completed: 46292.00M in 22.17s 2087.64MB/s, with 0 hardware incidents, 0 errors
+2000/01/05-01:16:02(UTC) Stats: Memory Copy: 22428.00M at 1121.23MB/s
+2000/01/05-01:16:02(UTC) Stats: File Copy: 0.00M at 0.00MB/s
+2000/01/05-01:16:02(UTC) Stats: Net Copy: 0.00M at 0.00MB/s
+2000/01/05-01:16:02(UTC) Stats: Data Check: 0.00M at 0.00MB/s
+2000/01/05-01:16:02(UTC) Stats: Invert Data: 23864.00M at 1192.86MB/s
+2000/01/05-01:16:02(UTC) Stats: Disk: 0.00M at 0.00MB/s
+2000/01/05-01:16:02(UTC) Log: Deleting worker threads
+2000/01/05-01:16:02(UTC) Log: Deleting thread 1
+2000/01/05-01:16:02(UTC) Log: Deleting thread 2
+2000/01/05-01:16:02(UTC) Log: Deleting thread 3
+2000/01/05-01:16:02(UTC) Log: Deleting thread 4
+2000/01/05-01:16:02(UTC) Log: Deleting thread 5
+2000/01/05-01:16:02(UTC) Log: Deleting thread 6
+2000/01/05-01:16:02(UTC) Log: Deleting thread 7
+2000/01/05-01:16:02(UTC) Log: Deleting thread 8
+2000/01/05-01:16:02(UTC) Log: Deleting thread 9
+2000/01/05-01:16:02(UTC) Log: Deleting thread 10
+2000/01/05-01:16:02(UTC) Log: Deleting thread 11
+2000/01/05-01:16:02(UTC) Log: Deleting thread 12
+2000/01/05-01:16:02(UTC) Log: Deleting thread 0
+2000/01/05-01:16:02(UTC) Log: Destroying WorkerStatus objects
+2000/01/05-01:16:02(UTC) Log: Uninstalling signal handlers
+2000/01/05-01:16:02(UTC) 
+2000/01/05-01:16:02(UTC) Status: PASS - please verify no corrected errors
+2000/01/05-01:16:02(UTC) 
+2000/01/05-01:17:04(UTC) Log: Commandline - ./stressapptest -s 20 -v 20 -m 4 -i 4 -C 4 -W -l tmp.log
+2000/01/05-01:17:04(UTC) Stats: SAT revision 1.0.7_autoconf, 32 bit binary
+2000/01/05-01:17:04(UTC) Log: root @ linaro-nano-george on Tue Jan  4 03:59:16 UTC 2000 from open source release
+2000/01/05-01:17:04(UTC) Log: 1 nodes, 4 cpus.
+2000/01/05-01:17:04(UTC) Log: /proc/sys/vm/nr_hugepages read did not provide data
+2000/01/05-01:17:04(UTC) Log: Total 2022 MB. Free 1581 MB. Hugepages 0 MB. Targeting 1719 MB (84%)
+2000/01/05-01:17:04(UTC) Log: Flooring memory allocation to multiple of 4: 1716MB
+2000/01/05-01:17:04(UTC) Log: /proc/sys/vm/nr_hugepages read did not provide data
+2000/01/05-01:17:04(UTC) Log: Prefer POSIX shared memory allocation.
+2000/01/05-01:17:04(UTC) Log: You may need to run 'sudo mount -o remount,size=100% /dev/shm.'
+2000/01/05-01:17:04(UTC) Log: Using posix shared memory object 0x4 mapped as needed.
+2000/01/05-01:17:04(UTC) Stats: Starting SAT, 1716M, 20 seconds
+2000/01/05-01:17:04(UTC) Log: initialized 120 data patterns
+2000/01/05-01:17:04(UTC) Log: Allocating pages, Total: 1716 Free: 686
+2000/01/05-01:17:04(UTC) Starting Fill threads: 8 threads, 0 pages
+2000/01/05-01:17:04(UTC) Starting Fill Threads 0: 0 pages
+2000/01/05-01:17:04(UTC) Starting Fill Threads 1: 0 pages
+2000/01/05-01:17:04(UTC) Starting Fill Threads 2: 0 pages
+2000/01/05-01:17:04(UTC) Starting Fill Threads 3: 0 pages
+2000/01/05-01:17:04(UTC) Starting Fill Threads 4: 0 pages
+2000/01/05-01:17:04(UTC) Starting Fill Threads 5: 0 pages
+2000/01/05-01:17:04(UTC) Starting Fill Threads 6: 0 pages
+2000/01/05-01:17:04(UTC) Starting Fill Threads 7: 0 pages
+2000/01/05-01:17:04(UTC) Log: Thread 0 running on core ID 3 mask F (F).
+2000/01/05-01:17:04(UTC) Log: Thread 1 running on core ID 0 mask F (F).
+2000/01/05-01:17:04(UTC) Log: Starting fill thread 0
+2000/01/05-01:17:04(UTC) Log: Starting fill thread 1
+2000/01/05-01:17:04(UTC) Log: Thread 2 running on core ID 0 mask F (F).
+2000/01/05-01:17:04(UTC) Log: Starting fill thread 2
+2000/01/05-01:17:04(UTC) Log: Thread 4 running on core ID 1 mask F (F).
+2000/01/05-01:17:04(UTC) Log: Starting fill thread 4
+2000/01/05-01:17:04(UTC) Log: Thread 3 running on core ID 2 mask F (F).
+2000/01/05-01:17:04(UTC) Log: Starting fill thread 3
+2000/01/05-01:17:04(UTC) Log: Thread 5 running on core ID 0 mask F (F).
+2000/01/05-01:17:04(UTC) Log: Starting fill thread 5
+2000/01/05-01:17:04(UTC) Log: Thread 7 running on core ID 3 mask F (F).
+2000/01/05-01:17:04(UTC) Log: Thread 6 running on core ID 1 mask F (F).
+2000/01/05-01:17:04(UTC) Log: Starting fill thread 6
+2000/01/05-01:17:04(UTC) Log: Starting fill thread 7

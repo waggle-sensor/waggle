@@ -1,0 +1,22 @@
+# kernel image  and dtb load addresses
+setenv uimg_addr "0x40007000"
+setenv zimg_addr "0x40008000"
+setenv fdt_addr "0x41f00000"
+setenv fdt_high "0xffffffff"
+# video config: 1280x720M@50, 1920x1080M@60
+# console config
+# rootfs config
+setenv vid_config "video=HDMI-A-1:1920x1080M@60"
+setenv con_config "console=ttySAC1,115200n8"
+setenv rfs_config "root=/dev/mmcblk0p2 rootfstype=ext4 rootwait ro"
+#
+setenv uimg_file "uImage-3.15.0"
+setenv fdt_file "exynos4412-odroidu3.dtb"
+setenv bootargs "${vid_config} ${con_config} ${rfs_config} earlyprintk"
+setenv bootcmd "run ubootcmd"
+# 
+setenv uloadcmd "fatload mmc 0:1 ${uimg_addr} ${uimg_file}; fatload mmc 0:1 ${fdt_addr} ${fdt_file}"
+setenv zloadcmd "fatload mmc 0:1 ${zimg_addr} ${zimg_file}"
+setenv ubootcmd "run uloadcmd; fdt addr ${fdt_addr}; fdt resize; bootm ${uimg_addr} - ${fdt_addr}"
+setenv zbootcmd "run zloadcmd; bootm ${zimg_addr}"
+boot

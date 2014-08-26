@@ -1,0 +1,46 @@
+= Custom UART =
+
+== Requirements ==
+
+USB to UART cable (U2U): FTDI Cable 5V VCC-3.3V I/O  https://www.sparkfun.com/products/9717
+
+Logic Level Converter (LLL): http://www.hobbytronics.co.uk/logic-level-converter
+                       https://www.sparkfun.com/products/12009
+
+Jumper Wires: https://www.sparkfun.com/products/9194 
+
+Odroid U3 (OU3)
+
+== Connection ==
+
+=== USB2UART Cable to Logic Level Converter ===
+USB2UART pinout (FTDI 3.3V IO 5V Vcc Cable.pdf) :
+    GND (black)
+    CTS (brown)
+    VCC (red)
+    TXD (orange)
+    RXD (yellow)
+    RTS (green)
+
+U2U_GND --> LLL_GND
+U2U_VCC --> LLL_HV
+U2U_TXD --> LLL_RXI
+U2U_RXD --> LLL_TXO
+
+
+=== Logic Level Converter to Odroid U3 ===
+
+LLL_GND --> OU3_GND
+LLL_RXO --> OU3_RXD
+LLL_TXI --> OU3_TXD 
+LLL_LV --> OU3_VCC 
+
+
+== Use ==
+
+To find the USB port you connected use 'dmesg| tail' and search for ttyUSB (e.g. ttyUSB0)
+
+then you can connect using 'screen':
+
+    # screen /dev/ttyUSB0 115200 8N1
+

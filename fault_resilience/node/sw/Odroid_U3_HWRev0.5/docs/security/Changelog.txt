@@ -1,0 +1,10 @@
+
+== Current State ==
+
+A clone from the hardkernel directory was created at /digital/g/projects/forest/getziadz/code/odroid/linux-sec
+
+As of now:
+    - Initially the .config file was set to be the one provided by hardkernel for odroid3 (odroidu_defconfig)
+    - Enabled module signing
+    - Enabled securefs (needed for IMA)
+

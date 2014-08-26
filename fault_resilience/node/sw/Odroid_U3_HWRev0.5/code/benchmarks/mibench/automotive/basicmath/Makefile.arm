@@ -1,0 +1,31 @@
+
+TARGET_ARCH   = 
+
+ARCH_MNEM = arm
+
+COMPILE_OPTS  = -O2 -Wall 
+
+CC      = arm-linux-gnueabi-gcc
+CXX     = $(CC)
+AS      = $(CC)
+LD      = $(CC)
+AR      = arm-linux-gnueabi-ar
+CFLAGS  = $(COMPILE_OPTS)
+CXXFLAGS= $(COMPILE_OPTS)
+LDFLAGS = 
+
+FILE1 = basicmath_small.c   rad2deg.c  cubic.c   isqrt.c
+FILE2 = basicmath_large.c   rad2deg.c  cubic.c   isqrt.c
+
+BINARIES = basicmath_small.$(ARCH_MNEM).bin basicmath_large.$(ARCH_MNEM).bin
+
+all: $(BINARIES)
+
+basicmath_small.$(ARCH_MNEM).bin: ${FILE1} Makefile.arm
+	$(LD) $(LDFLAGS) $(TARGET_ARCH) ${FILE1} -o $@ -lm
+
+basicmath_large.$(ARCH_MNEM).bin: ${FILE2} Makefile.arm
+	$(LD) $(LDFLAGS) $(TARGET_ARCH) ${FILE2} -o $@ -lm
+
+clean:
+	rm -rf $(BINARIES)  *.o output*

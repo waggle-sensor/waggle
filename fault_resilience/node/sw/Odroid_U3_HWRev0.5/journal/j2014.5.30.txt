@@ -1,0 +1,196 @@
+
+
+  Friday, 05/30/2014
+  ==================
+
+
+  Per Platform Stability Assessment
+  =================================
+
+
+	Odroid
+	======
+
+
+	Raspberry Pi
+	============
+
+
+	BeagleBone Black
+	================
+
+Complaint thread regarding how unstable Angstrom is (not working wifi, etc) https://groups.google.com/forum/#!topic/beagleboard/sNEZnSi77ls
+
+
+		Problem Categories
+		==================
+
+Software bug list http://bugs.elinux.org/projects/beaglebone-black/issues?set_filter=1&tracker_id=1
+
+Beaglebone Black Instability With Ethernet Plugged In http://archlinuxarm.org/forum/viewtopic.php?f=28&t=5505 
+
+
+			USB
+			===
+
+- USB Hub not working with BeagleBone Black https://code.google.com/p/beagleboard/issues/detail?id=119
+- USB automount problems http://e2e.ti.com/support/embedded/android/f/509/t/307379.aspx
+
+
+			Other
+			=====
+
+- The microSD card cannot be used as a storage device when booting from microSD in the 3.8 kernel.
+- SGX support is not currently provided in the 3.8 kernel.
+- The latest production image 6_20_2013 does not work on Lapdocks. 
+- Post with a few problems and fixes (LXDE under Ubuntu 13.04, Unable to log in via SSH, Rotate the screen,  Device tree compiler on Ubuntu 13.04, Unable to configure bonescript, Bluetooth) http://hipstercircuits.com/problems-with-beaglebone-black-and-their-solution/
+
+
+			HDMI
+			====
+
+- issues getting the board to work with various TVs and Displays http://elinux.org/Beagleboard:BeagleBoneBlack_HDMI
+
+
+			Boot
+			====
+
+- BeagleBone Black doesn't sometimes start. Only Power LED is on https://groups.google.com/forum/#!topic/beagleboard/aXv6An1xfqI (problem with u-boot, fix proposed)
+- Problem with booting from eMMC http://archlinuxarm.org/forum/viewtopic.php?f=48&t=6011 ( half solved)
+- Beaglebone Black SD boot problem http://archlinuxarm.org/forum/viewtopic.php?f=48&t=5809 ( missing line)
+
+
+	Intel Galileo
+	=============
+
+Due to running Linux it becomes too slow, compared to Arduino Leonardo, when driving a GPIO pin (not sure if it is in general slower) http://www.drdobbs.com/embedded-systems/galileo-the-slowest-fast-computer-around/240165716
+
+The maximum I/O speed on most pins is around 230 Hz, which may be a problem for some applications. There are a couple pins capable of faster speeds (~3MHz), and that limit doesn’t have effect on the UART, SPI, or I2C clocks.
+
+Known Issues thread  https://communities.intel.com/message/211398
+Makers Threads https://communities.intel.com/community/makers
+
+
+		Problem Categories
+		==================
+
+
+			Display
+			=======
+
+ - Problem with getting LCD to work with Galileo https://communities.intel.com/message/221141 (seems to be related to a bug in the libraries. Solution exists)
+
+
+			Reboot
+			======
+
+ - Problem with rebooting, board hangs https://communities.intel.com/message/207621 (seems to be related with firmware bug. Latest firmware should solve it)
+
+
+			Uart
+			====
+
+- Serial Console using Linux, w/ USB->UART FTDI cable https://communities.intel.com/message/231778
+- UART problem https://communities.intel.com/thread/45725  
+
+
+			I2C
+			===
+
+ - Problem with I2C device https://communities.intel.com/thread/46596 (it is fixed by compiling the kernel with specific flags)
+ - DHT11 Temperature Sensor Issue https://communities.intel.com/thread/46206 (similar to the above. Some people believe it is due latency, final post proposes some fixes on the code)
+
+
+			WiFi
+			====
+
+- Problem with connecting to WiFi using Galileo https://communities.intel.com/message/233443 (lack of WPA Enterprise for Arduino sketch library, for linux some configuration is needed)
+
+
+			SD
+			==
+
+intel Galileo and SD problems http://forum.arduino.cc/index.php?topic=192926.0 (Known IDE problem, there is a suggested troubleshooting)
+
+
+			Other
+			=====
+
+ - Problem uploading sketches https://communities.intel.com/thread/45751 ( may be related to IDE, needs reset)
+ - First problem I encountered was unable to upload sketches through arduino ide even sometimes worked (I updated the firmware, loaded full linux on SD Card). The other problem I encountered is by pressing the reboot button. The Usb Led shuts off and the board stays like this until I power cycle it. https://communities.intel.com/thread/50701 (similar to above. Proposed solution is to use ssh)
+
+- Problem with IDE https://github.com/arduino/Arduino/issues/2020 ( locale has to be set to english (US) )
+
+
+	Comparisons
+	===========
+
+Raspberry Pi Vs. BeagleBone Black http://makezine.com/magazine/how-to-choose-the-right-platform-raspberry-pi-or-beaglebone-black/ (Seems BeagleBone Black suits our purposes)
+
+====================
+
+
+  General information about each board
+  ====================================
+
+
+	Odroid
+	======
+
+
+	Raspberry Pi
+	============
+
+
+	BeagleBone Black
+	================
+
+Pretty much everything we need to know about BBB http://elinux.org/Beagleboard:BeagleBoneBlack
+
+Projects that target or are based upon BB http://beagleboard.org/project/
+
+Forums http://beagleboard.org/Community/Forums
+
+http://derekmolloy.ie/beaglebone/
+
+http://rayhightower.com/blog/2014/01/02/beaglebone-black-ubuntu-part-1/
+
+http://thethingsystem.com/dev/Bootstrapping-the-BeagleBone-Black.html
+
+
+	Intel Galileo
+	=============
+
+http://www.intel.com/support/galileo/index.htm
+
+https://learn.sparkfun.com/tutorials/galileo-getting-started-guide
+
+http://www.open-electronics.org/an-intel-galileo-walkthrough/
+
+http://learning.grobotronics.com/2014/02/exploring-arduinointel-galileo/
+
+http://wiki.ros.org/IntelGalileo/HydroGalileoInitialInstall
+
+http://makezine.com/2013/10/03/10-great-intel-galileo-features/
+
+http://blog.dimitridiakopoulos.com/2014/03/18/navigating-linux-on-intel-galileo/
+
+https://fibasile.github.io/interesting-facts-on-intel-galileo.html
+
+====================
+
+
+  Interesting Stuff
+  =================
+
+
+	Node Red
+	========
+
+http://nodered.org/  Node-RED is a tool for wiring together hardware devices, APIs and online services in new and interesting ways.
+
+http://www.techrepublic.com/article/node-red/
+
+
+
+

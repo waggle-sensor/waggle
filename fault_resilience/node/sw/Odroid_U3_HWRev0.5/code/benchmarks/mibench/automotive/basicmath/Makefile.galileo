@@ -1,0 +1,38 @@
+SHELL = /bin/sh
+SYSROOTDIR=/digital/g/opt/i586-poky-linux-uclibc-x-tools/
+
+TARGET_ARCH   = -m32 -march=i586 --sysroot=$(SYSROOTDIR)
+INCLUDE_DIRS  = -I $(TOOLDIR)../include \
+				-I $(TOOLDIR)../include/c++ \
+				-I $(TOOLDIR)../lib/i586-poky-linux-uclibc/gcc/i586-poky-linux-uclibc/4.7.2/include 
+LIBRARY_DIRS  = -L $(TOOLDIR)../../lib \
+				-L $(TOOLDIR)../lib \
+				-L $(TOOLDIR)../lib/i586-poky-linux-uclibc/4.7.2 \
+				-L $(TOOLDIR)../lib/i586-poky-linux-uclibc/4.7.2 
+COMPILE_OPTS  = -O2 -pipe -g -feliminate-unused-debug-types -fpermissive -Wall $(INCLUDE_DIRS) 
+
+TOOLDIR = $(SYSROOTDIR)/usr/bin/i586-poky-linux-uclibc/
+CC      = $(TOOLDIR)i586-poky-linux-uclibc-g++
+CXX     = $(CC)
+AS      = $(CC)
+LD      = $(CC)
+AR      = $(TOOLDIR)i586-poky-linux-uclibc-ar
+CFLAGS  = $(COMPILE_OPTS)
+CXXFLAGS= $(COMPILE_OPTS)
+LDFLAGS = -Wl,-O1 -Wl,--hash-style=gnu -Wl,--as-needed $(LIBRARY_DIRS) -lstdc++
+
+FILE1 = basicmath_small.c   rad2deg.c  cubic.c   isqrt.c
+FILE2 = basicmath_large.c   rad2deg.c  cubic.c   isqrt.c
+
+BINARIES = basicmath_small.galileo.bin basicmath_large.galileo.bin
+
+all: $(BINARIES)
+
+basicmath_small.galileo.bin: ${FILE1} Makefile.galileo
+	$(LD) $(LDFLAGS) $(TARGET_ARCH) ${FILE1} -o $@ -lm
+
+basicmath_large.galileo.bin: ${FILE2} Makefile.galileo
+	$(LD) $(LDFLAGS) $(TARGET_ARCH) ${FILE2} -o $@ -lm
+
+clean:
+	rm -rf $(BINARIES)  *.o output*

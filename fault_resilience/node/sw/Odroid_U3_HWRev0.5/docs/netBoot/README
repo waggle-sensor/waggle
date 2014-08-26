@@ -1,0 +1,23 @@
+
+
+Options for network boot:
+
+protocols:
+- tftp: https://en.wikipedia.org/wiki/Trivial_File_Transfer_Protocol
+
+
+software:
+- uboot: https://en.wikipedia.org/wiki/Das_U-Boot
+- iPXE [former gPXE, former etherboot] (x86 only) : https://en.wikipedia.org/wiki/IPXE
+- PXE (x86 only): https://en.wikipedia.org/wiki/Preboot_Execution_Environment
+
+
+IMPORTANT: For a network boot security is very important. However, most of the protocols assume that the network is secure, I would assume this is not the case with us.
+	   The only software that supports authentication and encryption is iPXE, but it is only x86 compatible.
+	   I am not sure what is happening with Uboot
+
+
+
+
+As of now it seems our only option for network booting is Uboot.
+

@@ -1,0 +1,200 @@
+
+= Stresslinux
+
+http://www.stresslinux.org/sl/wiki/Software
+
+"""
+    stresslinux is a minimal linux distribution running from a bootable cdrom, usb, vmware or via PXE (wip).
+    stresslinux makes use of some utitlities available on the net like: stress, cpuburn, hddtemp, lm_sensors ...
+    stresslinux is dedicated to users who want to test their system(s) entirely on high load and monitoring the health. 
+"""
+
+Seems the distribution is not maintained anymore 
+
+== Applications
+
+List of applications if Stresslinux distribution:
+
+    * stress
+    * stressapptest
+    * CPU burn
+    * nbench
+    * tiobench
+    * mprime
+    * hddtemp
+    * lm_sensors
+    * lshw
+    * bonnie++
+    * netio
+    * nepim
+    * netperf
+    * iperf
+    * smartmontools
+    * x86info
+    * memtester
+    * bandwidth
+    * memtest86
+    * memtest86+
+    * ramspeed
+    * y-cruncher
+    * tw_cli
+    * arecacli
+    * hpacucli
+    * megacli
+    * mpt-status
+    * lsiutil
+    * sas2ircu 
+
+
+=== stress [Works fine] [Compiles/Runs on ARM]
+
+Official site: http://people.seas.harvard.edu/~apw/stress/
+
+it is a bit outdated so instead we should use stress-ng: http://kernel.ubuntu.com/~cking/stress-ng/
+
+"""
+Stress-ng can stress various subsystems of a computer. One can load CPU, memory, I/O sync, disk writes, forks and context switches. It is a cleanroom re-write of the original stress tool by Amos Waterland but has addition features such as specifying the number of bogo operations to run, execution metrics and additional stress tasks.
+"""
+
+
+=== stressapptest [Works fine] [Does not compile on ARM, we need to enable support for armv7l (it already supports armv7a]
+
+Official site: https://code.google.com/p/stressapptest/
+
+"""
+Stressful Application Test (or stressapptest, its unix name) tries to maximize randomized traffic to memory from processor and I/O, with the intent of creating a realistic high load situation in order to test the existing hardware devices in a computer. It has been used at Google for some time and now it is available under the apache 2.0 license.
+"""
+
+=== CPU burn
+
+not found
+
+=== nbench [Works fine, but does not look very configurable] [Compiles/Runs on ARM]
+
+Official site: http://www.tux.org/~mayer/linux/bmark.html
+
+"""
+These are Native Mode (a.k.a. Algorithm Level) tests; benchmarks designed to expose the capabilities of a system's CPU, FPU, and memory system
+"""
+
+=== tiobench [Compiles on ARM]
+
+
+http://sourceforge.net/projects/tiobench/
+
+"""
+Portable, fully-threaded I/O benchmark program
+"""
+
+=== mprime
+
+http://www.mersenne.org/download/
+
+Probably not useful to us due to, follows excerpt from the website, "The source code for the program is highly optimized Intel assembly language"
+
+=== hddtemp
+
+http://www.guzu.net/linux/hddtemp.php
+
+ "hddtemp is a small utility (daemonizable) that gives you the temperature of your hard drive by reading S.M.A.R.T. informations (for drives that support this feature)."
+
+I believe it does not apply to us as we use SDCards
+
+=== lm_sensors
+
+It may need tweaking to work at odroid
+
+=== lshw
+
+same as previous
+
+=== bonnie++
+
+http://www.coker.com.au/bonnie++/
+
+"Bonnie++ is a benchmark suite that is aimed at performing a number of simple tests of hard drive and file system performance. Then you can decide which test is important and decide how to compare different systems after running it. I have no plans to ever have it produce a single number, because I don't think that a single number can be useful when comparing such things."
+
+Not a priority for us.
+
+=== netio
+
+http://freecode.com/projects/netio
+http://www.ars.de/ars/ars.nsf/docs/netio
+
+"This is a network benchmark for OS/2 2.x, Windows, Linux and Unix. It measures the net throughput of a network via TCP and UDP protocols using various different packet sizes. One instance has to run on one machine as a server process, another instance is used on another machine to perform the benchmark. When executed without arguments, the program will explain its usage."
+
+=== nepim
+
+http://www.nongnu.org/nepim/
+
+"nepim stands for network pipemeter, a tool for measuring available bandwidth between hosts. nepim is also useful to generate network traffic for testing purposes. nepim operates in client/server mode, is able to handle multiple parallel traffic streams, reports periodic partial statistics along the testing, accepts rich tuning from command-line, supports multicast and IPv6."
+
+=== netperf
+
+http://www.netperf.org/netperf/NetperfPage.html
+
+ Netperf is a benchmark that can be used to measure the performance of many different types of networking. It provides tests for both unidirectional throughput, and end-to-end latency. The environments currently measureable by netperf include:
+
+    TCP and UDP via BSD Sockets for both IPv4 and IPv6
+    DLPI
+    Unix Domain Sockets
+    SCTP for both IPv4 and IPv6 
+
+=== iperf
+
+Probably not needed
+
+=== smartmontools
+
+For hard drives
+
+=== x86info
+
+Not needed
+
+=== memtester [Compiles on ARM]
+http://pyropus.ca/software/memtester
+
+"A userspace utility for testing the memory subsystem for faults. It's portable and should compile and work on any 32- or 64-bit Unix-like system. (Yes, even weird, proprietary Unices, and even Mac OS X.) For hardware developers, memtester can be told to test memory starting at a particular physical address as of memtester version 4.1.0."
+
+=== bandwidth
+
+http://zsmith.co/bandwidth.html
+
+"My program, called simply bandwidth, is an artificial benchmark primarily for measuring memory bandwidth on x86 and x86_64 based computers, useful for identifying weaknesses in a computer's memory subsystem, in the bus architecture, in the cache architecture and in the processor itself."
+
+Highly unlikely to use, contains x86 assembly files
+
+
+=== memtest86
+
+Proprietary
+
+=== memtest86+
+
+http://www.memtest.org/
+
+Seem to be x86 specific
+
+=== ramspeed
+
+http://alasir.com/software/ramspeed/
+
+"a cache and memory benchmarking tool"
+
+No ARM but may be easy to extend
+
+=== y-cruncher
+http://www.numberworld.org/y-cruncher/
+
+Does not look so interesting
+
+=== tw_cli
+=== arecacli
+=== hpacucli
+=== megacli
+=== mpt-status
+=== lsiutil
+=== sas2ircu 
+
+RAID stuff

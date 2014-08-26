@@ -1,0 +1,16 @@
+setenv initrd_high "0xffffffff"
+setenv fdt_high "0xffffffff"
+setenv bootcmd "bootm 0x40008000"
+setenv bootargs "console=tty1 console=ttySAC1,115200n8 root=/dev/mmcblk0p2 rootwait rw mem=2047M"
+
+fatload mmc 0:1 0x40008000 uImage.1
+if iminfo 0x40008000
+then
+        boot
+fi
+
+fatload mmc 0:1 0x40008000 uImage.2
+if iminfo 0x40008000
+then
+        boot
+fi

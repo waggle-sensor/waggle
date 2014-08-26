@@ -1,0 +1,232 @@
+Legend - 
+
+* - complete
+? - have no idea if it will work 
+... - work in progress 
+? testing - testing a particular feature 
+
+
+Fault Tolerance- 
+
+
+    Features of interest: 
+        1. (*) Journaling Filesystem ( use of ext4 or more advanced FS)
+            Constrain - needs to be supported by uBoot
+        2. (*) Conditional Booting.
+            - (?) FIT (uImage is deprecated (uBoot)).
+                - FIT and checksum - yes
+                - FIT and signed checksum - No .
+        3. (? testing) Restart the system when we hit a Kernaloops.
+        4. (...) Initramfs for FS checking and complete deployment of CPU set.
+        5. (*) Upstart: Re spawn services and logging.
+        6. (*) Monit: checksums, restart processes on crash, actions based on events (...)
+        7. IMA Application integrity 
+            - Trusted computing (signed and update the applications if the signature changes). 
+        8. Exit live-lock situation in code (using Monit)
+        9. Monitor system race-conditions ( are processes waiting on each other?)
+            - are there metrics that help us see that all is not well? 
+                - cloud communication 
+                - sensors attached 
+                - internal network traffic 
+        
+Security: 
+
+    Features of interest: 
+        1. Signed uBoot
+        2. (?) Signed Kernel Image (signed hash of the kernel - uboot has a key)
+        3. (*) Signed Kernel modules
+        4. (*) Signed FS - files have checksum, how do you change that?
+            - (?) how can we overcome it 
+            - but how do you update it? 
+                - stop enforcing signed FS and then boot - but that is a security risk. 
+        5. Sever and client authentication using certificates - for socket communication.
+        6. Portknocking and single packet authentication
+        7. Reverse SSH tunnel and knock knock.
+        8. Framework security -
+            1. Data deluge from guestnode. 
+                - can shutdown guest node. 
+                - can kill socket 
+                    - but can reconnect 
+                - ip table rule to block after certain number of incidences 
+            - issue - what if self powered?
+            - what if saturating ethernet? 
+            - What if it does not adhere to CSMA-CA. 
+            
+            2. Data deluge from sensor modules.
+            
+        9. System stability
+            - hardware 
+                - can pull a node down. 
+            - software 
+                - can harass the cloud. ( rabbit MQ SSL).
+                - can someone start bombarding the server with fake data? 
+                    - Will need - 
+                        - IP
+                        - port number 
+                        - 
+                        
+                        (Mitigate by blocking hosts that sent lot of data to the wrong queue)
+
+                        - queue and password
+                            - can add bogus data sets. 
+                            
+                        - sensor registration on the cloud can prevent bogus data? 
+                        - send badly formatted data .
+                        
+Maintenance and functioning:
+    Features of interest:
+        1.
+        
+        
+        
+        
+        
+Cloud features list: 
+    1. Server will crash when malformed data is sent - not catching exceptions. 
+    2. Need to handle data, commands, requests and other kinds of messages
+    3. Node control center is incomplete 
+    4. Bi-directional communication 
+        - Tricky 
+    5. Only flat files now, and only for data. 
+        - we need data bases or some other way of storing data 
+        - we need to be able to route different packets 
+            - to different databases and
+            - different processes
+    6. Scaling 
+    7. No Feedback  - i.e. we still have not established that 
+        we can send messages and packets of data back from the 
+        cloud into the devices. 
+    8. Seq_id issues -  
+        (!) data agent has no excepting handling and is very much prone to crashes. 
+        (!) we do not have a way to restart the agent. 
+    9. Encode and decode of messages is _unstable_ 
+    10. BLOBS are still unknow and not handled
+    11. The path to moving data to computation is incomplete 
+    12. Feedback from computation to sensors is incomplete ( depends on step 4 )
+    13. Messaging API needs work 
+        - Type checking 
+        - packet is correctly constructed and wrong arrays and such 
+    
+WeatherWX Hardware:
+
+    1. I2C bus will hang if one of the sensor is unresponsive. 
+    2. We need interrupt based loop 
+    3. we need watchdog timer 
+    4. We need per sensor freq control
+    5. Missing sensors
+    6. Suppress faulty sensor readings. 
+    7. Sensor board status message. 
+    8. Per sensor and board level power control. 
+    9. Board "power monitoring" - faulty sensor hijacks board. 
+    10. Layered "availability" - I am here, cannot ping sensors, 
+    I am here and here are all sensor readings and I am here and 
+    some sensors do not work. ( Can be coupled to 6 and 7 )
+    
+    
+WeatherWX software: 
+    1. Descriptions of the sensor
+    2. Request for date 
+        - this depends of the sensor's ability. 
+        - this has to be documented some where 
+        - Will a hierarchical sensorML help us? 
+            - The sensorML description of the board will 
+                state the capabilities. (?)
+    
+System management unit:
+    
+    1. Per device power control 
+    2. Per device power monitoring
+    
+    3. Lowlevel system-monitor 
+    4. Time! - RTC {where and who gets to connect to it?}
+    5. Environmental awareness.
+    6. Watchdog - how is this implemented? 
+        - looking for network pings
+        - an out-of band system - communication / interrupt (Morses code) 
+        - a combination of both. 
+    7. System level - node scheduling based on input power
+    8. Environmentally sensitive operation 
+        - have clearly defined system extremities 
+            - Temperature 
+            - humidity 
+            - --vibration 
+            - power inconsistency - voltage and current 
+                - how to check? (a heater coil and current?)
+            - Radiation 
+                - what kinds hurt us? 
+            
+    9. Ensemble activity scaling based on environmental state.  
+        - reduce sensing 
+        - reduce computation 
+        - just slow things down - may be CPU scaling? 
+        
+    10. Moisture control 
+        - Desiccant 
+        - Peltier Cooler
+    
+    
+Larger Questions:    
+    How does a default installation get back to a functioning ensemble. 
+        - start from square one 
+            - resilience {what is the bare minimum}
+            - Come up with some cases 
+                - Think of all issues you are exposed to, and how do you minimize the risk. 
+                - 
+    Split between 
+        - threads, processes and applications - how do we split all that we 
+        need into the three? 
+            
+    How do you update packages on guest nodes? 
+    Fall-back installation? 
+    Upgrade process 
+        - with out GUI 
+        - We need updates for 
+            - Security updates. 
+            - What ever we use
+            - SSL and so on. 
+        
+    Security
+        - Do we need to have a prompt on these machines? 
+            - Non interactive in the field. 
+            - Only interaction over SSH. 
+
+Waggle Software stack:
+    1. Sensor queues are unregulated 
+        - what if a sensor puts a huge piece of data in the queue? 
+        - plugin watchdog? 
+        
+    2. A standard format for plugins and the whole plugin architecture 
+    needs to be reworked 
+        - Flat file based hierarchy? 
+        - Think about how one might support insitu computation
+        - How will it work when the sensor loop does not constantly 
+            send data, but needs prodding 
+        - Some kind of "registration" of a method to get data from sensors by the 
+        plugin 
+            - what kind of methods do we want to support? 
+                - right now, I will run a loop and you dump data in my buffer
+                
+    3. Seq_no _ state machine  - are we loosing messages, what is the length of 
+        forward window? Len =1 means lockstep ... Len = 2 means .. some breathing room
+            - some constrains there - very complex 
+    4. Buffers 
+        - At the Guestnode for Sensor data and also data to NC 
+            - GN should be ale to collect data even when 
+                - the sensors are nor registered, and in the hope that they will eventually be 
+                registered.
+                - the node controller is unreachable 
+                    - have never seen one 
+                    - intermittent issues 
+        - Ensemble level buffer 
+            - Unable to reach cloud 
+            - have never seen cloud 
+            - I will never connect to cloud, and someone will get the data from me sometime 
+                - can we make the system the same for both cases - 
+                    - with network 
+                    - and without 
+        - buffer emptying strategies 
+        - buffer reduction strategies 
+        - are we sending the network pinch to the guest nodes? 
+            - shared object
+  
+

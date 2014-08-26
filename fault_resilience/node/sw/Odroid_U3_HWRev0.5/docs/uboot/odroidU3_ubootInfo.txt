@@ -1,0 +1,27 @@
+U-Boot 2010.12-svn (Dec 21 2012 - 19:44:04) for Exynox4412
+
+
+CPU: S5PC220 [Samsung SOC on SMP Platform Base on ARM CortexA9]
+APLL = 1000MHz, MPLL = 880MHz
+DRAM:  2047 MiB
+
+PMIC VERSION : 0x00, CHIP REV : 2
+TrustZone Enabled BSP
+BL1 version: 20121128
+
+
+Checking Boot Mode ... SDMMC
+MMC Device 0: 7580 MB
+MMC Device 1 not found
+*** Warning - using default environment
+
+ModeKey Check... run normal_boot 
+Net:   No ethernet found.
+Hit any key to stop autoboot:  0 
+>>> Load Boot Script from mmc 0:1 <<<
+Partition1: Start Address(0x3ec1), Size(0x234c9)
+reading boot.scr
+Warning : Reads a file that is smaller than the cluster size.
+
+301 bytes read
+## Executing script at 40008000
