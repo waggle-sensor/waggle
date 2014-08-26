@@ -1,0 +1,20 @@
+
+= Detecting improper shutdown =
+
+We can implement an improper shutdown by creating, removing and checking for existence of a file at /var.
+
+Checking and removing should happen during the startup process.
+
+Creation during the shutdown process.
+
+== More Details ==
+
+Detection relies on the existens of the file /var/proper_shutdown.lock
+
+This file is generated at the end of the shutdown process.
+
+On startup we check if the file exists, if it does we simple remove it and continue, if it does not then we run our self-check process to detect the source of the failure.
+
+Both can be controlled by a single SysV configuration file '/etc/init/detectImproperShutdown.conf'
+
+

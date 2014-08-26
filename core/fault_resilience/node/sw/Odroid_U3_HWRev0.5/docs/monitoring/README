@@ -1,0 +1,16 @@
+
+= Monitoring
+
+Monitoring can happen for a variety of reasons.
+
+ - Failure Analysis
+ - Graceful Degradation
+ - Security
+
+== Software
+
+monit seems a very good solution for monitoring
+
+http://mmonit.com/monit/
+http://mmonit.com/monit/documentation/monit.html
+

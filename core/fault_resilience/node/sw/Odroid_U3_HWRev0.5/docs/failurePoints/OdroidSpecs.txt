@@ -1,0 +1,29 @@
+
+
+Odroid
+\
+ \_ Exynos4412 Prime Quad Core processor 
+  _ 2GB DRAM [PoP (Package on Package) 2Gbyte LPDDR2 880Mega Data Rate]
+  _ HSIC 
+  _ Power Management IC (MAX77686 Power Management IC from MAXIM)
+  _ Audio Codec
+  _ Power Protector IC
+  _ Ethernet RJ-45 Jack
+  _ USB2.0 Host x 3
+  _ 5V/2A DC Jack
+  _ Micro USB Connector (Device/Host)
+  _ eMMC Module Socket
+  _ Micro SD Card Slot
+  _ SD Card
+  _ Ethernet Cable
+  _ USB-to-Ethernet Adaptor
+
+
+HSIC USB 2.0 Hub:               USB3503A Integrated USB 2.0-compatible hub / HSIC upstream port from SMSC/Microchip
+HSIC Ethernet controller:       LAN9730HSIC USB 2.0 to 10/100 Ethernet controller with HP Auto-MDIX from SMSC/Microchip
+Protection IC:                  NCP372 Over-voltage, Over-current, Reverse-voltage protection IC from OnSemi.
+USB Load switch:                NCP380 Protection IC for USB power supply from OnSemi.
+
+
+
+

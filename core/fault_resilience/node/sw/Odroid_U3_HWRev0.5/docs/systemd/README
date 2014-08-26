@@ -1,0 +1,22 @@
+
+=== systemd Resources ===
+
+systemd seems to be a cool way to run our middleware get good logging and restart on crashes
+
+http://www.freedesktop.org/wiki/Software/systemd/
+http://www.freedesktop.org/software/systemd/python-systemd/daemon.html
+http://www.freedesktop.org/software/systemd/python-systemd/daemon.html
+http://www.freedesktop.org/software/systemd/man/
+http://www.freedesktop.org/software/systemd/man/daemon.html
+http://www.freedesktop.org/wiki/Software/systemd/TipsAndTricks/
+
+
+http://blog.scphillips.com/2013/07/getting-a-python-script-to-run-in-the-background-as-a-service-on-boot/
+
+http://www.gavinj.net/2012/06/building-python-daemon-process.html
+
+http://architects.dzone.com/articles/notes-writing-systemd-unit
+
+https://stackoverflow.com/questions/13069634/python-daemon-and-systemd-service
+
+

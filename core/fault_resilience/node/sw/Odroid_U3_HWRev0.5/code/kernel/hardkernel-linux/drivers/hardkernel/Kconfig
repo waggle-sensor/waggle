@@ -1,0 +1,27 @@
+menu "Hardkernel Specific Hardware"
+
+config ODROID_U2_FAN
+	bool "Enable the PWM Controlled FAN on ODROID-U2"
+	depends on ODROID_U2
+	default y
+	---help---
+		Enables the PWM Controlled FAN on ODROID-U2
+
+
+config VIDEO_SAMSUNG_S5P_HDMI_CEC
+        tristate "Enable CEC support for HDMI Driver"
+        default n
+        help
+          Enables CEC over the HDMI driver.
+          CEC enables tv-control, and reception of tv-remote
+          control commands over the HDMI interface
+
+config ODROID_IOBOARD
+    tristate "Enable the ODROID-U3+ & I/O Shield2 SPI Test"
+	depends on ODROID_U2
+	default n
+	---help---
+		Enables the I/O Shield2 SPI Drivers
+
+endmenu
+

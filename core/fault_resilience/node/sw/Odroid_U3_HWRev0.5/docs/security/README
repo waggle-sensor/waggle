@@ -1,0 +1,219 @@
+
+= Security =
+
+== Embedded System Security ==
+
+http://elinux.org/images/6/6f/Security-issues.pdf
+https://www.kernel.org/doc/ols/2007/ols2007v2-pages-79-86.pdf
+
+
+
+== Attack Surface ==
+The attack surface of a system is the “sum” of the inputs that can be controlled or influenced by untrusted users
+
+
+
+=== Odroid Attack Surface ===
+
+ * Physical
+    - Ethernet
+    - Keyboard
+    - USB
+    - UART
+    - GPS ?
+    - 4G ?
+ * Logical
+    - ssh
+    - our server applications
+    
+
+
+
+== Secure execution ==
+
+=== Signed Code ===
+
+https://en.wikipedia.org/wiki/Code_signing
+
+https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/Tools/signtool
+https://boinc.berkeley.edu/trac/wiki/CodeSigning
+
+
+==== Signed UBoot ====
+
+Verified U-Boot: http://lwn.net/Articles/571031/
+
+http://www.denx.de/wiki/pub/U-Boot/MiniSummitELCE2013/U-Boot_verified_RSA_boot_flow_on_arm_target.pdf
+
+http://duartes.org/gustavo/blog/post/kernel-boot-process/
+
+
+
+==== Linux IMA (Integrity Measurement Architecture)====
+
+Linux-IMA (Integrity Measurement Architecture):
+    - http://sourceforge.net/p/linux-ima/wiki/Home/
+    - https://wiki.gentoo.org/wiki/Integrity_Measurement_Architecture
+    - http://researcher.watson.ibm.com/researcher/view_group.php?id=2851
+    - http://lwn.net/Articles/488906/
+    - http://sourceforge.net/p/linux-ima/wiki/Home/#compiling-the-kernel-with-evmima-appraisal-enabled
+    
+IMA-EVM (Extended Verification Module) 
+    - https://wiki.gentoo.org/wiki/Extended_Verification_Module
+
+
+We need evm-tools to setup the secure environment, which to be build require:
+    gcc
+    make
+    autoconf
+    m4
+    libtool
+    automake
+    aclocal
+    linssl-dev
+    pkg-config
+    libattr1-dev
+    libkeyutils-dev
+
+Also, there seems to be a small problem with the installation as the libimaevm.so.0 file is installed at /usr/local/lib/ and it requires the extension of the LD_LIBRARY_PATH variable for correct dynamic linking
+
+Following the gentoo guide everything seems to be working fine.
+
+Both IMA and EVM need to be enabled.
+
+Still there seems to be some security holes. We will need to make sure they do not affect us (see 'I was able to edit an 'immutable' file and still run it. How come?')
+After changing offline a file and not being able to access it, a simple touch <FILE> re-enabled the file. This is probably an unacceptable behavior.
+
+TODO: 
+    - There is a chance I did not fully test EVM
+    - Create an initramfs that enables all the features
+
+===== Configuration =====
+
+http://sourceforge.net/p/linux-ima/wiki/Home/#compiling-the-kernel-with-evmima-appraisal-enabled
+
+
+
+
+==== Linux kernel ====
+
+===== Signed kernel module support =====
+Also, since version 3.7 the Linux kernel supports signed module loading. This, means that even if someone gains root access she can't load custom modules (there may be a catch here but we can look at it later).
+    * http://www.phoronix.com/scan.php?page=news_item&px=MTIwNzk
+
+To enable signed module loading support (http://wiki.gentoo.org/wiki/Signed_kernel_module_support) use menuconfig
+
+    --- Enable loadable module support
+    [*]   Module signature verification
+    [*]     Require modules to be validly signed
+    [*]     Automatically sign all modules
+          Which hash algorithm should modules be signed with? (Sign modules with SHA-512) --->
+
+
+NOTE: signed modules are supported by the hardkernel's linux kernel.
+
+Signed module support was tested using the hardkernel's branch 'odroid-3.8.y' and the steps from the above gentoo URL and seems to be working fine.
+
+
+===== Signed kernel =====
+
+We also need to sign the kernel, not just the loadable modules, to improve security.
+
+http://www.kroah.com/log/blog/2013/09/02/booting-a-self-signed-linux-kernel/
+
+
+To support signed kernel booting we need a version of uboot that supports that.
+
+http://lwn.net/Articles/571031/
+http://www.denx.de/wiki/pub/U-Boot/MiniSummitELCE2013/U-Boot_verified_RSA_boot_flow_on_arm_target.pdf
+
+At this moment the latest version of mainline UBoot supports signed kernel and signed device tree configuration booting. However, the hardkernel's uboot version is quit old and does not include this feature.
+
+IMPORTANT: Found a recently submitted set of patches (still under review) to the UBoot mainline that enable support for odroidu3. Maybe we will be able to use the latest UBoot after all (http://patchwork.ozlabs.org/patch/366338/)
+
+
+===== Minimal kernel setup  =====
+
+Another way to increase security would be to exclude modules that are not gonna be present in the hardware setup. This way a physical attack would be require to go through the existing hardware and nothing extra that will be attached could work.
+
+
+==== Python ====
+
+https://pypi.python.org/pypi/signedimp
+https://stackoverflow.com/questions/21122426/pgp-gpg-signed-python-code
+
+
+
+== Our Scheme ==
+
+
+=== Execution chain ===
+
+    boot_l1 (signed by samsung)
+        |
+        v
+    boot_l2 (signed by hardkernel)
+        |
+        v
+    u-boot (signed by ?)
+        |
+        V
+    Linux kernel + initramfs (signed by us, SIGNED MODULES PACKAGE)
+        |
+        V
+    systemd daemons (signed by us, IMA PACKAGE)
+
+=== Network Security ===
+
+We should minimize the number of applications that listen to the outside world.
+
+Allowed:
+    - ssh
+    - our middleware
+Disabled:
+    - telnet
+
+
+==== Root Auto login on boot ====
+
+to get rid of annoying root autologins rename "/etc/init/openvt.conf" to "/etc/init/openvt.conf.noboot" and edit "/etc/default/autogetty" to disable tty and serial autologin (http://linux-sunxi.org/More-images)
+
+==== Remote login ====
+
+http://www.cyberciti.biz/tips/linux-unix-bsd-openssh-server-best-practices.html
+https://dev.gentoo.org/~swift/docs/security_benchmarks/openssh.html
+
+We should consider the use of 'Port Knocking'
+
+
+Remote login should only happen password-less and with use of the highest key bitwidth.
+
+    - ssh-keygen (http://www.openbsd.org/cgi-bin/man.cgi?query=ssh-keygen&sektion=1)
+        example: ssh-keygen -t rsa -b 4096
+         -t dsa | ecdsa | ed25519 | rsa | rsa1
+             Specifies the type of key to create.  The possible values are
+             ``rsa1'' for protocol version 1 and ``dsa'', ``ecdsa'',
+             ``ed25519'', or ``rsa'' for protocol version 2.
+
+         -b bits
+             Specifies the number of bits in the key to create.  For RSA keys,
+             the minimum size is 768 bits and the default is 2048 bits.
+             Generally, 2048 bits is considered sufficient.  DSA keys must be
+             exactly 1024 bits as specified by FIPS 186-2.  For ECDSA keys,
+             the -b flag determines the key length by selecting from one of
+             three elliptic curve sizes: 256, 384 or 521 bits.  Attempting to
+             use bit lengths other than these three values for ECDSA keys will
+             fail.  ED25519 keys have a fixed length and the -b flag will be
+             ignored.
+
+
+
+==== Communication Encryption ====
+
+As a minimum I would assume that we need to encrypt all communication between the node controller and the cloud. In addition, all wireless communication between the guest nodes and the node controller should be encrypted.
+
+== Implications of increasing security ==
+
+Most of the security as described above is implemented through hash functions and public key, or symmetric, encryption. Both operations are resource intensive and would likely increase the power consumption.
+A profiling of this increase should be done.
+

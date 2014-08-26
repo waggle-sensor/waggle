@@ -1,0 +1,27 @@
+TARGET_ARCH   = 
+COMPILE_OPTS  = -O2 -Wall
+
+ARCH_MNEM = arm
+
+CC      = arm-linux-gnueabi-gcc
+CXX     = $(CC)
+AS      = $(CC)
+LD      = $(CC)
+AR      = arm-linux-gnueabi-ar
+CFLAGS  = $(COMPILE_OPTS)
+CXXFLAGS= $(COMPILE_OPTS)
+LDFLAGS = 
+
+FILE = bitcnt_1.c bitcnt_2.c bitcnt_3.c bitcnt_4.c bitcnts.c bitfiles.c bitstrng.c bstr_i.c 
+
+BINARIES = bitcnts.$(ARCH_MNEM).bin
+
+
+all: $(BINARIES)
+
+bitcnts.$(ARCH_MNEM).bin: ${FILE} Makefile.galileo
+	$(LD) $(LDFLAGS) $(TARGET_ARCH) ${FILE} -o $@
+
+clean:
+	rm -f $(BINARIES) *.o output*
+

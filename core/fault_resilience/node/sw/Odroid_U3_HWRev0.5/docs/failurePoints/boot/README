@@ -1,0 +1,33 @@
+
+= Boot script configurations for fault tolerance =
+
+== Links ==
+
+http://processors.wiki.ti.com/index.php/Booting_Linux_kernel_using_U-Boot
+
+
+== Kernel Select ==
+
+Using the uImage format we evaluate the checksum of a kernel before attempting to boot it up
+
+PROBLEM: as of now I was not able to boot-up odroid using a uImage kernel ( I do not know why), zImage boots fine
+
+=== Files ===
+    kernel_select.txt: example uboot boot script with that selects between kernel images after evaluating their checksums
+
+
+== Boot from a different partition ==
+
+This can probably be supported by trying to boot images from different partiotions until we succeed
+
+
+== Boot from USB ==
+
+We can probably boot from usb (http://processors.wiki.ti.com/index.php/Booting_Linux_kernel_using_U-Boot#USB_Storage)
+
+Example: 
+
+    U-Boot> usb reset  # usb start is equivalent
+    U-Boot> fatload usb 0:1 0xC0700000 uImage
+    U-Boot> setenv bootcmd 'usb start; fatload usb 0:1 0xC0700000 uImage; bootm 0xc0700000'
+

@@ -1,0 +1,42 @@
+.
+├── core
+│   ├── fault_resilience
+│   │   ├── cloud
+│   │   │   └── README
+│   │   └── node
+│   │       ├── hw
+│   │       │   └── systemController
+│   │       │       └── systemController0.3
+│   │       │           └── README
+│   │       └── sw
+│   │           └── README
+│   ├── frameworks
+│   │   ├── cloud
+│   │   │   └── README
+│   │   ├── common
+│   │   │   └── README
+│   │   └── node
+│   │       ├── common
+│   │       │   └── README
+│   │       ├── genericnode
+│   │       │   └── README
+│   │       └── nodecontroller
+│   │           └── README
+│   └── os
+│       ├── cloud
+│       │   └── README
+│       └── node
+│           └── README
+├── README
+└── sensors
+    └── weatherwx
+        └── weatherwx0.3
+            ├── fw
+            │   └── README
+            ├── hw
+            │   └── pcb
+            │       └── README
+            └── sw
+                └── README
+
+25 directories, 14 files

@@ -1,0 +1,11 @@
+
+= ACTIVE =
+
+* Chroot problem with livebuild: creates problem with auto-generation of rootfs images
+
+
+
+= RESOLVED =
+
+* UBoot of hardkernel is not booting uImages: creates problem with fault-tolerance at boot
+

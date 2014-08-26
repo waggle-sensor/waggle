@@ -1,0 +1,113 @@
+###
+### Instructions on how to create a custom SD card
+### Based on linaro-nano
+###
+
+## Compile UBoot
+
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- odroid_config
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- -j 2 all
+
+
+
+Then we need to use 'u-boot-dtb.bin'
+
+
+## Compile Kernel
+
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- 
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- uImage modules exynos4412-smdk4412.dtb
+
+
+## Format SD Card
+
+use
+https://repo.anl-external.org/repos/cerisc/forest/branches/2014/getziadz/code/sdcardTools/mkcard/mkcardOdroid.sh
+
+./mkcardOdroid.sh /dev/sdc
+
+## Flush boot binaries
+
+use
+https://repo.anl-external.org/repos/cerisc/forest/branches/2014/getziadz/code/sdcardTools/odroidSingedUBoot/
+
+./sd_fusing.sh /dev/sdc
+
+## Copy rootfs
+
+get the latest linaro-nano rootfs archive file 
+
+wget -r --no-parent -P latest http://snapshots.linaro.org/ubuntu/images/nano/latest/
+
+uncompress and copy the content of the 'binary' folder to /media/rootfs
+
+## Copy kernel, kernel modules, and firmware (assuming you have compiled one
+## already
+
+git clone --depth 1 https://github.com/hardkernel/linux.git -b odroid-3.8.y odroid-3.8.y
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- odroidu_defconfig
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- menuconfig
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- zImage uImage modules -j 3
+cp arch/arm/boot/uImage /media/boot/
+cp arch/arm/boot/zImage /media/boot/
+sudo cp .config /media/rootfs/boot/config-`cat ./include/config/kernel.release`
+sudo make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- modules_install INSTALL_MOD_PATH=/media/rootfs/
+sudo make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- firmware_install INSTALL_FW_PATH=/media/rootfs/lib/firmware
+
+## Copy boot scripts
+
+use
+https://repo.anl-external.org/repos/cerisc/forest/branches/2014/getziadz/code/sdcardTools/dummyBoot/
+
+copy the boot.* files 
+
+## Edit /etc/network/interfaces so that ethernet is brought up at boot and IPs
+## are assigned from dhcp
+
+++ auto eth0 eth1
+++ iface eth0 inet dhcp
+++ iface eth1 inet dhcp
+
+## First Boot
+
+apt-get update
+apt-get install openssh-server
+apt-get install nano
+apt-get install python-pika
+apt-get install make
+
+
+ * edit /etc/ssh/sshd_config to allow ssh root login
+
+-- PermitRootLogin without-password
+++ PermitRootLogin yes
+
+ * change passwd (why1not2)
+passwd
+
+
+ * Install extra packages
+pySensors (https://pypi.python.org/pypi/PySensors/)
+...
+
+
+ * single packet authorization
+
+apt-get install fwknop-server
+
+
+  * Fix MAC address
+
+
+
+
+#################
+## Known issues
+##
+##
+## clock resets after power lose: http://www.hardkernel.com/main/products/prdt_info.php?g_code=G137508214939
+##                                http://forum.odroid.com/download/file.php?mode=view&id=92
+##
+## 
+##
+#################
