@@ -1,6 +1,6 @@
 from commands import getoutput as bashit
-from configobj import ConfigObj
-from logging_module import set_logging_level
+from global_imports import ConfigObj
+from gn_global_definition_section import logger
 
 ##!/bin/bash
 #echo "Hostname: $(hostname"
@@ -11,7 +11,6 @@ from logging_module import set_logging_level
 #echo "Memory: $("
 #echo "Network: $(ifconfig | tr " " "\n" | grep -i "[a-z,0-9][a-z,0-9]:[a-z,0-9][a-z,0-9]:[a-z,0-9][a-z,0-9]:[a-z,0-9][a-z,0-9]:[a-z,0-9][a-z,0-9]:[a-z,0-9][a-z,0-9]""
 
-logger = set_logging_level("get_sys_info")
 
 def get_node_info(config_file_name):
         

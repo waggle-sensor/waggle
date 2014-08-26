@@ -1,8 +1,5 @@
-from configobj import *
-#from logging_module import *
-import os
-
-#logger = set_logging_level("NC_config_file_functions")
+from global_imports import os
+from configobj import ConfigObj
     
 ############################################################################## 
 def initialize_config_file(config_file_name):

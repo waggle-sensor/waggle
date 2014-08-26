@@ -1,4 +1,8 @@
-from nc_global_definition_section import *
+from nc_global_definition_section import buffered_msg,  msg_from_gn,  terminator,  gn_socket_list,  add_to_thread_buffer, logger
+import asyncore
+import asynchat
+import socket
+from global_imports import *
 
 # Delete the seq no id mapping entry when gn goes down, clean up everything related to the disconnected gn
 
@@ -9,8 +13,6 @@ from nc_global_definition_section import *
 # of the data to the GN which is in its output buffer.
 class internal_communicator(asynchat.async_chat):
 
-    logger = set_logging_level("Internal Communicator")
-    #logger = logging.getLogger(None)
     ac_in_buffer_size = 4096
     ac_out_buffer_size = 4096
      
@@ -23,7 +25,7 @@ class internal_communicator(asynchat.async_chat):
         self.gn_msgs_buffer_mngr = gn_msgs_buffer_mngr
         self.shutdown = 0
         self.set_terminator(terminator)                                                                         # terminating character indicating the end of the msg received
-        self.logger.debug("Internal Communicator for new GN initialized"+"\n\n")
+        logger.debug("Internal Communicator for new GN initialized"+"\n\n")
         
         
     ##############################################################################
@@ -31,12 +33,12 @@ class internal_communicator(asynchat.async_chat):
     def collect_incoming_data(self, data):
         if self.shutdown == 0:
             try:
-                self.logger.debug("Data from GN being received."+"\n\n")
+                logger.debug("Data from GN being received."+"\n\n")
                 self.input_buffer.append(data)                                                                          # Buffer the data
             except Exception as inst:
-                self.logger.critical("Exception in collect_data: " + str(inst)+"\n\n")
+                logger.critical("Exception in collect_data: " + str(inst)+"\n\n")
         else:
-            self.logger.critical("Socket Closed."+"\n\n")
+            logger.critical("Socket Closed."+"\n\n")
          
                 
         
@@ -45,14 +47,14 @@ class internal_communicator(asynchat.async_chat):
     def found_terminator(self):
         if self.shutdown == 0:
             try:
-                self.logger.info("Msg from GN:"+str(self.input_buffer)+"\n\n")
+                logger.info("Msg from GN! "+"\n\n")#+str(self.input_buffer)+"\n\n")
                 self.handle_request()
-                self.logger.debug("Incoming Msg handled."+"\n\n")
+                logger.debug("Incoming Msg handled."+"\n\n")
                 self.input_buffer = []
             except Exception as inst:
-                self.logger.critical("Exception in found_terminator: " + str(inst))
+                logger.critical("Exception in found_terminator: " + str(inst))
         else:
-            self.logger.critical("Socket Closed."+"\n\n")
+            logger.critical("Socket Closed."+"\n\n")
             
         
     ##############################################################################     
@@ -65,20 +67,20 @@ class internal_communicator(asynchat.async_chat):
                     msg = msg + single_msg                                              # convert msg from a list element to a string
                 msg = buffered_msg(msg_from_gn, None, None, None, msg, self)
                 add_to_thread_buffer(self.gn_msgs_buffer_mngr.msg_buffer, msg, "GN_msgs_buffer_mngr")                                             # Sends to the gn_msgs_buffer_mngr's buffer
-                self.logger.debug("Msg sent to gn_msgs_buffer_mngr."+"\n\n")
+                logger.debug("Msg sent to gn_msgs_buffer_mngr."+"\n\n")
             except Exception as inst:
-                self.logger.critical("Exception in handle_request: " + str(inst))
+                logger.critical("Exception in handle_request: " + str(inst))
         else:
-            self.logger.critical("Socket Closed."+"\n\n")
+            logger.critical("Socket Closed."+"\n\n")
         
         
     ##############################################################################
     def handle_error(self):
         try:
-            self.logger.critical("Error!!"+"\n\n")
+            logger.critical("Error!!"+"\n\n")
             self.handle_close()
         except Exception as inst:
-            self.logger.critical("Exception in handle_error: " + str(inst)+"\n\n")
+            logger.critical("Exception in handle_error: " + str(inst)+"\n\n")
             
         
     ##############################################################################    
@@ -87,9 +89,9 @@ class internal_communicator(asynchat.async_chat):
             self.shutdown = 1
             self.delete_socket()
             self.close() 
-            self.logger.critical("Socket Connection with GN closed."+"\n\n")
+            logger.critical("Socket Connection with GN closed."+"\n\n")
         except Exception as inst:
-            self.logger.critical("Exception in handle_close: " + str(inst)+"\n\n")
+            logger.critical("Exception in handle_close: " + str(inst)+"\n\n")
         
         
     ##############################################################################
@@ -100,10 +102,10 @@ class internal_communicator(asynchat.async_chat):
             current_socket_list = ''
             if gn_socket_list:
                 current_socket_list = str(gn_socket_list)
-            self.logger.critical("Current socket list:"+current_socket_list+"\n\n")
+            logger.critical("Current socket list:"+current_socket_list+"\n\n")
             self.gn_msgs_buffer_mngr.clean_gn_data(self)
         except Exception as inst:
-            self.logger.critical("Exception in delete_socket: " + str(inst)+"\n\n")
+            logger.critical("Exception in delete_socket: " + str(inst)+"\n\n")
         
         
     ##############################################################################

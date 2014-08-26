@@ -1,27 +1,15 @@
-import asyncore
-import asynchat
-import socket
-import logging
-import threading
+import os
 import Queue
-import sys
-import datetime
 import time
-import copy
+import logging
 from collections import namedtuple
-from configobj import *
-from config_file_functions import *
-from logging_module import *
-from waggle.common.util import get_current_time
-from waggle.common.util import get_instance_id
-from waggle.common.messaging_d import *
-from waggle.device.node_controller.send_msg import send_msg
 
 ## used for logging msgs
-##logging.basicConfig(filename = 'NC_output.log', level=logging.INFO,format='%(name)s: %(message)s',)
+#logging.basicConfig(filename = 'NC_output.log', level=logging.INFO,format='%(name)s: %(message)s',)
 #logging.basicConfig(level=logging.INFO,format='%(asctime)s %(name)s: %(message)s',)
+logging.basicConfig(level=logging.INFO,format='%(name)s: %(message)s',)
 # This file uses 3rd party package called configobj.py which is present in the . folder
-logger = set_logging_level(None)
+logger = logging.getLogger(None)
 
 port_for_gn = 7001                                                       # GNs can request at this port
 
@@ -48,8 +36,8 @@ terminator = str('!@#$%^&*')
 # List maintaining current GN sockets
 gn_socket_list = []                  
 
-# Variable keeping track of time
-current_time = time.time()
+## Variable keeping track of time
+#current_time = time.time()
 
 # config file 
 config_file_name = './' + "nc.cfg"
