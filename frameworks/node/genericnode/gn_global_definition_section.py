@@ -53,8 +53,13 @@ data_ack_wait_time = 300
 # References of Sensor threads present
 sensor_thread_list = []
 
-# Variable keeping track of time
-current_time = time.time()
+## Variable keeping track of time
+#current_time = time.time()
+
+
+# config file 
+config_file_name = './' + "gn.cfg"
+
 
 ################################################################################
 def get_instance_id():
@@ -84,7 +89,7 @@ get_instance_id.instance_id = None
 
 ##############################################################################     
 def add_to_thread_buffer(msg_buffer, string_msg, thread_name):
-    logger.info("Buffer size of " + thread_name + ': ' + str(msg_buffer.qsize()) + "\n\n")
+    logger.debug("Buffer size of " + thread_name + ': ' + str(msg_buffer.qsize()) + "\n\n")
     if not msg_buffer.full():
         msg_buffer.put(string_msg)
     else:
@@ -95,7 +100,7 @@ def add_to_thread_buffer(msg_buffer, string_msg, thread_name):
 ##############################################################################
 # Adds to the sorted buffer passed as an arg and then sorts the buffer based on the expiration_time field of the unacknowledged_msg_handler_info
 def add_to_sorted_output_buffer(msg_buffer, unacknowledged_msg_handler_info):
-    logger.info("Buffer size of buffer_mngr's output buffer: " + str(len(msg_buffer)))
+    logger.debug("Buffer size of buffer_mngr's output buffer before adding item: " + str(len(msg_buffer))+"\n\n")
     msg_buffer.append(unacknowledged_msg_handler_info)
     sorted(msg_buffer, key=lambda x: x[1])
     logger.debug("Msg waiting for ACK inserted in sorted buffer.\n\n")
@@ -104,7 +109,7 @@ def add_to_sorted_output_buffer(msg_buffer, unacknowledged_msg_handler_info):
 ##############################################################################    
 # Returns msg_info for a specific msg    
 def get_msg_info_and_delete_from_output_buffer(output_buffer, seq_no):
-    logger.info("Buffer size of buffer_mngr's output buffer: " + str(len(output_buffer)))
+    logger.debug("Buffer size of buffer_mngr's output buffer before deleting item: " + str(len(output_buffer))+"\n\n")
     for msg_handler_info in output_buffer:
         if msg_handler_info[0] == seq_no:
             output_buffer.remove(msg_handler_info)
@@ -113,10 +118,6 @@ def get_msg_info_and_delete_from_output_buffer(output_buffer, seq_no):
             return msg_handler_info
     return None
 
-##############################################################################
-# File in which all msg communication with NC are stored
-def get_log_file_name():
-    return "GN_msg_log"
 
 
 ##############################################################################    

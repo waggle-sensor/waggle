@@ -1,0 +1,1 @@
+buffered_msg, msg_to_nc, msg_from_nc, start_communication_with_nc_event, config_file_initialized_event, sensors_info_saved_event, registration_type, data_type, command_type, reply_type, acknowledgment, no_reply, terminator, gn_registration_ack_wait_time, data_ack_wait_time, sensor_thread_list, config_file_name

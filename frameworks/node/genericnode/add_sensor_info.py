@@ -72,7 +72,6 @@ class param_info():
 
       
 def write_to_config_file(sensor):
-    config_file_name = get_config_file_name()
     initialize_config_file(config_file_name)
     config = ConfigObj(config_file_name)
     main_section_name = "Sensors Info"
@@ -83,12 +82,12 @@ def write_to_config_file(sensor):
     config.write()
  
  
-def write_data_to_file(data):
-    config_file_name = get_reg_file_name(sensor.sensor_name)
-    config = ConfigObj(config_file_name)
-    config[sensor.sensor_name] = sensor.sensor_info_dict
-    config.write()
-    update_pending_file_list(sensor.sensor_name, config_file_name)
+#def write_data_to_file(data):
+    #config_file_name = get_reg_file_name(sensor.sensor_name)
+    #config = ConfigObj(config_file_name)
+    #config[sensor.sensor_name] = sensor.sensor_info_dict
+    #config.write()
+    #update_pending_file_list(sensor.sensor_name, config_file_name)
    
    
 def update_pending_file_list(sensor_name, file_name):

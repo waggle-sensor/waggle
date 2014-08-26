@@ -57,7 +57,6 @@ class msg_processor_class():
     ##############################################################################
     # Stores the node's sw/hw info in config file
     def store_system_info(self):
-        config_file_name = get_config_file_name()
         if os.path.exists(config_file_name):
             config = ConfigObj(config_file_name)
             if config["Systems Info"] != {}:                                            
@@ -70,32 +69,6 @@ class msg_processor_class():
         # Error
         return 1
         
-     
-        
-    ###############################################################################
-    #def run_lshw_cmd(self, lshw_xml_file_name):
-        #ret_val = 0
-        #if not os.path.exists(lshw_xml_file_name):
-                #try:
-                    #fd = open(lshw_xml_file_name, "w")
-                    #self.logger.debug("lshw_xml result file opened."+"\n\n")
-                #except:
-                    #self.logger.critical("Error in creating lshw_xml file."+"\n\n")
-                    #return 1
-                #try:
-                    #ret_val = check_call(['lshw', '-xml'], stdin = None, stdout=fd) #Popen(['lshw', '-xml'], 0, None, None, stdout=fd)
-                    ##self.logger.debug("\n\n\nlshw_xml command executed.")
-                #except Exception as inst:
-                    #self.logger.critical("Exception: " + str(inst)+"\n\n")
-                    #self.logger.critical("Error in executing \"lshw -xml\" command."+"\n\n")
-                    #ret_val = 1
-                #finally:
-                    #self.logger.debug("lshw_xml result file closed."+"\n\n")
-                    #fd.close()
-        #else:
-            #self.logger.debug("File " + lshw_xml_file_name + "already exists."+"\n\n")            
-        #return ret_val    
-    
         
     ##############################################################################
     # Extracts the msg_id and checks in the output sorted msg queue if its a reply of some msg, 
@@ -177,7 +150,7 @@ class msg_processor_class():
         
     ##############################################################################
     def get_system_info(self):
-        return ConfigObj(get_config_file_name())
+        return ConfigObj(config_file_name)
         
         
     ##############################################################################
@@ -196,11 +169,11 @@ class msg_processor_class():
     def register_gn(self, gn_info):
         try:
             for single_gn_info in gn_info:
-                config = ConfigObj(get_config_file_name())
+                config = ConfigObj(config_file_name)
                 config["GN Info"][single_gn_info.instance_id] = single_gn_info.sys_info
                 config.write()
-                config = ConfigObj(get_config_file_name())
-                self.logger.debug("GN registration info saved in config file."+"\n\n")
+                config = ConfigObj(config_file_name)
+                self.logger.info("GN registration info saved in config file."+"\n\n")
         except Exception as inst:
             self.logger.critical("Exception in register_gn:" + str(inst)+"\n\n")
         

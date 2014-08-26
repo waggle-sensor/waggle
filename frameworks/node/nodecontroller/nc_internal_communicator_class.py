@@ -34,7 +34,7 @@ class internal_communicator(asynchat.async_chat):
                 self.logger.debug("Data from GN being received."+"\n\n")
                 self.input_buffer.append(data)                                                                          # Buffer the data
             except Exception as inst:
-                self.logger.critical("Exception: " + str(inst)+"\n\n")
+                self.logger.critical("Exception in collect_data: " + str(inst)+"\n\n")
         else:
             self.logger.critical("Socket Closed."+"\n\n")
          
@@ -50,7 +50,7 @@ class internal_communicator(asynchat.async_chat):
                 self.logger.debug("Incoming Msg handled."+"\n\n")
                 self.input_buffer = []
             except Exception as inst:
-                self.logger.critical("Exception: " + str(inst))
+                self.logger.critical("Exception in found_terminator: " + str(inst))
         else:
             self.logger.critical("Socket Closed."+"\n\n")
             
@@ -67,7 +67,7 @@ class internal_communicator(asynchat.async_chat):
                 add_to_thread_buffer(self.gn_msgs_buffer_mngr.msg_buffer, msg, "GN_msgs_buffer_mngr")                                             # Sends to the gn_msgs_buffer_mngr's buffer
                 self.logger.debug("Msg sent to gn_msgs_buffer_mngr."+"\n\n")
             except Exception as inst:
-                self.logger.critical("Exception: " + str(inst))
+                self.logger.critical("Exception in handle_request: " + str(inst))
         else:
             self.logger.critical("Socket Closed."+"\n\n")
         
@@ -78,7 +78,7 @@ class internal_communicator(asynchat.async_chat):
             self.logger.critical("Error!!"+"\n\n")
             self.handle_close()
         except Exception as inst:
-            self.logger.critical("Exception: " + str(inst)+"\n\n")
+            self.logger.critical("Exception in handle_error: " + str(inst)+"\n\n")
             
         
     ##############################################################################    
@@ -89,7 +89,7 @@ class internal_communicator(asynchat.async_chat):
             self.close() 
             self.logger.critical("Socket Connection with GN closed."+"\n\n")
         except Exception as inst:
-            self.logger.critical("Exception: " + str(inst)+"\n\n")
+            self.logger.critical("Exception in handle_close: " + str(inst)+"\n\n")
         
         
     ##############################################################################
@@ -97,11 +97,13 @@ class internal_communicator(asynchat.async_chat):
         try:
             if self in gn_socket_list:
                 gn_socket_list.remove(self)
-            self.logger.critical("Current socket list:"+str(gn_socket_list)+"\n\n")
+            current_socket_list = ''
+            if gn_socket_list:
+                current_socket_list = str(gn_socket_list)
+            self.logger.critical("Current socket list:"+current_socket_list+"\n\n")
             self.gn_msgs_buffer_mngr.clean_gn_data(self)
-            
         except Exception as inst:
-            self.logger.critical("Exception: " + str(inst)+"\n\n")
+            self.logger.critical("Exception in delete_socket: " + str(inst)+"\n\n")
         
         
     ##############################################################################

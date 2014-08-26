@@ -51,6 +51,8 @@ gn_socket_list = []
 # Variable keeping track of time
 current_time = time.time()
 
+# config file 
+config_file_name = './' + "nc.cfg"
 
 ############################################################################## 
 def get_instance_id():
@@ -78,10 +80,6 @@ def get_instance_id():
 get_instance_id.instance_id = None    
 
         
-##############################################################################     
-# Saves the state machine with different GNs, currently just the last session_id corresponding to each
-def get_log_file_name():
-    return "NC_msg_log"
 
     
 ##############################################################################   
@@ -94,7 +92,7 @@ def get_current_time():
 ##############################################################################   
 def add_to_thread_buffer(msg_buffer, string_msg, thread_name):
     logger.debug("Added to thread's buffer."+"\n\n")
-    logger.info("Buffer size of " + thread_name + ':' + str(msg_buffer.qsize()) + "\n\n")
+    logger.debug("Buffer size of " + thread_name + ':' + str(msg_buffer.qsize()) + "\n\n")
     if not msg_buffer.full():
         msg_buffer.put(string_msg)
     else:
@@ -103,7 +101,7 @@ def add_to_thread_buffer(msg_buffer, string_msg, thread_name):
 ##############################################################################   
 # Adds to the sorted buffer passed as an arg and then sorts the buffer based on the expiration_time field of the unacknowledged_msg_handler_info
 def add_to_sorted_output_buffer(msg_buffer, unacknowledged_msg_handler_info):
-    logger.info("Buffer size of GN_msgs_buffer_mngr's output buffer: " + str(len(msg_buffer)))
+    logger.debug("Buffer size of GN_msgs_buffer_mngr's output buffer before adding item: " + str(len(msg_buffer))+"\n\n")
     msg_buffer.append(unacknowledged_msg_handler_info)
     sorted(msg_buffer, key=lambda x: x[2])                                              # sorted based on time
     logger.debug("Msg waiting for ACK inserted in sorted buffer."+"\n\n")
@@ -111,7 +109,7 @@ def add_to_sorted_output_buffer(msg_buffer, unacknowledged_msg_handler_info):
 ##############################################################################       
 # Returns msg_info for a specific msg    
 def get_msg_info_and_delete_from_output_buffer(output_buffer, seq_no):
-    logger.info("Buffer size of buffer_mngr's output buffer: " + str(len(output_buffer)))
+    logger.debug("Buffer size of buffer_mngr's output buffer before deleting item: " + str(len(output_buffer))+"\n\n")
     for msg_handler_info in output_buffer:
         if msg_handler_info[0] == seq_no:
             logger.debug("Timed out msg deleted from output_buffer and returned."+"\n\n")

@@ -27,39 +27,14 @@ class main_class():
         self.buffer_mngr = buffer_mngr
         self.logger.debug("info Thread "+self.thread_name+" Initialized."+ "\n\n")
 
-        
-    ############################################################################## 
-    def run_lshw_cmd(self, lshw_xml_file_name):
-        ret_val = 0
-        if not os.path.exists(lshw_xml_file_name):
-                try:
-                    fd = open(lshw_xml_file_name, "w")
-                    self.logger.debug("lshw_xml result file opened."+ "\n\n")
-                except:
-                    self.logger.critical("Error in creating lshw_xml file.")
-                    return 1
-                try:
-                    ret_val = check_call(['lshw', '-xml'], stdin = None, stdout=fd)
-                    self.logger.debug("lshw_xml command executed."+ "\n\n")
-                except Exception as inst:
-                    self.logger.critical("Exception: " + str(inst)+ "\n\n")
-                    self.logger.critical("Error in executing \"lshw -xml\" command."+ "\n\n")
-                    ret_val = 1
-                finally:
-                    self.logger.debug("lshw_xml result file closed.\n\n")
-                    fd.close()
-        else:
-            self.logger.debug("File " + lshw_xml_file_name + "already exists."+ "\n\n")            
-        return ret_val    
     
     ##############################################################################
     # Stores the node's sw/hw info in config file
     def store_node_info(self):
-        config_file_name = get_config_file_name()
         if os.path.exists(config_file_name):
             config = ConfigObj(config_file_name)
             if config["Systems Info"] != {}:                                            
-                # nc.cfg is already present
+                # gn.cfg is already present
                 return
         else:
             initialize_config_file(config_file_name)
@@ -77,7 +52,7 @@ class main_class():
         self.logger.debug("Waiting for sensors info."+ "\n\n")
         sensors_info_saved_event.wait()
         #Instance data filling goes here
-        reg_payload.sys_info = dict(ConfigObj(get_config_file_name()))
+        reg_payload.sys_info = dict(ConfigObj(config_file_name))
         reg_payload.instance_id = get_instance_id()
         self.send_to_buffer_mngr(registration_type, no_reply, reg_payload)
     
@@ -106,7 +81,7 @@ class main_class():
     ############################################################################## 
     # Function: Checks by reading the log file whether registration has been done or not. 
     def check_registration_status(self):
-        config = ConfigObj(get_config_file_name())
+        config = ConfigObj(config_file_name)
         if config["Registered"] == "YES":
             self.logger.debug("System Info: " + config["Systems Info"]+ "\n\n")
             self.logger.info("Registration already done."+ "\n\n")
