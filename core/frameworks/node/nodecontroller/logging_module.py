@@ -1,8 +1,8 @@
 import logging
 
 ## used for logging msgs
-logging.basicConfig(filename = './NC_output.log', level=logging.INFO,format='%(asctime)s %(name)s: %(message)s',)
-#logging.basicConfig(level=logging.NOTSET,format='%(asctime)s %(name)s: %(message)s',)
+#logging.basicConfig(filename = './NC_output.log', level=logging.INFO,format='%(asctime)s %(name)s: %(message)s',)
+logging.basicConfig(level=logging.NOTSET,format='%(asctime)s %(name)s: %(message)s',)
 
 
 # handler for logging msgs                    

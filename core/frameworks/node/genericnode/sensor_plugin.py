@@ -3,7 +3,7 @@ from gn_global_definition_section import *
  
 class sensor_plugin_class():
     
-    watchdir = '../sensor_modules' #'/nfs2/nkarimi/Desktop/internal_API/2014/nikhat/sensor_modules'
+    watchdir = '../sensormodules/weatherwx0.3' #'/nfs2/nkarimi/Desktop/internal_API/2014/nikhat/sensor_modules'
     logger = set_logging_level("sensor_plugin")
         
     ############################################################################## 
@@ -15,7 +15,6 @@ class sensor_plugin_class():
     ############################################################################## 
     def initialize_registered_modules_list(self):
         registered_modules = []
-        config_file_name = get_config_file_name()
         if os.path.exists(config_file_name):
             config = ConfigObj(config_file_name)
             if config["Sensors Info"] != {}:
@@ -47,7 +46,7 @@ class sensor_plugin_class():
         
     ############################################################################## 
     def update_last_registration__time(self):
-        config = ConfigObj(get_log_file_name()) 
+        config = ConfigObj(config_file_name) 
         config["last_registration_time"] = time.time()
         config.write()
         
@@ -90,7 +89,7 @@ class sensor_plugin_class():
     
     ############################################################################## 
     def is_new_sensor(self, sensor_file_name):
-        config = ConfigObj(get_log_file_name())
+        config = ConfigObj(config_file_name)
         if "last_registration_time" in config:
             return (config["last_registration_time"] < time.ctime(os.path.getmtime(watchdir+sensor_file_name+".py")))
         return True
@@ -140,7 +139,7 @@ class sensor_plugin_class():
     ##############################################################################     
     def is_sensor_registered(self, sensor_name):
         try:
-            config = ConfigObj(get_config_file_name())
+            config = ConfigObj(config_file_name)
             for sensor in config["Sensors Info"]:
                 if config["Sensors Info"][sensor]["Registered"] == 'yes':
                    return True

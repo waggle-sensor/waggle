@@ -3,7 +3,7 @@ from commands import getoutput
 getoutput("rm -f gn.cfg")
 getoutput("rm -f GN_msg_log")
 getoutput("rm -f GN_output.log")
-
+getoutput("rm -f *sensor1c")
 """
 4 threads:
 1.  main_thread (object of main_class): Spawns other threads and processes any messages intended for itself

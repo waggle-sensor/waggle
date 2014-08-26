@@ -37,7 +37,7 @@ class sensor_controller_class(threading.Thread):
     def run(self): 
         try:
             self.logger.debug("Starting " + self.thread_name+ "\n\n")
-            if not self.is_config_file_initialized(get_config_file_name()):
+            if not self.is_config_file_initialized(config_file_name):
                 # Waits for the config file to be initialized
                 config_file_initialized_event.wait()
                 self.logger.debug("Config file initialized."+ "\n\n")
