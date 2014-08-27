@@ -8,7 +8,7 @@ from collections import namedtuple                                              
 #logging.basicConfig(filename = 'GN_output.log', level=logging.INFO,format='%(name)s: %(message)s',)
 #logging.basicConfig(level=logging.INFO,format='%(asctime)s %(name)s: %(message)s',)
 logging.basicConfig(level=logging.INFO,format='%(name)s: %(message)s',)
-logger = logging.getLogger(None)
+logger = logging.getLogger("GN")
 
 # Message retrieved/stored in the buffer_mngr's buffer will use this tuple
 buffered_msg = namedtuple('buffered_msg', ['internal_msg_header', 'msg_type', 'seq_no', 'reply_id', 'msg'])

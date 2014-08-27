@@ -45,7 +45,7 @@ class external_communicator_class(asynchat.async_chat, threading.Thread):
     def found_terminator(self):
         try:
             if self.shutdown == 0:
-                logger.info("Msg from NC!"+"\n\n") #+str(self.input_buffer)+"\n\n")
+                print("GN:Msg received:"+str(time.time())) #"\n\n") #+str(self.input_buffer)+"\n\n")
                 self.handle_request()
                 logger.debug("Msg handled.\n\n")
                 self.input_buffer = []

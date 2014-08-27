@@ -856,7 +856,7 @@ class sensor1():
                     wxconnection = True
                 except:
                     #print "Waiting for Connection..."
-                    time.sleep(10)
+                    time.sleep(60)
                     sensor_data = [
                         
                         ['PDV_P8104.API.2006', time.time(), ['PDV_P8104.API.2006.Light_intensity'], ['f'], [579.0], ['Units10B0V5'], ['WXSensorV0.3_Indoor']],

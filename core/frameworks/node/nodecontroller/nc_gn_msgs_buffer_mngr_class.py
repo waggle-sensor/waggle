@@ -43,11 +43,18 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
     def run(self):
         try:
             logger.debug("Starting " + self.thread_name+"\n\n")
-            # Waits on the buffer till a msg is received      
+            # Waits on the buffer till a msg is received
+            #startTime = time.time()
+            #print startTime
+            
             while True:
+                #startTime = time.time()
                 if not self.msg_buffer.empty():
+                    #print time.time() - startTime
                     item = self.msg_buffer.get()
-                    if item.internal_msg_header == msg_send:                                                           # Send the message to internal_communicator's output_buffer to send it to GN
+                    if item.internal_msg_header == msg_send:
+                        # Send the message to internal_communicator's output_buffer to send it to GN
+                        #print time.time() - startTime
                         if item.msg_type == reply_type or not self.is_output_buffer_full():
                             logger.debug("Message to send to GN/Cloud received.:" + "\n\n")
                             encoded_msg = self.gen_msg(item)
@@ -57,11 +64,11 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
                                     socket_obj = self.get_socket_obj(item.inst_id)
                                     if socket_obj:
                                         socket_obj.push(encoded_msg)                                                  # Pushes the msg to the appropriate internal_communicator object's buffer which looks over the socket associated with the specific GN
-                                        logger.info("Msg to GN! "+"\n\n")#+str(item.inst_id)+" Msg sent: "+ encoded_msg + "\n\n" )
+                                        print("NC:Msg Sent:"+str(time.time()))#logger.info("Msg to GN! "+"\n\n")#+str(item.inst_id)+" Msg sent: "+ encoded_msg + "\n\n" )
                                     else:
                                         logger.critical("GN's socket closed. So discarding the msg------------------------------------------------------------."+ "\n\n")
                                 else:
-                                        logger.info("Msg sent to Cloud!"+"\n\n")# + (encoded_msg)+"\n\n")
+                                        logger.debug("Msg sent to Cloud!"+"\n\n")# + (encoded_msg)+"\n\n")
                                         self.send_msg_to_cloud(encoded_msg)                                                             # send msg to cloud
                             else:
                                 logger.critical("Nonetype Msg discarded."+"\n\n")
@@ -69,8 +76,12 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
                         else:
                             self.sorted_output_msg_buffer.put(item)
                     # Received message from GN so send it to msg_processor's input_buffer for processing
-                    elif item.internal_msg_header == msg_from_gn:                                                                   # msg from cloud/gn received
-                        logger.debug("  Msg from GN! "+"\n\n") #+ str(item.msg) + "\n\n")
+                    elif item.internal_msg_header == msg_from_gn:
+                        
+                        #print time.time() - startTime
+                        
+                        # msg from cloud/gn received
+                        logger.info("  Msg from GN! "+"\n\n") #+ str(item.msg) + "\n\n")
                         decoded_msg = Message.decode(item.msg)
                         if (not self.new_node(decoded_msg.header.instance_id)) | (decoded_msg.header.message_type == registration_type):
                             msg_state = 'correct'
@@ -95,8 +106,9 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
                             logger.critical("UNKNOWN GN SO MSG DISCARDED.........................................."+ "\n\n")
                             continue
                             # TODO: If msg is just an ACK then don't forward it, copy this portion from GN's code, take care of extra inst_id with seq_no in unack_msg_info here
+                        #print time.time() - startTime
                     self.msg_buffer.task_done()
-                time.sleep(0.01)
+                time.sleep(0.001)
         except Exception as inst:
             logger.critical("Exception in gn_msgs_bufr_mngr run: " + str(inst)+ "\n\n")
             self.run()
@@ -218,6 +230,8 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
        
     ##############################################################################
     def send_msg_to_cloud(self, encoded_msg):
+        #startTime = time.time()
+        #print "I am trying to send stuff to cloud at"+str(startTime)
         try:
             send_msg(encoded_msg)                                                             # send msg to cloud
             logger.info('Msg sent to cloud successfully.'+ "\n\n")
@@ -226,10 +240,12 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
             logger.critical("Retrying after 1 secs."+ "\n\n")
             time.sleep(1)
             self.send_msg_to_cloud(encoded_msg)
-   
+        #print "I am done sending dude!"+str(time.time() - startTime)
    
     ##############################################################################
-    # Checks whether a GN is new or not by checking entries in registered nodes or reading config file, if entry is presentin config file but not in registered nodes then it adds that node to registered_nodes list
+    # Checks whether a GN is new or not by checking entries in registered nodes or reading config 
+    #file, if entry is presentin config file but not in registered nodes then it adds that node to 
+    #registered_nodes list
     def new_node(self, inst_id):
         try:
             if inst_id in self.registered_nodes:

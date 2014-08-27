@@ -1,3 +1,4 @@
+import time
 from commands import getoutput
 #getoutput("rm -f lshw_result.xml")
 getoutput("rm -f gn.cfg")
@@ -18,7 +19,8 @@ getoutput("rm -f *sensor1c")
 """
 from gn_main_class import main_class
     
-if __name__ == "__main__":  
+if __name__ == "__main__":
+    print("GN:Starts:"+str(time.time()))
     main_thread = ''
     sensor_controller = ''                                                 # global object of sensor_controller_class which manages all sensors related messages
     buffer_mngr = ''                                                       # global object of buffer_mngr_class which manages the buffer for sent and received messages

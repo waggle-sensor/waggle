@@ -9,7 +9,7 @@ from collections import namedtuple
 #logging.basicConfig(level=logging.INFO,format='%(asctime)s %(name)s: %(message)s',)
 logging.basicConfig(level=logging.INFO,format='%(name)s: %(message)s',)
 # This file uses 3rd party package called configobj.py which is present in the . folder
-logger = logging.getLogger(None)
+logger = logging.getLogger("NC")
 
 port_for_gn = 7001                                                       # GNs can request at this port
 

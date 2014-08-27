@@ -24,6 +24,9 @@ class msg_processor_class():
     # Runs forever
     def run(self):
         try:
+            startTime = time.time()
+            #print startTime
+            
             logger.debug("Starting " + self.thread_name+"\n\n")
             self.store_system_info()
             # Instantiates threads
@@ -34,7 +37,11 @@ class msg_processor_class():
             # Starts Threads
             self.gn_msgs_buffer_mngr.start()
             self.nc_server.start()
+            print("NC:All threads started:"+str(time.time()))
+            #print time.time() - startTime
+            
             while True:
+                
                 if not self.input_buffer.empty():
                     item = self.input_buffer.get()
                     logger.debug("Msg received."+"\n\n")
@@ -43,9 +50,11 @@ class msg_processor_class():
                         logger.debug("Msg from GN received:"+"\n\n")
                         self.process_external_msg(item)                                                                     # processes msgs obtained from NC/GNs
                     self.input_buffer.task_done()
-                time.sleep(0.01)
+                time.sleep(0.001)
+                
         except Exception as inst:
             logger.critical("Exception in main: " + str(inst)+"\n\n")
+            
         finally:
             self.gn_msgs_buffer_mngr.join(1)
             self.nc_server.handle_close()

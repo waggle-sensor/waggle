@@ -96,8 +96,7 @@ class buffer_mngr_class(threading.Thread):
                                 unacknowledged_msg_handler_info = [self.last_gn_seq_no, expiration_time, encoded_msg, msg_handler_no]   # contains seq_no, expiration_time, registration msg, handler no corresponding to the handler which will be called when this msg times out or acknowledged
                                 add_to_sorted_output_buffer(self.sorted_output_msg_buffer, unacknowledged_msg_handler_info)
                             self.external_communicator.push(encoded_msg)                                                           # pushes to the output buffer of external_communicator_class
-                            if item.msg_type != registration_type:
-                                logger.info("Msg to NCR! "+"\n\n")# + str(encoded_msg)+"\n\n")
+                            print("GN:Msg Sent:"+str(time.time()))# + str(encoded_msg)+"\n\n")
                             #else:
                                 #logger.critical("\n\nNC's socket closed. So buffering the msg.")
                                 #time.sleep(5)
