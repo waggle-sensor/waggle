@@ -136,7 +136,7 @@ class buffer_mngr_class(threading.Thread):
                 timed_out_msg_info = get_timed_out_msg_info(self.sorted_output_msg_buffer) 
                 if timed_out_msg_info:
                     self.handler_vector_table[timed_out_msg_info[3]](timed_out_msg_info, None) 
-                time.sleep(0.001)
+                time.sleep(0.005)
                 count+=1
                 if count==1000:
                     count = 0

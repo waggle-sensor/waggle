@@ -57,7 +57,7 @@ class sensor_controller_class(threading.Thread):
                 plugin_obj.plugin_sensors()
                 # Puts all the sensor msgs in its input_buffer to sensor_controller's input_buffer by converting them in proper tuple format
                 plugin_obj.get_sensor_msgs()  
-                time.sleep(0.001)
+                time.sleep(0.01)
         except Exception as inst:
             logger.critical("Exception: " + str(inst)+ "\n\n")
             self.run()

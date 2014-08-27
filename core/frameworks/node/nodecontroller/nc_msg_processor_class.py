@@ -47,7 +47,7 @@ class msg_processor_class():
                         logger.debug("Msg from GN received:"+"\n\n")
                         self.process_external_msg(item)                                                                     # processes msgs obtained from NC/GNs
                     self.input_buffer.task_done()
-                time.sleep(0.001)
+                time.sleep(0.005)
                 
         except Exception as inst:
             logger.critical("Exception in main: " + str(inst)+"\n\n")
