@@ -2,7 +2,9 @@ import imp
 from threading import Thread
 from gn_global_definition_section import add_to_thread_buffer,  buffered_msg,  msg_to_nc,  sensors_info_saved_event,  data_type,  no_reply,  sensor_thread_list, config_file_name, logger    
 from global_imports import *
- 
+from config_file_functions import initialize_config_file, ConfigObj
+
+
 class sensor_plugin_class():
     
     watchdir = '../sensormodules/weatherwx0.3' #'/nfs2/nkarimi/Desktop/internal_API/2014/nikhat/sensor_modules'
@@ -46,9 +48,9 @@ class sensor_plugin_class():
             
         
     ############################################################################## 
-    def update_last_registration__time(self):
+    def update_last_sensors_registration_time(self):
         config = ConfigObj(config_file_name) 
-        config["last_registration_time"] = time.time()
+        config["last_sensors_registration_time"] = time.time()
         config.write()
         
         
@@ -89,10 +91,11 @@ class sensor_plugin_class():
     
     
     ############################################################################## 
+    # Compares the file's modified time with the current time to check whether the sensor module should be registered or just started
     def is_new_sensor(self, sensor_file_name):
         config = ConfigObj(config_file_name)
-        if "last_registration_time" in config:
-            return (config["last_registration_time"] < time.ctime(os.path.getmtime(watchdir+sensor_file_name+".py")))
+        if "last_sensors_registration_time" in config:
+            return (config["last_sensors_registration_time"] < time.ctime(os.path.getmtime(watchdir+sensor_file_name+".py")))
         return True
 
         
@@ -132,7 +135,7 @@ class sensor_plugin_class():
             for sensor_class_obj in sensor_class_objcts:
                 if self.is_new_sensor(sensor_class_obj):
                     sensor_class_obj.register()
-            self.update_last_registration__time()
+            self.update_last_sensors_registration_time()
         except Exception as inst:
             logger.critical("Exception in register_modules: " + str(inst)+"\n\n")
          

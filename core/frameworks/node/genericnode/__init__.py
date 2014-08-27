@@ -17,10 +17,13 @@ getoutput("rm -f *sensor1c")
 4.  external_communicator (object of External_communicator_class): Handles the sending and receiving of messages 
 
 """
+from gn_global_definition_section import logger
 from gn_main_class import main_class
+
+
     
 if __name__ == "__main__":
-    print("GN:Starts:"+str(time.time()))
+    logger.critical("Starts:"+str('%0.4f' % time.time())+"\n\n")
     main_thread = ''
     sensor_controller = ''                                                 # global object of sensor_controller_class which manages all sensors related messages
     buffer_mngr = ''                                                       # global object of buffer_mngr_class which manages the buffer for sent and received messages

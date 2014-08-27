@@ -1,9 +1,9 @@
 from nc_internal_communicator_class import internal_communicator
-from nc_global_definition_section import gn_socket_list, logger 
 from global_imports import threading, time
 import asyncore
 import asynchat
 import socket
+from nc_global_definition_section import gn_socket_list, logger
 
         
 # nc_server (object of nc_server_class): It listens for incoming registration requests of guest nodes and once a request is 
@@ -32,8 +32,8 @@ class nc_server_class(threading.Thread, asyncore.dispatcher):
             self.listen(5)                                                                                  # starts listening for GN registration request
             logger.info("Listening on port_for_gn: " + str(self.port_for_gn)+"\n\n")
             while True:
-                asyncore.loop(timeout=0.01, use_poll=False, map=None, count=1000)                                                                         # starts the loop which constantly checks whether the socket is readable or writable
-                time.sleep(0.01) 
+                asyncore.loop(timeout=0.001, use_poll=False, map=None, count=1000)                                                                         # starts the loop which constantly checks whether the socket is readable or writable
+                time.sleep(0.001) 
         except Exception as inst:
             logger.critical("Exception in nc_server run(): " + str(inst)+"\n\n")
             time.sleep(10)

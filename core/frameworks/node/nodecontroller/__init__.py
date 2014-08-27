@@ -30,10 +30,12 @@ getoutput("rm -f NC_output.log")
 #getoutput("rm -f nc.cfg")
 #getoutput("rm -f NC_msg_log")
 
-from nc_msg_processor_class import msg_processor_class
-from nc_global_definition_section import port_for_gn
 
-print("NC:Starts:"+str(time.time()))
+from nc_global_definition_section import port_for_gn, logger
+from nc_msg_processor_class import msg_processor_class
+
+
+logger.critical("NC Starts:"+str('%0.4f' % time.time())+"\n\n")
 msg_processor = ''
 gn_msgs_buffer_mngr = ''
 nc_server = ''

@@ -4,7 +4,7 @@ from gn_sensor_controller_class import sensor_controller_class
 from get_node_info import get_node_info
 from gn_global_definition_section import get_instance_id, add_to_thread_buffer, buffered_msg, msg_to_nc, msg_from_nc, start_communication_with_nc_event, \
 config_file_initialized_event, sensors_info_saved_event, registration_type, no_reply, config_file_name, logger
-
+from config_file_functions import initialize_config_file, ConfigObj
 
 # Config file is not thread safe and is not locked
 
@@ -51,7 +51,11 @@ class main_class():
         logger.debug("Waiting for sensors info."+ "\n\n")
         sensors_info_saved_event.wait()
         #Instance data filling goes here
-        reg_payload.sys_info = dict(ConfigObj(config_file_name))
+        config = ConfigObj(config_file_name)
+        temp_config = {}
+        temp_config["Systems Info"] = config["Systems Info"]
+        temp_config["Sensors Info"] = config["Sensors Info"]
+        reg_payload.sys_info = dict(temp_config)
         reg_payload.instance_id = get_instance_id()
         self.send_to_buffer_mngr(registration_type, no_reply, reg_payload)
     
@@ -114,7 +118,7 @@ class main_class():
             self.sensor_controller.start()
             # Starts communicator Thread
             self.buffer_mngr.start()
-            print("GN:All threads started:"+str(time.time()))
+            logger.critical("All threads started:"+str('%0.4f' % time.time())+"\n\n")
             self.register_gn()
             # Loops till a message is received in the input buffer or any unacknowledged msg times out/event like "get threads' status" triggers when its expiration_time is reached        
             # TODO: Add the get status msg in intialize_output buffer or create a separate thread for it
@@ -133,7 +137,7 @@ class main_class():
                     self.input_buffer.task_done()
                 else:
                     pass
-                time.sleep(0.01)
+                time.sleep(0.001)
         except Exception as inst:
             logger.critical("Exception in main_class: " + str(inst)+ "\n\n")
         finally:

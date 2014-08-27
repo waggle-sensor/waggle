@@ -1,8 +1,8 @@
-from nc_global_definition_section import buffered_msg,  msg_from_gn,  terminator,  gn_socket_list,  add_to_thread_buffer, logger
 import asyncore
 import asynchat
 import socket
 from global_imports import *
+from nc_global_definition_section import buffered_msg,  msg_from_gn,  terminator,  gn_socket_list,  add_to_thread_buffer, logger
 
 # Delete the seq no id mapping entry when gn goes down, clean up everything related to the disconnected gn
 
@@ -49,7 +49,7 @@ class internal_communicator(asynchat.async_chat):
         if self.shutdown == 0:
             try:
                 self.rcv_msg_count += 1
-                print("NC:"+str(self.rcv_msg_count)+":Msg received:"+str(time.time()))#+str(self.input_buffer)+"\n\n")
+                logger.critical("Msg received from GN:"+str('%0.4f' % time.time())+"\n\n")#+str(self.input_buffer)+"\n\n")
                 self.handle_request()
                 logger.debug("Incoming Msg handled."+"\n\n")
                 self.input_buffer = []

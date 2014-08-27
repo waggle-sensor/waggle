@@ -4,6 +4,7 @@ from gn_external_communicator_class import external_communicator_class
 from gn_global_definition_section import get_instance_id,  add_to_sorted_output_buffer,  get_msg_info_and_delete_from_output_buffer,  add_to_current_time, \
 get_timed_out_msg_info,  msg_to_nc,  msg_from_nc,  start_communication_with_nc_event,  registration_type,  data_type,  reply_type,  acknowledgment,  terminator, \
 gn_registration_ack_wait_time,  data_ack_wait_time,  config_file_name, logger
+from config_file_functions import initialize_config_file, ConfigObj
 
 ##################################################################################
 # Buffer manager discards any ACK which is unexpected ie. which does not have any corresponding waiting msg in sorted_output_msg_buffer
@@ -97,7 +98,7 @@ class buffer_mngr_class(threading.Thread):
                                 add_to_sorted_output_buffer(self.sorted_output_msg_buffer, unacknowledged_msg_handler_info)
                             self.external_communicator.push(encoded_msg)                                                           # pushes to the output buffer of external_communicator_class
                             self.sent_msg_count += 1
-                            print("GN:"+str(self.sent_msg_count)+":Msg Sent:"+str(time.time()))# + str(encoded_msg)+"\n\n")
+                            logger.critical("Msg Sent to NC:"+str('%0.4f' % time.time())+"\n\n")# + str(encoded_msg)+"\n\n")
                             #else:
                                 #logger.critical("\n\nNC's socket closed. So buffering the msg.")
                                 #time.sleep(5)
@@ -135,7 +136,7 @@ class buffer_mngr_class(threading.Thread):
                 timed_out_msg_info = get_timed_out_msg_info(self.sorted_output_msg_buffer) 
                 if timed_out_msg_info:
                     self.handler_vector_table[timed_out_msg_info[3]](timed_out_msg_info, None) 
-                time.sleep(0.01)
+                time.sleep(0.001)
                 count+=1
                 if count==1000:
                     count = 0

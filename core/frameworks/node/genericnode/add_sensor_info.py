@@ -1,4 +1,4 @@
-from global_imports import initialize_config_file, ConfigObj
+from config_file_functions import initialize_config_file, ConfigObj
 from gn_global_definition_section import config_file_name
 
 
