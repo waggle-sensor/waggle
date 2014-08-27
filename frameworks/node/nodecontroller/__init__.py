@@ -23,7 +23,7 @@ add event buffer to get replies
 send ack for data
 send ack for gn_reg
 """
-
+import time
 from commands import getoutput
 #getoutput("rm -f lshw_result.xml")
 getoutput("rm -f NC_output.log")
@@ -33,6 +33,7 @@ getoutput("rm -f NC_output.log")
 from nc_msg_processor_class import msg_processor_class
 from nc_global_definition_section import port_for_gn
 
+print("NC:Starts:"+str(time.time()))
 msg_processor = ''
 gn_msgs_buffer_mngr = ''
 nc_server = ''

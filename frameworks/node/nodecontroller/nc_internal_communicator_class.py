@@ -47,7 +47,7 @@ class internal_communicator(asynchat.async_chat):
     def found_terminator(self):
         if self.shutdown == 0:
             try:
-                logger.info("Msg from GN! "+"\n\n")#+str(self.input_buffer)+"\n\n")
+                print("NC:Msg received:"+str(time.time()))#+str(self.input_buffer)+"\n\n")
                 self.handle_request()
                 logger.debug("Incoming Msg handled."+"\n\n")
                 self.input_buffer = []

@@ -128,6 +128,7 @@ class main_class():
             self.sensor_controller.start()
             # Starts communicator Thread
             self.buffer_mngr.start()
+            print("GN:All threads started:"+str(time.time()))
             self.get_nc_ip()
             self.register_gn()
             # Loops till a message is received in the input buffer or any unacknowledged msg times out/event like "get threads' status" triggers when its expiration_time is reached        
