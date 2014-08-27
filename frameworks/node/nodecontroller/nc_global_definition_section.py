@@ -1,15 +1,17 @@
+from collections import namedtuple
 import os
 import Queue
 import time
 import logging
-from collections import namedtuple
+
 
 ## used for logging msgs
 #logging.basicConfig(filename = 'NC_output.log', level=logging.INFO,format='%(name)s: %(message)s',)
 #logging.basicConfig(level=logging.INFO,format='%(asctime)s %(name)s: %(message)s',)
-logging.basicConfig(level=logging.INFO,format='%(name)s: %(message)s',)
-# This file uses 3rd party package called configobj.py which is present in the . folder
+logging.basicConfig(level=logging.CRITICAL,format='%(name)s: %(message)s',)
 logger = logging.getLogger("NC")
+logger.setLevel(logging.CRITICAL)
+
 
 port_for_gn = 7001                                                       # GNs can request at this port
 

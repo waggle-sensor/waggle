@@ -1,9 +1,10 @@
 from global_imports import *
 from nc_gn_msgs_buffer_mngr_class import gn_msgs_buffer_mngr_class
 from nc_server_class import nc_server_class
-from nc_global_definition_section import logger, buffered_msg,  msg_send,  msg_from_gn,  registration_type,  data_type,  command_type,  reply_type,  acknowledgment,  no_reply, config_file_name, get_instance_id,  add_to_thread_buffer
 from get_node_info import get_node_info
 import socket
+from nc_global_definition_section import logger, buffered_msg,  msg_send,  msg_from_gn,  registration_type,  data_type,  command_type,  reply_type,  acknowledgment,  no_reply, config_file_name, get_instance_id,  add_to_thread_buffer
+from config_file_functions import initialize_config_file, ConfigObj
 
 # msg_processor (object of msg_processor_class): Responsible for spawning other threads, processing all the packets and responding to 
 # cloud's or guest nodes' messages are processed
@@ -35,7 +36,7 @@ class msg_processor_class():
             # Starts Threads
             self.gn_msgs_buffer_mngr.start()
             self.nc_server.start()
-            print("NC:All threads started:"+str(time.time()))
+            logger.critical("All threads Started:"+str('%0.4f' % time.time())+"\n\n")
             while True:
                 
                 if not self.input_buffer.empty():

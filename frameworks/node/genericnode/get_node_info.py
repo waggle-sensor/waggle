@@ -1,5 +1,5 @@
 from commands import getoutput as bashit
-from global_imports import ConfigObj
+from config_file_functions import initialize_config_file, ConfigObj
 from gn_global_definition_section import logger
 
 ##!/bin/bash

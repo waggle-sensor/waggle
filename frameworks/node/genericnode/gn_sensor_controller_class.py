@@ -1,6 +1,8 @@
 from global_imports import *
 from gn_global_definition_section import get_instance_id,  add_to_thread_buffer,  buffered_msg,  msg_to_nc,  start_communication_with_nc_event,  config_file_initialized_event,  data_type,  sensor_thread_list,  config_file_name, logger
 from sensor_plugin import sensor_plugin_class
+from config_file_functions import initialize_config_file, ConfigObj
+
 
 ##################################################################################
 # Registers sensors again even if they are registered once, to change later on
@@ -55,7 +57,7 @@ class sensor_controller_class(threading.Thread):
                 plugin_obj.plugin_sensors()
                 # Puts all the sensor msgs in its input_buffer to sensor_controller's input_buffer by converting them in proper tuple format
                 plugin_obj.get_sensor_msgs()  
-                time.sleep(0.01)
+                time.sleep(0.001)
         except Exception as inst:
             logger.critical("Exception: " + str(inst)+ "\n\n")
             self.run()

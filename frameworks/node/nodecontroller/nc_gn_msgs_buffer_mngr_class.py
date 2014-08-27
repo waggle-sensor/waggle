@@ -1,6 +1,7 @@
 from waggle.device.node_controller.send_msg import send_msg
 from global_imports import *
 from nc_global_definition_section import buffered_msg,  msg_send,  msg_from_gn,  registration_type,  reply_type,  terminator,  gn_socket_list, logger, config_file_name, get_instance_id,  add_to_thread_buffer, logger
+from config_file_functions import initialize_config_file, ConfigObj
 
 
 # gn_msgs_buffer_mngr (object of gn_msgs_buffer_mngr_class): Sends the received messages to msg_processor's buffer and messages received from msg_processor to
@@ -61,7 +62,7 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
                                     if socket_obj:
                                         socket_obj.push(encoded_msg)                                                  # Pushes the msg to the appropriate internal_communicator object's buffer which looks over the socket associated with the specific GN
                                         self.sent_msg_count+=1
-                                        print("NC:"+str(self.sent_msg_count)+":Msg Sent:"+str(time.time()))#logger.info("Msg to GN! "+"\n\n")#+str(item.inst_id)+" Msg sent: "+ encoded_msg + "\n\n" )
+                                        logger.critical("Msg sent to GN:"+str('%0.4f' % time.time())+"\n\n")#logger.info("Msg to GN! "+"\n\n")#+str(item.inst_id)+" Msg sent: "+ encoded_msg + "\n\n" )
                                     else:
                                         logger.critical("GN's socket closed. So discarding the msg------------------------------------------------------------."+ "\n\n")
                                 else:
@@ -75,18 +76,18 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
                     # Received message from GN so send it to msg_processor's input_buffer for processing
                     elif item.internal_msg_header == msg_from_gn:
                         # msg from cloud/gn received
-                        logger.info("  Msg from GN! "+"\n\n") #+ str(item.msg) + "\n\n")
+                        logger.debug("  Msg from GN! "+"\n\n") #+ str(item.msg) + "\n\n")
                         decoded_msg = Message.decode(item.msg)
                         if (not self.new_node(decoded_msg.header.instance_id)) | (decoded_msg.header.message_type == registration_type):
                             msg_state = 'correct'
                             if decoded_msg.header.message_type != reply_type:
                                 msg_state = self.get_msg_state(decoded_msg.header.instance_id, decoded_msg.header.sequence_id)
                             if msg_state == 'wrong':
-                                logger.info("OLD MSG DISCARDED.........................................................................................\n\n")
+                                logger.critical("OLD MSG DISCARDED.........................................................................................\n\n")
                                 continue
                             # don't process the msg just send ack #TODO add the acks in output buffer before sending so that so that you are sure the msg has been processed before, this ack is put once the ack is received from msg_processor thread
                             elif msg_state == 'dup':
-                                logger.info("DUPLICATE MSG DISCARDED. SENDING ACK........................................................................................\n\n")
+                                logger.critical("DUPLICATE MSG DISCARDED. SENDING ACK........................................................................................\n\n")
                                 decoded_msg.payloads = None
                             # save the new seq_no from that GN
                             self.gn_highest_seq_no[decoded_msg.header.instance_id] = decoded_msg.header.sequence_id
@@ -111,7 +112,9 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
     def is_output_buffer_full(self):
         # here window size can be checked 
         return len(self.sorted_output_msg_buffer) == self.nc_window_size
-     
+
+
+    ##############################################################################
     def convert_to_int(self, byte_id):
         byte_id = bytearray(byte_id)
         length = len(byte_id)
@@ -231,8 +234,9 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
     ##############################################################################
     def send_msg_to_cloud(self, encoded_msg):
         try:
+            logger.critical("Sending msg to pica:"+str('%0.4f' % time.time())+"\n\n")
             send_msg(encoded_msg)                                                             # send msg to cloud
-            logger.info('Msg sent to cloud successfully.'+ "\n\n")
+            logger.critical("Msg sent to pica:"+str('%0.4f' % time.time())+"\n\n")
         except Exception as inst:
             logger.critical("Exception in send_msg_to_cloud: " + str(inst)+ "\n\n")
             logger.critical("Retrying after 1 secs."+ "\n\n")

@@ -1,14 +1,15 @@
+from global_imports import threading
+from collections import namedtuple                                                                                           # used to store sensors information in the hierarchical dictionary provided by this module
 import os
 import Queue                                                                                                                    # to implement thread safe queues for Inter thread communication
 import time
 import logging
-from global_imports import threading
-from collections import namedtuple                                                                                           # used to store sensors information in the hierarchical dictionary provided by this module
 
 #logging.basicConfig(filename = 'GN_output.log', level=logging.INFO,format='%(name)s: %(message)s',)
 #logging.basicConfig(level=logging.INFO,format='%(asctime)s %(name)s: %(message)s',)
 logging.basicConfig(level=logging.CRITICAL,format='%(name)s: %(message)s',)
 logger = logging.getLogger("GN")
+logger.setLevel(logging.CRITICAL)
 
 # Message retrieved/stored in the buffer_mngr's buffer will use this tuple
 buffered_msg = namedtuple('buffered_msg', ['internal_msg_header', 'msg_type', 'seq_no', 'reply_id', 'msg'])
