@@ -137,7 +137,7 @@ class main_class():
                     self.input_buffer.task_done()
                 else:
                     pass
-                time.sleep(0.001)
+                time.sleep(0.01)
         except Exception as inst:
             logger.critical("Exception in main_class: " + str(inst)+ "\n\n")
         finally:

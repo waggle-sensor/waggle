@@ -102,7 +102,7 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
                             continue
                             # TODO: If msg is just an ACK then don't forward it, copy this portion from GN's code, take care of extra inst_id with seq_no in unack_msg_info here
                     self.msg_buffer.task_done()
-                time.sleep(0.001)
+                time.sleep(0.005)
         except Exception as inst:
             logger.critical("Exception in gn_msgs_bufr_mngr run: " + str(inst)+ "\n\n")
             self.run()
