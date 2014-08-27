@@ -1,9 +1,9 @@
+from global_imports import *
 from commands import getoutput as bashit
 from gn_external_communicator_class import external_communicator_class
 from gn_global_definition_section import get_instance_id,  add_to_sorted_output_buffer,  get_msg_info_and_delete_from_output_buffer,  add_to_current_time, \
 get_timed_out_msg_info,  msg_to_nc,  msg_from_nc,  start_communication_with_nc_event,  registration_type,  data_type,  reply_type,  acknowledgment,  terminator, \
 gn_registration_ack_wait_time,  data_ack_wait_time,  config_file_name, logger
-from global_imports import *
 
 ##################################################################################
 # Buffer manager discards any ACK which is unexpected ie. which does not have any corresponding waiting msg in sorted_output_msg_buffer
@@ -15,12 +15,11 @@ class buffer_mngr_class(threading.Thread):
     
     
     ##############################################################################
-    def __init__(self, thread_name, nc_ip, nc_port):
+    def __init__(self, thread_name, nc_port):
         threading.Thread.__init__(self)
         self.thread_name = thread_name                  # used for tagging the msgs related to this thread
         self.daemon = True
         self.msg_buffer = Queue.Queue(maxsize=1000)     # stores all incoming as well as outgoing msgs coming from sensor_controller_class, main_class, external_communicator_class and also any internal msg intended for buffer_mngr_class
-        self.nc_ip = nc_ip                              # to pass to the external_communicator_class
         self.nc_port = nc_port                          # port at which NC listens for incoming requests, to be passed to the external_communicator_class
         self.main_thread_ = ''
         self.sensor_controller = ''
@@ -39,6 +38,7 @@ class buffer_mngr_class(threading.Thread):
         self.gn_window_size = 1
         self.nc_window_size = 1
         self.seq_no_partition_size = 3                  # no of bytes of session_id
+        self.sent_msg_count = 0
         self.initialize_handler_vector_table()
         logger.debug("Thread "+self.thread_name+" Initialized.\n\n")
             
@@ -68,7 +68,7 @@ class buffer_mngr_class(threading.Thread):
         self.save_session_id("GN Session ID", session_id)
         logger.debug("Seq_no. initialized.\n\n")
         return session_id + str(self.initial_session_seq_no)
-        
+    
         
     ##############################################################################
     def run(self):
@@ -77,7 +77,7 @@ class buffer_mngr_class(threading.Thread):
             count = 0
             # Creates new thread
             if not self.communicator_thread_started:
-                self.external_communicator = external_communicator_class("external_communicator", self.nc_ip, self.nc_port, self) 
+                self.external_communicator = external_communicator_class("external_communicator", self.nc_port, self) 
                 # Starts new Thread
                 self.external_communicator.start()
                 self.communicator_thread_started = 1
@@ -96,7 +96,8 @@ class buffer_mngr_class(threading.Thread):
                                 unacknowledged_msg_handler_info = [self.last_gn_seq_no, expiration_time, encoded_msg, msg_handler_no]   # contains seq_no, expiration_time, registration msg, handler no corresponding to the handler which will be called when this msg times out or acknowledged
                                 add_to_sorted_output_buffer(self.sorted_output_msg_buffer, unacknowledged_msg_handler_info)
                             self.external_communicator.push(encoded_msg)                                                           # pushes to the output buffer of external_communicator_class
-                            print("GN:Msg Sent:"+str(time.time()))# + str(encoded_msg)+"\n\n")
+                            self.sent_msg_count += 1
+                            print("GN:"+str(self.sent_msg_count)+":Msg Sent:"+str(time.time()))# + str(encoded_msg)+"\n\n")
                             #else:
                                 #logger.critical("\n\nNC's socket closed. So buffering the msg.")
                                 #time.sleep(5)
@@ -139,7 +140,7 @@ class buffer_mngr_class(threading.Thread):
                 if count==1000:
                     count = 0
                     logger.info("Input Buffer size: " + str(self.msg_buffer.qsize()) + "\n\n")
-                    logger.info("Output Buffer size: " + str(self.sorted_output_msg_buffer.qsize()) + "\n\n")
+                    logger.info("Output Buffer size: " + str(len(self.sorted_output_msg_buffer)) + "\n\n")
         except Exception as inst:
             logger.critical("Exception in bufr_mngr run: " + str(inst) + "\n\n")
             if not self.external_communicator.isAlive():
@@ -227,36 +228,36 @@ class buffer_mngr_class(threading.Thread):
         
         
     ###############################################################################
-    #def increment_byte_seq(self, byte_seq):
-        #byte_seq = bytearray(byte_seq)
-        #try:
-            #for indx in range(len(byte_seq)-1, -1, -1):
-                #if byte_seq[indx] == 255:
-                    ## Reset
-                    #byte_seq[indx] = 0
-                #else:
-                    #byte_seq[indx] = byte_seq[indx] + 1
-                    #break
-        #except Exception as inst:
-            #logger.critical("Exception in increment_byte_seq: " + str(inst)+ "\n\n")
-        #return str(byte_seq)
-   
-    ##############################################################################
     def increment_byte_seq(self, byte_seq):
         byte_seq = bytearray(byte_seq)
         try:
-            length = len(byte_seq)
-            integer_no = sum(byte_seq[i] << ((length-1-i) * 8) for i in range(length))
-            if integer_no == 16777215:
-                for i in range(length):
-                    byte_seq[i] = 0
-            else:
-                integer_no += 1
-                print integer_no
-                byte_seq = bytearray.fromhex(hex(integer_no)[2:])
+            for indx in range(len(byte_seq)-1, -1, -1):
+                if byte_seq[indx] == 255:
+                    # Reset
+                    byte_seq[indx] = 0
+                else:
+                    byte_seq[indx] = byte_seq[indx] + 1
+                    break
         except Exception as inst:
             logger.critical("Exception in increment_byte_seq: " + str(inst)+ "\n\n")
         return str(byte_seq)
+   
+    ###############################################################################
+    #def increment_byte_seq(self, byte_seq):
+        #byte_seq = bytearray(byte_seq)
+        #try:
+            #length = len(byte_seq)
+            #integer_no = sum(byte_seq[i] << ((length-1-i) * 8) for i in range(length))
+            #if integer_no == 16777215:
+                #for i in range(length):
+                    #byte_seq[i] = 0
+            #else:
+                #integer_no += 1
+                #print integer_no
+                #byte_seq = bytearray.fromhex(hex(integer_no)[2:])
+        #except Exception as inst:
+            #logger.critical("Exception in increment_byte_seq: " + str(inst)+ "\n\n")
+        #return str(byte_seq)
     
       
     

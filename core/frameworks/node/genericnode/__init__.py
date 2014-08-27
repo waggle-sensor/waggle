@@ -25,8 +25,6 @@ if __name__ == "__main__":
     sensor_controller = ''                                                 # global object of sensor_controller_class which manages all sensors related messages
     buffer_mngr = ''                                                       # global object of buffer_mngr_class which manages the buffer for sent and received messages
     nc_port = 7001                                                         # port at which Gn can contact NC
-    nc_ip = "140.221.10.105"                                               # NC's ip address
-    #nc_ip = "10.1.2.3"
     # Program starts execution by calling main_class's object
-    main_thread = main_class("main_thread", nc_ip, nc_port, sensor_controller, buffer_mngr)     
+    main_thread = main_class("main_thread", nc_port, sensor_controller, buffer_mngr)     
     main_thread.run()

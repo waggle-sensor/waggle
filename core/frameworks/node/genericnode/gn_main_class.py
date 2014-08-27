@@ -1,10 +1,9 @@
+from global_imports import *
 from gn_buffer_mngr_class import buffer_mngr_class
 from gn_sensor_controller_class import sensor_controller_class
-from subprocess import Popen, call, check_call
 from get_node_info import get_node_info
 from gn_global_definition_section import get_instance_id, add_to_thread_buffer, buffered_msg, msg_to_nc, msg_from_nc, start_communication_with_nc_event, \
 config_file_initialized_event, sensors_info_saved_event, registration_type, no_reply, config_file_name, logger
-from global_imports import *
 
 
 # Config file is not thread safe and is not locked
@@ -16,13 +15,12 @@ class main_class():
     
         
     ############################################################################## 
-    def __init__(self, thread_name, nc_ip, nc_port, sensor_controller, buffer_mngr):
+    def __init__(self, thread_name, nc_port, sensor_controller, buffer_mngr):
         self.thread_name = thread_name                   # used by logging module for printing messages related to this thread
         self.reg_msg_handler_no = 0
         self.update_handler_no = 1
         self.status_handler_no = 2
         self.input_buffer = Queue.Queue(maxsize=1000)                # stores messages sent by buffer_mngr_class, sensor_controller_class
-        self.nc_ip = nc_ip                               # IP of NC to send to the External_communicator_class
         self.nc_port  = nc_port                          # port no. of NC to send to the External_communicator_class
         self.sensor_controller = sensor_controller
         self.buffer_mngr = buffer_mngr
@@ -99,19 +97,7 @@ class main_class():
                 self.send_ready_notification()
         else:
                 self.send_GN_registration_request()                                             # sends registration message to the NC to become visible in the outer world
-        
-    
-    ############################################################################## 
-    def get_nc_ip(self):
-        ip = '127.0.0.1'
-        while ip == '127.0.0.1':
-            logger.info("Waiting to get NC's IP..")
-            time.sleep(1)
-            try:
-                ip = open('nc_ip','r').read()
-            except Exception as inst:
-                logger.critical("Exception in get_nc_ip: " + str(inst)+ "\n\n")
-                self.get_nc_ip()
+
             
     ##############################################################################     
     # Runs forever
@@ -121,7 +107,7 @@ class main_class():
             self.store_node_info()
             # Spawns 2 threads
             self.sensor_controller = sensor_controller_class("sensor_controller")               # handles sensors related messages
-            self.buffer_mngr = buffer_mngr_class("buffer_mngr", self.nc_ip, self.nc_port)       # handles communication of the GN with NC/other GNs
+            self.buffer_mngr = buffer_mngr_class("buffer_mngr", self.nc_port)       # handles communication of the GN with NC/other GNs
             self.sensor_controller.pass_thread_address(self, self.buffer_mngr)
             self.buffer_mngr.pass_thread_address(self, self.sensor_controller)
             # Starts sensor Thread
@@ -129,7 +115,6 @@ class main_class():
             # Starts communicator Thread
             self.buffer_mngr.start()
             print("GN:All threads started:"+str(time.time()))
-            self.get_nc_ip()
             self.register_gn()
             # Loops till a message is received in the input buffer or any unacknowledged msg times out/event like "get threads' status" triggers when its expiration_time is reached        
             # TODO: Add the get status msg in intialize_output buffer or create a separate thread for it
@@ -150,7 +135,7 @@ class main_class():
                     pass
                 time.sleep(0.01)
         except Exception as inst:
-            logger.critical("Exception: " + str(inst)+ "\n\n")
+            logger.critical("Exception in main_class: " + str(inst)+ "\n\n")
         finally:
             self.sensor_controller.close()
             self.sensor_controller.join(1)

@@ -1,6 +1,6 @@
-from nc_global_definition_section import buffered_msg,  msg_send,  msg_from_gn,  registration_type,  reply_type,  terminator,  gn_socket_list, logger, config_file_name, get_instance_id,  add_to_thread_buffer, logger
 from waggle.device.node_controller.send_msg import send_msg
 from global_imports import *
+from nc_global_definition_section import buffered_msg,  msg_send,  msg_from_gn,  registration_type,  reply_type,  terminator,  gn_socket_list, logger, config_file_name, get_instance_id,  add_to_thread_buffer, logger
 
 
 # gn_msgs_buffer_mngr (object of gn_msgs_buffer_mngr_class): Sends the received messages to msg_processor's buffer and messages received from msg_processor to
@@ -30,6 +30,7 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
         self.registered_nodes = []
         self.last_nc_seq_no['cloud'] = self.initialize_seq_no('cloud')
         self.gn_instid_socket_obj_mapping = {}                                                # Dict maintaining gn_id and socket mapping
+        self.sent_msg_count = 0
         logger.debug(self.thread_name+" Initialized."+"\n\n")
 
        
@@ -44,17 +45,12 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
         try:
             logger.debug("Starting " + self.thread_name+"\n\n")
             # Waits on the buffer till a msg is received
-            #startTime = time.time()
-            #print startTime
-            
             while True:
                 #startTime = time.time()
                 if not self.msg_buffer.empty():
-                    #print time.time() - startTime
                     item = self.msg_buffer.get()
                     if item.internal_msg_header == msg_send:
                         # Send the message to internal_communicator's output_buffer to send it to GN
-                        #print time.time() - startTime
                         if item.msg_type == reply_type or not self.is_output_buffer_full():
                             logger.debug("Message to send to GN/Cloud received.:" + "\n\n")
                             encoded_msg = self.gen_msg(item)
@@ -64,7 +60,8 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
                                     socket_obj = self.get_socket_obj(item.inst_id)
                                     if socket_obj:
                                         socket_obj.push(encoded_msg)                                                  # Pushes the msg to the appropriate internal_communicator object's buffer which looks over the socket associated with the specific GN
-                                        print("NC:Msg Sent:"+str(time.time()))#logger.info("Msg to GN! "+"\n\n")#+str(item.inst_id)+" Msg sent: "+ encoded_msg + "\n\n" )
+                                        self.sent_msg_count+=1
+                                        print("NC:"+str(self.sent_msg_count)+":Msg Sent:"+str(time.time()))#logger.info("Msg to GN! "+"\n\n")#+str(item.inst_id)+" Msg sent: "+ encoded_msg + "\n\n" )
                                     else:
                                         logger.critical("GN's socket closed. So discarding the msg------------------------------------------------------------."+ "\n\n")
                                 else:
@@ -77,9 +74,6 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
                             self.sorted_output_msg_buffer.put(item)
                     # Received message from GN so send it to msg_processor's input_buffer for processing
                     elif item.internal_msg_header == msg_from_gn:
-                        
-                        #print time.time() - startTime
-                        
                         # msg from cloud/gn received
                         logger.info("  Msg from GN! "+"\n\n") #+ str(item.msg) + "\n\n")
                         decoded_msg = Message.decode(item.msg)
@@ -106,7 +100,6 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
                             logger.critical("UNKNOWN GN SO MSG DISCARDED.........................................."+ "\n\n")
                             continue
                             # TODO: If msg is just an ACK then don't forward it, copy this portion from GN's code, take care of extra inst_id with seq_no in unack_msg_info here
-                        #print time.time() - startTime
                     self.msg_buffer.task_done()
                 time.sleep(0.001)
         except Exception as inst:
@@ -119,23 +112,31 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
         # here window size can be checked 
         return len(self.sorted_output_msg_buffer) == self.nc_window_size
      
-    
+    def convert_to_int(self, byte_id):
+        byte_id = bytearray(byte_id)
+        length = len(byte_id)
+        int_id = sum(byte_id[i] << ((length-1-i) * 8) for i in range(length))
+        return int_id
     
     ##############################################################################
     def is_wrap_up(self, new_id, old_id):
-        length = len(new_id)
-        new_id = sum(new_id[i] << ((length-1-i) * 8) for i in range(length))
-        length = len(old_id)
-        old_id = sum(old_id[i] << ((length-1-i) * 8) for i in range(length))
+        new_id = self.convert_to_int(new_id)
+        old_id = self.convert_to_int(old_id)
         return new_id < (old_id - self.error_scope)
         
+    ##############################################################################
+    def is_new_id_greater(self, new_id, old_id):
+        new_id = self.convert_to_int(new_id)
+        old_id = self.convert_to_int(old_id)
+        return new_id > old_id
+    
     
     ##############################################################################
     # session_id (not <) old_session_id-10 so either == or > or wrap up occured so good
     def in_expected_range(self, new_id, old_id):
         # check for session_id very near to 0.0.0.0 because in that case self.error_scope may give wrong results
         # self.error_scope shows the range of session_id whihch may be old and should be discarded
-        return (new_id > old_id) or self.is_wrap_up(copy.deepcopy(new_id), copy.deepcopy(old_id))
+        return self.is_new_id_greater(new_id, old_id) or self.is_wrap_up(copy.deepcopy(new_id), copy.deepcopy(old_id))
     
     
     ##############################################################################
@@ -153,8 +154,7 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
     ##############################################################################
     # checks whether the session_seq_no is null or not for lock step protocol, can be modified for window thing
     def session_seq_no_within_gn_window(self, session_seq_no):
-        return session_seq_no == bytearray([0,0,0])
-    
+        return session_seq_no == str(bytearray([0,0,0]))
     
     ##############################################################################
     # checks whether new_session_id is valid or not
@@ -230,8 +230,6 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
        
     ##############################################################################
     def send_msg_to_cloud(self, encoded_msg):
-        #startTime = time.time()
-        #print "I am trying to send stuff to cloud at"+str(startTime)
         try:
             send_msg(encoded_msg)                                                             # send msg to cloud
             logger.info('Msg sent to cloud successfully.'+ "\n\n")
@@ -240,8 +238,8 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
             logger.critical("Retrying after 1 secs."+ "\n\n")
             time.sleep(1)
             self.send_msg_to_cloud(encoded_msg)
-        #print "I am done sending dude!"+str(time.time() - startTime)
-   
+        
+        
     ##############################################################################
     # Checks whether a GN is new or not by checking entries in registered nodes or reading config 
     #file, if entry is presentin config file but not in registered nodes then it adds that node to 
@@ -301,23 +299,39 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
             return config[inst_id][tag_name]
         return None
     
-
-    ##############################################################################
+    
+    ###############################################################################
     def increment_byte_seq(self, byte_seq):
         byte_seq = bytearray(byte_seq)
         try:
-            length = len(byte_seq)
-            integer_no = sum(byte_seq[i] << ((length-1-i) * 8) for i in range(length))
-            if integer_no == 16777215:
-               for i in range(length):
-                   byte_seq[i] = 0
-            else:
-                integer_no += 1
-                print integer_no
-                byte_seq = bytearray.fromhex(hex(integer_no)[2:])
+            for indx in range(len(byte_seq)-1, -1, -1):
+                if byte_seq[indx] == 255:
+                    # Reset
+                    byte_seq[indx] = 0
+                else:
+                    byte_seq[indx] = byte_seq[indx] + 1
+                    break
         except Exception as inst:
             logger.critical("Exception in increment_byte_seq: " + str(inst)+ "\n\n")
         return str(byte_seq)
+   
+
+    ###############################################################################
+    #def increment_byte_seq(self, byte_seq):
+        #byte_seq = bytearray(byte_seq)
+        #try:
+            #length = len(byte_seq)
+            #integer_no = sum(byte_seq[i] << ((length-1-i) * 8) for i in range(length))
+            #if integer_no == 16777215:
+               #for i in range(length):
+                   #byte_seq[i] = 0
+            #else:
+                #integer_no += 1
+                #print integer_no
+                #byte_seq = bytearray.fromhex(hex(integer_no)[2:])
+        #except Exception as inst:
+            #logger.critical("Exception in increment_byte_seq: " + str(inst)+ "\n\n")
+        #return str(byte_seq)
    
      
     ##############################################################################
