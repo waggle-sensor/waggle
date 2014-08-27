@@ -7,7 +7,7 @@ from collections import namedtuple                                              
 
 #logging.basicConfig(filename = 'GN_output.log', level=logging.INFO,format='%(name)s: %(message)s',)
 #logging.basicConfig(level=logging.INFO,format='%(asctime)s %(name)s: %(message)s',)
-logging.basicConfig(level=logging.INFO,format='%(name)s: %(message)s',)
+logging.basicConfig(level=logging.CRITICAL,format='%(name)s: %(message)s',)
 logger = logging.getLogger("GN")
 
 # Message retrieved/stored in the buffer_mngr's buffer will use this tuple
