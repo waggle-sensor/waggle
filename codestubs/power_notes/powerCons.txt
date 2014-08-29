@@ -1,0 +1,31 @@
+RPi: 
+
+1. With ethernet and hub on board - 
+    (How we supply power does not make a difference)
+    Power supplied through USB port- 5V 
+        Boot Peak - 180 mA
+        Booted idle - 120 mA
+        
+    Power Supplied through Power micro-usb port - 
+    
+        Boot Peak - 180 mA
+        Booted idle - 120 mA
+    
+2. Without ethernet and hub on board - 
+(How we supply power does not make a difference)
+    Power supplied through USB port- 5V 
+        Boot Peak - 380 mA
+        Booted idle - 325 mA
+        Ethernet cable plugged in and open - 325mA
+        Ethernet cable plugged in and connected to networn - 384mA
+        
+    Power Supplied through Power micro-usb port - 
+    
+        Boot Peak - 380 mA
+        Booted idle - 325 mA
+        
+        
+        with hub 
+        Belkin - 371mA
+        Orico - 381mA
+        EasyAcc - 387mA
