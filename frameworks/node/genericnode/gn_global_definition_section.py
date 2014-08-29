@@ -9,7 +9,7 @@ import logging
 #logging.basicConfig(level=logging.INFO,format='%(asctime)s %(name)s: %(message)s',)
 logging.basicConfig(level=logging.CRITICAL,format='%(name)s: %(message)s',)
 logger = logging.getLogger("GN")
-logger.setLevel(logging.CRITICAL)
+logger.setLevel(logging.INFO)
 
 # Message retrieved/stored in the buffer_mngr's buffer will use this tuple
 buffered_msg = namedtuple('buffered_msg', ['internal_msg_header', 'msg_type', 'seq_no', 'reply_id', 'msg'])
@@ -25,8 +25,8 @@ start_communication_with_nc_event = threading.Event()
 config_file_initialized_event = threading.Event()
 # This event is set by sensor_controller after it stores the sensors' info in config file
 sensors_info_saved_event = threading.Event()
-
-# unacknowledged_msg_thread_mapping = {}                                 # global structure containing (seq_no, thread_name) of all unacknowledged msgs sent to NC/GNs 
+# to signal to the sensor controller thread that the output buffer is empty so it can send the snesor msg to the buffer_mngr thread
+output_buffer_empty_event = threading.Event()
 
 # Msg Type - Number Mapping
 registration_type = '0'
@@ -36,9 +36,9 @@ reply_type = '3'
 acknowledgment = 'ACK'
 no_reply = '-1'
 terminator = str('!@#$%^&*')
-gn_registration_ack_wait_time = 60                                       # in seconds
-data_ack_wait_time = 300
-
+gn_registration_ack_wait_time = 5                                       # in seconds
+data_ack_wait_time = 10
+wait_time_for_next_msg = 0.005                                           # 10 ms
 # References of Sensor threads present
 sensor_thread_list = []
 
@@ -104,6 +104,8 @@ def get_msg_info_and_delete_from_output_buffer(output_buffer, seq_no):
             output_buffer.remove(msg_handler_info)
             logger.debug("Output buffer: "+str(output_buffer) + "\n\n")
             logger.debug("Msg deleted from output_buffer and returned.\n\n")
+            if not output_buffer:
+                logger.info("Output buffer event set.\n\n")
             return msg_handler_info
     return None
 
@@ -132,9 +134,10 @@ def is_expired(time1, time2):
 ##############################################################################    
 # Checks for timed out msg and returns it
 def get_timed_out_msg_info(output_buffer):
-    for msg_handler_info in output_buffer:
+    if output_buffer:
+        msg_handler_info = output_buffer[0]
         if is_expired(msg_handler_info[1], time.time()):
-            msg_info = output_buffer.remove(msg_handler_info)
+            del output_buffer[0]
             return msg_handler_info
     return None
             

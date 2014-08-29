@@ -2,8 +2,10 @@ from global_imports import *
 from gn_buffer_mngr_class import buffer_mngr_class
 from gn_sensor_controller_class import sensor_controller_class
 from get_node_info import get_node_info
-from gn_global_definition_section import get_instance_id, add_to_thread_buffer, buffered_msg, msg_to_nc, msg_from_nc, start_communication_with_nc_event, \
-config_file_initialized_event, sensors_info_saved_event, registration_type, no_reply, config_file_name, logger
+from gn_global_definition_section import get_instance_id, add_to_thread_buffer, \
+buffered_msg, msg_to_nc, msg_from_nc, start_communication_with_nc_event, \
+config_file_initialized_event, sensors_info_saved_event, registration_type, \
+no_reply, config_file_name, logger, wait_time_for_next_msg
 from config_file_functions import initialize_config_file, ConfigObj
 
 # Config file is not thread safe and is not locked
@@ -101,7 +103,7 @@ class main_class():
                 self.send_ready_notification()
         else:
                 self.send_GN_registration_request()                                             # sends registration message to the NC to become visible in the outer world
-
+        
             
     ##############################################################################     
     # Runs forever
@@ -122,9 +124,11 @@ class main_class():
             self.register_gn()
             # Loops till a message is received in the input buffer or any unacknowledged msg times out/event like "get threads' status" triggers when its expiration_time is reached        
             # TODO: Add the get status msg in intialize_output buffer or create a separate thread for it
+            wait_time = time.time() + wait_time_for_next_msg
+            wait_time_set = 1
             while True:
                 # Checks if any unprocessed msg in the input buffer
-                if not self.input_buffer.empty():
+                while (not self.input_buffer.empty()):
                     item = self.input_buffer.get()
                     logger.debug("Msg received in buffer:"+str(item)+ "\n\n")
                     internal_msg_header = item.internal_msg_header
@@ -135,9 +139,17 @@ class main_class():
                     else:
                         logger.critical("Unknown Msg Received: Discarding the msg............." + "\n\n")
                     self.input_buffer.task_done()
+                    if wait_time_set:
+                        wait_time_set = 0
+                    time.sleep(0.0001)
+                if not wait_time_set:
+                    # set time to remain attentive for next 5 ms
+                    wait_time = time.time() + wait_time_for_next_msg
+                    wait_time_set = 1
+                if wait_time > time.time():
+                    time.sleep(0.0001)
                 else:
-                    pass
-                time.sleep(0.01)
+                    time.sleep(1)
         except Exception as inst:
             logger.critical("Exception in main_class: " + str(inst)+ "\n\n")
         finally:
@@ -153,19 +165,7 @@ class main_class():
     # Starts processing msgs received from outside world only after registration is successful, else til then ignores the msgs
     def process_external_msg(self, item):
         logger.debug("Processing NC's msg."+ "\n\n")
-        msg = item.msg
-        if not start_communication_with_nc_event.isSet():
-            # all msgs should be processed only after registration ACK is obtained
-            if not is_registration_ack(msg):
-                add_to_thread_buffer(self.input_buffer, item, "Main Thread")                                                                          # adds to its own buffer as the registration is not yet successful so the msg should not be processed.
-                return
-        if msg.reply_id != no_reply: 
-            logger.critical("Response received: Discarding it..."+ "\n\n")
-            
-        else:
-            # a new command is received     
-            self.process_cmd(msg)
-    
+        # Add stuff to process any command received from NC
         
     ############################################################################## 
     # decodes the msg (seq_no, msg_type, cmd, cmd_args) and maps it to the system specific command/action required

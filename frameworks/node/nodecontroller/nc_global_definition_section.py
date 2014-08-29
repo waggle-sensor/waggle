@@ -34,7 +34,7 @@ reply_type = '3'
 acknowledgment = 'ACK'
 no_reply = '-1'
 terminator = str('!@#$%^&*')
-
+wait_time_for_next_msg = 0.01                   # 10 ms
 # List maintaining current GN sockets
 gn_socket_list = []                  
 

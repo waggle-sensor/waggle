@@ -21,7 +21,6 @@ class external_communicator_class(asynchat.async_chat, threading.Thread):
         self.output_buffer = ""                                                     # output buffer to buffer the msgs if the socket is not yet writable                                                                                                   
         self.buffer_mngr = buffer_mngr
         self.shutdown = 0
-        self.rcv_msg_count = 0
         self.set_terminator(terminator)                                             # used to detect the end of the incoming msg and take required action once the whole msg is received
         logger.debug("Thread "+self.thread_name+" Initialized.\n\n")
         
@@ -45,7 +44,6 @@ class external_communicator_class(asynchat.async_chat, threading.Thread):
     def found_terminator(self):
         try:
             if self.shutdown == 0:
-                self.rcv_msg_count += 1
                 logger.critical("Msg received from NC:"+str('%0.4f' % time.time())+"\n\n") #"\n\n") #+str(self.input_buffer)+"\n\n")
                 self.handle_request()
                 logger.debug("Msg handled.\n\n")

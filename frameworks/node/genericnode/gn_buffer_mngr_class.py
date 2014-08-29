@@ -1,13 +1,19 @@
 from global_imports import *
 from commands import getoutput as bashit
 from gn_external_communicator_class import external_communicator_class
-from gn_global_definition_section import get_instance_id,  add_to_sorted_output_buffer,  get_msg_info_and_delete_from_output_buffer,  add_to_current_time, \
-get_timed_out_msg_info,  msg_to_nc,  msg_from_nc,  start_communication_with_nc_event,  registration_type,  data_type,  reply_type,  acknowledgment,  terminator, \
-gn_registration_ack_wait_time,  data_ack_wait_time,  config_file_name, logger
+
+from gn_global_definition_section import get_instance_id,  add_to_sorted_output_buffer, \
+get_msg_info_and_delete_from_output_buffer,  add_to_current_time, \
+get_timed_out_msg_info,  msg_to_nc,  msg_from_nc,  start_communication_with_nc_event, \
+registration_type,  data_type,  reply_type,  acknowledgment,  terminator, \
+output_buffer_empty_event, gn_registration_ack_wait_time,  data_ack_wait_time, \
+config_file_name, logger, wait_time_for_next_msg
+
 from config_file_functions import initialize_config_file, ConfigObj
 
 ##################################################################################
-# Buffer manager discards any ACK which is unexpected ie. which does not have any corresponding waiting msg in sorted_output_msg_buffer
+# Buffer manager discards any ACK which is unexpected ie. which does not have
+# any corresponding waiting msg in sorted_output_msg_buffer
 ##################################################################################
 
 # buffer_mngr (object of buffer_mngr_class): Sends msgs from main_thread and sensor_controller threads to the external_communicator thread
@@ -39,7 +45,7 @@ class buffer_mngr_class(threading.Thread):
         self.gn_window_size = 1
         self.nc_window_size = 1
         self.seq_no_partition_size = 3                  # no of bytes of session_id
-        self.sent_msg_count = 0
+        self.wait_time = 0
         self.initialize_handler_vector_table()
         logger.debug("Thread "+self.thread_name+" Initialized.\n\n")
             
@@ -82,66 +88,75 @@ class buffer_mngr_class(threading.Thread):
                 # Starts new Thread
                 self.external_communicator.start()
                 self.communicator_thread_started = 1
+            wait_time = time.time() + wait_time_for_next_msg
+            wait_time_set = 1
             # Waits on the msg_buffer till a msg is received       
             while True:
-                if not self.msg_buffer.empty():
-                    item = self.msg_buffer.get()
-                    if item.internal_msg_header == msg_to_nc: 
-                        if item.msg_type == reply_type or not self.is_output_buffer_full(): 
-                            #if not NC_down:
-                            encoded_msg = self.gen_msg(item)
-                            encoded_msg = encoded_msg + terminator
-                            if item.msg_type != reply_type:
-                                expiration_time = self.calculate_expiration_time(item.msg_type, item.msg)
-                                msg_handler_no = self.get_msg_handler_no(item.msg_type)
-                                unacknowledged_msg_handler_info = [self.last_gn_seq_no, expiration_time, encoded_msg, msg_handler_no]   # contains seq_no, expiration_time, registration msg, handler no corresponding to the handler which will be called when this msg times out or acknowledged
-                                add_to_sorted_output_buffer(self.sorted_output_msg_buffer, unacknowledged_msg_handler_info)
-                            self.external_communicator.push(encoded_msg)                                                           # pushes to the output buffer of external_communicator_class
-                            self.sent_msg_count += 1
-                            logger.critical("Msg Sent to NC:"+str('%0.4f' % time.time())+"\n\n")# + str(encoded_msg)+"\n\n")
-                            #else:
-                                #logger.critical("\n\nNC's socket closed. So buffering the msg.")
-                                #time.sleep(5)
-                        # push the msg back in the buffer till the output_buffer becomes empty
-                        else:
-                            self.msg_buffer.put(item)
-                    # Pushes all received_external_msg msgs to either main_thread's buffer or sensor_controller's buffer
-                    elif item.internal_msg_header == msg_from_nc:
-                        logger.debug("Msg from NCR:" + str(item.msg) + "\n\n")
-                        logger.debug("Output Buffer: " + str(self.sorted_output_msg_buffer) + "\n\n")
-                        decoded_msg = Message.decode(item.msg)
-                        msg_state = 'correct'
-                        if decoded_msg.header.message_type != reply_type:
-                            msg_state = self.get_msg_state(decoded_msg.header.instance_id, decoded_msg.header.sequence_id)
-                        if msg_state == 'wrong':
-                            logger.info("OLD MSG DISCARDED.........................................................................................\n\n")
-                            continue
-                        # don't process the msg just send ack #TODO add the acks in output buffer before sending so that so that you are sure the msg has been processed before, this ack is put once the ack is received from msg_processor thread
-                        elif msg_state == 'dup':
-                            logger.info("DUPLICATE MSG DISCARDED. SENDING ACK........................................................................................\n\n")
-                            decoded_msg.payloads = None
-                        # save NC's new seq_no
-                        self.nc_highest_seq_no = decoded_msg.header.sequence_id
-                        if decoded_msg.header.message_type == reply_type:
-                            msg_info = get_msg_info_and_delete_from_output_buffer(self.sorted_output_msg_buffer, decoded_msg.header.reply_to_id)         # removes the msg_info from output sorted msg queue and returns it 
-                            if msg_info:
-                                self.handler_vector_table[msg_info[3]](msg_info[2], decoded_msg)        # calls the handler whose no is stored in the msg_info at index 3 and passes the original msg and the reply received
+                while self.sorted_output_msg_buffer or (not self.msg_buffer.empty()):
+                    if not self.msg_buffer.empty():
+                        item = self.msg_buffer.get()
+                        if item.internal_msg_header == msg_to_nc:
+                            if item.msg_type == reply_type or not self.is_output_buffer_full():
+                                #if not NC_down:
+                                encoded_msg = self.gen_msg(item)
+                                encoded_msg = encoded_msg + terminator
+                                if item.msg_type != reply_type:
+                                    expiration_time = self.calculate_expiration_time(item.msg_type, item.msg)
+                                    msg_handler_no = self.get_msg_handler_no(item.msg_type)
+                                    unacknowledged_msg_handler_info = [self.last_gn_seq_no, expiration_time, encoded_msg, msg_handler_no]   # contains seq_no, expiration_time, registration msg, handler no corresponding to the handler which will be called when this msg times out or acknowledged
+                                    add_to_sorted_output_buffer(self.sorted_output_msg_buffer, unacknowledged_msg_handler_info)
+                                    output_buffer_empty_event.clear()
+                                    logger.info("Output buffer event cleared.\n\n")
+                                self.external_communicator.push(encoded_msg)                                                           # pushes to the output buffer of external_communicator_class
+                                logger.critical("Msg Sent to NC:"+str('%0.4f' % time.time())+"\n\n")# + str(encoded_msg)+"\n\n")
+                                #else:
+                                    #logger.critical("\n\nNC's socket closed. So buffering the msg.")
+                                    #time.sleep(5)
+                            # push the msg back in the buffer till the output_buffer becomes empty
                             else:
-                                logger.critical("ACK Discarded................................................................................\n\n")
-                    else:
-                        logger.critical("Unknown Msg received: Discarding...\n\n")
-                    self.msg_buffer.task_done()
-                # Check in output_buffer for pending registration msg and if that msg has timed out
-                # Extract msg info and change the registration handler function to resend the msg by preparing a buffer msg and inserting in the bufr mngr's queue
-                timed_out_msg_info = get_timed_out_msg_info(self.sorted_output_msg_buffer) 
-                if timed_out_msg_info:
-                    self.handler_vector_table[timed_out_msg_info[3]](timed_out_msg_info, None) 
-                time.sleep(0.005)
-                count+=1
-                if count==1000:
-                    count = 0
-                    logger.info("Input Buffer size: " + str(self.msg_buffer.qsize()) + "\n\n")
-                    logger.info("Output Buffer size: " + str(len(self.sorted_output_msg_buffer)) + "\n\n")
+                                self.msg_buffer.put(item)
+                        # Pushes all received_external_msg msgs to either main_thread's buffer or sensor_controller's buffer
+                        elif item.internal_msg_header == msg_from_nc:
+                            logger.debug("Msg from NCR:" + str(item.msg) + "\n\n")
+                            logger.debug("Output Buffer: " + str(self.sorted_output_msg_buffer) + "\n\n")
+                            decoded_msg = Message.decode(item.msg)
+                            msg_state = 'correct'
+                            if decoded_msg.header.message_type != reply_type:
+                                msg_state = self.get_msg_state(decoded_msg.header.instance_id, decoded_msg.header.sequence_id)
+                            if msg_state == 'wrong':
+                                logger.info("OLD MSG DISCARDED.........................................................................................\n\n")
+                            # don't process the msg just send ack #TODO add the acks in output buffer before sending so that so that you are sure the msg has been processed before, this ack is put once the ack is received from msg_processor thread
+                            elif msg_state == 'dup':
+                                logger.info("DUPLICATE MSG DISCARDED. SENDING ACK........................................................................................\n\n")
+                                decoded_msg.payloads = None
+                            if msg_state != 'wrong':
+                                # save NC's new seq_no
+                                self.nc_highest_seq_no = decoded_msg.header.sequence_id
+                                if decoded_msg.header.message_type == reply_type:
+                                    msg_info = get_msg_info_and_delete_from_output_buffer(self.sorted_output_msg_buffer, decoded_msg.header.reply_to_id)         # removes the msg_info from output sorted msg queue and returns it
+                                    if msg_info:
+                                        self.handler_vector_table[msg_info[3]](msg_info[2], decoded_msg)        # calls the handler whose no is stored in the msg_info at index 3 and passes the original msg and the reply received
+                                    else:
+                                        logger.critical("ACK Discarded................................................................................\n\n")
+                        else:
+                            logger.critical("Unknown Msg received: Discarding...\n\n")
+                        self.msg_buffer.task_done()
+                    # Check in output_buffer for pending registration msg and if that msg has timed out
+                    # Extract msg info and change the registration handler function to resend the msg by preparing a buffer msg and inserting in the bufr mngr's queue
+                    timed_out_msg_info = get_timed_out_msg_info(self.sorted_output_msg_buffer)
+                    if timed_out_msg_info:
+                        self.handler_vector_table[timed_out_msg_info[3]](timed_out_msg_info, None)
+                    if wait_time_set:
+                        wait_time_set = 0
+                    time.sleep(0.0001)
+                if not wait_time_set:
+                    # set time to remain attentive for next 5 ms
+                    wait_time = time.time() + wait_time_for_next_msg
+                    wait_time_set = 1
+                if wait_time > time.time():
+                    time.sleep(0.0001)
+                else:
+                    time.sleep(0.1)
         except Exception as inst:
             logger.critical("Exception in bufr_mngr run: " + str(inst) + "\n\n")
             if not self.external_communicator.isAlive():
@@ -300,8 +315,8 @@ class buffer_mngr_class(threading.Thread):
     def data_msg_handler(self, msg_info, reply):
         logger.debug("Data msg handler called.\n\n")
         if reply:
-            for reply in reply.payloads:
-                if reply.output == acknowledgment:
+            for single_response in reply.payloads:
+                if single_response.output == acknowledgment and not single_response.return_value:
                     logger.info("\t\tData ACK received.\n\n")
                 else:
                     logger.critical("Unknown ACK received: Discarding..\n\n")
