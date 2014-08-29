@@ -3,7 +3,10 @@ from nc_gn_msgs_buffer_mngr_class import gn_msgs_buffer_mngr_class
 from nc_server_class import nc_server_class
 from get_node_info import get_node_info
 import socket
-from nc_global_definition_section import logger, buffered_msg,  msg_send,  msg_from_gn,  registration_type,  data_type,  command_type,  reply_type,  acknowledgment,  no_reply, config_file_name, get_instance_id,  add_to_thread_buffer
+from nc_global_definition_section import logger, buffered_msg,  msg_send,  \
+msg_from_gn,  registration_type,  data_type,  command_type,  reply_type,  \
+acknowledgment,  no_reply, config_file_name, get_instance_id,  \
+add_to_thread_buffer, wait_time_for_next_msg
 from config_file_functions import initialize_config_file, ConfigObj
 
 # msg_processor (object of msg_processor_class): Responsible for spawning other threads, processing all the packets and responding to 
@@ -25,7 +28,6 @@ class msg_processor_class():
     # Runs forever
     def run(self):
         try:
-            startTime = time.time()
             logger.debug("Starting " + self.thread_name+"\n\n")
             self.store_system_info()
             # Instantiates threads
@@ -37,18 +39,28 @@ class msg_processor_class():
             self.gn_msgs_buffer_mngr.start()
             self.nc_server.start()
             logger.critical("All threads Started:"+str('%0.4f' % time.time())+"\n\n")
+            wait_time = time.time() + wait_time_for_next_msg                                                              # wait for 5ms for any msg
+            wait_time_set = 1
             while True:
-                
-                if not self.input_buffer.empty():
+                while not self.input_buffer.empty():
                     item = self.input_buffer.get()
                     logger.debug("Msg received."+"\n\n")
-                    # Waits on the buffer till a msg is received 
+                    # Waits on the buffer till a msg is received
                     if item.internal_msg_header == msg_from_gn:
                         logger.debug("Msg from GN received:"+"\n\n")
                         self.process_external_msg(item)                                                                     # processes msgs obtained from NC/GNs
                     self.input_buffer.task_done()
-                time.sleep(0.005)
-                
+                    if wait_time_set:
+                        wait_time_set = 0
+                    time.sleep(0.0001)
+                if not wait_time_set:
+                    # set time to remain attentive for next 5 ms
+                    wait_time = time.time() + wait_time_for_next_msg
+                    wait_time_set = 1
+                if wait_time > time.time():
+                    time.sleep(0.0001)
+                else:
+                    time.sleep(0.1)
         except Exception as inst:
             logger.critical("Exception in main: " + str(inst)+"\n\n")
             
@@ -129,9 +141,12 @@ class msg_processor_class():
         # add to cloud thread's buffer and send ACK
         logger.debug("REGISTRATION Msg Received..........................."+"\n\n")
         if item.msg != None:
-            # Store GN info in config file
-            self.register_gn(item.msg)
-            self.send_reg_msg('cloud')                                    # sends msg to bufr mngr to send it to cloud
+            config = ConfigObj(config_file_name)
+            # if GN is not registered, for 2nd level ack you need to check if it has any additional info related to registration
+            if item.inst_id not in config["GN Info"]:
+                # Store GN info in config file
+                self.register_gn(item.msg)
+                self.send_reg_msg('cloud')                                    # sends msg to bufr mngr to send it to cloud
         self.send_ack(item.seq_no, item.inst_id, 0, str(int(time.time())))                                     # sends msg to bufr mngr to send ACK to gn
         logger.debug("REGISTRATION ACK sent to gn_msgs_buffer_mngr."+"\n\n")
    
@@ -145,7 +160,16 @@ class msg_processor_class():
     ##############################################################################
     def send_reg_msg(self, inst_id):
         reg_payload = RegistrationPayload()
-        reg_payload.sys_info = dict(ConfigObj(config_file_name))
+        config = ConfigObj(config_file_name)
+        reg_dict = {}
+        if config["Registered"] == 'No':
+            reg_dict["Systems Info"] = config["Systems Info"]
+        for node in config["GN Info"]:
+            if config["GN Info"][node]["Registered"] == 'No':
+                # append this GN's info to the registration dict
+                reg_dict["GN Info"][node]["Systems Info"] = config["GN Info"][node]["Systems Info"]
+                reg_dict["GN Info"][node]["Sensors Info"] = config["GN Info"][node]["Sensors Info"]
+        reg_payload.sys_info = reg_dict
         reg_payload.instance_id = get_instance_id()
         buff_msg = buffered_msg(msg_send, registration_type, None, no_reply, [reg_payload], inst_id)                   # adds header msg_to_nc in front of the registration message and returns whole message in string form by adding delimiter
         add_to_thread_buffer(self.gn_msgs_buffer_mngr.msg_buffer, buff_msg, 'GN_msgs_buffer_mngr')                                 # Sends registration msg by adding to the buffer_mngr's buffer
@@ -170,6 +194,7 @@ class msg_processor_class():
             for single_gn_info in gn_info:
                 config = ConfigObj(config_file_name)
                 config["GN Info"][single_gn_info.instance_id] = single_gn_info.sys_info
+                config["GN Info"]["Registered"] = 'No'
                 config.write()
                 config = ConfigObj(config_file_name)
                 logger.info("GN registration info saved in config file."+"\n\n")

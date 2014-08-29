@@ -1,5 +1,7 @@
 from global_imports import *
-from gn_global_definition_section import get_instance_id,  add_to_thread_buffer,  buffered_msg,  msg_to_nc,  start_communication_with_nc_event,  config_file_initialized_event,  data_type,  sensor_thread_list,  config_file_name, logger
+from gn_global_definition_section import get_instance_id,  add_to_thread_buffer,  buffered_msg,  msg_to_nc, \
+start_communication_with_nc_event,  config_file_initialized_event,  data_type,  sensor_thread_list, \
+config_file_name, logger, output_buffer_empty_event, wait_time_for_next_msg
 from sensor_plugin import sensor_plugin_class
 from config_file_functions import initialize_config_file, ConfigObj
 
@@ -35,7 +37,7 @@ class sensor_controller_class(threading.Thread):
         
     ############################################################################## 
     # Runs forever    
-    def run(self): 
+    def run(self):
         try:
             logger.debug("Starting " + self.thread_name+ "\n\n")
             if not self.is_config_file_initialized(config_file_name):
@@ -43,9 +45,15 @@ class sensor_controller_class(threading.Thread):
                 config_file_initialized_event.wait()
                 logger.debug("Config file initialized."+ "\n\n")
             plugin_obj = sensor_plugin_class(self.input_buffer)
+            # Import new sensor files if any
+            plugin_obj.plugin_sensors()
+            wait_time = time.time() + wait_time_for_next_msg
+            wait_time_set = 1
             while True:
+                # Puts all the sensor msgs in its input_buffer to sensor_controller's input_buffer by converting them in proper tuple format
+                plugin_obj.get_sensor_msgs()
                 # Checks if any unprocessed msg is in the input buffer
-                if not self.input_buffer.empty():
+                while not self.input_buffer.empty():
                     logger.debug("Waiting for registration to be successful.."+ "\n\n")
                     if start_communication_with_nc_event.is_set():
                         item = self.input_buffer.get()
@@ -53,11 +61,17 @@ class sensor_controller_class(threading.Thread):
                         # process the msg
                         self.process_msg(item)
                         self.input_buffer.task_done()
-                # Import new sensor files if any
-                plugin_obj.plugin_sensors()
-                # Puts all the sensor msgs in its input_buffer to sensor_controller's input_buffer by converting them in proper tuple format
-                plugin_obj.get_sensor_msgs()  
-                time.sleep(0.01)
+                    if wait_time_set:
+                        wait_time_set = 0
+                    time.sleep(0.0001)
+                if not wait_time_set:
+                    # set time to remain attentive for next 5 ms
+                    wait_time = time.time() + wait_time_for_next_msg
+                    wait_time_set = 1
+                if wait_time > time.time():
+                    time.sleep(0.0001)
+                else:
+                    time.sleep(0.1)
         except Exception as inst:
             logger.critical("Exception: " + str(inst)+ "\n\n")
             self.run()
@@ -76,10 +90,14 @@ class sensor_controller_class(threading.Thread):
     # item: buffered_msg tuple
     def process_msg(self, item):
         logger.debug('Msg being processed..'+ "\n\n")
-        if item.internal_msg_header == msg_to_nc:
+        if item.internal_msg_header == msg_to_nc and self.buffer_mngr.msg_buffer.empty():
+            logger.info("Output buffer event set so I can send msg.\n\n")
             logger.debug('Received sensor msg.'+ "\n\n")
             if item.msg_type == data_type:
                 self.send_data_msg(item)
+                # clear the event to signal that the output buffer won't be full when the data msg is sent by buffer_mngr so 
+        else:
+            self.input_buffer.put(item)
             
         
     ##############################################################################         

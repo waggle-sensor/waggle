@@ -24,7 +24,6 @@ class internal_communicator(asynchat.async_chat):
         self.output_buffer = ""                                                                                 # stores outgoing message
         self.gn_msgs_buffer_mngr = gn_msgs_buffer_mngr
         self.shutdown = 0
-        self.rcv_msg_count = 0
         self.set_terminator(terminator)                                                                         # terminating character indicating the end of the msg received
         logger.debug("Internal Communicator for new GN initialized"+"\n\n")
         
@@ -48,7 +47,6 @@ class internal_communicator(asynchat.async_chat):
     def found_terminator(self):
         if self.shutdown == 0:
             try:
-                self.rcv_msg_count += 1
                 logger.critical("Msg received from GN:"+str('%0.4f' % time.time())+"\n\n")#+str(self.input_buffer)+"\n\n")
                 self.handle_request()
                 logger.debug("Incoming Msg handled."+"\n\n")
