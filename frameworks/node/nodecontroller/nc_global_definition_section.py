@@ -10,7 +10,7 @@ import logging
 #logging.basicConfig(level=logging.INFO,format='%(asctime)s %(name)s: %(message)s',)
 logging.basicConfig(level=logging.CRITICAL,format='%(name)s: %(message)s',)
 logger = logging.getLogger("NC")
-logger.setLevel(logging.CRITICAL)
+logger.setLevel(logging.INFO)
 
 
 port_for_gn = 7001                                                       # GNs can request at this port
@@ -34,7 +34,7 @@ reply_type = '3'
 acknowledgment = 'ACK'
 no_reply = '-1'
 terminator = str('!@#$%^&*')
-wait_time_for_next_msg = 0.01                   # 10 ms
+wait_time_for_next_msg = 0.1                   # 10 ms
 # List maintaining current GN sockets
 gn_socket_list = []                  
 

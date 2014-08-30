@@ -1,7 +1,7 @@
 from global_imports import *
 from gn_global_definition_section import get_instance_id,  add_to_thread_buffer,  buffered_msg,  msg_to_nc, \
-start_communication_with_nc_event,  config_file_initialized_event,  data_type,  sensor_thread_list, \
-config_file_name, logger, output_buffer_empty_event, wait_time_for_next_msg
+start_communication_with_nc_event,  data_type,  sensor_thread_list, \
+config_file_name, logger, wait_time_for_next_msg
 from sensor_plugin import sensor_plugin_class
 from config_file_functions import initialize_config_file, ConfigObj
 
@@ -40,10 +40,6 @@ class sensor_controller_class(threading.Thread):
     def run(self):
         try:
             logger.debug("Starting " + self.thread_name+ "\n\n")
-            if not self.is_config_file_initialized(config_file_name):
-                # Waits for the config file to be initialized
-                config_file_initialized_event.wait()
-                logger.debug("Config file initialized."+ "\n\n")
             plugin_obj = sensor_plugin_class(self.input_buffer)
             # Import new sensor files if any
             plugin_obj.plugin_sensors()
@@ -63,14 +59,17 @@ class sensor_controller_class(threading.Thread):
                         self.input_buffer.task_done()
                     if wait_time_set:
                         wait_time_set = 0
+                    #print "short sleep snsr"
                     time.sleep(0.0001)
                 if not wait_time_set:
                     # set time to remain attentive for next 5 ms
                     wait_time = time.time() + wait_time_for_next_msg
                     wait_time_set = 1
                 if wait_time > time.time():
+                    #print "short sleep snsr"
                     time.sleep(0.0001)
                 else:
+                    #print "long sleep snsr"
                     time.sleep(0.1)
         except Exception as inst:
             logger.critical("Exception: " + str(inst)+ "\n\n")
@@ -90,8 +89,7 @@ class sensor_controller_class(threading.Thread):
     # item: buffered_msg tuple
     def process_msg(self, item):
         logger.debug('Msg being processed..'+ "\n\n")
-        if item.internal_msg_header == msg_to_nc and self.buffer_mngr.msg_buffer.empty():
-            logger.info("Output buffer event set so I can send msg.\n\n")
+        if item.internal_msg_header == msg_to_nc and self.buffer_mngr.in_to_out_buffer.empty():
             logger.debug('Received sensor msg.'+ "\n\n")
             if item.msg_type == data_type:
                 self.send_data_msg(item)
@@ -121,14 +119,9 @@ class sensor_controller_class(threading.Thread):
     # Adds msg to the buffer_mngr's buffer
     def send_to_buffer_mngr(self, msg_type, reply_id, msg):
         buff_msg = buffered_msg(msg_to_nc, msg_type, None, reply_id, msg)                   # adds header msg_to_nc in front of the registration message and returns whole message in string form by adding delimiter
-        add_to_thread_buffer(self.buffer_mngr.msg_buffer, buff_msg, "Buffer Mngr")                                 # Sends registration msg by adding to the buffer_mngr's buffer
+        add_to_thread_buffer(self.buffer_mngr.in_to_out_buffer, buff_msg, "Buffer Mngr")                                 # Sends registration msg by adding to the buffer_mngr's buffer
         logger.debug("Msg sent to buffer_mngr." + "\n\n")
-
         
-    ##############################################################################  
-    def is_config_file_initialized(self, config_file_name):
-        return os.path.exists(config_file_name)
-     
         
     ##############################################################################  
     def __del__(self):

@@ -11,19 +11,19 @@ class sensor_plugin_class():
         
     ############################################################################## 
     def __init__(self, output_buffer):
-        self.sensors_output_buffer = Queue.Queue()
         self.sensor_controller_output_buffer = output_buffer
         self.sensorid_input_buffer_map = {}
+        self.sensorid_output_buffer_map = {}
         
-    ############################################################################## 
-    def initialize_registered_modules_list(self):
-        registered_modules = []
-        if os.path.exists(config_file_name):
-            config = ConfigObj(config_file_name)
-            if config["Sensors Info"] != {}:
-                for sensor_name in config["Sensors Info"]:
-                    registered_modules.append(sensor_name)
-        return registered_modules    
+    ############################################################################### 
+    #def initialize_registered_modules_list(self):
+        #registered_modules = []
+        #if os.path.exists(config_file_name):
+            #config = ConfigObj(config_file_name)
+            #if config["Sensors Info"] != {}:
+                #for sensor_name in config["Sensors Info"]:
+                    #registered_modules.append(sensor_name)
+        #return registered_modules    
     
      
     ############################################################################## 
@@ -51,6 +51,8 @@ class sensor_plugin_class():
     def update_last_sensors_registration_time(self):
         config = ConfigObj(config_file_name) 
         config["last_sensors_registration_time"] = time.time()
+        #if config_file_locked.is_set():
+            #config_file_locked.wait()
         config.write()
         
         
@@ -111,14 +113,15 @@ class sensor_plugin_class():
                 for module_name, sensor_class_name in zip(sensor_modules, sensor_class_names):
                     if sensor_class_name != '__init__':
                         try:
-                            sensor_class_name = getattr(module_name, sensor_class_name)
-                            sensor_class_obj = sensor_class_name()
+                            sensor_class = getattr(module_name, sensor_class_name)
+                            sensor_class_obj = sensor_class()
                             sensor_class_objcts.append(sensor_class_obj)
                         except Exception as inst:
                             logger.critical("Exception in plugin loop: " + str(inst)+"\n\n")
                 self.register_modules(sensor_class_objcts)
                 for sensor_class_name in sensor_class_names :
                     self.sensorid_input_buffer_map[sensor_class_name] = Queue.Queue()
+                    self.sensorid_output_buffer_map[sensor_class_name] = Queue.Queue()
                 logger.debug("Sensors added to registered sensors' list and their input buffers created."+"\n\n")
                 if not sensors_info_saved_event.is_set():
                     sensors_info_saved_event.set()
@@ -144,12 +147,11 @@ class sensor_plugin_class():
     def is_sensor_registered(self, sensor_name):
         try:
             config = ConfigObj(config_file_name)
-            for sensor in config["Sensors Info"]:
-                if config["Sensors Info"][sensor]["Registered"] == 'yes':
-                   return True
+            if config["Sensors Info"][sensor_name]["Registered"] == 'YES':
+                return True
             return False 
         except Exception as inst:
-            logger.critical("Exception in update_registered_sensors_list: " + str(inst)+"\n\n")
+            logger.critical("Exception in is_sensor_registered: " + str(inst)+"\n\n")
     
     
     
@@ -157,7 +159,7 @@ class sensor_plugin_class():
     def start_sensors(self, sensor_class_objcts, sensor_class_names):
         try:
             for sensor_class_obj, sensor_class_name in zip(sensor_class_objcts, sensor_class_names):
-                t = Thread(target=self.start_sensor, args = (sensor_class_obj,self.sensorid_input_buffer_map[sensor_class_name], self.sensors_output_buffer))
+                t = Thread(target=self.start_sensor, args = (sensor_class_obj,self.sensorid_input_buffer_map[sensor_class_name], self.sensorid_output_buffer_map[sensor_class_name]))
                 self.update_sensor_thread_list(t)
                 t.start()
             logger.debug("New sensors started."+"\n\n")
@@ -181,18 +183,20 @@ class sensor_plugin_class():
     ############################################################################## 
     def get_sensor_msgs(self):
         try:
-            while not self.sensors_output_buffer.empty():
-                item = self.sensors_output_buffer.get()
-                msg_type = data_type 
-                reply_id = no_reply 
-                # Check whether sensor is properly registered or not
-                if not self.is_sensor_registered(item[0]):
-                    for i in range(1,6):
-                        item[i] = None
-                    item[6] = "Error in registering sensor."
-                msg = item
-                add_to_thread_buffer(self.sensor_controller_output_buffer, buffered_msg(msg_to_nc, msg_type, None, reply_id, msg), "Sensor Controller")                                 # Sends registration msg by adding to the buffer_mngr's buffer
-                logger.debug("Msg sent to sensor_controller_output_buffer." + str(msg)+"\n\n")
+            for each_sensor in self.sensorid_output_buffer_map:
+                while not self.sensorid_output_buffer_map[each_sensor].empty():
+                    item = self.sensorid_output_buffer_map[each_sensor].get()
+                    msg_type = data_type 
+                    reply_id = no_reply 
+                    # Check whether sensor is properly registered or not
+                    if not self.is_sensor_registered(item[0]):
+                        for i in range(1,6):
+                            item[i] = None
+                        item[6] = "Error in registering sensor."
+                    msg = item
+                    add_to_thread_buffer(self.sensor_controller_output_buffer, buffered_msg(msg_to_nc, msg_type, None, reply_id, msg), "Sensor Controller")                                 # Sends registration msg by adding to the buffer_mngr's buffer
+                    self.sensorid_output_buffer_map[each_sensor].task_done()
+                    logger.debug("Msg sent to sensor_controller_output_buffer." + str(msg)+"\n\n")
             logger.debug("Msg sending to sensor_controller's buffer done."+"\n\n")    
         except Exception as inst:
             logger.critical("Exception in get_sensor_msgs: " + str(inst)+"\n\n")

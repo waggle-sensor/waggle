@@ -9,7 +9,7 @@ import logging
 #logging.basicConfig(level=logging.INFO,format='%(asctime)s %(name)s: %(message)s',)
 logging.basicConfig(level=logging.CRITICAL,format='%(name)s: %(message)s',)
 logger = logging.getLogger("GN")
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.CRITICAL)
 
 # Message retrieved/stored in the buffer_mngr's buffer will use this tuple
 buffered_msg = namedtuple('buffered_msg', ['internal_msg_header', 'msg_type', 'seq_no', 'reply_id', 'msg'])
@@ -21,12 +21,8 @@ msg_from_nc = 'msg_from_NC'
 
 # To signal successful registration
 start_communication_with_nc_event = threading.Event() 
-# Set the event after which sensor_controller can start storing sensors info in this file
-config_file_initialized_event = threading.Event()
 # This event is set by sensor_controller after it stores the sensors' info in config file
 sensors_info_saved_event = threading.Event()
-# to signal to the sensor controller thread that the output buffer is empty so it can send the snesor msg to the buffer_mngr thread
-output_buffer_empty_event = threading.Event()
 
 # Msg Type - Number Mapping
 registration_type = '0'
@@ -38,7 +34,7 @@ no_reply = '-1'
 terminator = str('!@#$%^&*')
 gn_registration_ack_wait_time = 5                                       # in seconds
 data_ack_wait_time = 10
-wait_time_for_next_msg = 0.005                                           # 10 ms
+wait_time_for_next_msg = 0.1                                           # 10 ms
 # References of Sensor threads present
 sensor_thread_list = []
 
@@ -104,8 +100,6 @@ def get_msg_info_and_delete_from_output_buffer(output_buffer, seq_no):
             output_buffer.remove(msg_handler_info)
             logger.debug("Output buffer: "+str(output_buffer) + "\n\n")
             logger.debug("Msg deleted from output_buffer and returned.\n\n")
-            if not output_buffer:
-                logger.info("Output buffer event set.\n\n")
             return msg_handler_info
     return None
 

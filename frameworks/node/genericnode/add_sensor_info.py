@@ -7,7 +7,7 @@ class sensor_info():
     name_delimiter = '.'
    
     def __init__(self, sensor_name, complete_sensor_name, reading_interval, interval_settable, communication_type, packaging_info, vendor_id):
-        self.sensor_name = sensor_name
+        self.complete_sensor_name = complete_sensor_name
         self.sensor_info_dict = {}
         self.sensor_info_dict["context"] = "Sensor Board"
         sensor_name, manufacturer_id, revision = complete_sensor_name.split('.')                                      # contains sensor_name, manufacturer_id and revision/year
@@ -71,13 +71,11 @@ class param_info():
 
       
 def write_to_config_file(sensor):
-    initialize_config_file(config_file_name)
     config = ConfigObj(config_file_name)
     main_section_name = "Sensors Info"
-    config[main_section_name] = {}
-    config[main_section_name][sensor.sensor_name] = sensor.sensor_info_dict
+    config[main_section_name][sensor.complete_sensor_name] = sensor.sensor_info_dict
     # code to validate the fields goes here
-    config[main_section_name][sensor.sensor_name]["Registered"] = 'yes'
+    config[main_section_name][sensor.complete_sensor_name]["Registered"] = 'YES'
     config.write()
  
  

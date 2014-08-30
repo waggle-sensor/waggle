@@ -52,14 +52,17 @@ class msg_processor_class():
                     self.input_buffer.task_done()
                     if wait_time_set:
                         wait_time_set = 0
+                    #print "MSG PROCESSED_---------------------------------------------------------------------"+str("%.4f"%time.time())
                     time.sleep(0.0001)
                 if not wait_time_set:
                     # set time to remain attentive for next 5 ms
                     wait_time = time.time() + wait_time_for_next_msg
                     wait_time_set = 1
                 if wait_time > time.time():
+                    #print "main short sleep main"+str("%.4f"%time.time())
                     time.sleep(0.0001)
                 else:
+                    #print "main long sleep main"+str("%.4f"%time.time())
                     time.sleep(0.1)
         except Exception as inst:
             logger.critical("Exception in main: " + str(inst)+"\n\n")
@@ -121,7 +124,7 @@ class msg_processor_class():
     ##############################################################################
     def send_data_msg(self, inst_id, data_payloads):
         buff_msg = buffered_msg(msg_send, data_type, None, no_reply, data_payloads, inst_id)                   # adds header msg_to_nc in front of the registration message and returns whole message in string form by adding delimiter
-        add_to_thread_buffer(self.gn_msgs_buffer_mngr.msg_buffer, buff_msg, 'GN_msgs_buffer_mngr')                                 # Sends registration msg by adding to the buffer_mngr's buffer
+        add_to_thread_buffer(self.gn_msgs_buffer_mngr.in_to_out_buffer, buff_msg, 'GN_msgs_buffer_mngr')                                 # Sends registration msg by adding to the buffer_mngr's buffer
         logger.debug("Data msg sent to bufr mngr to send to cloud."+"\n\n")
     
     
@@ -159,22 +162,28 @@ class msg_processor_class():
        
     ##############################################################################
     def send_reg_msg(self, inst_id):
-        reg_payload = RegistrationPayload()
-        config = ConfigObj(config_file_name)
-        reg_dict = {}
-        if config["Registered"] == 'No':
-            reg_dict["Systems Info"] = config["Systems Info"]
-        for node in config["GN Info"]:
-            if config["GN Info"][node]["Registered"] == 'No':
-                # append this GN's info to the registration dict
-                reg_dict["GN Info"][node]["Systems Info"] = config["GN Info"][node]["Systems Info"]
-                reg_dict["GN Info"][node]["Sensors Info"] = config["GN Info"][node]["Sensors Info"]
-        reg_payload.sys_info = reg_dict
-        reg_payload.instance_id = get_instance_id()
-        buff_msg = buffered_msg(msg_send, registration_type, None, no_reply, [reg_payload], inst_id)                   # adds header msg_to_nc in front of the registration message and returns whole message in string form by adding delimiter
-        add_to_thread_buffer(self.gn_msgs_buffer_mngr.msg_buffer, buff_msg, 'GN_msgs_buffer_mngr')                                 # Sends registration msg by adding to the buffer_mngr's buffer
-        logger.debug("Registration msg sent to bufr mngr to send to cloud."+"\n\n")
-    
+        try:
+            reg_payload = RegistrationPayload()
+            config = ConfigObj(config_file_name)
+            reg_dict = dict()
+            if config["Registered"] == 'NO':
+                reg_dict["Systems Info"] = config["Systems Info"]
+            for node in config["GN Info"]:
+                print "ghgh"+node
+                if config["GN Info"][node]["Registered"] == 'NO':
+                    # append this GN's info to the registration dict
+                    reg_dict["GN Info"][node]["Systems Info"] = config["GN Info"][node]["Systems Info"]
+                    reg_dict["GN Info"][node]["Sensors Info"] = config["GN Info"][node]["Sensors Info"]
+                    print "1. out of loop::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"
+            print "out of loop::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"
+            reg_payload.sys_info = reg_dict
+            reg_payload.instance_id = get_instance_id()
+            buff_msg = buffered_msg(msg_send, registration_type, None, no_reply, [reg_payload], inst_id)                   # adds header msg_to_nc in front of the registration message and returns whole message in string form by adding delimiter
+            add_to_thread_buffer(self.gn_msgs_buffer_mngr.in_to_out_buffer, buff_msg, 'GN_msgs_buffer_mngr')                                 # Sends registration msg by adding to the buffer_mngr's buffer
+            logger.debug("Registration msg sent to bufr mngr to send to cloud."+"\n\n")
+        except Exception as inst:
+            logger.critical("Exception in send_reg_msg:" + str(inst)+"\n\n")
+           
         
     ##############################################################################
     def send_ack(self, reply_id, inst_id, ret_val, special_reg_ack=None):
@@ -185,7 +194,7 @@ class msg_processor_class():
         else:
             msg.output = acknowledgment
         buff_msg = buffered_msg(msg_send, reply_type, None, reply_id, [msg], inst_id)                   # adds header msg_to_nc in front of the registration message and returns whole message in string form by adding delimiter
-        add_to_thread_buffer(self.gn_msgs_buffer_mngr.msg_buffer, buff_msg, 'GN_msgs_buffer_mngr')                                 # Sends registration msg by adding to the buffer_mngr's buffer
+        add_to_thread_buffer(self.gn_msgs_buffer_mngr.in_to_out_buffer, buff_msg, 'GN_msgs_buffer_mngr')                                 # Sends registration msg by adding to the buffer_mngr's buffer
         
         
     ##############################################################################
@@ -194,7 +203,7 @@ class msg_processor_class():
             for single_gn_info in gn_info:
                 config = ConfigObj(config_file_name)
                 config["GN Info"][single_gn_info.instance_id] = single_gn_info.sys_info
-                config["GN Info"]["Registered"] = 'No'
+                config["GN Info"][single_gn_info.instance_id]["Registered"] = 'NO'
                 config.write()
                 config = ConfigObj(config_file_name)
                 logger.info("GN registration info saved in config file."+"\n\n")
