@@ -12,8 +12,8 @@ received, it creates a new object of class internal_communicator and passes the 
 """
 """
 internal_communicator object: When it receives the message it will read the message till it finds the terminating character 
-of the message (here it is '\n') and then it adds the message to the gn_msgs_buffer_mngr's buffer: msg_buffer. It also handles the sending
-of the data which is in its output buffer.
+of the message and then it adds the message to the gn_msgs_buffer_mngr's buffer. It also handles the sending
+of the data which is in output buffer.
 
 """
 """

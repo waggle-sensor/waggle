@@ -15,7 +15,8 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
         threading.Thread.__init__(self)
         self.thread_name = "Thread_" + thread_name                                            # used by logging module for printing messages related to this thread
         self.daemon = True
-        self.msg_buffer = Queue.Queue(maxsize=1000)                                                       # stores all incoming as well as outgoing msgs and also internal msgs
+        self.in_to_out_buffer = Queue.Queue(maxsize=1000)                                                       # stores all incoming as well as outgoing msgs and also internal msgs
+        self.out_to_in_buffer = Queue.Queue(maxsize=1000) 
         self.msg_processor = ''                                                               # to save global msg_processor's input_buffer address
         self.sorted_output_msg_buffer = []
         self.reg_msg_handler_no = 0
@@ -31,7 +32,7 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
         self.gn_window_size = 1
         self.nc_window_size = 1
         self.registered_nodes = []
-        self.last_nc_seq_no['cloud'] = self.initialize_seq_no('cloud')
+        self.last_nc_seq_no['cloud'] = self.initialize_nc_to_cloud_seq_no()
         self.gn_instid_socket_obj_mapping = {}                                                # Dict maintaining gn_id and socket mapping
         logger.debug(self.thread_name+" Initialized."+"\n\n")
 
@@ -49,43 +50,39 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
             wait_time = time.time() + wait_time_for_next_msg                                                              # wait for 5ms for any msg
             wait_time_set = 1
             while True:
-                while not self.msg_buffer.empty():
-                    item = self.msg_buffer.get()
-                    # msg to send out received
-                    if item.internal_msg_header == msg_send:
+                while not self.out_to_in_buffer.empty() or not self.in_to_out_buffer.empty():
+                    print "MSG Received........................................................................................................"
+                    if not self.in_to_out_buffer.empty() and not self.is_output_buffer_full():
+                        item = self.in_to_out_buffer.get()
                         # Send the message to internal_communicator's output_buffer to send it to GN only if the msg is an ACK or the output buffer is not full (this check is for lock step protocol)
-                        if item.msg_type == reply_type or not self.is_output_buffer_full():
-                            logger.debug("Message to send to GN/Cloud received.:" + "\n\n")
-                            encoded_msg = self.gen_msg(item)
-                            if encoded_msg:
-                                if item.inst_id != 'cloud':
-                                    encoded_msg = encoded_msg + terminator
-                                    socket_obj = self.get_socket_obj(item.inst_id)
-                                    if socket_obj:
-                                        socket_obj.push(encoded_msg)                                                  # Pushes the msg to the appropriate internal_communicator object's buffer which looks over the socket associated with the specific GN
-                                        logger.critical("Msg sent to GN:"+str('%0.4f' % time.time())+"\n\n")#logger.info("Msg to GN! "+"\n\n")#+str(item.inst_id)+" Msg sent: "+ encoded_msg + "\n\n" )
-                                    else:
-                                        logger.critical("GN's socket closed. So discarding the msg------------------------------------------------------------."+ "\n\n")
+                        logger.debug("Message to send to GN/Cloud received.:" + "\n\n")
+                        encoded_msg = self.gen_msg(item)
+                        if encoded_msg:
+                            if item.inst_id != 'cloud':
+                                encoded_msg = encoded_msg + terminator
+                                socket_obj = self.get_socket_obj(item.inst_id)
+                                if socket_obj:
+                                    socket_obj.push(encoded_msg)                                                  # Pushes the msg to the appropriate internal_communicator object's buffer which looks over the socket associated with the specific GN
+                                    logger.critical("Msg sent to GN:"+str('%0.4f' % time.time())+"\n\n")#logger.info("Msg to GN! "+"\n\n")#+str(item.inst_id)+" Msg sent: "+ encoded_msg + "\n\n" )
                                 else:
-                                        logger.debug("Msg sent to Cloud!"+"\n\n")# + (encoded_msg)+"\n\n")
-                                        ret = self.send_msg_to_cloud(encoded_msg)                                                             # send msg to cloud
-                                        # need to handle the failure case
-                                        if not ret:
-                                            self.process_ack(item.msg_type)
+                                    logger.critical("GN's socket closed. So discarding the msg------------------------------------------------------------."+ "\n\n")
                             else:
-                                logger.critical("Nonetype Msg discarded."+"\n\n")
-                        # push msg back in the buffer till the output_buffer is empty
+                                    logger.debug("Msg sent to Cloud!"+"\n\n")# + (encoded_msg)+"\n\n")
+                                    ret = self.send_msg_to_cloud(encoded_msg)                                                             # send msg to cloud
+                                    # need to handle the failure case
+                                    if not ret:
+                                        self.process_ack(item.msg_type)
                         else:
-                            self.sorted_output_msg_buffer.put(item)
+                            logger.critical("Nonetype Msg discarded."+"\n\n")
+                        self.in_to_out_buffer.task_done()
                     # Received message from GN so send it to msg_processor's input_buffer for processing
-                    elif item.internal_msg_header == msg_from_gn:
+                    if not self.out_to_in_buffer.empty():
+                        item = self.out_to_in_buffer.get()
                         # msg from cloud/gn received
                         logger.debug("  Msg from GN! "+"\n\n") #+ str(item.msg) + "\n\n")
                         decoded_msg = Message.decode(item.msg)
                         if (not self.new_node(decoded_msg.header.instance_id)) | (decoded_msg.header.message_type == registration_type):
-                            msg_state = 'correct'
-                            if decoded_msg.header.message_type != reply_type:
-                                msg_state = self.get_msg_state(decoded_msg.header.instance_id, decoded_msg.header.sequence_id)
+                            msg_state = self.get_msg_state(decoded_msg.header.instance_id, decoded_msg.header.sequence_id)
                             if msg_state == 'wrong':
                                 logger.critical("OLD MSG DISCARDED.........................................................................................\n\n")
                             # don't process the msg just send ack #TODO add the acks in output buffer before sending so that you are sure the msg has been processed before, this ack is put once the ack is received from msg_processor thread
@@ -98,23 +95,27 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
                                 if item.inst_id in gn_socket_list and (item.inst_id not in self.gn_instid_socket_obj_mapping):
                                     self.gn_instid_socket_obj_mapping[decoded_msg.header.instance_id] = item.inst_id
                                 if decoded_msg.header.instance_id not in self.last_nc_seq_no:
-                                    self.last_nc_seq_no[decoded_msg.header.instance_id] = self.initialize_seq_no(decoded_msg.header.instance_id)
+                                    self.last_nc_seq_no[decoded_msg.header.instance_id] = self.initialize_nc_to_gn_seq_no(decoded_msg.header.instance_id)
                                 item = buffered_msg(item.internal_msg_header, decoded_msg.header.message_type, decoded_msg.header.sequence_id, decoded_msg.header.reply_to_id, decoded_msg.payloads, decoded_msg.header.instance_id)
                                 add_to_thread_buffer(self.msg_processor.input_buffer, item, 'Msg_Processor')                                             # Sends to the msg_processor's buffer
                         else:
                             logger.critical("UNKNOWN GN SO MSG DISCARDED.........................................."+ "\n\n")
-                    # TODO: If msg is just an ACK then don't forward it, copy this portion from GN's code, take care of extra inst_id with seq_no in unack_msg_info here
-                    self.msg_buffer.task_done()
+                        # TODO: If msg is just an ACK then don't forward it, copy this portion from GN's code, take care of extra inst_id with seq_no in unack_msg_info here
+                        self.out_to_in_buffer.task_done()
                     if wait_time_set:
                         wait_time_set = 0
                     time.sleep(0.0001)
+                    print "MSG PROCESSSED----------------------------------------------------------------------------------------------------------"
+                    #print "short sleep bfr mngr"
                 if not wait_time_set:
                     # set time to remain attentive for next 5 ms
                     wait_time = time.time() + wait_time_for_next_msg
                     wait_time_set = 1
                 if wait_time > time.time():
+                    #print "short sleep bfr mngr"+str("%.4f"%time.time())
                     time.sleep(0.0001)
                 else:
+                    #print "long sleep bfr mngr"+str("%.4f"%time.time())
                     time.sleep(0.1)
         except Exception as inst:
             logger.critical("Exception in gn_msgs_bufr_mngr run: " + str(inst)+ "\n\n")
@@ -125,20 +126,32 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
     def is_output_buffer_full(self):
         # here window size can be checked 
         return len(self.sorted_output_msg_buffer) == self.nc_window_size
+        
+    
+    ##############################################################################
+    def initialize_nc_to_cloud_seq_no(self):
+        return self.initialize_seq_no('cloud')
 
+        
+    ##############################################################################
+    def initialize_nc_to_gn_seq_no(self, inst_id):
+        return self.initialize_seq_no(inst_id)
+    
+    
     ############################################################################## 
     def process_ack(self, msg_type):
         if msg_type == registration_type:
             self.process_reg_ack()
             
+            
     ############################################################################## 
     def process_reg_ack(self):
         config = ConfigObj(config_file_name)
-        if config["Registered"] == 'No':
-            config["Registered"] = 'Yes'
+        if config["Registered"] == 'NO':
+            config["Registered"] = 'YES'
         for node in config["GN Info"]:
-            if config[node]["Registered"] == 'No':
-                config[node]["Registered"] == 'Yes'
+            if config[node]["Registered"] == 'NO':
+                config[node]["Registered"] == 'YES'
         config.write()
         
     ##############################################################################
@@ -266,7 +279,7 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
         except Exception as inst:
             logger.critical("Exception in send_msg_to_cloud: " + str(inst)+ "\n\n")
             logger.critical("Retrying after 1 secs."+ "\n\n")
-            time.sleep(.1)
+            time.sleep(.001)
             self.send_msg_to_cloud(encoded_msg)
         
         
@@ -321,14 +334,15 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
     ##############################################################################
     #checks first in self.gn_highest_seq_no, if found then returns that else checks in log file for that inst_id entry if found returns that, else returns None 
     def get_old_session_id(self, inst_id, tag_name):
-        if tag_name == 'GN Session ID':
-            if inst_id in self.gn_highest_seq_no:
-                return (self.gn_highest_seq_no[inst_id])[:self.seq_no_partition_size]
-        config = ConfigObj(self.log_file_name)
-        if inst_id in config:
-            return config[inst_id][tag_name]
-        return None
-    
+        try:
+            if tag_name == 'GN Session ID'and inst_id in self.gn_highest_seq_no:
+                    return (self.gn_highest_seq_no[inst_id])[:self.seq_no_partition_size]
+            config = ConfigObj(self.log_file_name)
+            if inst_id in config:
+                return config[inst_id][tag_name]
+            return None
+        except Exception as inst:
+            logger.critical("Exception in get_old_session_id: " + str(inst)+ "\n\n")
     
     ###############################################################################
     def increment_byte_seq(self, byte_seq):

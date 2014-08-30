@@ -5,7 +5,7 @@ from configobj import ConfigObj
 def initialize_config_file(config_file_name):
     if not os.path.exists(config_file_name):
         config = ConfigObj(config_file_name)
-        config["Registered"] = 'No'
+        config["Registered"] = 'NO'
         config["Systems Info"] = {}
         config["GN Info"] = {}
         config.write()

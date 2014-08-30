@@ -4,7 +4,7 @@ from gn_sensor_controller_class import sensor_controller_class
 from get_node_info import get_node_info
 from gn_global_definition_section import get_instance_id, add_to_thread_buffer, \
 buffered_msg, msg_to_nc, msg_from_nc, start_communication_with_nc_event, \
-config_file_initialized_event, sensors_info_saved_event, registration_type, \
+sensors_info_saved_event, registration_type, \
 no_reply, config_file_name, logger, wait_time_for_next_msg
 from config_file_functions import initialize_config_file, ConfigObj
 
@@ -40,9 +40,7 @@ class main_class():
         else:
             initialize_config_file(config_file_name)
             ret_val = get_node_info(config_file_name)
-        # Set the event after which sensor_controller can start storing sensors info in this file
-        config_file_initialized_event.set()
-        logger.debug("Config file intialize event set."+ "\n\n")
+        logger.debug("System's Info stored in config file."+ "\n\n")
         
 
     ############################################################################## 
@@ -78,7 +76,7 @@ class main_class():
     # Adds msg to the buffer_mngr's buffer
     def send_to_buffer_mngr(self, msg_type, reply_id, msg):
         buff_msg = buffered_msg(msg_to_nc, msg_type, None, reply_id, msg)                   # adds header msg_to_nc in front of the registration message and returns whole message in string form by adding delimiter
-        add_to_thread_buffer(self.buffer_mngr.msg_buffer, buff_msg, "Buffer Mngr")                                 # Sends registration msg by adding to the buffer_mngr's buffer
+        add_to_thread_buffer(self.buffer_mngr.in_to_out_buffer, buff_msg, "Buffer Mngr")                                 # Sends registration msg by adding to the buffer_mngr's buffer
         logger.debug ("Msg sent to buffer_mngr."+ "\n\n")
 
 
