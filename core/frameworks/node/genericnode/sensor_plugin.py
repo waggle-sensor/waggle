@@ -14,6 +14,8 @@ class sensor_plugin_class():
         self.sensor_controller_output_buffer = output_buffer
         self.sensorid_input_buffer_map = {}
         self.sensorid_output_buffer_map = {}
+        self.registered_sensors = []
+        
         
     ############################################################################### 
     #def initialize_registered_modules_list(self):
@@ -123,10 +125,10 @@ class sensor_plugin_class():
                     self.sensorid_input_buffer_map[sensor_class_name] = Queue.Queue()
                     self.sensorid_output_buffer_map[sensor_class_name] = Queue.Queue()
                 logger.debug("Sensors added to registered sensors' list and their input buffers created."+"\n\n")
+                self.start_sensors(sensor_class_objcts, sensor_class_names)
                 if not sensors_info_saved_event.is_set():
                     sensors_info_saved_event.set()
                     logger.debug("Sensors_info_saved_event set."+"\n\n")
-                self.start_sensors(sensor_class_objcts, sensor_class_names)
                 return
         except Exception as inst:
             logger.critical("Exception in plugin_sensors: " + str(inst)+"\n\n")
@@ -139,17 +141,18 @@ class sensor_plugin_class():
                 if self.is_new_sensor(sensor_class_obj):
                     sensor_class_obj.register()
             self.update_last_sensors_registration_time()
+            self.save_registered_sensors()
         except Exception as inst:
             logger.critical("Exception in register_modules: " + str(inst)+"\n\n")
          
     
-    ##############################################################################     
-    def is_sensor_registered(self, sensor_name):
+    ###############################################################################     
+    def save_registered_sensors(self):
         try:
             config = ConfigObj(config_file_name)
-            if config["Sensors Info"][sensor_name]["Registered"] == 'YES':
-                return True
-            return False 
+            for sensor_name in config['Sensors Info']:
+                if config["Sensors Info"][sensor_name]["Registered"] == 'YES':
+                    self.registered_sensors.append(sensor_name)
         except Exception as inst:
             logger.critical("Exception in is_sensor_registered: " + str(inst)+"\n\n")
     
@@ -158,6 +161,7 @@ class sensor_plugin_class():
     ############################################################################## 
     def start_sensors(self, sensor_class_objcts, sensor_class_names):
         try:
+            config = ConfigObj(config_file_name)
             for sensor_class_obj, sensor_class_name in zip(sensor_class_objcts, sensor_class_names):
                 t = Thread(target=self.start_sensor, args = (sensor_class_obj,self.sensorid_input_buffer_map[sensor_class_name], self.sensorid_output_buffer_map[sensor_class_name]))
                 self.update_sensor_thread_list(t)
@@ -189,10 +193,11 @@ class sensor_plugin_class():
                     msg_type = data_type 
                     reply_id = no_reply 
                     # Check whether sensor is properly registered or not
-                    if not self.is_sensor_registered(item[0]):
+                    if item[0] not in self.registered_sensors:
                         for i in range(1,6):
                             item[i] = None
                         item[6] = "Error in registering sensor."
+                        logger.critical("Error in registering sensor.")
                     msg = item
                     add_to_thread_buffer(self.sensor_controller_output_buffer, buffered_msg(msg_to_nc, msg_type, None, reply_id, msg), "Sensor Controller")                                 # Sends registration msg by adding to the buffer_mngr's buffer
                     self.sensorid_output_buffer_map[each_sensor].task_done()

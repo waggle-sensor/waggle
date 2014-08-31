@@ -8,6 +8,8 @@ msg_from_gn,  registration_type,  data_type,  command_type,  reply_type,  \
 acknowledgment,  no_reply, config_file_name, get_instance_id,  \
 add_to_thread_buffer, wait_time_for_next_msg
 from config_file_functions import initialize_config_file, ConfigObj
+from collections import defaultdict
+
 
 # msg_processor (object of msg_processor_class): Responsible for spawning other threads, processing all the packets and responding to 
 # cloud's or guest nodes' messages are processed
@@ -40,7 +42,6 @@ class msg_processor_class():
             self.nc_server.start()
             logger.critical("All threads Started:"+str('%0.4f' % time.time())+"\n\n")
             wait_time = time.time() + wait_time_for_next_msg                                                              # wait for 5ms for any msg
-            wait_time_set = 1
             while True:
                 while not self.input_buffer.empty():
                     item = self.input_buffer.get()
@@ -50,14 +51,9 @@ class msg_processor_class():
                         logger.debug("Msg from GN received:"+"\n\n")
                         self.process_external_msg(item)                                                                     # processes msgs obtained from NC/GNs
                     self.input_buffer.task_done()
-                    if wait_time_set:
-                        wait_time_set = 0
-                    #print "MSG PROCESSED_---------------------------------------------------------------------"+str("%.4f"%time.time())
-                    time.sleep(0.0001)
-                if not wait_time_set:
-                    # set time to remain attentive for next 5 ms
                     wait_time = time.time() + wait_time_for_next_msg
-                    wait_time_set = 1
+                    #print "main MSG PROCESSED_---------------------------------------------------------------------"+str("%.4f"%time.time())
+                    time.sleep(0.0001)
                 if wait_time > time.time():
                     #print "main short sleep main"+str("%.4f"%time.time())
                     time.sleep(0.0001)
@@ -165,17 +161,15 @@ class msg_processor_class():
         try:
             reg_payload = RegistrationPayload()
             config = ConfigObj(config_file_name)
-            reg_dict = dict()
+            l=lambda:defaultdict(l)
+            reg_dict = l()
             if config["Registered"] == 'NO':
                 reg_dict["Systems Info"] = config["Systems Info"]
             for node in config["GN Info"]:
-                print "ghgh"+node
                 if config["GN Info"][node]["Registered"] == 'NO':
                     # append this GN's info to the registration dict
                     reg_dict["GN Info"][node]["Systems Info"] = config["GN Info"][node]["Systems Info"]
                     reg_dict["GN Info"][node]["Sensors Info"] = config["GN Info"][node]["Sensors Info"]
-                    print "1. out of loop::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"
-            print "out of loop::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"
             reg_payload.sys_info = reg_dict
             reg_payload.instance_id = get_instance_id()
             buff_msg = buffered_msg(msg_send, registration_type, None, no_reply, [reg_payload], inst_id)                   # adds header msg_to_nc in front of the registration message and returns whole message in string form by adding delimiter
