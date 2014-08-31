@@ -48,10 +48,9 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
         try:
             logger.debug("Starting " + self.thread_name+"\n\n")
             wait_time = time.time() + wait_time_for_next_msg                                                              # wait for 5ms for any msg
-            wait_time_set = 1
             while True:
                 while not self.out_to_in_buffer.empty() or not self.in_to_out_buffer.empty():
-                    print "MSG Received........................................................................................................"
+                    #print "MSG Received........................................................................................................"
                     if not self.in_to_out_buffer.empty() and not self.is_output_buffer_full():
                         item = self.in_to_out_buffer.get()
                         # Send the message to internal_communicator's output_buffer to send it to GN only if the msg is an ACK or the output buffer is not full (this check is for lock step protocol)
@@ -67,7 +66,7 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
                                 else:
                                     logger.critical("GN's socket closed. So discarding the msg------------------------------------------------------------."+ "\n\n")
                             else:
-                                    logger.debug("Msg sent to Cloud!"+"\n\n")# + (encoded_msg)+"\n\n")
+                                    logger.info("Msg sent to Cloud!"+"\n\n") # + (encoded_msg)+"\n\n")
                                     ret = self.send_msg_to_cloud(encoded_msg)                                                             # send msg to cloud
                                     # need to handle the failure case
                                     if not ret:
@@ -92,7 +91,7 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
                             if msg_state != 'wrong':
                                 # save the new seq_no from that GN
                                 self.gn_highest_seq_no[decoded_msg.header.instance_id] = decoded_msg.header.sequence_id
-                                if item.inst_id in gn_socket_list and (item.inst_id not in self.gn_instid_socket_obj_mapping):
+                                if self.new_socket(decoded_msg.header.instance_id, item.inst_id):
                                     self.gn_instid_socket_obj_mapping[decoded_msg.header.instance_id] = item.inst_id
                                 if decoded_msg.header.instance_id not in self.last_nc_seq_no:
                                     self.last_nc_seq_no[decoded_msg.header.instance_id] = self.initialize_nc_to_gn_seq_no(decoded_msg.header.instance_id)
@@ -102,15 +101,11 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
                             logger.critical("UNKNOWN GN SO MSG DISCARDED.........................................."+ "\n\n")
                         # TODO: If msg is just an ACK then don't forward it, copy this portion from GN's code, take care of extra inst_id with seq_no in unack_msg_info here
                         self.out_to_in_buffer.task_done()
-                    if wait_time_set:
-                        wait_time_set = 0
-                    time.sleep(0.0001)
-                    print "MSG PROCESSSED----------------------------------------------------------------------------------------------------------"
-                    #print "short sleep bfr mngr"
-                if not wait_time_set:
                     # set time to remain attentive for next 5 ms
-                    wait_time = time.time() + wait_time_for_next_msg
-                    wait_time_set = 1
+                    wait_time = time.time() + wait_time_for_next_msg - 0.1              # this waits only for 0.1 s as its one layer above the other threads
+                    time.sleep(0.0001)
+                    #print "MSG PROCESSSED----------------------------------------------------------------------------------------------------------"
+                    #print "short sleep bfr mngr"
                 if wait_time > time.time():
                     #print "short sleep bfr mngr"+str("%.4f"%time.time())
                     time.sleep(0.0001)
@@ -127,6 +122,13 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
         # here window size can be checked 
         return len(self.sorted_output_msg_buffer) == self.nc_window_size
         
+    ############################################################################## 
+    def new_socket(self, gn_id, socket):
+        if socket in gn_socket_list:
+            if (gn_id in self.gn_instid_socket_obj_mapping) and (socket == self.gn_instid_socket_obj_mapping[gn_id]):
+                return False
+        return True
+    
     
     ##############################################################################
     def initialize_nc_to_cloud_seq_no(self):
@@ -150,9 +152,10 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
         if config["Registered"] == 'NO':
             config["Registered"] = 'YES'
         for node in config["GN Info"]:
-            if config[node]["Registered"] == 'NO':
-                config[node]["Registered"] == 'YES'
+            if config['GN Info'][node]["Registered"] == 'NO':
+                config['GN Info'][node]["Registered"] = 'YES'
         config.write()
+        
         
     ##############################################################################
     def convert_to_int(self, byte_id):
@@ -160,6 +163,7 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
         length = len(byte_id)
         int_id = sum(byte_id[i] << ((length-1-i) * 8) for i in range(length))
         return int_id
+    
     
     ##############################################################################
     def is_wrap_up(self, new_id, old_id):
@@ -234,7 +238,7 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
     ##############################################################################  
     def clean_gn_data(self, del_socket):
         try:
-            inst_id = ''
+            inst_id = None
             if self.gn_instid_socket_obj_mapping:
                 for gn_id, socket in self.gn_instid_socket_obj_mapping.items():
                         if socket == del_socket:
@@ -319,11 +323,9 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
     def initialize_seq_no(self, inst_id):
         try:
             logger.debug("Initializing seq_no."+"\n\n")
-            if self.new_node(inst_id):
+            session_id = self.get_old_session_id(inst_id, "NC Session ID")
+            if not session_id:
                 session_id = str(self.initial_session_id)
-            else:
-                logger.debug("Node already present in the records."+"\n\n")
-                session_id = self.get_old_session_id(inst_id, "NC Session ID")
             session_id = self.increment_byte_seq(session_id)
             self.save_session_id(inst_id, "NC Session ID", session_id)
             return (session_id + str(self.initial_session_seq_no))
@@ -335,47 +337,46 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
     #checks first in self.gn_highest_seq_no, if found then returns that else checks in log file for that inst_id entry if found returns that, else returns None 
     def get_old_session_id(self, inst_id, tag_name):
         try:
-            if tag_name == 'GN Session ID'and inst_id in self.gn_highest_seq_no:
+            if tag_name == 'GN Session ID' and inst_id in self.gn_highest_seq_no:
                     return (self.gn_highest_seq_no[inst_id])[:self.seq_no_partition_size]
             config = ConfigObj(self.log_file_name)
-            if inst_id in config:
+            if inst_id in config and tag_name in config[inst_id]:
                 return config[inst_id][tag_name]
             return None
         except Exception as inst:
-            logger.critical("Exception in get_old_session_id: " + str(inst)+ "\n\n")
+            logger.critical("Exception in get_old_session_id: " + str(inst)+ " for:" + inst_id + + "\n\n")
     
-    ###############################################################################
-    def increment_byte_seq(self, byte_seq):
-        byte_seq = bytearray(byte_seq)
-        try:
-            for indx in range(len(byte_seq)-1, -1, -1):
-                if byte_seq[indx] == 255:
-                    # Reset
-                    byte_seq[indx] = 0
-                else:
-                    byte_seq[indx] = byte_seq[indx] + 1
-                    break
-        except Exception as inst:
-            logger.critical("Exception in increment_byte_seq: " + str(inst)+ "\n\n")
-        return str(byte_seq)
-   
-
     ###############################################################################
     #def increment_byte_seq(self, byte_seq):
         #byte_seq = bytearray(byte_seq)
         #try:
-            #length = len(byte_seq)
-            #integer_no = sum(byte_seq[i] << ((length-1-i) * 8) for i in range(length))
-            #if integer_no == 16777215:
-               #for i in range(length):
-                   #byte_seq[i] = 0
-            #else:
-                #integer_no += 1
-                #print integer_no
-                #byte_seq = bytearray.fromhex(hex(integer_no)[2:])
+            #for indx in range(len(byte_seq)-1, -1, -1):
+                #if byte_seq[indx] == 255:
+                    ## Reset
+                    #byte_seq[indx] = 0
+                #else:
+                    #byte_seq[indx] = byte_seq[indx] + 1
+                    #break
         #except Exception as inst:
             #logger.critical("Exception in increment_byte_seq: " + str(inst)+ "\n\n")
         #return str(byte_seq)
+   
+
+    ###############################################################################
+    def increment_byte_seq(self, byte_seq):
+        try:
+            byte_seq = bytearray(byte_seq)
+            length = len(byte_seq)
+            integer_no = sum(byte_seq[i] << ((length-1-i) * 8) for i in range(length))
+            if integer_no == 16777215:
+               integer_no = 0
+            else:
+                integer_no += 1
+            for i in range(length):
+                byte_seq[i] = (integer_no >> ((length-1-i)*8)) & 0xff 
+        except Exception as inst:
+            logger.critical("Exception in increment_byte_seq: " + str(inst)+ "\n\n")
+        return str(byte_seq)
    
      
     ##############################################################################

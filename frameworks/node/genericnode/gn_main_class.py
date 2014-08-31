@@ -137,13 +137,9 @@ class main_class():
                     else:
                         logger.critical("Unknown Msg Received: Discarding the msg............." + "\n\n")
                     self.input_buffer.task_done()
-                    if wait_time_set:
-                        wait_time_set = 0
-                    time.sleep(0.0001)
-                if not wait_time_set:
                     # set time to remain attentive for next 5 ms
                     wait_time = time.time() + wait_time_for_next_msg
-                    wait_time_set = 1
+                    time.sleep(0.0001)
                 if wait_time > time.time():
                     time.sleep(0.0001)
                 else:

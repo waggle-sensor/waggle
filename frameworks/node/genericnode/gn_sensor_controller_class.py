@@ -50,21 +50,17 @@ class sensor_controller_class(threading.Thread):
                 plugin_obj.get_sensor_msgs()
                 # Checks if any unprocessed msg is in the input buffer
                 while not self.input_buffer.empty():
-                    logger.debug("Waiting for registration to be successful.."+ "\n\n")
+                    #logger.debug("Waiting for registration to be successful.."+ "\n\n")
                     if start_communication_with_nc_event.is_set():
                         item = self.input_buffer.get()
                         logger.debug("Msg received."+ "\n\n")
                         # process the msg
                         self.process_msg(item)
                         self.input_buffer.task_done()
-                    if wait_time_set:
-                        wait_time_set = 0
-                    #print "short sleep snsr"
-                    time.sleep(0.0001)
-                if not wait_time_set:
                     # set time to remain attentive for next 5 ms
                     wait_time = time.time() + wait_time_for_next_msg
-                    wait_time_set = 1
+                    #print "short sleep snsr"
+                    time.sleep(0.0001)
                 if wait_time > time.time():
                     #print "short sleep snsr"
                     time.sleep(0.0001)

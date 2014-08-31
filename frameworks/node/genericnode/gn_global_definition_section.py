@@ -34,7 +34,7 @@ no_reply = '-1'
 terminator = str('!@#$%^&*')
 gn_registration_ack_wait_time = 5                                       # in seconds
 data_ack_wait_time = 10
-wait_time_for_next_msg = 0.1                                           # 10 ms
+wait_time_for_next_msg = 0.2                                           # 100 ms
 # References of Sensor threads present
 sensor_thread_list = []
 

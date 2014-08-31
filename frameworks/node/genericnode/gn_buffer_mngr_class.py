@@ -93,7 +93,7 @@ class buffer_mngr_class(threading.Thread):
             wait_time_set = 1
             # Waits on the msg_buffer till a msg is received       
             while True:
-                while self.sorted_output_buffer or (not self.out_to_in_buffer.empty()) or (not self.in_to_out_buffer.empty()):
+                while (not self.out_to_in_buffer.empty()) or (not self.in_to_out_buffer.empty()):
                     if not self.out_to_in_buffer.empty():
                         item = self.out_to_in_buffer.get()
                         logger.debug("Msg from NCR:" + str(item.msg) + "\n\n")
@@ -101,10 +101,10 @@ class buffer_mngr_class(threading.Thread):
                         decoded_msg = Message.decode(item.msg)
                         msg_state = self.get_msg_state(decoded_msg.header.instance_id, decoded_msg.header.sequence_id)
                         if msg_state == 'wrong':
-                            logger.info("OLD MSG DISCARDED.........................................................................................\n\n")
+                            logger.critical("OLD MSG DISCARDED.........................................................................................\n\n")
                             # don't process the msg just send ack #TODO add the acks in output buffer before sending so that so that you are sure the msg has been processed before, this ack is put once the ack is received from msg_processor thread
                         elif msg_state == 'dup':
-                            logger.info("DUPLICATE MSG DISCARDED. SENDING ACK........................................................................................\n\n")
+                            logger.critical("DUPLICATE MSG DISCARDED. SENDING ACK........................................................................................\n\n")
                             decoded_msg.payloads = None
                         if msg_state != 'wrong':
                             # save NC's new seq_no
@@ -137,14 +137,10 @@ class buffer_mngr_class(threading.Thread):
                     timed_out_msg_info = get_timed_out_msg_info(self.sorted_output_buffer)
                     if timed_out_msg_info:
                         self.handler_vector_table[timed_out_msg_info[3]](timed_out_msg_info, None)
-                    if wait_time_set:
-                        wait_time_set = 0
+                    # set time to remain attentive for next 5 ms
+                    wait_time = time.time() + wait_time_for_next_msg - .1               # this waits for .1 s only as its one level above the other threads
                     #print "short sleep bfr mngr"
                     time.sleep(0.0001)
-                if not wait_time_set:
-                    # set time to remain attentive for next 5 ms
-                    wait_time = time.time() + wait_time_for_next_msg
-                    wait_time_set = 1
                 if wait_time > time.time():
                     #print "short sleep bfr mngr"
                     time.sleep(0.0001)
@@ -277,7 +273,7 @@ class buffer_mngr_class(threading.Thread):
     
     ##############################################################################    
     def get_old_session_id(self, tag_name):
-        if tag_name == 'NC Session ID'and self.nc_highest_seq_no:
+        if tag_name == 'NC Session ID' and self.nc_highest_seq_no:
             return self.nc_highest_seq_no[:self.seq_no_partition_size]
         config = ConfigObj(self.log_file_name)
         if tag_name in config:
@@ -311,37 +307,36 @@ class buffer_mngr_class(threading.Thread):
         logger.debug("\tSEQUENCE NO. gen:" + self.last_gn_seq_no+"\n\n")
         
         
-    ###############################################################################
-    def increment_byte_seq(self, byte_seq):
-        byte_seq = bytearray(byte_seq)
-        try:
-            for indx in range(len(byte_seq)-1, -1, -1):
-                if byte_seq[indx] == 255:
-                    # Reset
-                    byte_seq[indx] = 0
-                else:
-                    byte_seq[indx] = byte_seq[indx] + 1
-                    break
-        except Exception as inst:
-            logger.critical("Exception in increment_byte_seq: " + str(inst)+ "\n\n")
-        return str(byte_seq)
-   
-    ###############################################################################
+    ################################################################################
     #def increment_byte_seq(self, byte_seq):
         #byte_seq = bytearray(byte_seq)
         #try:
-            #length = len(byte_seq)
-            #integer_no = sum(byte_seq[i] << ((length-1-i) * 8) for i in range(length))
-            #if integer_no == 16777215:
-                #for i in range(length):
-                    #byte_seq[i] = 0
-            #else:
-                #integer_no += 1
-                #print integer_no
-                #byte_seq = bytearray.fromhex(hex(integer_no)[2:])
+            #for indx in range(len(byte_seq)-1, -1, -1):
+                #if byte_seq[indx] == 255:
+                    ## Reset
+                    #byte_seq[indx] = 0
+                #else:
+                    #byte_seq[indx] = byte_seq[indx] + 1
+                    #break
         #except Exception as inst:
             #logger.critical("Exception in increment_byte_seq: " + str(inst)+ "\n\n")
         #return str(byte_seq)
+   
+    ###############################################################################
+    def increment_byte_seq(self, byte_seq):
+        try:
+            byte_seq = bytearray(byte_seq)
+            length = len(byte_seq)
+            integer_no = sum(byte_seq[i] << ((length-1-i) * 8) for i in range(length))
+            if integer_no == 16777215:
+               integer_no = 0
+            else:
+                integer_no += 1
+            for i in range(length):
+                byte_seq[i] = (integer_no >> ((length-1-i)*8)) & 0xff 
+        except Exception as inst:
+            logger.critical("Exception in increment_byte_seq: " + str(inst)+ "\n\n")
+        return str(byte_seq)
     
       
     
