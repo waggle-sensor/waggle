@@ -5,7 +5,9 @@ registration_type,  reply_type,  terminator,  gn_socket_list, logger, \
 config_file_name, get_instance_id,  add_to_thread_buffer, wait_time_for_next_msg
 from config_file_functions import initialize_config_file, ConfigObj
 
-
+# Incoming msgs from all GNs go into out_to_in buffer, all responses to GN's msgs are stored in a hashmap tagged by gn_id. 
+# There is a separate in_to_out_buffer for cmds to be sent to each GN and also output_buffer_for_gn_cmds,
+# which stores the last sent msg till the ack is received.
 # gn_msgs_buffer_mngr (object of gn_msgs_buffer_mngr_class): Sends the received messages to msg_processor's buffer and messages received from msg_processor to
 # the respective socket connected to the specific guest node       
 class gn_msgs_buffer_mngr_class(threading.Thread):
@@ -17,6 +19,7 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
         self.daemon = True
         self.in_to_out_buffer = Queue.Queue(maxsize=1000)                                                       # stores all incoming as well as outgoing msgs and also internal msgs
         self.out_to_in_buffer = Queue.Queue(maxsize=1000) 
+        
         self.msg_processor = ''                                                               # to save global msg_processor's input_buffer address
         self.sorted_output_msg_buffer = []
         self.reg_msg_handler_no = 0
@@ -86,7 +89,7 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
                                 logger.critical("OLD MSG DISCARDED.........................................................................................\n\n")
                             # don't process the msg just send ack #TODO add the acks in output buffer before sending so that you are sure the msg has been processed before, this ack is put once the ack is received from msg_processor thread
                             elif msg_state == 'dup':
-                                logger.critical("DUPLICATE MSG DISCARDED. SENDING ACK........................................................................................\n\n")
+                                logger.critical("DUPLICATE MSG DISCARDED...................................................................................\n\n")
                                 decoded_msg.payloads = None
                             if msg_state != 'wrong':
                                 # save the new seq_no from that GN
@@ -95,8 +98,9 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
                                     self.gn_instid_socket_obj_mapping[decoded_msg.header.instance_id] = item.inst_id
                                 if decoded_msg.header.instance_id not in self.last_nc_seq_no:
                                     self.last_nc_seq_no[decoded_msg.header.instance_id] = self.initialize_nc_to_gn_seq_no(decoded_msg.header.instance_id)
-                                item = buffered_msg(item.internal_msg_header, decoded_msg.header.message_type, decoded_msg.header.sequence_id, decoded_msg.header.reply_to_id, decoded_msg.payloads, decoded_msg.header.instance_id)
-                                add_to_thread_buffer(self.msg_processor.input_buffer, item, 'Msg_Processor')                                             # Sends to the msg_processor's buffer
+                                if decoded_msg.header.message_type != reply_type:
+                                    item = buffered_msg(item.internal_msg_header, decoded_msg.header.message_type, decoded_msg.header.sequence_id, decoded_msg.header.reply_to_id, decoded_msg.payloads, decoded_msg.header.instance_id)
+                                    add_to_thread_buffer(self.msg_processor.input_buffer, item, 'Msg_Processor')                                             # Sends to the msg_processor's buffer
                         else:
                             logger.critical("UNKNOWN GN SO MSG DISCARDED.........................................."+ "\n\n")
                         # TODO: If msg is just an ACK then don't forward it, copy this portion from GN's code, take care of extra inst_id with seq_no in unack_msg_info here

@@ -76,7 +76,7 @@ class main_class():
     # Adds msg to the buffer_mngr's buffer
     def send_to_buffer_mngr(self, msg_type, reply_id, msg):
         buff_msg = buffered_msg(msg_to_nc, msg_type, None, reply_id, msg)                   # adds header msg_to_nc in front of the registration message and returns whole message in string form by adding delimiter
-        add_to_thread_buffer(self.buffer_mngr.in_to_out_buffer, buff_msg, "Buffer Mngr")                                 # Sends registration msg by adding to the buffer_mngr's buffer
+        add_to_thread_buffer(self.buffer_mngr.bfr_for_in_to_out_msgs, buff_msg, "Buffer Mngr")                                 # Sends registration msg by adding to the buffer_mngr's buffer
         logger.debug ("Msg sent to buffer_mngr."+ "\n\n")
 
 
@@ -137,7 +137,7 @@ class main_class():
                     else:
                         logger.critical("Unknown Msg Received: Discarding the msg............." + "\n\n")
                     self.input_buffer.task_done()
-                    # set time to remain attentive for next 5 ms
+                    # set time to remain attentive for next 200 ms
                     wait_time = time.time() + wait_time_for_next_msg
                     time.sleep(0.0001)
                 if wait_time > time.time():

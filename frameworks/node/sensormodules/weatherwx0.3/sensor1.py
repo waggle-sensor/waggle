@@ -856,7 +856,7 @@ class sensor1():
                     wxconnection = True
                 except:
                     #print "Waiting for Connection..."
-                    time.sleep(1)
+                    #time.sleep(1)
                     sensor_data = [
                         
                         ['PDV_P8104.API.2006', time.time(), ['PDV_P8104.API.2006.Light_intensity'], ['f'], [579.0], ['Units10B0V5'], ['WXSensorV0.3_Indoor']],
@@ -895,7 +895,7 @@ class sensor1():
                     
                     for single_sensor_data in sensor_data:
                         output_buffer.put(single_sensor_data) 
-                    time.sleep(60)    
+                    time.sleep(0.5)    
                     pass
             try:
                 wxsensor.flushInput()
