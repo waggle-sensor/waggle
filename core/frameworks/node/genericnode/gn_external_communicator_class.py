@@ -65,8 +65,8 @@ class external_communicator_class(asynchat.async_chat, threading.Thread):
                 # Creating the full msg by concatenating different fragments of it
                 for single_msg in self.input_buffer:
                     msg = msg + single_msg
-                msg = buffered_msg(msg_from_nc, None, None, None, msg) 
-                add_to_thread_buffer(self.buffer_mngr.out_to_in_buffer, msg, "Buffer Mngr")                                             # Sends to the buffer_mngr's buffer
+                msg = buffered_msg(msg_from_nc, msg) 
+                add_to_thread_buffer(self.buffer_mngr.bfr_for_out_to_in_msgs, msg, "Buffer Mngr")                                             # Sends to the buffer_mngr's buffer
                 logger.debug("Msg forwarded to buffer_mngr.\n\n")    
         except Exception as inst:
              logger.critical("Exception in handle_request: " + str(inst) + "\n\n")
@@ -107,8 +107,8 @@ class external_communicator_class(asynchat.async_chat, threading.Thread):
             self.connect( (nc_ip, self.nc_port) )                                                              # tries to connect to the NC at the specified port no
             logger.info("CONNECTED......................................................."+"\n\n")
             while True:
-                asyncore.loop(timeout=0.01, use_poll=False, map=None, count=1000)                                                                                         # starts the loop which constantly checks whether the socket is readable or writable
-                time.sleep(0.01)
+                asyncore.loop(timeout=0.01, use_poll=False, map=None)                                                                                         # starts the loop which constantly checks whether the socket is readable or writable
+                #time.sleep(0.01)
         except Exception as inst:
             logger.critical("Exception in run: " + str(inst) + "\n\n")
             self.shutdown = 1
