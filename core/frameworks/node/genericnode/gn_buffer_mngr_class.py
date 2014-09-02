@@ -48,10 +48,11 @@ class buffer_mngr_class(threading.Thread):
         self.last_nc_subseq_no = 0                                      # in int
         self.ackd_gn_subseq_no = 0                                      # in int
         self.ackd_nc_subseq_no = 0                                      # in int
-        self.gn_window_size = 5
-        self.nc_window_size = 5
+        self.gn_window_size = 1
+        self.nc_window_size = 1
         self.temp_acks = []
         self.wait_time = 0
+        #self.sent_msg_count = 0
         logger.debug("Thread "+self.thread_name+" Initialized.\n\n")
             
     
@@ -116,8 +117,11 @@ class buffer_mngr_class(threading.Thread):
                         if ackd_id in self.temp_acks:
                             self.temp_acks.remove(ackd_id)
                         self.bfr_for_sent_responses.append([ackd_id, encoded_msg])
+                    #self.sent_msg_count += 1
+                    # sending to socket corresponding to the respective GN    
                     self.external_communicator.push(encoded_msg)                              
-                    logger.critical("Msg Sent to NC:"+str('%0.4f' % time.time()) + "\n\n") # + str(encoded_msg)+
+                    #logger.critical("Msg Sent to NC:"+str('%0.4f' % time.time())+ "\tcount:" + str(self.sent_msg_count) + "\t" + str(encoded_msg)+"\n\n") # 
+                    logger.critical("Msg Sent to NC:"+str('%0.4f' % time.time())+ "\n\n")
                 self.bfr_for_in_to_out_msgs.task_done()
         except Exception as inst:
             logger.critical("Exception in send_in_to_out_msg: " + str(inst) + "\n\n")
