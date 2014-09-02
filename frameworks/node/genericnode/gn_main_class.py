@@ -57,7 +57,7 @@ class main_class():
         temp_config["Sensors Info"] = config["Sensors Info"]
         reg_payload.sys_info = dict(temp_config)
         reg_payload.instance_id = get_instance_id()
-        self.send_to_buffer_mngr(registration_type, no_reply, reg_payload)
+        self.send_to_buffer_mngr(registration_type, no_reply, [reg_payload])
     
     
         

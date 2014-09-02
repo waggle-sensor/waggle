@@ -66,7 +66,7 @@ class internal_communicator(asynchat.async_chat):
                 for single_msg in self.input_buffer:
                     msg = msg + single_msg                                              # convert msg from a list element to a string
                 msg = buffered_msg(msg_from_gn, None, None, None, msg, self)
-                add_to_thread_buffer(self.gn_msgs_buffer_mngr.out_to_in_buffer, msg, "GN_msgs_buffer_mngr")                                             # Sends to the gn_msgs_buffer_mngr's buffer
+                add_to_thread_buffer(self.gn_msgs_buffer_mngr.bfr_for_out_to_in_msgs, msg, "GN_msgs_buffer_mngr")                                             # Sends to the gn_msgs_buffer_mngr's buffer
                 logger.debug("Msg sent to gn_msgs_buffer_mngr."+"\n\n")
             except Exception as inst:
                 logger.critical("Exception in handle_request: " + str(inst))

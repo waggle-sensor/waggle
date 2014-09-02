@@ -10,12 +10,12 @@ import logging
 #logging.basicConfig(level=logging.INFO,format='%(asctime)s %(name)s: %(message)s',)
 logging.basicConfig(level=logging.CRITICAL,format='%(name)s: %(message)s',)
 logger = logging.getLogger("NC")
-logger.setLevel(logging.CRITICAL)
+logger.setLevel(logging.DEBUG)
 
 
 port_for_gn = 7001                                                       # GNs can request at this port
 
-buffered_msg = namedtuple('buffered_msg', ['internal_msg_header', 'msg_type', 'seq_no', 'reply_id', 'msg', 'inst_id'])
+buffered_msg = namedtuple('buffered_msg', ['internal_msg_header', 'msg_type', 'seq_no', 'reply_id', 'msg', 'sock_or_gn_id'])
 
 # Internal Msg Headers
 msg_send = 'msg_send'
@@ -35,11 +35,11 @@ acknowledgment = 'ACK'
 no_reply = '-1'
 terminator = str('!@#$%^&*')
 wait_time_for_next_msg = 0.2                   # 100 ms
+command_ack_wait_time = 10                     # in secs
 # List maintaining current GN sockets
 gn_socket_list = []                  
 
-## Variable keeping track of time
-#current_time = time.time()
+
 
 # config file 
 config_file_name = './' + "nc.cfg"
@@ -88,41 +88,3 @@ def add_to_thread_buffer(msg_buffer, string_msg, thread_name):
     else:
         logger.info("Msg buffer FULL: So Discarding the msg................................................................................." + "\n\n")
     
-##############################################################################   
-# Adds to the sorted buffer passed as an arg and then sorts the buffer based on the expiration_time field of the unacknowledged_msg_handler_info
-def add_to_sorted_output_buffer(msg_buffer, unacknowledged_msg_handler_info):
-    logger.debug("Buffer size of GN_msgs_buffer_mngr's output buffer before adding item: " + str(len(msg_buffer))+"\n\n")
-    msg_buffer.append(unacknowledged_msg_handler_info)
-    sorted(msg_buffer, key=lambda x: x[2])                                              # sorted based on time
-    logger.debug("Msg waiting for ACK inserted in sorted buffer."+"\n\n")
-    
-##############################################################################       
-# Returns msg_info for a specific msg    
-def get_msg_info_and_delete_from_output_buffer(output_buffer, seq_no):
-    logger.debug("Buffer size of buffer_mngr's output buffer before deleting item: " + str(len(output_buffer))+"\n\n")
-    for msg_handler_info in output_buffer:
-        if msg_handler_info[0] == seq_no:
-            logger.debug("Timed out msg deleted from output_buffer and returned."+"\n\n")
-            return output_buffer.remove(msg_handler_info)
-    return None
-
-     
-##############################################################################      
-# Adds given no of seconds to current time
-def add_to_current_time(seconds):
-    d1 = datetime.now() + datetime.timedelta(seconds = seconds)
-    logger.debug ("Added to current time: "+str(seconds)+"\n\n")
-    #time1 = datetime.datetime.strptime(time1, "%Y.%m.%d.%H.%M.%S")
-    #return (time1 + datetime.timedelta(0, time2))
-    # d1 = time.time() + seconds
-    return d1
-
-    
-##############################################################################   
-# Adds secs           
-def add_time(time1, time2):
-    d1 = datetime.datetime.now() + datetime.timedelta(time2)
-    #time1 = datetime.datetime.strptime(time1, "%Y.%m.%d.%H.%M.%S")
-    #return (time1 + datetime.timedelta(0, time2))
-    logger.debug ("Added two timings."+"\n\n")
-    return d1

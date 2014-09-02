@@ -112,15 +112,15 @@ class msg_processor_class():
         logger.debug("DATA MSG Received.................................."+"\n\n")
         if item.msg != None:                                                     
             self.send_data_msg('cloud', item.msg)                                # sends msg to bufr mngr to send it to cloud
-        self.send_ack(item.seq_no, item.inst_id, 0)                              # sends msg to bufr mngr to send ACK to gn
+        self.send_ack(item.seq_no, item.sock_or_gn_id, 0)                              # sends msg to bufr mngr to send ACK to gn
         logger.debug("Data ACK sent to gn_msgs_buffer_mngr."+"\n\n")
    
    
        
     ##############################################################################
     def send_data_msg(self, inst_id, data_payloads):
-        buff_msg = buffered_msg(msg_send, data_type, None, no_reply, data_payloads, inst_id)                   # adds header msg_to_nc in front of the registration message and returns whole message in string form by adding delimiter
-        add_to_thread_buffer(self.gn_msgs_buffer_mngr.in_to_out_buffer, buff_msg, 'GN_msgs_buffer_mngr')                                 # Sends registration msg by adding to the buffer_mngr's buffer
+        buff_msg = buffered_msg(msg_send, data_type, None, no_reply, data_payloads, None)                   # adds header msg_to_nc in front of the registration message and returns whole message in string form by adding delimiter
+        add_to_thread_buffer(self.gn_msgs_buffer_mngr.bfr_for_in_to_out_msgs[inst_id], buff_msg, 'GN_msgs_buffer_mngr')                                 # Sends registration msg by adding to the buffer_mngr's buffer
         logger.debug("Data msg sent to bufr mngr to send to cloud."+"\n\n")
     
     
@@ -142,11 +142,11 @@ class msg_processor_class():
         if item.msg != None:
             config = ConfigObj(config_file_name)
             # if GN is not registered, for 2nd level ack you need to check if it has any additional info related to registration
-            if item.inst_id not in config["GN Info"]:
+            if item.sock_or_gn_id not in config["GN Info"]:
                 # Store GN info in config file
                 self.register_gn(item.msg)
                 self.send_reg_msg('cloud')                                    # sends msg to bufr mngr to send it to cloud
-        self.send_ack(item.seq_no, item.inst_id, 0, str(int(time.time())))                                     # sends msg to bufr mngr to send ACK to gn
+        self.send_ack(item.seq_no, item.sock_or_gn_id, 0, str(int(time.time())))                                     # sends msg to bufr mngr to send ACK to gn
         logger.debug("REGISTRATION ACK sent to gn_msgs_buffer_mngr."+"\n\n")
    
        
@@ -172,8 +172,8 @@ class msg_processor_class():
                     reg_dict["GN Info"][node]["Sensors Info"] = config["GN Info"][node]["Sensors Info"]
             reg_payload.sys_info = reg_dict
             reg_payload.instance_id = get_instance_id()
-            buff_msg = buffered_msg(msg_send, registration_type, None, no_reply, [reg_payload], inst_id)                   # adds header msg_to_nc in front of the registration message and returns whole message in string form by adding delimiter
-            add_to_thread_buffer(self.gn_msgs_buffer_mngr.in_to_out_buffer, buff_msg, 'GN_msgs_buffer_mngr')                                 # Sends registration msg by adding to the buffer_mngr's buffer
+            buff_msg = buffered_msg(msg_send, registration_type, None, no_reply, [reg_payload], None)                   # adds header msg_to_nc in front of the registration message and returns whole message in string form by adding delimiter
+            add_to_thread_buffer(self.gn_msgs_buffer_mngr.bfr_for_in_to_out_msgs[inst_id], buff_msg, 'GN_msgs_buffer_mngr')                                 # Sends registration msg by adding to the buffer_mngr's buffer
             logger.debug("Registration msg sent to bufr mngr to send to cloud."+"\n\n")
         except Exception as inst:
             logger.critical("Exception in send_reg_msg:" + str(inst)+"\n\n")
@@ -187,8 +187,8 @@ class msg_processor_class():
             msg.output = special_reg_ack
         else:
             msg.output = acknowledgment
-        buff_msg = buffered_msg(msg_send, reply_type, None, reply_id, [msg], inst_id)                   # adds header msg_to_nc in front of the registration message and returns whole message in string form by adding delimiter
-        add_to_thread_buffer(self.gn_msgs_buffer_mngr.in_to_out_buffer, buff_msg, 'GN_msgs_buffer_mngr')                                 # Sends registration msg by adding to the buffer_mngr's buffer
+        buff_msg = buffered_msg(msg_send, reply_type, None, reply_id, [msg], None)                   # adds header msg_to_nc in front of the registration message and returns whole message in string form by adding delimiter
+        add_to_thread_buffer(self.gn_msgs_buffer_mngr.bfr_for_in_to_out_msgs[inst_id], buff_msg, 'GN_msgs_buffer_mngr')                                 # Sends registration msg by adding to the buffer_mngr's buffer
         
         
     ##############################################################################
