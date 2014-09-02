@@ -47,7 +47,8 @@ uint8_t HIH61XX::update()
     while(true) {
       delay(10);
       
-      Wire.requestFrom(a, (uint8_t) 4);
+      int c = Wire.requestFrom(a, (uint8_t) 4);
+      if (c == 0) Serial.println("Problem with request");
       if(Wire.available()) {
         x = Wire.read();
         y = Wire.read();
