@@ -93,7 +93,8 @@ class sensor_controller_class(threading.Thread):
                     # clear the event to signal that the output buffer won't be full when the data msg is sent by buffer_mngr so 
             else:
                 self.input_buffer.put(item)
-         
+            logger.debug("Length of input bfr of sensor_controller:"+str(self.input_buffer.qsize()))
+                
         
     ##############################################################################         
     # item: buffered_msg tuple        
