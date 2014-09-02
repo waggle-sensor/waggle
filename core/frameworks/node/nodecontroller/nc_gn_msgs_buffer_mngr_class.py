@@ -59,6 +59,7 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
     def send_in_to_out_msgs(self, filled_in_to_out_bfr_ids):
         try:
             for inst_id in filled_in_to_out_bfr_ids:
+                logger.debug("Length of in_to_out bfr:"+str(self.bfr_for_in_to_out_msgs[inst_id].qsize()))
                 item = self.bfr_for_in_to_out_msgs[inst_id].get()
                 if inst_id != 'cloud' and item.msg_type != reply_type and self.bfr_for_sent_msgs_full(inst_id):
                     # push the msg back in the queue
@@ -83,6 +84,8 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
                     else:
                         #self.sent_msg_count += 1
                         #logger.critical("Msg sent to Cloud!: "+str('%0.4f' % time.time())+ "\tcount:" +str(self.sent_msg_count)+"\t"+(encoded_msg)+"\n\n") # + +"\n\n")
+                        #logger.critical("Msg sent to Cloud!: "+str('%0.4f' % time.time()))
+                        #logger.critical("Msg sent to Cloud: "+str('%0.4f' % time.time())+ "\t"+(encoded_msg)+"\n\n")
                         ret = self.send_msg_to_cloud(encoded_msg)                                                             # send msg to cloud
                         # need to handle the failure case
                         if not ret:
@@ -99,7 +102,7 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
             if socket_obj:
                 socket_obj.push(msg) 
                 #logger.critical("Msg sent to GN:"+str('%0.4f' % time.time()) + str(msg)+"\n\n" ) #+ 
-                logger.critical("Msg sent to GN:"+str('%0.4f' % time.time()) + "\n\n" )
+                logger.critical("Msg sent to GN "+str(inst_id)+":"+str('%0.4f' % time.time()) + "\n\n" )
             else:
                 logger.critical("GN's socket closed. So discarding the msg------------------------------------------------------------."+ "\n\n")
         except Exception as inst:

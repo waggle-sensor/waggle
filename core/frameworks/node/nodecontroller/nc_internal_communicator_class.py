@@ -48,7 +48,7 @@ class internal_communicator(asynchat.async_chat):
         if self.shutdown == 0:
             try:
                 #logger.critical("Msg received from GN:"+str('%0.4f' % time.time()) +str(self.input_buffer)+"\n\n") #+
-                logger.critical("Msg received from GN:"+str('%0.4f' % time.time()) + "\n\n")
+                logger.critical("Msg received from GN:"+str('%0.4f' % time.time())+"\n\n")
                 self.handle_request()
                 logger.debug("Incoming Msg handled."+"\n\n")
                 self.input_buffer = []
