@@ -47,16 +47,17 @@ nop();
 #include <Adafruit_BMP085_U.h>
 
 // #define debug_serial 1
+// #define SILENCE_BAD_SENSORS 1
 
 // #define SHT75_ADD 1
-// #define BMP180_ADD 2
+#define BMP180_ADD 2
 // #define RHT03_ADD 3
 #define TMP102_ADD 4
 // #define SHT15_ADD 5
-// #define MMA8452 6
+#define MMA8452 6
 // #define HIH6130_ADD 7
 // #define DS18B20_ADD 8
-// #define MLX90614_ADD 9
+#define MLX90614_ADD 9
 // #define GA1A1S201WP_ADD 10
 // #define THERMIS_100K_ADD 11
 // #define MAX4466_ADD 12
@@ -74,11 +75,14 @@ float t_PTAT;
 float tPEC;
 
 bool D6T_get_data(void) {
-  int k;
-  i2c_start_wait(0x14);
-  i2c_write(0x4C);
+  int k, start_err = 0, write_err = 0;
+  start_err = i2c_start(0x14);
+  if (start_err == 1) return false;
+  write_err = i2c_write(0x4C);
+  if (write_err == 1) return false;
   
-  i2c_rep_start(0x15);
+  start_err = i2c_rep_start(0x15);
+  if (start_err == 1) return false;
   for (k = 0; k < 35; k++) {
     if (k == 34) {
       rbuf[k] = i2c_readNak();
@@ -86,6 +90,10 @@ bool D6T_get_data(void) {
     else {
       rbuf[k] = i2c_readAck();
     }
+  }
+  for (int j = 0; j<35; j++) {
+    if (rbuf[j] == -999)
+      return false;
   }
   i2c_stop();
    
@@ -110,7 +118,7 @@ void output_csv() {
     if (i < 15) {
       Serial.print(",");
     }
-  }
+  }    
 }
 
 int D6T_checkPEC(int* buf, int pPEC) {
@@ -149,18 +157,28 @@ byte calc_crc(byte data) {
 #define GSCALE 2
 
 float xmean, ymean, zmean, rt_mean_sq;
+bool MMA_found;
 
-void MMA8452_get_means(float *xmean, float *ymean, float *zmean, float *rt_mean_sq)
+bool MMA8452_get_means(float *xmean, float *ymean, float *zmean, float *rt_mean_sq)
 {
   int n = 0;
   float xvals[25], yvals[25], zvals[25];
-  float xtotal = 0, ytotal = 0, ztotal = 0, xvar = 0, yvar = 0, zvar = 0, mean_square_var;
+  float xtotal = 0, ytotal = 0, ztotal = 0, xvar = 0, yvar = 0, zvar = 0, mean_square_var = 0;
 
   while (n < 25){
     delay(10);
     int accelCount[3]; // Stores the 12-bit signed value
 
-    readAccelData(accelCount); // Read the x/y/z adc values
+    bool good_data = readAccelData(accelCount); // Read the x/y/z adc values
+
+    if (good_data == false) 
+      {
+        *xmean = -999;
+        *ymean = -999;
+        *zmean = -999;
+        *rt_mean_sq = -999;
+        return false;
+      }
 
     float accelG[3]; // Stores the real accel value in g's
     for (int i = 0 ; i < 3 ; i++)
@@ -190,13 +208,16 @@ void MMA8452_get_means(float *xmean, float *ymean, float *zmean, float *rt_mean_
 
   mean_square_var = (sq(xvar) + sq(yvar) + sq(zvar))/3;
   *rt_mean_sq = sqrt(mean_square_var);
+  return true;
 }
 
-void readAccelData(int *destination)
+bool readAccelData(int *destination)
 {
   byte rawData[6]; // x/y/z accel register data stored here
 
-  readRegisters(OUT_X_MSB, 6, rawData); // Read the six raw data registers into data array
+  bool read_success = readRegisters(OUT_X_MSB, 6, rawData); // Read the six raw data registers into data array
+
+  if (read_success == false) return false;
 
   // Loop to calculate 12-bit ADC and g value for each axis
   for(int i = 0; i < 3 ; i++)
@@ -213,14 +234,17 @@ void readAccelData(int *destination)
 
     destination[i] = gCount; //Record this gCount into the 3 int array
   }
+  return true;
 }
 
-void initMMA8452()
+bool initMMA8452()
 {
   byte c = readRegister(WHO_AM_I); // Read WHO_AM_I register
-  if (c == 0x2A) ; // WHO_AM_I should always be 0x2A
-  else
-    Serial.print("Error with MMA8452");
+  if (c == 0x2A); // WHO_AM_I should always be 0x2A
+  else {
+    return false;
+    // Serial.print("Error with MMA8452");
+  }
 
   MMA8452Standby(); // Must be in standby to change registers
 
@@ -230,6 +254,7 @@ void initMMA8452()
   writeRegister(XYZ_DATA_CFG, fsr);
 
   MMA8452Active(); // Set to active to start reading
+  return true;
 }
 
 void MMA8452Standby()
@@ -244,17 +269,21 @@ void MMA8452Active()
   writeRegister(CTRL_REG1, c | 0x01); //Set the active bit to begin detection
 }
 
-void readRegisters(byte addressToRead, int bytesToRead, byte * dest)
+bool readRegisters(byte addressToRead, int bytesToRead, byte * dest)
 {
   i2c_start(MMA8452_ADDRESS_WRITE);
   i2c_write(addressToRead);
   i2c_rep_start(MMA8452_ADDRESS_READ);
 
   for(int x = 0 ; x < bytesToRead ; x++)
+  {
     if (x == bytesToRead - 1)
       dest[x] = i2c_readNak();
     else
       dest[x] = i2c_readAck();
+    if (dest[x] == -999) return false;
+  }
+  return true;
 }
 
 byte readRegister(byte addressToRead)
@@ -456,7 +485,8 @@ void setup()
   #ifndef I2C_INIT_ADD
   i2c_init();
   #endif //I2C_INIT_ADD
-  initMMA8452();
+  MMA_found = false;
+  MMA_found = initMMA8452();
   #endif //MMA8452
 
   #if FASTADC
@@ -471,6 +501,143 @@ void loop()
 {
   Serial.print("WXSensor;");
 
+  #ifdef MLX90614_ADD
+  int dev = 0x5A<<1;
+  int data_low = 0;
+  int data_high = 0;
+  int pec = 0;
+  int start_err = 0, write_err = 0, rep_start_err = 0;
+  
+  start_err = i2c_start(dev+I2C_WRITE);
+  write_err = i2c_write(0x07);
+  
+  // read
+  rep_start_err = i2c_rep_start(dev+I2C_READ);
+  data_low = i2c_readAck(); //Read 1 byte and then send ack
+  data_high = i2c_readAck(); //Read 1 byte and then send ack
+  pec = i2c_readNak();
+  i2c_stop();
+  
+  if (start_err == 1 || write_err == 1 || rep_start_err == 1)
+  {
+    #ifndef SILENCE_BAD_SENSORS
+    Serial.print("MLX90614_T_F:");
+    Serial.print(-999);
+    // Serial.print(fahrenheit);
+    Serial.print(";");
+    #endif
+  }
+  else {
+    //This converts high and low bytes together and processes temperature, MSB is a error bit and is ignored for temps
+    double tempFactor = 0.02; // 0.02 degrees per LSB (measurement resolution of the MLX90614)
+    double tempData = 0x0000; // zero out the data
+    int frac; // data past the decimal point
+    
+    // This masks off the error bit of the high byte, then moves it left 8 bits and adds the low byte.
+    tempData = (double)(((data_high & 0x007F) << 8) + data_low);
+    tempData = (tempData * tempFactor)-0.01;
+    
+    float celcius = tempData - 273.15;
+    float fahrenheit = (celcius*1.8) + 32;
+    
+    Serial.print("MLX90614_T_F:");
+    Serial.print(fahrenheit);
+    Serial.print(";");
+  }
+  #endif //MLX90614_ADD
+  
+  #ifdef IR_D6T_44L_06_ADD
+  bool data_check = D6T_get_data();
+  if (data_check == true) {
+    Serial.print("D6T_44L_06_1_T_C:");
+    output_csv();
+    Serial.print(";");
+  }
+  else {
+    #ifndef SILENCE_BAD_SENSORS
+    Serial.print("D6T_44L_06_1_T_C:");
+    Serial.print("-999,-999,-999,-999,-999,-999,-999,-999,-999,-999,-999,-999,-999,-999,-999,-999,-999;");
+    #endif
+  }
+  #endif //IR_D6T_44L_06_ADD
+
+  #ifdef TMP421_ADD
+  float TMP421_1_temperature;
+  TMP421_1_temperature = TMP421_1.GetTemperature(); // Some error, check this out! 
+  if (TMP421_1_temperature == -999) {
+    #ifndef SILENCE_BAD_SENSORS
+    Serial.print("TMP421_1_T_C:");
+    Serial.print(TMP421_1_temperature, 2);
+    Serial.print(";");
+    #endif
+  }
+  else {
+    Serial.print("TMP421_1_T_C:");
+    Serial.print(TMP421_1_temperature, 2);
+    Serial.print(";");
+  }
+  #endif //TMP421_ADD
+      
+  #ifdef BMP180_ADD
+  float BMP_180_1_temperature, BMP_180_1_pressure;
+  BMP_180_1.getPressure(&BMP_180_1_pressure);  
+  BMP_180_1.getTemperature(&BMP_180_1_temperature);
+  if (BMP_180_1_temperature == -999 || BMP_180_1_pressure == -999) {
+    #ifndef SILENCE_BAD_SENSORS
+    Serial.print("BMP_180_1_T_C:");
+    Serial.print(BMP_180_1_temperature, 2);
+    Serial.print(";");
+    Serial.print("BMP_180_1_P_PA:");
+    Serial.print(BMP_180_1_pressure, 2);
+    Serial.print(";");
+    #endif
+  }
+  else {
+    Serial.print("BMP_180_1_T_C:");
+    Serial.print(BMP_180_1_temperature, 2);
+    Serial.print(";");
+    Serial.print("BMP_180_1_P_PA:");
+    Serial.print(BMP_180_1_pressure, 2);
+    Serial.print(";");
+  }
+  #endif //BMP180_ADD
+  
+  #ifdef MMA8452
+  if (MMA_found == true) {
+    MMA8452_get_means(&xmean, &ymean, &zmean, &rt_mean_sq);
+    Serial.print("MMA8452_1_A_X_Units:");
+    Serial.print(xmean);
+    Serial.print(";");
+    Serial.print("MMA8452_1_A_Y_Units:");
+    Serial.print(ymean);
+    Serial.print(";");
+    Serial.print("MMA8452_1_A_Z_Units:");
+    Serial.print(zmean);
+    Serial.print(";");
+    Serial.print("MMA8452_1_A_RMS_Units:");
+    Serial.print(rt_mean_sq);
+    Serial.print(";");
+  }
+  else {
+    #ifndef SILENCE_BAD_SENSORS
+    xmean = -999, ymean = -999, zmean = -999, rt_mean_sq = -999;
+    Serial.print("MMA8452_1_A_X_Units:");
+    Serial.print(xmean);
+    Serial.print(";");
+    Serial.print("MMA8452_1_A_Y_Units:");
+    Serial.print(ymean);
+    Serial.print(";");
+    Serial.print("MMA8452_1_A_Z_Units:");
+    Serial.print(zmean);
+    Serial.print(";");
+    Serial.print("MMA8452_1_A_RMS_Units:");
+    Serial.print(rt_mean_sq);
+    Serial.print(";");
+    MMA_found = initMMA8452();
+    #endif
+  }
+  #endif //MMA8452
+
   #ifdef PhoRes_ADD
   int PhoRes_1_Value;
   PhoRes_1_Value = analogRead(PhoRes_PIN); 
@@ -479,46 +646,6 @@ void loop()
   Serial.print(";");
   #endif //PhoRes_ADD
   
-  #ifdef MLX90614_ADD
-  int dev = 0x5A<<1;
-  int data_low = 0;
-  int data_high = 0;
-  int pec = 0;
-  
-  i2c_start_wait(dev+I2C_WRITE);
-  i2c_write(0x07);
-  
-  // read
-  i2c_rep_start(dev+I2C_READ);
-  data_low = i2c_readAck(); //Read 1 byte and then send ack
-  data_high = i2c_readAck(); //Read 1 byte and then send ack
-  pec = i2c_readNak();
-  i2c_stop();
-  
-  //This converts high and low bytes together and processes temperature, MSB is a error bit and is ignored for temps
-  double tempFactor = 0.02; // 0.02 degrees per LSB (measurement resolution of the MLX90614)
-  double tempData = 0x0000; // zero out the data
-  int frac; // data past the decimal point
-  
-  // This masks off the error bit of the high byte, then moves it left 8 bits and adds the low byte.
-  tempData = (double)(((data_high & 0x007F) << 8) + data_low);
-  tempData = (tempData * tempFactor)-0.01;
-  
-  float celcius = tempData - 273.15;
-  float fahrenheit = (celcius*1.8) + 32;
-  
-  Serial.print("MLX90614_T_F:");
-  Serial.print(fahrenheit);
-  Serial.print(";");
-  #endif //MLX90614_ADD
-  
-  #ifdef IR_D6T_44L_06_ADD
-  D6T_get_data();
-  Serial.print("D6T_44L_06_1_T_C:");
-  output_csv();
-  Serial.print(";");
-  #endif //IR_D6T_44L_06_ADD
-
   #ifdef THERMIS_100K_ADD
   int THERMIS_1_Value;
   THERMIS_1_Value = analogRead(THERMIS_100K_Pin); 
@@ -553,34 +680,6 @@ void loop()
   Serial.print(";");
   #endif //SHT15_ADD
   
-  #ifdef BMP180_ADD
-  float BMP_180_1_temperature, BMP_180_1_pressure;
-  BMP_180_1.getPressure(&BMP_180_1_pressure);  
-  BMP_180_1.getTemperature(&BMP_180_1_temperature);
-  Serial.print("BMP_180_1_T_C:");
-  Serial.print(BMP_180_1_temperature, 2);
-  Serial.print(";");
-  Serial.print("BMP_180_1_P_PA:");
-  Serial.print(BMP_180_1_pressure, 2);
-  Serial.print(";");
-  #endif //BMP180_ADD
-  
-  #ifdef MMA8452
-  MMA8452_get_means(&xmean, &ymean, &zmean, &rt_mean_sq);
-  Serial.print("MMA8452_1_A_X_Units:");
-  Serial.print(xmean);
-  Serial.print(";");
-  Serial.print("MMA8452_1_A_Y_Units:");
-  Serial.print(ymean);
-  Serial.print(";");
-  Serial.print("MMA8452_1_A_Z_Units:");
-  Serial.print(zmean);
-  Serial.print(";");
-  Serial.print("MMA8452_1_A_RMS_Units:");
-  Serial.print(rt_mean_sq);
-  Serial.print(";");
-  #endif //MMA8452
-
   #ifdef DS18B20_ADD
   float DS18B20_1_temperature;
   DS18B20_1_temperature = DS18B20_1_getTemp();
@@ -588,14 +687,6 @@ void loop()
   Serial.print(DS18B20_1_temperature, 2);
   Serial.print(";");
   #endif //DS18B20_ADD
-      
-  #ifdef TMP421_ADD
-  float TMP421_1_temperature;
-  TMP421_1_temperature = TMP421_1.GetTemperature(); // Some error, check this out! 
-  Serial.print("TMP421_1_T_C:");
-  Serial.print(TMP421_1_temperature, 2);
-  Serial.print(";");
-  #endif //TMP421_ADD
       
   #ifdef RHT03_ADD
   int chk_RHT03_1;
@@ -613,13 +704,23 @@ void loop()
   
   #ifdef TMP102_ADD
   float tmp102_1_temperature;
-  Wire.requestFrom(tmp102_1_Address,2);
-  byte tmp102_1_MSB = Wire.read();
-  byte tmp102_1_LSB = Wire.read();
-  tmp102_1_temperature = (((tmp102_1_MSB << 8) | tmp102_1_LSB) >> 4) * 0.11250 + 32; //it's a 12bit int, using two's compliment for negative
-  Serial.print("TMP102_1_T_F:");
-  Serial.print(tmp102_1_temperature,2);
-  Serial.print(";");
+  int err = Wire.requestFrom(tmp102_1_Address,2);
+  if (err != 0) {
+    byte tmp102_1_MSB = Wire.read();
+    byte tmp102_1_LSB = Wire.read();
+    tmp102_1_temperature = (((tmp102_1_MSB << 8) | tmp102_1_LSB) >> 4) * 0.11250 + 32; //it's a 12bit int, using two's compliment for negative
+    Serial.print("TMP102_1_T_F:");
+    Serial.print(tmp102_1_temperature,2);
+    Serial.print(";");
+  }
+  else{
+    tmp102_1_temperature = -999;
+    #ifndef SILENCE_BAD_SENSORS
+    Serial.print("TMP102_1_T_F:");
+    Serial.print(tmp102_1_temperature,2);
+    Serial.print(";");
+    #endif
+  }
   #endif //TMP102_ADD
 
   #ifdef SHT75_ADD
