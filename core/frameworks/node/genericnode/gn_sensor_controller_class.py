@@ -104,11 +104,11 @@ class sensor_controller_class(threading.Thread):
         data_payload.inst_id = get_instance_id()
         ret = True
         for reading_name, reading_type, reading_value, reading_unit, reading_note in zip(item.msg[2], item.msg[3], item.msg[4], item.msg[5], item.msg[6]):
-            ret = ret and data_payload.add_item(reading_name, reading_type, reading_value, reading_unit, reading_note)
+            ret = (ret and data_payload.add_item(reading_name, reading_type, reading_value, reading_unit, reading_note))
         if not ret:
             logger.critical("Error in packing data....................................")
         logger.debug("DATA PAYLOAD:" + str(data_payload) + "\n\n")
-        self.send_to_buffer_mngr(data_type, item.reply_id, data_payload)
+        self.send_to_buffer_mngr(data_type, item.reply_id, [data_payload])
         logger.debug("Data msg sent to bufr mngr to send to NC." + "\n\n")
     
 
