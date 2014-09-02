@@ -1,7 +1,7 @@
 from global_imports import *
 from gn_global_definition_section import get_instance_id,  add_to_thread_buffer,  buffered_msg,  msg_to_nc, \
 start_communication_with_nc_event,  data_type,  sensor_thread_list, \
-config_file_name, logger, wait_time_for_next_msg
+config_file_name, logger, wait_time_for_next_msg, reply_type
 from sensor_plugin import sensor_plugin_class
 from config_file_functions import initialize_config_file, ConfigObj
 
@@ -86,7 +86,7 @@ class sensor_controller_class(threading.Thread):
     def process_msg(self, item):
         logger.debug('Msg being processed..'+ "\n\n")
         if item.internal_msg_header == msg_to_nc:
-            if item.msg_type == reply_type or self.buffer_mngr.bfr_for_in_to_out_msgs.qsize == 0:
+            if item.msg_type == reply_type or self.buffer_mngr.bfr_for_in_to_out_msgs.empty():
                 logger.debug('Received sensor msg.'+ "\n\n")
                 if item.msg_type == data_type:
                     self.send_data_msg(item)
