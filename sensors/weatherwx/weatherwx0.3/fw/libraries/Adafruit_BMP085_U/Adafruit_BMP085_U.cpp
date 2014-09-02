@@ -73,12 +73,19 @@ static void read8(byte reg, uint8_t *value)
     Wire.send(reg);
   #endif
   Wire.endTransmission();
-  Wire.requestFrom((uint8_t)BMP085_ADDRESS, (byte)1);
-  #if ARDUINO >= 100
-    *value = Wire.read();
-  #else
-    *value = Wire.receive();
-  #endif  
+  int BMP_err = Wire.requestFrom((uint8_t)BMP085_ADDRESS, (byte)1);
+  if (BMP_err != 0) {
+    Serial.println("Reading ok"); // DEBUG
+    #if ARDUINO >= 100
+      *value = Wire.read();
+    #else
+      *value = Wire.receive();
+    #endif  
+  }
+  else {
+    Serial.println("Bad reading"); // DEBUG
+    *value = -999;
+  }
   Wire.endTransmission();
 }
 
@@ -96,12 +103,19 @@ static void read16(byte reg, uint16_t *value)
     Wire.send(reg);
   #endif
   Wire.endTransmission();
-  Wire.requestFrom((uint8_t)BMP085_ADDRESS, (byte)2);
-  #if ARDUINO >= 100
-    *value = (Wire.read() << 8) | Wire.read();
-  #else
-    *value = (Wire.receive() << 8) | Wire.receive();
-  #endif  
+  int BMP_err = Wire.requestFrom((uint8_t)BMP085_ADDRESS, (byte)2);
+  if (BMP_err != 0) {
+    Serial.println("Reading ok"); // DEBUG
+    #if ARDUINO >= 100
+      *value = (Wire.read() << 8) | Wire.read();
+    #else
+      *value = (Wire.receive() << 8) | Wire.receive();
+    #endif  
+  }
+  else{
+    Serial.println("Bad reading"); // DEBUG
+    *value = -999;
+  }
   Wire.endTransmission();
 }
 
@@ -203,12 +217,19 @@ static void readRawPressure(int32_t *pressure)
     }
 
     read16(BMP085_REGISTER_PRESSUREDATA, &p16);
-    p32 = (uint32_t)p16 << 8;
-    read8(BMP085_REGISTER_PRESSUREDATA+2, &p8);
-    p32 += p8;
-    p32 >>= (8 - _bmp085Mode);
-    
-    *pressure = p32;
+    if (p16 != -999) {
+      p32 = (uint32_t)p16 << 8;
+      read8(BMP085_REGISTER_PRESSUREDATA+2, &p8);
+      p32 += p8;
+      p32 >>= (8 - _bmp085Mode);
+      
+      *pressure = p32;
+    }
+    else {
+      Serial.print("Raw pressure identified as bad; pressure = "); // DEBUG
+      Serial.println(p16); // DEBUG
+      *pressure = p16;
+    }
   #endif
 }
 
@@ -277,37 +298,42 @@ void Adafruit_BMP085_Unified::getPressure(float *pressure)
   readRawTemperature(&ut);
   readRawPressure(&up);
 
-  /* Temperature compensation */
-  x1 = (ut - (int32_t)(_bmp085_coeffs.ac6))*((int32_t)(_bmp085_coeffs.ac5))/pow(2,15);
-  x2 = ((int32_t)(_bmp085_coeffs.mc*pow(2,11)))/(x1+(int32_t)(_bmp085_coeffs.md));
-  b5 = x1 + x2;
+  if (ut != -999 && up != -999) {
+    /* Temperature compensation */
+    x1 = (ut - (int32_t)(_bmp085_coeffs.ac6))*((int32_t)(_bmp085_coeffs.ac5))/pow(2,15);
+    x2 = ((int32_t)(_bmp085_coeffs.mc*pow(2,11)))/(x1+(int32_t)(_bmp085_coeffs.md));
+    b5 = x1 + x2;
 
-  /* Pressure compensation */
-  b6 = b5 - 4000;
-  x1 = (_bmp085_coeffs.b2 * ((b6 * b6) >> 12)) >> 11;
-  x2 = (_bmp085_coeffs.ac2 * b6) >> 11;
-  x3 = x1 + x2;
-  b3 = (((((int32_t) _bmp085_coeffs.ac1) * 4 + x3) << _bmp085Mode) + 2) >> 2;
-  x1 = (_bmp085_coeffs.ac3 * b6) >> 13;
-  x2 = (_bmp085_coeffs.b1 * ((b6 * b6) >> 12)) >> 16;
-  x3 = ((x1 + x2) + 2) >> 2;
-  b4 = (_bmp085_coeffs.ac4 * (uint32_t) (x3 + 32768)) >> 15;
-  b7 = ((uint32_t) (up - b3) * (50000 >> _bmp085Mode));
+    /* Pressure compensation */
+    b6 = b5 - 4000;
+    x1 = (_bmp085_coeffs.b2 * ((b6 * b6) >> 12)) >> 11;
+    x2 = (_bmp085_coeffs.ac2 * b6) >> 11;
+    x3 = x1 + x2;
+    b3 = (((((int32_t) _bmp085_coeffs.ac1) * 4 + x3) << _bmp085Mode) + 2) >> 2;
+    x1 = (_bmp085_coeffs.ac3 * b6) >> 13;
+    x2 = (_bmp085_coeffs.b1 * ((b6 * b6) >> 12)) >> 16;
+    x3 = ((x1 + x2) + 2) >> 2;
+    b4 = (_bmp085_coeffs.ac4 * (uint32_t) (x3 + 32768)) >> 15;
+    b7 = ((uint32_t) (up - b3) * (50000 >> _bmp085Mode));
 
-  if (b7 < 0x80000000)
-  {
-    p = (b7 << 1) / b4;
+    if (b7 < 0x80000000)
+    {
+      p = (b7 << 1) / b4;
+    }
+    else
+    {
+      p = (b7 / b4) << 1;
+    }
+
+    x1 = (p >> 8) * (p >> 8);
+    x1 = (x1 * 3038) >> 16;
+    x2 = (-7357 * p) >> 16;
+    compp = p + ((x1 + x2 + 3791) >> 4);
   }
-  else
-  {
-    p = (b7 / b4) << 1;
+  else {
+    Serial.println("Pressure identified as bad"); // DEBUG
+    compp = up;
   }
-
-  x1 = (p >> 8) * (p >> 8);
-  x1 = (x1 * 3038) >> 16;
-  x2 = (-7357 * p) >> 16;
-  compp = p + ((x1 + x2 + 3791) >> 4);
-
   /* Assign compensated pressure value */
   *pressure = compp;
 }
@@ -333,13 +359,18 @@ void Adafruit_BMP085_Unified::getTemperature(float *temp)
     _bmp085_coeffs.md = 2868;
   #endif
 
-  // step 1
-  X1 = (UT - (int32_t)_bmp085_coeffs.ac6) * ((int32_t)_bmp085_coeffs.ac5) / pow(2,15);
-  X2 = ((int32_t)_bmp085_coeffs.mc * pow(2,11)) / (X1+(int32_t)_bmp085_coeffs.md);
-  B5 = X1 + X2;
-  t = (B5+8)/pow(2,4);
-  t /= 10;
-
+  if (UT != -999) {
+    // step 1
+    X1 = (UT - (int32_t)_bmp085_coeffs.ac6) * ((int32_t)_bmp085_coeffs.ac5) / pow(2,15);
+    X2 = ((int32_t)_bmp085_coeffs.mc * pow(2,11)) / (X1+(int32_t)_bmp085_coeffs.md);
+    B5 = X1 + X2;
+    t = (B5+8)/pow(2,4);
+    t /= 10;
+  }
+  else {
+    Serial.println("Temperature identified as bad"); // DEBUG
+    t = UT;
+  }
   *temp = t;
 }
 
