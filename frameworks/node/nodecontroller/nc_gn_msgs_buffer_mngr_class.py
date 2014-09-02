@@ -42,6 +42,7 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
         self.handler_vector_table = {}  
         self.registered_nodes = []
         self.gn_instid_socket_obj_mapping = {}                                                # Dict maintaining gn_id and socket mapping
+        #self.sent_msg_count = 0
         logger.debug(self.thread_name+" Initialized."+"\n\n")
 
        
@@ -80,7 +81,8 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
                             self.bfr_for_sent_responses[inst_id].append([ackd_id, encoded_msg])
                         self.send_msg_to_gn(inst_id, encoded_msg)
                     else:
-                        logger.info("Msg sent to Cloud!"+"\n\n") # + (encoded_msg)+"\n\n")
+                        #self.sent_msg_count += 1
+                        #logger.critical("Msg sent to Cloud!: "+str('%0.4f' % time.time())+ "\tcount:" +str(self.sent_msg_count)+"\t"+(encoded_msg)+"\n\n") # + +"\n\n")
                         ret = self.send_msg_to_cloud(encoded_msg)                                                             # send msg to cloud
                         # need to handle the failure case
                         if not ret:
@@ -96,7 +98,8 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
             socket_obj = self.get_socket_obj(inst_id)
             if socket_obj:
                 socket_obj.push(msg) 
-                logger.critical("Msg sent to GN:"+str('%0.4f' % time.time()) + "\n\n" ) #+ str(msg)
+                #logger.critical("Msg sent to GN:"+str('%0.4f' % time.time()) + str(msg)+"\n\n" ) #+ 
+                logger.critical("Msg sent to GN:"+str('%0.4f' % time.time()) + "\n\n" )
             else:
                 logger.critical("GN's socket closed. So discarding the msg------------------------------------------------------------."+ "\n\n")
         except Exception as inst:

@@ -49,7 +49,7 @@ class NodeDataClient:
 
 
     def _send(self, msg):
-	print ("Msg rcvd in Data Client:%0.4f"%time.time())
+	#print ("Msg rcvd in Data Client:%0.4f"%time.time())
         """ 
         ========= DO NOT use this function in your code directly!!! ==========
         This is a low level function, you should only use msg_send(msg) or
@@ -64,12 +64,12 @@ class NodeDataClient:
                                    body = msg,
                                    properties=pika.BasicProperties(
                                    content_type='text/plain',delivery_mode=1)):
-	    print 'Message delivered.'
-            print ("Returning from Data Client:%0.4f"%time.time())
+	    #print 'Message delivered.'
+            #print ("Returning from Data Client:%0.4f"%time.time())
             return 0
         else:
-            print 'Message not delivered.'
-	    print ("Returning from Data Client:%0.4f"%time.time())
+            #print 'Message not delivered.'
+	    #print ("Returning from Data Client:%0.4f"%time.time())
             return 1
 
         if __name__ == "__main__":

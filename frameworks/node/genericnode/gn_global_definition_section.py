@@ -33,14 +33,10 @@ acknowledgment = 'ACK'
 no_reply = '-1'
 terminator = str('!@#$%^&*')
 gn_registration_ack_wait_time = 5                                       # in seconds
-data_ack_wait_time = 10
-wait_time_for_next_msg = 0.2                                           # 100 ms
+data_ack_wait_time = 10                                                 # in secs
+wait_time_for_next_msg = 0.2                                            # 100 ms
 # References of Sensor threads present
 sensor_thread_list = []
-
-## Variable keeping track of time
-#current_time = time.time()
-
 
 # config file 
 config_file_name = './' + "gn.cfg"
