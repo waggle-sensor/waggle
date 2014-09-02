@@ -44,7 +44,7 @@ class external_communicator_class(asynchat.async_chat, threading.Thread):
     def found_terminator(self):
         try:
             if self.shutdown == 0:
-                logger.critical("Msg received from NC:"+str('%0.4f' % time.time())+"\n\n") #"\n\n") #+str(self.input_buffer)+"\n\n")
+                logger.critical("Msg received from NC:"+str('%0.4f' % time.time()) +"\n\n") #+str(self.input_buffer)
                 self.handle_request()
                 logger.debug("Msg handled.\n\n")
                 self.input_buffer = []
@@ -65,7 +65,7 @@ class external_communicator_class(asynchat.async_chat, threading.Thread):
                 # Creating the full msg by concatenating different fragments of it
                 for single_msg in self.input_buffer:
                     msg = msg + single_msg
-                msg = buffered_msg(msg_from_nc, msg) 
+                msg = buffered_msg(msg_from_nc, None, None, None, msg) 
                 add_to_thread_buffer(self.buffer_mngr.bfr_for_out_to_in_msgs, msg, "Buffer Mngr")                                             # Sends to the buffer_mngr's buffer
                 logger.debug("Msg forwarded to buffer_mngr.\n\n")    
         except Exception as inst:

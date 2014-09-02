@@ -10,7 +10,7 @@ import logging
 #logging.basicConfig(level=logging.INFO,format='%(asctime)s %(name)s: %(message)s',)
 logging.basicConfig(level=logging.CRITICAL,format='%(name)s: %(message)s',)
 logger = logging.getLogger("NC")
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.CRITICAL)
 
 
 port_for_gn = 7001                                                       # GNs can request at this port
@@ -69,16 +69,7 @@ def get_instance_id():
     return get_instance_id.instance_id
 get_instance_id.instance_id = None    
 
-        
-
-    
-##############################################################################   
-# Returns the current time in string form
-def get_current_time():
-    logger.debug("Current time retrieved."+"\n\n")
-    return time.strftime ('%Y.%m.%d.%H.%M.%S')
-
-    
+           
 ##############################################################################   
 def add_to_thread_buffer(msg_buffer, string_msg, thread_name):
     logger.debug("Added to thread's buffer."+"\n\n")
