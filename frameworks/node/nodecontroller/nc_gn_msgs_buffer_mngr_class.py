@@ -39,8 +39,8 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
             self.last_nc_subseq_no = {}                                      # in int
             self.ackd_gn_subseq_no = {}                                      # in int
             self.ackd_nc_subseq_no = {}                                      # in int
-            self.gn_window_size = 10
-            self.nc_window_size = 10
+            self.gn_window_size = 20
+            self.nc_window_size = 20
             self.msg_processor = ''                                                               # to save global msg_processor's input_buffer address
             self.handler_vector_table = {}  
             self.registered_nodes = []
@@ -97,9 +97,6 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
                             self.send_msg_to_gn(inst_id, encoded_msg)
                     else:
                         #self.sent_msg_count += 1
-                        #logger.critical("Msg sent to Cloud!: "+str('%0.4f' % time.time())+ "\tcount:" +str(self.sent_msg_count)+"\t"+(encoded_msg)+"\n\n") # + +"\n\n")
-                        #logger.critical("Msg sent to Cloud!: "+str('%0.4f' % time.time()))
-                        #logger.critical("Msg sent to Cloud: "+str('%0.4f' % time.time())+ "\t"+(encoded_msg)+"\n\n")
                         ret = self.send_msg_to_cloud(encoded_msg)                                                             # send msg to cloud
                         # need to handle the failure case
                         if not ret:
@@ -117,6 +114,7 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
                 try:
                     socket_obj.push(msg) 
                     #logger.critical("Msg sent to GN:"+str('%0.4f' % time.time()) + str(msg)+"\n\n" ) #+ 
+                    #logger.critical("Msg sent to GN "+str(inst_id)+":"+str('%0.4f' % time.time())+":"+str(self.last_nc_subseq_no[inst_id])+ ":"+str(self.ackd_nc_subseq_no[inst_id]) + "\n\n" )
                     logger.critical("Msg sent to GN "+str(inst_id)+":"+str('%0.4f' % time.time()) + "\n\n" )
                 except Exception as inst:
                     logger.critical("Exception in send_msg_to_gn: " + str(inst)+"\n\n")
@@ -231,7 +229,7 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
                     filled_in_to_out_bfr_ids = []
                     filled_sent_msgs_bfr_ids = []
                     # set time to remain attentive for next 5 ms
-                    wait_time = time.time() + wait_time_for_next_msg - 0.1              # this waits only for 0.1 s as its one layer above the other threads
+                    wait_time = time.time() + wait_time_for_next_msg              # this waits only for 0.1 s as its one layer above the other threads
                     time.sleep(0.0001)
                     logger.debug("short sleep bfr mngr")
                 if wait_time > time.time():
@@ -368,6 +366,9 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
     def send_msg_to_cloud(self, encoded_msg):
         try:
             send_msg(encoded_msg)                                                             # send msg to cloud
+            #logger.critical("Msg sent to Cloud!: "+str('%0.4f' % time.time())+ "\tcount:" +str(self.sent_msg_count)+"\t"+(encoded_msg)+"\n\n") # + +"\n\n")
+            #logger.critical("Msg sent to Cloud: "+str('%0.4f' % time.time()))
+            #logger.critical("Msg sent to Cloud: "+str('%0.4f' % time.time())+ "\t"+(encoded_msg)+"\n\n")
             return 0
         except Exception as inst:
             logger.critical("Exception in send_msg_to_cloud: " + str(inst)+ "\n\n")
@@ -703,7 +704,7 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
                         logger.critical("Unexpected subseq_no received: "+str(new_subseq_no)+".............................................\n\n")
                 # GN is up but NC went down since they last contacted eachother so no record of subseq_no found 
                 else:
-                    logger.critical("Expected session_id received.............................................")
+                    logger.critical("Expected session_id received.............................................\n\n")
                     self.init_nc_related_node_data_structures(inst_id)
                     self.init_node_specific_data_structures(inst_id)
                     # save new GN session_id 
@@ -711,7 +712,7 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
                     ret_val = True
             # check whether new session id falls in the expected range and the new seq_no is [0,0,0]
             elif self.valid_new_session_id(old_session_id, new_session_id) and new_subseq_no == 1:
-                logger.critical("Valid new session_id received.............................................")
+                logger.critical("Valid new session_id received.............................................\n\n")
                 # reset all data structures related to seq nos of this GN as the GN has lost its earlier state as it went down
                 self.init_nc_related_node_data_structures(inst_id)
                 self.init_node_specific_data_structures(inst_id)
@@ -726,8 +727,8 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
                 # save new ackd and last seq_nos received from this inst_id
                 new_last_gn_subseq_no = self.convert_to_int(msg.header.sequence_id[self.seq_no_partition_size:])
                 new_ackd_gn_subseq_no = self.convert_to_int(msg.header.user_field1)
-                self.last_gn_subseq_no[inst_id] = self.get_new_seq_no(self.last_gn_subseq_no[inst_id], new_last_gn_subseq_no)
-                new_ackd_gn_subseq_no = self.get_new_seq_no(self.ackd_gn_subseq_no[inst_id], new_ackd_gn_subseq_no)
+                self.last_gn_subseq_no[inst_id] = self.get_new_seq_no(new_last_gn_subseq_no, self.last_gn_subseq_no[inst_id])
+                new_ackd_gn_subseq_no = self.get_new_seq_no(new_ackd_gn_subseq_no, self.ackd_gn_subseq_no[inst_id])
                 if self.ackd_gn_subseq_no[inst_id] != new_ackd_gn_subseq_no:
                     self.ackd_gn_subseq_no[inst_id] = new_ackd_gn_subseq_no
                     self.discard_ackd_responses(inst_id)
