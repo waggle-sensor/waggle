@@ -14,18 +14,17 @@ from config_file_functions import initialize_config_file, ConfigObj
 
 # main_thread (object of main_class): Spawns other threads and processes any messages intended for itself              
 class main_class():
-    
         
     ############################################################################## 
-    def __init__(self, thread_name, nc_port, sensor_controller, buffer_mngr):
+    def __init__(self, thread_name, nc_port):
         self.thread_name = thread_name                   # used by logging module for printing messages related to this thread
         self.reg_msg_handler_no = 0
         self.update_handler_no = 1
         self.status_handler_no = 2
         self.input_buffer = Queue.Queue(maxsize=1000)                # stores messages sent by buffer_mngr_class, sensor_controller_class
         self.nc_port  = nc_port                          # port no. of NC to send to the External_communicator_class
-        self.sensor_controller = sensor_controller
-        self.buffer_mngr = buffer_mngr
+        self.sensor_controller = ''
+        self.buffer_mngr = ''
         logger.debug("info Thread "+self.thread_name+" Initialized."+ "\n\n")
 
     
@@ -49,6 +48,7 @@ class main_class():
         reg_payload = RegistrationPayload()
         # This event is set by sensor_controller after it stores the sensors' info in config file
         logger.debug("Waiting for sensors info."+ "\n\n")
+        # Waits till sensor_plugin object finishes writing to the config file so that race conditions don't occur
         sensors_info_saved_event.wait()
         #Instance data filling goes here
         config = ConfigObj(config_file_name)
@@ -63,8 +63,9 @@ class main_class():
         
     ############################################################################## 
     # Function: Sends "Ready" packet to NC 
-    # Returns: None
+    # Function Incomplete
     def send_ready_notification(self):
+        # Waits till sensor_plugin object finishes writing to the config file so that race conditions don't occur
         sensors_info_saved_event.wait()
         # Read sensors info
         reg_payload = "I am UP"

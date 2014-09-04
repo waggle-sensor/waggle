@@ -895,7 +895,7 @@ class sensor1():
                     
                     for single_sensor_data in sensor_data:
                         output_buffer.put(single_sensor_data) 
-                    time.sleep(0.5)    
+                    time.sleep(10)    
                     pass
             try:
                 wxsensor.flushInput()

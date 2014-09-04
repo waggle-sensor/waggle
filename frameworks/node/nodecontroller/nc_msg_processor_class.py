@@ -6,7 +6,7 @@ import socket
 from nc_global_definition_section import logger, buffered_msg,  msg_send,  \
 msg_from_gn,  registration_type,  data_type,  command_type,  reply_type,  \
 acknowledgment,  no_reply, config_file_name, get_instance_id,  \
-add_to_thread_buffer, wait_time_for_next_msg
+add_to_thread_buffer, wait_time_for_next_msg, config_file_lock
 from config_file_functions import initialize_config_file, ConfigObj
 from collections import defaultdict
 
@@ -16,13 +16,13 @@ from collections import defaultdict
 class msg_processor_class():
     
     ##############################################################################
-    def __init__(self, thread_name, port_for_gn, gn_msgs_buffer_mngr, nc_server):
+    def __init__(self, thread_name, port_for_gn):
         
         self.thread_name = "Thread_" + thread_name																	# used by logging module for printing messages related to this thread
         self.input_buffer = Queue.Queue(maxsize=1000)																			# stores all incoming msgs from GNs/gn_msgs_buffer_mngr thread
         self.port_for_gn = port_for_gn																				# to be passed to nc_server_class so that it starts listening for guest's requests on that port
-        self.gn_msgs_buffer_mngr =  gn_msgs_buffer_mngr                                                             # to save this global instance and pass to other objects when needed
-        self.nc_server = nc_server                                                                                  # to save this global instance and pass to other objects when needed
+        self.gn_msgs_buffer_mngr =  ''                                                            # to save this global instance and pass to other objects when needed
+        self.nc_server = ''                                                                                  # to save this global instance and pass to other objects when needed
         logger.debug(self.thread_name+" Initialized."+"\n\n")
         
         
@@ -56,14 +56,13 @@ class msg_processor_class():
                             self.input_buffer.put(item)
                     self.input_buffer.task_done()
                     wait_time = time.time() + wait_time_for_next_msg
-                    #print "main MSG PROCESSED_---------------------------------------------------------------------"+str("%.4f"%time.time())
-                    time.sleep(0.0001)
+                    time.sleep(0.0001+random.randrange(0,100)/1000.0)
                 if wait_time > time.time():
                     #print "main short sleep main"+str("%.4f"%time.time())
-                    time.sleep(0.0001)
+                    time.sleep(0.0001+random.randrange(0,100)/1000.0)
                 else:
                     #print "main long sleep main"+str("%.4f"%time.time())
-                    time.sleep(0.1)
+                    time.sleep(0.1+random.randrange(0,100)/1000.0)
         except Exception as inst:
             logger.critical("Exception in main: " + str(inst)+"\n\n")
             
@@ -79,7 +78,8 @@ class msg_processor_class():
     # and not a command reply which needs to be inserted in both sent_response and sent_msgs bfr
     def can_send_msg(self, inst_id, msg_type):
         return self.gn_msgs_buffer_mngr.bfr_for_in_to_out_msgs[inst_id].empty() or (msg_type != command_type)
-        
+       
+       
     ##############################################################################
     # Stores the node's sw/hw info in config file
     def store_system_info(self):
@@ -87,7 +87,7 @@ class msg_processor_class():
             config = ConfigObj(config_file_name)
             if config["Systems Info"] != {}:                                            
                 # nc.cfg is already present
-                return
+                return 0
         initialize_config_file(config_file_name)
         ret_val = get_node_info(config_file_name)
         if not ret_val:
@@ -140,7 +140,6 @@ class msg_processor_class():
     def process_cmd_msg(self, item):
         logger.debug("CMD Received........................................"+"\n\n")
     
-    
         
     ##############################################################################
     # Input: Received Msg
@@ -150,8 +149,9 @@ class msg_processor_class():
         # add to cloud thread's buffer and send ACK
         logger.debug("REGISTRATION Msg Received..........................."+"\n\n")
         if item.msg != None:
+            with config_file_lock:
             config = ConfigObj(config_file_name)
-            # if GN is not registered, for 2nd level ack you need to check if it has any additional info related to registration
+            # if GN is not registered, item.sock_or_gn_id at this point stores the GN's inst_id
             if item.sock_or_gn_id not in config["GN Info"]:
                 # Store GN info in config file
                 self.register_gn(item.msg)
@@ -159,7 +159,19 @@ class msg_processor_class():
         self.send_ack(item.seq_no, item.sock_or_gn_id, 0, str(int(time.time())))                                     # sends msg to bufr mngr to send ACK to gn
         logger.debug("REGISTRATION ACK sent to gn_msgs_buffer_mngr."+"\n\n")
    
-       
+   
+    ##############################################################################
+    def entry_in_config_file(entry, tag):
+        try:
+            if entry in config["GN Info"]:
+                return True
+            return False
+        except Exception as inst:
+            logger.critical("Exception in finding tag_in_config_file due to race condition:" + str(inst) +"\n\n")
+            logger.critical("Retrying the operation:" + str(inst) +"\n\n")
+            self.tag_in_config_file(tag)
+     
+     
     ##############################################################################
     def send_reg_msg(self, inst_id):
         try:

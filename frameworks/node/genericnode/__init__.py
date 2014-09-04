@@ -25,9 +25,7 @@ from gn_main_class import main_class
 if __name__ == "__main__":
     logger.critical("Starts:"+str('%0.4f' % time.time())+"\n\n")
     main_thread = ''
-    sensor_controller = ''                                                 # global object of sensor_controller_class which manages all sensors related messages
-    buffer_mngr = ''                                                       # global object of buffer_mngr_class which manages the buffer for sent and received messages
     nc_port = 7001                                                         # port at which Gn can contact NC
     # Program starts execution by calling main_class's object
-    main_thread = main_class("main_thread", nc_port, sensor_controller, buffer_mngr)     
+    main_thread = main_class("main_thread", nc_port)     
     main_thread.run()

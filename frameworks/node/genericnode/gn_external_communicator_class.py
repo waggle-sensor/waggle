@@ -1,4 +1,4 @@
-from gn_global_definition_section import add_to_thread_buffer, buffered_msg, msg_from_nc, terminator, logger
+from gn_global_definition_section import add_to_thread_buffer, buffered_msg, msg_from_nc, asynchat_msg_terminator, logger
 from global_imports import *
 import asyncore                                                                                                                 # required for aynchronous sockets
 import asynchat                                                                                                                 # required for aynchronous sockets
@@ -21,7 +21,7 @@ class external_communicator_class(asynchat.async_chat, threading.Thread):
         self.output_buffer = ""                                                     # output buffer to buffer the msgs if the socket is not yet writable                                                                                                   
         self.buffer_mngr = buffer_mngr
         self.shutdown = 0
-        self.set_terminator(terminator)                                             # used to detect the end of the incoming msg and take required action once the whole msg is received
+        self.set_terminator(asynchat_msg_terminator)                                             # used to detect the end of the incoming msg and take required action once the whole msg is received
         logger.debug("Thread "+self.thread_name+" Initialized.\n\n")
         
     
