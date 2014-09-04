@@ -52,8 +52,8 @@ class buffer_mngr_class(threading.Thread):
             self.last_nc_subseq_no = self.default_seq_no                                      # in int
             self.ackd_gn_subseq_no = self.default_seq_no                                      # in int
             self.ackd_nc_subseq_no = self.default_seq_no                                      # in int
-            self.gn_window_size = 10
-            self.nc_window_size = 10
+            self.gn_window_size = 20
+            self.nc_window_size = 20
             self.wait_time = 0
             #self.sent_msg_count = 0
             logger.debug("Thread "+self.thread_name+" Initialized.\n\n")
@@ -199,7 +199,8 @@ class buffer_mngr_class(threading.Thread):
         try:
             self.external_communicator.push(msg)
             #logger.critical("Msg Sent to NC:"+str('%0.4f' % time.time())+ "\tcount:" + str(self.sent_msg_count) + "\t" + str(encoded_msg)+"\n\n") # 
-            logger.critical("Msg Sent to NC:"+str('%0.4f' % time.time())+ "\n\n")
+            #logger.critical("Msg Sent to NC:"+str('%0.4f' % time.time())+":"+str(self.last_gn_subseq_no)+ ":"+str(self.ackd_gn_subseq_no)+"\n\n")
+            logger.critical("Msg Sent to NC:"+str('%0.4f' % time.time())+"\n\n")
         except Exception as inst:
             logger.critical("Exception in send_msg_to_nc: " + str(inst)+"\n\n")
             self.send_msg_to_nc()
@@ -213,7 +214,7 @@ class buffer_mngr_class(threading.Thread):
                 self.external_communicator = external_communicator_class("external_communicator", self.nc_port, self) 
                 self.external_communicator.start()
                 self.communicator_thread_started = 1
-            wait_time = time.time() + wait_time_for_next_msg - .1
+            wait_time = time.time() + wait_time_for_next_msg
             wait_time_set = 1
             while True:
                 while (not self.bfr_for_out_to_in_msgs.empty()) or (not self.bfr_for_in_to_out_msgs.empty()) or (self.bfr_for_sent_msgs):
@@ -479,14 +480,14 @@ class buffer_mngr_class(threading.Thread):
                         logger.critical("Unexpected subseq_no received: "+str(new_subseq_no)+":"+str(self.last_nc_subseq_no)+":"+str(self.ackd_nc_subseq_no)+"\n\n")
                 # GN is up but NC went down since they last contacted eachother so no record of subseq_no found 
                 else:
-                    logger.critical("Expected session_id received.............................................")
+                    logger.critical("Expected session_id received.............................................\n\n")
                     self.reset_nc_specific_data_structures()
                     # save new NC session_id 
                     self.nc_session_id = new_session_id
                     ret_val = True
             # check whether new session id falls in the expected range with any subseq_no
             elif self.valid_new_session_id(old_session_id, new_session_id):
-                logger.critical("Valid new session_id received.............................................")
+                logger.critical("Valid new session_id received.............................................\n\n")
                 self.reset_nc_specific_data_structures()
                 # save new NC session_id 
                 self.nc_session_id = new_session_id
@@ -500,8 +501,8 @@ class buffer_mngr_class(threading.Thread):
                 # save new ackd and last seq_nos
                 new_last_nc_subseq_no = self.convert_to_int(msg.header.sequence_id[self.seq_no_partition_size:])
                 new_ackd_nc_subseq_no = self.convert_to_int(msg.header.user_field1)
-                self.last_nc_subseq_no = self.get_new_seq_no(self.last_nc_subseq_no, new_last_nc_subseq_no)
-                new_ackd_nc_subseq_no = self.get_new_seq_no(self.ackd_nc_subseq_no, new_ackd_nc_subseq_no)
+                self.last_nc_subseq_no = self.get_new_seq_no(new_last_nc_subseq_no, self.last_nc_subseq_no)
+                new_ackd_nc_subseq_no = self.get_new_seq_no(new_ackd_nc_subseq_no, self.ackd_nc_subseq_no)
                 if self.ackd_nc_subseq_no != new_ackd_nc_subseq_no:
                     self.ackd_nc_subseq_no = new_ackd_nc_subseq_no
                     # discard the last out of nc_window buffered response if any

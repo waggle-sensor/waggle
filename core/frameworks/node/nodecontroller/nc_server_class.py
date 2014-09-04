@@ -26,15 +26,15 @@ class nc_server_class(threading.Thread, asyncore.dispatcher):
     ##############################################################################    
     def run(self):
         try:
-            self.bind(("130.202.92.198", self.port_for_gn))
-            #self.bind(("140.221.10.105", self.port_for_gn))
+            #self.bind(("130.202.92.198", self.port_for_gn))
+            self.bind(("140.221.10.105", self.port_for_gn))
             #self.bind(("10.1.2.3", self.port_for_gn))
             self.listen(5)                                                                                  # starts listening for GN registration request
             logger.info("Listening on port_for_gn: " + str(self.port_for_gn)+"\n\n")
             while True:
                 var_timeout = 0.01
-                asyncore.loop(timeout=var_timeout, use_poll=False, map=None)                                                                         # starts the loop which constantly checks whether the socket is readable or writable
-                #time.sleep(0.01)
+                asyncore.loop(timeout=0.01, use_poll=False, map=None, count = 100)                                                                         # starts the loop which constantly checks whether the socket is readable or writable
+                time.sleep(0.01)
         except Exception as inst:
             logger.critical("Exception in nc_server run(): " + str(inst)+"\n\n")
             time.sleep(1)

@@ -69,6 +69,7 @@ class sensor_plugin_class():
     
         
     ############################################################################## 
+    # not importing __init__ to avoid recursive imports due to another __init__ file present in the directory
     def is_source_module(self, module):
         if module[1] == 'py' and module[0] != '__init__':
              return True
