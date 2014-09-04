@@ -33,9 +33,13 @@ command_type = '2'
 reply_type = '3'
 acknowledgment = 'ACK'
 no_reply = '-1'
-terminator = str('!@#$%^&*')
+asynchat_msg_terminator = str('!@#$%^&*')                   # Character at the end of every msg sent between GN and NC
 wait_time_for_next_msg = 0.2                   # 100 ms
 command_ack_wait_time = 10                     # in secs
+
+# to avoid race conditions between msg+processor and gn_msgs_buffr_mngr
+config_file_lock = threading.Lock()
+
 # List maintaining current GN sockets
 gn_socket_list = []                  
 

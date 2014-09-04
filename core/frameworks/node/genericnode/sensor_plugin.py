@@ -16,18 +16,7 @@ class sensor_plugin_class():
         self.sensorid_output_buffer_map = {}
         self.registered_sensors = []
         
-        
-    ############################################################################### 
-    #def initialize_registered_modules_list(self):
-        #registered_modules = []
-        #if os.path.exists(config_file_name):
-            #config = ConfigObj(config_file_name)
-            #if config["Sensors Info"] != {}:
-                #for sensor_name in config["Sensors Info"]:
-                    #registered_modules.append(sensor_name)
-        #return registered_modules    
     
-     
     ############################################################################## 
     # Returns a list of new modules available
     def import_new_sensor_modules(self):

@@ -2,7 +2,7 @@ import asyncore
 import asynchat
 import socket
 from global_imports import *
-from nc_global_definition_section import buffered_msg,  msg_from_gn,  terminator,  gn_socket_list,  add_to_thread_buffer, logger
+from nc_global_definition_section import buffered_msg,  msg_from_gn,  asynchat_msg_terminator,  gn_socket_list,  add_to_thread_buffer, logger
 
 # Delete the seq no id mapping entry when gn goes down, clean up everything related to the disconnected gn
 
@@ -24,7 +24,7 @@ class internal_communicator(asynchat.async_chat):
         self.output_buffer = ""                                                                                 # stores outgoing message
         self.gn_msgs_buffer_mngr = gn_msgs_buffer_mngr
         self.shutdown = 0
-        self.set_terminator(terminator)                                                                         # terminating character indicating the end of the msg received
+        self.set_terminator(asynchat_msg_terminator)                                                                         # terminating character indicating the end of the msg received
         logger.debug("Internal Communicator for new GN initialized"+"\n\n")
         
         
