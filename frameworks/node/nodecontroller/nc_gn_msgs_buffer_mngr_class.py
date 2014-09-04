@@ -39,8 +39,8 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
             self.last_nc_subseq_no = {}                                      # in int
             self.ackd_gn_subseq_no = {}                                      # in int
             self.ackd_nc_subseq_no = {}                                      # in int
-            self.gn_window_size = 5
-            self.nc_window_size = 5
+            self.gn_window_size = 10
+            self.nc_window_size = 10
             self.msg_processor = ''                                                               # to save global msg_processor's input_buffer address
             self.handler_vector_table = {}  
             self.registered_nodes = []
@@ -232,14 +232,14 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
                     filled_sent_msgs_bfr_ids = []
                     # set time to remain attentive for next 5 ms
                     wait_time = time.time() + wait_time_for_next_msg - 0.1              # this waits only for 0.1 s as its one layer above the other threads
-                    time.sleep(0.0001+random.randrange(0,100)/1000.0)
+                    time.sleep(0.0001)
                     logger.debug("short sleep bfr mngr")
                 if wait_time > time.time():
                     logger.debug("short sleep bfr mngr"+str("%.4f"%time.time()))
-                    time.sleep(0.0001+random.randrange(0,100)/1000.0)
+                    time.sleep(0.0001)
                 else:
                     logger.debug("long sleep bfr mngr"+str("%.4f"%time.time()))
-                    time.sleep(0.1+random.randrange(0,100)/1000.0)
+                    time.sleep(0.1)
         except Exception as inst:
             logger.critical("Exception in gn_msgs_bufr_mngr run: " + str(inst)+ "\n\n")
             self.run()
@@ -311,9 +311,8 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
     ############################################################################## 
     def process_reg_ack(self):
         try:
-            logger.critical("Trying to acquire LOCK-------------------------------------------------------------\n\n")
             with config_file_lock:
-                logger.critical("Lock acquired------------------------------------------------------------------\n\n")
+                logger.critical("Config file lock acquired------------------------------------------------------------------\n\n")
                 config = ConfigObj(config_file_name)
                 if config["Registered"] == 'NO':
                     config["Registered"] = 'YES'
@@ -321,7 +320,7 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
                     if config['GN Info'][node]["Registered"] == 'NO':
                         config['GN Info'][node]["Registered"] = 'YES'
                 config.write()
-                logger.critical("Lock released------------------------------------------------------------------\n\n")
+                logger.critical("Config file lock released------------------------------------------------------------------\n\n")
         except Exception as inst:
             logger.critical("Exception in process_reg_ack: " + str(inst)+"\n\n")
 
@@ -386,12 +385,18 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
             if inst_id in self.registered_nodes:
                 logger.debug("Node is already known."+"\n\n")
                 return False
-            # Check in config file for the inst_id
-            config = ConfigObj(config_file_name)
-            if inst_id in config['GN Info']:
-                logger.debug("Node is already known."+"\n\n")
-                self.registered_nodes.append(inst_id)
-                return False
+            # Lock acquired
+            with config_file_lock:
+                logger.critical("Config file lock acquired------------------------------------------------------------------\n\n")
+                # Check in config file for the inst_id
+                config = ConfigObj(config_file_name)
+                if inst_id in config['GN Info']:
+                    logger.debug("Node is already known."+"\n\n")
+                    self.registered_nodes.append(inst_id)
+                    logger.critical("Config file lock released------------------------------------------------------------------\n\n")
+                    return False
+                # Lock released
+                logger.critical("Lock released------------------------------------------------------------------\n\n")
             logger.debug("New node."+"\n\n")
             return True
         except Exception as inst:
@@ -698,13 +703,15 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
                         logger.critical("Unexpected subseq_no received: "+str(new_subseq_no)+".............................................\n\n")
                 # GN is up but NC went down since they last contacted eachother so no record of subseq_no found 
                 else:
+                    logger.critical("Expected session_id received.............................................")
                     self.init_nc_related_node_data_structures(inst_id)
                     self.init_node_specific_data_structures(inst_id)
                     # save new GN session_id 
                     self.gn_session_id[inst_id] = new_session_id
                     ret_val = True
             # check whether new session id falls in the expected range and the new seq_no is [0,0,0]
-            elif self.valid_new_session_id(old_session_id, new_session_id) and new_subseq_no == 1: 
+            elif self.valid_new_session_id(old_session_id, new_session_id) and new_subseq_no == 1:
+                logger.critical("Valid new session_id received.............................................")
                 # reset all data structures related to seq nos of this GN as the GN has lost its earlier state as it went down
                 self.init_nc_related_node_data_structures(inst_id)
                 self.init_node_specific_data_structures(inst_id)
@@ -725,10 +732,14 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
                     self.ackd_gn_subseq_no[inst_id] = new_ackd_gn_subseq_no
                     self.discard_ackd_responses(inst_id)
             else:
-                logger.critical("Unexpected no received: "+str(new_subseq_no)+":"+str(self.last_gn_subseq_no[inst_id])+":"+str(self.ackd_gn_subseq_no[inst_id])+"\n\n")
+                logger.critical("Unexpected seq_no received: "+str(new_subseq_no)+\
+                    ": when last_gn_subseq_no: "+str(self.last_gn_subseq_no[inst_id])\
+                        +": ackd_gn_subseq_no: "+str(self.ackd_gn_subseq_no[inst_id])+"\n\n")
+                logger.critical("new_session_id: "+str(new_session_id)+\
+                    ": old_session_id: "+str(old_session_id)+"\n\n")
             logger.debug("new_subseq_no:"+str(new_subseq_no))
-            logger.debug("self.last_gn_subseq_no[inst_id]"+str(self.last_gn_subseq_no[inst_id]))
-            logger.debug("self.ackd_gn_subseq_no[inst_id]"+str(self.ackd_gn_subseq_no[inst_id]))
+            logger.debug("last_gn_subseq_no[inst_id]"+str(self.last_gn_subseq_no[inst_id]))
+            logger.debug("ackd_gn_subseq_no[inst_id]"+str(self.ackd_gn_subseq_no[inst_id]))
             return ret_val 
         except Exception as inst:
             logger.critical("Exception in new_msg: " + str(inst)+"\n\n")

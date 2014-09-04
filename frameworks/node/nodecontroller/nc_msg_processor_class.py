@@ -56,13 +56,13 @@ class msg_processor_class():
                             self.input_buffer.put(item)
                     self.input_buffer.task_done()
                     wait_time = time.time() + wait_time_for_next_msg
-                    time.sleep(0.0001+random.randrange(0,100)/1000.0)
+                    time.sleep(0.0001)
                 if wait_time > time.time():
                     #print "main short sleep main"+str("%.4f"%time.time())
-                    time.sleep(0.0001+random.randrange(0,100)/1000.0)
+                    time.sleep(0.0001)
                 else:
                     #print "main long sleep main"+str("%.4f"%time.time())
-                    time.sleep(0.1+random.randrange(0,100)/1000.0)
+                    time.sleep(0.1)
         except Exception as inst:
             logger.critical("Exception in main: " + str(inst)+"\n\n")
             
@@ -83,17 +83,22 @@ class msg_processor_class():
     ##############################################################################
     # Stores the node's sw/hw info in config file
     def store_system_info(self):
-        if os.path.exists(config_file_name):
-            config = ConfigObj(config_file_name)
-            if config["Systems Info"] != {}:                                            
-                # nc.cfg is already present
+        with config_file_lock:
+            logger.critical("Config file lock acquired------------------------------------------------------------------\n\n")
+            if os.path.exists(config_file_name):
+                config = ConfigObj(config_file_name)
+                if config["Systems Info"] != {}:                                            
+                    # nc.cfg is already present
+                    logger.critical("Config file lock released------------------------------------------------------------------\n\n")
+                    return 0
+            initialize_config_file(config_file_name)
+            ret_val = get_node_info(config_file_name)
+            if not ret_val:
+                logger.critical("Lock released------------------------------------------------------------------\n\n")
                 return 0
-        initialize_config_file(config_file_name)
-        ret_val = get_node_info(config_file_name)
-        if not ret_val:
-            return 0
-        # Error
-        return 1
+            # Error
+            logger.critical("Lock released------------------------------------------------------------------\n\n")
+            return 1
         
         
     ##############################################################################
@@ -142,7 +147,7 @@ class msg_processor_class():
     
         
     ##############################################################################
-    # Input: Received Msg
+    # Input: Received item from the queue which is a named tuple having specific format
     # Function: Stores the information in gns_info_dict by calling update_gns_info_dict
     def process_gn_registration_msg(self, item):
         # store gn info in config file
@@ -150,27 +155,17 @@ class msg_processor_class():
         logger.debug("REGISTRATION Msg Received..........................."+"\n\n")
         if item.msg != None:
             with config_file_lock:
-            config = ConfigObj(config_file_name)
-            # if GN is not registered, item.sock_or_gn_id at this point stores the GN's inst_id
-            if item.sock_or_gn_id not in config["GN Info"]:
-                # Store GN info in config file
-                self.register_gn(item.msg)
-                self.send_reg_msg('cloud')                                    # sends msg to bufr mngr to send it to cloud
+                logger.critical("Config file lock acquired------------------------------------------------------------------\n\n")
+                config = ConfigObj(config_file_name)
+                # if GN is not registered, item.sock_or_gn_id at this point stores the GN's inst_id
+                if item.sock_or_gn_id not in config["GN Info"]:
+                    # Store GN info in config file
+                    self.register_gn(item.msg)
+                    self.send_reg_msg('cloud')                                                                       # sends msg to bufr mngr to send it to cloud
+                logger.critical("Config file lock released------------------------------------------------------------------\n\n")
         self.send_ack(item.seq_no, item.sock_or_gn_id, 0, str(int(time.time())))                                     # sends msg to bufr mngr to send ACK to gn
         logger.debug("REGISTRATION ACK sent to gn_msgs_buffer_mngr."+"\n\n")
-   
-   
-    ##############################################################################
-    def entry_in_config_file(entry, tag):
-        try:
-            if entry in config["GN Info"]:
-                return True
-            return False
-        except Exception as inst:
-            logger.critical("Exception in finding tag_in_config_file due to race condition:" + str(inst) +"\n\n")
-            logger.critical("Retrying the operation:" + str(inst) +"\n\n")
-            self.tag_in_config_file(tag)
-     
+
      
     ##############################################################################
     def send_reg_msg(self, inst_id):
@@ -196,6 +191,7 @@ class msg_processor_class():
            
         
     ##############################################################################
+    # special_reg_ack is used to send current time to the GN
     def send_ack(self, reply_id, inst_id, ret_val, special_reg_ack=None):
         msg = ReplyPayload()
         msg.return_value = ret_val
@@ -215,7 +211,6 @@ class msg_processor_class():
                 config["GN Info"][single_gn_info.instance_id] = single_gn_info.sys_info
                 config["GN Info"][single_gn_info.instance_id]["Registered"] = 'NO'
                 config.write()
-                config = ConfigObj(config_file_name)
                 logger.info("GN registration info saved in config file."+"\n\n")
         except Exception as inst:
             logger.critical("Exception in register_gn:" + str(inst)+"\n\n")

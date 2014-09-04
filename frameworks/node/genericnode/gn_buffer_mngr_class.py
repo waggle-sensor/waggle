@@ -52,8 +52,8 @@ class buffer_mngr_class(threading.Thread):
             self.last_nc_subseq_no = self.default_seq_no                                      # in int
             self.ackd_gn_subseq_no = self.default_seq_no                                      # in int
             self.ackd_nc_subseq_no = self.default_seq_no                                      # in int
-            self.gn_window_size = 1
-            self.nc_window_size = 1
+            self.gn_window_size = 10
+            self.nc_window_size = 10
             self.wait_time = 0
             #self.sent_msg_count = 0
             logger.debug("Thread "+self.thread_name+" Initialized.\n\n")
@@ -83,7 +83,7 @@ class buffer_mngr_class(threading.Thread):
             self.temp_acks = []                                # maintains seq_nos which have been received but not yet responded by msg_processor
             self.bfr_for_sent_responses = []
         except Exception as inst:
-            logger.critical("Exception in initialize_gn_data_structures: " + str(inst)+"\n\n")
+            logger.critical("Exception in reset_nc_specific_data_structures: " + str(inst)+"\n\n")
 
     
     ##############################################################################
@@ -103,7 +103,7 @@ class buffer_mngr_class(threading.Thread):
             if not session_id:
                 session_id = self.initial_session_id
             session_id = int (session_id)
-            session_id = self.increment_no(self.convert_to_int(session_id))
+            session_id = self.increment_no(session_id)
             self.save_session_id("GN Session ID", session_id)
             logger.debug("Seq_no. initialized.\n\n")
             return session_id
@@ -479,12 +479,14 @@ class buffer_mngr_class(threading.Thread):
                         logger.critical("Unexpected subseq_no received: "+str(new_subseq_no)+":"+str(self.last_nc_subseq_no)+":"+str(self.ackd_nc_subseq_no)+"\n\n")
                 # GN is up but NC went down since they last contacted eachother so no record of subseq_no found 
                 else:
+                    logger.critical("Expected session_id received.............................................")
                     self.reset_nc_specific_data_structures()
                     # save new NC session_id 
                     self.nc_session_id = new_session_id
                     ret_val = True
             # check whether new session id falls in the expected range with any subseq_no
-            elif self.valid_new_session_id(old_session_id, new_session_id):            
+            elif self.valid_new_session_id(old_session_id, new_session_id):
+                logger.critical("Valid new session_id received.............................................")
                 self.reset_nc_specific_data_structures()
                 # save new NC session_id 
                 self.nc_session_id = new_session_id
@@ -505,11 +507,13 @@ class buffer_mngr_class(threading.Thread):
                     # discard the last out of nc_window buffered response if any
                     self.discard_ackd_responses()
             else:
-                logger.critical("Unexpected no received: "+str(new_subseq_no)+":"+str(self.last_nc_subseq_no)+":"+str(self.ackd_nc_subseq_no)+"\n\n")
+                logger.critical("Unexpected no received: "+str(new_subseq_no)+\
+                    ": when last_nc_subseq_no: "+str(self.last_nc_subseq_no)+\
+                        ": ackd_nc_subseq_no: "+str(self.ackd_nc_subseq_no)+"\n\n")
+                logger.critical("new_session_id: "+str(new_session_id)+" old_session_id: "+str(old_session_id)+"\n\n")
             logger.debug("new_subseq_no:"+str(new_subseq_no))
-            logger.debug("self.last_nc_subseq_no:"+str(self.last_nc_subseq_no))
-            logger.debug("self.ackd_nc_subseq_no:"+str(self.ackd_nc_subseq_no))
-           
+            logger.debug("last_nc_subseq_no:"+str(self.last_nc_subseq_no))
+            logger.debug("ackd_nc_subseq_no:"+str(self.ackd_nc_subseq_no))
             return ret_val 
         except Exception as inst:
             logger.critical("Exception in new_msg: " + str(inst)+"\n\n")

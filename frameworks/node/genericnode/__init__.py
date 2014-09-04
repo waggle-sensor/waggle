@@ -4,7 +4,6 @@ from commands import getoutput
 getoutput("rm -f gn.cfg")
 #getoutput("rm -f GN_msg_log")
 getoutput("rm -f GN_output.log")
-getoutput("rm -f *sensor1c")
 """
 4 threads:
 1.  main_thread (object of main_class): Spawns other threads and processes any messages intended for itself
@@ -24,7 +23,6 @@ from gn_main_class import main_class
     
 if __name__ == "__main__":
     logger.critical("Starts:"+str('%0.4f' % time.time())+"\n\n")
-    main_thread = ''
     nc_port = 7001                                                         # port at which Gn can contact NC
     # Program starts execution by calling main_class's object
     main_thread = main_class("main_thread", nc_port)     
