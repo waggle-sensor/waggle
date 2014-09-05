@@ -108,7 +108,7 @@ class external_communicator_class(asynchat.async_chat, threading.Thread):
             self.connect( (nc_ip, self.nc_port) )                                                              # tries to connect to the NC at the specified port no
             logger.info("CONNECTED......................................................."+"\n\n")
             while True:
-                asyncore.loop(timeout=0.01, use_poll=False, map=None)                                                                                         # starts the loop which constantly checks whether the socket is readable or writable
+                asyncore.loop(timeout=0.01, use_poll=True, map=None)                                                                                         # starts the loop which constantly checks whether the socket is readable or writable
                 #time.sleep(0.01)
         except Exception as inst:
             logger.critical("Exception in run: " + str(inst) + "\n\n")
