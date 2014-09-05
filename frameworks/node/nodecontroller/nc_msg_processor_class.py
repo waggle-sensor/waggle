@@ -141,7 +141,7 @@ class msg_processor_class():
     
         
     ##############################################################################
-    # Function: Stores the information in gns_info_dict by calling update_gns_info_dict
+    # Function: TODO: just a hook
     def process_cmd_msg(self, item):
         logger.debug("CMD Received........................................"+"\n\n")
     
@@ -151,7 +151,7 @@ class msg_processor_class():
     # Function: Stores the information in gns_info_dict by calling update_gns_info_dict
     def process_gn_registration_msg(self, item):
         # store gn info in config file
-        # add to cloud thread's buffer and send ACK
+        # send msg to cloud and send ACK to GN
         logger.debug("REGISTRATION Msg Received..........................."+"\n\n")
         if item.msg != None:
             with config_file_lock:
@@ -161,14 +161,14 @@ class msg_processor_class():
                 if item.sock_or_gn_id not in config["GN Info"]:
                     # Store GN info in config file
                     self.register_gn(item.msg)
-                    self.send_reg_msg('cloud')                                                                       # sends msg to bufr mngr to send it to cloud
+                    self.send_reg_msg_to_cloud('cloud')                                                                       # sends msg to bufr mngr to send it to cloud
                 logger.critical("Config file lock released------------------------------------------------------------------\n\n")
         self.send_ack(item.seq_no, item.sock_or_gn_id, 0, str(int(time.time())))                                     # sends msg to bufr mngr to send ACK to gn
         logger.debug("REGISTRATION ACK sent to gn_msgs_buffer_mngr."+"\n\n")
 
      
     ##############################################################################
-    def send_reg_msg(self, inst_id):
+    def send_reg_msg_to_cloud(self, inst_id):
         try:
             reg_payload = RegistrationPayload()
             config = ConfigObj(config_file_name)
@@ -187,7 +187,7 @@ class msg_processor_class():
             add_to_thread_buffer(self.gn_msgs_buffer_mngr.bfr_for_in_to_out_msgs[inst_id], buff_msg, 'GN_msgs_buffer_mngr')         # Sends registration msg by adding to the buffer_mngr's buffer
             logger.debug("Registration msg sent to bufr mngr to send to cloud."+"\n\n")
         except Exception as inst:
-            logger.critical("Exception in send_reg_msg:" + str(inst)+"\n\n")
+            logger.critical("Exception in send_reg_msg_to_cloud:" + str(inst)+"\n\n")
            
         
     ##############################################################################
