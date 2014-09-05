@@ -52,8 +52,8 @@ class buffer_mngr_class(threading.Thread):
             self.last_nc_subseq_no = self.default_seq_no                                      # in int
             self.ackd_gn_subseq_no = self.default_seq_no                                      # in int
             self.ackd_nc_subseq_no = self.default_seq_no                                      # in int
-            self.gn_window_size = 20
-            self.nc_window_size = 20
+            self.gn_window_size = 1
+            self.nc_window_size = 1    
             self.wait_time = 0
             #self.sent_msg_count = 0
             logger.debug("Thread "+self.thread_name+" Initialized.\n\n")
@@ -153,7 +153,7 @@ class buffer_mngr_class(threading.Thread):
     ##############################################################################
     def process_out_to_in_msgs(self):
         try:
-            while not self.bfr_for_out_to_in_msgs.empty():
+            if not self.bfr_for_out_to_in_msgs.empty():
                 item = self.bfr_for_out_to_in_msgs.get()
                 logger.debug("Msg from NCR:" + str(item.msg) + "\n\n")
                 try:
@@ -162,7 +162,7 @@ class buffer_mngr_class(threading.Thread):
                     logger.critical("Exception while decoding msg: " + str(inst) + "\n\n")
                     logger.critical("So discarding msg..........................................." + str(inst) + "\n\n")
                     self.bfr_for_out_to_in_msgs.task_done()
-                    continue
+                    return
                 if self.new_msg(decoded_msg):
                     if decoded_msg.header.message_type == reply_type:
                         session_id = self.convert_to_int(decoded_msg.header.reply_to_id[:self.seq_no_partition_size])
@@ -214,7 +214,7 @@ class buffer_mngr_class(threading.Thread):
                 self.external_communicator = external_communicator_class("external_communicator", self.nc_port, self) 
                 self.external_communicator.start()
                 self.communicator_thread_started = 1
-            wait_time = time.time() + wait_time_for_next_msg
+            wait_time = time.time() + wait_time_for_next_msg - 0.1
             wait_time_set = 1
             while True:
                 while (not self.bfr_for_out_to_in_msgs.empty()) or (not self.bfr_for_in_to_out_msgs.empty()) or (self.bfr_for_sent_msgs):

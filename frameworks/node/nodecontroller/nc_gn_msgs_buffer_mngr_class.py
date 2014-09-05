@@ -39,8 +39,8 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
             self.last_nc_subseq_no = {}                                      # in int
             self.ackd_gn_subseq_no = {}                                      # in int
             self.ackd_nc_subseq_no = {}                                      # in int
-            self.gn_window_size = 20
-            self.nc_window_size = 20
+            self.gn_window_size = 1
+            self.nc_window_size = 1
             self.msg_processor = ''                                                               # to save global msg_processor's input_buffer address
             self.handler_vector_table = {}  
             self.registered_nodes = []
@@ -164,7 +164,7 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
     ##############################################################################    
     def process_out_to_in_msgs(self):
         try:
-            while not self.bfr_for_out_to_in_msgs.empty():
+            if not self.bfr_for_out_to_in_msgs.empty():
                 item = self.bfr_for_out_to_in_msgs.get()
                 logger.debug("Msg from GN:" + "\n\n") # + str(item.msg) 
                 try:
@@ -173,7 +173,7 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
                     logger.critical("Exception while decoding msg: " + str(inst) + "\n\n")
                     logger.critical("So discarding msg..........................................." + str(inst) + "\n\n")
                     self.bfr_for_out_to_in_msgs.task_done()
-                    continue
+                    return
                 inst_id = decoded_msg.header.instance_id
                 if (not self.new_node(decoded_msg.header.instance_id)) | (decoded_msg.header.message_type == registration_type):
                     if self.new_msg(decoded_msg):
@@ -218,7 +218,7 @@ class gn_msgs_buffer_mngr_class(threading.Thread):
         self.init_nc_related_node_data_structures('cloud')
         try:
             logger.debug("Starting " + self.thread_name+"\n\n")
-            wait_time = time.time() + wait_time_for_next_msg    - 0.1                                                           # wait for 5ms for any msg
+            wait_time = time.time() + wait_time_for_next_msg - 0.1                                                           # wait for 5ms for any msg
             while True:
                 filled_in_to_out_bfr_ids = self.get_filled_in_to_out_msgs_bfr_ids()
                 filled_sent_msgs_bfr_ids = self.get_filled_sent_msgs_bfr_ids()
