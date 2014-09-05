@@ -72,14 +72,7 @@ class sensor_controller_class(threading.Thread):
             self.run()
         finally:
             self.close()
-            
-        
-    ##############################################################################     
-    def close(self):
-        for thread in sensor_thread_list:
-            thread.join(1)
-        logger.info("All per sensor threads exited."+ "\n\n")
-            
+    
         
     ##############################################################################     
     # item: buffered_msg tuple
@@ -116,11 +109,20 @@ class sensor_controller_class(threading.Thread):
     ############################################################################## 
     # Adds msg to the buffer_mngr's buffer
     def send_to_buffer_mngr(self, msg_type, reply_id, msg):
-        buff_msg = buffered_msg(msg_to_nc, msg_type, None, reply_id, msg)                   # adds header msg_to_nc in front of the registration message and returns whole message in string form by adding delimiter
-        add_to_thread_buffer(self.buffer_mngr.bfr_for_in_to_out_msgs, buff_msg, "Buffer Mngr")                                 # Sends registration msg by adding to the buffer_mngr's buffer
+        buff_msg = buffered_msg(msg_to_nc, msg_type, None, reply_id, msg)                     
+        # Sends msg to buffer_mngr by adding to bfr_for_in_to_out_msgs
+        add_to_thread_buffer(self.buffer_mngr.bfr_for_in_to_out_msgs, buff_msg, "Buffer Mngr")
         logger.debug("Msg sent to buffer_mngr." + "\n\n")
         
-        
+    
+    # Called by main_thread to join all threads before exiting
+    ##############################################################################     
+    def close(self):
+        for thread in sensor_thread_list:
+            thread.join(1)
+        logger.info("All per sensor threads exited."+ "\n\n")
+    
+    
     ##############################################################################  
     def __del__(self):
         print self, 'Sensor Controller object died'

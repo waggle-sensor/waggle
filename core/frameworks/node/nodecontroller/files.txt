@@ -1,0 +1,115 @@
+NC functions
+
+__init__.py
+Instantiates the msg_processor class and starts it. 
+
+nc_msg_processor_class.py
+1. Stores system's info
+1. Instantiates and starts gn_msgs_buffer_mngr and nc_server
+2. Processes registration and data msgs obtained from GNs and sends the registration msg for cloud and ACKs for GNs
+
+nc_gn_msgs_buffer_mngr_class.py
+1. Manages the bfr_for_sent_msgs, bfr_for_sent_responses, bfr_for_in_to_out_msgs and bfr_for_out_to_in_msgs
+2. All the communication with the socket is managed by this thread. Sends all msgs coming from msg_processor to sockets/cloud (using send_msg_to_cloud) and vice versa.
+3. Handles encoding and decoding of msgs obtained from GNs
+4. Implements the lock step protocol and hence responsible for deciding whether a new msg should be accepted or discarded
+5. Handles simple ACKs (which might be received from GNs in future)
+
+config_file_functions.py
+1. Contains only initialize_config_file function
+
+get_node_info.py
+1. Runs bash scripts to collect system's info required for registration.
+
+global_imports.py
+1. Import statements of the packages used by most of the threads
+
+nc_global_definition_section.py
+1. Defines global variables, events if any, functions common to most threads
+
+nc_internal_communicator_class.py
+1. Is an asynchat object handling communication with a GN
+
+nc_server_class.py
+Server listening for GN's requests
+
+Useful scripts to collect which all global variables from global_definition file should be imported for each module:
+filter_needed_vars.py
+write_global_variables.py
+filtered_vars
+
+
+Python packages:
+asynchat.py - Comparatively better version of asynchat 
+configobj.py - Provides ConfigOBj used to store registration info
+
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+GN functions
+
+__init__.py            
+1. Instantiates and starts the main_thread
+
+add_sensor_info.py
+1. Provides APIs to store sensor_board's info in config file
+
+gn_buffer_mngr_class.py
+1. Manages the bfr_for_sent_msgs, bfr_for_sent_responses, bfr_for_in_to_out_msgs and bfr_for_out_to_in_msgs
+2. All the communication with the socket is managed by this thread. Sends all msgs coming from main_thread and sensor_controller_thread to external_communicator_thread.
+3. Handles encoding and decoding of msgs obtained from NC
+4. Implements the lock step protocol and hence responsible for deciding whether a new msg should be accepted or discarded
+5. Handles simple ACKs 
+6. Sets start_communication_with_nc_event to True after successful registration.
+
+
+gn_main_class.py
+1. Stores system's info in config file
+2. Spawns all other threads
+3. Sends registration request to buffer_mngr to forward it to NC.
+
+
+nc_ip
+1. Stores the IP of NC.
+
+gn_external_communicator_class.py 
+1. Is an asynchat object handling communication with a NC
+
+
+gn_sensor_controller_class.py
+1. Creates sensor_plugin object and calls plug_in sensors and get_sensor_msgs function of this object.
+
+          
+sensor_plugin.py
+1. Imports sensor modules, registers them, and starts new thread for each sensor module
+2. Periodically called by sensor_controller to collect sensor msgs and 
+transform them in proper format which the sensor_controller can understand and 
+puts in the input_buffer of sensor controller.
+3. But this is not a separate thread.
+
+config_file_functions.py
+1. Contains only initialize_config_file function
+
+get_node_info.py
+1. Runs bash scripts to collect system's info required for registration.
+
+global_imports.py
+1. Import statements of the packages used by most of the threads
+
+gn_global_definition_section.py
+1. Defines global variables, events if any, functions common to most threads
+
+
+Useful scripts to collect which all global variables from global_definition file should be imported for each module:
+filtered_vars
+write_global_variables.py
+filter_needed_vars.py
+global_variables
+
+
+Python packages:
+asynchat.py - Comparatively better version of asynchat 
+configobj.py - Provides ConfigOBj used to store registration info
+

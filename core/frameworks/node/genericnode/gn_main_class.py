@@ -83,7 +83,8 @@ class main_class():
 
         
     ############################################################################## 
-    # Function: Checks by reading the log file whether registration has been done or not. 
+    # Function: Checks by reading the config file whether registration has been done or not. 
+    # 
     def check_registration_status(self):
         config = ConfigObj(config_file_name)
         if config["Registered"] == "YES":
@@ -157,13 +158,13 @@ class main_class():
     
         
     ############################################################################## 
-    # Starts processing msgs received from outside world only after registration is successful, else til then ignores the msgs
+    # Just a hook 
     def process_external_msg(self, item):
         logger.debug("Processing NC's msg."+ "\n\n")
         # Add stuff to process any command received from NC
         
     ############################################################################## 
-    # decodes the msg (seq_no, msg_type, cmd, cmd_args) and maps it to the system specific command/action required
+    # Hook
     def process_cmd(self, msg):
         logger.debug("Command from NC received."+ "\n\n")
         if msg == "Update":
