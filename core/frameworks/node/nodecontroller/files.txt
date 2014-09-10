@@ -5,10 +5,10 @@ Instantiates the msg_processor class and starts it.
 
 nc_msg_processor_class.py
 1. Stores system's info
-1. Instantiates and starts gn_msgs_buffer_mngr and nc_server
+1. Instantiates and starts buffer_mngr and nc_server
 2. Processes registration and data msgs obtained from GNs and sends the registration msg for cloud and ACKs for GNs
 
-nc_gn_msgs_buffer_mngr_class.py
+nc_buffer_mngr_class.py
 1. Manages the bfr_for_sent_msgs, bfr_for_sent_responses, bfr_for_in_to_out_msgs and bfr_for_out_to_in_msgs
 2. All the communication with the socket is managed by this thread. Sends all msgs coming from msg_processor to sockets/cloud (using send_msg_to_cloud) and vice versa.
 3. Handles encoding and decoding of msgs obtained from GNs

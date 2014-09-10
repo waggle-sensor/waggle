@@ -6,11 +6,12 @@ class sensor_info():
    
     name_delimiter = '.'
    
+    # Initializes various attributes of the sensor object
     def __init__(self, sensor_name, complete_sensor_name, reading_interval, interval_settable, communication_type, packaging_info, vendor_id):
         self.complete_sensor_name = complete_sensor_name
         self.sensor_info_dict = {}
         self.sensor_info_dict["context"] = "Sensor Board"
-        sensor_name, manufacturer_id, revision = complete_sensor_name.split('.')                                      # contains sensor_name, manufacturer_id and revision/year
+        sensor_name, manufacturer_id, revision = complete_sensor_name.split('.')                      # contains sensor_name, manufacturer_id and revision/year
         self.sensor_info_dict["manufacturer_id"] = manufacturer_id
         self.sensor_info_dict["revision"] = revision
         self.sensor_info_dict["sensor_name"] = sensor_name
@@ -24,25 +25,19 @@ class sensor_info():
         self.sensor_info_dict["Sensor Non-Functnl Params"][param1.param_name] = param1.param_info_dict
         self.sensor_info_dict["Sensor Non-Functnl Params"][param2.param_name] = param2.param_info_dict
         
-       
+    # Adds reading to the sensor object   
     def add_reading(self, reading):
         self.sensor_info_dict["Sensor Reading Info"][reading.reading_name] = reading.reading_info_dict
        
-   
+   	# Adds non functional parameter to the sensor object
     def add_parameter(self, param):
         self.sensor_info_dict["Sensor Non-Functnl Params"][param.param_name] = param.param_info_dict
    
-   
-    #def gen_reading_name(self, reading_name, reading_context):
-        #return self.sensor_name + self.name_delimiter + reading_name + self.name_delimiter + reading_context
-
-       
-    #def gen_sensor_name(self, sensor_name, manufacturer_id, sensor_context):
-        #return sensor_name + self.name_delimiter + manufacturer_id + self.name_delimiter + sensor_context
  
        
 class reading_info():
    
+   	# Initializes various attributes of the reading
     def __init__(self, reading_name, reading_type = " ", reading_unit = " ", reading_note = " "):
         self.reading_name = reading_name                                                                                    # string
         self.reading_info_dict = {}
@@ -53,7 +48,7 @@ class reading_info():
         self.reading_val = -1                                                                                               # Intially no value of the reading
         self.reading_time = -1                                                                                              # Initially no reading_time
        
-       
+    # Adds functional parameter to the reading object
     def add_parameter(self, param):
         self.reading_info_dict["Reading Params Info"][param.param_name] = param.param_info_dict
        
@@ -61,6 +56,7 @@ class reading_info():
        
 class param_info():
    
+   	# Initializes various attributes of the parameter
     def __init__(self, context, param_name, param_val = " ", param_type = " ", param_settable = " "):
         self.param_name = param_name
         self.param_info_dict = {}
@@ -69,7 +65,7 @@ class param_info():
         self.param_info_dict["param_settable"] = param_settable
        
 
-      
+# Writes the sensor objects to config file      
 def write_to_config_file(sensor):
     config = ConfigObj(config_file_name)
     main_section_name = "Sensors Info"
@@ -77,19 +73,3 @@ def write_to_config_file(sensor):
     # code to validate the fields goes here
     config[main_section_name][sensor.complete_sensor_name]["Registered"] = 'YES'
     config.write()
- 
- 
-#def write_data_to_file(data):
-    #config_file_name = get_reg_file_name(sensor.sensor_name)
-    #config = ConfigObj(config_file_name)
-    #config[sensor.sensor_name] = sensor.sensor_info_dict
-    #config.write()
-    #update_pending_file_list(sensor.sensor_name, config_file_name)
-   
-   
-def update_pending_file_list(sensor_name, file_name):
-    fd = open('pending_file_list' ,"a")
-    # TODO
-    #acquire_file_lock(fd)
-    fd.write(sensor_name + "\t" + file_name + "\n")
-    #release lock

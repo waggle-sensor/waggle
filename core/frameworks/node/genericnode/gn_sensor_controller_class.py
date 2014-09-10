@@ -6,22 +6,18 @@ from sensor_plugin import sensor_plugin_class
 from config_file_functions import initialize_config_file, ConfigObj
 
 
-##################################################################################
-# Registers sensors again even if they are registered once, to change later on
-##################################################################################
-
-
-
-# sensor_controller (object of sensor_controller_class): Processes msgs related to sensors
+# Creates sensor_plugin object. Calls plug_in sensors and get_sensor_msgs function\
+# of this object to import sensor modules and periodically collect data from sensors.
+# (For future) Can also process any msg obtained from NC
 class sensor_controller_class(threading.Thread):
     
-        
     ############################################################################## 
     def __init__(self, thread_name):
         threading.Thread.__init__(self)
-        self.thread_name = thread_name                                                              # used by logging module for printing messages related to this thread
+        # can be used by logging module for printing messages related to this thread
+        self.thread_name = thread_name                                                              
         self.daemon = True
-        self.input_buffer = Queue.Queue(maxsize=1000)                                                           # stores messages sent by buffer_mngr_class, main_class
+        self.input_buffer = Queue.Queue(maxsize=1000)                                                           
         self.main_thread = ''
         self.buffer_mngr = ''
         self.sensor_msg_delimiter = str(unichr(12))
@@ -29,14 +25,18 @@ class sensor_controller_class(threading.Thread):
     
         
     ############################################################################## 
-    def pass_thread_address(self, main_thread, buffer_mngr): 
+    # Called by main_thread to pass the address of buffer_mngr, main_thread 
+	# so that sensor_controller thread can access their variables
+	def pass_thread_address(self, main_thread, buffer_mngr): 
         self.main_thread = main_thread
         self.buffer_mngr = buffer_mngr               
         logger.debug("Addresses of main_thread and buffer_mngr saved."+ "\n\n")
     
         
     ############################################################################## 
-    # Runs forever    
+    # Plugs in new sensors and periodically collects data from them and sends\
+    # that to NC through buffer_mngr
+    # (For future) Can process any cmd/reply obtained from NC
     def run(self):
         try:
             logger.debug("Starting " + self.thread_name+ "\n\n")
@@ -46,18 +46,26 @@ class sensor_controller_class(threading.Thread):
             wait_time = time.time() + wait_time_for_next_msg
             wait_time_set = 1
             while True:
-                # Puts all the sensor msgs in its input_buffer to sensor_controller's input_buffer by converting them in proper tuple format
+				"""
+                # Collects all the sensor msgs from their respective output_buffers and \
+                # puts them into its input_buffer by converting them in proper namedtuple format
+                # This might seem to be an overhead as whatever it does is reads\
+                # the sensor msgs from their output_buffers and packs them in proper format
+                # and puts them back in its own input_buffer and finally gets \
+                # them from its input_buffer and sends them to buffer_mngr by preparing data payloads. 
+                # But this approach is used to give equal priority to all msgs
+                # irrespective of whether they are obtained from sensors or NC and reduce redundancy \
+                # in the code.
+                """
                 plugin_obj.get_sensor_msgs()
-                # Checks if any unprocessed msg is in the input buffer
                 while not self.input_buffer.empty():
-                    #logger.debug("Waiting for registration to be successful.."+ "\n\n")
+					# Start reading the received msgs only if registration is done
                     if start_communication_with_nc_event.is_set():
                         item = self.input_buffer.get()
                         logger.debug("Msg received."+ "\n\n")
-                        # process the msg
                         self.process_msg(item)
                         self.input_buffer.task_done()
-                    # set time to remain attentive for next 5 ms
+                    # set time to remain attentive for next 200 ms
                     wait_time = time.time() + wait_time_for_next_msg
                     #print "short sleep snsr"
                     time.sleep(0.0001)
@@ -75,30 +83,35 @@ class sensor_controller_class(threading.Thread):
     
         
     ##############################################################################     
-    # item: buffered_msg tuple
+    # Processes received msg and based on the type decides the action 
     def process_msg(self, item):
         logger.debug('Msg being processed..'+ "\n\n")
         if item.internal_msg_header == msg_to_nc:
+			# If the bfr_for_in_to_out_msgs is empty or msg to be\
+			# sent is a reply type then process the msg
             if item.msg_type == reply_type or self.buffer_mngr.bfr_for_in_to_out_msgs.empty():
                 logger.debug('Received sensor msg.'+ "\n\n")
                 if item.msg_type == data_type:
                     self.send_data_msg(item)
-                    # clear the event to signal that the output buffer won't be full when the data msg is sent by buffer_mngr so 
+            # protocol does not allow to send a (data/cmd) msg when  \
+            # bfr_for_in_to_out_msgs is full so push it back in the queue 
             else:
                 self.input_buffer.put(item)
             logger.debug("Length of input bfr of sensor_controller:"+str(self.input_buffer.qsize()))
                 
         
     ##############################################################################         
-    # item: buffered_msg tuple        
+    # Prepares and sends data msg received from sensors to NC through buffer_mngr    
     def send_data_msg(self, item):
         data_payload = DataPayload()
         data_payload.sens_id = item.msg[0]
         data_payload.read_tm = item.msg[1]
         data_payload.inst_id = get_instance_id()
         ret = True
-        for reading_name, reading_type, reading_value, reading_unit, reading_note in zip(item.msg[2], item.msg[3], item.msg[4], item.msg[5], item.msg[6]):
-            ret = (ret and data_payload.add_item(reading_name, reading_type, reading_value, reading_unit, reading_note))
+        for reading_name, reading_type, reading_value, reading_unit, reading_note in\
+        zip(item.msg[2], item.msg[3], item.msg[4], item.msg[5], item.msg[6]):
+            ret = (ret and data_payload.add_item(reading_name, reading_type, \
+            reading_value, reading_unit, reading_note))
         if not ret:
             logger.critical("Error in packing data....................................")
         logger.debug("DATA PAYLOAD:" + str(data_payload) + "\n\n")
@@ -115,8 +128,8 @@ class sensor_controller_class(threading.Thread):
         logger.debug("Msg sent to buffer_mngr." + "\n\n")
         
     
-    # Called by main_thread to join all threads before exiting
-    ##############################################################################     
+    ##############################################################################   
+    # Called by main_thread to join all sensor threads before exiting
     def close(self):
         for thread in sensor_thread_list:
             thread.join(1)

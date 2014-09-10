@@ -1,10 +1,14 @@
-from gn_global_definition_section import add_to_thread_buffer, buffered_msg, msg_from_nc, asynchat_msg_terminator, logger
+from gn_global_definition_section import add_to_thread_buffer, buffered_msg, \
+msg_from_nc, asynchat_msg_terminator, logger
 from global_imports import *
-import asyncore                                                                                                                 # required for aynchronous sockets
-import asynchat                                                                                                                 # required for aynchronous sockets
-import socket                                                                                                                   # required for sockets
+import asyncore                                                                                                                 
+import asynchat                                                                                                                 
+import socket                                                                                                                   
 
-# external_communicator (object of external_communicator_class): Handles the sending and receiving of messages     
+# This handles all communication with NC. 
+# When it receives the message from NC it will read the message till it finds\
+# the terminating character of the message and then it sends the message to the buffer_mngr. 
+# Also handles the sending of the data which is in its output buffer to the NC.  
 class external_communicator_class(asynchat.async_chat, threading.Thread):
     
     ac_in_buffer_size = 4096
@@ -13,21 +17,25 @@ class external_communicator_class(asynchat.async_chat, threading.Thread):
     ##############################################################################
     def __init__(self, thread_name, nc_port, buffer_mngr):
         threading.Thread.__init__(self)
-        self.thread_name = thread_name                                              # Used to tag msgs related to this thread by logging module
+        self.thread_name = thread_name                                              
         self.daemon = True
-        self.nc_port = nc_port                                                      # Static port where NC listens and where connection request can be sent
+        # Static port where NC listens and where connection request can be sent
+        self.nc_port = nc_port                                                      
         asynchat.async_chat.__init__(self)
-        self.input_buffer = []                                                      # input buffer to store incoming msgs from NC/GNs
-        self.output_buffer = ""                                                     # output buffer to buffer the msgs if the socket is not yet writable                                                                                                   
+        self.input_buffer = []                                                      
+        self.output_buffer = ""                                                                                                                                                      
         self.buffer_mngr = buffer_mngr
+        # Used to signal that the NC is down so don't receive. There is no control\
+        # on sending using asynchat, msgs buffer in the output_buffer until connection is restablished 
         self.shutdown = 0
-        self.set_terminator(asynchat_msg_terminator)                                             # used to detect the end of the incoming msg and take required action once the whole msg is received
+        self.set_terminator(asynchat_msg_terminator)                                             
         logger.debug("Thread "+self.thread_name+" Initialized.\n\n")
         
     
     ##############################################################################    
     # Called when the socket is readable 
-    # Function: Appends data to the input buffer till the terminating character is detected which indicates the end of the msg
+    # Appends data to the input buffer till the terminating character is detected\
+    # which indicates the end of the msg after which the found_terminator is called
     def collect_incoming_data(self, data):
         try:
             if self.shutdown == 0:
@@ -40,12 +48,15 @@ class external_communicator_class(asynchat.async_chat, threading.Thread):
     
     ##############################################################################    
     # Called when the specified terminating character is detected in the received message
-    # Function: Handles the msg by calling handle_request and then empties the input_buffer to receive th next msg 
+    # Handles the msg by calling handle_request and then empties the input_buffer\
+    # to receive the next msg 
     def found_terminator(self):
         try:
             if self.shutdown == 0:
-                #logger.critical("Msg received from NC:"+str('%0.4f' % time.time()) +str(self.input_buffer)+"\n\n") #+
-                logger.critical("Msg received from NC:"+str('%0.4f' % time.time()) + "\n\n")
+                #logger.critical("Msg received from NC:"+str('%0.4f' % time.time())\
+                # +str(self.input_buffer)+"\n\n") #+
+                logger.critical("Msg received from NC:"+str('%0.4f' % time.time())\
+                 + "\n\n")
                 self.handle_request()
                 logger.debug("Msg handled.\n\n")
                 self.input_buffer = []
@@ -56,25 +67,25 @@ class external_communicator_class(asynchat.async_chat, threading.Thread):
     
     
     ##############################################################################    
-    # Function: Adds msg_from_nc header in the front of the received message 
-    # So the incoming msg gets transformed to the form: [msg_from_nc + original msg]
-    # Then it adds this msg to buffer  
+    # Recreates the complete msg by concatenating different fragments of it
+    # and sends to buffer_mngr's buffer
     def handle_request(self):
         try:
             msg = ''
             if self.shutdown == 0:
-                # Creating the full msg by concatenating different fragments of it
+                # recreates msg by concatenating list's elements
                 for single_msg in self.input_buffer:
                     msg = msg + single_msg
                 msg = buffered_msg(msg_from_nc, None, None, None, msg) 
-                add_to_thread_buffer(self.buffer_mngr.bfr_for_out_to_in_msgs, msg, "Buffer Mngr")                                             # Sends to the buffer_mngr's buffer
+                # Sends msg to the buffer_mngr's buffer                
+                add_to_thread_buffer(self.buffer_mngr.bfr_for_out_to_in_msgs, msg, "Buffer Mngr")                                             
                 logger.debug("Msg forwarded to buffer_mngr.\n\n")    
         except Exception as inst:
              logger.critical("Exception in handle_request: " + str(inst) + "\n\n")
     
     
     ##############################################################################    
-    # Called in case of any errors while sending
+    # Called when an error occurs
     def handle_error(self):
         try:
             logger.critical("Error!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n\n")
@@ -83,7 +94,8 @@ class external_communicator_class(asynchat.async_chat, threading.Thread):
             logger.critical("Exception in handle_error: " + str(inst) + "\n\n")
     
     
-    ############################################################################## 
+    ##############################################################################
+    # Loops till an IP address other than loopback is obtained
     def get_nc_ip(self):
         ip = '127.0.0.1'
         while ip == '127.0.0.1':
@@ -93,23 +105,25 @@ class external_communicator_class(asynchat.async_chat, threading.Thread):
                 ip = open('nc_ip','r').read()
             except Exception as inst:
                 logger.critical("Exception in get_nc_ip: " + str(inst)+ "\n\n")
-                #self.get_nc_ip()
         return ip
     
     
     ##############################################################################    
-    # Thread starts its execution from here    
+    # Retrieves the stored IP and connects to it and starts the polling loop.
+    # In case of connection failure retries after 10 secs
     def run(self):
         try:
             nc_ip = self.get_nc_ip()
             logger.debug("Starting " + self.thread_name + "\n\n")
             self.shutdown = 0
             self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.connect( (nc_ip, self.nc_port) )                                                              # tries to connect to the NC at the specified port no
-            logger.info("CONNECTED......................................................."+"\n\n")
-            while True:
-                asyncore.loop(timeout=0.01, use_poll=True, map=None)                                                                                         # starts the loop which constantly checks whether the socket is readable or writable
-                #time.sleep(0.01)
+            self.connect( (nc_ip, self.nc_port) )                                                             
+            logger.info("CONNECTED............................................\
+            ..........."+"\n\n")
+            #while True:
+            # Starts the loop which polls the open socket
+            asyncore.loop(timeout=0.01, use_poll=True, map=None)                                                                                         
+            #time.sleep(0.01)
         except Exception as inst:
             logger.critical("Exception in run: " + str(inst) + "\n\n")
             self.shutdown = 1
@@ -120,6 +134,8 @@ class external_communicator_class(asynchat.async_chat, threading.Thread):
     
     
     ##############################################################################
+    # Closes the socket and returns when called by buffer_mngr \
+    # else closes the socket for sometime and reopens
     def handle_close(self):
         try:
             if self.shutdown == 0:
@@ -127,11 +143,11 @@ class external_communicator_class(asynchat.async_chat, threading.Thread):
                 NC_down = 1
                 self.close()
                 logger.critical("Socket Connection with NC closed.\n\n")
-                # Notify buffer_mngr that NC is down
                 logger.critical("Retry after sometime.\n\n")
                 time.sleep(10)
                 self.run()
-            else:                                                           # A global exception raised by main thread to exit
+            # Called by buffer_mngr
+            else:                                                           
                 self.close()
                 logger.critical("Socket Connection with NC closed.\n\n")                
         except Exception as inst:
