@@ -12,6 +12,7 @@ from nc_global_definition_section import logger
 #echo "Network: $(ifconfig | tr " " "\n" | grep -i "[a-z,0-9][a-z,0-9]:[a-z,0-9][a-z,0-9]:[a-z,0-9][a-z,0-9]:[a-z,0-9][a-z,0-9]:[a-z,0-9][a-z,0-9]:[a-z,0-9][a-z,0-9]""
 
 
+# Runs various bash scripts and retrieves system's info and stores that in config file
 def get_node_info(config_file_name):
         
     config_object = ConfigObj(config_file_name)

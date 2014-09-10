@@ -4,7 +4,7 @@ from commands import getoutput as bashit
 f=open('global_variables').read()
 f=f.split(' ,')
 class_list = {}
-classes = ['config_file_functions', 'get_node_info', '__init__', 'logging_module', 'nc_gn_msgs_buffer_mngr_class', 'nc_internal_communicator_class', 'nc_msg_processor_class', 'nc_server_class']
+classes = ['config_file_functions', 'get_node_info', '__init__', 'logging_module', 'nc_buffer_mngr_class', 'nc_internal_communicator_class', 'nc_msg_processor_class', 'nc_server_class']
 for each in classes:
     class_list[each]=[]
 print f

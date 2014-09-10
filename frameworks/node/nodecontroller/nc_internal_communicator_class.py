@@ -2,52 +2,58 @@ import asyncore
 import asynchat
 import socket
 from global_imports import *
-from nc_global_definition_section import buffered_msg,  msg_from_gn,  asynchat_msg_terminator,  gn_socket_list,  add_to_thread_buffer, logger
+from nc_global_definition_section import buffered_msg,  msg_from_gn,  \
+asynchat_msg_terminator,  gn_socket_list,  add_to_thread_buffer, logger
 
-# Delete the seq no id mapping entry when gn goes down, clean up everything related to the disconnected gn
+# One object of this class is created for each GN and this object handles all \
+# communication with that GN. 
+# When it receives the message from GN it will read the message till it finds \
+# the terminating character of the message and then it sends the message to the buffer_mngr. 
+# Also handles the sending of the data which is in its output buffer to the GN.
 
-
-# One object of this class is created for each GN and this object handles all communication with that GN. 
-# When it receives the message from GN it will read the message till it finds the terminating character 
-# of the message and then it adds the message to the gn_msgs_buffer_mngr's buffer: msg_buffer. It also handles the sending
-# of the data to the GN which is in its output buffer.
 class internal_communicator(asynchat.async_chat):
 
     ac_in_buffer_size = 4096
     ac_out_buffer_size = 4096
      
     ##############################################################################
-    def __init__(self, gn_socket_conn, gn_addr, gn_msgs_buffer_mngr):
+    def __init__(self, gn_socket_conn, gn_addr, buffer_mngr):
         asynchat.async_chat.__init__(self, gn_socket_conn)
-        self.gn_addr = gn_addr                                                                                  # contains (gn's ip, gn's port), through which it communicates with NC
-        self.input_buffer = []                                                                                  # stores incoming message
-        self.output_buffer = ""                                                                                 # stores outgoing message
-        self.gn_msgs_buffer_mngr = gn_msgs_buffer_mngr
+        self.gn_addr = gn_addr                                                                                  
+        self.input_buffer = []                                                                                  
+        self.output_buffer = ""                                                                                 
+        self.buffer_mngr = buffer_mngr
+        # Used to signal that the NC is down so don't receive. There is no control\
+        # on sending using asynchat, msgs buffer in the output_buffer until connection is restablished 
         self.shutdown = 0
-        self.set_terminator(asynchat_msg_terminator)                                                                         # terminating character indicating the end of the msg received
+        self.set_terminator(asynchat_msg_terminator)                                                                         
         logger.debug("Internal Communicator for new GN initialized"+"\n\n")
         
         
     ##############################################################################
-    # Called when the socket is readable    
+    # Called when the socket is readable
+    # Appends data to the input buffer till the terminating character\
+    # is detected which indicates the end of the msg after which the found_terminator is called
     def collect_incoming_data(self, data):
         if self.shutdown == 0:
             try:
                 logger.debug("Data from GN being received."+"\n\n")
-                self.input_buffer.append(data)                                                                          # Buffer the data
+                self.input_buffer.append(data)                                                                          
             except Exception as inst:
                 logger.critical("Exception in collect_data: " + str(inst)+"\n\n")
         else:
             logger.critical("Socket Closed."+"\n\n")
-         
                 
         
     ##############################################################################  
-    # Called when the specified terminating character is detected in the received message (here '\n')
+    # Called when the specified terminating character is detected in the received message
+    # Handles the msg by calling handle_request and then empties the input_buffer\
+    # to receive th next msg 
     def found_terminator(self):
         if self.shutdown == 0:
             try:
-                #logger.critical("Msg received from GN:"+str('%0.4f' % time.time()) +str(self.input_buffer)+"\n\n") #+
+                # logger.critical("Msg received from GN:"+str('%0.4f' % time.time())\
+                # +str(self.input_buffer)+"\n\n") #+
                 logger.critical("Msg received from GN:"+str('%0.4f' % time.time())+"\n\n")
                 self.handle_request()
                 logger.debug("Incoming Msg handled."+"\n\n")
@@ -59,16 +65,20 @@ class internal_communicator(asynchat.async_chat):
             
         
     ##############################################################################     
-    # Recreates the complete msg by concatenating different fragments of it and sends to gn_msgs_buffer_mngr's buffer
+    # Recreates the complete msg by concatenating different fragments of it
+    # and sends to buffer_mngr's buffer
     def handle_request(self):
         if self.shutdown == 0:
             msg = ''
             try:
+				# recreates msg by concatenatning list's elements
                 for single_msg in self.input_buffer:
-                    msg = msg + single_msg                                              # convert msg from a list element to a string
+                    msg = msg + single_msg                                              
                 msg = buffered_msg(msg_from_gn, None, None, None, msg, self)
-                add_to_thread_buffer(self.gn_msgs_buffer_mngr.bfr_for_out_to_in_msgs, msg, "GN_msgs_buffer_mngr")                                             # Sends to the gn_msgs_buffer_mngr's buffer
-                logger.debug("Msg sent to gn_msgs_buffer_mngr."+"\n\n")
+                # Sends msg to the buffer_mngr's buffer
+                add_to_thread_buffer(self.buffer_mngr.bfr_for_out_to_in_msgs,\
+                msg, "GN_msgs_buffer_mngr")                                             
+                logger.debug("Msg sent to buffer_mngr."+"\n\n")
             except Exception as inst:
                 logger.critical("Exception in handle_request: " + str(inst))
         else:
@@ -76,6 +86,7 @@ class internal_communicator(asynchat.async_chat):
         
         
     ##############################################################################
+    # Called when an error occurs
     def handle_error(self):
         try:
             logger.critical("Error!!"+"\n\n")
@@ -84,7 +95,8 @@ class internal_communicator(asynchat.async_chat):
             logger.critical("Exception in handle_error: " + str(inst)+"\n\n")
             
         
-    ##############################################################################    
+    ############################################################################## 
+    # Closes the socket after removing its entries wherever present
     def handle_close(self):
         try:
             self.shutdown = 1
@@ -96,6 +108,7 @@ class internal_communicator(asynchat.async_chat):
         
         
     ##############################################################################
+    # Removes its entries from various GN related data structures
     def delete_socket(self):
         try:
             if self in gn_socket_list:
@@ -104,7 +117,7 @@ class internal_communicator(asynchat.async_chat):
             if gn_socket_list:
                 current_socket_list = str(gn_socket_list)
             logger.critical("Current socket list:"+current_socket_list+"\n\n")
-            self.gn_msgs_buffer_mngr.clean_gn_data(self)
+            self.buffer_mngr.clean_gn_data(self)
         except Exception as inst:
             logger.critical("Exception in delete_socket: " + str(inst)+"\n\n")
         
