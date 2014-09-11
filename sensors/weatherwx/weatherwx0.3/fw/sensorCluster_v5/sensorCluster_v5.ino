@@ -1,10 +1,13 @@
-// Sensor Cluster Code, version 1
-// Gets readings from all sensors on the sensor board every 30 seconds
+// Sensor Cluster Code, version 5
+// Using interrupts, gets readings from three time-sensitive sensors (noise, wind velocity, and 
+// acceleration) every 6 seconds in order to calculate average values for these sensors, and 
+// gets readings from all other sensors once every 30 seconds
 // Prevents the board from hanging if a sensor is disconnected
-// Allows bad sensor readings to be silenced (incomplete code, works for 1/3 of sensors)
+// Allows bad sensor readings to be silenced for about a third of the sensors (incomplete)
 // Time between readings can be adjusted
 
 // Edited By: Kaitlyn MacIntyre
+// Updated: 09/08/14
 
 // BOF preprocessor bug prevent - insert me on top of your arduino-code
 // From: http://www.a-control.de/arduino-fehler/?lang=en
@@ -47,6 +50,8 @@ nop();
 #include <DallasTemperature.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BMP085_U.h>
+#include <TimerOne.h>
+#include <TimerThree.h>
 
 // #define debug_serial 1
 // #define SILENCE_BAD_SENSORS 1
@@ -67,6 +72,15 @@ nop();
 #define IR_D6T_44L_06_ADD 14 
 #define HIH4030_ADD 15
 #define PhoRes_ADD 16
+// #define WindVel_ADD 17
+
+int timer1_runs = 0;
+int timer3_runs = 0;
+int counter = 0;
+volatile int current_time = 0;
+int q = 0;
+// int counter_time = 0;
+// byte oldSREG;
 
 #ifdef IR_D6T_44L_06_ADD
 #include <i2cmaster.h>
@@ -75,6 +89,7 @@ int rbuf[35];
 float tdata[16];
 float t_PTAT;
 float tPEC;
+bool data_check;
 
 bool D6T_get_data(void) {
   int k, start_err = 0, write_err = 0;
@@ -160,57 +175,57 @@ byte calc_crc(byte data) {
 
 float xmean, ymean, zmean, rt_mean_sq;
 bool MMA_found;
+float xvals[460];
+float yvals[460];
+float zvals[460];
+float xvar = 0, yvar = 0, zvar = 0, mean_square_var = 0;
 
-bool MMA8452_get_means(float *xmean, float *ymean, float *zmean, float *rt_mean_sq)
+void MMA8452_get_means()
 {
-  int n = 0;
-  float xvals[25], yvals[25], zvals[25];
-  float xtotal = 0, ytotal = 0, ztotal = 0, xvar = 0, yvar = 0, zvar = 0, mean_square_var = 0;
+  int accelCount[3]; // Stores the 12-bit signed value
 
-  while (n < 25){
-    delay(10);
-    int accelCount[3]; // Stores the 12-bit signed value
+  bool good_data = readAccelData(accelCount); // Read the x/y/z adc values
+  // Serial.println(accelCount[1]);
 
-    bool good_data = readAccelData(accelCount); // Read the x/y/z adc values
+  float accelG[3]; // Stores the real accel value in g's
 
-    if (good_data == false) 
-      {
-        *xmean = -999;
-        *ymean = -999;
-        *zmean = -999;
-        *rt_mean_sq = -999;
-        return false;
-      }
-
-    float accelG[3]; // Stores the real accel value in g's
-    for (int i = 0 ; i < 3 ; i++)
-    {
-      accelG[i] = (float) accelCount[i] / ((1<<12)/(2*GSCALE)); // get actual g value, this depends on scale being set
-    }
-
-    xvals[n] = accelG[0];
-    xtotal += accelG[0];
-    yvals[n] = accelG[1];
-    ytotal += accelG[1];
-    zvals[n] = accelG[2];
-    ztotal += accelG[2];
-    n++;
+  if (good_data == false) 
+  {
+    accelG[0] = -999;
+    accelG[1] = -999;
+    accelG[2] = -999;
+    // return false;
   }
 
-  *xmean = xtotal/25;
-  *ymean = ytotal/25;
-  *zmean = ztotal/25;
+  else {
+    for (int i = 0 ; i < 3 ; i++) {
+      accelG[i] = (float) accelCount[i] / ((1<<12)/(2*GSCALE)); // get actual g value, this depends on scale being set
+    }
+  }
 
-  for (int j = 0; j < 25; j++)
+  xvals[q] = accelG[0];
+  yvals[q] = accelG[1];
+  zvals[q] = accelG[2];
+
+  xmean = (xmean*q+xvals[q])/(q+1);
+  ymean = (ymean*q+yvals[q])/(q+1);
+  zmean = (zmean*q+zvals[q])/(q+1);
+
+  q++;
+
+  // return true;
+}
+
+void calc_MMA_RMS() {
+  for (int j = 0; j < q; j++)
   {
-    xvar += sq(xvals[j] - *xmean);
-    yvar += sq(yvals[j] - *ymean);
-    zvar += sq(zvals[j] - *zmean);
+    xvar += sq(xvals[j] - xmean);
+    yvar += sq(yvals[j] - ymean);
+    zvar += sq(zvals[j] - zmean);
   }
 
   mean_square_var = (sq(xvar) + sq(yvar) + sq(zvar))/3;
-  *rt_mean_sq = sqrt(mean_square_var);
-  return true;
+  rt_mean_sq = sqrt(mean_square_var);
 }
 
 bool readAccelData(int *destination)
@@ -245,7 +260,7 @@ bool initMMA8452()
   if (c == 0x2A); // WHO_AM_I should always be 0x2A
   else {
     return false;
-    // Serial.print("Error with MMA8452");
+    Serial.print("Error with MMA8452");
   }
 
   MMA8452Standby(); // Must be in standby to change registers
@@ -308,16 +323,28 @@ void writeRegister(byte addressToWrite, byte dataToWrite)
 
 #ifdef HIH4030_ADD
 #define HIH4030_PIN A2
+int HIH4030_1_Value;
 #endif //HIH4030_ADD
 
 #ifdef MLX90614_ADD
 #ifndef I2C_ADD
 #include <i2cmaster.h>
 #endif //I2C_ADD
+int dev = 0x5A<<1;
+int data_low = 0;
+int data_high = 0;
+int pec = 0;
+double tempFactor = 0.02; // 0.02 degrees per LSB (measurement resolution of the MLX90614)
+double tempData;
+int frac; // data past the decimal point
+float celcius;
+float fahrenheit;
+int start_err = 0, write_err = 0, rep_start_err = 0;
 #endif //MLX90614_ADD
 
 #ifdef PhoRes_ADD
 #define PhoRes_PIN A3 
+int PhoRes_1_Value;
 #endif //PhoRes_ADD
 
 #ifdef SHT15_ADD
@@ -327,6 +354,8 @@ void writeRegister(byte addressToWrite, byte dataToWrite)
 #define SHT15_1_sclkPin  12     // SHT15_1 serial clock
 float SHT15_1_temperature;
 float SHT15_1_humidity;
+uint16_t SHT15_1_rawData;
+uint8_t SHT15_1_error; 
 Sensirion SHT15_1_tempSensor = Sensirion(SHT15_1_dataPin, SHT15_1_sclkPin);
 #endif //SHT15_ADD
 
@@ -338,26 +367,37 @@ Sensirion SHT15_1_tempSensor = Sensirion(SHT15_1_dataPin, SHT15_1_sclkPin);
 #define SHT75_1_sclkPin 9   // SHT15_1 serial clock
 float SHT75_1_temperature;
 float SHT75_1_humidity;
+uint16_t SHT75_1_rawData;
+uint8_t SHT75_1_error;
 Sensirion SHT75_1_tempSensor = Sensirion(SHT75_1_dataPin, SHT75_1_sclkPin);
 #endif //SHT75_ADD
 
 #ifdef GA1A1S201WP_ADD
 #define AMBI_1_Pin A6    // Ambient sensor
+int AMBI_1_Value;
 #endif //GA1A1S201WP_ADD
 
 #ifdef MAX4466_ADD
 #define MAX4466_PIN 1
-const int MAX4466_Buff_Len = 100;
-int MAX4466_Val[MAX4466_Buff_Len];   // variable to store the value coming from the sensor
+// const int MAX4466_Buff_Len = 100;
+// int MAX4466_Val[MAX4466_Buff_Len];   // variable to store the value coming from the sensor
+int MAX4466_Value = 0;
+
+void MAX4466_get_max()
+{
+  MAX4466_Value= max(MAX4466_Value,abs(512-analogRead(MAX4466_PIN)));
+}
 #endif //MAX4466_ADD
 
 #ifdef THERMIS_100K_ADD
 #define THERMIS_100K_Pin 0    // NTC sensor
+int THERMIS_1_Value;
 #endif //THERMIS_100K_ADD
 
 #ifdef DS18B20_ADD
 #define DS18B20_1_Pin 7
 OneWire DS18B20_1_ds(DS18B20_1_Pin);  // Temperature chip i/o on digital pin 2
+float DS18B20_1_temperature;
 
 float DS18B20_1_getTemp()
 {
@@ -410,11 +450,15 @@ float DS18B20_1_getTemp()
 #ifdef RHT03_ADD
 #define RHT03_1_PIN 8 // RHT03 Sensor pin
 dht RHT03_1;
+int chk_RHT03_1;
 #endif //RHT03_ADD
 
 #ifdef TMP102_ADD
 const int tmp102_1_Address = 0x48;
-#endif //TMP421_ADD
+float tmp102_1_temperature;
+byte tmp102_1_MSB, tmp102_1_LSB;
+int err;
+#endif //TMP102_ADD
 
 #ifdef HIH6130_ADD
 //  Create an HIH61XX with I2C address 0x27, powered by pin 22, need to modify this
@@ -423,21 +467,70 @@ HIH61XX HIH_6130_1_hih(0x27,22);
 
 #ifdef TMP421_ADD
 LibTempTMP421 TMP421_1 = LibTempTMP421(0);
+float TMP421_1_temperature;
 #endif //TMP421_ADD
 
 #ifdef BMP180_ADD
 Adafruit_BMP085_Unified BMP_180_1 = Adafruit_BMP085_Unified(10085);
+float BMP_180_1_temperature, BMP_180_1_pressure;
 #endif //BMP180_ADD
+
+#ifdef WindVel_ADD
+unsigned int pulse_count = 0;
+float RPM, airspeed, max_airspeed = 0;
+float speeds[5], avg_speed;
+int pos = 0;
+
+void inc_pulse_count() {
+  pulse_count++;
+}
+
+void calc_airspeed(unsigned int pulse_count, int seconds = 2) {
+  RPM = pulse_count*20/seconds;
+  if (RPM < 200) {
+    airspeed = 0;
+  }
+  else {
+    airspeed = 0.000975*RPM+0.341; // units = meters/second
+  }
+  max_airspeed = max(max_airspeed, airspeed);
+  speeds[pos] = airspeed;
+  pos++;
+  pulse_count = 0;
+}
+
+float mean_airspeed() {
+  float speed_total = 0, mean_speed;
+  for (int i = 0; i < 5; i++) {
+    speed_total += speeds[i];
+  }
+  mean_speed = speed_total/5;
+  return mean_speed;
+}
+#endif //WindVel_ADD
 
 void setup()
 {
   Serial.begin(115200);
   #ifdef debug_serial
-  Serial.print("Starting Up.");
-  #endif
+  Serial.print("Starting Up");
+  #endif //debug_serial
   
+  #ifndef BMP180_ADD
   Wire.begin();
+  #endif //BMP180_ADD
 
+  delay(3000); // waiting for the sensors to settle
+
+  #ifdef debug_serial
+  Serial.println("...entering Sensor Loop...");
+  #endif //debug_serial  
+  
+  #ifdef BMP180_ADD
+  BMP_180_1.begin();
+  #endif //BMP180_ADD
+  // set the resolution to 10 bit (good enough?)
+        
   #ifdef TMP421_ADD
   /************ The LibTemp421 library turns on Arduino pins A2, A3 (aka 16, 17) to power the sensor.
   *  This is necessary due to the fact that Wire.begin() is called in the constructor and needs to be 
@@ -450,17 +543,6 @@ void setup()
   pinMode(A3, INPUT);        // VCC pin
   digitalWrite(A3, LOW);     // turn off pullups   
   #endif //TMP421_ADD
-  
-  #ifdef BMP180_ADD
-  BMP_180_1.begin();
-  #endif //BMP180_ADD
-  // set the resolution to 10 bit (good enough?)
-      
-  delay(3000); // waiting for the sensors to settle
-  
-  #ifdef debug_serial
-  Serial.println("...entering Sensor Loop...");
-  #endif //debug_serial  
   
   #ifdef MLX90614_ADD
   i2c_init(); //Initialise the i2c bus
@@ -497,59 +579,37 @@ void setup()
   cbi(ADCSRA,ADPS1) ;
   cbi(ADCSRA,ADPS0) ;
   #endif //FASTADC
+
+  
 }
 
-void loop()
+void increment_time() {
+  current_time++; // Increases every 7 seconds
+  quick_sensors();
+  // Serial.print(".");
+}
+
+void sensor_print()
 {
   Serial.print("WXSensor;");
 
-  #ifdef MLX90614_ADD
-  int dev = 0x5A<<1;
-  int data_low = 0;
-  int data_high = 0;
-  int pec = 0;
-  int start_err = 0, write_err = 0, rep_start_err = 0;
-  
-  start_err = i2c_start(dev+I2C_WRITE);
-  write_err = i2c_write(0x07);
-  
-  // read
-  rep_start_err = i2c_rep_start(dev+I2C_READ);
-  data_low = i2c_readAck(); //Read 1 byte and then send ack
-  data_high = i2c_readAck(); //Read 1 byte and then send ack
-  pec = i2c_readNak();
-  i2c_stop();
-  
+  #ifdef MLX90614_ADD  
   if (start_err == 1 || write_err == 1 || rep_start_err == 1)
   {
     #ifndef SILENCE_BAD_SENSORS
-    Serial.print("MLX90614_T_F:");
+    Serial.print("MLX90614_1_T_F:");
     Serial.print(-999);
-    // Serial.print(fahrenheit);
     Serial.print(";");
     #endif
   }
   else {
-    //This converts high and low bytes together and processes temperature, MSB is a error bit and is ignored for temps
-    double tempFactor = 0.02; // 0.02 degrees per LSB (measurement resolution of the MLX90614)
-    double tempData = 0x0000; // zero out the data
-    int frac; // data past the decimal point
-    
-    // This masks off the error bit of the high byte, then moves it left 8 bits and adds the low byte.
-    tempData = (double)(((data_high & 0x007F) << 8) + data_low);
-    tempData = (tempData * tempFactor)-0.01;
-    
-    float celcius = tempData - 273.15;
-    float fahrenheit = (celcius*1.8) + 32;
-    
-    Serial.print("MLX90614_T_F:");
+    Serial.print("MLX90614_1_T_F:");
     Serial.print(fahrenheit);
     Serial.print(";");
   }
   #endif //MLX90614_ADD
   
   #ifdef IR_D6T_44L_06_ADD
-  bool data_check = D6T_get_data();
   if (data_check == true) {
     Serial.print("D6T_44L_06_1_T_C:");
     output_csv();
@@ -564,8 +624,6 @@ void loop()
   #endif //IR_D6T_44L_06_ADD
 
   #ifdef TMP421_ADD
-  float TMP421_1_temperature;
-  TMP421_1_temperature = TMP421_1.GetTemperature(); // Some error, check this out! 
   if (TMP421_1_temperature == -999) {
     #ifndef SILENCE_BAD_SENSORS
     Serial.print("TMP421_1_T_C:");
@@ -581,9 +639,6 @@ void loop()
   #endif //TMP421_ADD
       
   #ifdef BMP180_ADD
-  float BMP_180_1_temperature, BMP_180_1_pressure;
-  BMP_180_1.getPressure(&BMP_180_1_pressure);  
-  BMP_180_1.getTemperature(&BMP_180_1_temperature);
   if (BMP_180_1_temperature == -999 || BMP_180_1_pressure == -999) {
     #ifndef SILENCE_BAD_SENSORS
     Serial.print("BMP_180_1_T_C:");
@@ -606,7 +661,6 @@ void loop()
   
   #ifdef MMA8452
   if (MMA_found == true) {
-    MMA8452_get_means(&xmean, &ymean, &zmean, &rt_mean_sq);
     Serial.print("MMA8452_1_A_X_Units:");
     Serial.print(xmean);
     Serial.print(";");
@@ -641,24 +695,18 @@ void loop()
   #endif //MMA8452
 
   #ifdef PhoRes_ADD
-  int PhoRes_1_Value;
-  PhoRes_1_Value = analogRead(PhoRes_PIN); 
-  Serial.print("PhoRes_10K4.7K_Units:");
+  Serial.print("PhoRes_10K4.7K_1_Units:");
   Serial.print(PhoRes_1_Value);
   Serial.print(";");
   #endif //PhoRes_ADD
   
   #ifdef THERMIS_100K_ADD
-  int THERMIS_1_Value;
-  THERMIS_1_Value = analogRead(THERMIS_100K_Pin); 
-  Serial.print("THERMIS_100K_Units:");
+  Serial.print("THERMIS_100K_1_Units:");
   Serial.print(THERMIS_1_Value);
   Serial.print(";");
   #endif //THERMIS_100K_ADD
   
   #ifdef HIH6130_ADD
-  HIH_6130_1_hih.start();
-  HIH_6130_1_hih.update();
   Serial.print("HIH_6130_1_T_C:");
   Serial.print(HIH_6130_1_hih.temperature(), 2);
   Serial.print(";");
@@ -668,12 +716,6 @@ void loop()
   #endif //HIH6130_ADD
   
   #ifdef SHT15_ADD
-  uint16_t SHT15_1_rawData;
-  uint8_t SHT15_1_error; 
-  SHT15_1_error = SHT15_1_tempSensor.measTemp(&SHT15_1_rawData);
-  SHT15_1_temperature = SHT15_1_tempSensor.calcTemp(SHT15_1_rawData);
-  SHT15_1_error = SHT15_1_tempSensor.measHumi(&SHT15_1_rawData);
-  SHT15_1_humidity = SHT15_1_tempSensor.calcHumi(SHT15_1_rawData, SHT15_1_temperature);
   Serial.print("SHT15_1_T_C:");
   Serial.print(SHT15_1_temperature,2);
   Serial.print(";");
@@ -683,16 +725,12 @@ void loop()
   #endif //SHT15_ADD
   
   #ifdef DS18B20_ADD
-  float DS18B20_1_temperature;
-  DS18B20_1_temperature = DS18B20_1_getTemp();
   Serial.print("DS18B20_1_T_C:");
   Serial.print(DS18B20_1_temperature, 2);
   Serial.print(";");
   #endif //DS18B20_ADD
       
   #ifdef RHT03_ADD
-  int chk_RHT03_1;
-  chk_RHT03_1 = RHT03_1.read22(RHT03_1_PIN);
   if (chk_RHT03_1 == DHTLIB_OK)
   { 
     Serial.print("RHT03_1_T_C:");
@@ -705,18 +743,12 @@ void loop()
   #endif //RHT03_ADD
   
   #ifdef TMP102_ADD
-  float tmp102_1_temperature;
-  int err = Wire.requestFrom(tmp102_1_Address,2);
   if (err != 0) {
-    byte tmp102_1_MSB = Wire.read();
-    byte tmp102_1_LSB = Wire.read();
-    tmp102_1_temperature = (((tmp102_1_MSB << 8) | tmp102_1_LSB) >> 4) * 0.11250 + 32; //it's a 12bit int, using two's compliment for negative
     Serial.print("TMP102_1_T_F:");
     Serial.print(tmp102_1_temperature,2);
     Serial.print(";");
   }
   else{
-    tmp102_1_temperature = -999;
     #ifndef SILENCE_BAD_SENSORS
     Serial.print("TMP102_1_T_F:");
     Serial.print(tmp102_1_temperature,2);
@@ -726,13 +758,6 @@ void loop()
   #endif //TMP102_ADD
 
   #ifdef SHT75_ADD
-  uint16_t SHT75_1_rawData;
-  uint8_t SHT75_1_error;
-  SHT75_1_error = SHT75_1_tempSensor.measTemp(&SHT75_1_rawData);
-  SHT75_1_temperature = SHT75_1_tempSensor.calcTemp(SHT75_1_rawData);
-  SHT75_1_error = SHT75_1_tempSensor.measHumi(&SHT75_1_rawData);
-  SHT75_1_humidity = SHT75_1_tempSensor.calcHumi(SHT75_1_rawData, SHT75_1_temperature);
-  
   Serial.print("SHT75_1_T_C:");
   Serial.print(SHT75_1_temperature,2);
   Serial.print(";");
@@ -742,42 +767,211 @@ void loop()
   #endif //SHT75_ADD
   
   #ifdef HIH4030_ADD
-  int HIH4030_1_Value;
-  HIH4030_1_Value = analogRead(HIH4030_PIN); 
-  Serial.print("HIH4030_Units:");
+  Serial.print("HIH4030_1_Units:");
   Serial.print(HIH4030_1_Value);
   Serial.print(";");
   #endif //HIH4030_ADD
   
   #ifdef GA1A1S201WP_ADD
-  int AMBI_1_Value;
-  AMBI_1_Value = analogRead(AMBI_1_Pin); 
   Serial.print("AMBI_1_Units:");
   Serial.print(AMBI_1_Value);
   Serial.print(";");
   #endif //GA1A1S201WP_ADD
   
   #ifdef MAX4466_ADD
-  int i=0;
-  int MAX4466_Peak;
-  
-  for (i=0;i<MAX4466_Buff_Len;i++)
-  {
-    MAX4466_Val[i]= analogRead(MAX4466_PIN);
-  } 
-
-  // we have read sample_size values, let us now find the peak of the 100 values. 
-  MAX4466_Peak = 0;
-  
-  for (i=0;i<MAX4466_Buff_Len;i++)
-  {
-    MAX4466_Peak = max(MAX4466_Peak , abs(512-MAX4466_Val[i]));
-  }
-  Serial.print("MAX4466_1_Units:");
-  Serial.print(MAX4466_Peak);
+  Serial.print("MAX4466_1_MaxN_Units:");
+  Serial.print(MAX4466_Value);
   Serial.print(";");
   #endif //MAX4466_ADD
+
+  #ifdef WindVel_ADD
+  Serial.print("WindVel_1_MaxV_M/S:");
+  Serial.print(max_airspeed);
+  Serial.print(";");
+  Serial.print("WindVel_1_AvgV_M/S:");
+  Serial.print(avg_speed);
+  Serial.print(";");
+  #endif //WindVel_ADD
   
   Serial.println("WXSensor");
-  delay(29200);
+}
+
+void quick_sensors()
+{
+  #ifdef MMA8452
+  MMA8452_get_means();
+  #endif
+
+  #ifdef MAX4466_ADD
+  for (int i = 0; i < 900; i++) {
+    MAX4466_get_max();
+  }
+  #endif //MAX4466_ADD
+
+  // timer3_runs++;
+}
+
+void loop() {
+  // Serial.print("Timer 1 Runs: ");
+  // Serial.println(timer1_runs);
+  // if (current_time == 1) {
+  //   Serial.print("Timer 3 Runs: ");
+  //   Serial.println(timer3_runs);
+  //   current_time = 0;
+  // }
+  // quick_sensors();
+
+  #ifdef IR_D6T_44L_06_ADD
+  data_check = D6T_get_data();
+  #endif //IR_D6T_44L_06_ADD
+
+  #ifdef SHT15_ADD
+  SHT15_1_error = SHT15_1_tempSensor.measTemp(&SHT15_1_rawData);
+  SHT15_1_temperature = SHT15_1_tempSensor.calcTemp(SHT15_1_rawData);
+  SHT15_1_error = SHT15_1_tempSensor.measHumi(&SHT15_1_rawData);
+  SHT15_1_humidity = SHT15_1_tempSensor.calcHumi(SHT15_1_rawData, SHT15_1_temperature);
+  #endif //SHT15_ADD
+  
+  #ifdef SHT75_ADD
+  SHT75_1_error = SHT75_1_tempSensor.measTemp(&SHT75_1_rawData);
+  SHT75_1_temperature = SHT75_1_tempSensor.calcTemp(SHT75_1_rawData);
+  SHT75_1_error = SHT75_1_tempSensor.measHumi(&SHT75_1_rawData);
+  SHT75_1_humidity = SHT75_1_tempSensor.calcHumi(SHT75_1_rawData, SHT75_1_temperature);
+  #endif //SHT75_ADD
+
+  #ifdef GA1A1S201WP_ADD
+  AMBI_1_Value = analogRead(AMBI_1_Pin); 
+  #endif //GA1A1S201WP_ADD
+  
+  #ifdef PhoRes_ADD
+  PhoRes_1_Value = analogRead(PhoRes_PIN); 
+  #endif //PhoRes_ADD
+  
+  #ifdef HIH4030_ADD
+  HIH4030_1_Value = analogRead(HIH4030_PIN); 
+  #endif //HIH4030_ADD
+  
+  #ifdef THERMIS_100K_ADD
+  THERMIS_1_Value = analogRead(THERMIS_100K_Pin); 
+  #endif //THERMIS_100K_ADD
+  
+  #ifdef DS18B20_ADD
+  DS18B20_1_temperature = DS18B20_1_getTemp();
+  #endif //DS18B20_ADD
+      
+  #ifdef TMP421_ADD
+  TMP421_1_temperature = TMP421_1.GetTemperature(); // Some error, check this out! 
+  #endif //TMP421_ADD
+      
+  #ifdef RHT03_ADD
+  chk_RHT03_1 = RHT03_1.read22(RHT03_1_PIN);
+  #endif //RHT03_ADD
+  
+  #ifdef BMP180_ADD
+  BMP_180_1.getPressure(&BMP_180_1_pressure);  
+  BMP_180_1.getTemperature(&BMP_180_1_temperature);
+  #endif //BMP180_ADD
+  
+  #ifdef TMP102_ADD
+  err = Wire.requestFrom(tmp102_1_Address,2);
+  if (err != 0) {
+    byte tmp102_1_MSB = Wire.read();
+    byte tmp102_1_LSB = Wire.read();
+    tmp102_1_temperature = (((tmp102_1_MSB << 8) | tmp102_1_LSB) >> 4) * 0.11250 + 32; //it's a 12bit int, using two's compliment for negative
+  }
+  else {
+    tmp102_1_temperature = -999;
+  }
+  #endif //TMP102_ADD
+
+  #ifdef HIH6130_ADD
+  HIH_6130_1_hih.start();
+  HIH_6130_1_hih.update();
+  #endif //HIH6130_ADD
+  
+  #ifdef MLX90614_ADD
+  start_err = i2c_start(dev+I2C_WRITE);
+  write_err = i2c_write(0x07);
+    
+  // read
+  rep_start_err = i2c_rep_start(dev+I2C_READ);
+  data_low = i2c_readAck(); //Read 1 byte and then send ack
+  data_high = i2c_readAck(); //Read 1 byte and then send ack
+  pec = i2c_readNak();
+  i2c_stop();
+  
+  //This converts high and low bytes together and processes temperature, MSB is a error bit and is ignored for temps
+  tempData = 0x0000; // zero out the data
+  
+  // This masks off the error bit of the high byte, then moves it left 8 bits and adds the low byte.
+  tempData = (double)(((data_high & 0x007F) << 8) + data_low);
+  tempData = (tempData * tempFactor)-0.01;
+  
+  celcius = tempData - 273.15;
+  fahrenheit = (celcius*1.8) + 32;
+  #endif //MLX90614_ADD
+
+  // END OF SIMPLE SENSORS
+  //Timer1.initialize(1000000);
+  //Timer1.stop();
+  Timer3.initialize(63500);
+  //Timer3.stop();
+  current_time = 0;
+  // Serial.print("!");
+  //Timer3.restart();
+  Timer3.attachInterrupt(increment_time);
+  // Serial.print("&");
+  //Timer1.restart();
+  //Timer3.attachInterrupt(quick_sensors);
+  // Serial.print("*");
+  //Timer1.restart();
+  Timer3.restart();
+  // Serial.print("^");
+
+  while (current_time < 458) {
+    //continue;
+    delay(50);
+  }
+
+  //Timer1.detachInterrupt();
+  Timer3.detachInterrupt();
+
+  // #ifdef WindVel_ADD
+  // attachInterrupt(0, inc_pulse_count, FALLING);
+  // #endif
+  // delay(2000);
+  // #ifdef WindVel_ADD
+  // detachInterrupt(0);
+  // calc_airspeed(pulse_count);
+  // #endif
+
+  // Timer3.attachInterrupt(increment_time);
+  // while (current_time < 4) {
+  //   quick_sensors();
+  // }
+  // Timer3.detachInterrupt();
+  // current_time = 0;
+  // delay(2000);
+
+  // #ifdef WindVel_ADD
+  // avg_speed = mean_airspeed();
+  // #endif
+  #ifdef MMA8452
+  calc_MMA_RMS();
+  #endif
+
+  sensor_print();
+  // #ifdef WindVel_ADD
+  // pos = 0;
+  // max_airspeed = 0;
+  // #endif
+  #ifdef MAX4466_ADD
+  MAX4466_Value = 0;
+  #endif
+  //current_time = 0;
+  #ifdef MMA8452
+  q = 0;
+  float xmean = 0, ymean = 0, zmean = 0, rt_mean_sq = 0, xvar = 0, yvar = 0, zvar = 0, mean_square_var = 0;
+  float xvals[460], yvals[460], zvals[460];
+  #endif
 }
