@@ -27,8 +27,8 @@ class sensor_plugin_class():
         
     
     ##############################################################################
-    # Imports all the sensor modules present in the watchdir and registers only \
-    # the unregistered sensor modules and spawns a separate thread for all the \
+    # Imports all the sensor modules present in the watchdir and registers only
+    # the unregistered sensor modules and spawns a separate thread for all the
     # imported modules and starts all of them
     def plugin_sensors(self):
         try:
@@ -73,7 +73,7 @@ class sensor_plugin_class():
             if module_names:
                 logger.debug ("Sensor Modules:"+"\n\n")
                 for module_name in module_names:
-	            # Finds the module
+					# Finds the module
                     f, filename, description = imp.find_module(module_name)
                     logger.debug('Desc: ' + str(description) + '\n ' + 'Filename:'\
                     + str(filename) + '\n' + 'File Desc:' + str(f)+"\n\n")
@@ -112,7 +112,7 @@ class sensor_plugin_class():
 
     ############################################################################## 
     # Checks if its the name of a valid python source module
-    # Not importing __init__ to avoid recursive imports due to another __init__ \
+    # Not importing __init__ to avoid recursive imports due to another __init__
     # file present in the directory
     def is_source_module(self, module):
         if module[1] == 'py' and module[0] != '__init__':
@@ -130,7 +130,7 @@ class sensor_plugin_class():
     
 
     ##############################################################################
-    # Stores the sensor's info in confi file by calling the register function \
+    # Stores the sensor's info in config file by calling the register function
     # of the sensor object
     def register_modules(self, sensor_class_objcts):
         try:
@@ -144,8 +144,8 @@ class sensor_plugin_class():
          
     
     ############################################################################## 
-    # Compares the file's modified time with the current time to check whether\
-    # the sensor module should be registered or just started
+    # Compares the file's modified time with the current time to check whether
+    # the sensor module should be registered and or just started
     def is_new_sensor(self, sensor_file_name):
         config = ConfigObj(config_file_name)
         if "last_sensors_registration_time" in config:
@@ -176,7 +176,7 @@ class sensor_plugin_class():
 
 
     ##############################################################################
-    # Creates a separate thread for each of the sensor modules and attaches \
+    # Creates a separate thread for each of the sensor modules and attaches the thread
     # with each sensor module and starts the sensor
     def start_sensors(self, sensor_class_objcts, sensor_class_names):
         try:
@@ -192,7 +192,7 @@ class sensor_plugin_class():
          
         
     ##############################################################################  
-    # Prepares a list of running sensor threads so that when the process exits\
+    # Prepares a list of running sensor threads so that when the process exits
     # they can be joined
     def update_sensor_thread_list(self, thread):
         sensor_thread_list.append(thread)
@@ -209,7 +209,7 @@ class sensor_plugin_class():
         
         
     ##############################################################################
-    # Collects msgs from each of the output_buffers of the sensors and converts\
+    # Collects msgs from each of the output_buffers of the sensors and converts
     # them into proper format and puts them into sensor_controller's input_buffer
     def get_sensor_msgs(self):
         try:

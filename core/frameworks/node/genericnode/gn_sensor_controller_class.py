@@ -60,13 +60,10 @@ class sensor_controller_class(threading.Thread):
 						self.input_buffer.task_done()
 					# set time to remain attentive for next 200 ms
 					wait_time = time.time() + wait_time_for_next_msg
-					#print "short sleep snsr"
 					time.sleep(0.0001)
 				if wait_time > time.time():
-					#print "short sleep snsr"
 					time.sleep(0.0001)
 				else:
-					#print "long sleep snsr"
 					time.sleep(0.1)
 		except Exception as inst:
 			logger.critical("Exception: " + str(inst)+ "\n\n")
@@ -80,13 +77,13 @@ class sensor_controller_class(threading.Thread):
 	def process_msg(self, item):
 		logger.debug('Msg being processed..'+ "\n\n")
 		if item.internal_msg_header == msg_to_nc:
-			# If the bfr_for_in_to_out_msgs is empty or msg to be\
+			# If the bfr_for_in_to_out_msgs is empty or msg to be
 			# sent is a reply type then process the msg
 			if item.msg_type == reply_type or self.buffer_mngr.bfr_for_in_to_out_msgs.empty():
 				logger.debug('Received sensor msg.'+ "\n\n")
 				if item.msg_type == data_type:
 					self.send_data_msg(item)
-			# protocol does not allow to send a (data/cmd) msg when  \
+			# protocol does not allow to send a (data/cmd) msg when
 			# bfr_for_in_to_out_msgs is full so push it back in the queue 
 			else:
 				self.input_buffer.put(item)
@@ -131,7 +128,7 @@ class sensor_controller_class(threading.Thread):
 	
 
 	##############################################################################   
-	# Called by main_thread to join all sensor threads before exiting
+	# Called by main_thread to join all looping sensor threads before exiting
 	def close(self):
 		for thread in sensor_thread_list:
 			thread.join(1)
