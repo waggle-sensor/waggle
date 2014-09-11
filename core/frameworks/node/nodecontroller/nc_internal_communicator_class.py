@@ -5,12 +5,13 @@ from global_imports import *
 from nc_global_definition_section import buffered_msg,  msg_from_gn,  \
 asynchat_msg_terminator,  gn_socket_list,  add_to_thread_buffer, logger
 
-# One object of this class is created for each GN and this object handles all \
+"""
+# One object of this class is created for each GN and this object handles all 
 # communication with that GN. 
-# When it receives the message from GN it will read the message till it finds \
+# When it receives the message from GN it will read the message till it finds 
 # the terminating character of the message and then it sends the message to the buffer_mngr. 
 # Also handles the sending of the data which is in its output buffer to the GN.
-
+"""
 class internal_communicator(asynchat.async_chat):
 
     ac_in_buffer_size = 4096

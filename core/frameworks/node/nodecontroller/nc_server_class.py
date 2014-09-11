@@ -5,9 +5,12 @@ import asynchat
 import socket
 from nc_global_definition_section import gn_socket_list, logger
         
+
+"""
 # Listens for incoming registration requests of guest nodes and once a request
 # is received, it creates a new object of class internal_communicator and passes
 # the new socket's details to that.
+"""
 class nc_server_class(threading.Thread, asyncore.dispatcher):
         
     ##############################################################################

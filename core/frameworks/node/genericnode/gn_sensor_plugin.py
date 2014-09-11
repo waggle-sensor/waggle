@@ -6,7 +6,13 @@ config_file_name, logger
 from global_imports import *
 from config_file_functions import initialize_config_file, ConfigObj
 
-
+"""
+# Imports sensor modules, registers them, and starts new thread for each sensor module
+# Periodically called by sensor_controller to collect sensor msgs and 
+# transform them in proper format which the sensor_controller can understand and 
+# puts in the input_buffer of sensor controller.
+# But this is not a separate thread.
+"""
 class sensor_plugin_class():
     
     # Specifies the path from where sensor modules are imported

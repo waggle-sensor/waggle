@@ -72,7 +72,7 @@ class async_chat (asyncore.dispatcher):
     def __init__ (self, sock=None, map=None):
         # for string terminator matching
         self.ac_in_buffer = ''
-        #print "USING NEW ASYNCHAT VERSION-----------------------------------------\n\n"
+        # print "USING NEW ASYNCHAT VERSION-----------------------------------------\n\n"
         # we use a list here rather than cStringIO for a few reasons...
         # del lst[:] is faster than sio.truncate(0)
         # lst = [] is faster than sio.truncate(0)

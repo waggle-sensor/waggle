@@ -10,19 +10,41 @@ config_file_name, logger, wait_time_for_next_msg
 from config_file_functions import initialize_config_file, ConfigObj
 
 ##################################################################################
-# Comments:
-# sequence no = session_id (3bytes) + subseq_no(3 bytes)
+# NOTES---------------------------------------------------------------------------
+
+"""
+ sequence no = session_id(3 bytes) + subseq_no(3 bytes)
+"""
+
+"""
+ unacknowledged_msg_handler_info is saved in bfr_for_sent_msgs
+ unacknowledged_msg_handler_info's format: [session_id, \
+ last_gn_subseq_no, expiration_time, encoded_msg, msg_handler_no, inst_id]
+"""
+
+"""
+ Responses stored in bfr_for_sent_responses have the format:
+ (session_id, subseq_no, encoded_msg)
+"""
+
+"""
+ Sequence nos stored in temp_acks have the format:
+ (session_id, subseq_no)
+"""
 ##################################################################################
+
+
  
+"""
 # Collects msgs from main_thread and sensor_controller threads, encodes them, 
 # attaches msg header to the msg and sends it to the external_communicator 
 # thread to forward to NC. 
 # Implements the lock step protocol
 # Decodes msgs obtained from NC and decides whether its a valid msg and if so, 
 # dispatches msgs to appropriate threads by examining the msg_type.
-# Handles simple ACKs.  
-
-class buffer_mngr_class(threading.Thread):    
+# Handles simple ACKs. 
+"""
+class buffer_mngr_class(threading.Thread):
 	
 	##############################################################################
 	# Initializes the global variables and data structures
@@ -534,13 +556,13 @@ class buffer_mngr_class(threading.Thread):
 									self.send_msg_to_nc(response[2])
 									match = 1
 							if not match:
-							# check if the msg has been already received 
-							# but not responded so it does not have any entry in bfrd_responses
-							for response in self.temp_acks:                
-									# comparing the subseq_no of new msg with 
-                                   # saved subseq_no not yet acknowledged
-                                   if response[1] == new_subseq_no:
-									    logger.critical("Old msg with subseq_no: "\
+								# check if the msg has been already received 
+								# but not responded so it does not have any entry in bfrd_responses
+								for ack in self.temp_acks:                
+									# comparing the subseq_no of new msg with
+									# saved subseq_no not yet acknowledged
+									if ack[1] == new_subseq_no:
+										logger.critical("Old msg with subseq_no: "\
 									    +str(new_subseq_no)+ " received whose ACK\
 									    is not yet sent..................\n\n")
 										match = 1

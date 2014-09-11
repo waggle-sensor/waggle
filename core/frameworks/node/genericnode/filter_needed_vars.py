@@ -4,7 +4,7 @@ f=open('global_variables').read()
 f=f.split(',')
 class_list = {}
 
-classes = ['config_file_functions', 'get_node_info', '__init__', 'gn_buffer_mngr_class', 'gn_external_communicator_class', 'gn_main_class', 'gn_sensor_controller_class', 'sensor_plugin', 'add_sensor_info']
+classes = ['config_file_functions', 'get_node_info', '__init__', 'gn_buffer_mngr_class', 'gn_external_communicator_class', 'gn_main_class', 'gn_sensor_controller_class', 'gn_sensor_plugin', 'add_sensor_info']
 
 for each in classes:
     class_list[each]=[]

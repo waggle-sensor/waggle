@@ -60,6 +60,15 @@ buffered_msg = namedtuple('buffered_msg', ['internal_msg_header', 'msg_type',\
 """
 
 """
+# When msg sent to sensor_controller's input_buffer:
+#	internal_msg_header = "msg_to_nc"
+#	msg_type = data_type (as currently only data is sent from sensors)
+#   seq_no: None as seq_no is managed by buffr_mngr
+#   reply_id: -1
+#   msg = data msg from sensor
+"""
+
+"""
 # When msg sent from main_thread/sensor_controller to buffr_mngr:
 #	internal_msg_header = "msg_to_nc"
 #	msg_type = msg_type of the msg to be sent
@@ -143,6 +152,6 @@ def add_to_thread_buffer(msg_buffer, string_msg, thread_name):
     if not msg_buffer.full():
         msg_buffer.put(string_msg)
     else:
-        logger.info("Msg buffer FULL: So Discarding the msg...................
+        logger.info("Msg buffer FULL: So Discarding the msg...................\
         .............................................................." + "\n\n")
     logger.debug("Msg added to thread's buffer.\n\n")
