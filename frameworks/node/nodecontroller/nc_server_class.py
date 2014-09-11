@@ -38,11 +38,10 @@ class nc_server_class(threading.Thread, asyncore.dispatcher):
             self.listen(5)                                                                                  
             logger.info("Listening on port_for_gn: " + str(self.port_for_gn)+"\n\n")
             # starts the loop which constantly checks whether the socket is readable or writable
-            #while True:
-			# Starts the loop which polls all the open sockets one by one
-			asyncore.loop(timeout=0.01, use_poll=True, map=None)   
-			print "looping"
-            #time.sleep(0.01)
+            while True:
+				# Starts the loop which polls all the open sockets one by one
+				asyncore.loop(timeout=0.01, use_poll=True, map=None)   
+            	time.sleep(0.01)
         except Exception as inst:
             logger.critical("Exception in nc_server run(): " + str(inst)+"\n\n")
             time.sleep(1)

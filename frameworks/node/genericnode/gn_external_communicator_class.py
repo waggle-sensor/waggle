@@ -122,10 +122,10 @@ class external_communicator_class(asynchat.async_chat, threading.Thread):
             self.connect( (nc_ip, self.nc_port) )                                                             
             logger.info("CONNECTED............................................\
             ..........."+"\n\n")
-            #while True:
-            # Starts the loop which polls the open socket
-            asyncore.loop(timeout=0.01, use_poll=True, map=None)                                                                                         
-            #time.sleep(0.01)
+            while True:
+            	# Starts the loop which polls the open socket
+            	asyncore.loop(timeout=0.01, use_poll=True, map=None)                                                                                         
+            	time.sleep(0.01)
         except Exception as inst:
             logger.critical("Exception in run: " + str(inst) + "\n\n")
             self.shutdown = 1
