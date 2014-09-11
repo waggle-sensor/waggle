@@ -1,0 +1,70 @@
+10
+
+dir
+0
+https://repo.anl-external.org/repos/cerisc/forest/branches/2014/kmacintyre/Arduino/libraries/Wire/examples
+https://repo.anl-external.org/repos/cerisc
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+05a808c1-ce7b-436b-b179-cd05a5c35c82
+
+master_writer
+dir
+
+
+
+add
+
+slave_sender
+dir
+
+
+
+add
+
+SFRRanger_reader
+dir
+
+
+
+add
+
+digital_potentiometer
+dir
+
+
+
+add
+
+master_reader
+dir
+
+
+
+add
+
+slave_receiver
+dir
+
+
+
+add
+
