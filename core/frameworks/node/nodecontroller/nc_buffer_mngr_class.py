@@ -273,7 +273,7 @@ class buffer_mngr_class(threading.Thread):
 		try:
 			if not self.bfr_for_out_to_in_msgs.empty():
 				item = self.bfr_for_out_to_in_msgs.get()
-				logger.debug("Msg from GN:" + "\n\n") + str(item.msg) 
+				logger.debug("Msg from GN:"  +  str(item.msg) + "\n\n")
 				try:
 					decoded_msg = Message.decode(item.msg)
 				except Exception as inst:
