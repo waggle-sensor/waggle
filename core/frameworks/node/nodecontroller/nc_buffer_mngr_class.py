@@ -11,27 +11,27 @@ from config_file_functions import initialize_config_file, ConfigObj
 # NOTES---------------------------------------------------------------------------
 
 """
- sequence no = session_id(3 bytes) + subseq_no(3 bytes)
+sequence no = session_id(3 bytes) + subseq_no(3 bytes)
 """
 
 """
- unacknowledged_msg_handler_info is saved in bfr_for_sent_msgs
- unacknowledged_msg_handler_info's format: [session_id, \
- last_nc_subseq_no[inst_id], expiration_time, encoded_msg, msg_handler_no, inst_id]
+unacknowledged_msg_handler_info is saved in bfr_for_sent_msgs
+unacknowledged_msg_handler_info's format: [session_id, \
+last_nc_subseq_no[inst_id], expiration_time, encoded_msg, msg_handler_no, inst_id]
 """
 
 """
- Responses stored in bfr_for_sent_responses have the format:
- (session_id, subseq_no, encoded_msg)
+Responses stored in bfr_for_sent_responses have the format:
+(session_id, subseq_no, encoded_msg)
 """
 
 """
- Sequence nos stored in temp_acks have the format:
- (session_id, subseq_no)
+Sequence nos stored in temp_acks have the format:
+(session_id, subseq_no)
 """
 ##################################################################################
 
- 
+
 """
 # Collects msgs from msg_processor, encodes them, attaches msg header to the msg
 # and sends it to the internal_communicator thread to forward to GN. 
@@ -150,6 +150,7 @@ class buffer_mngr_class(threading.Thread):
 							for msg_id in self.temp_acks[inst_id]:
 								if msg_id[0] == session_id and msg_id[1] == ackd_id:
 									self.temp_acks[inst_id].remove(msg_id)
+							# If the response is not for an old msg
 							if session_id == self.gn_session_id[inst_id]:
 								self.bfr_for_sent_responses[inst_id].append((\
 								session_id, ackd_id, encoded_msg))
@@ -164,7 +165,7 @@ class buffer_mngr_class(threading.Thread):
 						ret = self.send_msg_to_cloud(encoded_msg)                                                             
 						# TODO: need to handle the failure case
 						if not ret:
-							self.process_ack(item.msg_type)
+						        self.process_ack(item.msg_type)
 				self.bfr_for_in_to_out_msgs[inst_id].task_done()
 		except Exception as inst:
 			logger.critical("Exception in send_in_to_out_msgs: " + str(inst)+"\n\n")
@@ -981,3 +982,4 @@ class buffer_mngr_class(threading.Thread):
 	def __del__(self):
 		print self, 'gn_msgs_bufr_mngr object died.'
 	
+

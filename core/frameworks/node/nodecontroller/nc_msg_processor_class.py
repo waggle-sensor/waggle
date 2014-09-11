@@ -20,7 +20,7 @@ class msg_processor_class():
     
     ##############################################################################
     def __init__(self, thread_name, port_for_gn):
-		# used by logging module for printing messages related to this thread
+	# used by logging module for printing messages related to this thread
         self.thread_name = "Thread_" + thread_name																	
         self.input_buffer = Queue.Queue(maxsize=1000)																			
         self.port_for_gn = port_for_gn																				
@@ -116,7 +116,6 @@ class msg_processor_class():
             self.process_gn_registration_msg(item)                                                             
         elif item.msg_type == data_type:                                                                                         
             self.process_data_msg(item)																		  
-        
         elif item.msg_type == command_type:
             self.process_cmd_msg(item)                                                                         
         else:
@@ -128,7 +127,7 @@ class msg_processor_class():
     def process_data_msg(self, item):
         logger.debug("DATA MSG Received.................................."+"\n\n")
         if item.msg != None:
-			# sends msg to bufr mngr to send it to cloud
+	    # sends msg to bufr mngr to send it to cloud
             self.send_data_msg('cloud', item.msg)  
         # sends msg to bufr mngr to send ACK to GN
         self.send_ack(item.seq_no, item.sock_or_gn_id, 0)                              
