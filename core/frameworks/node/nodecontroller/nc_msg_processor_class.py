@@ -20,7 +20,7 @@ class msg_processor_class():
     
     ##############################################################################
     def __init__(self, thread_name, port_for_gn):
-	# used by logging module for printing messages related to this thread
+		# used by logging module for printing messages related to this thread
         self.thread_name = "Thread_" + thread_name																	
         self.input_buffer = Queue.Queue(maxsize=1000)																			
         self.port_for_gn = port_for_gn																				
@@ -30,7 +30,7 @@ class msg_processor_class():
         
         
     ##############################################################################    
-    # Stores system's info, spawns other threads and processes reg/data msgs from GNs
+    # Stores system's info, spawns other threads and at present processes reg/data msgs from GNs
     # and sends them to cloud and ACKs to GNs through buffer_mngr
     def run(self):
         try:
@@ -76,14 +76,6 @@ class msg_processor_class():
     
     
     ##############################################################################
-    # Returns True if the bfr_for_in_to_out_msgs of this inst_id is empty or the msg is reg/data
-    # and not a command, so the reply is simple ACK which is not saved in sent_msgs bfr. 
-    # So as per the protocol even if bfr_for_in_to_out_msgs is full the ACK can be sent.
-    def can_send_msg(self, inst_id, msg_type):
-        return self.buffer_mngr.bfr_for_in_to_out_msgs[inst_id].empty() or (msg_type != command_type)
-       
-       
-    ##############################################################################
     # Stores the node's sw/hw info in config file
     def store_system_info(self):
         with config_file_lock:
@@ -107,7 +99,15 @@ class msg_processor_class():
             -------------------------------\n\n")
             return 1
         
-        
+
+    ##############################################################################
+    # Returns True if the bfr_for_in_to_out_msgs of this inst_id is empty or the msg is reg/data
+    # and not a command, so the reply is simple ACK which is not saved in sent_msgs bfr. 
+    # So as per the protocol even if bfr_for_in_to_out_msgs is full the ACK can be sent.
+    def can_send_msg(self, inst_id, msg_type):
+        return self.buffer_mngr.bfr_for_in_to_out_msgs[inst_id].empty() or (msg_type != command_type)
+       
+       
     ##############################################################################
     # Dispatches the msg to proper function by examining msg_type
     def process_external_msg(self, item):
@@ -121,34 +121,6 @@ class msg_processor_class():
         else:
             logger.critical("Unknown Msg type received......"+"\n\n")
             
-        
-    ##############################################################################
-    # Sends data msg to cloud and ACK to GN
-    def process_data_msg(self, item):
-        logger.debug("DATA MSG Received.................................."+"\n\n")
-        if item.msg != None:
-	    # sends msg to bufr mngr to send it to cloud
-            self.send_data_msg('cloud', item.msg)  
-        # sends msg to bufr mngr to send ACK to GN
-        self.send_ack(item.seq_no, item.sock_or_gn_id, 0)                              
-        logger.debug("Data ACK sent to buffer_mngr."+"\n\n")
-   
-   
-       
-    ##############################################################################
-    # Sends msg to buffer_mngr to forward to cloud
-    def send_data_msg(self, inst_id, data_payloads):
-        buff_msg = buffered_msg(msg_send, data_type, None, no_reply, data_payloads, inst_id)                   # adds header msg_to_nc in front of the registration message and returns whole message in string form by adding delimiter
-        add_to_thread_buffer(self.buffer_mngr.bfr_for_in_to_out_msgs[inst_id], buff_msg, 'GN_msgs_buffer_mngr')                                 # Sends registration msg by adding to the buffer_mngr's buffer
-        logger.debug("Data msg sent to bufr mngr to send to cloud."+"\n\n")
-    
-    
-        
-    ##############################################################################
-    # Function: TODO: just a hook
-    def process_cmd_msg(self, item):
-        logger.debug("CMD Received........................................"+"\n\n")
-    
         
     ##############################################################################
     # Registers GN if not registered yet and then sends reg msg to cloud
@@ -170,7 +142,21 @@ class msg_processor_class():
         self.send_ack(item.seq_no, item.sock_or_gn_id, 0, str(int(time.time())))                                     # sends msg to bufr mngr to send ACK to gn
         logger.debug("REGISTRATION ACK sent to buffer_mngr."+"\n\n")
 
-     
+    
+    ##############################################################################
+    # Saves GN's info in config file and sets registration status = "NO"
+    def register_gn(self, gn_info):
+        try:
+            for single_gn_info in gn_info:
+                config = ConfigObj(config_file_name)
+                config["GN Info"][single_gn_info.instance_id] = single_gn_info.sys_info
+                config["GN Info"][single_gn_info.instance_id]["Registered"] = 'NO'
+                config.write()
+                logger.info("GN registration info saved in config file."+"\n\n")
+        except Exception as inst:
+            logger.critical("Exception in register_gn:" + str(inst)+"\n\n")
+        
+    
     ##############################################################################
     # Sends its own system's info if its not registered and also all GNs' info \
     # which are unregistered with the cloud
@@ -196,9 +182,35 @@ class msg_processor_class():
         except Exception as inst:
             logger.critical("Exception in send_reg_msg_to_cloud:" + str(inst)+"\n\n")
            
+
+    ##############################################################################
+    # Sends data msg to cloud and ACK to GN
+    def process_data_msg(self, item):
+        logger.debug("DATA MSG Received.................................."+"\n\n")
+        if item.msg != None:
+	    # sends msg to bufr mngr to send it to cloud
+            self.send_data_msg('cloud', item.msg)  
+        # sends msg to bufr mngr to send ACK to GN
+        self.send_ack(item.seq_no, item.sock_or_gn_id, 0)                              
+        logger.debug("Data ACK sent to buffer_mngr."+"\n\n")
+
+       
+    ##############################################################################
+    # Sends msg to buffer_mngr to forward to cloud
+    def send_data_msg(self, inst_id, data_payloads):
+        buff_msg = buffered_msg(msg_send, data_type, None, no_reply, data_payloads, inst_id)                   # adds header msg_to_nc in front of the registration message and returns whole message in string form by adding delimiter
+        add_to_thread_buffer(self.buffer_mngr.bfr_for_in_to_out_msgs[inst_id], buff_msg, 'GN_msgs_buffer_mngr')                                 # Sends registration msg by adding to the buffer_mngr's buffer
+        logger.debug("Data msg sent to bufr mngr to send to cloud."+"\n\n")
+    
         
     ##############################################################################
-    # Sends ACK to GN
+    # Hook
+    def process_cmd_msg(self, item):
+        logger.debug("CMD Received........................................"+"\n\n")
+    
+        
+    ##############################################################################
+    # Sends ACK to GN for reg/data msg currently, can be extended for all types
     # special_reg_ack is used to send current time to the GN while sending Reg ACK
     def send_ack(self, reply_id, inst_id, ret_val, special_reg_ack=None):
         msg = ReplyPayload()
@@ -209,22 +221,7 @@ class msg_processor_class():
             msg.output = acknowledgment
         buff_msg = buffered_msg(msg_send, reply_type, None, reply_id, [msg], inst_id)
         add_to_thread_buffer(self.buffer_mngr.bfr_for_in_to_out_msgs[inst_id], buff_msg, 'GN_msgs_buffer_mngr')                                 # Sends registration msg by adding to the buffer_mngr's buffer
-        
-        
-    ##############################################################################
-    # Saves GN's info in config file and sets registration status = "NO"
-    def register_gn(self, gn_info):
-        try:
-            for single_gn_info in gn_info:
-                config = ConfigObj(config_file_name)
-                config["GN Info"][single_gn_info.instance_id] = single_gn_info.sys_info
-                config["GN Info"][single_gn_info.instance_id]["Registered"] = 'NO'
-                config.write()
-                logger.info("GN registration info saved in config file."+"\n\n")
-        except Exception as inst:
-            logger.critical("Exception in register_gn:" + str(inst)+"\n\n")
-        
-        
+            
         
     ##############################################################################    
     def __del__(self):

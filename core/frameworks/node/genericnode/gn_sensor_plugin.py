@@ -26,6 +26,44 @@ class sensor_plugin_class():
         self.registered_sensors = []
         
     
+    ##############################################################################
+    # Imports all the sensor modules present in the watchdir and registers only \
+    # the unregistered sensor modules and spawns a separate thread for all the \
+    # imported modules and starts all of them
+    def plugin_sensors(self):
+        try:
+            imported_sensor_modules, sensor_class_names = self.import_new_sensor_modules()
+            logger.debug("Module extracted from package."+"\n\n")
+            if sensor_class_names:    
+                sensor_class_objcts = []
+                for module_name, sensor_class_name in zip(imported_sensor_modules, sensor_class_names):
+                    if sensor_class_name != '__init__':
+                        try:
+							# Loads the class dynamically from the imported module
+							# So essentially the sensor_class_name (class name)\
+							# and the module_name (file name) must match
+                            sensor_class = getattr(module_name, sensor_class_name)
+                            # create an object of the above class
+                            sensor_class_obj = sensor_class()
+                            sensor_class_objcts.append(sensor_class_obj)
+                        except Exception as inst:
+                            logger.critical("Exception in plugin loop: " + str(inst)+"\n\n")
+                self.register_modules(sensor_class_objcts)
+                for sensor_class_name in sensor_class_names :
+                    self.sensorid_input_buffer_map[sensor_class_name] = Queue.Queue()
+                    self.sensorid_output_buffer_map[sensor_class_name] = Queue.Queue()
+                logger.debug("Sensors' info added to the config file and their buffers created.")      
+                self.start_sensors(sensor_class_objcts, sensor_class_names)
+                # Notify to the other threads that the sensors' info has been \
+                # saved in config file. Used to avoid race conditions.
+                if not sensors_info_saved_event.is_set():
+                    sensors_info_saved_event.set()
+                    logger.debug("Sensors_info_saved_event set."+"\n\n")
+                return
+        except Exception as inst:
+            logger.critical("Exception in plugin_sensors: " + str(inst)+"\n\n")
+            
+
     ############################################################################## 
     # Imports new modules and returns their list
     def import_new_sensor_modules(self):
@@ -50,20 +88,12 @@ class sensor_plugin_class():
             logger.critical("Exception in import_new_sensor_modules: " + str(inst)+"\n\n")
             
         
-    ############################################################################## 
-    # Updates sensors registration time to avoid repetitive registration in future
-    def update_last_sensors_registration_time(self):
-        config = ConfigObj(config_file_name) 
-        config["last_sensors_registration_time"] = time.time()
-        config.write()
-        
-        
     ##############################################################################  
     # Sends a list of directories/files present in the watchdir
     def list_dir(self):
         return os.listdir(self.watchdir)
 
-       
+
     ############################################################################## 
     # Extracts and sends the valid and new sensor modules' (files') names
     def extract_module_names(self, module_list):
@@ -79,8 +109,7 @@ class sensor_plugin_class():
         except Exception as inst:
             logger.critical("Exception in extract_module_names: " + str(inst)+"\n\n")
     
-    
-        
+
     ############################################################################## 
     # Checks if its the name of a valid python source module
     # Not importing __init__ to avoid recursive imports due to another __init__ \
@@ -99,56 +128,7 @@ class sensor_plugin_class():
             return False
         return True
     
-    
-    ############################################################################## 
-    # Compares the file's modified time with the current time to check whether\
-    # the sensor module should be registered or just started
-    def is_new_sensor(self, sensor_file_name):
-        config = ConfigObj(config_file_name)
-        if "last_sensors_registration_time" in config:
-            return (config["last_sensors_registration_time"] < \
-            time.ctime(os.path.getmtime(watchdir+sensor_file_name+".py")))
-        return True
 
-        
-    ##############################################################################
-    # Imports all the sensor modules present in the watchdir and registers only \
-    # the unregistered sensor modules and spawns a separate thread for all the \
-    # imported modules and starts all of them
-    def plugin_sensors(self):
-        try:
-            imported_sensor_modules, sensor_class_names = self.import_new_sensor_modules()
-            logger.debug("Module extracted from package."+"\n\n")
-            if sensor_class_names:    
-                sensor_class_objcts = []
-                for module_name, sensor_class_name in zip(imported_sensor_modules, sensor_class_names):
-                    if sensor_class_name != '__init__':
-                        try:
-			    # Loads the class dynamically from the imported module
-			    # So essentially the sensor_class_name (class name)\
-			    # and the module_name (file name) must match
-                            sensor_class = getattr(module_name, sensor_class_name)
-                            # create an object of the above class
-                            sensor_class_obj = sensor_class()
-                            sensor_class_objcts.append(sensor_class_obj)
-                        except Exception as inst:
-                            logger.critical("Exception in plugin loop: " + str(inst)+"\n\n")
-                self.register_modules(sensor_class_objcts)
-                for sensor_class_name in sensor_class_names :
-                    self.sensorid_input_buffer_map[sensor_class_name] = Queue.Queue()
-                    self.sensorid_output_buffer_map[sensor_class_name] = Queue.Queue()
-		logger.debug("Sensors' info added to the config file and their buffers created.")      
-                self.start_sensors(sensor_class_objcts, sensor_class_names)
-                # Notify to the other threads that the sensors' info has been \
-                # saved in config file. Used to avoid race conditions.
-                if not sensors_info_saved_event.is_set():
-                    sensors_info_saved_event.set()
-                    logger.debug("Sensors_info_saved_event set."+"\n\n")
-                return
-        except Exception as inst:
-            logger.critical("Exception in plugin_sensors: " + str(inst)+"\n\n")
-            
-        
     ##############################################################################
     # Stores the sensor's info in confi file by calling the register function \
     # of the sensor object
@@ -163,6 +143,25 @@ class sensor_plugin_class():
             logger.critical("Exception in register_modules: " + str(inst)+"\n\n")
          
     
+    ############################################################################## 
+    # Compares the file's modified time with the current time to check whether\
+    # the sensor module should be registered or just started
+    def is_new_sensor(self, sensor_file_name):
+        config = ConfigObj(config_file_name)
+        if "last_sensors_registration_time" in config:
+            return (config["last_sensors_registration_time"] < \
+            time.ctime(os.path.getmtime(watchdir+sensor_file_name+".py")))
+        return True
+
+
+    ############################################################################## 
+    # Updates sensors registration time to avoid repetitive registration in future
+    def update_last_sensors_registration_time(self):
+        config = ConfigObj(config_file_name) 
+        config["last_sensors_registration_time"] = time.time()
+        config.write()
+        
+
     ###############################################################################
     # Prepares a list of the registered sensors
     # Useful in case of on the go plugin of sensors ie. without stopping the system
@@ -174,9 +173,8 @@ class sensor_plugin_class():
                     self.registered_sensors.append(sensor_name)
         except Exception as inst:
             logger.critical("Exception in is_sensor_registered: " + str(inst)+"\n\n")
-    
-    
-    
+
+
     ##############################################################################
     # Creates a separate thread for each of the sensor modules and attaches \
     # with each sensor module and starts the sensor
@@ -193,6 +191,14 @@ class sensor_plugin_class():
             logger.critical("Exception in start_sensors: " + str(inst)+"\n\n")
          
         
+    ##############################################################################  
+    # Prepares a list of running sensor threads so that when the process exits\
+    # they can be joined
+    def update_sensor_thread_list(self, thread):
+        sensor_thread_list.append(thread)
+        logger.debug("Thread added: " + str(sensor_thread_list) + "\n\n")
+        
+
     ############################################################################## 
     # Starts the sensor by calling start function of the sensor object
     def start_sensor(self, sensor_class_obj, input_buffer, output_buffer):
@@ -201,13 +207,6 @@ class sensor_plugin_class():
         except Exception as inst:
             logger.critical("Exception in start_sensor: " + str(inst)+"\n\n")
         
-        
-    ##############################################################################  
-    # Prepares a list of running sensor threads so that when the process exits\
-    # they can be joined
-    def update_sensor_thread_list(self, thread):
-        sensor_thread_list.append(thread)
-        logger.debug("Thread added: " + str(sensor_thread_list) + "\n\n")
         
     ##############################################################################
     # Collects msgs from each of the output_buffers of the sensors and converts\
