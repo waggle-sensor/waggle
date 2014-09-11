@@ -39,8 +39,9 @@ class nc_server_class(threading.Thread, asyncore.dispatcher):
 			logger.info("Listening on port_for_gn: " + str(self.port_for_gn)+"\n\n")
 			# starts the loop which constantly checks whether the socket is readable or writable
 			while True:
-				# Starts the loop which polls all the open sockets one by one \
-				# and comes out of the asyncore loop after polling for *count* no of times
+				# Starts the loop which polls all the open sockets one by one, 
+				# comes out of the asyncore loop after polling for *count*
+				# times and then repeats after 0.01s
 				asyncore.loop(timeout=0.01, use_poll=True, map=None, count=1000)   
 				time.sleep(0.01)
 		except Exception as inst:
