@@ -51,16 +51,18 @@ class buffer_mngr_class(threading.Thread):
 	def __init__(self, thread_name, nc_port):
 		try:
 			threading.Thread.__init__(self)
-			# used for tagging the msgs related to this thread
+			# can be used for tagging the msgs related to this thread
 			self.thread_name = thread_name                  
 			self.daemon = True
 			###############################
 			""" 
 			# Below are different types of buffers 
 			"""
-			self.bfr_for_in_to_out_msgs = Queue.Queue(maxsize=1000)     
+			self.bfr_for_in_to_out_msgs = Queue.Queue(maxsize=1000)
+			# Stores only sent reg/data/cmds not replies/ACKs
 			self.bfr_for_sent_msgs =[]
 			self.bfr_for_out_to_in_msgs = Queue.Queue(maxsize=1000)
+			# Stores only sent replies/ACKs
 			self.bfr_for_sent_responses = []
 			# Stores the sequence nos which are received but unacknowledged
 			self.temp_acks = []							     
@@ -80,7 +82,7 @@ class buffer_mngr_class(threading.Thread):
 			self.default_seq_no = 0                                             
 			self.error_scope = 255
 			self.upper_seq_bytes_limit = 16777215
-			# no of bytes of session_id or subseq_no in complete sequence no
+			# Specifies the no of bytes after which the subseq_no starts
 			self.seq_no_partition_size = 3                  
 			self.initial_session_id = self.default_seq_no
 			self.gn_session_id = self.initialize_gn_session_id()   
@@ -102,7 +104,7 @@ class buffer_mngr_class(threading.Thread):
 		
 
 	##############################################################################
-	# main loop which loops through all the buffers constantly
+	# Loops through all the buffers constantly
 	def run(self):
 		try:
 			logger.debug("Starting " + self.thread_name + "\n\n")
@@ -121,13 +123,10 @@ class buffer_mngr_class(threading.Thread):
 					# set time to remain attentive for next 100 ms
 					# this waits for .1 s only as its one level above the other threads
 					wait_time = time.time() + wait_time_for_next_msg - .1               
-					#print "short sleep bfr mngr"
 					time.sleep(0.0001)
 				if wait_time > time.time():
-					#print "short sleep bfr mngr"
 					time.sleep(0.0001)
 				else:
-					#print "long sleep bfr mngr"
 					time.sleep(0.1)
 		except Exception as inst:
 			logger.critical("Exception in bufr_mngr run: " + str(inst) + "\n\n")
@@ -229,14 +228,14 @@ class buffer_mngr_class(threading.Thread):
 						for msg_id in self.temp_acks:
 							if msg_id[0] == session_id and msg_id[1] == ackd_id:
 								self.temp_acks.remove(msg_id)
-						# If this is not a response for the old msg
+						# Check whether this is not a response for the old msg with old session_id
 						if session_id == self.nc_session_id:
 							self.bfr_for_sent_responses.append((session_id, ackd_id, encoded_msg))
 						# as its an old msg don't send it
 						else:
 							send_msg = 0
 							logger.critical("Session id of NC has changed so \
-							discarding msg................................\n\n")
+							discarding msg..............\n\n")
 					if send_msg:
 						self.send_msg_to_nc(encoded_msg)
 				self.bfr_for_in_to_out_msgs.task_done()
@@ -259,8 +258,7 @@ class buffer_mngr_class(threading.Thread):
 					decoded_msg = Message.decode(item.msg)
 				except Exception as inst:
 					logger.critical("Exception while decoding msg: " + str(inst) + "\n\n")
-					logger.critical("So discarding msg........................\
-					..................." + str(inst) + "\n\n")
+					logger.critical("So discarding msg............." + str(inst) + "\n\n")
 					self.bfr_for_out_to_in_msgs.task_done()
 					return
 				# check whether the msg is new or duplicate
@@ -275,14 +273,13 @@ class buffer_mngr_class(threading.Thread):
 					else:
 						session_id = self.convert_to_int(decoded_msg.header.sequence_id[:self.seq_no_partition_size])
 						subseq_no = self.convert_to_int(decoded_msg.header.sequence_id[self.seq_no_partition_size:])
-						# save the last_nc_subseq_no till its ack is actually\
+						# save the last_nc_subseq_no till its ack is actually
 						# inserted after receiving from another thread
 						self.temp_acks.append((session_id, subseq_no))
 						# a new cmd from NC so send it to apt thread: sensor_ctlr or main_class
 						self.dispatch_cmd(decoded_msg)
 				else:
-					logger.critical("OLD MSG DISCARDED........................\
-					...........................\n\n")
+					logger.critical("OLD MSG DISCARDED.............\n\n")
 				self.bfr_for_out_to_in_msgs.task_done()
 		except Exception as inst:
 			logger.critical("Exception in process_out_to_in_msg: " + str(inst) + "\n\n")
@@ -375,7 +372,7 @@ class buffer_mngr_class(threading.Thread):
 	
 	
 	##############################################################################    
-	# From bfr_for_sent_msgs returns msg_info for a specific msg whose ACK is obtained  
+	# From bfr_for_sent_msgs deletes & returns msg_info for a specific msg whose ACK is obtained  
 	def get_and_del_saved_msg(self, session_id, subseq_no):
 		try:
 			logger.debug("Buffer size of buffer_mngr's output buffer before \
@@ -504,8 +501,8 @@ class buffer_mngr_class(threading.Thread):
 		
 	##############################################################################
 	# Checks whether new id falls in expected range or not
-	# ie. If new_id is greater than old_id, or less than old_id in
-	# case of wrap-up it falls in expected range
+	# ie. If new_id is greater than old_id, or less than old_id (in
+	# case of wrap-up) it falls in expected range
 	def in_expected_range(self, new_id, old_id):
 		try:
 			# self.error_scope shows the range of session_id which may be old\
@@ -517,8 +514,8 @@ class buffer_mngr_class(threading.Thread):
 	
 	##############################################################################
 	# Checks whether new session_id falls in expected range or not
-	# ie. If new_id is greater than old_id, or less than old_id in
-	# case of wrap-up it falls in expected range
+	# ie. If new_id is greater than old_id, or less than old_id (in
+	# case of wrap-up) it falls in expected range
 	def in_expected_sessionseq_range(self, new_id, old_id):
 		try:
 			return self.in_expected_range(new_id, old_id)
@@ -611,17 +608,14 @@ class buffer_mngr_class(threading.Thread):
 									ret_val = True
 							if not ret_val:
 								logger.critical("DUP ACK received for old \
-								subseq_no: "+str(reply_subseq_no)+".......\
-								.........................................\n\n")
+								subseq_no: "+str(reply_subseq_no)+".............\n\n")
 						else:
 							match = 0
 							# check for duplicate old msg whose ACK is already sent
 							for response in self.bfr_for_sent_responses:                
 								# comparing the seq_no of new msg with reply_id of bfrd response
 								if response[1] == new_subseq_no:
-									logger.critical("ACK Lost so old msg with \
-									subseq_no:"+str(new_subseq_no)+ " received\
-									.....................................\n\n")
+									logger.critical("ACK Lost so old msg with subseq_no:"+str(new_subseq_no)+ " received.............\n\n")
 									# resend response
 									self.send_msg_to_nc(response[2])
 									match = 1
@@ -634,7 +628,7 @@ class buffer_mngr_class(threading.Thread):
 									if ack[1] == new_subseq_no:
 										logger.critical("Old msg with subseq_no: "\
 									    	+str(new_subseq_no)+ " received whose ACK\
-									    	is not yet sent..................\n\n")
+									    	is not yet sent.............\n\n")
 										match = 1
 							if not match:
 								# else its a new msg
@@ -646,16 +640,14 @@ class buffer_mngr_class(threading.Thread):
 				# NC is up but GN went down since they last contacted eachother\
 				# so no record of subseq_no found 
 				else:
-					logger.critical("Expected session_id received............\
-					................................\n\n")
+					logger.critical("Expected session_id received..........\n\n")
 					self.reset_nc_specific_data_structures()
 					# save new NC session_id 
 					self.nc_session_id = new_session_id
 					ret_val = True
 			# check whether new session id falls in the expected range with any subseq_no
 			elif self.valid_new_session_id(old_session_id, new_session_id):
-				logger.critical("Valid new session_id received...............\
-				.............................\n\n")
+				logger.critical("Valid new session_id received.............\n\n")
 				self.reset_nc_specific_data_structures()
 				# save new NC session_id 
 				self.nc_session_id = new_session_id
@@ -663,7 +655,7 @@ class buffer_mngr_class(threading.Thread):
 				ret_val = True
 			else:
 				logger.critical("Unexpected seq_no received: "+str(new_session_id)+"\t"+\
-					str(new_subseq_no)+".............................................\n\n")
+					str(new_subseq_no)+".............\n\n")
 			if ret_val:
 				# save ackd and new seq_nos received from this inst_id
 				new_last_nc_subseq_no = self.convert_to_int(msg.header.sequence_id[self.seq_no_partition_size:])
@@ -723,11 +715,11 @@ class buffer_mngr_class(threading.Thread):
 						logger.critical("Unknown ACK received: Discarding..\n\n")
 				return   
 			# handle failure
-			logger.critical("Registration timeout........\n\n")
+			logger.critical("Registration timeout.............\n\n")
 			msg_info[2] = self.calculate_expiration_time(registration_type, None)
 			self.add_to_sent_msgs_bfr(msg_info)
 			self.send_msg_to_nc(msg_info[3])
-			logger.critical("Registration msg resent......"+"\n\n")
+			logger.critical("Registration msg resent............."+"\n\n")
 		except Exception as inst:
 			logger.critical("Exception in reg_msg_handler: " + str(inst)+ "\n\n")
 		
@@ -745,11 +737,11 @@ class buffer_mngr_class(threading.Thread):
 						logger.critical("Unknown ACK received: Discarding..\n\n")
 				return
 			# handle failure
-			logger.critical("Data Packet timeout........\n\n")
+			logger.critical("Data Packet timeout.............\n\n")
 			msg_info[2] = self.calculate_expiration_time(data_type, None)
 			self.add_to_sent_msgs_bfr(msg_info)
 			self.send_msg_to_nc(msg_info[3])
-			logger.critical("Data msg resent......"+"\n\n")
+			logger.critical("Data msg resent............."+"\n\n")
 		except Exception as inst:
 			logger.critical("Exception in data_msg_handler: " + str(inst)+ "\n\n")
 		

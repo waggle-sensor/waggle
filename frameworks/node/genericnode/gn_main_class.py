@@ -112,12 +112,12 @@ class main_class():
 
 
     ############################################################################## 
-    # After sensor infon is saved in config file, this prepares registration msg\
+    # After sensor infon is saved in config file, this prepares registration msg
     # and sends to buffer_mngr's buffer for sending it to NC
     def send_GN_registration_request(self):
         # This event is set by sensor_controller after it stores the sensors' info in config file
         logger.debug("Waiting for sensors info."+ "\n\n")
-        # Waits till sensor_plugin object finishes writing to the config file \
+        # Waits till sensor_plugin object finishes writing to the config file 
         # so that race conditions don't occur
         sensors_info_saved_event.wait()
         config = ConfigObj(config_file_name)

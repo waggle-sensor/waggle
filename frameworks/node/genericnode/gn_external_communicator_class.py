@@ -19,6 +19,7 @@ class external_communicator_class(asynchat.async_chat, threading.Thread):
     ##############################################################################
     def __init__(self, thread_name, nc_port, buffer_mngr):
         threading.Thread.__init__(self)
+        # can be used by logging module for printing messages related to this thread
         self.thread_name = thread_name                                              
         self.daemon = True
         # Static port where NC listens and where connection request can be sent
@@ -27,8 +28,9 @@ class external_communicator_class(asynchat.async_chat, threading.Thread):
         self.input_buffer = []                                                      
         self.output_buffer = ""                                                                                                                                                      
         self.buffer_mngr = buffer_mngr
-        # Used to signal that the NC is down so don't receive. There is no control\
-        # on sending using asynchat, msgs buffer in the output_buffer until connection is restablished 
+        # Used to signal that the NC is down so stop receiving. At present there is no 
+        # way to signal to stop sending to asynchat when NC is down, asynchat buffers msgs 
+        # in the output_buffer until connection is restablished 
         self.shutdown = 0
         self.set_terminator(asynchat_msg_terminator)                                             
         logger.debug("Thread "+self.thread_name+" Initialized.\n\n")
@@ -44,8 +46,7 @@ class external_communicator_class(asynchat.async_chat, threading.Thread):
             self.shutdown = 0
             self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
             self.connect( (nc_ip, self.nc_port) )                                                             
-            logger.info("CONNECTED............................................\
-            ..........."+"\n\n")
+            logger.info("CONNECTED............."+"\n\n")
             while True:
             	# Starts the loop which polls the open socket for *count* times,
             	# comes out of the asyncore loop and then repeats after 0.01s
@@ -62,7 +63,7 @@ class external_communicator_class(asynchat.async_chat, threading.Thread):
   
     ##############################################################################    
     # Called when the socket is readable 
-    # Appends data to the input buffer till the terminating character is detected\
+    # Appends data to the input buffer till the terminating character is detected
     # which indicates the end of the msg after which the found_terminator is called
     def collect_incoming_data(self, data):
         try:
@@ -81,7 +82,7 @@ class external_communicator_class(asynchat.async_chat, threading.Thread):
     def found_terminator(self):
         try:
             if self.shutdown == 0:
-                #logger.critical("Msg received from NC:"+str('%0.4f' % time.time())\
+                # logger.critical("Msg received from NC:"+str('%0.4f' % time.time())\
                 # +str(self.input_buffer)+"\n\n") #+
                 logger.critical("Msg received from NC:"+str('%0.4f' % time.time())\
                  + "\n\n")
@@ -149,7 +150,7 @@ class external_communicator_class(asynchat.async_chat, threading.Thread):
                 logger.critical("Retry after sometime.\n\n")
                 time.sleep(10)
                 self.run()
-            # Called by buffer_mngr
+            # When this function called by buffer_mngr
             else:                                                           
                 self.close()
                 logger.critical("Socket Connection with NC closed.\n\n")                

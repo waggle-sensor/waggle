@@ -24,8 +24,7 @@ class internal_communicator(asynchat.async_chat):
         self.input_buffer = []                                                                                  
         self.output_buffer = ""                                                                                 
         self.buffer_mngr = buffer_mngr
-        # Used to signal that the NC is down so don't receive. There is no control\
-        # on sending using asynchat, msgs buffer in the output_buffer until connection is restablished 
+        # Used to signal that the GN is down so stop receiving.  
         self.shutdown = 0
         self.set_terminator(asynchat_msg_terminator)                                                                         
         logger.debug("Internal Communicator for new GN initialized"+"\n\n")

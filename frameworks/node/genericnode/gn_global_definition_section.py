@@ -103,7 +103,7 @@ command_type = '2'
 reply_type = '3'
 acknowledgment = 'ACK'
 no_reply = '-1'
-# Character at the end of every msg sent between GN and NC
+# String at the end of every msg sent between GN and NC
 asynchat_msg_terminator = str('!@#$%^&*')      
 # Wait time in seconds before the msg is resent
 gn_registration_ack_wait_time = 5

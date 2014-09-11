@@ -96,7 +96,7 @@ command_type = '2'
 reply_type = '3'
 acknowledgment = 'ACK'
 no_reply = '-1'
-# Character at the end of every msg sent between GN and NC
+# String at the end of every msg sent between GN and NC
 asynchat_msg_terminator = str('!@#$%^&*')   
 # Time during which the thread should remain attentive for new msg, here 200 ms
 wait_time_for_next_msg = 0.2                   
