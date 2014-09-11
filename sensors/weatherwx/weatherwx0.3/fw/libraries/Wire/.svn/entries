@@ -1,0 +1,63 @@
+10
+
+dir
+0
+https://repo.anl-external.org/repos/cerisc/forest/branches/2014/kmacintyre/Arduino/libraries/Wire
+https://repo.anl-external.org/repos/cerisc
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+05a808c1-ce7b-436b-b179-cd05a5c35c82
+
+utility
+dir
+
+
+
+add
+
+keywords.txt
+file
+
+
+
+add
+
+Wire.cpp
+file
+
+
+
+add
+
+Wire.h
+file
+
+
+
+add
+
+examples
+dir
+
+
+
+add
+
