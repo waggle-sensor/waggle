@@ -75,7 +75,6 @@ static void read8(byte reg, uint8_t *value)
   Wire.endTransmission();
   int BMP_err = Wire.requestFrom((uint8_t)BMP085_ADDRESS, (byte)1);
   if (BMP_err != 0) {
-    //Serial.println("Reading ok"); // DEBUG
     #if ARDUINO >= 100
       *value = Wire.read();
     #else
@@ -83,7 +82,6 @@ static void read8(byte reg, uint8_t *value)
     #endif  
   }
   else {
-    //Serial.println("Bad reading"); // DEBUG
     *value = -999;
   }
   Wire.endTransmission();
@@ -105,7 +103,6 @@ static void read16(byte reg, uint16_t *value)
   Wire.endTransmission();
   int BMP_err = Wire.requestFrom((uint8_t)BMP085_ADDRESS, (byte)2);
   if (BMP_err != 0) {
-    //Serial.println("Reading ok"); // DEBUG
     #if ARDUINO >= 100
       *value = (Wire.read() << 8) | Wire.read();
     #else
@@ -113,7 +110,6 @@ static void read16(byte reg, uint16_t *value)
     #endif  
   }
   else{
-    //Serial.println("Bad reading"); // DEBUG
     *value = -999;
   }
   Wire.endTransmission();
@@ -226,8 +222,6 @@ static void readRawPressure(int32_t *pressure)
       *pressure = p32;
     }
     else {
-      //Serial.print("Raw pressure identified as bad; pressure = "); // DEBUG
-      //Serial.println(p16); // DEBUG
       *pressure = p16;
     }
   #endif
@@ -331,7 +325,6 @@ void Adafruit_BMP085_Unified::getPressure(float *pressure)
     compp = p + ((x1 + x2 + 3791) >> 4);
   }
   else {
-    //Serial.println("Pressure identified as bad"); // DEBUG
     compp = up;
   }
   /* Assign compensated pressure value */
@@ -368,7 +361,6 @@ void Adafruit_BMP085_Unified::getTemperature(float *temp)
     t /= 10;
   }
   else {
-    //Serial.println("Temperature identified as bad"); // DEBUG
     t = UT;
   }
   *temp = t;
