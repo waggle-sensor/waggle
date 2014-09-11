@@ -35,7 +35,7 @@ class sensor_plugin_class():
             if module_names:
                 logger.debug ("Sensor Modules:"+"\n\n")
                 for module_name in module_names:
-					# Finds the module
+	            # Finds the module
                     f, filename, description = imp.find_module(module_name)
                     logger.debug('Desc: ' + str(description) + '\n ' + 'Filename:'\
                     + str(filename) + '\n' + 'File Desc:' + str(f)+"\n\n")
@@ -124,9 +124,9 @@ class sensor_plugin_class():
                 for module_name, sensor_class_name in zip(imported_sensor_modules, sensor_class_names):
                     if sensor_class_name != '__init__':
                         try:
-							# Loads the class dynamically from the imported module
-							# So essentially the sensor_class_name (class name)\
-							# and the module_name (file name) must match
+			    # Loads the class dynamically from the imported module
+			    # So essentially the sensor_class_name (class name)\
+			    # and the module_name (file name) must match
                             sensor_class = getattr(module_name, sensor_class_name)
                             # create an object of the above class
                             sensor_class_obj = sensor_class()
@@ -137,8 +137,7 @@ class sensor_plugin_class():
                 for sensor_class_name in sensor_class_names :
                     self.sensorid_input_buffer_map[sensor_class_name] = Queue.Queue()
                     self.sensorid_output_buffer_map[sensor_class_name] = Queue.Queue()
-                logger.debug("Sensors added to registered sensors' list and their\
-                input buffers created."+"\n\n")
+		logger.debug("Sensors' info added to the config file and their buffers created.")      
                 self.start_sensors(sensor_class_objcts, sensor_class_names)
                 # Notify to the other threads that the sensors' info has been \
                 # saved in config file. Used to avoid race conditions.

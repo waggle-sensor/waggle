@@ -187,6 +187,7 @@ class buffer_mngr_class(threading.Thread):
 						for msg_id in self.temp_acks:
 							if msg_id[0] == session_id and msg_id[1] == ackd_id:
 								self.temp_acks.remove(msg_id)
+						# If this is not a response for the old msg
 						if session_id == self.nc_session_id:
 							self.bfr_for_sent_responses.append((session_id, ackd_id, encoded_msg))
 						# as its an old msg don't send it
@@ -563,8 +564,8 @@ class buffer_mngr_class(threading.Thread):
 									# saved subseq_no not yet acknowledged
 									if ack[1] == new_subseq_no:
 										logger.critical("Old msg with subseq_no: "\
-									    +str(new_subseq_no)+ " received whose ACK\
-									    is not yet sent..................\n\n")
+									    	+str(new_subseq_no)+ " received whose ACK\
+									    	is not yet sent..................\n\n")
 										match = 1
 							if not match:
 								# else its a new msg
@@ -606,8 +607,8 @@ class buffer_mngr_class(threading.Thread):
 					self.discard_ackd_responses()
 			else:
 				logger.critical("Unexpected no received: "+str(new_subseq_no)+\
-					": when last_nc_subseq_no: "+str(self.last_nc_subseq_no)+\
-						": ackd_nc_subseq_no: "+str(self.ackd_nc_subseq_no)+"\n\n")
+				": when last_nc_subseq_no: "+str(self.last_nc_subseq_no)+\
+				": ackd_nc_subseq_no: "+str(self.ackd_nc_subseq_no)+"\n\n")
 				logger.critical("new_session_id: "+str(new_session_id)+\
 				" old_session_id: "+str(old_session_id)+"\n\n")
 			logger.debug("new_subseq_no:"+str(new_subseq_no))
