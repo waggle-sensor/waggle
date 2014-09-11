@@ -39,8 +39,9 @@ class nc_server_class(threading.Thread, asyncore.dispatcher):
 			logger.info("Listening on port_for_gn: " + str(self.port_for_gn)+"\n\n")
 			# starts the loop which constantly checks whether the socket is readable or writable
 			while True:
-				# Starts the loop which polls all the open sockets one by one
-				asyncore.loop(timeout=0.01, use_poll=True, map=None)   
+				# Starts the loop which polls all the open sockets one by one \
+				# and comes out of the asyncore loop after polling for *count* no of times
+				asyncore.loop(timeout=0.01, use_poll=True, map=None, count=1000)   
 				time.sleep(0.01)
 		except Exception as inst:
 			logger.critical("Exception in nc_server run(): " + str(inst)+"\n\n")
@@ -54,7 +55,7 @@ class nc_server_class(threading.Thread, asyncore.dispatcher):
 		self.buffer_mngr = buffer_mngr
 		logger.debug("buffer address of gn_buffer_mngr saved."+"\n\n")
 	
-		
+
 	##############################################################################
 	# Called when a GN tries to contact the NC server for the first time
 	def handle_accept(self):

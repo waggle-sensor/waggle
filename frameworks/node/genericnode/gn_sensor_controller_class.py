@@ -27,15 +27,6 @@ class sensor_controller_class(threading.Thread):
 	
 		
 	############################################################################## 
-	# Called by main_thread to pass the address of buffer_mngr, main_thread 
-	# so that sensor_controller thread can access their variables
-	def pass_thread_address(self, main_thread, buffer_mngr): 
-		self.main_thread = main_thread
-		self.buffer_mngr = buffer_mngr               
-		logger.debug("Addresses of main_thread and buffer_mngr saved."+ "\n\n")
-	
-		
-	############################################################################## 
 	# Plugs in new sensors and periodically collects data from them and sends\
 	# that to NC through buffer_mngr
 	# (For future) Can process any cmd/reply obtained from NC
@@ -55,7 +46,7 @@ class sensor_controller_class(threading.Thread):
 				# the sensor msgs from their output_buffers and packs them in proper format
 				# and puts them back in its own input_buffer and finally gets \
 				# them from its input_buffer and sends them to buffer_mngr by preparing data payloads. 
-				# But this approach is used to give equal priority to all msgs
+				# But this approach is used to give equal FIFO processing priority to all msgs
 				# irrespective of whether they are obtained from sensors or NC and reduce redundancy \
 				# in the code.
 				"""
@@ -83,7 +74,7 @@ class sensor_controller_class(threading.Thread):
 		finally:
 			self.close()
 	
-		
+
 	##############################################################################     
 	# Processes received msg and based on the type decides the action 
 	def process_msg(self, item):
@@ -130,6 +121,15 @@ class sensor_controller_class(threading.Thread):
 		logger.debug("Msg sent to buffer_mngr." + "\n\n")
 		
 	
+	############################################################################## 
+	# Called by main_thread to pass the address of buffer_mngr, main_thread 
+	# so that sensor_controller thread can access their variables
+	def pass_thread_address(self, main_thread, buffer_mngr): 
+		self.main_thread = main_thread
+		self.buffer_mngr = buffer_mngr               
+		logger.debug("Addresses of main_thread and buffer_mngr saved."+ "\n\n")
+	
+
 	##############################################################################   
 	# Called by main_thread to join all sensor threads before exiting
 	def close(self):

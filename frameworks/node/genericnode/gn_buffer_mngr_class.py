@@ -100,7 +100,60 @@ class buffer_mngr_class(threading.Thread):
 		except Exception as inst:
 			logger.critical("Exception in  init function: " + str(inst) + "\n\n")
 		
-	
+
+	##############################################################################
+	# main loop which loops through all the buffers constantly
+	def run(self):
+		try:
+			logger.debug("Starting " + self.thread_name + "\n\n")
+			if not self.communicator_thread_started:
+				self.external_communicator = external_communicator_class("external_communicator", self.nc_port, self) 
+				self.external_communicator.start()
+				self.communicator_thread_started = 1
+			wait_time = time.time() + wait_time_for_next_msg - 0.1
+			wait_time_set = 1
+			while True:
+				while (not self.bfr_for_out_to_in_msgs.empty()) or\
+				(not self.bfr_for_in_to_out_msgs.empty()) or (self.bfr_for_sent_msgs):
+					self.send_in_to_out_msg()
+					self.process_out_to_in_msg()
+					self.send_timed_out_msg()
+					# set time to remain attentive for next 100 ms
+					# this waits for .1 s only as its one level above the other threads
+					wait_time = time.time() + wait_time_for_next_msg - .1               
+					#print "short sleep bfr mngr"
+					time.sleep(0.0001)
+				if wait_time > time.time():
+					#print "short sleep bfr mngr"
+					time.sleep(0.0001)
+				else:
+					#print "long sleep bfr mngr"
+					time.sleep(0.1)
+		except Exception as inst:
+			logger.critical("Exception in bufr_mngr run: " + str(inst) + "\n\n")
+			if not self.external_communicator.isAlive():
+				logger.critical("External Communicator dead.")
+				self.communicator_thread_started = 0
+				logger.critical("Waiting for socket to get closed.")
+				time.sleep(2)
+			else:
+				logger.critical("External Communicator not dead.")
+			time.sleep(10)
+			self.run()
+				
+
+	##############################################################################  
+	# Called by main_thread to pass the address of sensor_controller, main_thread 
+	# so that buffer_mngr thread can access their variables
+	def pass_thread_address(self, main_thread, sensor_controller):
+		try:
+			self.main_thread = main_thread
+			self.sensor_controller = sensor_controller
+			logger.debug("Addresses of main_thread and sensor_controller saved.\n\n")
+		except Exception as inst:
+			logger.critical("Exception in pass_thread_address: " + str(inst)+"\n\n")
+
+
 	##############################################################################
 	# Initializes the handler_vector_table by mapping handler nos with the names
 	# To call a function, its no. is used  as an index in handler_vector_table
@@ -113,30 +166,6 @@ class buffer_mngr_class(threading.Thread):
 			logger.critical("Exception in  initialize_handler_vector_table: " + str(inst) + "\n\n")
 		
 	
-	##############################################################################
-	# Resets the data structures related to NC when GN first contacts NC after
-	# NC is up
-	def reset_nc_specific_data_structures(self):
-		try:
-			self.last_nc_subseq_no = self.default_seq_no
-			self.ackd_nc_subseq_no = self.default_seq_no
-			self.temp_acks = []                               
-			self.bfr_for_sent_responses = []
-		except Exception as inst:
-			logger.critical("Exception in reset_nc_specific_data_structures: " + str(inst)+"\n\n")
-
-	
-	##############################################################################
-	# saves the NC or GN session id in log file
-	def save_session_id(self, tag_name, session_id):
-		try:
-			config = ConfigObj(self.log_file_name)
-			config[tag_name] = session_id  
-			config.write()
-		except Exception as inst:
-			logger.critical("Exception in save_session_id: " + str(inst) + "\n\n")
-	
-		
 	##############################################################################
 	# Initializes GN's session id when GN starts by incrementing the old id if any
 	def initialize_gn_session_id(self):
@@ -152,6 +181,19 @@ class buffer_mngr_class(threading.Thread):
 		except Exception as inst:
 			logger.critical("Exception in initialize_gn_session_id: " + str(inst) + "\n\n")
 		
+	
+	##############################################################################
+	# Resets the data structures related to NC when GN first contacts NC after
+	# NC is up
+	def reset_nc_specific_data_structures(self):
+		try:
+			self.last_nc_subseq_no = self.default_seq_no
+			self.ackd_nc_subseq_no = self.default_seq_no
+			self.temp_acks = []                               
+			self.bfr_for_sent_responses = []
+		except Exception as inst:
+			logger.critical("Exception in reset_nc_specific_data_structures: " + str(inst)+"\n\n")
+
 	
 	##############################################################################
 	# Sends msgs to NC through external_communicator by reading one msg 
@@ -208,7 +250,7 @@ class buffer_mngr_class(threading.Thread):
 	# Decodes msg and decides whether it should be accepted or not
 	# Processes simple ACKS and forwards other msgs (in future cmd) to main_thread 
 	# or sensor_controller
-	def process_out_to_in_msgs(self):
+	def process_out_to_in_msg(self):
 		try:
 			if not self.bfr_for_out_to_in_msgs.empty():
 				item = self.bfr_for_out_to_in_msgs.get()
@@ -243,7 +285,7 @@ class buffer_mngr_class(threading.Thread):
 					...........................\n\n")
 				self.bfr_for_out_to_in_msgs.task_done()
 		except Exception as inst:
-			logger.critical("Exception in process_out_to_in_msgs: " + str(inst) + "\n\n")
+			logger.critical("Exception in process_out_to_in_msg: " + str(inst) + "\n\n")
 		
 	
 	##############################################################################
@@ -273,58 +315,20 @@ class buffer_mngr_class(threading.Thread):
 			self.send_msg_to_nc()
 	
 	
-	##############################################################################
-	# main loop which loops through all the buffers constantly
-	def run(self):
+	##############################################################################    
+	# Checks whether first msg in bfr_for_sent_msgs has timed out and if so, 
+	# returns it
+	def get_timed_out_msg_info(self):
 		try:
-			logger.debug("Starting " + self.thread_name + "\n\n")
-			if not self.communicator_thread_started:
-				self.external_communicator = external_communicator_class("external_communicator", self.nc_port, self) 
-				self.external_communicator.start()
-				self.communicator_thread_started = 1
-			wait_time = time.time() + wait_time_for_next_msg - 0.1
-			wait_time_set = 1
-			while True:
-				while (not self.bfr_for_out_to_in_msgs.empty()) or\
-				(not self.bfr_for_in_to_out_msgs.empty()) or (self.bfr_for_sent_msgs):
-					self.send_in_to_out_msg()
-					self.process_out_to_in_msgs()
-					self.send_timed_out_msg()
-					# set time to remain attentive for next 100 ms
-					# this waits for .1 s only as its one level above the other threads
-					wait_time = time.time() + wait_time_for_next_msg - .1               
-					#print "short sleep bfr mngr"
-					time.sleep(0.0001)
-				if wait_time > time.time():
-					#print "short sleep bfr mngr"
-					time.sleep(0.0001)
-				else:
-					#print "long sleep bfr mngr"
-					time.sleep(0.1)
+			msg_handler_info = self.bfr_for_sent_msgs[0]
+			if msg_handler_info[2] < time.time():
+				self.bfr_for_sent_msgs.remove(msg_handler_info)
+				return msg_handler_info
+			return None
 		except Exception as inst:
-			logger.critical("Exception in bufr_mngr run: " + str(inst) + "\n\n")
-			if not self.external_communicator.isAlive():
-				logger.critical("External Communicator dead.")
-				self.communicator_thread_started = 0
-				logger.critical("Waiting for socket to get closed.")
-				time.sleep(2)
-			else:
-				logger.critical("External Communicator not dead.")
-			time.sleep(10)
-			self.run()
-				
-				
-	##############################################################################
-	# Called by main_thread while exiting
-	def close(self):
-		try:
-			self.external_communicator.shutdown = 1
-			self.external_communicator.handle_close()
-			self.external_communicator.join(1)
-		except Exception as inst:
-			logger.critical("Exception in close: " + str(inst)+"\n\n")
+			logger.critical("Exception in get_timed_out_msg_info: " + str(inst)+"\n\n")
 	
-	
+
 	##############################################################################
 	# Saves copy of the sent msg (not data/reg/ACK) in buffer of respective GN
 	def add_to_sent_msgs_bfr(self, msg_handler_info):
@@ -339,19 +343,6 @@ class buffer_mngr_class(threading.Thread):
 			logger.critical("Exception in add_to_sent_msgs_bfr: " + str(inst) + "\n\n")
 		
 
-	#############################################################################
-	# Decides and returns the no which is ahead in the sequence sent
-	# Ex: 001->002, returns 002
-	# Ex: 255->001, returns 001
-	def get_new_seq_no(self, new_no, old_no):
-		try:
-			if (new_no != old_no) and self.in_expected_range(new_no, old_no):
-				return new_no
-			return old_no
-		except Exception as inst:
-			logger.critical("Exception in get_new_seq_no: " + str(inst)+"\n\n")
-		
-	
 	##############################################################################
 	#TODO: hook to dispatch cmds to apt thread: main or sensor_controller
 	def dispatch_cmd(self, decoded_msg):
@@ -402,20 +393,6 @@ class buffer_mngr_class(threading.Thread):
 			logger.critical("Exception in get_and_del_saved_msg: " + str(inst)+"\n\n")
 	
 
-	##############################################################################    
-	# Checks whether first msg in bfr_for_sent_msgs has timed out and if so, 
-	# returns it
-	def get_timed_out_msg_info(self):
-		try:
-			msg_handler_info = self.bfr_for_sent_msgs[0]
-			if msg_handler_info[2] < time.time():
-				self.bfr_for_sent_msgs.remove(msg_handler_info)
-				return msg_handler_info
-			return None
-		except Exception as inst:
-			logger.critical("Exception in get_timed_out_msg_info: " + str(inst)+"\n\n")
-	
-
 	##############################################################################
 	# Decides whether the bfr is full or not based on the gn's window size
 	def is_bfr_for_sent_msgs_full(self):
@@ -423,6 +400,57 @@ class buffer_mngr_class(threading.Thread):
 			return len(self.bfr_for_sent_msgs) >= self.gn_window_size
 		except Exception as inst:
 			logger.critical("Exception in is_bfr_for_sent_msgs_full: " + str(inst)+"\n\n")
+	
+	
+	##############################################################################
+	# Generates msg by attaching the msg_header to the payloads received from 
+	# main_thread or sensor_controller
+	def gen_msg(self, item):
+		try:
+			header = MessageHeader()
+			header.instance_id = get_instance_id()
+			header.message_type = item.msg_type
+			header.sequence_id = self.gen_gn_seq_no()
+			header.user_field1 = str(self.convert_to_bytearray(self.ackd_gn_subseq_no))
+			header.reply_to_id = item.reply_id
+			msg = Message()
+			msg.header = header
+			for each_msg in item.msg:
+				msg.append(each_msg)
+			try:
+				msg = msg.encode()   
+			except Exception as inst:
+				logger.critical("Exception while encoding msg: " + str(inst) + "\n\n")
+			return msg
+		except Exception as inst:
+			logger.critical("Exception in gen_msg: " + str(inst)+"\n\n")
+	
+	
+	##############################################################################
+	# Increments the current subseq_no which is maintained with NC
+	def gen_gn_seq_no(self):
+		try:
+			self.last_gn_subseq_no = self.increment_no(self.last_gn_subseq_no)
+			logger.debug("\tSUBSEQUENCE NO. gen:" + str(self.last_gn_subseq_no)+"\n\n")
+			return str(self.convert_to_bytearray(self.gn_session_id)) +\
+			str(self.convert_to_bytearray(self.last_gn_subseq_no))
+		except Exception as inst:
+			logger.critical("Exception in gen_gn_seq_no: " + str(inst)+"\n\n")
+	
+		
+	###############################################################################
+	# increments the session_id or subseq_no by 1
+	def increment_no(self, int_no):
+		integer_no = copy.copy(int_no)
+		try:
+			if integer_no == self.upper_seq_bytes_limit:
+				# reset it to 1 
+				integer_no = self.default_seq_no + 1
+			else:
+				integer_no += 1
+		except Exception as inst:
+			logger.critical("Exception in increment_no: " + str(inst)+ "\n\n")
+		return integer_no
 	
 	
 	##############################################################################
@@ -452,6 +480,19 @@ class buffer_mngr_class(threading.Thread):
 			logger.critical("Exception in convert_to_bytearray: " + str(inst)+"\n\n")
 	
 				
+	#############################################################################
+	# Decides and returns the no which is ahead in the sequence sent
+	# Ex: 001->002, returns 002
+	# Ex: 255->001, returns 001
+	def get_new_no(self, new_no, old_no):
+		try:
+			if (new_no != old_no) and self.in_expected_range(new_no, old_no):
+				return new_no
+			return old_no
+		except Exception as inst:
+			logger.critical("Exception in get_new_no: " + str(inst)+"\n\n")
+		
+	
 	##############################################################################
 	# Checks for wrap-up by comparing old and new nos
 	def is_wrap_up(self, no2, no1):
@@ -461,17 +502,6 @@ class buffer_mngr_class(threading.Thread):
 			logger.critical("Exception in is_wrap_up: " + str(inst)+"\n\n")
 	
 		
-	##############################################################################
-	# Checks whether new session_id falls in expected range or not
-	# ie. If new_id is greater than old_id, or less than old_id in
-	# case of wrap-up it falls in expected range
-	def in_expected_sessionseq_range(self, new_id, old_id):
-		try:
-			return self.in_expected_range(new_id, old_id)
-		except Exception as inst:
-			logger.critical("Exception in in_expected_sessionseq_range: " + str(inst)+"\n\n")
-	
-	
 	##############################################################################
 	# Checks whether new id falls in expected range or not
 	# ie. If new_id is greater than old_id, or less than old_id in
@@ -483,6 +513,17 @@ class buffer_mngr_class(threading.Thread):
 			return (new_id > old_id) or self.is_wrap_up(new_id, old_id)
 		except Exception as inst:
 			logger.critical("Exception in in_expected_range: " + str(inst)+"\n\n")
+	
+	
+	##############################################################################
+	# Checks whether new session_id falls in expected range or not
+	# ie. If new_id is greater than old_id, or less than old_id in
+	# case of wrap-up it falls in expected range
+	def in_expected_sessionseq_range(self, new_id, old_id):
+		try:
+			return self.in_expected_range(new_id, old_id)
+		except Exception as inst:
+			logger.critical("Exception in in_expected_sessionseq_range: " + str(inst)+"\n\n")
 	
 	
 	##############################################################################
@@ -517,6 +558,34 @@ class buffer_mngr_class(threading.Thread):
 		except Exception as inst:
 			logger.critical("Exception in valid_new_session_id: " + str(inst)+"\n\n")
 
+		
+	##############################################################################  
+	# When NC's session_id is queried, it checks first in self.nc_session_id, 
+	# if found then returns that else checks in log file for that inst_id entry 
+	# if found returns that, else returns None 
+	# When GN's session_id is queried it is read from log file
+	def get_old_session_id(self, tag_name):
+		try:
+			if tag_name == 'NC Session ID' and self.nc_session_id:
+				return self.nc_session_id
+			config = ConfigObj(self.log_file_name)
+			if tag_name in config:
+				return int(config[tag_name])
+			return None
+		except Exception as inst:
+			logger.critical("Exception in get_old_session_id: " + str(inst)+"\n\n")
+	
+	
+	##############################################################################
+	# saves the NC or GN session id in log file
+	def save_session_id(self, tag_name, session_id):
+		try:
+			config = ConfigObj(self.log_file_name)
+			config[tag_name] = session_id  
+			config.write()
+		except Exception as inst:
+			logger.critical("Exception in save_session_id: " + str(inst) + "\n\n")
+	
 		
 	##############################################################################
 	# Decides whether new msg is actually new or duplicate
@@ -599,8 +668,8 @@ class buffer_mngr_class(threading.Thread):
 				# save ackd and new seq_nos received from this inst_id
 				new_last_nc_subseq_no = self.convert_to_int(msg.header.sequence_id[self.seq_no_partition_size:])
 				new_ackd_nc_subseq_no = self.convert_to_int(msg.header.user_field1)
-				self.last_nc_subseq_no = self.get_new_seq_no(new_last_nc_subseq_no, self.last_nc_subseq_no)
-				new_ackd_nc_subseq_no = self.get_new_seq_no(new_ackd_nc_subseq_no, self.ackd_nc_subseq_no)
+				self.last_nc_subseq_no = self.get_new_no(new_last_nc_subseq_no, self.last_nc_subseq_no)
+				new_ackd_nc_subseq_no = self.get_new_no(new_ackd_nc_subseq_no, self.ackd_nc_subseq_no)
 				if self.ackd_nc_subseq_no != new_ackd_nc_subseq_no:
 					self.ackd_nc_subseq_no = new_ackd_nc_subseq_no
 					# discard all responses whose ACKs are received
@@ -633,103 +702,6 @@ class buffer_mngr_class(threading.Thread):
 			logger.critical("Exception in get_msg_handler_no: " + str(inst)+"\n\n")
 		
 		
-	##############################################################################    
-	# Based on msg_type and sometimes msg_content, it decides how long it should wait for the ACK
-	def calculate_expiration_time(self, msg_type, msg):
-		try:
-			if msg_type == registration_type:
-				wait_time = gn_registration_ack_wait_time
-			elif msg_type == data_type:
-				wait_time = data_ack_wait_time
-			logger.debug("Calculated expiration_time based on msg_type and msg.\n\n")
-			return (time.time() + wait_time)
-		except Exception as inst:
-			logger.critical("Exception in calculate_expiration_time: " + str(inst)+"\n\n")
-	
-	
-
-	##############################################################################  
-	# When NC's session_id is queried, it checks first in self.nc_session_id, 
-	# if found then returns that else checks in log file for that inst_id entry 
-	# if found returns that, else returns None 
-	# When GN's session_id is queried it is read from log file
-	def get_old_session_id(self, tag_name):
-		try:
-			if tag_name == 'NC Session ID' and self.nc_session_id:
-				return self.nc_session_id
-			config = ConfigObj(self.log_file_name)
-			if tag_name in config:
-				return int(config[tag_name])
-			return None
-		except Exception as inst:
-			logger.critical("Exception in get_old_session_id: " + str(inst)+"\n\n")
-	
-	
-	
-	##############################################################################
-	# Generates msg by attaching the msg_header to the payloads received from 
-	# main_thread or sensor_controller
-	def gen_msg(self, item):
-		try:
-			header = MessageHeader()
-			header.instance_id = get_instance_id()
-			header.message_type = item.msg_type
-			header.sequence_id = self.gen_gn_seq_no()
-			header.user_field1 = str(self.convert_to_bytearray(self.ackd_gn_subseq_no))
-			header.reply_to_id = item.reply_id
-			msg = Message()
-			msg.header = header
-			for each_msg in item.msg:
-				msg.append(each_msg)
-			try:
-				msg = msg.encode()   
-			except Exception as inst:
-				logger.critical("Exception while encoding msg: " + str(inst) + "\n\n")
-			return msg
-		except Exception as inst:
-			logger.critical("Exception in gen_msg: " + str(inst)+"\n\n")
-	
-	
-	##############################################################################
-	# Increments the current subseq_no which is maintained with NC
-	def gen_gn_seq_no(self):
-		try:
-			self.last_gn_subseq_no = self.increment_no(self.last_gn_subseq_no)
-			logger.debug("\tSUBSEQUENCE NO. gen:" + str(self.last_gn_subseq_no)+"\n\n")
-			return str(self.convert_to_bytearray(self.gn_session_id)) +\
-			str(self.convert_to_bytearray(self.last_gn_subseq_no))
-		except Exception as inst:
-			logger.critical("Exception in gen_gn_seq_no: " + str(inst)+"\n\n")
-	
-		
-
-	###############################################################################
-	# increments the session_id or subseq_no by 1
-	def increment_no(self, int_no):
-		integer_no = copy.copy(int_no)
-		try:
-			if integer_no == self.upper_seq_bytes_limit:
-				# reset it to 1 
-				integer_no = self.default_seq_no + 1
-			else:
-				integer_no += 1
-		except Exception as inst:
-			logger.critical("Exception in increment_no: " + str(inst)+ "\n\n")
-		return integer_no
-	
-	
-	##############################################################################  
-	# Called by main_thread to pass the address of sensor_controller, main_thread 
-	# so that buffer_mngr thread can access their variables
-	def pass_thread_address(self, main_thread, sensor_controller):
-		try:
-			self.main_thread = main_thread
-			self.sensor_controller = sensor_controller
-			logger.debug("Addresses of main_thread and sensor_controller saved.\n\n")
-		except Exception as inst:
-			logger.critical("Exception in pass_thread_address: " + str(inst)+"\n\n")
-	
-	
 	##############################################################################
 	# Takes action based on whether the ACK is obtained or the msg has timed out
 	def reg_msg_handler(self, msg_info, reply=None):
@@ -760,7 +732,6 @@ class buffer_mngr_class(threading.Thread):
 			logger.critical("Exception in reg_msg_handler: " + str(inst)+ "\n\n")
 		
 		
-	
 	##############################################################################
 	# Takes action based on whether the ACK is obtained or the msg has timed out
 	def data_msg_handler(self, msg_info, reply=None):
@@ -783,7 +754,30 @@ class buffer_mngr_class(threading.Thread):
 			logger.critical("Exception in data_msg_handler: " + str(inst)+ "\n\n")
 		
 				
-			
+	##############################################################################    
+	# Based on msg_type and sometimes msg_content, it decides how long it should wait for the ACK
+	def calculate_expiration_time(self, msg_type, msg):
+		try:
+			if msg_type == registration_type:
+				wait_time = gn_registration_ack_wait_time
+			elif msg_type == data_type:
+				wait_time = data_ack_wait_time
+			logger.debug("Calculated expiration_time based on msg_type and msg.\n\n")
+			return (time.time() + wait_time)
+		except Exception as inst:
+			logger.critical("Exception in calculate_expiration_time: " + str(inst)+"\n\n")
+	
+	
+	##############################################################################
+	# Called by main_thread while exiting
+	def close(self):
+		try:
+			self.external_communicator.shutdown = 1
+			self.external_communicator.handle_close()
+			self.external_communicator.join(1)
+		except Exception as inst:
+			logger.critical("Exception in close: " + str(inst)+"\n\n")
+	
 	
 	##############################################################################
 	def __del__(self):

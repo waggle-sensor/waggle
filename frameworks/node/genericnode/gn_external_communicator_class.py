@@ -33,7 +33,32 @@ class external_communicator_class(asynchat.async_chat, threading.Thread):
         self.set_terminator(asynchat_msg_terminator)                                             
         logger.debug("Thread "+self.thread_name+" Initialized.\n\n")
         
-    
+        
+    ##############################################################################    
+    # Retrieves the stored IP and connects to it and starts the polling loop.
+    # In case of connection failure retries after 10 secs
+    def run(self):
+        try:
+            nc_ip = self.get_nc_ip()
+            logger.debug("Starting " + self.thread_name + "\n\n")
+            self.shutdown = 0
+            self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.connect( (nc_ip, self.nc_port) )                                                             
+            logger.info("CONNECTED............................................\
+            ..........."+"\n\n")
+            while True:
+            	# Starts the loop which polls the open socket
+            	asyncore.loop(timeout=0.01, use_poll=True, map=None)                                                                                         
+            	time.sleep(0.01)
+        except Exception as inst:
+            logger.critical("Exception in run: " + str(inst) + "\n\n")
+            self.shutdown = 1
+            self.handle_close()
+            logger.critical("Error in connecting with the NC.\n\n") 
+            time.sleep(10)
+            self.run()
+  
+  
     ##############################################################################    
     # Called when the socket is readable 
     # Appends data to the input buffer till the terminating character is detected\
@@ -108,31 +133,6 @@ class external_communicator_class(asynchat.async_chat, threading.Thread):
             except Exception as inst:
                 logger.critical("Exception in get_nc_ip: " + str(inst)+ "\n\n")
         return ip
-    
-    
-    ##############################################################################    
-    # Retrieves the stored IP and connects to it and starts the polling loop.
-    # In case of connection failure retries after 10 secs
-    def run(self):
-        try:
-            nc_ip = self.get_nc_ip()
-            logger.debug("Starting " + self.thread_name + "\n\n")
-            self.shutdown = 0
-            self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.connect( (nc_ip, self.nc_port) )                                                             
-            logger.info("CONNECTED............................................\
-            ..........."+"\n\n")
-            while True:
-            	# Starts the loop which polls the open socket
-            	asyncore.loop(timeout=0.01, use_poll=True, map=None)                                                                                         
-            	time.sleep(0.01)
-        except Exception as inst:
-            logger.critical("Exception in run: " + str(inst) + "\n\n")
-            self.shutdown = 1
-            self.handle_close()
-            logger.critical("Error in connecting with the NC.\n\n") 
-            time.sleep(10)
-            self.run()
     
     
     ##############################################################################
