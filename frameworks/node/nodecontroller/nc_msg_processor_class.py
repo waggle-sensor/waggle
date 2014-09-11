@@ -10,9 +10,12 @@ add_to_thread_buffer, wait_time_for_next_msg, config_file_lock
 from config_file_functions import initialize_config_file, ConfigObj
 from collections import defaultdict
 
+
+"""
 # Stores system's info
 # Instantiates and starts buffer_mngr and nc_server
 # Processes registration and data msgs obtained from GNs and sends them to cloud and ACKs to GNs
+"""
 class msg_processor_class():
     
     ##############################################################################

@@ -5,10 +5,12 @@ import asyncore
 import asynchat                                                                                                                 
 import socket                                                                                                                   
 
+"""
 # This handles all communication with NC. 
 # When it receives the message from NC it will read the message till it finds\
 # the terminating character of the message and then it sends the message to the buffer_mngr. 
-# Also handles the sending of the data which is in its output buffer to the NC.  
+# Also handles the sending of the data which is in its output buffer to the NC. 
+"""
 class external_communicator_class(asynchat.async_chat, threading.Thread):
     
     ac_in_buffer_size = 4096
