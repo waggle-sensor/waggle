@@ -114,7 +114,7 @@ class buffer_mngr_class(threading.Thread):
 		self.init_nc_related_node_data_structures('cloud')
 		try:
 			logger.debug("Starting " + self.thread_name+"\n\n")
-			wait_time = time.time() + wait_time_for_next_msg - 0.1                                                           
+			wait_time = time.time() + wait_time_for_next_msg                                                           
 			while True:
 				filled_in_to_out_bfr_ids = self.get_filled_in_to_out_msgs_bfr_ids()
 				filled_sent_msgs_bfr_ids = self.get_filled_sent_msgs_bfr_ids()
@@ -125,9 +125,8 @@ class buffer_mngr_class(threading.Thread):
 					self.send_timed_out_msgs()
 					filled_in_to_out_bfr_ids = []
 					filled_sent_msgs_bfr_ids = []
-					# set time to remain attentive for next 100 ms
-					# this waits only for 0.1 s as its one layer above the other threads
-					wait_time = time.time() + wait_time_for_next_msg -.1             
+					# set time to remain attentive for few ms
+					wait_time = time.time() + wait_time_for_next_msg             
 					time.sleep(0.0001)
 					logger.debug("short sleep bfr mngr")
 				if wait_time > time.time():

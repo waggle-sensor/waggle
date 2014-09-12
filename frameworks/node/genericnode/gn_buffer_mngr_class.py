@@ -112,7 +112,7 @@ class buffer_mngr_class(threading.Thread):
 				self.external_communicator = external_communicator_class("external_communicator", self.nc_port, self) 
 				self.external_communicator.start()
 				self.communicator_thread_started = 1
-			wait_time = time.time() + wait_time_for_next_msg - 0.1
+			wait_time = time.time() + wait_time_for_next_msg
 			wait_time_set = 1
 			while True:
 				while (not self.bfr_for_out_to_in_msgs.empty()) or\
@@ -120,9 +120,8 @@ class buffer_mngr_class(threading.Thread):
 					self.send_in_to_out_msg()
 					self.process_out_to_in_msg()
 					self.send_timed_out_msg()
-					# set time to remain attentive for next 100 ms
-					# this waits for .1 s only as its one level above the other threads
-					wait_time = time.time() + wait_time_for_next_msg - .1               
+					# set time to remain attentive for few ms
+					wait_time = time.time() + wait_time_for_next_msg              
 					time.sleep(0.0001)
 				if wait_time > time.time():
 					time.sleep(0.0001)

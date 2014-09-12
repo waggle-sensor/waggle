@@ -50,8 +50,10 @@ class external_communicator_class(asynchat.async_chat, threading.Thread):
             while True:
             	# Starts the loop which polls the open socket for *count* times,
             	# comes out of the asyncore loop and then repeats after 0.01s
-            	asyncore.loop(timeout=0.01, use_poll=True, map=None, count=1000)                                                                                         
-            	time.sleep(0.01)
+       		# Performance widely varies based on sleep time and count's value
+		# When count=0/None control will never come out of the asyncore loop
+	     	asyncore.loop(timeout=0.01, use_poll=True, map=None)  # , count=n) can be added. n>=1                                                                   
+                time.sleep(0.01)
         except Exception as inst:
             logger.critical("Exception in run: " + str(inst) + "\n\n")
             self.shutdown = 1

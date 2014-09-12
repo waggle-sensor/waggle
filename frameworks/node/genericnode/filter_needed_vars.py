@@ -1,3 +1,10 @@
+"""
+Extra Script which reads all the global variables/function names/events from global_variables
+# (file where all global variables, functions and events defined in gn_global_definition.py are present with comma separating them)
+# and searches for all the files which use each of them and prepares a list of global variables
+for each of the files which should be imported from the gn_global_definition_section.py.
+"""
+
 from commands import getoutput as bashit
 
 f=open('global_variables').read()
@@ -9,7 +16,7 @@ classes = ['config_file_functions', 'get_node_info', '__init__', 'gn_buffer_mngr
 for each in classes:
     class_list[each]=[]
 
-bashit("rm -rf test_filtered_vars")
+bashit("rm -rf filtered_vars")
 bashit("rm -rf classes")
 
 for variable in f:
