@@ -1,4 +1,9 @@
-
+"""
+Extra Script which reads all the global variables/function names/events from global_variables
+# (file where all global variables, functions and events defined in nc_global_definition.py are present with comma separating them)
+# and searches for all the files which use each of them and prepares a list of global variables
+for each of the files which should be imported from the nc_global_definition_section.py.
+"""
 from commands import getoutput as bashit
 
 f=open('global_variables').read()
