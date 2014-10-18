@@ -1,5 +1,7 @@
 import time
 from commands import getoutput
+
+# As GN is stateless, gn.cfg should be removed
 getoutput("rm -f gn.cfg")
 getoutput("rm -f GN_output.log")
 

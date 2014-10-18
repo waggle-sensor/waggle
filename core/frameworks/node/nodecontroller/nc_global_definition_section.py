@@ -16,13 +16,13 @@ import threading
 #######################################################################
 """
 # Below line should be uncommented if you want to log the messages to a file
-# logging.basicConfig(filename = 'NC_output.log', level=logging.INFO,format=
-# '%(name)s: %(message)s',)
+logging.basicConfig(filename = 'NC_output.log', level=logging.CRITICAL,format=
+'%(name)s: %(message)s',)
 
 # Below line should be commented if you don't want to log the messages to a terminal
 # In the below format: name is usually used to show from which thread or class the message is displayed
 # message is the string passsed in double quotes: Ex: logger.info("This will be displayed.")
-logging.basicConfig(level=logging.CRITICAL,format='%(name)s: %(message)s',)
+#logging.basicConfig(level=logging.CRITICAL,format='%(name)s: %(message)s',)
 
 # name="NC" as per the above format
 logger = logging.getLogger("NC")
@@ -107,10 +107,11 @@ command_ack_wait_time = 10
 # to avoid race conditions between msg_processor and buffr_mngr
 config_file_lock = threading.Lock()
 
+# to avoid race conditions between nc_buffer_mngr and nc_server/nc_internal_communicator
+gn_socket_list_lock = threading.Lock()
+
 # List maintaining current GN sockets
-gn_socket_list = []                  
-
-
+gn_socket_list = []
 
 # config file 
 config_file_name = './' + "nc.cfg"
@@ -151,6 +152,5 @@ def add_to_thread_buffer(msg_buffer, msg, thread_name):
     if not msg_buffer.full():
         msg_buffer.put(msg)
     else:
-        logger.info("Msg buffer FULL: So Discarding the msg..................\
-        ..............................................................." + "\n\n")
+        logger.info("Msg buffer FULL: So Discarding the msg." + "\n\n")
     
