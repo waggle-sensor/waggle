@@ -3,7 +3,7 @@ import asynchat
 import socket
 from global_imports import *
 from nc_global_definition_section import buffered_msg,  msg_from_gn,  \
-asynchat_msg_terminator,  gn_socket_list,  add_to_thread_buffer, logger
+asynchat_msg_terminator,  gn_socket_list,  add_to_thread_buffer, logger, gn_socket_list_lock
 
 """
 # One object of this class is created for each GN and this object handles all 
@@ -111,17 +111,18 @@ class internal_communicator(asynchat.async_chat):
     # Removes its entries from various GN related data structures
     def delete_socket(self):
         try:
-            if self in gn_socket_list:
-                gn_socket_list.remove(self)
-            current_socket_list = ''
-            if gn_socket_list:
-                current_socket_list = str(gn_socket_list)
-            logger.critical("Current socket list:"+current_socket_list+"\n\n")
-            self.buffer_mngr.clean_gn_data(self)
+            # Lock acquired to access global list variable and released when the 'with' block ends
+            with gn_socket_list_lock:
+                if self in gn_socket_list:
+                    gn_socket_list.remove(self)
+                current_socket_list = ''
+                if gn_socket_list:
+                    current_socket_list = str(gn_socket_list)
+            logger.critical("Current socket list:"+current_socket_list+"\n")
         except Exception as inst:
-            logger.critical("Exception in delete_socket: " + str(inst)+"\n\n")
-        
-        
+            logger.critical("Exception in delete_socket: " + str(inst)+"\n")
+
+
     ##############################################################################
     def __del__(self):
         print self, 'Socket object died.'

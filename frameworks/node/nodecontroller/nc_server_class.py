@@ -3,7 +3,7 @@ from global_imports import threading, time, random
 import asyncore
 import asynchat
 import socket
-from nc_global_definition_section import gn_socket_list, logger
+from nc_global_definition_section import gn_socket_list, logger, gn_socket_list_lock
 		
 
 """
@@ -31,7 +31,7 @@ class nc_server_class(threading.Thread, asyncore.dispatcher):
 	def run(self):
 		try:
 			# self.bind(("130.202.92.198", self.port_for_gn))
-			self.bind(("140.221.9.200", self.port_for_gn))
+			self.bind(("140.221.14.151", self.port_for_gn))
 			# self.bind(("10.1.2.3", self.port_for_gn))
 			# Backlog argument: 5 specifies the maximum number of queued connections\
 			# and should be at least 1; the maximum value is system-dependent (usually 5)
@@ -61,43 +61,50 @@ class nc_server_class(threading.Thread, asyncore.dispatcher):
 
 	##############################################################################
 	# Called when a GN tries to contact the NC server for the first time
-	def handle_accept(self):
-		try:
-			logger.info("New GN connection available." + "\n\n")
-			gn_socket_conn, gn_addr = self.accept() 
-			# Pass GN's details and new socket's details to a new socket object created for that GN
-			gn_socket_list.append(internal_communicator(gn_socket_conn, gn_addr, self.buffer_mngr))           
-			#logger.debug("Socket object corresponding to new GN created and running.")
-		except:
-			logger.critical("Error in handling the GN connection request."+ "\n\n")
-			pass
-			
-		
-	##############################################################################
-	# Closes all individual GN sockets and then itself
-	def handle_close(self):
-		# close all individual gn sockets
-		self.close_gn_socket()
-		self.close()
-		logger.critical("Server Socket closed."+"\n\n")
-	
-		
-	##############################################################################
-	# Closes all alive sockets present in the gn_socket_list
-	def close_gn_socket(self):
-		for socket in gn_socket_list: 
-			socket.handle_close()
-			logger.info("Individual GN socket closed.")
-		logger.critical("NC's individual GN sockets closed."+"\n\n")
-		
-		
-	##############################################################################
-	# Called when an error occurs
-	def handle_error(self):
-		logger.critical("Server error."+"\n\n")
-		self.run()
-	
-		
-	##############################################################################
-	def __del__(self):
-		print self, 'Server object died\n\n'
+    def handle_accept(self):
+        try:
+            logger.info("New GN connection available." + "\n\n")
+            gn_socket_conn, gn_addr = self.accept() 
+            socket = internal_communicator(gn_socket_conn, gn_addr, self.buffer_mngr)
+            # Lock acquired to access global list variable and released when the 'with' block ends
+            with gn_socket_list_lock:
+                # Pass GN's details and new socket's details to a new socket object created for that GN
+                gn_socket_list.append(socket)           
+            #logger.debug("Socket object corresponding to new GN created and running.")
+        except:
+            logger.critical("Error in handling the GN connection request."+ "\n\n")
+            pass
+            
+        
+    ##############################################################################
+    # Closes all individual GN sockets and then itself
+    def handle_close(self):
+        # close all individual gn sockets
+        self.close_gn_socket()
+        self.close()
+        logger.critical("Server Socket closed."+"\n\n")
+    
+        
+    ##############################################################################
+    # Closes all alive sockets present in the gn_socket_list
+    def close_gn_socket(self):
+        # Lock acquired to access global list variable and released when the 'with' block ends
+        with gn_socket_list_lock:
+            for socket in gn_socket_list: 
+                socket.shutdown = 1
+                gn_socket_list.remove(socket)
+                socket.close()
+                logger.info("Individual GN socket closed.")
+        logger.critical("NC's individual GN sockets closed."+"\n\n")
+        
+        
+    ##############################################################################
+    # Called when an error occurs
+    def handle_error(self):
+        logger.critical("Server error."+"\n\n")
+        self.run()
+    
+        
+    ##############################################################################
+    def __del__(self):
+        print self, 'Server object died\n\n'

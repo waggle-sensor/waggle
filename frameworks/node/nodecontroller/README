@@ -38,6 +38,19 @@ filter_needed_vars.py
 filtered_vars
 
 Python packages:
-asynchat.py - Comparatively better version of asynchat
+asynchat.py - Comparatively better version of asynchat, to run this version always include the path where this file is present in PYTHONPATH
 configobj.py - Provides ConfigOBj used to store registration info
+
+
+########################################################################################
+BUGS Fixed
+########################################################################################
+
+1. In nc_buffer_mngr_class: init_socket() for mapping gn's socket to its inst_id was called after checking whether the msg is new or not
+which was causing probs when an old msg whose ACK was already buffered by the NC was being sent by the GN after the first time due to asynchat error
+whenever the two parties got disconnected. As the NC in new_msg resent the response to the old closed socket of the GN, it was never reaching the GN
+and so GN as the new socket was not mapped before resending the response. This was causing the error. So now related changes to the socket function 
+are made and its placed before validating the incoming msg.
+
+2. Also, changes are made to the protocol related to the acknowledged subseq_no.
 

@@ -52,8 +52,14 @@ filtered_vars
 filter_needed_vars.py
 
 Python packages:
-asynchat.py - Comparatively better version of asynchat
+asynchat.py - Comparatively better version of asynchat, to run this version always include the path where this file is present in PYTHONPATH
 configobj.py - Provides ConfigOBj used to store registration info
+
+########################################################################################
+BUGS Fixed
+########################################################################################
+
+1. Changes are made to the protocol related to the acknowledged subseq_no.
 
 
 

@@ -1,6 +1,9 @@
 from commands import getoutput
 getoutput("rm -f NC_output.log")
 
+# Please don't uncomment the below line as NC maintains its own and GNs' states in nc.cfg file
+# getoutput("rm -f nc.cfg")
+
 
 from nc_global_definition_section import port_for_gn, logger, time
 from nc_msg_processor_class import msg_processor_class
