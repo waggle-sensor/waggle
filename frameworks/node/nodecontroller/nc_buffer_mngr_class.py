@@ -450,6 +450,7 @@ class buffer_mngr_class(threading.Thread):
                 # check whether the buffered_response's reply_id ie. GN's subseq_no\
                 # is now outside GN's current window
                 elif self.response_rcvd_by_gn(self.ackd_gn_subseq_no[inst_id], response[1]):
+                    # discard the response
                     self.bfr_for_sent_responses[inst_id].remove(response)
                 else:
                     # as ACKS are stored in FIFO order
