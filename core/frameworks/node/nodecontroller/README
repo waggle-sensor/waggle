@@ -41,6 +41,59 @@ Python packages:
 asynchat.py - Comparatively better version of asynchat, to run this version always include the path where this file is present in PYTHONPATH
 configobj.py - Provides ConfigOBj used to store registration info
 
+########################################################################################
+Protocol in brief
+########################################################################################
+
+-------------last and ackd subseq_nos
+
+1. last_nc_subseq_no/last_gn_subseq_nos are used as unique sequence nos during one session.
+
+2. ackd_nc_subseq_no/ackd_gn_subseq_nos are used to let other party know that which is the 
+last_subseq_no till which all ACKs have been obtained. This further helps in detecting the
+duplicate msgs or detecting the old msgs circulating unnecessarily in case of loss
+of network connectivity.
+
+3. Every new msg is validated based on the last and ackd subseq_nos of the previous msg and core part 
+   is explained in in_expected_subseq_range function.
+
+4. When first time the msg arrives then based on a new session id and certain other conditions
+it is accepted. Conditions are written as comments in new_msg function.
+
+5. ackd and last subseq nos of the sending party are updated whenever a new msg from that party arrives.
+
+6. ackd subseq_no of itself is updated when 1) an ACK is obtained from the other party for some pending msg in bfr_for_sent_msgs or 
+   2) when the node itself sends a new msg to someone.
+   So, for NC as in current scenario it never sends any new msg, so ackd and last subseq_nos will always be the
+   same and ackd is always set to last_nc_subseq_no. 
+   Its explained in the code in gen_nc_ackd_subseq_no and get_and_del_saved_msg where updation of ackd_subseq_no takes place. 
+   
+   last_subseq_no is always incremented by 1 when the node sends a new msg to a specific node.
+   
+-------------MSGs
+
+    A new *msg* (not ACK) is only sent by a GN/NC when the corresponding bfr_for_sent_msgs is not full, full is determined
+      by the window size. Else it puts the msg back in the queue. buffer_mngr thread does this check.
+    
+    Every sent msg is buffered in the bfr_for_sent_msgs till an ACK for that msg is obtained. 
+   
+    Whenever a msg times out it is resent and so at that time no check is made as we are not adding anything extra to the bfr_for_sent_msgs.
+    
+    When a duplicate msg arrives, NC/GN resends its ACK without processing the msg again.
+
+------------ACKs
+
+    When a response/ACK is sent we don't check anything as in this case also we are not adding anything extra to the bfr_for_sent_msgs.
+    
+    Every sent ACK is buffered in the bfr_for_sent_responses till the apt msg having ackd_subseq_no >= reply_ids of the buffered ACKs is obtained 
+    from the other party. Comments are written to explain the scenarios in discard_ackd_responses function.
+    
+    When a duplicate ACK arrives, it is discarded as no corresponding msg is present in the 
+    waiting buffer.
+
+   
+--- Currently the protocol is designed to work with same window size on both the ends
+    but can be easily converted to different sizes.
 
 ########################################################################################
 BUGS Fixed
