@@ -112,8 +112,9 @@ it is accepted. Conditions are written as comments in new_msg function.
     convey to the other party about the new size. Right now the window size (buffer size) can be statically set to any value >=1 
     so that in future it won't be difficult to implement the dynamic window size. 
     
---- Latency of sending and receiving an ACK for the msg depends a lot on the count parametr in asynchat socket in external_communicator class,
-    on the wait_time and sleep time of the threads and the frequency of sending msgs
+--- Latency of sending and receiving msgs depends a lot on the count parameter in asynchat socket in external_communicator class,
+    on the wait_time and sleep time of the threads and the frequency of sending msgs.
+    CPU Usage/Latency also increases due to logging stuff to file.
     
 --- Don't remove nc.cfg/NC_msg_log without removing GN_msg_log as these files maintain the state at both the ends
 
@@ -143,5 +144,24 @@ gen_gn_ackd_subseq_no
 
 There are changes made to other files but they are minor and not directly related to the protocol.
 
+
+
+##################################################################################################
+Normal Errors/Exceptions due to asynchat/pika
+##################################################################################################
+
+On GN Side:
+
+Due to asynchat:
+1. GN: Unexpected subseq_no received: XXXX:XXXX:XXXX
+
+
+GN: Unexpected no received: XXXX: when last_nc_subseq_no: XXXX4: ackd_nc_subseq_no: XXXX4
+
+
+GN: new_session_id: xyz old_session_id: abc
+
+
+GN: OLD MSG DISCARDED.............
 
 
