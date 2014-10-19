@@ -39,9 +39,9 @@ class sensor_plugin_class():
                 for module_name, sensor_class_name in zip(imported_sensor_modules, sensor_class_names):
                     if sensor_class_name != '__init__':
                         try:
-							# Loads the class dynamically from the imported module
-							# So essentially the sensor_class_name (class name)\
-							# and the module_name (file name) must match
+                            # Loads the class dynamically from the imported module
+                            # So essentially the sensor_class_name (class name)\
+                            # and the module_name (file name) must match
                             sensor_class = getattr(module_name, sensor_class_name)
                             # create an object of the above class
                             sensor_class_obj = sensor_class()
@@ -73,7 +73,7 @@ class sensor_plugin_class():
             if module_names:
                 logger.debug ("Sensor Modules:"+"\n\n")
                 for module_name in module_names:
-					# Finds the module
+                    # Finds the module
                     f, filename, description = imp.find_module(module_name)
                     logger.debug('Desc: ' + str(description) + '\n ' + 'Filename:'\
                     + str(filename) + '\n' + 'File Desc:' + str(f)+"\n\n")
@@ -116,7 +116,7 @@ class sensor_plugin_class():
     # file present in the directory
     def is_source_module(self, module):
         if module[1] == 'py' and module[0] != '__init__':
-             return True
+            return True
         return False
         
     
@@ -141,7 +141,7 @@ class sensor_plugin_class():
             self.save_registered_sensors()
         except Exception as inst:
             logger.critical("Exception in register_modules: " + str(inst)+"\n\n")
-         
+        
     
     ############################################################################## 
     # Compares the file's modified time with the current time to check whether
@@ -189,7 +189,7 @@ class sensor_plugin_class():
             logger.debug("New sensors started."+"\n\n")
         except Exception as inst:
             logger.critical("Exception in start_sensors: " + str(inst)+"\n\n")
-         
+        
         
     ##############################################################################  
     # Prepares a list of running sensor threads so that when the process exits
@@ -232,7 +232,7 @@ class sensor_plugin_class():
             logger.debug("Msg sending to sensor_controller's buffer done."+"\n\n")    
         except Exception as inst:
             logger.critical("Exception in get_sensor_msgs: " + str(inst)+"\n\n")
-         
+        
         
     ##############################################################################     
     # Hook
@@ -244,4 +244,4 @@ class sensor_plugin_class():
     ############################################################################## 
     def __del__(self):
         print self, 'Sensor Plugin object died'
-   
+

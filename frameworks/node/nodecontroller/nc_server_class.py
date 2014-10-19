@@ -4,7 +4,7 @@ import asyncore
 import asynchat
 import socket
 from nc_global_definition_section import gn_socket_list, logger, gn_socket_list_lock
-		
+        
 
 """
 # Listens for incoming registration requests of guest nodes and once a request
@@ -12,55 +12,55 @@ from nc_global_definition_section import gn_socket_list, logger, gn_socket_list_
 # the new socket's details to that.
 """
 class nc_server_class(threading.Thread, asyncore.dispatcher):
-		
-	##############################################################################
-	def __init__(self, thread_name, socket_type, port_for_gn):
-		asyncore.dispatcher.__init__(self)
-		threading.Thread.__init__(self)
-		# can be used by logging module for printing messages related to this thread
-		self.thread_name = "Thread_" + thread_name                                                          
-		self.daemon = True
-		self.port_for_gn = port_for_gn                                                                      
-		self.buffer_mngr= ''                                                                        
-		self.create_socket(socket_type, socket.SOCK_STREAM)
-		logger.debug(self.thread_name+" Initialized."+"\n\n")
-		
-			
-	############################################################################## 
-	# Listens for GN's requests and creates new internal_communicator object for each GN
-	def run(self):
-		try:
-			# self.bind(("130.202.92.198", self.port_for_gn))
-			self.bind(("140.221.14.151", self.port_for_gn))
-			# self.bind(("10.1.2.3", self.port_for_gn))
-			# Backlog argument: 5 specifies the maximum number of queued connections\
-			# and should be at least 1; the maximum value is system-dependent (usually 5)
-			self.listen(5)                                                                                  
-			logger.info("Listening on port_for_gn: " + str(self.port_for_gn)+"\n\n")
-			# starts the loop which constantly checks whether the socket is readable or writable
-			while True:
-				# Starts the loop which polls all the open sockets one by one, 
-				# comes out of the asyncore loop after polling for *count*
-				# times and then repeats after 0.01s. 
-				# Performance widely varies based on sleep time and count's value
-				# When count=0/None control will never come out of the asyncore loop
-				asyncore.loop(timeout=0.01, use_poll=True, map=None) # , count=n) can be added. n>=1   
-				time.sleep(0.01)
-		except Exception as inst:
-			logger.critical("Exception in nc_server run(): " + str(inst)+"\n\n")
-			time.sleep(1)
-			self.run()
-			
-		
-	##############################################################################
-	# Called by msg_processor thread to pass the address of buffer_mngr to this thread
-	def pass_thread_address(self, buffer_mngr): 
-		self.buffer_mngr = buffer_mngr
-		logger.debug("buffer address of gn_buffer_mngr saved."+"\n\n")
-	
+        
+    ##############################################################################
+    def __init__(self, thread_name, socket_type, port_for_gn):
+        asyncore.dispatcher.__init__(self)
+        threading.Thread.__init__(self)
+        # can be used by logging module for printing messages related to this thread
+        self.thread_name = "Thread_" + thread_name                                                          
+        self.daemon = True
+        self.port_for_gn = port_for_gn                                                                      
+        self.buffer_mngr= ''                                                                        
+        self.create_socket(socket_type, socket.SOCK_STREAM)
+        logger.debug(self.thread_name+" Initialized."+"\n\n")
+        
+            
+    ############################################################################## 
+    # Listens for GN's requests and creates new internal_communicator object for each GN
+    def run(self):
+        try:
+            # self.bind(("130.202.92.198", self.port_for_gn))
+            self.bind(("140.221.14.151", self.port_for_gn))
+            # self.bind(("10.1.2.3", self.port_for_gn))
+            # Backlog argument: 5 specifies the maximum number of queued connections\
+            # and should be at least 1; the maximum value is system-dependent (usually 5)
+            self.listen(5)                                                                                  
+            logger.info("Listening on port_for_gn: " + str(self.port_for_gn)+"\n\n")
+            # starts the loop which constantly checks whether the socket is readable or writable
+            while True:
+                # Starts the loop which polls all the open sockets one by one, 
+                # comes out of the asyncore loop after polling for *count*
+                # times and then repeats after 0.01s. 
+                # Performance widely varies based on sleep time and count's value
+                # When count=0/None control will never come out of the asyncore loop
+                asyncore.loop(timeout=0.01, use_poll=True, map=None) # , count=n) can be added. n>=1   
+                time.sleep(0.01)
+        except Exception as inst:
+            logger.critical("Exception in nc_server run(): " + str(inst)+"\n\n")
+            time.sleep(1)
+            self.run()
+            
+        
+    ##############################################################################
+    # Called by msg_processor thread to pass the address of buffer_mngr to this thread
+    def pass_thread_address(self, buffer_mngr): 
+        self.buffer_mngr = buffer_mngr
+        logger.debug("buffer address of gn_buffer_mngr saved."+"\n\n")
+    
 
-	##############################################################################
-	# Called when a GN tries to contact the NC server for the first time
+    ##############################################################################
+    # Called when a GN tries to contact the NC server for the first time
     def handle_accept(self):
         try:
             logger.info("New GN connection available." + "\n\n")

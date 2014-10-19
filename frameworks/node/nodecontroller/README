@@ -93,7 +93,15 @@ it is accepted. Conditions are written as comments in new_msg function.
 
    
 --- Currently the protocol is designed to work with same window size on both the ends
-    but can be easily converted to different sizes.
+    but can be easily converted to different sizes. Note that the window size is not dynamic but can be made 
+    by adding a field in the sent msg for the window size and implementing some mechanism to negotiate and 
+    convey to the other party about the new size. Right now the window size (buffer size) can be statically set to any value >=1
+    so that in future it won't be difficult to implement the dynamic window size. 
+    
+--- Latency of sending and receiving an ACK for the msg depends a lot on the count parametr in asynchat socket in internal_communicator class,
+    on the wait_time and sleep time of the threads and the frequency of receiving msgs
+    
+--- Don't remove nc.cfg/NC_msg_log without removing GN_msg_log as these files maintain the state at both the ends
 
 ########################################################################################
 BUGS Fixed
@@ -106,4 +114,33 @@ and so GN as the new socket was not mapped before resending the response. This w
 are made and its placed before validating the incoming msg.
 
 2. Also, changes are made to the protocol related to the acknowledged subseq_no.
+
+3. Lock is implemented to access the shared data structure gn_socket_list so that there may not be any race conditions in future.
+
+########################################################################################
+LIST OF IMP FUNCTIONS CHANGED
+########################################################################################
+
+Imp functions changed in nc_buffer_mngr_class in the original version (Submitted on 12thSept.):
+
+new_socket
+get_socket_obj
+discard_ackd_responses
+get_and_del_saved_msg
+in_expected_subseq_range
+gen_msg
+
+Added:
+response_rcvd_by_nc
+is_gt
+diff_large
+process_out_to_in_msg
+find_oldest_last_nc_subseq_no
+gen_nc_ackd_subseq_no
+
+There are changes made to other files but they are minor and not directly related to the protocol.
+
+
+
+
 

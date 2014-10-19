@@ -39,8 +39,8 @@ def get_node_info(config_file_name):
                     'uname -m',
                     'cat /proc/version',
                     "df -h  | tr -s ' ' | cut -d ' ' -f 1,2,5,6 | tr '\n' ';' | sed 's/;/\ ;\ /g'"
-                   ]
-                   
+                ]
+                
     for key, cmd in zip(list_of_keywords, list_of_cmds):
         try:
             if not isinstance(cmd, list):

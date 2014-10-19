@@ -20,7 +20,7 @@ class msg_processor_class():
     
     ##############################################################################
     def __init__(self, thread_name, port_for_gn):
-		# can be used by logging module for printing messages related to this thread
+        # can be used by logging module for printing messages related to this thread
         self.thread_name = "Thread_" + thread_name																	
         self.input_buffer = Queue.Queue(maxsize=1000)																			
         self.port_for_gn = port_for_gn																				
@@ -104,8 +104,8 @@ class msg_processor_class():
     # So as per the protocol even if bfr_for_in_to_out_msgs is full the ACK can be sent.
     def can_send_msg(self, inst_id, msg_type):
         return self.buffer_mngr.bfr_for_in_to_out_msgs[inst_id].empty() or (msg_type != command_type)
-       
-       
+    
+    
     ##############################################################################
     # Dispatches the msg to proper function by examining msg_type
     def process_external_msg(self, item):
@@ -176,20 +176,20 @@ class msg_processor_class():
             logger.debug("Registration msg sent to bufr mngr to send to cloud."+"\n\n")
         except Exception as inst:
             logger.critical("Exception in send_reg_msg_to_cloud:" + str(inst)+"\n\n")
-           
+        
 
     ##############################################################################
     # Sends data msg to cloud and ACK to GN
     def process_data_msg(self, item):
         logger.debug("DATA MSG Received.................................."+"\n\n")
         if item.msg != None:
-			# sends msg to bufr mngr to send it to cloud
+            # sends msg to bufr mngr to send it to cloud
             self.send_data_msg('cloud', item.msg)  
         # sends msg to bufr mngr to send ACK to GN
         self.send_ack(item.seq_no, item.sock_or_gn_id, 0)                              
         logger.debug("Data ACK sent to buffer_mngr."+"\n\n")
 
-       
+    
     ##############################################################################
     # Sends msg to buffer_mngr to forward to cloud
     def send_data_msg(self, inst_id, data_payloads):
@@ -221,4 +221,4 @@ class msg_processor_class():
     ##############################################################################    
     def __del__(self):
         print self, 'msg_processor object died.'
-   
+
