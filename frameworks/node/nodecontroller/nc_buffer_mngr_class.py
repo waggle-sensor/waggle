@@ -370,9 +370,11 @@ class buffer_mngr_class(threading.Thread):
             return 0
         except Exception as inst:
             logger.critical("Exception in send_msg_to_cloud: " + str(inst)+ "\n\n")
-            logger.critical("Retrying after 1 secs."+ "\n\n")
-            time.sleep(.001)
-            self.send_msg_to_cloud(encoded_msg)
+            # NOTE: below lines are commented out because  of continuous pika errors the max length of recursion was exceeding the limits
+	    # logger.critical("Retrying after 1 secs."+ "\n\n")
+            # time.sleep(.001)
+            # self.send_msg_to_cloud(encoded_msg)
+	    return 1
     
 
     ##############################################################################    

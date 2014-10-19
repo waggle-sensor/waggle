@@ -98,8 +98,9 @@ it is accepted. Conditions are written as comments in new_msg function.
     convey to the other party about the new size. Right now the window size (buffer size) can be statically set to any value >=1
     so that in future it won't be difficult to implement the dynamic window size. 
     
---- Latency of sending and receiving an ACK for the msg depends a lot on the count parametr in asynchat socket in internal_communicator class,
+--- Latency of sending and receiving msgs depends a lot on the count parameter in asynchat socket in internal_communicator class,
     on the wait_time and sleep time of the threads and the frequency of receiving msgs
+    CPU Usage/Latency also increases due to logging stuff to file.
     
 --- Don't remove nc.cfg/NC_msg_log without removing GN_msg_log as these files maintain the state at both the ends
 
@@ -140,6 +141,20 @@ gen_nc_ackd_subseq_no
 
 There are changes made to other files but they are minor and not directly related to the protocol.
 
+########################################################################################
+NORMAL Exceptions/Errors due to asynchat/pika
+########################################################################################
+
+On NC Side:
+
+Due to asynchat sometimes the same msg is sent twice and as a result you may get
+error like:
+
+1. Old msg with subseq_no:XXXX received whose ACK is not yet sent.
+2. ACK Lost so old msg with subseq_no: XXXX received.
+
+Due to pika:
+Exception in send_msg_to_cloud
 
 
 
