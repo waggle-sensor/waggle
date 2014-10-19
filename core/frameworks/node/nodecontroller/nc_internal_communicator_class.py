@@ -16,7 +16,7 @@ class internal_communicator(asynchat.async_chat):
 
     ac_in_buffer_size = 4096
     ac_out_buffer_size = 4096
-     
+    
     ##############################################################################
     def __init__(self, gn_socket_conn, gn_addr, buffer_mngr):
         asynchat.async_chat.__init__(self, gn_socket_conn)
@@ -71,7 +71,7 @@ class internal_communicator(asynchat.async_chat):
         if self.shutdown == 0:
             msg = ''
             try:
-				# recreates msg by concatenatning list's elements
+                # recreates msg by concatenatning list's elements
                 for single_msg in self.input_buffer:
                     msg = msg + single_msg                                              
                 msg = buffered_msg(msg_from_gn, None, None, None, msg, self)
@@ -126,4 +126,3 @@ class internal_communicator(asynchat.async_chat):
     ##############################################################################
     def __del__(self):
         print self, 'Socket object died.'
-   

@@ -48,11 +48,11 @@ class external_communicator_class(asynchat.async_chat, threading.Thread):
             self.connect( (nc_ip, self.nc_port) )                                                             
             logger.info("CONNECTED............."+"\n\n")
             while True:
-            	# Starts the loop which polls the open socket for *count* times,
-            	# comes out of the asyncore loop and then repeats after 0.01s
-       		# Performance widely varies based on sleep time and count's value
-		# When count=0/None control will never come out of the asyncore loop
-	     	asyncore.loop(timeout=0.01, use_poll=True, map=None)  # , count=n) can be added. n>=1                                                                   
+                # Starts the loop which polls the open socket for *count* times,
+                # comes out of the asyncore loop and then repeats after 0.01s
+                # Performance widely varies based on sleep time and count's value
+                # When count=0/None control will never come out of the asyncore loop
+                asyncore.loop(timeout=0.01, use_poll=True, map=None)  # , count=n) can be added. n>=1                                                                   
                 time.sleep(0.01)
         except Exception as inst:
             logger.critical("Exception in run: " + str(inst) + "\n\n")
@@ -61,8 +61,8 @@ class external_communicator_class(asynchat.async_chat, threading.Thread):
             logger.critical("Error in connecting with the NC.\n\n") 
             time.sleep(10)
             self.run()
-  
-  
+
+
     ##############################################################################    
     # Called when the socket is readable 
     # Appends data to the input buffer till the terminating character is detected
@@ -74,7 +74,7 @@ class external_communicator_class(asynchat.async_chat, threading.Thread):
                 self.input_buffer.append(data)
                 logger.debug("Data received from NC.\n\n")
         except Exception as inst:
-             logger.critical("Exception in collect_incoming_data: " + str(inst) + "\n\n")
+            logger.critical("Exception in collect_incoming_data: " + str(inst) + "\n\n")
     
     
     ##############################################################################    
@@ -87,14 +87,14 @@ class external_communicator_class(asynchat.async_chat, threading.Thread):
                 # logger.critical("Msg received from NC:"+str('%0.4f' % time.time())\
                 # +str(self.input_buffer)+"\n\n") #+
                 logger.critical("Msg received from NC:"+str('%0.4f' % time.time())\
-                 + "\n\n")
+                + "\n\n")
                 self.handle_request()
                 logger.debug("Msg handled.\n\n")
                 self.input_buffer = []
             else:
                 logger.critical("Socket is closed.\n\n")
         except Exception as inst:
-             logger.critical("Exception in found_terminator: " + str(inst) + "\n\n")
+            logger.critical("Exception in found_terminator: " + str(inst) + "\n\n")
     
     
     ##############################################################################    
@@ -112,7 +112,7 @@ class external_communicator_class(asynchat.async_chat, threading.Thread):
                 add_to_thread_buffer(self.buffer_mngr.bfr_for_out_to_in_msgs, msg, "Buffer Mngr")                                             
                 logger.debug("Msg forwarded to buffer_mngr.\n\n")    
         except Exception as inst:
-             logger.critical("Exception in handle_request: " + str(inst) + "\n\n")
+            logger.critical("Exception in handle_request: " + str(inst) + "\n\n")
     
     
     ##############################################################################    
@@ -157,10 +157,10 @@ class external_communicator_class(asynchat.async_chat, threading.Thread):
                 self.close()
                 logger.critical("Socket Connection with NC closed.\n\n")                
         except Exception as inst:
-             logger.critical("Exception in handle_close: " + str(inst) + "\n\n")
+            logger.critical("Exception in handle_close: " + str(inst) + "\n\n")
     
     
     ##############################################################################
     def __del__(self):
         print self, 'Socket object died'
-   
+

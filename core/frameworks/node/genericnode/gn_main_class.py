@@ -17,7 +17,7 @@ class main_class():
         
     ############################################################################## 
     def __init__(self, thread_name, nc_port):
-		# can be used by logging module for printing messages related to this thread
+        # can be used by logging module for printing messages related to this thread
         self.thread_name = thread_name                   
         self.reg_msg_handler_no = 0
         self.update_handler_no = 1
@@ -72,7 +72,7 @@ class main_class():
             self.buffer_mngr.close()
             self.buffer_mngr.join(1)
             logger.critical("All child threads exited. Parent Exiting..."+ "\n\n")
-       
+    
     
     ##############################################################################
     # Stores the node's sw/hw info in config file
@@ -88,15 +88,15 @@ class main_class():
         logger.debug("System's Info stored in config file."+ "\n\n")
         
 
-	############################################################################## 
+    ############################################################################## 
     # Calls apt function based on whether it is registered or not
     def register_gn(self):
         logger.debug("Checking whether registration is done or not."+ "\n\n")
         if self.check_registration_status():
-                # Registration already done so just send msg to NC saying that I am up
-                self.send_ready_notification()
+            # Registration already done so just send msg to NC saying that I am up
+            self.send_ready_notification()
         else:
-                self.send_GN_registration_request()                                             
+            self.send_GN_registration_request()                                             
     
 
     ############################################################################## 
@@ -170,4 +170,3 @@ class main_class():
     ##############################################################################        
     def __del__(self):
         print self, 'Main object died'
-   

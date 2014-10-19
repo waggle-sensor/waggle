@@ -713,7 +713,7 @@ class buffer_mngr_class(threading.Thread):
             return str(self.convert_to_bytearray(self.ackd_nc_subseq_no[inst_id]))
         except Exception as inst:
             logger.critical("Exception in gen_nc_seq_no: " + str(inst)+ "\n\n")
-  
+
     
     ###############################################################################
     # increments the session_id or subseq_no by 1
