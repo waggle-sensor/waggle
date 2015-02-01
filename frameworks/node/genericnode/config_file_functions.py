@@ -10,6 +10,3 @@ def initialize_config_file(config_file_name):
         config["Sensors Info"] = {}
         config["Registered"] = "NO"
         config.write()
-        
-
-        
