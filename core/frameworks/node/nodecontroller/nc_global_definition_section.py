@@ -21,7 +21,7 @@ import threading
 # Below line should be commented if you don't want to log the messages to a terminal
 # In the below format: name is usually used to show from which thread or class the message is displayed
 # message is the string passsed in double quotes: Ex: logger.info("This will be displayed.")
-logging.basicConfig(level=logging.DEBUG,format='%(name)s: %(message)s',)
+logging.basicConfig(level=logging.CRITICAL,format='%(name)s: %(message)s',)
 
 # name="NC" as per the above format
 logger = logging.getLogger("NC")

@@ -22,7 +22,7 @@ import logging
 # In the below format: name is usually used to show from which thread or class\
 # the message is displayed
 # Message is the string passed in double quotes: Ex: logger.info("This will be displayed.")
-logging.basicConfig(level=logging.DEBUG,format='%(name)s: %(message)s',)
+logging.basicConfig(level=logging.CRITICAL,format='%(name)s: %(message)s',)
 # name="GN" as per the above format
 logger = logging.getLogger("GN")
 
