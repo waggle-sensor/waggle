@@ -358,9 +358,10 @@ class buffer_mngr_class(threading.Thread):
     # sends msg to cloud by calling imported send_msg function
     def send_msg_to_cloud(self, encoded_msg):
         try:
+            logger.critical("\n\n\nMsg being SENT TO CLOUD!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\t\n\n")
             send_msg(encoded_msg)
-            logger.critical("Msg sent to Cloud!: "+str('%0.4f' % time.time())\
-             + "\tcount:" +str(self.sent_msg_count)+"\t\n\n") # + +"\n\n")
+            #logger.critical("Msg sent to Cloud!: "+str('%0.4f' % time.time())\
+            # + "\tcount:" +str(self.sent_msg_count)+"\t\n\n") # + +"\n\n")
             #logger.critical("Msg sent to Cloud: "+str('%0.4f' % time.time()))
             #logger.critical("Msg sent to Cloud: "+str('%0.4f' % time.time())+\
             # "\t"+(encoded_msg)+"\n\n")

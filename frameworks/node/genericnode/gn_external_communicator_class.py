@@ -129,6 +129,7 @@ class external_communicator_class(asynchat.async_chat, threading.Thread):
     # Loops till an IP address other than loopback is obtained
     def get_nc_ip(self):
         ip = '127.0.0.1'
+        return ip
         while ip == '127.0.0.1':
             logger.info("Waiting to get NC's IP..")
             time.sleep(1)

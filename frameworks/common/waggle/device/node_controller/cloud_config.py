@@ -3,7 +3,8 @@
 # A data client that connects to the RabbitMQ Weather queue
 
 # RabbitMQ Connection information
-rmq_ip = '149.165.149.8'
+#rmq_ip = '149.165.149.8'
+rmq_ip = "127.0.0.1"
 rmq_port = 5672
 rmq_user = 'clients'
 rmq_passwd = 'Ruza3que'
