@@ -63,7 +63,7 @@ it is accepted. Conditions are written as comments in new_msg function.
 5. ackd and last subseq nos of the sending party are updated whenever a new msg from that party arrives.
 
 6. ackd subseq_no of itself is updated when 1) an ACK is obtained from the other party for some pending msg in bfr_for_sent_msgs or 
-   2) when the node itself sends a new msg to someone.
+   2) in the case when there are no pending unackd msgs when the node itself sends a new msg to someone.
    So, for NC as in current scenario it never sends any new msg, so ackd and last subseq_nos will always be the
    same and ackd is always set to last_nc_subseq_no. 
    Its explained in the code in gen_nc_ackd_subseq_no and get_and_del_saved_msg where updation of ackd_subseq_no takes place. 
@@ -99,7 +99,7 @@ it is accepted. Conditions are written as comments in new_msg function.
     so that in future it won't be difficult to implement the dynamic window size. 
     
 --- Latency of sending and receiving msgs depends a lot on the count parameter in asynchat socket in internal_communicator class,
-    on the wait_time and sleep time of the threads and the frequency of receiving msgs
+    on the wait_time and sleep time of the threads and the frequency of receiving msgs.
     CPU Usage/Latency also increases due to logging stuff to file.
     
 --- Don't remove nc.cfg/NC_msg_log without removing GN_msg_log as these files maintain the state at both the ends

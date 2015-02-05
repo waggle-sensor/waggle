@@ -22,11 +22,11 @@ class msg_processor_class():
     def __init__(self, thread_name, port_for_gn):
         # can be used by logging module for printing messages related to this thread
         self.thread_name = "Thread_" + thread_name
-        self.input_buffer = Queue.Queue(maxsize=1000)
+        self.incoming_moduleMsgBfr = Queue.Queue(maxsize=1000)
         self.port_for_gn = port_for_gn
         self.buffer_mngr =  ''
         self.nc_server = ''
-        logger.debug(self.thread_name+" Initialized."+"\n\n")
+        logger.debug(self.thread_name+" Initialized.")
 
 
     ##############################################################################
@@ -34,7 +34,7 @@ class msg_processor_class():
     # and sends them to cloud and ACKs to GNs through buffer_mngr
     def run(self):
         try:
-            logger.debug("Starting " + self.thread_name+"\n\n")
+            logger.debug("Starting " + self.thread_name)
             self.store_system_info()
             self.buffer_mngr = buffer_mngr_class("buffer_mngr")
             self.nc_server = nc_server_class("nc_server_class", socket.AF_INET, self.port_for_gn)
@@ -42,35 +42,33 @@ class msg_processor_class():
             self.nc_server.pass_thread_address(self.buffer_mngr)
             self.buffer_mngr.start()
             self.nc_server.start()
-            logger.critical("All threads Started:"+str('%0.4f' % time.time())+"\n\n")
+            logger.critical("All threads Started:"+str('%0.4f' % time.time()))
             wait_time = time.time() + wait_time_for_next_msg
+            wait_time_set=0;
             while True:
-                while not self.input_buffer.empty():
-                    item = self.input_buffer.get()
-                    logger.debug("Msg received."+"\n\n")
-                    if item.internal_msg_header == msg_from_gn:
-                        if self.can_send_msg(item.sock_or_gn_id, item.msg_type):
-                            logger.debug("Msg from GN received:"+"\n\n")
-                            self.process_external_msg(item)
-                        else:
-                            # pushes the msg back in the queue as protocol \
-                            # does not allow to send
-                            self.input_buffer.put(item)
-                    self.input_buffer.task_done()
-                    wait_time = time.time() + wait_time_for_next_msg
+                if not self.incoming_moduleMsgBfr.empty():
+                    item = self.incoming_moduleMsgBfr.get()
+                    logger.debug("Msg from GN received.")
+                    self.process_external_msg(item)
+                    self.incoming_moduleMsgBfr.task_done()
                     time.sleep(0.0001)
-                if wait_time > time.time():
-                    time.sleep(0.0001)
-                else:
-                    time.sleep(0.1)
+                    wait_time_set=0
+                else
+                    if wait_time_set==0: 
+                        wait_time = time.time() + wait_time_for_next_msg
+                        wait_time_set=1;
+                    if wait_time > time.time():
+                        time.sleep(0.0001)
+                    else:
+                        time.sleep(0.1)
         except Exception as inst:
-            logger.critical("Exception in main: " + str(inst)+"\n\n")
+            logger.critical("Exception in main: " + str(inst))
 
         finally:
             self.buffer_mngr.join(1)
             self.nc_server.handle_close()
             self.nc_server.join(1)
-            logger.critical("All child threads exited. Parent Exiting..."+"\n\n")
+            logger.critical("All child threads exited. Parent Exiting...")
 
 
     ##############################################################################
@@ -98,18 +96,18 @@ class msg_processor_class():
             return 1
 
 
-    ##############################################################################
-    # Returns True if the bfr_for_in_to_out_msgs of this inst_id is empty or the msg is reg/data
-    # and not a command, so the reply is simple ACK which is not saved in sent_msgs bfr.
-    # So as per the protocol even if bfr_for_in_to_out_msgs is full the ACK can be sent.
-    def can_send_msg(self, inst_id, msg_type):
-        return self.buffer_mngr.bfr_for_in_to_out_msgs[inst_id].empty() or (msg_type != command_type)
+    ###############################################################################
+    ## Returns True if the bfr_for_in_to_out_msgs of this inst_id is empty or the msg is reg/data
+    ## and not a command, so the reply is simple ACK which is not saved in sent_msgs bfr.
+    ## So as per the protocol even if bfr_for_in_to_out_msgs is full the ACK can be sent.
+    #def can_send_msg(self, inst_id, msg_type):
+        #return self.buffer_mngr.bfr_for_in_to_out_msgs[inst_id].empty() or (msg_type != command_type)
 
 
     ##############################################################################
     # Dispatches the msg to proper function by examining msg_type
     def process_external_msg(self, item):
-        logger.debug("GN msg being processed."+"\n\n")
+        logger.debug("GN msg being processed.")
         if item.msg_type == registration_type:
             self.process_gn_registration_msg(item)
         elif item.msg_type == data_type:
@@ -117,14 +115,14 @@ class msg_processor_class():
         elif item.msg_type == command_type:
             self.process_cmd_msg(item)
         else:
-            logger.critical("Unknown Msg type received......"+"\n\n")
+            logger.critical("Unknown Msg type received......")
 
 
     ##############################################################################
     # Registers GN if not registered yet and then sends reg msg to cloud
     # Always sends ACK to GN
     def process_gn_registration_msg(self, item):
-        logger.debug("REGISTRATION Msg Received..........................."+"\n\n")
+        logger.debug("REGISTRATION Msg Received...........................")
         if item.msg != None:
             with config_file_lock:
                 logger.critical("Config file lock acquired------------------------------------------------------------------\n\n")
@@ -135,7 +133,7 @@ class msg_processor_class():
                     self.send_reg_msg_to_cloud('cloud')
                 logger.critical("Config file lock released------------------------------------------------------------------\n\n")
         self.send_ack(item.seq_no, item.sock_or_gn_id, 0, str(int(time.time())))
-        logger.debug("REGISTRATION ACK sent to buffer_mngr."+"\n\n")
+        logger.debug("REGISTRATION ACK sent to buffer_mngr.")
 
 
     ##############################################################################
@@ -147,9 +145,9 @@ class msg_processor_class():
                 config["GN Info"][single_gn_info.instance_id] = single_gn_info.sys_info
                 config["GN Info"][single_gn_info.instance_id]["Registered"] = 'NO'
                 config.write()
-                logger.info("GN registration info saved in config file."+"\n\n")
+                logger.info("GN registration info saved in config file.")
         except Exception as inst:
-            logger.critical("Exception in register_gn:" + str(inst)+"\n\n")
+            logger.critical("Exception in register_gn:" + str(inst))
 
 
     ##############################################################################
@@ -170,38 +168,38 @@ class msg_processor_class():
                     reg_dict["GN Info"][node]["Sensors Info"] = config["GN Info"][node]["Sensors Info"]
             reg_payload.sys_info = reg_dict
             reg_payload.instance_id = get_instance_id()
-            buff_msg = buffered_msg(msg_send, registration_type, None, no_reply, [reg_payload], inst_id)
+            buff_msg = buffered_msg(registration_type, None, no_reply, [reg_payload], inst_id)
             # Sends registration msg by sending to buffer_mngr
-            add_to_thread_buffer(self.buffer_mngr.bfr_for_in_to_out_msgs[inst_id], buff_msg, 'GN_msgs_buffer_mngr')
-            logger.debug("Registration msg sent to bufr mngr to send to cloud."+"\n\n")
+            add_to_thread_buffer(self.buffer_mngr.outgoing_moduleAckBfr[inst_id], buff_msg, 'buffer_mngr')
+            logger.debug("Registration msg sent to bufr mngr to send to cloud.")
         except Exception as inst:
-            logger.critical("Exception in send_reg_msg_to_cloud:" + str(inst)+"\n\n")
+            logger.critical("Exception in send_reg_msg_to_cloud:" + str(inst))
 
 
     ##############################################################################
     # Sends data msg to cloud and ACK to GN
     def process_data_msg(self, item):
-        logger.debug("DATA MSG Received.................................."+"\n\n")
+        logger.debug("DATA MSG Received..................................")
         if item.msg != None:
             # sends msg to bufr mngr to send it to cloud
             self.send_data_msg('cloud', item.msg)
         # sends msg to bufr mngr to send ACK to GN
         self.send_ack(item.seq_no, item.sock_or_gn_id, 0)
-        logger.debug("Data ACK sent to buffer_mngr."+"\n\n")
+        logger.debug("Data ACK sent to buffer_mngr.")
 
 
     ##############################################################################
-    # Sends msg to buffer_mngr to forward to cloud
+    # Sends msg to buffer_mngr to forward to GN/cloud (right now only used for cloud)
     def send_data_msg(self, inst_id, data_payloads):
-        buff_msg = buffered_msg(msg_send, data_type, None, no_reply, data_payloads, inst_id)
-        add_to_thread_buffer(self.buffer_mngr.bfr_for_in_to_out_msgs[inst_id], buff_msg, 'GN_msgs_buffer_mngr')
-        logger.debug("Data msg sent to bufr mngr to send to cloud."+"\n\n")
+        buff_msg = buffered_msg(data_type, None, no_reply, data_payloads, inst_id)
+        add_to_thread_buffer(self.buffer_mngr.outgoing_moduleMsgBfrs[inst_id], buff_msg, 'buffer_mngr')
+        logger.debug("Data msg sent to bufr mngr to send to cloud/GN.")
 
 
     ##############################################################################
     # Hook
     def process_cmd_msg(self, item):
-        logger.debug("CMD Received........................................"+"\n\n")
+        logger.debug("CMD Received........................................")
 
 
     ##############################################################################
@@ -214,8 +212,8 @@ class msg_processor_class():
             msg.output = special_reg_ack
         else:
             msg.output = acknowledgment
-        buff_msg = buffered_msg(msg_send, reply_type, None, reply_id, [msg], inst_id)
-        add_to_thread_buffer(self.buffer_mngr.bfr_for_in_to_out_msgs[inst_id], buff_msg, 'GN_msgs_buffer_mngr')
+        buff_msg = buffered_msg(reply_type, None, reply_id, [msg], inst_id)
+        add_to_thread_buffer(self.buffer_mngr.outgoing_moduleAckBfr[inst_id], buff_msg, 'GN_msgs_buffer_mngr')
 
 
     ##############################################################################
