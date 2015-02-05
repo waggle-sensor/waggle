@@ -36,7 +36,7 @@ port_for_gn = 7001
 
 #######################################################################
 # Message to another thread is passed in the following format
-buffered_msg = namedtuple('buffered_msg', ['internal_msg_header', 'msg_type',\
+buffered_msg = namedtuple('buffered_msg', ['msg_type',\
 'seq_no', 'reply_id', 'msg', 'sock_or_gn_id'])
 # The interpretation of fields in the above format:
 
@@ -79,13 +79,7 @@ buffered_msg = namedtuple('buffered_msg', ['internal_msg_header', 'msg_type',\
 """
 #######################################################################
 
-# Internal Msg Headers
-# Used to distinguish between different types of msgs present in one queue
-# mostly required for msg_processor using only one input bfr
-msg_send = 'msg_send'
-msg_from_gn = 'msg_from_gn'
-# Following is for future use
-msg_from_cloud = 'msg_from_cloud'
+
 
 
 # Constants
@@ -116,29 +110,39 @@ gn_socket_list = []
 config_file_name = './' + "nc.cfg"
 
 ##############################################################################
-# Generates the inst_id by concatenating the MAC Address and sdcard id if available
+# Reads id from file
 def get_instance_id():
-    if get_instance_id.instance_id == None:
-        mac_addr = ''
-        mmcid = "sdcardid"
-        try:
-            interface_no = 0
-            while 1:
-                if os.path.exists('/sys/class/net/eth'+str(interface_no)+'/address'):
-                    mac_addr = open('/sys/class/net/eth'+str(interface_no)+"/address").read()
-                    mac_addr = mac_addr.split('\n')
-                    mac_addr = mac_addr[0].replace(':','')
-                    break
-                else:
-                    interface_no += 1
-            if os.path.exists('/sys/block/mmcblk0/device/cid'):
-                mmcid = open('/sys/block/mmcblk0/device/cid').read()
-                mmcid = mmcid.split('\n')
-                mmcid = mmcid[0]
-            get_instance_id.instance_id = mac_addr + mmcid
-        except Exception as inst:
-            logger.critical("Exception in get_inst_id: " + str(inst)+"\n\n")
+    try:
+        if get_instance_id.instance_id == None:
+            # read inst_id from file
+            f=open("inst_id","r")
+            get_instance_id.instance_id=f.read()
+            f.close()
+    except Exception as inst:
+            logger.critical("Exception in get_inst_id: " + str(inst))
+        
+####################################################    
+        #mac_addr = ''
+        #mmcid = "sdcardid"
+        #try:
+            #interface_no = 0
+            #while 1:
+                #if os.path.exists('/sys/class/net/eth'+str(interface_no)+'/address'):
+                    #mac_addr = open('/sys/class/net/eth'+str(interface_no)+"/address").read()
+                    #mac_addr = mac_addr.split('\n')
+                    #mac_addr = mac_addr[0].replace(':','')
+                    #break
+                #else:
+                    #interface_no += 1
+            #if os.path.exists('/sys/block/mmcblk0/device/cid'):
+                #mmcid = open('/sys/block/mmcblk0/device/cid').read()
+                #mmcid = mmcid.split('\n')
+                #mmcid = mmcid[0]
+            #get_instance_id.instance_id = mac_addr + mmcid
+       
+#####################################################            
     return get_instance_id.instance_id
+# instance_id is a static variable    
 get_instance_id.instance_id = None
 
 

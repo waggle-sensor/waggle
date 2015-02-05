@@ -116,35 +116,41 @@ config_file_name = './' + "gn.cfg"
 
 
 ################################################################################
-# Generates the inst_id by concatenating the MAC Address and sdcard id if available
+# Reads id from file
 def get_instance_id():
-    return "0xaabbccdeff"
-    print "inside get inst id func"
-    if get_instance_id.instance_id == None:
-        mac_addr = ''
-        mmcid = "sdcardid"
-        try:
-            print "inside try block of get inst id func"
-            interface_no = 0
-            while 1:
-                print "inside while loop of get inst id func"
-                if os.path.exists('/sys/class/net/eth'+str(interface_no)+'/address'):
-                    mac_addr = open('/sys/class/net/eth'+str(interface_no)+"/address").read()
-                    mac_addr = mac_addr.split('\n')
-                    mac_addr = mac_addr[0].replace(':','')
-                    break
-                else:
-                    interface_no += 1
-            if os.path.exists('/sys/block/mmcblk0/device/cid'):
-                mmcid = open('/sys/block/mmcblk0/device/cid').read()
-                mmcid = mmcid.split('\n')
-                mmcid = mmcid[0]
-            get_instance_id.instance_id = mac_addr + mmcid
-        except Exception as inst:
-            logger.critical("Exception in get_inst_id: " + str(inst)+"\n\n")
+    try:
+        if get_instance_id.instance_id == None:
+            # read inst_id from file
+            f=open("inst_id","r")
+            get_instance_id.instance_id=f.read()
+            f.close()
+    except Exception as inst:
+            logger.critical("Exception in get_inst_id: " + str(inst))
+        
+####################################################    
+        #mac_addr = ''
+        #mmcid = "sdcardid"
+        #try:
+            #interface_no = 0
+            #while 1:
+                #if os.path.exists('/sys/class/net/eth'+str(interface_no)+'/address'):
+                    #mac_addr = open('/sys/class/net/eth'+str(interface_no)+"/address").read()
+                    #mac_addr = mac_addr.split('\n')
+                    #mac_addr = mac_addr[0].replace(':','')
+                    #break
+                #else:
+                    #interface_no += 1
+            #if os.path.exists('/sys/block/mmcblk0/device/cid'):
+                #mmcid = open('/sys/block/mmcblk0/device/cid').read()
+                #mmcid = mmcid.split('\n')
+                #mmcid = mmcid[0]
+            #get_instance_id.instance_id = mac_addr + mmcid
+       
+#####################################################            
     return get_instance_id.instance_id
+# instance_id is a static variable    
 get_instance_id.instance_id = None
-
+    
 
 ##############################################################################
 # Adds the msg to another thread's buffer if buffer is not full else discards the msg
