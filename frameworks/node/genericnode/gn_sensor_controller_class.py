@@ -1,5 +1,5 @@
 from global_imports import *
-from gn_global_definition_section import get_instance_id,  add_to_thread_buffer,  buffered_msg,  msg_to_nc, \
+from gn_global_definition_section import get_instance_id,  add_to_thread_buffer,  buffered_msg,  \
 start_communication_with_nc_event,  data_type,  sensor_thread_list, \
 config_file_name, logger, wait_time_for_next_msg, reply_type
 from gn_sensor_plugin import sensor_plugin_class
@@ -7,7 +7,7 @@ from config_file_functions import initialize_config_file, ConfigObj
 
 
 """
-# Creates sensor_plugin object. Calls plug_in sensors and get_sensor_msgs function\
+# Creates sensor_plugin object. Calls plug_in sensors and get_sensor_dataMsgs function\
 # of this object to import sensor modules and periodically collect data from sensors.
 # (For future) Can also process any msg obtained from NC
 """
@@ -19,7 +19,7 @@ class sensor_controller_class(threading.Thread):
         # can be used by logging module for printing messages related to this thread
         self.thread_name = thread_name                                                              
         self.daemon = True
-        self.input_buffer = Queue.Queue(maxsize=1000)                                                           
+        self.sensor_dataMsgs = Queue.Queue(maxsize=1000)                                                           
         self.main_thread = ''
         self.buffer_mngr = ''
         self.sensor_msg_delimiter = str(unichr(12))
@@ -33,7 +33,7 @@ class sensor_controller_class(threading.Thread):
     def run(self):
         try:
             logger.debug("Starting " + self.thread_name+ "\n\n")
-            plugin_obj = sensor_plugin_class(self.input_buffer)
+            plugin_obj = sensor_plugin_class(self.sensor_dataMsgs)
             # Import new sensor files if any
             plugin_obj.plugin_sensors()
             wait_time = time.time() + wait_time_for_next_msg
@@ -41,23 +41,20 @@ class sensor_controller_class(threading.Thread):
             while True:
                 """
                 # Collects all the sensor msgs from their respective output_buffers and \
-                # puts them into its input_buffer by converting them in proper namedtuple format
+                # puts them into its sensor_dataMsgs by converting them in proper namedtuple format
                 # This might seem to be an overhead as whatever it does is reads\
                 # the sensor msgs from their output_buffers and packs them in proper format
-                # and puts them back in its own input_buffer and finally gets \
-                # them from its input_buffer and sends them to buffer_mngr by preparing data payloads. 
+                # and puts them back in its own sensor_dataMsgs and finally gets \
+                # them from its sensor_dataMsgs and sends them to buffer_mngr by preparing data payloads. 
                 # But this approach is used to give equal FIFO processing priority to all msgs
                 # irrespective of whether they are obtained from sensors or NC and reduce redundancy \
                 # in the code.
                 """
                 plugin_obj.get_sensor_msgs()
-                while not self.input_buffer.empty():
+                while not self.sensor_dataMsgs.empty():
                     # Start reading the received msgs only if registration is done
                     if start_communication_with_nc_event.is_set():
-                        item = self.input_buffer.get()
-                        logger.debug("Msg received."+ "\n\n")
-                        self.process_msg(item)
-                        self.input_buffer.task_done()
+                        self.process_msg()
                     # set time to remain attentive for next 200 ms
                     wait_time = time.time() + wait_time_for_next_msg
                     time.sleep(0.0001)
@@ -74,20 +71,15 @@ class sensor_controller_class(threading.Thread):
 
     ##############################################################################     
     # Processes received msg and based on the type decides the action 
-    def process_msg(self, item):
+    def process_msg(self):
+        item = self.sensor_dataMsgs.get()
         logger.debug('Msg being processed..'+ "\n\n")
-        if item.internal_msg_header == msg_to_nc:
-            # If the bfr_for_in_to_out_msgs is empty or msg to be
-            # sent is a reply type then process the msg
-            if item.msg_type == reply_type or self.buffer_mngr.bfr_for_in_to_out_msgs.empty():
-                logger.debug('Received sensor msg.'+ "\n\n")
-                if item.msg_type == data_type:
-                    self.send_data_msg(item)
-            # protocol does not allow to send a (data/cmd) msg when
-            # bfr_for_in_to_out_msgs is full so push it back in the queue 
-            else:
-                self.input_buffer.put(item)
-            logger.debug("Length of input bfr of sensor_controller:"+str(self.input_buffer.qsize()))
+        # If the bfr_for_in_to_out_msgs is empty or msg to be
+        # sent is a reply type then process the msg
+        logger.debug('Received sensor msg.'+ "\n\n")
+        self.send_data_msg(item)
+        self.sensor_dataMsgs.task_done()
+        logger.debug("Length of input bfr of sensor_controller:"+str(self.sensor_dataMsgs.qsize()))
                 
         
     ##############################################################################         
@@ -112,9 +104,9 @@ class sensor_controller_class(threading.Thread):
     ############################################################################## 
     # Adds msg to the buffer_mngr's buffer
     def send_to_buffer_mngr(self, msg_type, reply_id, msg):
-        buff_msg = buffered_msg(msg_to_nc, msg_type, None, reply_id, msg)                     
+        buff_msg = buffered_msg(msg_type, None, reply_id, msg)                     
         # Sends msg to buffer_mngr by adding to bfr_for_in_to_out_msgs
-        add_to_thread_buffer(self.buffer_mngr.bfr_for_in_to_out_msgs, buff_msg, "Buffer Mngr")
+        add_to_thread_buffer(self.buffer_mngr.outgoing_gnMsgBfr, buff_msg, "Buffer Mngr")
         logger.debug("Msg sent to buffer_mngr." + "\n\n")
         
     

@@ -3,7 +3,7 @@ from gn_buffer_mngr_class import buffer_mngr_class
 from gn_sensor_controller_class import sensor_controller_class
 from get_node_info import get_node_info
 from gn_global_definition_section import get_instance_id, add_to_thread_buffer, \
-buffered_msg, msg_to_nc, msg_from_nc, start_communication_with_nc_event, \
+buffered_msg, start_communication_with_nc_event, \
 sensors_info_saved_event, registration_type, \
 no_reply, config_file_name, logger, wait_time_for_next_msg
 from config_file_functions import initialize_config_file, ConfigObj
@@ -47,23 +47,22 @@ class main_class():
             wait_time = time.time() + wait_time_for_next_msg
             wait_time_set = 1
             while True:
-                while (not self.input_buffer.empty()):
-                    item = self.input_buffer.get()
-                    logger.debug("Msg received in buffer:"+str(item)+ "\n\n")
-                    internal_msg_header = item.internal_msg_header
-                    if internal_msg_header == msg_from_nc:
-                        process_external_msg(item)
-                    else:
-                        logger.critical("Unknown Msg Received: Discarding the msg\
-                        ............." + "\n\n")
-                    self.input_buffer.task_done()
-                    # set time to remain attentive for next 200 ms
-                    wait_time = time.time() + wait_time_for_next_msg
-                    time.sleep(0.0001)
-                if wait_time > time.time():
-                    time.sleep(0.0001)
-                else:
-                    time.sleep(1)
+                time.sleep(0.1)
+                #while (not self.input_buffer.empty()):
+                    #item = self.input_buffer.get()
+                    #logger.debug("Msg received in buffer:"+str(item)+ "\n\n")
+                        #process_external_msg(item)
+                    #else:
+                        #logger.critical("Unknown Msg Received: Discarding the msg\
+                        #............." + "\n\n")
+                    #self.input_buffer.task_done()
+                    ## set time to remain attentive for next 200 ms
+                    #wait_time = time.time() + wait_time_for_next_msg
+                    #time.sleep(0.0001)
+                #if wait_time > time.time():
+                    #time.sleep(0.0001)
+                #else:
+                    #time.sleep(1)
         except Exception as inst:
             logger.critical("Exception in main_class: " + str(inst)+ "\n\n")
         finally:
@@ -143,28 +142,28 @@ class main_class():
     ##############################################################################
     # Adds msg to the buffer_mngr's buffer
     def send_to_buffer_mngr(self, msg_type, reply_id, msg):
-        buff_msg = buffered_msg(msg_to_nc, msg_type, None, reply_id, msg)
-        add_to_thread_buffer(self.buffer_mngr.bfr_for_in_to_out_msgs, buff_msg, "Buffer Mngr")
+        buff_msg = buffered_msg(msg_type, None, reply_id, msg)
+        add_to_thread_buffer(self.buffer_mngr.outgoing_gnMsgBfr, buff_msg, "Buffer Mngr")
         logger.debug ("Msg sent to buffer_mngr."+ "\n\n")
 
 
-    ##############################################################################
-    # Hook
-    def process_external_msg(self, item):
-        logger.debug("Processing NC's msg."+ "\n\n")
-        # Add stuff to process any command received from NC
+    ###############################################################################
+    ## Hook
+    #def process_external_msg(self, item):
+        #logger.debug("Processing NC's msg."+ "\n\n")
+        ## Add stuff to process any command received from NC
 
-    ##############################################################################
-    # Hook
-    def process_cmd(self, msg):
-        logger.debug("Command from NC received."+ "\n\n")
-        if msg == "Update":
-            #TODO
-            update_cmd_handler()
+    ###############################################################################
+    ## Hook
+    #def process_cmd(self, msg):
+        #logger.debug("Command from NC received."+ "\n\n")
+        #if msg == "Update":
+            ##TODO
+            #update_cmd_handler()
 
-        elif msg == "Status":
-            #TODO
-            get_status()
+        #elif msg == "Status":
+            ##TODO
+            #get_status()
 
 
     ##############################################################################

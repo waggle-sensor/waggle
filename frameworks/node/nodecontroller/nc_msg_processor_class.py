@@ -3,8 +3,8 @@ from nc_buffer_mngr_class import buffer_mngr_class
 from nc_server_class import nc_server_class
 from get_node_info import get_node_info
 import socket
-from nc_global_definition_section import logger, buffered_msg,  msg_send,  \
-msg_from_gn,  registration_type,  data_type,  command_type,  reply_type,  \
+from nc_global_definition_section import logger, buffered_msg, \
+registration_type,  data_type,  command_type,  reply_type,  \
 acknowledgment,  no_reply, config_file_name, get_instance_id,  \
 add_to_thread_buffer, wait_time_for_next_msg, config_file_lock
 from config_file_functions import initialize_config_file, ConfigObj
@@ -53,7 +53,7 @@ class msg_processor_class():
                     self.incoming_moduleMsgBfr.task_done()
                     time.sleep(0.0001)
                     wait_time_set=0
-                else
+                else:
                     if wait_time_set==0: 
                         wait_time = time.time() + wait_time_for_next_msg
                         wait_time_set=1;
@@ -170,7 +170,7 @@ class msg_processor_class():
             reg_payload.instance_id = get_instance_id()
             buff_msg = buffered_msg(registration_type, None, no_reply, [reg_payload], inst_id)
             # Sends registration msg by sending to buffer_mngr
-            add_to_thread_buffer(self.buffer_mngr.outgoing_moduleAckBfr[inst_id], buff_msg, 'buffer_mngr')
+            add_to_thread_buffer(self.buffer_mngr.outgoing_ncMsgBfr[inst_id], buff_msg, 'buffer_mngr')
             logger.debug("Registration msg sent to bufr mngr to send to cloud.")
         except Exception as inst:
             logger.critical("Exception in send_reg_msg_to_cloud:" + str(inst))
@@ -192,7 +192,7 @@ class msg_processor_class():
     # Sends msg to buffer_mngr to forward to GN/cloud (right now only used for cloud)
     def send_data_msg(self, inst_id, data_payloads):
         buff_msg = buffered_msg(data_type, None, no_reply, data_payloads, inst_id)
-        add_to_thread_buffer(self.buffer_mngr.outgoing_moduleMsgBfrs[inst_id], buff_msg, 'buffer_mngr')
+        add_to_thread_buffer(self.buffer_mngr.outgoing_ncMsgBfr[inst_id], buff_msg, 'buffer_mngr')
         logger.debug("Data msg sent to bufr mngr to send to cloud/GN.")
 
 

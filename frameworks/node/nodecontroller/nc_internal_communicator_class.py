@@ -2,7 +2,7 @@ import asyncore
 import asynchat
 import socket
 from global_imports import *
-from nc_global_definition_section import buffered_msg,  msg_from_gn,  \
+from nc_global_definition_section import buffered_msg, \
 asynchat_msg_terminator,  gn_socket_list,  add_to_thread_buffer, logger, gn_socket_list_lock
 
 """
@@ -74,9 +74,9 @@ class internal_communicator(asynchat.async_chat):
                 # recreates msg by concatenatning list's elements
                 for single_msg in self.input_buffer:
                     msg = msg + single_msg                                              
-                msg = buffered_msg(msg_from_gn, None, None, None, msg, self)
+                msg = buffered_msg(None, None, None, msg, self)
                 # Sends msg to the buffer_mngr's buffer
-                add_to_thread_buffer(self.buffer_mngr.bfr_for_out_to_in_msgs,\
+                add_to_thread_buffer(self.buffer_mngr.incoming_moduleMsgBfr,\
                 msg, "GN_msgs_buffer_mngr")                                             
                 logger.debug("Msg sent to buffer_mngr."+"\n\n")
             except Exception as inst:

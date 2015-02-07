@@ -33,7 +33,7 @@ logger = logging.getLogger("GN")
 
 #################################################################################
 # Message to another thread is passed in the following format
-buffered_msg = namedtuple('buffered_msg', ['internal_msg_header', 'msg_type',\
+buffered_msg = namedtuple('buffered_msg', ['msg_type',\
 'seq_no', 'reply_id', 'msg'])
 # The interpretation of fields in the above format:
 

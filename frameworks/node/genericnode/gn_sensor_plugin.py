@@ -1,7 +1,7 @@
 import imp
 from threading import Thread
 from gn_global_definition_section import add_to_thread_buffer,  buffered_msg, \
-msg_to_nc,  sensors_info_saved_event,  data_type,  no_reply,  sensor_thread_list,\
+sensors_info_saved_event,  data_type,  no_reply,  sensor_thread_list,\
 config_file_name, logger    
 from global_imports import *
 from config_file_functions import initialize_config_file, ConfigObj
@@ -20,9 +20,9 @@ class sensor_plugin_class():
         
     ############################################################################## 
     def __init__(self, output_buffer):
-        self.sensor_controller_output_buffer = output_buffer
-        self.sensorid_input_buffer_map = {}
-        self.sensorid_output_buffer_map = {}
+        self.sensor_dataMsgs = output_buffer
+        self.sensorBoard_input_queue = {}
+        self.sensorBoard_output_queue = {}
         self.registered_sensors = []
         
     
@@ -50,8 +50,8 @@ class sensor_plugin_class():
                             logger.critical("Exception in plugin loop: " + str(inst)+"\n\n")
                 self.register_modules(sensor_class_objcts)
                 for sensor_class_name in sensor_class_names :
-                    self.sensorid_input_buffer_map[sensor_class_name] = Queue.Queue()
-                    self.sensorid_output_buffer_map[sensor_class_name] = Queue.Queue()
+                    self.sensorBoard_input_queue[sensor_class_name] = Queue.Queue()
+                    self.sensorBoard_output_queue[sensor_class_name] = Queue.Queue()
                 logger.debug("Sensors' info added to the config file and their buffers created.")      
                 self.start_sensors(sensor_class_objcts, sensor_class_names)
                 # Notify to the other threads that the sensors' info has been \
@@ -123,7 +123,7 @@ class sensor_plugin_class():
     ############################################################################## 
     # Checks whether the module (file) is new or already imported
     def is_new_module(self, module_name):
-        if module_name in self.sensorid_input_buffer_map:
+        if module_name in self.sensorBoard_input_queue:
             # module is imported once since last reboot
             return False
         return True
@@ -183,7 +183,7 @@ class sensor_plugin_class():
             config = ConfigObj(config_file_name)
             for sensor_class_obj, sensor_class_name in zip(sensor_class_objcts, sensor_class_names):
                 t = Thread(target=self.start_sensor, args = (sensor_class_obj, \
-                self.sensorid_input_buffer_map[sensor_class_name], self.sensorid_output_buffer_map[sensor_class_name]))
+                self.sensorBoard_input_queue[sensor_class_name], self.sensorBoard_output_queue[sensor_class_name]))
                 self.update_sensor_thread_list(t)
                 t.start()
             logger.debug("New sensors started."+"\n\n")
@@ -213,9 +213,9 @@ class sensor_plugin_class():
     # them into proper format and puts them into sensor_controller's input_buffer
     def get_sensor_msgs(self):
         try:
-            for each_sensor in self.sensorid_output_buffer_map:
-                while not self.sensorid_output_buffer_map[each_sensor].empty():
-                    item = self.sensorid_output_buffer_map[each_sensor].get()
+            for each_sensor in self.sensorBoard_output_queue:
+                while not self.sensorBoard_output_queue[each_sensor].empty():
+                    item = self.sensorBoard_output_queue[each_sensor].get()
                     msg_type = data_type 
                     reply_id = no_reply 
                     # Check whether sensor is properly registered or not
@@ -225,10 +225,10 @@ class sensor_plugin_class():
                         item[6] = "Error in registering sensor."
                         logger.critical("Error in registering sensor.")
                     msg = item
-                    add_to_thread_buffer(self.sensor_controller_output_buffer, \
-                    buffered_msg(msg_to_nc, msg_type, None, reply_id, msg), "Sensor Controller")                                
-                    self.sensorid_output_buffer_map[each_sensor].task_done()
-                    logger.debug("Msg sent to sensor_controller_output_buffer." + str(msg)+"\n\n")
+                    add_to_thread_buffer(self.sensor_dataMsgs, \
+                    buffered_msg(msg_type, None, reply_id, msg), "Sensor Controller")                                
+                    self.sensorBoard_output_queue[each_sensor].task_done()
+                    logger.debug("Msg sent to sensor_dataMsgs." + str(msg)+"\n\n")
             logger.debug("Msg sending to sensor_controller's buffer done."+"\n\n")    
         except Exception as inst:
             logger.critical("Exception in get_sensor_msgs: " + str(inst)+"\n\n")

@@ -17,9 +17,9 @@ sequence no = session_id(3 bytes) + subseq_no(3 bytes)
 """
 
 """
-unacknowledged_msg_handler_info is saved in bfr_for_sent_msgs
+unacknowledged_msg_handler_info is saved in sent_gnMsgBfr
 unacknowledged_msg_handler_info's format: [session_id, \
-last_gn_subseq_no, expiration_time, encoded_msg, msg_handler_no, inst_id]
+highest_gn_subseq_no, expiration_time, encoded_msg, msg_handler_no, inst_id]
 """
 
 """
@@ -58,14 +58,10 @@ class buffer_mngr_class(threading.Thread):
             """ 
             # Below are different types of buffers 
             """
-            self.bfr_for_in_to_out_msgs = Queue.Queue(maxsize=1000)
+            self.outgoing_gnMsgBfr = Queue.Queue(maxsize=1000)
+            self.incoming_ncAckBfr = Queue.Queue(maxsize=1000)
             # Stores only sent reg/data/cmds not replies/ACKs
-            self.bfr_for_sent_msgs =[]
-            self.bfr_for_out_to_in_msgs = Queue.Queue(maxsize=1000)
-            # Stores only sent replies/ACKs
-            self.bfr_for_sent_responses = []
-            # Stores the sequence nos which are received but unacknowledged
-            self.temp_acks = []							     
+            self.sent_gnMsgBfr =[]
             ###############################
             # Port where NC listens for GNs
             self.nc_port = nc_port                          
@@ -88,9 +84,9 @@ class buffer_mngr_class(threading.Thread):
             self.gn_session_id = self.initialize_gn_session_id()   
             self.nc_session_id = self.default_seq_no 
             # subseq_no of the last msg (excluding duplicate) sent to NC
-            self.last_gn_subseq_no = self.default_seq_no  
+            self.highest_gn_subseq_no = self.default_seq_no  
             # subseq_no of the last msg (excluding duplicate) sent to GN
-            self.last_nc_subseq_no = self.default_seq_no 
+            self.highest_nc_subseq_no = self.default_seq_no 
             # subseq_no of the last msg of GN (excluding duplicate) acknowledged by NC
             self.ackd_gn_subseq_no = self.default_seq_no 
             # subseq_no of the last msg of NC (excluding duplicate) acknowledged by GN
@@ -115,8 +111,7 @@ class buffer_mngr_class(threading.Thread):
             wait_time = time.time() + wait_time_for_next_msg
             wait_time_set = 1
             while True:
-                while (not self.bfr_for_out_to_in_msgs.empty()) or\
-                (not self.bfr_for_in_to_out_msgs.empty()) or (self.bfr_for_sent_msgs):
+                while (not self.outgoing_gnMsgBfr.empty()) or (self.sent_gnMsgBfr) or (not self.incoming_ncAckBfr.empty()):
                     self.send_in_to_out_msg()
                     self.process_out_to_in_msg()
                     self.send_timed_out_msg()
@@ -185,10 +180,8 @@ class buffer_mngr_class(threading.Thread):
     # NC is up
     def reset_nc_specific_data_structures(self):
         try:
-            self.last_nc_subseq_no = self.default_seq_no
+            self.highest_nc_subseq_no = self.default_seq_no
             self.ackd_nc_subseq_no = self.default_seq_no
-            self.temp_acks = []                               
-            self.bfr_for_sent_responses = []
         except Exception as inst:
             logger.critical("ERROR: Exception in reset_nc_specific_data_structures: " + str(inst))
 
@@ -199,66 +192,43 @@ class buffer_mngr_class(threading.Thread):
     # Attaches msg_header and encodes msg and saves it before sending
     def send_in_to_out_msg(self):
         try:
-            if not self.bfr_for_in_to_out_msgs.empty():
-                send_msg = 1
-                item = self.bfr_for_in_to_out_msgs.get()				
-                if item.msg_type != reply_type and self.is_bfr_for_sent_msgs_full():
-                    # push the msg back in the queue as the msg is not a simple
-                    # reply and the sent_msgs buffer is full so protocol does 
-                    # not allow to send any new msg
-                    self.bfr_for_in_to_out_msgs.put(item)
-                else:
-                    encoded_msg = self.gen_msg(item)
-                    encoded_msg = encoded_msg + asynchat_msg_terminator
-                    # save the copy of msg in sent_msgs buffer
-                    if item.msg_type != reply_type:
-                        expiration_time = self.calculate_expiration_time(item.msg_type, item.msg)
-                        msg_handler_no = self.get_msg_handler_no(item.msg_type)
-                        unacknowledged_msg_handler_info = [self.gn_session_id,\
-                        self.last_gn_subseq_no, expiration_time, encoded_msg, msg_handler_no]  
-                        logger.debug("Buffer size of buffer_mngr's output buffer\
-                        before adding item: " + str(len(self.bfr_for_sent_msgs)))
-                        self.add_to_sent_msgs_bfr(unacknowledged_msg_handler_info)
-                        logger.debug("Msg waiting for ACK inserted in sorted buffer.")
-                    # save the copy of ACK in sent_responses buffer
-                    else:
-                        session_id = self.convert_to_int(item.reply_id[:self.seq_no_partition_size])
-                        ackd_id = self.convert_to_int(item.reply_id[self.seq_no_partition_size:])
-                        for msg_id in self.temp_acks:
-                            if msg_id[0] == session_id and msg_id[1] == ackd_id:
-                                self.temp_acks.remove(msg_id)
-                        # Check whether this is not a response for the old msg with old session_id
-                        if session_id == self.nc_session_id:
-                            self.bfr_for_sent_responses.append((session_id, ackd_id, encoded_msg))
-                        # as its an old msg don't send it
-                        else:
-                            send_msg = 0
-                            logger.critical("ERROR: Session id of NC has changed so \
-                            discarding msg..............")
-                    if send_msg:
-                        self.send_msg_to_nc(encoded_msg)
-                self.bfr_for_in_to_out_msgs.task_done()
+            if not self.outgoing_gnMsgBfr.empty() and not self.is_sent_gnMsgBfr_full():
+                item = self.outgoing_gnMsgBfr.get()				
+                encoded_msg = self.gen_msg(item)
+                encoded_msg = encoded_msg + asynchat_msg_terminator
+                # save the copy of msg in sent_msgs buffer
+                # send only if its not a reply (currently only reg/data msgs are present in the bfr)
+                expiration_time = self.calculate_expiration_time(item.msg_type, item.msg)
+                msg_handler_no = self.get_msg_handler_no(item.msg_type)
+                unacknowledged_msg_handler_info = [self.gn_session_id,\
+                self.highest_gn_subseq_no, expiration_time, encoded_msg, msg_handler_no]  
+                logger.debug("Buffer size of buffer_mngr's output buffer\
+                before adding item: " + str(len(self.sent_gnMsgBfr)))
+                self.add_to_sent_msgs_bfr(unacknowledged_msg_handler_info)
+                logger.debug("Msg waiting for ACK inserted in sorted buffer.")
+                self.send_msg_to_nc(encoded_msg)
+                self.outgoing_gnMsgBfr.task_done()
         except Exception as inst:
             logger.critical("ERROR: Exception in send_in_to_out_msg: " + str(inst) )
         
                     
     
     ##############################################################################
-    # Processes msgs in the bfr_for_out_to_in_msgs coming from NC
+    # Processes msgs in the incoming_ncAckBfr coming from NC
     # Decodes msg and decides whether it should be accepted or not
     # Processes simple ACKS and forwards other msgs (in future cmd) to main_thread 
     # or sensor_controller
     def process_out_to_in_msg(self):
         try:
-            if not self.bfr_for_out_to_in_msgs.empty():
-                item = self.bfr_for_out_to_in_msgs.get()
+            if not self.incoming_ncAckBfr.empty():
+                item = self.incoming_ncAckBfr.get()
                 logger.debug("Msg from NCR:" + str(item.msg) )
                 try:
                     decoded_msg = Message.decode(item.msg)
                 except Exception as inst:
                     logger.critical("ERROR: Exception while decoding msg: " + str(inst) )
                     logger.critical("So discarding msg............." + str(inst) )
-                    self.bfr_for_out_to_in_msgs.task_done()
+                    self.incoming_ncAckBfr.task_done()
                     return
                 # check whether the msg is new or duplicate
                 if self.new_msg(decoded_msg):
@@ -268,18 +238,10 @@ class buffer_mngr_class(threading.Thread):
                         subseq_no = self.convert_to_int(decoded_msg.header.reply_to_id[self.seq_no_partition_size:])
                         msg_info = self.get_and_del_saved_msg(session_id, subseq_no)   
                         self.handler_vector_table[msg_info[4]](msg_info, decoded_msg)   
-                    # (For future use) cmd obtained so send it to proper thread
-                    else:
-                        session_id = self.convert_to_int(decoded_msg.header.sequence_id[:self.seq_no_partition_size])
-                        subseq_no = self.convert_to_int(decoded_msg.header.sequence_id[self.seq_no_partition_size:])
-                        # save the last_nc_subseq_no till its ack is actually
-                        # inserted after receiving from another thread
-                        self.temp_acks.append((session_id, subseq_no))
-                        # a new cmd from NC so send it to apt thread: sensor_ctlr or main_class
-                        self.dispatch_cmd(decoded_msg)
+                    
                 else:
                     logger.critical("OLD MSG DISCARDED.............")
-                self.bfr_for_out_to_in_msgs.task_done()
+                self.incoming_ncAckBfr.task_done()
         except Exception as inst:
             logger.critical("ERROR: Exception in process_out_to_in_msg: " + str(inst) )
         
@@ -288,7 +250,7 @@ class buffer_mngr_class(threading.Thread):
     # Resend timed out msg
     def send_timed_out_msg(self):
         try:
-            if self.bfr_for_sent_msgs:
+            if self.sent_gnMsgBfr:
                 timed_out_msg_info = self.get_timed_out_msg_info()
                 if timed_out_msg_info:
                     self.handler_vector_table[timed_out_msg_info[4]](timed_out_msg_info, None)
@@ -304,7 +266,7 @@ class buffer_mngr_class(threading.Thread):
             # logger.critical("Msg Sent to NC:"+str('%0.4f' % time.time())+ \
             # "\tcount:" + str(self.sent_msg_count) + "\t" + str(encoded_msg)) # 
             # logger.critical("Msg Sent to NC:"+str('%0.4f' % time.time())+":"\
-            # +str(self.last_gn_subseq_no)+ ":"+str(self.ackd_gn_subseq_no))
+            # +str(self.highest_gn_subseq_no)+ ":"+str(self.ackd_gn_subseq_no))
             logger.critical("Msg Sent to NC:"+str('%0.4f' % time.time())+">>>>>>>>>>>>>>>>>>>>")
         except Exception as inst:
             logger.critical("ERROR: Exception in send_msg_to_nc: " + str(inst))
@@ -312,13 +274,13 @@ class buffer_mngr_class(threading.Thread):
     
     
     ##############################################################################    
-    # Checks whether first msg in bfr_for_sent_msgs has timed out and if so, 
+    # Checks whether first msg in sent_gnMsgBfr has timed out and if so, 
     # returns it
     def get_timed_out_msg_info(self):
         try:
-            msg_handler_info = self.bfr_for_sent_msgs[0]
+            msg_handler_info = self.sent_gnMsgBfr[0]
             if msg_handler_info[2] < time.time():
-                self.bfr_for_sent_msgs.remove(msg_handler_info)
+                self.sent_gnMsgBfr.remove(msg_handler_info)
                 return msg_handler_info
             return None
         except Exception as inst:
@@ -330,10 +292,10 @@ class buffer_mngr_class(threading.Thread):
     def add_to_sent_msgs_bfr(self, msg_handler_info):
         try:
             logger.debug("Buffer size of GN_msgs_buffer_mngr's output buffer \
-            before adding item: " + str(len(self.bfr_for_sent_msgs)))
-            self.bfr_for_sent_msgs.append(msg_handler_info)
+            before adding item: " + str(len(self.sent_gnMsgBfr)))
+            self.sent_gnMsgBfr.append(msg_handler_info)
             # sorted based on time so retrieval for expired msgs is in FIFO order
-            sorted(self.bfr_for_sent_msgs, key=lambda x: x[2])                                              
+            sorted(self.sent_gnMsgBfr, key=lambda x: x[2])                                              
             logger.debug("Msg waiting for ACK inserted in sorted buffer.")
         except Exception as inst:
             logger.critical("ERROR: Exception in add_to_sent_msgs_bfr: " + str(inst) )
@@ -344,71 +306,71 @@ class buffer_mngr_class(threading.Thread):
     def dispatch_cmd(self, decoded_msg):
         pass
     
-    ##############################################################################
-    # Discards all the old msgs in the bfr_for_sent_responses whose reply_id is
-    # behind or equal to the acknowledged seq_no in the sequence sent by the NC
-    def discard_ackd_responses(self):
-        try:
-            for response in self.bfr_for_sent_responses:
-                # If session_id doesn't match means its probably an old response so delete it
-                if response[0] != self.nc_session_id:
-                    self.bfr_for_sent_responses.remove(response)
-                # check whether the buffered_response's reply_id ie. NC's subseq_no\
-                # is now outside NC's current window
-                elif self.response_rcvd_by_nc(self.ackd_nc_subseq_no, response[1]):
-                    self.bfr_for_sent_responses.remove(response)
-                else:
-                    # as ACKS are stored in FIFO order
-                    break
-        except Exception as inst:
-            logger.critical("ERROR: Exception in discard_ackd_responses: " + str(inst))
+    ###############################################################################
+    ## Discards all the old msgs in the bfr_for_sent_responses whose reply_id is
+    ## behind or equal to the acknowledged seq_no in the sequence sent by the NC
+    #def discard_ackd_responses(self):
+        #try:
+            #for response in self.bfr_for_sent_responses:
+                ## If session_id doesn't match means its probably an old response so delete it
+                #if response[0] != self.nc_session_id:
+                    #self.bfr_for_sent_responses.remove(response)
+                ## check whether the buffered_response's reply_id ie. NC's subseq_no\
+                ## is now outside NC's current window
+                #elif self.response_rcvd_by_nc(self.ackd_nc_subseq_no, response[1]):
+                    #self.bfr_for_sent_responses.remove(response)
+                #else:
+                    ## as ACKS are stored in FIFO order
+                    #break
+        #except Exception as inst:
+            #logger.critical("ERROR: Exception in discard_ackd_responses: " + str(inst))
             
             
-    ##############################################################################
-    # checks whether the ACK corresponding to the reply_id has already been received
-    # by the NC or not based on the newly received ackd_nc_subseq_no
-    def response_rcvd_by_nc(self, ackd_no, reply_id):
-        # Explanation for 1st OR Condtion: If reply_id > ackd_no then if the difference between them is too large then
-        # that means there is wrap up so the response is old but as the subseq_no is about
-        # to reach the max limit so reply_id > ackd_no
-        # Explanation for 2nd OR Condtion: If reply_id is not greater than ackd_no then its either == or < ackd_no
-        # and if the difference is not very large. Necessary to check diff for special case of wrap-up 
-        # Ex: (say) reply_id = 2 due to wrap up and ackd_id = 255(lets say its the max. limit) then in this case 
-        # the response should not be deleted as its ahead in the sequence and not yet acknowledged by NC
-        if (self.is_gt(reply_id,ackd_no) and self.diff_large(reply_id,ackd_no)) or ((not self.is_gt(reply_id, ackd_no)) and (not self.diff_large(ackd_no, reply_id))):
-            return True
-        return False
+    ###############################################################################
+    ## checks whether the ACK corresponding to the reply_id has already been received
+    ## by the NC or not based on the newly received ackd_nc_subseq_no
+    #def response_rcvd_by_nc(self, ackd_no, reply_id):
+        ## Explanation for 1st OR Condtion: If reply_id > ackd_no then if the difference between them is too large then
+        ## that means there is wrap up so the response is old but as the subseq_no is about
+        ## to reach the max limit so reply_id > ackd_no
+        ## Explanation for 2nd OR Condtion: If reply_id is not greater than ackd_no then its either == or < ackd_no
+        ## and if the difference is not very large. Necessary to check diff for special case of wrap-up 
+        ## Ex: (say) reply_id = 2 due to wrap up and ackd_id = 255(lets say its the max. limit) then in this case 
+        ## the response should not be deleted as its ahead in the sequence and not yet acknowledged by NC
+        #if (self.is_gt(reply_id,ackd_no) and self.diff_large(reply_id,ackd_no)) or ((not self.is_gt(reply_id, ackd_no)) and (not self.diff_large(ackd_no, reply_id))):
+            #return True
+        #return False
     
-    ##############################################################################
-    # checks whether no1 is greater than no2
-    def is_gt(self, no1, no2):
-        return no1>no2
+    ###############################################################################
+    ## checks whether no1 is greater than no2
+    #def is_gt(self, no1, no2):
+        #return no1>no2
         
         
-    ##############################################################################
-    # checks whether no1 is greater than no2
-    def diff_large(self, no1, no2):
-        return (no1-no2)>self.error_scope
+    ###############################################################################
+    ## checks whether no1 is greater than no2
+    #def diff_large(self, no1, no2):
+        #return (no1-no2)>self.error_scope
         
         
     ##############################################################################    
-    # From bfr_for_sent_msgs deletes & returns msg_info for a specific msg whose ACK is obtained   
+    # From sent_gnMsgBfr deletes & returns msg_info for a specific msg whose ACK is obtained   
     def get_and_del_saved_msg(self, session_id, subseq_no):
         try:
             logger.debug("Buffer size of buffer_mngr's output buffer before \
-            deleting item: " + str(len(self.bfr_for_sent_msgs))+"\n")
-            for msg_handler_info in self.bfr_for_sent_msgs:
+            deleting item: " + str(len(self.sent_gnMsgBfr))+"\n")
+            for msg_handler_info in self.sent_gnMsgBfr:
                 if msg_handler_info[0] == session_id and msg_handler_info[1] == subseq_no:
-                    self.bfr_for_sent_msgs.remove(msg_handler_info)
+                    self.sent_gnMsgBfr.remove(msg_handler_info)
                     if (msg_handler_info[1] == self.ackd_gn_subseq_no+1) or\
                     (msg_handler_info[1] == 1 and self.ackd_gn_subseq_no==self.upper_seq_bytes_limit):
-                        # Set the ackd_gn_subseq_no equal to the oldest waiting msg's last_gn_subseq_no
+                        # Set the ackd_gn_subseq_no equal to the oldest waiting msg's highest_gn_subseq_no
                         # minus 1 (or max subseq_no as shown below in a special case) if the bfr is not empty
-                        if self.bfr_for_sent_msgs:
-                            oldest_last_gn_subseq_no = self.find_oldest_last_gn_subseq_no()
+                        if self.sent_gnMsgBfr:
+                            oldest_highest_gn_subseq_no = self.find_oldest_highest_gn_subseq_no()
                             # check the border case: if ACK of msg, whose subseq_no has reached to the max limit, is received
                             # and the oldest msg waiting in the bfr has subseq_no=1
-                            if msg_handler_info[1] == self.upper_seq_bytes_limit and oldest_last_gn_subseq_no==1:
+                            if msg_handler_info[1] == self.upper_seq_bytes_limit and oldest_highest_gn_subseq_no==1:
                                 self.ackd_gn_subseq_no = self.upper_seq_bytes_limit
                             else:
                                 # As the protocol allows to receive msgs in any sequence (when window_size>1)
@@ -418,11 +380,11 @@ class buffer_mngr_class(threading.Thread):
                                 # ackd_gn_subseq_no is always not simply incremented by 1
                                 # but set 1 less than the current oldest waiting packet's no
                                 # in the buffer
-                                self.ackd_gn_subseq_no = oldest_last_gn_subseq_no - 1
+                                self.ackd_gn_subseq_no = oldest_highest_gn_subseq_no - 1
                         # as bfr is empty that means gn is not expecting any ACK from GN so 
-                        # set ackd_gn_subseq_no=last_gn_subseq_no maintained with this GN
+                        # set ackd_gn_subseq_no=highest_gn_subseq_no maintained with this GN
                         else:
-                            self.ackd_gn_subseq_no = self.last_gn_subseq_no
+                            self.ackd_gn_subseq_no = self.highest_gn_subseq_no
                         
                     logger.debug("Msg deleted from output_buffer and returned.\n")
                     return msg_handler_info
@@ -432,17 +394,17 @@ class buffer_mngr_class(threading.Thread):
 
             
     ##############################################################################
-    # Returns the last_gn_subseq_no of the oldest waiting msg
-    def find_oldest_last_gn_subseq_no(self):
+    # Returns the highest_gn_subseq_no of the oldest waiting msg
+    def find_oldest_highest_gn_subseq_no(self):
         try:
             logger.debug("Searching for the oldest subseq_no sent by gn."+"\n")
-            # initializing with the last_gn_subseq_no of the first msg in the bfr
-            first_msg = self.bfr_for_sent_msgs[0]
+            # initializing with the highest_gn_subseq_no of the first msg in the bfr
+            first_msg = self.sent_gnMsgBfr[0]
             min_subseq_no = first_msg[1]
             max_subseq_no = first_msg[1]
-            # find the min and max last_gn_subseq_no to find the the subseq_no which is the oldest, 
-            # if there is no wrap up then it will be the min last_gn_subseq_no else it will be max last_gn_subseq_no
-            for msg_handler_info in self.bfr_for_sent_msgs:
+            # find the min and max highest_gn_subseq_no to find the the subseq_no which is the oldest, 
+            # if there is no wrap up then it will be the min highest_gn_subseq_no else it will be max highest_gn_subseq_no
+            for msg_handler_info in self.sent_gnMsgBfr:
                 if msg_handler_info[1] > max_subseq_no:
                     # set max_subseq_no
                     max_subseq_no = msg_handler_info[1]
@@ -461,11 +423,11 @@ class buffer_mngr_class(threading.Thread):
 
     ##############################################################################
     # Decides whether the bfr is full or not based on the gn's window size
-    def is_bfr_for_sent_msgs_full(self):
+    def is_sent_gnMsgBfr_full(self):
         try:
-            return len(self.bfr_for_sent_msgs) >= self.gn_window_size
+            return len(self.sent_gnMsgBfr) >= self.gn_window_size
         except Exception as inst:
-            logger.critical("ERROR: Exception in is_bfr_for_sent_msgs_full: " + str(inst))
+            logger.critical("ERROR: Exception in is_sent_gnMsgBfr_full: " + str(inst))
     
     
     ##############################################################################
@@ -476,10 +438,10 @@ class buffer_mngr_class(threading.Thread):
             header = MessageHeader()
             header.instance_id = get_instance_id()
             header.message_type = item.msg_type
-            # saves the session_id + new subseq_no which is called: last_nc_subseq_no
+            # saves the session_id + new subseq_no which is called: highest_nc_subseq_no
             header.sequence_id = self.gen_gn_seq_no()
             # To indicate the last subseq_no of GN till which all ACKs ie replies from NC have been received 
-            # NOTE: Its important to increment the last_gn_subseq_no first 
+            # NOTE: Its important to increment the highest_gn_subseq_no first 
             # (which is done in above function call: gen_gn_seq_no) and then call gen_gn_ackd_subseq_no
             header.user_field1 = self.gen_gn_ackd_subseq_no(item.msg_type) 
             header.reply_to_id = item.reply_id
@@ -500,27 +462,28 @@ class buffer_mngr_class(threading.Thread):
     # Increments the current subseq_no which is maintained with NC
     def gen_gn_seq_no(self):
         try:
-            self.last_gn_subseq_no = self.increment_no(self.last_gn_subseq_no)
-            logger.debug("\tSUBSEQUENCE NO. gen:" + str(self.last_gn_subseq_no))
+            self.highest_gn_subseq_no = self.increment_no(self.highest_gn_subseq_no)
+            logger.debug("\tSUBSEQUENCE NO. gen:" + str(self.highest_gn_subseq_no))
             return str(self.convert_to_bytearray(self.gn_session_id)) +\
-            str(self.convert_to_bytearray(self.last_gn_subseq_no))
+            str(self.convert_to_bytearray(self.highest_gn_subseq_no))
         except Exception as inst:
             logger.critical("ERROR: Exception in gen_gn_seq_no: " + str(inst))
     
         
     ##############################################################################
-    # *If needed* then sets the current ackd_subseq_no to last_gn_subseq_no which is maintained with NC
+    # *If needed* then sets the current ackd_subseq_no to highest_gn_subseq_no which is maintained with NC
     def gen_gn_ackd_subseq_no(self, msg_type):
         try:
-            # If bfr_for_sent_msgs is empty means
+            # If sent_gnMsgBfr is empty means
             # there are no pending unacknowledged *msgs* (not ACKS as ACKS don't require ACK) 
             # sent by GN->NC AND if this msg is an *ACK* so the ackd_gn_subseq_no
-            # can be safely set equal to last_gn_subseq_no maintained with NC
+            # can be safely set equal to highest_gn_subseq_no maintained with NC
             # to indicate that GN has received all ACKs for all the msgs sent by it (if any from GN->NC)
             # or in short GN is not expecting any ACK
-            if msg_type == reply_type and (not self.bfr_for_sent_msgs):
-                # assign the recently incremented last_gn_subseq_no
-                self.ackd_gn_subseq_no = self.last_gn_subseq_no
+            # following if condition will never be true (currently) because GN never sends any ACK to the NC
+            if msg_type == reply_type and (not self.sent_gnMsgBfr):
+                # assign the recently incremented highest_gn_subseq_no
+                self.ackd_gn_subseq_no = self.highest_gn_subseq_no
             return str(self.convert_to_bytearray(self.ackd_gn_subseq_no))
         except Exception as inst:
             logger.critical("ERROR: Exception in gen_gn_seq_no: " + str(inst))
@@ -618,25 +581,25 @@ class buffer_mngr_class(threading.Thread):
     # Checks whether new subseq_no is valid or not
     def in_expected_subseq_range(self, new_subseq_no):
         try:
-            upper_limit = self.last_nc_subseq_no + self.nc_window_size
-            # 1. Ex: last_nc_subseq_no == ackd_nc_subseq_no so acceptable msgs can fall in range  
-            #    last_nc_subseq_no < *HERE* <= last_nc_subseq_no + nc_window_size
-            # 2. Ex: ackd_nc_subseq_no < last_nc_subseq_no so acceptable msgs can fall in range
-            #    ackd_nc_subseq_no < *HERE* <= last_nc_subseq_no + nc_window_size
-            # 3. Ex: ackd_nc_subseq_no > last_nc_subseq_no so acceptable msgs can fall in range
-            #    ackd_nc_subseq_no < *HERE* <= upper_seq_bytes_limit OR 0 < *HERE* <= (last_nc_subseq_no + nc_window_size)
+            upper_limit = self.highest_nc_subseq_no + self.nc_window_size
+            # 1. Ex: highest_nc_subseq_no == ackd_nc_subseq_no so acceptable msgs can fall in range  
+            #    highest_nc_subseq_no < *HERE* <= highest_nc_subseq_no + nc_window_size
+            # 2. Ex: ackd_nc_subseq_no < highest_nc_subseq_no so acceptable msgs can fall in range
+            #    ackd_nc_subseq_no < *HERE* <= highest_nc_subseq_no + nc_window_size
+            # 3. Ex: ackd_nc_subseq_no > highest_nc_subseq_no so acceptable msgs can fall in range
+            #    ackd_nc_subseq_no < *HERE* <= upper_seq_bytes_limit OR 0 < *HERE* <= (highest_nc_subseq_no + nc_window_size)
             #    Explanation for limit_due_to_wrap_up: suppose upper_seq_bytes_limit=255 and nc_window_size=2 
-            #    and last_nc_subseq_no=254 then upper_limit(calculated above)=256 which is invalid
+            #    and highest_nc_subseq_no=254 then upper_limit(calculated above)=256 which is invalid
             #    so set another limit_due_to_wrap_up which will be (in this case): 1
             #    Wrap-up can occur in both 1 & 2 cases above and 3rd is essentially wrap up
             if upper_limit > self.upper_seq_bytes_limit:
-                limit_due_to_wrap_up = (self.last_nc_subseq_no + \
+                limit_due_to_wrap_up = (self.highest_nc_subseq_no + \
                 self.nc_window_size) - (self.upper_seq_bytes_limit)
                 upper_limit = self.upper_seq_bytes_limit
             else:
                 # placeholder value
                 limit_due_to_wrap_up = 0
-            if self.last_nc_subseq_no >= self.ackd_nc_subseq_no:
+            if self.highest_nc_subseq_no >= self.ackd_nc_subseq_no:
                 return (self.ackd_nc_subseq_no < new_subseq_no <= upper_limit) or\
                 (0 < new_subseq_no <= limit_due_to_wrap_up)
             return (self.ackd_nc_subseq_no < new_subseq_no <= \
@@ -698,46 +661,24 @@ class buffer_mngr_class(threading.Thread):
             # if any saved session id then check whether saved one and new one match
             if old_session_id == new_session_id:
                 # GN and NC are both up since they last contacted each other
-                if self.last_nc_subseq_no:
+                if self.highest_nc_subseq_no:
                     if (self.in_expected_subseq_range(new_subseq_no)):
                         # ACK obtained
                         if msg.header.message_type == reply_type:
+                            reply_session_id = self.convert_to_int(msg.header.reply_to_id[:self.seq_no_partition_size])
                             reply_subseq_no = self.convert_to_int(msg.header.reply_to_id[self.seq_no_partition_size:])
                             # check in sent_msgs bfr for corresponding msg waiting for ACK
-                            for sent_msg in self.bfr_for_sent_msgs:
+                            for sent_msg in self.sent_gnMsgBfr:
                                 # comparing the seq_no of bfrd msg with reply_id of new msg
-                                if sent_msg[1] == reply_subseq_no:                       
+                                if sent_msg[0] == reply_session_id and sent_msg[1] == reply_subseq_no:                       
                                     ret_val = True
                             if not ret_val:
                                 logger.critical("ERROR: DUP ACK received for old \
                                 subseq_no: "+str(reply_subseq_no)+".............")
-                        else:
-                            match = 0
-                            # check for duplicate old msg whose ACK is already sent
-                            for response in self.bfr_for_sent_responses:                
-                                # comparing the seq_no of new msg with reply_id of bfrd response
-                                if response[1] == new_subseq_no:
-                                    logger.critical("ERROR: ACK Lost so old msg with subseq_no:"+str(new_subseq_no)+ " received.............")
-                                    # resend response
-                                    self.send_msg_to_nc(response[2])
-                                    match = 1
-                            if not match:
-                                # check if the msg has been already received 
-                                # but not responded so it does not have any entry in bfrd_responses
-                                for ack in self.temp_acks:                
-                                    # comparing the subseq_no of new msg with
-                                    # saved subseq_no not yet acknowledged
-                                    if ack[1] == new_subseq_no:
-                                        logger.critical("ERROR: Old msg with subseq_no: "\
-                                            +str(new_subseq_no)+ " received whose ACK\
-                                            is not yet sent.............")
-                                        match = 1
-                            if not match:
-                                # else its a new msg
-                                ret_val = True
+                        
                     else:
                         logger.critical("ERROR: Unexpected subseq_no received: "\
-                        +str(new_subseq_no)+":"+str(self.last_nc_subseq_no)+\
+                        +str(new_subseq_no)+":"+str(self.highest_nc_subseq_no)+\
                         ":"+str(self.ackd_nc_subseq_no))
                 # NC is up but GN went down since they last contacted eachother\
                 # so no record of subseq_no found 
@@ -760,22 +701,23 @@ class buffer_mngr_class(threading.Thread):
                     str(new_subseq_no)+".............")
             if ret_val:
                 # save ackd and new seq_nos received from this inst_id
-                new_last_nc_subseq_no = self.convert_to_int(msg.header.sequence_id[self.seq_no_partition_size:])
+                new_highest_nc_subseq_no = self.convert_to_int(msg.header.sequence_id[self.seq_no_partition_size:])
                 new_ackd_nc_subseq_no = self.convert_to_int(msg.header.user_field1)
-                self.last_nc_subseq_no = self.get_new_no(new_last_nc_subseq_no, self.last_nc_subseq_no)
+                self.highest_nc_subseq_no = self.get_new_no(new_highest_nc_subseq_no, self.highest_nc_subseq_no)
                 new_ackd_nc_subseq_no = self.get_new_no(new_ackd_nc_subseq_no, self.ackd_nc_subseq_no)
+                # for future use
                 if self.ackd_nc_subseq_no != new_ackd_nc_subseq_no:
                     self.ackd_nc_subseq_no = new_ackd_nc_subseq_no
-                    # discard all responses whose ACKs are received
-                    self.discard_ackd_responses()
+                    # for future use: discard all responses whose ACKs are received
+                    # self.discard_ackd_responses()
             else:
                 logger.critical("Unexpected no received: "+str(new_subseq_no)+\
-                ": when last_nc_subseq_no: "+str(self.last_nc_subseq_no)+\
+                ": when highest_nc_subseq_no: "+str(self.highest_nc_subseq_no)+\
                 ": ackd_nc_subseq_no: "+str(self.ackd_nc_subseq_no))
                 logger.critical("new_session_id: "+str(new_session_id)+\
                 " old_session_id: "+str(old_session_id))
             logger.debug("new_subseq_no:"+str(new_subseq_no))
-            logger.debug("last_nc_subseq_no:"+str(self.last_nc_subseq_no))
+            logger.debug("highest_nc_subseq_no:"+str(self.highest_nc_subseq_no))
             logger.debug("ackd_nc_subseq_no:"+str(self.ackd_nc_subseq_no))
             return ret_val 
         except Exception as inst:
