@@ -107,9 +107,9 @@ class external_communicator_class(asynchat.async_chat, threading.Thread):
                 # recreates msg by concatenating list's elements
                 for single_msg in self.input_buffer:
                     msg = msg + single_msg
-                msg = buffered_msg(msg_from_nc, None, None, None, msg) 
+                msg = buffered_msg(None, None, None, msg) 
                 # Sends msg to the buffer_mngr's buffer                
-                add_to_thread_buffer(self.buffer_mngr.bfr_for_out_to_in_msgs, msg, "Buffer Mngr")                                             
+                add_to_thread_buffer(self.buffer_mngr.incoming_ncAckBfr, msg, "Buffer Mngr")                                             
                 logger.debug("Msg forwarded to buffer_mngr.\n\n")    
         except Exception as inst:
             logger.critical("Exception in handle_request: " + str(inst) + "\n\n")
