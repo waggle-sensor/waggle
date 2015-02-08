@@ -43,16 +43,17 @@ class msg_processor_class():
             self.buffer_mngr.start()
             self.nc_server.start()
             logger.critical("All threads Started:"+str('%0.4f' % time.time()))
-            wait_time = time.time() + wait_time_for_next_msg
             wait_time_set=0;
             while True:
                 if not self.incoming_moduleMsgBfr.empty():
+                    #print "GN DATA MSG^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"+str('%0.4f' % time.time())
                     item = self.incoming_moduleMsgBfr.get()
                     logger.debug("Msg from GN received.")
                     self.process_external_msg(item)
                     self.incoming_moduleMsgBfr.task_done()
                     time.sleep(0.0001)
                     wait_time_set=0
+                    #print "DATA MSG PROCESSED^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"+str('%0.4f' % time.time())
                 else:
                     if wait_time_set==0: 
                         wait_time = time.time() + wait_time_for_next_msg
@@ -196,12 +197,7 @@ class msg_processor_class():
         logger.debug("Data msg sent to bufr mngr to send to cloud/GN.")
 
 
-    ##############################################################################
-    # Hook
-    def process_cmd_msg(self, item):
-        logger.debug("CMD Received........................................")
-
-
+    
     ##############################################################################
     # Sends ACK to GN for reg/data msg currently, can be extended for all types
     # special_reg_ack is used to send current time to the GN while sending Reg ACK
@@ -213,7 +209,7 @@ class msg_processor_class():
         else:
             msg.output = acknowledgment
         buff_msg = buffered_msg(reply_type, None, reply_id, [msg], inst_id)
-        add_to_thread_buffer(self.buffer_mngr.outgoing_moduleAckBfr[inst_id], buff_msg, 'GN_msgs_buffer_mngr')
+        add_to_thread_buffer(self.buffer_mngr.outgoing_ncAckBfr[inst_id], buff_msg, 'GN_msgs_buffer_mngr')
 
 
     ##############################################################################

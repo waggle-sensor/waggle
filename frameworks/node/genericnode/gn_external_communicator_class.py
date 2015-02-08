@@ -1,5 +1,5 @@
 from gn_global_definition_section import add_to_thread_buffer, buffered_msg, \
-msg_from_nc, asynchat_msg_terminator, logger
+asynchat_msg_terminator, logger
 from global_imports import *
 import asyncore                                                                                                                 
 import asynchat                                                                                                                 
@@ -128,16 +128,15 @@ class external_communicator_class(asynchat.async_chat, threading.Thread):
     ##############################################################################
     # Loops till an IP address other than loopback is obtained
     def get_nc_ip(self):
-        ip = '127.0.0.1'
-        return ip
-        while ip == '127.0.0.1':
-            logger.info("Waiting to get NC's IP..")
-            time.sleep(1)
+        #while ip == '127.0.0.1':
+            #logger.info("Waiting to get NC's IP..")
+            #time.sleep(1)
             try:
                 ip = open('nc_ip','r').read()
+                return ip
             except Exception as inst:
                 logger.critical("Exception in get_nc_ip: " + str(inst)+ "\n\n")
-        return ip
+        
     
     
     ##############################################################################
