@@ -2,7 +2,7 @@ from global_imports import *
 from commands import getoutput as bashit
 from gn_external_communicator_class import external_communicator_class
 
-from gn_global_definition_section import get_instance_id,  msg_to_nc,  msg_from_nc,  start_communication_with_nc_event, \
+from gn_global_definition_section import get_instance_id, start_communication_with_nc_event, \
 registration_type,  data_type,  reply_type,  acknowledgment,  asynchat_msg_terminator, \
 gn_registration_ack_wait_time,  data_ack_wait_time, \
 config_file_name, logger, wait_time_for_next_msg
@@ -68,7 +68,7 @@ class buffer_mngr_class(threading.Thread):
             self.main_thread_ = ''
             self.sensor_controller = ''
             self.external_communicator = ''
-            self.log_file_name = 'GN_msg_log'
+            self.log_file_name = 'session_ids'
             self.communicator_thread_started = 0
             self.reg_msg_handler_no = 0
             self.data_msg_handler_no = 1
@@ -108,20 +108,22 @@ class buffer_mngr_class(threading.Thread):
                 self.external_communicator = external_communicator_class("external_communicator", self.nc_port, self) 
                 self.external_communicator.start()
                 self.communicator_thread_started = 1
-            wait_time = time.time() + wait_time_for_next_msg
-            wait_time_set = 1
+            wait_time_set = 0
             while True:
                 while (not self.outgoing_gnMsgBfr.empty()) or (self.sent_gnMsgBfr) or (not self.incoming_ncAckBfr.empty()):
                     self.send_in_to_out_msg()
                     self.process_out_to_in_msg()
                     self.send_timed_out_msg()
-                    # set time to remain attentive for few ms
-                    wait_time = time.time() + wait_time_for_next_msg              
                     time.sleep(0.0001)
-                if wait_time > time.time():
-                    time.sleep(0.0001)
+                    wait_time_set=0
                 else:
-                    time.sleep(0.1)
+                    if wait_time_set==0: 
+                        wait_time = time.time() + wait_time_for_next_msg
+                        wait_time_set=1;
+                    if wait_time > time.time():
+                        time.sleep(0.0001)
+                    else:
+                        time.sleep(0.1)
         except Exception as inst:
             logger.critical("ERROR: Exception in bufr_mngr run: " + str(inst) )
             if not self.external_communicator.isAlive():

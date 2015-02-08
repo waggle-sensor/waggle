@@ -48,8 +48,8 @@ class sensor_plugin_class():
                             sensor_class_objcts.append(sensor_class_obj)
                         except Exception as inst:
                             logger.critical("Exception in plugin loop: " + str(inst)+"\n\n")
-                self.register_modules(sensor_class_objcts)
-                for sensor_class_name in sensor_class_names :
+                self.register_modules(sensor_class_objcts, sensor_class_names)
+                for sensor_class_name in sensor_class_names:
                     self.sensorBoard_input_queue[sensor_class_name] = Queue.Queue()
                     self.sensorBoard_output_queue[sensor_class_name] = Queue.Queue()
                 logger.debug("Sensors' info added to the config file and their buffers created.")      
@@ -132,10 +132,10 @@ class sensor_plugin_class():
     ##############################################################################
     # Stores the sensor's info in config file by calling the register function
     # of the sensor object
-    def register_modules(self, sensor_class_objcts):
+    def register_modules(self, sensor_class_objcts, sensor_file_names):
         try:
-            for sensor_class_obj in sensor_class_objcts:
-                if self.is_new_sensor(sensor_class_obj):
+            for sensor_class_obj, sensor_file_name in zip(sensor_class_objcts, sensor_file_names):
+                if self.is_new_sensor(sensor_file_name):
                     sensor_class_obj.register()
             self.update_last_sensors_registration_time()
             self.save_registered_sensors()
@@ -147,11 +147,15 @@ class sensor_plugin_class():
     # Compares the file's modified time with the current time to check whether
     # the sensor module should be registered and or just started
     def is_new_sensor(self, sensor_file_name):
-        config = ConfigObj(config_file_name)
-        if "last_sensors_registration_time" in config:
-            return (config["last_sensors_registration_time"] < \
-            time.ctime(os.path.getmtime(watchdir+sensor_file_name+".py")))
-        return True
+        try:
+            config = ConfigObj(config_file_name)
+            if "last_sensors_registration_time" in config:
+                return (config["last_sensors_registration_time"] < \
+                time.ctime(os.path.getmtime(self.watchdir+'/'+str(sensor_file_name)+".py")))
+            return True
+        except Exception as inst:
+            logger.critical("Exception in is_new_sensor: " + str(inst)+"\n\n")
+        
 
 
     ############################################################################## 

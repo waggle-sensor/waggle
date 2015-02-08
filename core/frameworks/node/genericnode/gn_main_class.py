@@ -76,38 +76,40 @@ class main_class():
     ##############################################################################
     # Stores the node's sw/hw info in config file
     def store_node_info(self):
-        if os.path.exists(config_file_name):
-            config = ConfigObj(config_file_name)
-            if config["Systems Info"] != {}:
-                # gn.cfg is already present
-                return
-        else:
-            initialize_config_file(config_file_name)
-            ret_val = get_node_info(config_file_name)
-        logger.debug("System's Info stored in config file."+ "\n\n")
-
+        try:
+            if os.path.exists(config_file_name):
+                config = ConfigObj(config_file_name)
+                if config["Systems Info"] != {}:
+                    # gn.cfg is already present
+                    return
+            else:
+                initialize_config_file(config_file_name)
+                ret_val = get_node_info(config_file_name)
+            logger.debug("System's Info stored in config file."+ "\n\n")
+        except Exception as inst:
+            logger.critical("Exception in store_node_info: " + str(inst)+ "\n\n")
 
     ##############################################################################
     # Calls apt function based on whether it is registered or not
     def register_gn(self):
         logger.debug("Checking whether registration is done or not."+ "\n\n")
-        if self.check_registration_status():
-            # Registration already done so just send msg to NC saying that I am up
-            self.send_ready_notification()
-        else:
-            self.send_GN_registration_request()
+        #if self.check_registration_status():
+            ## Registration already done so just send msg to NC saying that I am up
+            #self.send_ready_notification()
+        #else:
+        self.send_GN_registration_request()
 
 
-    ##############################################################################
-    # Checks by reading the config file whether registration has been done or not.
-    def check_registration_status(self):
-        config = ConfigObj(config_file_name)
-        if config["Registered"] == "YES":
-            logger.debug("System Info: " + config["Systems Info"]+ "\n\n")
-            logger.info("Registration already done."+ "\n\n")
-            return True
-        logger.info("Registration not done."+ "\n\n")
-        return False
+    ###############################################################################
+    ## Checks by reading the config file whether registration has been done or not.
+    #def check_registration_status(self):
+        #config = ConfigObj(config_file_name)
+        #if config["Registered"] == "YES":
+            #logger.debug("System Info: " + config["Systems Info"]+ "\n\n")
+            #logger.info("Registration already done."+ "\n\n")
+            #return True
+        #logger.info("Registration not done."+ "\n\n")
+        #return False
 
 
     ##############################################################################
@@ -127,7 +129,7 @@ class main_class():
         reg_payload.sys_info = dict(temp_config)
         reg_payload.instance_id = get_instance_id()
         self.send_to_buffer_mngr(registration_type, no_reply, [reg_payload])
-
+        
 
     ##############################################################################
     # Function Incomplete: Sends "Ready" packet to NC as GN is already registered

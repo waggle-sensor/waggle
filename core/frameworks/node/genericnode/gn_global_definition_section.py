@@ -16,13 +16,13 @@ import logging
 """
 
 # Below line should be uncommented if you want to log the messages to a file
-#logging.basicConfig(filename = 'module'+str(int(time.time()))+'.log', level=logging.CRITICAL,format='%(name)s: %(message)s',)
+logging.basicConfig(filename = 'module'+str(int(time.time()))+'.log', level=logging.CRITICAL,format='%(name)s: %(message)s',)
 
 # Below line should be commented if you don't want to log the messages to a terminal
 # In the below format: name is usually used to show from which thread or class\
 # the message is displayed
 # Message is the string passed in double quotes: Ex: logger.info("This will be displayed.")
-logging.basicConfig(level=logging.CRITICAL,format='%(name)s: %(message)s',)
+#logging.basicConfig(level=logging.CRITICAL,format='%(name)s: %(message)s',)
 # name="GN" as per the above format
 logger = logging.getLogger("GN")
 
@@ -47,19 +47,11 @@ buffered_msg = namedtuple('buffered_msg', ['msg_type',\
 #   msg = msg obbtained from NC
 """
 
-"""
-# For future: When msg sent from buffr_mngr to main_thread/sensor_controller:
-#	internal_msg_header = "msg_from_nc",  can be changed to anything depending\
-#   on the sender of the msg
-#	msg_type = msg_type of the received msg
-#   seq_no: sequence no of the received msg
-#   reply_id: None
-#   msg = payloads of the received msg
-"""
+
 
 """
 # When msg sent to sensor_controller's input_buffer:
-#	internal_msg_header = "msg_to_nc"
+#	
 #	msg_type = data_type (as currently only data is sent from sensors)
 #   seq_no: None as seq_no is managed by buffr_mngr
 #   reply_id: -1
@@ -68,7 +60,7 @@ buffered_msg = namedtuple('buffered_msg', ['msg_type',\
 
 """
 # When msg sent from main_thread/sensor_controller to buffr_mngr:
-#	internal_msg_header = "msg_to_nc"
+#	
 #	msg_type = msg_type of the msg to be sent
 #   seq_no: None as seq_no is managed by buffr_mngr
 #   reply_id: if msg = ACK then sequence no of the msg whose ACK is being sent else None
@@ -83,11 +75,7 @@ buffered_msg = namedtuple('buffered_msg', ['msg_type',\
 #################################################################################
 
 
-# Internal Msg Headers
-# Used to distinguish between different types of msgs present in one queue\
-# mostly required for main_thread/sensor_controller threads using only one input bfr
-msg_to_nc = 'msg_to_NC'
-msg_from_nc = 'msg_from_NC'
+
 
 # To signal successful registration
 start_communication_with_nc_event = threading.Event()
@@ -125,28 +113,7 @@ def get_instance_id():
             get_instance_id.instance_id=f.read()
             f.close()
     except Exception as inst:
-            logger.critical("Exception in get_inst_id: " + str(inst))
-        
-####################################################    
-        #mac_addr = ''
-        #mmcid = "sdcardid"
-        #try:
-            #interface_no = 0
-            #while 1:
-                #if os.path.exists('/sys/class/net/eth'+str(interface_no)+'/address'):
-                    #mac_addr = open('/sys/class/net/eth'+str(interface_no)+"/address").read()
-                    #mac_addr = mac_addr.split('\n')
-                    #mac_addr = mac_addr[0].replace(':','')
-                    #break
-                #else:
-                    #interface_no += 1
-            #if os.path.exists('/sys/block/mmcblk0/device/cid'):
-                #mmcid = open('/sys/block/mmcblk0/device/cid').read()
-                #mmcid = mmcid.split('\n')
-                #mmcid = mmcid[0]
-            #get_instance_id.instance_id = mac_addr + mmcid
-       
-#####################################################            
+            logger.critical("Exception in get_inst_id: " + str(inst))     
     return get_instance_id.instance_id
 # instance_id is a static variable    
 get_instance_id.instance_id = None

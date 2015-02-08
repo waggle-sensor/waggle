@@ -16,12 +16,12 @@ import threading
 #######################################################################
 """
 # Below line should be uncommented if you want to log the messages to a file
-#logging.basicConfig(filename = 'NC_output'+str(int(time.time()))+'.log', level=logging.CRITICAL,format='%(name)s: %(message)s')
+logging.basicConfig(filename = 'module'+str(int(time.time()))+'.log', level=logging.CRITICAL,format='%(name)s: %(message)s')
 
 # Below line should be commented if you don't want to log the messages to a terminal
 # In the below format: name is usually used to show from which thread or class the message is displayed
 # message is the string passsed in double quotes: Ex: logger.info("This will be displayed.")
-logging.basicConfig(level=logging.CRITICAL,format='%(name)s: %(message)s',)
+#logging.basicConfig(level=logging.CRITICAL,format='%(name)s: %(message)s',)
 
 # name="NC" as per the above format
 logger = logging.getLogger("NC")
@@ -42,8 +42,6 @@ buffered_msg = namedtuple('buffered_msg', ['msg_type',\
 
 """
 # When msg sent from internal_communicator to buffr_mngr:
-#	 internal_msg_header = "msg_from_gn",  can be changed to anything depending
-#    on the sender of the msg
 #	 msg_type = None
 #    seq_no: None,
 #    reply_id: None
@@ -53,8 +51,6 @@ buffered_msg = namedtuple('buffered_msg', ['msg_type',\
 
 """
 # When msg sent from buffr_mngr to msg_processor:
-#	 internal_msg_header = "msg_from_gn",  can be changed to anything depending
-#    on the sender of the msg
 #	 msg_type = msg_type of the received msg
 #    seq_no: sequence no of the received msg
 #    reply_id: None
@@ -64,7 +60,6 @@ buffered_msg = namedtuple('buffered_msg', ['msg_type',\
 
 """
 # When msg sent from msg_processor to buffr_mngr:
-#	 internal_msg_header = "msg_send"
 #	 msg_type = msg_type of the msg to be sent
 #    seq_no: None as seq_no is managed by buffr_mngr
 #    reply_id: if msg = ACK then sequence no of the msg whose ACK is being sent else None
@@ -120,6 +115,10 @@ def get_instance_id():
             f.close()
     except Exception as inst:
             logger.critical("Exception in get_inst_id: " + str(inst))
+    return get_instance_id.instance_id
+# instance_id is a static variable    
+get_instance_id.instance_id = None
+
         
 ####################################################    
         #mac_addr = ''
@@ -141,9 +140,6 @@ def get_instance_id():
             #get_instance_id.instance_id = mac_addr + mmcid
        
 #####################################################            
-    return get_instance_id.instance_id
-# instance_id is a static variable    
-get_instance_id.instance_id = None
 
 
 ##############################################################################
