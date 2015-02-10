@@ -4,7 +4,8 @@
 
 # RabbitMQ Connection information
 #rmq_ip = '149.165.149.8'
-rmq_ip = "10.10.10.109"
+#rmq_ip = "10.10.10.126"
+rmq_ip = "192.168.1.1"
 rmq_port = 5672
 rmq_user = 'honeybee'
 rmq_passwd = 'buzz'
