@@ -1,4 +1,14 @@
-from waggle.device.node_controller.send_msg import send_msg
+import time
+while 1:
+    try:
+        from waggle.device.node_controller.send_msg import send_msg
+        break
+    except:
+        print "Cloud not ready yet... waiting...", time.asctime()
+        time.sleep(3)
+print ">>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<"
+
+
 from global_imports import *
 from nc_global_definition_section import buffered_msg, \
 registration_type,  reply_type, command_type, command_ack_wait_time, asynchat_msg_terminator,  \
@@ -347,10 +357,6 @@ class buffer_mngr_class(threading.Thread):
             return 0
         except Exception as inst:
             logger.critical("Exception in send_msg_to_cloud: " + str(inst))
-            # NOTE: below lines are commented out because  of continuous pika errors the max length of recursion was exceeding the limits
-	    # logger.critical("Retrying after 1 secs.")
-            # time.sleep(.001)
-            # self.send_msg_to_cloud(encoded_msg)
 	    return 1
 
 
