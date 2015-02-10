@@ -16,13 +16,13 @@ import logging
 """
 
 # Below line should be uncommented if you want to log the messages to a file
-logging.basicConfig(filename = 'module'+str(int(time.time()))+'.log', level=logging.CRITICAL,format='%(name)s: %(message)s',)
+#logging.basicConfig(filename = 'module'+str(int(time.time()))+'.log', level=logging.CRITICAL,format='%(name)s: %(message)s',)
 
 # Below line should be commented if you don't want to log the messages to a terminal
 # In the below format: name is usually used to show from which thread or class\
 # the message is displayed
 # Message is the string passed in double quotes: Ex: logger.info("This will be displayed.")
-#logging.basicConfig(level=logging.CRITICAL,format='%(name)s: %(message)s',)
+logging.basicConfig(level=logging.CRITICAL,format='%(name)s: %(message)s',)
 # name="GN" as per the above format
 logger = logging.getLogger("GN")
 

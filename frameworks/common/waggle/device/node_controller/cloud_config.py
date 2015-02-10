@@ -4,10 +4,10 @@
 
 # RabbitMQ Connection information
 #rmq_ip = '149.165.149.8'
-rmq_ip = "127.0.0.1"
+rmq_ip = "10.10.10.109"
 rmq_port = 5672
-rmq_user = 'clients'
-rmq_passwd = 'Ruza3que'
+rmq_user = 'honeybee'
+rmq_passwd = 'buzz'
 rmq_exchange = ''
 rmq_routing_key = 'weather'
 

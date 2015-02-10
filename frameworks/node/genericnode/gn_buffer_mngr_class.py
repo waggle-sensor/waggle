@@ -269,7 +269,7 @@ class buffer_mngr_class(threading.Thread):
             # "\tcount:" + str(self.sent_msg_count) + "\t" + str(encoded_msg)) # 
             # logger.critical("Msg Sent to NC:"+str('%0.4f' % time.time())+":"\
             # +str(self.highest_gn_subseq_no)+ ":"+str(self.ackd_gn_subseq_no))
-            logger.critical("Msg Sent to NC:"+str('%0.4f' % time.time())+">>>>>>>>>>>>>>>>>>>>")
+            logger.critical("Msg "+str(self.highest_gn_subseq_no)+" Sent to NC:"+str('%0.4f' % time.time())+">>>>>>>>>>>>>>>>>>>>")
         except Exception as inst:
             logger.critical("ERROR: Exception in send_msg_to_nc: " + str(inst))
             self.send_msg_to_nc()
