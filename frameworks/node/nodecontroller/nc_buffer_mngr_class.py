@@ -111,7 +111,7 @@ class buffer_mngr_class(threading.Thread):
             self.gn_socket_mapping = {}
             logger.debug(self.thread_name+" Initialized.")
         except Exception as inst:
-            logger.critical("Exception in init(): " + str(inst))
+            logger.critical("ERROR: Exception in init(): " + str(inst))
 
 
     ##############################################################################
@@ -143,7 +143,7 @@ class buffer_mngr_class(threading.Thread):
                     else:
                         time.sleep(0.1)
         except Exception as inst:
-            logger.critical("Exception in gn_msgs_bufr_mngr run: " + str(inst))
+            logger.critical("ERROR: Exception in gn_msgs_bufr_mngr run: " + str(inst))
             #self.run()
 
 
@@ -160,7 +160,7 @@ class buffer_mngr_class(threading.Thread):
             logger.debug("Seq_no. initialized.\n\n")
             return session_id
         except Exception as inst:
-            logger.critical("Exception in initialize_nc_session_id: " + str(inst))
+            logger.critical("ERROR: Exception in initialize_nc_session_id: " + str(inst))
 
 
     ##############################################################################
@@ -174,7 +174,7 @@ class buffer_mngr_class(threading.Thread):
                 self.outgoing_ncMsgBfr[inst_id] = Queue.Queue(100)
                 self.sent_ncMsgBfr[inst_id] = []
         except Exception as inst:
-            logger.critical("Exception in init_nc_related_node_data_structures:\
+            logger.critical("ERROR: Exception in init_nc_related_node_data_structures:\
             " + str(inst))
 
 
@@ -188,7 +188,7 @@ class buffer_mngr_class(threading.Thread):
             self.sent_ncAckBfr[inst_id] = []
             self.outgoing_ncAckBfr[inst_id] = Queue.Queue(100)
         except Exception as inst:
-            logger.critical("Exception in init_node_specific_data_structures: "\
+            logger.critical("ERROR: Exception  in init_node_specific_data_structures: "\
             + str(inst))
 
 
@@ -203,7 +203,7 @@ class buffer_mngr_class(threading.Thread):
                 elif inst_id in self.gn_socket_mapping and self.gn_socket_mapping[inst_id]==socket:
                     del self.gn_socket_mapping[inst_id]
         except Exception as inst:
-            logger.critical("Exception in map_socket: " + str(inst)+"\n")
+            logger.critical("ERROR: Exception  in map_socket: " + str(inst)+"\n")
 
 
     ##############################################################################
@@ -214,7 +214,7 @@ class buffer_mngr_class(threading.Thread):
             self.msg_processor = msg_processor
             logger.debug("Address of msg processor saved.")
         except Exception as inst:
-            logger.critical("Exception in pass_thread_address: " + str(inst))
+            logger.critical("ERROR: Exception  in pass_thread_address: " + str(inst))
 
 
     ##############################################################################
@@ -257,7 +257,7 @@ class buffer_mngr_class(threading.Thread):
                 self.outgoing_ncAckBfr[inst_id].task_done()
         
         except Exception as inst:
-            logger.critical("Exception in send_ncAcks: " + str(inst))
+            logger.critical("ERROR: Exception  in send_ncAcks: " + str(inst))
         
 
 
@@ -273,7 +273,7 @@ class buffer_mngr_class(threading.Thread):
                 try:
                     decoded_msg = Message.decode(item.msg)
                 except Exception as inst:
-                    logger.critical("Exception while decoding msg: " + str(inst) )
+                    logger.critical("ERROR: Exception  while decoding msg: " + str(inst) )
                     logger.critical("So discarding msg............." + str(inst) )
                     self.incoming_moduleMsgBfr.task_done()
                     return 
@@ -300,11 +300,11 @@ class buffer_mngr_class(threading.Thread):
                     else:
                         logger.critical("OLD MSG DISCARDED.............\n\n")
                 else:
-                    logger.critical("UNKNOWN GN SO MSG DISCARDED.............")
+                    logger.critical("ERROR: UNKNOWN GN SO MSG DISCARDED.............")
                 self.incoming_moduleMsgBfr.task_done()
             
         except Exception as inst:
-            logger.critical("Exception in process_incoming_moduleMsg: " + str(inst))
+            logger.critical("ERROR: Exception  in process_incoming_moduleMsg: " + str(inst))
         
 
     ##############################################################################
@@ -318,7 +318,7 @@ class buffer_mngr_class(threading.Thread):
                         #self.handler_vector_table[timed_out_msg_info[4]]\
                         #(timed_out_msg_info, inst_id, None)
         #except Exception as inst:
-            #logger.critical("Exception in send_timed_out_msgs: " + str(inst))
+            #logger.critical("ERROR: Exception  in send_timed_out_msgs: " + str(inst))
 
 
     ##############################################################################
@@ -339,12 +339,12 @@ class buffer_mngr_class(threading.Thread):
                     logger.critical("Msg sent to GN "+str(inst_id)+":"+\
                     str('%0.4f' % time.time()) + ">>>>>>>>>>>>>>>>>>>>" )
                 except Exception as inst:
-                    logger.critical("Exception in send_msg_to_gn: " + str(inst))
+                    logger.critical("ERROR: Exception  in send_msg_to_gn: " + str(inst))
                     self.send_msg_to_gn(inst_id, msg)
             else:
-                logger.critical("GN's socket closed. So discarding the msg..............")
+                logger.critical("ERROR: GN's socket closed. So discarding the msg..............")
         except Exception as inst:
-            logger.critical("Exception in send_msg_to_gn: " + str(inst))
+            logger.critical("ERROR: Exception in send_msg_to_gn: " + str(inst))
 
 
     ##############################################################################
@@ -356,7 +356,7 @@ class buffer_mngr_class(threading.Thread):
             #logger.critical("Msg to Cloud Stop: "+str('%0.4f' % time.time()))
             return 0
         except Exception as inst:
-            logger.critical("Exception in send_msg_to_cloud: " + str(inst))
+            logger.critical("ERROR: Exception in send_msg_to_cloud: " + str(inst))
 	    return 1
 
 
@@ -371,7 +371,7 @@ class buffer_mngr_class(threading.Thread):
                 #return msg_handler_info
             #return None
         #except Exception as inst:
-            #logger.critical("Exception in get_timed_out_msg_info: " + str(inst))
+            #logger.critical("ERROR: Exception  in get_timed_out_msg_info: " + str(inst))
 
 
     ###############################################################################
@@ -384,7 +384,7 @@ class buffer_mngr_class(threading.Thread):
                     #filled_bfr_ids.append(inst_id)
             #return filled_bfr_ids
         #except Exception as inst:
-            #logger.critical("Exception in get_filled_bfr_ids: " + str(inst))
+            #logger.critical("ERROR: Exception  in get_filled_bfr_ids: " + str(inst))
 
 
     ###############################################################################
@@ -397,7 +397,7 @@ class buffer_mngr_class(threading.Thread):
                     #filled_bfr_ids.append(inst_id)
             #return filled_bfr_ids
         #except Exception as inst:
-            #logger.critical("Exception in get_filled_bfr_ids: " + str(inst))
+            #logger.critical("ERROR: Exception  in get_filled_bfr_ids: " + str(inst))
 
 
     ###############################################################################
@@ -406,7 +406,7 @@ class buffer_mngr_class(threading.Thread):
         #try:
             #return len(self.sent_ncMsgBfr[inst_id]) >= self.nc_window_size
         #except Exception as inst:
-            #logger.critical("Exception in is_bfr_for_sent_msgs_full: " + str(inst))
+            #logger.critical("ERROR: Exception  in is_bfr_for_sent_msgs_full: " + str(inst))
 
 
     ###############################################################################
@@ -420,7 +420,7 @@ class buffer_mngr_class(threading.Thread):
             #sorted(self.sent_ncMsgBfr[inst_id], key=lambda x: x[2])
             #logger.debug("Msg waiting for ACK inserted in sorted buffer.")
         #except Exception as inst:
-            #logger.critical("Exception in add_to_sent_msgs_bfr: " + str(inst))
+            #logger.critical("ERROR: Exception  in add_to_sent_msgs_bfr: " + str(inst))
 
 
     ##############################################################################
@@ -441,7 +441,7 @@ class buffer_mngr_class(threading.Thread):
                     # as ACKS are stored in FIFO order
                     break
         except Exception as inst:
-            logger.critical("Exception in discard_ackd_responses: " + str(inst)+"\n")
+            logger.critical("ERROR: Exception  in discard_ackd_responses: " + str(inst)+"\n")
 
 
     ##############################################################################
@@ -508,7 +508,7 @@ class buffer_mngr_class(threading.Thread):
                     #return msg_handler_info
             #return None
         #except Exception as inst:
-            #logger.critical("Exception in get_and_del_saved_msg: " + str(inst)+"\n")
+            #logger.critical("ERROR: Exception  in get_and_del_saved_msg: " + str(inst)+"\n")
 
 
     ###############################################################################
@@ -536,7 +536,7 @@ class buffer_mngr_class(threading.Thread):
                 #return max_subseq_no
             #return min_subseq_no
         #except Exception as inst:
-            #logger.critical("Exception in get_and_del_saved_msg: " + str(inst)+"\n")
+            #logger.critical("ERROR: Exception  in get_and_del_saved_msg: " + str(inst)+"\n")
 
 
     ##############################################################################
@@ -549,7 +549,7 @@ class buffer_mngr_class(threading.Thread):
             if msg_type == registration_type:
                 self.process_reg_ack()
         except Exception as inst:
-            logger.critical("Exception in process_ack: " + str(inst))
+            logger.critical("ERROR: Exception  in process_ack: " + str(inst))
 
 
     ##############################################################################
@@ -568,7 +568,7 @@ class buffer_mngr_class(threading.Thread):
                 config.write()
                 logger.critical("Config file lock released.............\n\n")
         except Exception as inst:
-            logger.critical("Exception in process_reg_ack: " + str(inst))
+            logger.critical("ERROR: Exception  in process_reg_ack: " + str(inst))
 
 
     ##############################################################################
@@ -587,7 +587,7 @@ class buffer_mngr_class(threading.Thread):
                         del self.gn_socket_mapping[gn_id]
             return None
         except Exception as inst:
-            logger.critical("Exception in get_socket_obj: " + str(inst)+ "\n")
+            logger.critical("ERROR: Exception  in get_socket_obj: " + str(inst)+ "\n")
 
 
     ###############################################################################
@@ -612,7 +612,7 @@ class buffer_mngr_class(threading.Thread):
                 #del self.gn_socket_mapping[gn_id]
             #return False
         #except Exception as inst:
-            #logger.critical("Exception in new_socket: " + str(inst)+"\n")
+            #logger.critical("ERROR: Exception  in new_socket: " + str(inst)+"\n")
 
 
     ##############################################################################
@@ -639,7 +639,7 @@ class buffer_mngr_class(threading.Thread):
             logger.debug("New node.")
             return True
         except Exception as inst:
-            logger.critical("Exception in new_node: " + str(inst))
+            logger.critical("ERROR: Exception  in new_node: " + str(inst))
 
 
     ##############################################################################
@@ -664,11 +664,11 @@ class buffer_mngr_class(threading.Thread):
             try:
                 msg = msg.encode()
             except Exception as inst:
-                logger.critical("Exception while encoding msg: " + str(inst) )
+                logger.critical("ERROR: Exception  while encoding msg: " + str(inst) )
             logger.debug("Msg Encoded.")
             return msg
         except Exception as inst:
-            logger.critical("Exception in gen_msg: " + str(inst))
+            logger.critical("ERROR: Exception  in gen_msg: " + str(inst))
 
 
     ##############################################################################
@@ -683,7 +683,7 @@ class buffer_mngr_class(threading.Thread):
                 str(self.convert_to_bytearray(self.highest_nc_subseq_no[inst_id]))
             return None
         except Exception as inst:
-            logger.critical("Exception in gen_nc_seq_no: " + str(inst))
+            logger.critical("ERROR: Exception  in gen_nc_seq_no: " + str(inst))
 
     ##############################################################################
     # *If needed* then sets the current ackd_subseq_no to highest_nc_subseq_no which is maintained with GN
@@ -700,7 +700,7 @@ class buffer_mngr_class(threading.Thread):
                 self.ackd_nc_subseq_no[inst_id] = self.highest_nc_subseq_no[inst_id]
             return str(self.convert_to_bytearray(self.ackd_nc_subseq_no[inst_id]))
         except Exception as inst:
-            logger.critical("Exception in gen_nc_seq_no: " + str(inst))
+            logger.critical("ERROR: Exception  in gen_nc_seq_no: " + str(inst))
 
 
     ###############################################################################
@@ -715,7 +715,7 @@ class buffer_mngr_class(threading.Thread):
                 integer_no += 1
             return integer_no
         except Exception as inst:
-            logger.critical("Exception in increment_no: " + str(inst))
+            logger.critical("ERROR: Exception  in increment_no: " + str(inst))
 
 
     ##############################################################################
@@ -728,7 +728,7 @@ class buffer_mngr_class(threading.Thread):
                 return int_id
             return None
         except Exception as inst:
-            logger.critical("Exception in convert_to_int: " + str(inst))
+            logger.critical("ERROR: Exception  in convert_to_int: " + str(inst))
 
 
     ##############################################################################
@@ -742,7 +742,7 @@ class buffer_mngr_class(threading.Thread):
                 return byte_seq
             return None
         except Exception as inst:
-            logger.critical("Exception in convert_to_bytearray: " + str(inst))
+            logger.critical("ERROR: Exception  in convert_to_bytearray: " + str(inst))
 
 
     ##############################################################################
@@ -755,7 +755,7 @@ class buffer_mngr_class(threading.Thread):
                 return new_no
             return old_no
         except Exception as inst:
-            logger.critical("Exception in get_new_no: " + str(inst))
+            logger.critical("ERROR: Exception  in get_new_no: " + str(inst))
 
 
     ##############################################################################
@@ -764,7 +764,7 @@ class buffer_mngr_class(threading.Thread):
         try:
             return no2 < (no1 - self.error_scope)
         except Exception as inst:
-            logger.critical("Exception in is_wrap_up: " + str(inst))
+            logger.critical("ERROR: Exception  in is_wrap_up: " + str(inst))
 
 
     ##############################################################################
@@ -777,7 +777,7 @@ class buffer_mngr_class(threading.Thread):
             # and should be discarded
             return (new_id > old_id) or self.is_wrap_up(new_id, old_id)
         except Exception as inst:
-            logger.critical("Exception in in_expected_range: " + str(inst))
+            logger.critical("ERROR: Exception  in in_expected_range: " + str(inst))
 
 
     ##############################################################################
@@ -788,7 +788,7 @@ class buffer_mngr_class(threading.Thread):
         try:
             return self.in_expected_range(new_id, old_id)
         except Exception as inst:
-            logger.critical("Exception in in_expected_sessionseq_range: " + str(inst))
+            logger.critical("ERROR: Exception  in in_expected_sessionseq_range: " + str(inst))
 
 
     ##############################################################################
@@ -821,7 +821,7 @@ class buffer_mngr_class(threading.Thread):
             return (self.ackd_gn_subseq_no[inst_id] < new_subseq_no <= \
             self.upper_seq_bytes_limit) or (0 < new_subseq_no <= upper_limit)
         except Exception as inst:
-            logger.critical("Exception in in_expected_subseq_range: " + str(inst))
+            logger.critical("ERROR: Exception  in in_expected_subseq_range: " + str(inst))
 
 
     ##############################################################################
@@ -835,7 +835,7 @@ class buffer_mngr_class(threading.Thread):
             # if this GN is contacting the NC for the first time then accept any session_id from GN
             return True
         except Exception as inst:
-            logger.critical("Exception in valid_new_session_id: " + str(inst))
+            logger.critical("ERROR: Exception  in valid_new_session_id: " + str(inst))
             return False
 
 
@@ -861,7 +861,7 @@ class buffer_mngr_class(threading.Thread):
                     return int(log[tag_name])
             return None
         except Exception as inst:
-            logger.critical("Exception in get_old_session_id: " + str(inst)+\
+            logger.critical("ERROR: Exception  in get_old_session_id: " + str(inst)+\
             " for:" + str(inst_id) )
 
 
@@ -880,7 +880,7 @@ class buffer_mngr_class(threading.Thread):
                 log[tag_name] = session_id
             log.write()
         except Exception as inst:
-            logger.critical("Exception in save_session_id: " + str(inst))
+            logger.critical("ERROR: Exception  in save_session_id: " + str(inst))
 
 
     ##############################################################################
@@ -903,7 +903,7 @@ class buffer_mngr_class(threading.Thread):
                         for response in self.sent_ncAckBfr[inst_id]:
                             # comparing the seq_no of new msg with reply_id of bfrd response
                             if response[0] == new_session_id and response[1] == new_subseq_no:
-                                logger.critical("ACK Lost so old msg with\
+                                logger.critical("ERROR: ACK Lost so old msg with\
                                 subseq_no:"+str(new_subseq_no)+ " received.............\n\n")
                                 # resend response
                                 self.send_msg_to_gn(inst_id, response[2])
@@ -915,7 +915,7 @@ class buffer_mngr_class(threading.Thread):
                                 # comparing the subseq_no of new msg with
                                 # saved subseq_no not yet acknowledged
                                 if seq_no[0] == new_session_id and seq_no[1] == new_subseq_no:
-                                    logger.critical("Old msg with subseq_no:\
+                                    logger.critical("ERROR: Old msg with subseq_no:\
                                     "+str(new_subseq_no)+ " received whose\
                                     ACK is not yet sent.............\n\n")
                                     match = 1
@@ -923,7 +923,7 @@ class buffer_mngr_class(threading.Thread):
                             # else its a new msg
                             ret_val = True
                     else:
-                        logger.critical("Unexpected subseq_no received: "+\
+                        logger.critical("ERROR: Unexpected subseq_no received: "+\
                         str(new_subseq_no)+".............\n\n")
                 # GN is up but NC went down since they last contacted \
                 # eachother so no record of subseq_no found
@@ -944,7 +944,7 @@ class buffer_mngr_class(threading.Thread):
                 self.save_session_id(inst_id, "GN Session ID", self.gn_session_id[inst_id])
                 ret_val = True
             else:
-                logger.critical("Unexpected seq_no received: "+str(new_session_id)+"\t"+\
+                logger.critical("ERROR: Unexpected seq_no received: "+str(new_session_id)+"\t"+\
                     str(new_subseq_no)+".............\n\n")
             if ret_val:
                 # For this GN: update current ackd_gn_subseq_no and highest_gn_subseq_no based on the new received nos 
@@ -967,11 +967,11 @@ class buffer_mngr_class(threading.Thread):
             logger.debug("ackd_gn_subseq_no[inst_id]"+str(self.ackd_gn_subseq_no[inst_id]))
             return ret_val
         except Exception as inst:
-            logger.critical("Exception in new_msg: " + str(inst))
+            logger.critical("ERROR: Exception  in new_msg: " + str(inst))
 
     ##############################################################################
     def __del__(self):
-        print self, 'gn_msgs_bufr_mngr object died.'
+        logger.critical(self + 'gn_msgs_bufr_mngr object died.')
 
 
 

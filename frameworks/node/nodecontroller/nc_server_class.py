@@ -47,7 +47,7 @@ class nc_server_class(threading.Thread, asyncore.dispatcher):
                 asyncore.loop(timeout=0.01, use_poll=True, map=None) # , count=n) can be added. n>=1
                 time.sleep(0.01)
         except Exception as inst:
-            logger.critical("Exception in nc_server run(): " + str(inst)+"\n\n")
+            logger.critical("ERROR: Exception in nc_server run(): " + str(inst)+"\n\n")
             time.sleep(1)
             self.run()
 
@@ -72,7 +72,7 @@ class nc_server_class(threading.Thread, asyncore.dispatcher):
                 gn_socket_list.append(socket)
             #logger.debug("Socket object corresponding to new GN created and running.")
         except:
-            logger.critical("Error in handling the GN connection request."+ "\n\n")
+            logger.critical("Error: Exception in handling the GN connection request."+ "\n\n")
             pass
 
 
@@ -101,7 +101,7 @@ class nc_server_class(threading.Thread, asyncore.dispatcher):
     ##############################################################################
     # Called when an error occurs
     def handle_error(self):
-        logger.critical("Server error."+"\n\n")
+        logger.critical("Server ERROR."+"\n\n")
         self.run()
 
 

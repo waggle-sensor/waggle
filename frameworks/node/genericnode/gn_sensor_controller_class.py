@@ -63,7 +63,7 @@ class sensor_controller_class(threading.Thread):
                 else:
                     time.sleep(0.1)
         except Exception as inst:
-            logger.critical("Exception: " + str(inst)+ "\n\n")
+            logger.critical("ERROR: Exception: " + str(inst)+ "\n\n")
             self.run()
         finally:
             self.close()
@@ -95,7 +95,7 @@ class sensor_controller_class(threading.Thread):
             ret = (ret and data_payload.add_item(reading_name, reading_type, \
             reading_value, reading_unit, reading_note))
         if not ret:
-            logger.critical("Error in packing data....................................")
+            logger.critical("ERROR in packing data....................................")
         logger.debug("DATA PAYLOAD:" + str(data_payload) + "\n\n")
         self.send_to_buffer_mngr(data_type, item.reply_id, [data_payload])
         logger.debug("Data msg sent to bufr mngr to send to NC." + "\n\n")
@@ -129,4 +129,4 @@ class sensor_controller_class(threading.Thread):
     
     ##############################################################################  
     def __del__(self):
-        print self, 'Sensor Controller object died'
+        logger.critical(self + 'Sensor Controller object died')

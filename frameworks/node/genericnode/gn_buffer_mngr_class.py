@@ -783,7 +783,7 @@ class buffer_mngr_class(threading.Thread):
                         logger.critical("Unknown ACK received: Discarding..")
                 return
             # handle failure
-            logger.critical("Data Packet timeout.............")
+            logger.critical("ERROR: Data Packet timeout.............")
             msg_info[2] = self.calculate_expiration_time(data_type, None)
             self.add_to_sent_msgs_bfr(msg_info)
             self.send_msg_to_nc(msg_info[3])
