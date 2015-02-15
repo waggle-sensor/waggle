@@ -148,7 +148,7 @@ class external_communicator_class(asynchat.async_chat, threading.Thread):
                 self.shutdown = 1
                 NC_down = 1
                 self.close()
-                logger.critical("Socket Connection with NC closed.\n\n")
+                logger.critical("ERROR: Socket Connection with NC closed.\n\n")
                 logger.critical("Retry after sometime.\n\n")
                 time.sleep(10)
                 self.run()

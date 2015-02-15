@@ -47,7 +47,7 @@ class main_class():
             wait_time = time.time() + wait_time_for_next_msg
             wait_time_set = 1
             while True:
-                time.sleep(0.1)
+                time.sleep(10)
                 #while (not self.input_buffer.empty()):
                     #item = self.input_buffer.get()
                     #logger.debug("Msg received in buffer:"+str(item)+ "\n\n")
