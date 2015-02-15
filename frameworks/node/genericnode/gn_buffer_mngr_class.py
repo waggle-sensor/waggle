@@ -227,7 +227,6 @@ class buffer_mngr_class(threading.Thread):
                 logger.debug("Msg from NCR:" + str(item.msg) )
                 try:
                     decoded_msg = Message.decode(item.msg)
-                    logger.critical(str(item.msg) + " of len:"+str(len(item.msg)) )
                 except Exception as inst:
                     logger.critical("ERROR: Exception while decoding msg: " + str(inst) )
                     logger.critical("Discarding msg " + str(item.msg) + " of len:"+str(len(item.msg)) )

@@ -858,7 +858,7 @@ class sensor1():
 
                     for single_sensor_data in sensor_data:
                         output_buffer.put(single_sensor_data)
-                        time.sleep(3)
+                        #time.sleep(3)
                     time.sleep(.01)
                     #pass
             try:
