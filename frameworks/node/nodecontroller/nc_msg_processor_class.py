@@ -94,6 +94,7 @@ class msg_processor_class():
             # Error
             logger.critical("Config file lock released-----------------------------------\
             -------------------------------\n\n")
+            logger.critical("Error in getting node info!!!!")
             return 1
 
 

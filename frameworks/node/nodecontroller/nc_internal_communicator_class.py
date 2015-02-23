@@ -24,8 +24,8 @@ class internal_communicator(asynchat.async_chat):
         self.input_buffer = []                                                                                  
         self.output_buffer = ""                                                                                 
         self.buffer_mngr = buffer_mngr
-        # Used to signal that the GN is down so stop receiving.  
-        self.shutdown = 0
+        ## Set to 1 when GN socket is dead.  
+        #self.shutdown = 0
         self.set_terminator(asynchat_msg_terminator)                                                                         
         logger.debug("Internal Communicator for new GN initialized"+"\n\n")
         
@@ -35,54 +35,46 @@ class internal_communicator(asynchat.async_chat):
     # Appends data to the input buffer till the terminating character\
     # is detected which indicates the end of the msg after which the found_terminator is called
     def collect_incoming_data(self, data):
-        if self.shutdown == 0:
-            try:
-                logger.debug("Data from GN being received."+"\n\n")
-                self.input_buffer.append(data)                                                                          
-            except Exception as inst:
-                logger.critical("ERROR: Exception in collect_data: " + str(inst)+"\n\n")
-        else:
-            logger.critical("ERROR: Socket Closed."+"\n\n")
-                
+        #if self.shutdown == 0:
+        try:
+            logger.debug("Data from GN being received."+"\n\n")
+            self.input_buffer.append(data)                                                                          
+        except Exception as inst:
+            logger.critical("ERROR: Exception in collect_data: " + str(inst)+"\n\n")
+            
         
     ##############################################################################  
     # Called when the specified terminating character is detected in the received message
     # Handles the msg by calling handle_request and then empties the input_buffer\
     # to receive th next msg 
     def found_terminator(self):
-        if self.shutdown == 0:
-            try:
-                # logger.critical("Msg received from GN:"+str('%0.4f' % time.time())\
-                # +str(self.input_buffer)+"\n\n") #+
-                logger.critical("Msg received from GN:"+str('%0.4f' % time.time())+"<<<<<<<<<<<<<<<<<<<<")
-                self.handle_request()
-                logger.debug("Incoming Msg handled."+"\n\n")
-                self.input_buffer = []
-            except Exception as inst:
-                logger.critical("ERROR: Exception in found_terminator: " + str(inst))
-        else:
-            logger.critical("ERROR: Socket Closed."+"\n\n")
+        try:
+            # logger.critical("Msg received from GN:"+str('%0.4f' % time.time())\
+            # +str(self.input_buffer)+"\n\n") #+
+            logger.critical("Msg received from GN:"+str('%0.4f' % time.time())+"<<<<<<<<<<<<<<<<<<<<")
+            self.handle_request()
+            logger.debug("Incoming Msg handled."+"\n\n")
+            self.input_buffer = []
+        except Exception as inst:
+            logger.critical("ERROR: Exception in found_terminator: " + str(inst))
             
         
     ##############################################################################     
     # Recreates the complete msg by concatenating different fragments of it
     # and sends to buffer_mngr's buffer
     def handle_request(self):
-        if self.shutdown == 0:
-            msg = ''
-            try:
-                # recreates msg by concatenatning list's elements
-                for single_msg in self.input_buffer:
-                    msg = msg + single_msg                                              
-                msg = buffered_msg(None, None, None, msg, self)
-                # Sends msg to the buffer_mngr's buffer
-                add_to_thread_buffer(self.buffer_mngr.incoming_moduleMsgBfr,\
-                msg, "GN_msgs_buffer_mngr")                                             
-                logger.debug("Msg sent to buffer_mngr."+"\n\n")
-            except Exception as inst:
-                logger.critical("ERROR: Exception in handle_request: " + str(inst))
-        else:
-            logger.critical("ERROR: Socket Closed."+"\n\n")
+        msg = ''
+        try:
+            # recreates msg by concatenatning list's elements
+            for single_msg in self.input_buffer:
+                msg = msg + single_msg                                              
+            msg = buffered_msg(None, None, None, msg, self)
+            # Sends msg to the buffer_mngr's buffer
+            add_to_thread_buffer(self.buffer_mngr.incoming_moduleMsgBfr,\
+            msg, "GN_msgs_buffer_mngr")                                             
+            logger.debug("Msg sent to buffer_mngr."+"\n\n")
+        except Exception as inst:
+            logger.critical("ERROR: Exception in handle_request: " + str(inst))
         
         
     ##############################################################################
@@ -96,10 +88,10 @@ class internal_communicator(asynchat.async_chat):
             
         
     ############################################################################## 
+    # Called when socket at any end gets closed
     # Closes the socket after removing its entries wherever present
     def handle_close(self):
         try:
-            self.shutdown = 1
             self.delete_socket()
             self.close() 
             logger.critical("ERROR: Socket Connection with GN closed."+"\n\n")
@@ -125,4 +117,4 @@ class internal_communicator(asynchat.async_chat):
 
     ##############################################################################
     def __del__(self):
-        logger.critical(self+' Socket object died.')
+        logger.critical('ERROR: '+self+' Socket object died.')

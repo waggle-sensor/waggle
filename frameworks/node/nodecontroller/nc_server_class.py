@@ -30,9 +30,7 @@ class nc_server_class(threading.Thread, asyncore.dispatcher):
     # Listens for GN's requests and creates new internal_communicator object for each GN
     def run(self):
         try:
-            # self.bind(("130.202.92.198", self.port_for_gn))
             self.bind(("0.0.0.0", self.port_for_gn))
-            # self.bind(("10.1.2.3", self.port_for_gn))
             # Backlog argument: 5 specifies the maximum number of queued connections\
             # and should be at least 1; the maximum value is system-dependent (usually 5)
             self.listen(5)
@@ -41,11 +39,12 @@ class nc_server_class(threading.Thread, asyncore.dispatcher):
             while True:
                 # Starts the loop which polls all the open sockets one by one,
                 # comes out of the asyncore loop after polling for *count*
-                # times and then repeats after 0.01s.
+                # times and then repeats after 0.011s.
                 # Performance widely varies based on sleep time and count's value
                 # When count=0/None control will never come out of the asyncore loop
+                # internal timeout of 0.01s between 2 polls
                 asyncore.loop(timeout=0.01, use_poll=True, map=None) # , count=n) can be added. n>=1
-                time.sleep(0.01)
+                time.sleep(0.011)
         except Exception as inst:
             logger.critical("ERROR: Exception in nc_server run(): " + str(inst)+"\n\n")
             time.sleep(1)
@@ -64,6 +63,7 @@ class nc_server_class(threading.Thread, asyncore.dispatcher):
     def handle_accept(self):
         try:
             logger.info("New GN connection available." + "\n\n")
+            # returns the newly allocated socket and ip address
             gn_socket_conn, gn_addr = self.accept()
             socket = internal_communicator(gn_socket_conn, gn_addr, self.buffer_mngr)
             # Lock acquired to access global list variable and released when the 'with' block ends
@@ -91,7 +91,7 @@ class nc_server_class(threading.Thread, asyncore.dispatcher):
         # Lock acquired to access global list variable and released when the 'with' block ends
         with gn_socket_list_lock:
             for socket in gn_socket_list:
-                socket.shutdown = 1
+                #socket.shutdown = 1
                 gn_socket_list.remove(socket)
                 socket.close()
                 logger.info("Individual GN socket closed.")
