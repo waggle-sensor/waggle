@@ -4,7 +4,7 @@ from config_file_functions import initialize_config_file, ConfigObj
 from threading import Thread
 from gn_global_definition_section import get_instance_id,  add_to_thread_buffer,  buffered_msg,  \
 start_communication_with_nc_event,  data_type,  sensor_thread_list, \
-config_file_name, logger, sensors_info_saved_event, no_reply
+config_file_name, logger, sensors_info_saved_event, no_reply, wait_time_for_next_msg
 
 
 
@@ -30,6 +30,8 @@ class sensor_controller_class(threading.Thread):
         self.registered_sensors = []
         self.main_thread = ''
         self.buffer_mngr = ''
+        self.count=0
+            
         logger.debug("Thread "+self.thread_name+" Initialized."+ "\n\n")
     
         
@@ -43,10 +45,12 @@ class sensor_controller_class(threading.Thread):
             # Import new sensor files if any
             self.plugin_sensors()
             wait_time_set = 1
+            wait_time=0
             # Start reading the received msgs only if registration is done
             while not start_communication_with_nc_event.is_set():
                 pass
             while True:
+                self.count = self.count+1
                 queue_empty = self.get_sensor_msgs()
                 if queue_empty==1:
                     time.sleep(0.0001)
@@ -59,6 +63,8 @@ class sensor_controller_class(threading.Thread):
                         time.sleep(0.0001)
                     else:
                         time.sleep(0.1)
+                
+                
         except Exception as inst:
             logger.critical("ERROR: Exception: " + str(inst)+ "\n\n")
             #self.run()

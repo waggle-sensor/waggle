@@ -117,4 +117,4 @@ class internal_communicator(asynchat.async_chat):
 
     ##############################################################################
     def __del__(self):
-        logger.critical('ERROR: '+self+' Socket object died.')
+        logger.critical('ERROR: '+str(self)+' Socket object died.')

@@ -95,6 +95,7 @@ class buffer_mngr_class(threading.Thread):
             self.gn_window_size = 1
             self.nc_window_size = 1
             logger.debug("Thread "+self.thread_name+" Initialized.")
+            self.count=0
         except Exception as inst:
             logger.critical("ERROR: Exception in  init function: " + str(inst))
         
@@ -109,11 +110,25 @@ class buffer_mngr_class(threading.Thread):
                 self.external_communicator.start()
                 self.communicator_thread_started = 1
             wait_time_set = 0
+            wait_time=0
             while True:
-                while (not self.outgoing_gnMsgBfr.empty()) or (self.sent_gnMsgBfr) or (not self.incoming_ncAckBfr.empty()):
-                    self.send_in_to_out_msg()
-                    self.process_out_to_in_msg()
-                    self.send_timed_out_msg()
+                self.count=self.count+1
+                time.sleep(0.01)
+                #while (not self.outgoing_gnMsgBfr.empty()) or (self.sent_gnMsgBfr) or (not self.incoming_ncAckBfr.empty()):
+                queue_empty = self.send_in_to_out_msg()
+                queue_empty = queue_empty | self.process_out_to_in_msg()
+                queue_empty = queue_empty | self.send_timed_out_msg()
+                    #time.sleep(0.0001)
+                    #wait_time_set=0
+                #else:
+                    #if wait_time_set==0: 
+                        #wait_time = time.time() + wait_time_for_next_msg
+                        #wait_time_set=1;
+                    #if wait_time > time.time():
+                        #time.sleep(0.0001)
+                    #else:
+                        #time.sleep(0.1)
+                if queue_empty==1:
                     time.sleep(0.0001)
                     wait_time_set=0
                 else:
@@ -124,6 +139,9 @@ class buffer_mngr_class(threading.Thread):
                         time.sleep(0.0001)
                     else:
                         time.sleep(0.1)
+                logger.critical("count of sensor loop:"+str(self.sensor_controller.count))
+                logger.critical("count of bfr mngr:"+str(self.count))
+                
         except Exception as inst:
             logger.critical("ERROR: Exception in bufr_mngr run: " + str(inst) )
             if not self.external_communicator.isAlive():
@@ -193,8 +211,10 @@ class buffer_mngr_class(threading.Thread):
     # from the queue everytime
     # Attaches msg_header and encodes msg and saves it before sending
     def send_in_to_out_msg(self):
+        queue_empty = 0
         try:
             if not self.outgoing_gnMsgBfr.empty() and not self.is_sent_gnMsgBfr_full():
+                queue_empty = 1
                 item = self.outgoing_gnMsgBfr.get()				
                 encoded_msg = self.gen_msg(item)
                 encoded_msg = encoded_msg + asynchat_msg_terminator
@@ -210,6 +230,7 @@ class buffer_mngr_class(threading.Thread):
                 logger.debug("Msg waiting for ACK inserted in sorted buffer.")
                 self.send_msg_to_nc(encoded_msg)
                 self.outgoing_gnMsgBfr.task_done()
+            return queue_empty
         except Exception as inst:
             logger.critical("ERROR: Exception in send_in_to_out_msg: " + str(inst) )
         
@@ -221,8 +242,10 @@ class buffer_mngr_class(threading.Thread):
     # Processes simple ACKS and forwards other msgs (in future cmd) to main_thread 
     # or sensor_controller
     def process_out_to_in_msg(self):
+        queue_empty = 0
         try:
             if not self.incoming_ncAckBfr.empty():
+                queue_empty = 1
                 item = self.incoming_ncAckBfr.get()
                 logger.debug("Msg from NCR:" + str(item.msg) )
                 try:
@@ -248,6 +271,7 @@ class buffer_mngr_class(threading.Thread):
                 else:
                     logger.critical("OLD MSG DISCARDED.............")
                 self.incoming_ncAckBfr.task_done()
+            return queue_empty
         except Exception as inst:
             logger.critical("ERROR: Exception in process_out_to_in_msg: " + str(inst) )
         
@@ -255,11 +279,14 @@ class buffer_mngr_class(threading.Thread):
     ##############################################################################
     # Resend timed out msg
     def send_timed_out_msg(self):
+        queue_empty = 0
         try:
             if self.sent_gnMsgBfr:
+                queue_empty = 1
                 timed_out_msg_info = self.get_timed_out_msg_info()
                 if timed_out_msg_info:
                     self.handler_vector_table[timed_out_msg_info[4]](timed_out_msg_info, None)
+            return queue_empty
         except Exception as inst:
             logger.critical("ERROR: Exception in send_timed_out_msg: " + str(inst) )
         
