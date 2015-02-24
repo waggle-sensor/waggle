@@ -24,8 +24,6 @@ class internal_communicator(asynchat.async_chat):
         self.input_buffer = []                                                                                  
         self.output_buffer = ""                                                                                 
         self.buffer_mngr = buffer_mngr
-        ## Set to 1 when GN socket is dead.  
-        #self.shutdown = 0
         self.set_terminator(asynchat_msg_terminator)                                                                         
         logger.debug("Internal Communicator for new GN initialized"+"\n\n")
         
@@ -35,7 +33,6 @@ class internal_communicator(asynchat.async_chat):
     # Appends data to the input buffer till the terminating character\
     # is detected which indicates the end of the msg after which the found_terminator is called
     def collect_incoming_data(self, data):
-        #if self.shutdown == 0:
         try:
             logger.debug("Data from GN being received."+"\n\n")
             self.input_buffer.append(data)                                                                          

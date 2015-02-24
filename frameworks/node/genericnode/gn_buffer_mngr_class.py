@@ -112,22 +112,11 @@ class buffer_mngr_class(threading.Thread):
             wait_time_set = 0
             wait_time=0
             while True:
-                self.count=self.count+1
-                time.sleep(0.01)
+                #self.count=self.count+1
                 #while (not self.outgoing_gnMsgBfr.empty()) or (self.sent_gnMsgBfr) or (not self.incoming_ncAckBfr.empty()):
-                queue_empty = self.send_in_to_out_msg()
-                queue_empty = queue_empty | self.process_out_to_in_msg()
+                queue_empty = self.send_module_msg()
+                queue_empty = queue_empty | self.process_ncAcks()
                 queue_empty = queue_empty | self.send_timed_out_msg()
-                    #time.sleep(0.0001)
-                    #wait_time_set=0
-                #else:
-                    #if wait_time_set==0: 
-                        #wait_time = time.time() + wait_time_for_next_msg
-                        #wait_time_set=1;
-                    #if wait_time > time.time():
-                        #time.sleep(0.0001)
-                    #else:
-                        #time.sleep(0.1)
                 if queue_empty==1:
                     time.sleep(0.0001)
                     wait_time_set=0
@@ -139,8 +128,8 @@ class buffer_mngr_class(threading.Thread):
                         time.sleep(0.0001)
                     else:
                         time.sleep(0.1)
-                logger.critical("count of sensor loop:"+str(self.sensor_controller.count))
-                logger.critical("count of bfr mngr:"+str(self.count))
+                #logger.critical("count of sensor loop:"+str(self.sensor_controller.count))
+                #logger.critical("count of bfr mngr:"+str(self.count))
                 
         except Exception as inst:
             logger.critical("ERROR: Exception in bufr_mngr run: " + str(inst) )
@@ -210,7 +199,7 @@ class buffer_mngr_class(threading.Thread):
     # Sends msgs to NC through external_communicator by reading one msg 
     # from the queue everytime
     # Attaches msg_header and encodes msg and saves it before sending
-    def send_in_to_out_msg(self):
+    def send_module_msg(self):
         queue_empty = 0
         try:
             if not self.outgoing_gnMsgBfr.empty() and not self.is_sent_gnMsgBfr_full():
@@ -232,7 +221,7 @@ class buffer_mngr_class(threading.Thread):
                 self.outgoing_gnMsgBfr.task_done()
             return queue_empty
         except Exception as inst:
-            logger.critical("ERROR: Exception in send_in_to_out_msg: " + str(inst) )
+            logger.critical("ERROR: Exception in send_module_msg: " + str(inst) )
         
                     
     
@@ -241,7 +230,7 @@ class buffer_mngr_class(threading.Thread):
     # Decodes msg and decides whether it should be accepted or not
     # Processes simple ACKS and forwards other msgs (in future cmd) to main_thread 
     # or sensor_controller
-    def process_out_to_in_msg(self):
+    def process_ncAcks(self):
         queue_empty = 0
         try:
             if not self.incoming_ncAckBfr.empty():
@@ -273,7 +262,7 @@ class buffer_mngr_class(threading.Thread):
                 self.incoming_ncAckBfr.task_done()
             return queue_empty
         except Exception as inst:
-            logger.critical("ERROR: Exception in process_out_to_in_msg: " + str(inst) )
+            logger.critical("ERROR: Exception in process_ncAcks: " + str(inst) )
         
     
     ##############################################################################
@@ -839,7 +828,7 @@ class buffer_mngr_class(threading.Thread):
     def close(self):
         try:
             #self.external_communicator.shutdown = 1
-            self.external_communicator.handle_close()
+            self.external_communicator.close()
             self.external_communicator.join(1)
         except Exception as inst:
             logger.critical("ERROR: Exception in close: " + str(inst))

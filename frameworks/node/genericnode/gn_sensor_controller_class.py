@@ -7,7 +7,6 @@ start_communication_with_nc_event,  data_type,  sensor_thread_list, \
 config_file_name, logger, sensors_info_saved_event, no_reply, wait_time_for_next_msg
 
 
-
 """
 # Imports sensor modules, registers them, and starts new thread for each sensor module
 # Periodically collects sensor msgs and transforms them in proper format and 
@@ -16,7 +15,7 @@ config_file_name, logger, sensors_info_saved_event, no_reply, wait_time_for_next
 class sensor_controller_class(threading.Thread):
     
     # Specifies the path from where sensor modules are imported
-    watchdir = '../sensormodules/weatherwx0.3' #'/nfs2/nkarimi/Desktop/internal_API/2014/nikhat/sensor_modules'
+    watchdir = '../sensormodules/weatherwx0.3'
     
     
     ############################################################################## 
@@ -36,21 +35,20 @@ class sensor_controller_class(threading.Thread):
     
         
     ############################################################################## 
-    # Plugs in new sensors and periodically collects data from them and sends\
-    # that to NC through buffer_mngr
-    # (For future) Can process any cmd/reply obtained from NC
+    # Plugs in new sensors and periodically collects data and sends\
+    # to NC through buffer_mngr
     def run(self):
         try:
             logger.debug("Starting " + self.thread_name+ "\n\n")
             # Import new sensor files if any
             self.plugin_sensors()
-            wait_time_set = 1
+            wait_time_set = 0
             wait_time=0
-            # Start reading the received msgs only if registration is done
+            # loop till registration approval received from node controller
             while not start_communication_with_nc_event.is_set():
                 pass
             while True:
-                self.count = self.count+1
+                #self.count = self.count+1
                 queue_empty = self.get_sensor_msgs()
                 if queue_empty==1:
                     time.sleep(0.0001)
@@ -63,18 +61,15 @@ class sensor_controller_class(threading.Thread):
                         time.sleep(0.0001)
                     else:
                         time.sleep(0.1)
-                
-                
         except Exception as inst:
             logger.critical("ERROR: Exception: " + str(inst)+ "\n\n")
-            #self.run()
         finally:
             self.close()
             
             
     ##############################################################################
-    # Collects msgs from each of the output_buffers of the sensors and converts
-    # them into proper format and puts them into sensor_controller's input_buffer
+    # Collects msgs from each of the output_buffers of the sensors, converts
+    # into proper format and sends to buffer_mngr
     def get_sensor_msgs(self):
         try:
             queue_empty=0
@@ -317,7 +312,7 @@ class sensor_controller_class(threading.Thread):
     def close(self):
         for thread in sensor_thread_list:
             thread.join(1)
-        logger.info("All per sensor threads exited."+ "\n\n")
+        logger.critical("All per sensor threads exited."+ "\n\n")
     
     
     ##############################################################################  
