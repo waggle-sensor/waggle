@@ -814,10 +814,10 @@ class sensor1():
 
         print ">>>>Loading Sensor Module<<<<<"
         try:
-            device_conf_file_handle = open('./device.conf', r+)
+            device_conf_file_handle = open('./device.conf', 'r+')
             DEV_PATH=device_conf_file_handle.readline().split('\n')[0]
             device_conf_file_handle.close()
-	except:
+    	except:
             DEV_PATH="/dev/ttyACM0"
         while True:
             wxconnection = False
