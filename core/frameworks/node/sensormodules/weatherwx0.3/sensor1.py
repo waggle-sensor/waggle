@@ -2,6 +2,7 @@ from add_sensor_info import *
 import time
 import serial
 
+
 Sensor_Index=["D6T_44L_06_1_T_C","MMA8452_1_A_X_Units","MMA8452_1_A_Y_Units",
               "MMA8452_1_A_Z_Units","MMA8452_1_A_RMS_Units","SHT15_1_T_C","SHT15_1_H_%","SHT75_1_T_C",
               "SHT75_1_H_%","MAX4466_1_Units","AMBI_1_Units","PhoRes_10K4.7K_Units","HIH4030_Units",
@@ -810,55 +811,22 @@ class sensor1():
 
 
     def start(self, input_buffer, output_buffer):
+
         print ">>>>Loading Sensor Module<<<<<"
+        try:
+            device_conf_file_handle = open('./device.conf', r+)
+            DEV_PATH=device_conf_file_handle.readline().split('\n')[0]
+            device_conf_file_handle.close()
+	except:
+            DEV_PATH="/dev/ttyACM0"
         while True:
             wxconnection = False
             while wxconnection == False:
                 try:
-                    wxsensor = serial.Serial('/dev/ttyACM0',57600,timeout=4)
+                    wxsensor = serial.Serial(DEV_PATH,57600,timeout=4)
                     wxconnection = True
                 except:
                     print "Waiting for Connection..."
-                    time.sleep(1)
-                    #sensor_data = [
-
-                        #['PDV_P8104.API.2006', time.time(), ['PDV_P8104.API.2006.Light_intensity'], ['f'], [579.0], ['Units10B0V5'], ['WXSensorV0.3_Indoor']],
-
-                        #['MLX90614ESF-DAA.Melexis.008-2013', time.time(), ['MLX90614ESF-DAA.Melexis.008/2013.Temp'], ['f'], [77.86], ['F'], ['WXSensorV0.3_Indoor']],
-
-                        #['D6T-44L-06.Omron.2012', time.time(), ['PTAT_Temp_C', '1x1_Temp_C', '1x2_Temp_C', '1x3_Temp_C', '1x4_Temp_C', '2x1_Temp_C', '2x2_Temp_C', '2x3_Temp_C', '2x4_Temp_C', '3x1_Temp_C', '3x2_Temp_C', '3x3_Temp_C', '3x4_Temp_C', '4x1_Temp_C', '4x2_Temp_C', '4x3_Temp_C', '4x4_Temp_C'], ['f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f'], [24.8, 23.2, 23.3, 23.5, 24.1, 23.1, 23.4, 23.4, 23.5, 23.0, 23.1, 23.3, 23.4, 23.1, 23.2, 23.3, 23.2], ['C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C'], ['WXSensorV0.3_Indoor', 'WXSensorV0.3_Indoor', 'WXSensorV0.3_Indoor', 'WXSensorV0.3_Indoor', 'WXSensorV0.3_Indoor', 'WXSensorV0.3_Indoor', 'WXSensorV0.3_Indoor', 'WXSensorV0.3_Indoor', 'WXSensorV0.3_Indoor', 'WXSensorV0.3_Indoor', 'WXSensorV0.3_Indoor', 'WXSensorV0.3_Indoor', 'WXSensorV0.3_Indoor', 'WXSensorV0.3_Indoor', 'WXSensorV0.3_Indoor', 'WXSensorV0.3_Indoor', 'WXSensorV0.3_Indoor']],
-
-                        #['Thermistor_NTC_PR103J2.US_Sensor.2003', time.time(), ['Thermistor_NTC_PR103J2.US_Sensor.2003.Temp'], ['f'], [882.0], ['Units10B0V5'], ['WXSensorV0.3_Indoor']],
-
-                        #['HIH6130.Honeywell.2011', time.time(), ['HIH6130.Honeywell.2011.Temp', 'HIH6130.Honeywell.2011.Humidity'], ['f', 'f'], [24.39, 37.79], ['C', '%RH'], ['WXSensorV0.3_Indoor', 'WXSensorV0.3_Indoor']],
-
-                        #['SHT15.Sensirion.4_3-2010', time.time(), ['SHT15.Sensirion.4_3-2010.Temp', 'SHT15.Sensirion.4_3-2010.Humidity'], ['f', 'f'], [24.52, 40.2], ['C', '%RH'], ['WXSensorV0.3_Indoor', 'WXSensorV0.3_Indoor']],
-
-                        #['BMP180.Bosch.2_5-2013', time.time(), ['BMP180.Bosch.2_5-2013.Temp', 'BMP180.Bosch.2_5-2013.Pressure'], ['f', 'f'], [24.54, 99052.0], ['C', 'PA'], ['WXSensorV0.3_Indoor', 'WXSensorV0.3_Indoor']],
-
-                        #['MMA8452Q.Freescale.8_1-2013', time.time(), ['MMA8452Q.Freescale.8_1-2013.X_Accel', 'MMA8452Q.Freescale.8_1-2013.Y_Accel', 'MMA8452Q.Freescale.8_1-2013.Z_Accel', 'MMA8452Q.Freescale.8_1-2013.RMS_Vibration'], ['f', 'f', 'f', 'f'], [-0.02, 0.0, 1.01, 0.0], ['g', 'g', 'g', 'g'], ['WXSensorV0.3_Indoor', 'WXSensorV0.3_Indoor', 'WXSensorV0.3_Indoor', 'WXSensorV0.3_Indoor']],
-
-                        #['DS18B20.Maxim.2008', time.time(), ['DS18B20.Maxim.2008.Temp'], ['f'], [24.12], ['C'], ['WXSensorV0.3_Indoor']],
-
-                        #['TMP421.Texas_Instruments.2012', time.time(), ['TMP421.Texas_Instruments.2012.Temp'], ['f'], [24.69], ['C'], ['WXSensorV0.3_Indoor']],
-
-                        #['RHT03.Maxdetect.2011', time.time(), ['RHT03.Maxdetect.2011.Temp', 'RHT03.Maxdetect.2011.Humidity'], ['f', 'f'], [24.0, 38.5], ['C', '%RH'], ['WXSensorV0.3_Indoor', 'WXSensorV0.3_Indoor']],
-
-                        #['TMP102.Texas_Instruments.2008', time.time(), ['TMP102.Texas_Instruments.2008.Temp'], ['f'], [77.11], ['F'], ['WXSensorV0.3_Indoor']],
-
-                        #['SHT75.Sensirion.5_2011', time.time(), ['SHT75.Sensirion.5_2011.Temp', 'SHT75.Sensirion.5_2011.Humidity'], ['f', 'f'], [24.18, 39.67], ['C', '%RH'], ['WXSensorV0.3_Indoor', 'WXSensorV0.3_Indoor']],
-
-                        #['HIH4030.Honeywell.2008', time.time(), ['HIH4030.Honeywell.2008.Humidity'], ['f'], [407.0], ['Units10B0V5'], ['WXSensorV0.3_Indoor']],
-
-                        #['GA1A1S201WP.Sharp.2007', time.time(), ['GA1A1S201WP.Sharp.2007.Light_Level'], ['f'], [526.0], ['Units10B0V5'], ['WXSensorV0.3_Indoor']],
-
-                        #['MAX4466.Maxim.1_2001', time.time(), ['MAX4466.Maxim.1_2001.Noise_Level'], ['f'], [46.0], ['Units10B0V5'], ['WXSensorV0.3_Indoor']]
-
-                        #]
-
-                    #for single_sensor_data in sensor_data:
-                        #output_buffer.put(single_sensor_data)
-                        #time.sleep(3)
                     time.sleep(10)
                     pass
             try:

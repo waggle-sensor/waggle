@@ -30,9 +30,7 @@ class nc_server_class(threading.Thread, asyncore.dispatcher):
     # Listens for GN's requests and creates new internal_communicator object for each GN
     def run(self):
         try:
-            # self.bind(("130.202.92.198", self.port_for_gn))
-            self.bind(("0.0.0.0", self.port_for_gn))
-            # self.bind(("10.1.2.3", self.port_for_gn))
+            self.bind(("127.0.0.1", self.port_for_gn))
             # Backlog argument: 5 specifies the maximum number of queued connections\
             # and should be at least 1; the maximum value is system-dependent (usually 5)
             self.listen(5)

@@ -110,7 +110,7 @@ def get_instance_id():
         if get_instance_id.instance_id == None:
             # read inst_id from file
             f=open("inst_id","r")
-            get_instance_id.instance_id=f.read()
+            get_instance_id.instance_id=f.readline().split('\n')[0]
             f.close()
     except Exception as inst:
             logger.critical("Exception in get_inst_id: " + str(inst))     
