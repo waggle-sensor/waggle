@@ -78,8 +78,8 @@ class external_communicator_class(asynchat.async_chat, threading.Thread):
         try:
                 # logger.critical("Msg received from NC:"+str('%0.4f' % time.time())\
                 # +str(self.input_buffer)+"\n\n") #+
-                logger.critical("Msg received from NC:"+str('%0.4f' % time.time())\
-                + "<<<<<<<<<<<<<<<<<<<<")
+                #logger.critical("Msg received from NC:"+str('%0.4f' % time.time())\
+                #+ "<<<<<<<<<<<<<<<<<<<<")
                 self.handle_request()
                 logger.debug("Msg handled.\n\n")
                 self.input_buffer = []

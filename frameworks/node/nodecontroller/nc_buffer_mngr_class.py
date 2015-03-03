@@ -332,14 +332,8 @@ class buffer_mngr_class(threading.Thread):
             if socket_obj:
                 try:
                     socket_obj.push(msg)
-                    # logger.critical("Msg sent to GN:"+str('%0.4f' % \
-                    # time.time()) + str(msg) ) #+
-                    # logger.critical("Msg sent to GN "+str(inst_id)+":"+\
-                    # str('%0.4f' % time.time())+":"+\
-                    # str(self.nc_highest_subseq_no[inst_id])+ ":"+\
-                    # str(self.nc_ackd_subseq_no[inst_id])  )
-                    logger.critical("Msg sent to GN "+str(inst_id)+":"+\
-                    str('%0.4f' % time.time()) + ">>>>>>>>>>>>>>>>>>>>" )
+                    #logger.critical("Msg sent to GN "+str(inst_id)+":"+\
+                    #str('%0.4f' % time.time()) + ">>>>>>>>>>>>>>>>>>>>" )
                 except Exception as inst:
                     logger.critical("ERROR: Exception  in send_msg_to_gn: " + str(inst))
                     self.send_msg_to_gn(inst_id, msg)
@@ -964,14 +958,13 @@ class buffer_mngr_class(threading.Thread):
                     # discard all responses whose ACKs are received
                     self.discard_ackd_responses(inst_id)
             else:
-                logger.critical("Unexpected seq_no received: "+str(gn_new_highest_subseq_no)+\
+                logger.critical("Unexpected highest seq_no received: "+str(gn_new_highest_subseq_no)+\
+                    ": and ackd_no: "+str(gn_new_ackd_subseq_no)+\
                     ": when highest_gn_subseq_no: "+str(self.gn_highest_subseq_no[inst_id])\
                         +": ackd_gn_subseq_no: "+str(self.gn_ackd_subseq_no[inst_id]))
                 logger.critical("new_session_id: "+str(gn_new_session_id)+\
                     ": old_session_id: "+str(gn_old_session_id))
-            logger.debug("new_subseq_no:"+str(gn_new_highest_subseq_no))
-            logger.debug("highest_gn_subseq_no[inst_id]"+str(self.gn_highest_subseq_no[inst_id]))
-            logger.debug("ackd_gn_subseq_no[inst_id]"+str(self.gn_ackd_subseq_no[inst_id]))
+               
             return ret_val
         except Exception as inst:
             logger.critical("ERROR: Exception  in new_msg: " + str(inst))

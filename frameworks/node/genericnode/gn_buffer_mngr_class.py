@@ -239,7 +239,6 @@ class buffer_mngr_class(threading.Thread):
                 logger.debug("Msg from NCR:" + str(item.msg) )
                 try:
                     decoded_msg = Message.decode(item.msg)
-                    logger.critical("Msg: "+str(item.msg))
                 except Exception as inst:
                     logger.critical("ERROR: Exception while decoding msg: " + str(inst) )
                     logger.critical("Discarding msg " + str(item.msg) + " of len:"+str(len(item.msg)) )
@@ -287,9 +286,7 @@ class buffer_mngr_class(threading.Thread):
             self.external_communicator.push(msg)
             # logger.critical("Msg Sent to NC:"+str('%0.4f' % time.time())+ \
             # "\tcount:" + str(self.sent_msg_count) + "\t" + str(encoded_msg)) # 
-            # logger.critical("Msg Sent to NC:"+str('%0.4f' % time.time())+":"\
-            # +str(self.gn_highest_subseq_no)+ ":"+str(self.gn_ackd_subseq_no))
-            logger.critical("Msg "+str(self.gn_highest_subseq_no)+" Sent to NC:"+str('%0.4f' % time.time())+">>>>>>>>>>>>>>>>>>>>")
+            #logger.critical("Msg "+str(self.gn_highest_subseq_no)+" Sent to NC:"+str('%0.4f' % time.time())+">>>>>>>>>>>>>>>>>>>>")
         except Exception as inst:
             logger.critical("ERROR: Exception in send_msg_to_nc: " + str(inst))
             self.send_msg_to_nc()
@@ -700,7 +697,7 @@ class buffer_mngr_class(threading.Thread):
                     else:
                         logger.critical("ERROR: Unexpected subseq_no received: "\
                         +str(nc_new_highest_subseq_no)+":"+str(self.nc_highest_subseq_no)+\
-                        ":"+str(self.nc_new_ackd_subseq_no))
+                        ":"+str(self.nc_ackd_subseq_no))
                 # NC is up but GN went down since they last contacted eachother\
                 # so no record of subseq_no found 
                 else:
@@ -730,14 +727,14 @@ class buffer_mngr_class(threading.Thread):
                     # for future use: discard all responses whose ACKs are received
                     # self.discard_ackd_responses()
             else:
-                logger.critical("Unexpected no received: "+str(nc_new_highest_subseq_no)+\
+                logger.critical("Unexpected highest no received: "+str(nc_new_highest_subseq_no)+\
+                ": and ackd no received: "+str(nc_new_ackd_subseq_no)+
                 ": when highest_nc_subseq_no: "+str(self.nc_highest_subseq_no)+\
                 ": ackd_nc_subseq_no: "+str(self.nc_ackd_subseq_no))
                 logger.critical("new_session_id: "+str(nc_new_session_id)+\
-                " old_session_id: "+str(nc_old_session_id))
-            logger.debug("new_subseq_no:"+str(nc_new_highest_subseq_no))
-            logger.debug("highest_nc_subseq_no:"+str(self.nc_highest_subseq_no))
-            logger.debug("ackd_nc_subseq_no:"+str(self.nc_ackd_subseq_no))
+                "  old_session_id: "+str(nc_old_session_id)+
+                " new reply session id: "+str(nc_new_reply_session_id)+
+                " new reply_subseq_no: "+str(nc_new_reply_subseq_no))
             return ret_val 
         except Exception as inst:
             logger.critical("ERROR: Exception in new_msg: " + str(inst))
