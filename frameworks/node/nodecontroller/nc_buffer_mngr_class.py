@@ -1,12 +1,12 @@
 import time
-#while 1:
-    #try:
-        #from waggle.device.node_controller.send_msg import send_msg
-        #break
-    #except:
-        #print "Cloud not ready yet... waiting...", time.asctime()
-        #time.sleep(3)
-#print ">>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<"
+while 1:
+    try:
+        from waggle.device.node_controller.send_msg import send_msg
+        break
+    except:
+        print "Cloud not ready yet... waiting...", time.asctime()
+        time.sleep(3)
+print ">>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<"
 
 
 from global_imports import *
@@ -130,6 +130,8 @@ class buffer_mngr_class(threading.Thread):
                         item = self.outgoing_ncMsgBfr['cloud'].get()
                         encoded_msg = self.gen_msg(item)
                         self.send_msg_to_cloud(encoded_msg)
+			if item.msg_type==registration_type:
+				self.process_reg_ack()
                     self.send_ncAcks(filled_outgoingBfr_ids)
                     filled_outgoingBfr_ids=[]
                     time.sleep(0.0001)
@@ -348,7 +350,7 @@ class buffer_mngr_class(threading.Thread):
     def send_msg_to_cloud(self, encoded_msg):
         try:
             #logger.critical("Msg to Cloud Start: "+str('%0.4f' % time.time()))
-            #send_msg(encoded_msg)
+            send_msg(encoded_msg)
             #logger.critical("Msg to Cloud Stop: "+str('%0.4f' % time.time()))
             return 0
         except Exception as inst:
@@ -540,12 +542,12 @@ class buffer_mngr_class(threading.Thread):
     # currently as nothing comes from the cloud so just to update the
     # registration status to 'YES' this function is called after registration
     # msg is successfully sent to the cloud
-    def process_ack(self, msg_type):
-        try:
-            if msg_type == registration_type:
-                self.process_reg_ack()
-        except Exception as inst:
-            logger.critical("ERROR: Exception  in process_ack: " + str(inst))
+    #def process_ack(self, msg_type):
+    #    try:
+    #        if msg_type == registration_type:
+    #            self.process_reg_ack()
+    #    except Exception as inst:
+    #        logger.critical("ERROR: Exception  in process_ack: " + str(inst))
 
 
     ##############################################################################
