@@ -130,9 +130,13 @@ def touch(inst_id):
 
 def file_len(fname):
     with open(fname) as f:
-        for i, l in enumerate(f):
-            pass
-    return i + 1
+        try:
+            for i, l in enumerate(f):
+                pass
+            return i + 1
+        except:
+            return 0
+    return 0
 
 on_break = False
 sleep_time = 1.0
@@ -141,6 +145,7 @@ i = 0
 #create local directory if not present.
 bash('mkdir '+LOCAL_DIR)
 bash('mkdir '+WORKING_CACHE_DIR)
+bash('touch '+SENSOR_DATA_EXCHANGE_FILE)
 
 while 1:
     #checking how many lines have been processed
@@ -151,15 +156,15 @@ while 1:
         bash("echo '0' > /tmp/wag/lines_processed.in")
         lines_proc = 0
 
-    totalData = file_len(RAW_DATA_FILE)
+    totalData = file_len(SENSOR_DATA_EXCHANGE_FILE)
     linesToProcess = max(totalData - lines_proc, 0)
     print linesToProcess, lines_proc
     if linesToProcess > 0:
-        rawHandler = open(RAW_DATA_FILE,'r')
+        rawHandler = open(SENSOR_DATA_EXCHANGE_FILE,'r')
         #do not process already processed lines, seek the appropriate line.
         for i in range(lines_proc):
             rawHandler.readline()
-            
+
         for i in xrange(linesToProcess):
             line = rawHandler.readline().split('\n')[0]
             lines_proc = lines_proc + 1
