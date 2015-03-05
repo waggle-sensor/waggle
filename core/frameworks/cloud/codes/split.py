@@ -140,6 +140,7 @@ i = 0
 
 #create local directory if not present.
 bash('mkdir '+LOCAL_DIR)
+bash('mkdir '+WORKING_CACHE_DIR)
 
 while 1:
     #checking how many lines have been processed

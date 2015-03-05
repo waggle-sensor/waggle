@@ -5,6 +5,7 @@ import data_proc
 import forward
 import reg_proc
 from commands import getoutput as bash
+from localconfig import *
 
 bash('mkdir '+LOCAL_DIR)
 

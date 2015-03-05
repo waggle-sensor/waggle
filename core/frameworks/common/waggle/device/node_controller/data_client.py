@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import logging
 import pika
-#from vectorClock import *
 import time
 import os
 import socket
@@ -9,8 +8,6 @@ import uuid
 
 from waggle.common.messaging_d import *
 
-#global VECTOR_CLOCK
-#VECTOR_CLOCK = VectorClock('|:|')
 logging.basicConfig()
 
 class NodeDataClient:
@@ -26,50 +23,29 @@ class NodeDataClient:
         self.RMQExchange = exch
         self.RMQRoutingKey = rout_key
 
-        #'clients','Ruza3que'
         credentials = pika.PlainCredentials(self.RMQUser, self.RMQPassWd)
 
-        #host='192.168.1.29', port= 5672
         self.connection = pika.BlockingConnection(pika.ConnectionParameters(
                                 host = self.RMQHost, port = self.RMQPort, 
                                 credentials= credentials))
 
-        #connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
         self.channel = self.connection.channel()
-        #self.channel.queue_declare(queue = self.RMQRoutingKey) #'hello'
         self.delimiter0 = DELIMITERS[0]
     
-    def _unitTest(self, param):
-        if __name__ == "__main__":
-            print param
-        src = '/home/ubuntu/private/test.blob'
-        dest = '149.165.149.3:/home/ubuntu/waggleData/blobs/'
-        self._blob_transfer(src, dest)
-        return 0
-
-
     def _send(self, msg):
-	#print ("Msg rcvd in Data Client:%0.4f"%time.time())
         """ 
         ========= DO NOT use this function in your code directly!!! ==========
         This is a low level function, you should only use msg_send(msg) or
         multi_send(msgArray)
         """
         localClock = int(round(1000*1000*time.time()))
-        #strToSend =(getLanIP() + self.delimiter + dataName + self.delimiter
-        #          + dataType + self.delimiter + DataValue + self.delimiter
-        #          + str(localClock))
         if self.channel.basic_publish(exchange = self.RMQExchange,
                                    routing_key = self.RMQRoutingKey,
                                    body = msg,
                                    properties=pika.BasicProperties(
                                    content_type='text/plain',delivery_mode=1)):
-	    #print 'Message delivered.'
-            #print ("Returning from Data Client:%0.4f"%time.time())
             return 0
         else:
-            #print 'Message not delivered.'
-	    #print ("Returning from Data Client:%0.4f"%time.time())
             return 1
 
         if __name__ == "__main__":
@@ -174,52 +150,4 @@ class NodeDataClient:
 # Unit Test
 if __name__ == "__main__":
     #Test case and example
-    
-    RMQ_ip = '149.165.149.8'
-    RMQ_port = 5672
-    RMQ_user = 'clients'
-    RMQ_passwd = 'Ruza3que'
-    RMQ_exchange = ''
-    RMQ_routing_key = 'weather'
-    
-    '''
-    RMQ_ip = 'vanavil.mcs.anl.gov'
-    RMQ_port = 5672
-    RMQ_user = 'waggle'
-    RMQ_passwd = 'why1not2'
-    RMQ_exchange = ''
-    RMQ_routing_key = 'blobswelcome'
-    '''
-
-    dataClient = NodeDataClient(RMQ_ip, RMQ_port, RMQ_user, RMQ_passwd,
-                                RMQ_exchange, RMQ_routing_key)
-
-    dataClient.channel.confirm_delivery()# Enable ack
-   
-
-    data_payload = DataPayload()
-    data_payload.inst_id = "inst_id"
-    data_payload.sens_id = "sens_id"
-    data_payload.read_tm = time.time()
-    for i in xrange(4):
-        data_payload.add_item("name" + str(i), "s", "valu" + str(i),
-                           "unit" + str(i), "note" + str(i))
-
-
-    data_str = data_payload.encode()
-    data_payload1 = DataPayload.decode(data_str)
-
-
-    msg = Message()
-    msg.header.protocol_version = "protocol_version"
-    msg.header.msg_type = "msg_type"
-    msg.header.instance_id = "instance_id"
-    msg.header.timestamp = "timestamp"
-    msg.header.seq_id = "seq_id"
-    msg.header.reply_to_id = "reply_to_id"
-    msg.append(data_payload)
-    msg.append(data_payload)
-
-    msg_str = msg.encode()
-
-    dataClient.msg_send(msg_str)
+    print "I have tested absolutely nothing..."
