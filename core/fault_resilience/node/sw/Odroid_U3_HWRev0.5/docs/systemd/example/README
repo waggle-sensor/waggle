@@ -1,5 +1,0 @@
-Code from http://www.gavinj.net/2012/06/building-python-daemon-process.html
-
-
-Step 1 - Required Libraries
-Install the Python Daemon package from (http://pypi.python.org/pypi/python-daemon/) - note that you will also need an earlier version of the python lockfile (version 0.8) to work (http://pypi.python.org/pypi/lockfile/0.9.1).

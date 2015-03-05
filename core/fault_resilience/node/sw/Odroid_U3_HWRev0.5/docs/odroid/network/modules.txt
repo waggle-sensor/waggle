@@ -1,7 +1,0 @@
-
-All ethernet ports are going to be through the usb hub so we need the 'usbnet' module compiled and loaded
-
-Default Ethernet: smsc95xx
-
-USB3.0 Cable Matters LAN/Gigabit: ax88179_178a
-
