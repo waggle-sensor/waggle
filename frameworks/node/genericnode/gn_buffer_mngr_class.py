@@ -727,7 +727,7 @@ class buffer_mngr_class(threading.Thread):
                     # for future use: discard all responses whose ACKs are received
                     # self.discard_ackd_responses()
             else:
-                logger.critical("Unexpected highest no received: "+str(nc_new_highest_subseq_no)+\
+                logger.critical("At "+str('%0.4f' % time.time())+" Unexpected highest no received: "+str(nc_new_highest_subseq_no)+\
                 ": and ackd no received: "+str(nc_new_ackd_subseq_no)+
                 ": when highest_nc_subseq_no: "+str(self.nc_highest_subseq_no)+\
                 ": ackd_nc_subseq_no: "+str(self.nc_ackd_subseq_no))

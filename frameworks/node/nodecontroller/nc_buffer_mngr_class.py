@@ -960,13 +960,13 @@ class buffer_mngr_class(threading.Thread):
                     # discard all responses whose ACKs are received
                     self.discard_ackd_responses(inst_id)
             else:
-                logger.critical("Unexpected highest seq_no received: "+str(gn_new_highest_subseq_no)+\
+		logger.critical("At "+str('%0.4f' % time.time())+" Unexpected highest seq_no received: "+str(gn_new_highest_subseq_no)+\
                     ": and ackd_no: "+str(gn_new_ackd_subseq_no)+\
                     ": when highest_gn_subseq_no: "+str(self.gn_highest_subseq_no[inst_id])\
                         +": ackd_gn_subseq_no: "+str(self.gn_ackd_subseq_no[inst_id]))
                 logger.critical("new_session_id: "+str(gn_new_session_id)+\
                     ": old_session_id: "+str(gn_old_session_id))
-               
+		               
             return ret_val
         except Exception as inst:
             logger.critical("ERROR: Exception  in new_msg: " + str(inst))
