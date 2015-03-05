@@ -79,10 +79,9 @@ def update_value(dic, keys, value):
 
 def log_payload(payload):
     bash("mkdir -p " + WWW_PREFIX + payload.inst_id)
-    f = open(WWW_PREFIX + payload.inst_id +"/log_" + filename_timestamp(payload.read_tm) + ".txt", 'a')
+    f = open(WWW_PREFIX + payload.inst_id +"/Waggle_" + filename_timestamp(payload.read_tm) + ".csv", 'a')
     payload.read_tm = pretty_time(payload.read_tm)
     f.write(to_easy_parse_string(payload))
-    #print to_easy_parse_string(payload)
 
 def filename_timestamp(time):
     # Convert a time into a date
