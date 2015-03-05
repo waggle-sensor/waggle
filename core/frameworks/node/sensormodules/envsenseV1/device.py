@@ -86,22 +86,12 @@ sensor_names = ["PDV_P8104.API.2006", "MLX90614ESF-DAA.Melexis.008-2013", "D6T-4
         "SHT75.Sensirion.5_2011", "HIH4030.Honeywell.2008", "GA1A1S201WP.Sharp.2007", "MAX4466.Maxim.1_2001"]
 
 
-class sensor1():
+class device():
 
     def __init__(self):
         pass
 
     def register(self):
-
-        # Create sensor object by providing following details:
-        # unique_name: sensor_name + '_' + number
-        # complete_sensor_name: sensor_name + '.' + manufacturer_id + '.' + revision/year
-        # reading_interval: float (in secs)
-        # interval_settable: Value: 0 or 1, 0-No, Yes-1
-        # communication_type: 0/1/2, 0: unpingable, 1: pingable, 2: both
-        # packaging_info: string
-        # vendor_id: string (packaging vendor)
-        # sensor_obj = sensor_info("abc_1", "abc.ARM.0_1", 20, 1, 2, "Metal container","234") # Example
 
         sensor_obj_1 = sensor_info("PDV_P8104_1", "PDV_P8104.API.2006", " ", " ", " ", "Ceramic", "Digi-Key")
         sensor_obj_2 = sensor_info("MLX90614ESF-DAA_1", "MLX90614ESF-DAA.Melexis.008-2013", 0.001024, 1, 2, "TO-39-4 Modified Metal Can", "Digi-Key")
@@ -120,17 +110,6 @@ class sensor1():
         sensor_obj_15 = sensor_info("GA1A1S201WP_1", "GA1A1S201WP.Sharp.2007", 1, 0, 0, "Breakout board", "Modern_Device")
         sensor_obj_16 = sensor_info("MAX4466_1", "MAX4466.Maxim.1_2001", 0.04, 1, 1, "Breakout board", "Adafruit")
 
-        # sensor_names = ["PDV_P8104.API.2006", "MLX90614ESF-DAA.Melexis.008-2013", "D6T-44L-06.Omron.2012", "Thermistor_NTC_PR103J2.US_Sensor.2003",
-        # "HIH6130.Honeywell.2011", "HIH6130.Honeywell.2011", "SHT15.Sensirion.4_3-2010", "SHT15.Sensirion.4_3-2010", "BMP180.Bosch.2_5-2013",
-        # "BMP180.Bosch.2_5-2013", "MMA8452Q.Freescale.8_1-2013", "DS18B20.Maxim.2008", "TMP421.Texas_Instruments.2012", "RHT03.Maxdetect.2011",
-        # "RHT03.Maxdetect.2011", "TMP102.Texas_Instruments.2008", "SHT75.Sensirion.5_2011", "SHT75.Sensirion.5_2011", "HIH4030.Honeywell.2008",
-        # "GA1A1S201WP.Sharp.2007", "MAX4466.Maxim.1_2001"]
-
-        # complete_reading_name: complete_sensor_name + '.' + reading_name
-        # reading_type
-        # reading_unit
-        # reading_note = " "
-        # reading_obj = reading_info("abc.ARM.0_1.Temp", "float", "F", " ") # Example
 
         reading_obj_1_1 = reading_info("PDV_P8104.API.2006.Light_intensity", "int", "ohms", " ")
         reading_obj_2_1 = reading_info("MLX90614ESF-DAA.Melexis.008/2013.Temp", "float", "F", " ")
@@ -154,22 +133,6 @@ class sensor1():
         reading_obj_15_1 = reading_info("GA1A1S201WP.Sharp.2007.Light_intensity", "int", "Units10B0V5", " ")
         reading_obj_16_1 = reading_info("MAX4466.Maxim.1_2001.Noise_intensity", "int", "Units10B0V5", " ")
 
-        # reading_names = ["PDV_P8104.API.2006.Light_intensity", "MLX90614ESF-DAA.Melexis.008/2013.Temp", "D6T-44L-06.Omron.2012.Temp",
-        # "Thermistor_NTC_PR103J2.US_Sensor.2003.Temp", "HIH6130.Honeywell.2011.Temp", "HIH6130.Honeywell.2011.Humidity", "SHT15.Sensirion.4_3-2010.Temp"
-        # "SHT15.Sensirion.4_3-2010.Humidity", "BMP180.Bosch.2_5-2013.Temp", "BMP180.Bosch.2_5-2013.Pressure", "MMA8452Q.Freescale.8_1-2013.Accel",
-        # "DS18B20.Maxim.2008.Temp", "TMP421.Texas_Instruments.2012.Temp", "RHT03.Maxdetect.2011.Temp", "RHT03.Maxdetect.2011.Humidity",
-        # "TMP102.Texas_Instruments.2008.Temp", "SHT75.Sensirion.5_2011.Temp", "SHT75.Sensirion.5_2011.Humidity", "HIH4030.Honeywell.2008.Humidity",
-        # "GA1A1S201WP.Sharp.2007.Light_intensity", "MAX4466.Maxim.1_2001.Noise_intensity"]
-
-        # units = ["ohms", "F", "C", "Units10B0V5", "C", "%", "C", "%", "C", "PA", "g", "C", "C", "C", "%", "F", "C", "%", "Units10B0V5", "Units10B0V5",
-        # "Units10B0V5"]
-
-        # functional: Value: 0 or 1, 0-Nonfunctional, 1-Functional
-        # param_name
-        # param_val
-        # param_type
-        # param_settable
-        # param_obj = param_info(1, "Accuracy", "99%", "float", 1) # Example
 
         param_obj_1_1 = param_info(1, "Parameter", "Light_intensity", "string", 0)
         param_obj_1_2 = param_info(1, "Units", "ohms", "string", 0)
@@ -819,6 +782,8 @@ class sensor1():
             device_conf_file_handle.close()
     	except:
             DEV_PATH="/dev/ttyACM0"
+
+        print "Trying to connect to - ",DEV_PATH
         while True:
             wxconnection = False
             while wxconnection == False:
@@ -830,6 +795,7 @@ class sensor1():
                     time.sleep(10)
                     pass
             try:
+                print wxsensor
                 wxsensor.flushInput()
                 wxsensor.flushOutput()
             except:

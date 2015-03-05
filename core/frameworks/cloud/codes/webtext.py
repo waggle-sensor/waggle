@@ -37,7 +37,7 @@ def safe_string(a):
 
 def update_current(payload):
     # Update current values of a sensor
-    file_location = INPUT_PREFIX + payload.inst_id + ".in"
+    file_location = WORKING_CACHE_DIR + payload.inst_id + ".in"
     current_values = read_current(file_location)
 
     for i in xrange(len(payload.data_name)):
@@ -79,7 +79,7 @@ def update_value(dic, keys, value):
 
 def log_payload(payload):
     bash("mkdir -p " + WWW_PREFIX + payload.inst_id)
-    f = open(WWW_PREFIX + payload.inst_id +"/Waggle_" + filename_timestamp(payload.read_tm) + ".csv", 'a')
+    f = open(WWW_PREFIX + payload.inst_id +"/Waggle_" + filename_timestamp(payload.read_tm) + ".txt", 'a')
     payload.read_tm = pretty_time(payload.read_tm)
     f.write(to_easy_parse_string(payload))
 
@@ -95,7 +95,7 @@ def pretty_time(time):
 
 
 def gen_page(inst_id):
-    cfg = read_current(INPUT_PREFIX + payload.inst_id + ".in")
+    cfg = read_current(WORKING_CACHE_DIR + payload.inst_id + ".in")
     f = open(WWW_PREFIX + inst_id + "/current.txt", 'w')
     touch(WWW_PREFIX + inst_id)
 
