@@ -1,9 +1,9 @@
 from pika_connections import Consume, Connect, Send, CreateQueue
 from waggle.common.messaging_d import *
 import time
+from localconfig import *
 
 queues = dict()
-
 con = Connect()
 
 def run():
@@ -28,7 +28,7 @@ def callback(ch, method, properties, body):
             seq_id = (seq_id << 8) + ord(i)
         a.header.sequence_id = str(seq_id)
         writeString = a.encode()
-        write_to_file(writeString.replace('\n', '\\n') + '\n', "/home/rajesh/waggleData/beehive.dat-reg")
+        write_to_file(writeString.replace('\n', '\\n') + '\n',REG_DATA_EXCHANGE_FILE)
         ch.basic_ack(delivery_tag = method.delivery_tag)
     except:
         Send(con, "malformed_registration", body)

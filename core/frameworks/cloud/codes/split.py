@@ -7,14 +7,12 @@ import operator
 import re
 import linecache
 import time
+from localconfig import *
 
 sensors_list = ["BMP180.Bosch.2_5-2013","D6T-44L-06.Omron.2012","DS18B20.Maxim.2008","GA1A1S201WP.Sharp.2007","HIH4030.Honeywell.2008","HIH6130.Honeywell.2011","HMC5883.Honeywell.2013","HTU21D.MeasSpec.2013","MAX4466.Maxim.2001","MLX90614ESF-DAA.Melexis.008-2013","MMA8452Q.Freescale.8_1-2013","PDV_P8104.API.2006","RHT03.Maxdetect.2011","SHT15.Sensirion.4_3-2010","SHT75.Sensirion.5_2011","TMP102.Texas_Instruments.2008","TMP421.Texas_Instruments.2012","Thermistor_NTC_PR103J2.US_Sensor.2003"]
 sensor_current_data=["BMP180.Bosch.2_5-2013","D6T-44L-06.Omron.2012","DS18B20.Maxim.2008","GA1A1S201WP.Sharp.2007","HIH4030.Honeywell.2008","HIH6130.Honeywell.2011","HMC5883.Honeywell.2013","HTU21D.MeasSpec.2013","MAX4466.Maxim.2001","MLX90614ESF-DAA.Melexis.008-2013","MMA8452Q.Freescale.8_1-2013","PDV_P8104.API.2006","RHT03.Maxdetect.2011","SHT15.Sensirion.4_3-2010","SHT75.Sensirion.5_2011","TMP102.Texas_Instruments.2008","TMP421.Texas_Instruments.2012","Thermistor_NTC_PR103J2.US_Sensor.2003"]
 
-LOG_FILE = "/tmp/wag/lines_processed.in"
-WWW_PREFIX = "/tmp/wag/html/"
-INPUT_PREFIX = "/tmp/wag/in_files/"
-RAW_DATA_FILE = "/tmp/wag/beehive.dat"
+
 
 def nullify(a):
     if a == '':
@@ -23,7 +21,7 @@ def nullify(a):
 
 def to_easy_parse_string(payload, delim = " ; "):
     data = payload._convert_to_list()
-    rv = ','.join([str(data[1]), str(data[2])] + [';'.join([data[3][i], data[5][i], data[6][i], nullify(data[7][i])])                            for i in xrange(len(data[3]))])
+    rv = ','.join([str(data[1]), str(data[2])] + [';'.join([data[3][i], data[5][i], data[6][i], nullify(data[7][i])]) for i in xrange(len(data[3]))])
     return rv + "\n"
 
 def num_lines_to_process():
@@ -140,13 +138,14 @@ on_break = False
 sleep_time = 1.0
 i = 0
 
-
+#create local directory if not present.
+bash('mkdir '+LOCAL_DIR)
 
 while 1:
     #checking how many lines have been processed
     try:
-        linecache.checkcache('/tmp/wag/lines_processed.in')
-        lines_proc = int(linecache.getline('/tmp/wag/lines_processed.in', 1))
+        linecache.checkcache(COUNTER_FILE)
+        lines_proc = int(linecache.getline(COUNTER_FILE, 1))
     except:
         bash("echo '0' > /tmp/wag/lines_processed.in")
         lines_proc = 0
@@ -156,9 +155,10 @@ while 1:
     print linesToProcess, lines_proc
     if linesToProcess > 0:
         rawHandler = open(RAW_DATA_FILE,'r')
-        #do not process already processed lines
+        #do not process already processed lines, seek the appropriate line.
         for i in range(lines_proc):
             rawHandler.readline()
+            
         for i in xrange(linesToProcess):
             line = rawHandler.readline().split('\n')[0]
             lines_proc = lines_proc + 1
@@ -168,16 +168,14 @@ while 1:
                     payload.inst_id = safe_string(payload.inst_id)
                     bash("mkdir -p" + WWW_PREFIX + str(payload.inst_id))
                     update_current(payload)
-                    ##sensor_current_data[sensors_list.index(to_easy_parse_string(payload).split(',')[0])] = to_easy_parse_string(payload)
                     log_payload(payload)
-                    #gen_page(payload.inst_id)
 
             if lines_proc % 10000 == 0:
                 print linesToProcess,lines_proc,time.asctime()
-                f = open("/tmp/wag/lines_processed.in", 'w')
+                f = open(COUNTER_FILE, 'w')
                 f.write(str(lines_proc))
                 f.close()
-        f = open("/tmp/wag/lines_processed.in", 'w')
+        f = open(COUNTER_FILE, 'w')
         f.write(str(lines_proc))
         f.close()
     else:

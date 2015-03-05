@@ -4,6 +4,9 @@ import router
 import data_proc
 import forward
 import reg_proc
+from commands import getoutput as bash
+
+bash('mkdir '+LOCAL_DIR)
 
 funcs = [router.run,
          data_proc.run,

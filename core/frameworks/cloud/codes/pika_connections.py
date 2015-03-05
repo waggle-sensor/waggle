@@ -1,19 +1,12 @@
 import pika
-import time
-import logging
-logging.basicConfig()
-#logging.getLogger('pika').setLevel(logging.DEBUG)
-
-#_connections = dict() #Connection info -> connection count ?, count?
-    # ip - port - username - password
+from localconfig import *
 
 class Consumer:
     global _connections
     pass
 
 class Producer:
-    def __init__(self, ip = "localhost", port = 23181, username = "beehive",
-            password = "queenB", routing_key = "default_queue", exchange = ''):
+    def __init__(self, ip = BEEHIVE_IP, port = BEEHIVE_PORT, username = BEEHIVE_UNAME, password = BEEHIVE_PWD, routing_key = BEEHIVE_RTK, exchange = BEEHIVE_EXCHANGE):
         print "Producer.__init__()"
 
         self._ip = ip
@@ -95,7 +88,7 @@ class Producer:
         return self._channel.basic_publish(self._exchange, self._routing_key,
                                            msg, properties = self._properties)
 
-def Consume(callback, routing_key, ip = "localhost", port = 23181, username = "beehive", password = "queenB"):
+def Consume(callback, routing_key, ip = BEEHIVE_IP, port = BEEHIVE_PORT, username = BEEHIVE_UNAME, password = BEEHIVE_PWD):
     credentials = pika.PlainCredentials(username, password)
     parameters = pika.ConnectionParameters(ip, port, credentials = credentials)
     connection = pika.BlockingConnection(parameters)
@@ -107,7 +100,7 @@ def Consume(callback, routing_key, ip = "localhost", port = 23181, username = "b
     connection.close()
 
 
-def Connect(ip = "localhost", port = 23181, username = "beehive", password = "queenB"):
+def Connect(ip = BEEHIVE_IP, port = BEEHIVE_PORT, username = BEEHIVE_UNAME, password = BEEHIVE_PWD):
     credentials = pika.PlainCredentials(username, password)
     parameters = pika.ConnectionParameters(ip, port, credentials = credentials)
     connection = pika.BlockingConnection(parameters)
@@ -124,20 +117,5 @@ def CreateQueue(connection, routing_key):
 
 
 if __name__ == "__main__":
-    def echo(ch, method, properties, body):
-        # print ch, method, properties, 
-        if body == "done!":
-            raise Exception("Going Home!")
-        body = body + "f"
-        ch.basic_ack(delivery_tag = method.delivery_tag)
-        
-    
-    print time.time()
-    con = Connect("localhost", 23181, "beehive", "queenB")
-    print "Queue declared"
-    for i in xrange(10):
-        Send(con, "testing", "hello1")
-    print time.time()
-    Send(con, "testing", "done!")
-    Consume(echo, "testing", "localhost", 23181, "beehive", "queenB")
-    print time.time()
+    con = Connect(BEEHIVE_IP, BEEHIVE_PORT, BEEHIVE_UNAME, BEEHIVE_PWD)
+    print con

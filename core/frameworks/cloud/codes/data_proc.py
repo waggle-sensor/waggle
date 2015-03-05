@@ -1,8 +1,8 @@
 from pika_connections import Consume, Connect, Send, CreateQueue
 from waggle.common.messaging_d import *
+from localconfig import *
 import time
 
-data_exchange_file = "/tmp/beehive.dat"
 
 
 def run():
@@ -33,8 +33,6 @@ def callback(ch, method, properties, body):
     Send(con, queue_name, "ack")
 
 def callback(ch, method, properties, body):
-    #print "GOT: '%s'" % body
-    #writeString = body  + '\n'
 
     print "\n############################################################################################\n"
     print "Begin %.4f" % time.time()
@@ -63,18 +61,10 @@ def callback(ch, method, properties, body):
         print "Processed Data:\n'%s'" % repr(writeString)
     except:
         print "Processed unprintable."
-    write_to_file(writeString.replace('\n', '\\n') + '\n', data_exchange_file)
+    write_to_file(writeString.replace('\n', '\\n') + '\n', RAW_DATA_FILE)
 
     print "End   %.4f" % time.time()
     ch.basic_ack(delivery_tag = method.delivery_tag)
 
-
-    #msg_type = ""
-    #try:
-    #recs = Record.msg_parse(body)
-    #msgObj = Message._DA_decode(writeString, self.db_connector)
-    #msgObj._push_to_db()
-    #ch.basic_ack(delivery_tag = method.delivery_tag)
-    
 if __name__ == "__main__":
     run()
