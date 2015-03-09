@@ -772,10 +772,7 @@ void sensor_print()
     Serial.print("HMC5883_Z_uT:");
     Serial.print(HMC5883_event.magnetic.z);
     Serial.print(";");
-//     Serial.print("HMC5883_Heading_Deg:");
-//     Serial.print(HMC5883_headingDegrees);
-//     Serial.print(";");
-    Serial.print("WXSensor;");
+    Serial.println("WXSensor");
     #endif //HMC5883_ADD
 }
 
