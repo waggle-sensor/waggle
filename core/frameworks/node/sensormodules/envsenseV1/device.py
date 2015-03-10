@@ -92,7 +92,7 @@ class device():
         self.sensor_names = ["PDV_P8104.API.2006", "MLX90614ESF-DAA.Melexis.008-2013", "D6T-44L-06.Omron.2012", "Thermistor_NTC_PR103J2.US_Sensor.2003",
                 "HIH6130.Honeywell.2011", "SHT15.Sensirion.4_3-2010", "BMP180.Bosch.2_5-2013", "MMA8452Q.Freescale.8_1-2013",
                 "DS18B20.Maxim.2008", "TMP421.Texas_Instruments.2012", "RHT03.Maxdetect.2011", "TMP102.Texas_Instruments.2008",
-                "SHT75.Sensirion.5_2011", "HIH4030.Honeywell.2008", "GA1A1S201WP.Sharp.2007", "MAX4466.Maxim.1_2001","HTU21D.Honeywell.2011","HMC5883.HoneyWell.2012"]
+                "SHT75.Sensirion.5_2011", "HIH4030.Honeywell.2008", "GA1A1S201WP.Sharp.2007", "MAX4466.Maxim.2001","HTU21D.MeasSpec.2013","HMC5883.Honeywell.2013"]
 
     def register(self):
 
@@ -709,8 +709,8 @@ class device():
 
 
 
-        sensor_obj_16 = sensor_info("MAX4466_1", "MAX4466.Maxim.1_2001", 0.04, 1, 1, "Breakout board", "Adafruit")
-        reading_obj_16_1 = reading_info("MAX4466.Maxim.1_2001.Noise_intensity", "int", "Units10B0V5", " ")
+        sensor_obj_16 = sensor_info("MAX4466_1", "MAX4466.Maxim.2001", 0.04, 1, 1, "Breakout board", "Adafruit")
+        reading_obj_16_1 = reading_info("MAX4466.Maxim.2001.Noise_intensity", "int", "Units10B0V5", " ")
         param_obj_16_1 = param_info(1, "Parameter", "Noise_intensity", "string", 0)
         param_obj_16_2 = param_info(1, "Units", "Units10B0V5", "string", 0)
         param_obj_16_3 = param_info(1, "Accuracy", " ", " ", " ")
@@ -747,9 +747,9 @@ class device():
         write_to_config_file(sensor_obj_16)
         
         
-        sensor_obj_17 = sensor_info("HTU21D_1", "HTU21D.Honeywell.2011", 0.04, 1, 1, "Breakout board", "Sparkfun")
-        reading_obj_17_1 = reading_info("HTU21D.Honeywell.2011.Temp", "float", "C", " ")
-        reading_obj_17_2 = reading_info("HTU21D.Honeywell.2011.Humidity", "float", "%", " ")
+        sensor_obj_17 = sensor_info("HTU21D_1", "HTU21D.MeasSpec.2013", 0.04, 1, 1, "Breakout board", "Sparkfun")
+        reading_obj_17_1 = reading_info("HTU21D.MeasSpec.2013.Temp", "float", "C", " ")
+        reading_obj_17_2 = reading_info("HTU21D.MeasSpec.2013.Humidity", "float", "%", " ")
         param_obj_17_1 = param_info(1, "Parameter", "Temperature", "string", 0)
         param_obj_17_2 = param_info(1, "Units", "C", "string", 0)
         param_obj_17_3 = param_info(1, "Accuracy", 0.3, "float", 0)
@@ -792,8 +792,8 @@ class device():
         sensor_obj_17.add_reading(reading_obj_17_2)
         write_to_config_file(sensor_obj_17)
 
-        sensor_obj_18 = sensor_info("HMC5883_1", "HMC5883.HoneyWell.2012", 0.04, 1, 1, "Breakout board", "Sparkfun")
-        reading_obj_18_1 = reading_info("HMC5883.HoneyWell.2012.Mag_intensity", "float", "uT", " ")
+        sensor_obj_18 = sensor_info("HMC5883_1", "HMC5883.Honeywell.2013", 0.04, 1, 1, "Breakout board", "Sparkfun")
+        reading_obj_18_1 = reading_info("HMC5883.Honeywell.2013.Mag_intensity", "float", "uT", " ")
         param_obj_18_1 = param_info(1, "Parameter", "Magnetic_Field", "string", 0)
         param_obj_18_2 = param_info(1, "Units", "uT", "string", 0)
         param_obj_18_3 = param_info(1, "Accuracy/Sensitivity", 0.02, "float", 0) 
