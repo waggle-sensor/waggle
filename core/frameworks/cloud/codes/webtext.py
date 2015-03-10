@@ -9,8 +9,43 @@ import linecache
 import time
 from localconfig import *
 
-sensors_list = ["BMP180.Bosch.2_5-2013","D6T-44L-06.Omron.2012","DS18B20.Maxim.2008","GA1A1S201WP.Sharp.2007","HIH4030.Honeywell.2008","HIH6130.Honeywell.2011","HMC5883.Honeywell.2013","HTU21D.MeasSpec.2013","MAX4466.Maxim.2001","MLX90614ESF-DAA.Melexis.008-2013","MMA8452Q.Freescale.8_1-2013","PDV_P8104.API.2006","RHT03.Maxdetect.2011","SHT15.Sensirion.4_3-2010","SHT75.Sensirion.5_2011","TMP102.Texas_Instruments.2008","TMP421.Texas_Instruments.2012","Thermistor_NTC_PR103J2.US_Sensor.2003"]
-sensor_current_data=["BMP180.Bosch.2_5-2013\n","D6T-44L-06.Omron.2012\n","DS18B20.Maxim.2008\n","GA1A1S201WP.Sharp.2007\n","HIH4030.Honeywell.2008\n","HIH6130.Honeywell.2011\n","HMC5883.Honeywell.2013,03/04/15 22:09:17,MagneticField;0.24;gauss;X,MagneticField;0.48;gauss;Y,MagneticField;0.20;gauss;Z\n","HTU21D.MeasSpec.2013,03/04/15 22:09:17,Temperature;28.37;C;none,Humidity;11.29;%RH;RH\n","MAX4466.Maxim.2001\n","MLX90614ESF-DAA.Melexis.008-2013\n","MMA8452Q.Freescale.8_1-2013\n","PDV_P8104.API.2006\n","RHT03.Maxdetect.2011\n","SHT15.Sensirion.4_3-2010\n","SHT75.Sensirion.5_2011\n","TMP102.Texas_Instruments.2008\n","TMP421.Texas_Instruments.2012\n","Thermistor_NTC_PR103J2.US_Sensor.2003\n"]
+sensors_list = ["BMP180.Bosch.2_5-2013",
+                "D6T-44L-06.Omron.2012",
+                "DS18B20.Maxim.2008",
+                "GA1A1S201WP.Sharp.2007",
+                "HIH4030.Honeywell.2008",
+                "HIH6130.Honeywell.2011",
+                "HMC5883.Honeywell.2013",
+                "HTU21D.MeasSpec.2013",
+                "MAX4466.Maxim.2001",
+                "MLX90614ESF-DAA.Melexis.008-2013",
+                "MMA8452Q.Freescale.8_1-2013",
+                "PDV_P8104.API.2006",
+                "RHT03.Maxdetect.2011",
+                "SHT15.Sensirion.4_3-2010",
+                "SHT75.Sensirion.5_2011",
+                "TMP102.Texas_Instruments.2008",
+                "TMP421.Texas_Instruments.2012",
+                "Thermistor_NTC_PR103J2.US_Sensor.2003"]
+
+sensor_current_data=["BMP180.Bosch.2_5-2013\n",
+                        "D6T-44L-06.Omron.2012\n",
+                        "DS18B20.Maxim.2008\n",
+                        "GA1A1S201WP.Sharp.2007\n",
+                        "HIH4030.Honeywell.2008\n",
+                        "HIH6130.Honeywell.2011\n",
+                        "HMC5883.Honeywell.2013\n",
+                        "HTU21D.MeasSpec.2013\n",
+                        "MAX4466.Maxim.2001\n",
+                        "MLX90614ESF-DAA.Melexis.008-2013\n",
+                        "MMA8452Q.Freescale.8_1-2013\n",
+                        "PDV_P8104.API.2006\n",
+                        "RHT03.Maxdetect.2011\n",
+                        "SHT15.Sensirion.4_3-2010\n",
+                        "SHT75.Sensirion.5_2011\n",
+                        "TMP102.Texas_Instruments.2008\n",
+                        "TMP421.Texas_Instruments.2012\n",
+                        "Thermistor_NTC_PR103J2.US_Sensor.2003\n"]
 
 SNAPSHOT_FREQ = 5 #time ins seconds when a snapshot file will be written
 
@@ -148,7 +183,8 @@ i = 0
 bash('mkdir '+LOCAL_DIR)
 bash('mkdir '+WORKING_CACHE_DIR)
 bash('touch '+SENSOR_DATA_EXCHANGE_FILE)
-bash("echo '0' > "+COUNTER_FILE)
+bash("touch"+COUNTER_FILE)
+#bash("echo '0' > "+COUNTER_FILE)
 
 
 while 1:
@@ -180,10 +216,9 @@ while 1:
                     payload.inst_id = safe_string(payload.inst_id)
                     sensorConnected = 1
                     try:
-                        print to_easy_parse_string(payload).split(',')[0]
                         sensor_current_data[sensors_list.index(to_easy_parse_string(payload).split(',')[0])] = to_easy_parse_string(payload)
                     except:
-                        print "**************"
+                        print payload.inst_id, "@@@@@@@@", to_easy_parse_string(payload).split(',')[0]
 
                     try:
                         log_payload(payload)
@@ -198,7 +233,7 @@ while 1:
                 f.write(str(lines_proc))
                 f.close()
                 
-                
+        print lines_proc        
         f = open(COUNTER_FILE, 'w')
         f.write(str(lines_proc))
         f.close()
