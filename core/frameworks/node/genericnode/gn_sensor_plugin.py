@@ -34,7 +34,7 @@ class sensor_plugin_class():
         try:
             imported_sensor_modules, sensor_class_names = self.import_new_sensor_modules()
             logger.debug("Module extracted from package."+"\n\n")
-            if sensor_class_names:    
+            if sensor_class_names:
                 sensor_class_objcts = []
                 for module_name, sensor_class_name in zip(imported_sensor_modules, sensor_class_names):
                     if sensor_class_name != '__init__':
@@ -49,6 +49,7 @@ class sensor_plugin_class():
                         except Exception as inst:
                             logger.critical("Exception in plugin loop: " + str(inst)+"\n\n")
                 self.register_modules(sensor_class_objcts, sensor_class_names)
+                
                 for sensor_class_name in sensor_class_names:
                     self.sensorBoard_input_queue[sensor_class_name] = Queue.Queue()
                     self.sensorBoard_output_queue[sensor_class_name] = Queue.Queue()
@@ -220,18 +221,20 @@ class sensor_plugin_class():
                 while not self.sensorBoard_output_queue[each_sensor].empty():
                     item = self.sensorBoard_output_queue[each_sensor].get()
                     msg_type = data_type 
-                    reply_id = no_reply 
+                    reply_id = no_reply
                     # Check whether sensor is properly registered or not
-                    if item[0] not in self.registered_sensors:
+                    if item[0] in self.registered_sensors:
+                        msg = item
+                        #print msg
+                        add_to_thread_buffer(self.sensor_dataMsgs, \
+                        buffered_msg(msg_type, None, reply_id, msg), "Sensor Controller")
+                        self.sensorBoard_output_queue[each_sensor].task_done()
+                        logger.debug("Msg sent to sensor_dataMsgs." + str(msg)+"\n\n")
+                    elif item[0] not in self.registered_sensors:
                         for i in range(1,6):
                             item[i] = None
                         item[6] = "Error in registering sensor."
                         logger.critical("Error in registering sensor.")
-                    msg = item
-                    add_to_thread_buffer(self.sensor_dataMsgs, \
-                    buffered_msg(msg_type, None, reply_id, msg), "Sensor Controller")                                
-                    self.sensorBoard_output_queue[each_sensor].task_done()
-                    logger.debug("Msg sent to sensor_dataMsgs." + str(msg)+"\n\n")
             logger.debug("Msg sending to sensor_controller's buffer done."+"\n\n")    
         except Exception as inst:
             logger.critical("Exception in get_sensor_msgs: " + str(inst)+"\n\n")
