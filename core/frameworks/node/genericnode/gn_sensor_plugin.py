@@ -108,7 +108,6 @@ class sensor_plugin_class():
             return module_names
         except Exception as inst:
             logger.critical("Exception in extract_module_names: " + str(inst)+"\n\n")
-    
 
     ############################################################################## 
     # Checks if its the name of a valid python source module
