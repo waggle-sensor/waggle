@@ -1,1 +1,0 @@
-../../../code/sdcardTools/mkcard/mkcardOdroid.sh
