@@ -1,9 +1,7 @@
 #!/usr/bin/env python
-
 # A data client that connects to the RabbitMQ Weather queue
-
 # RabbitMQ Connection information
-rmq_ip = "140.221.14.151"
+rmq_ip = "beehive.wa8.gl"
 rmq_port = 23181
 rmq_user = 'honeybee'
 rmq_passwd = 'buzz'
