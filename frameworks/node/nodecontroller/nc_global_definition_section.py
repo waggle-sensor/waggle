@@ -29,8 +29,6 @@ logger = logging.getLogger("NC")
 # To set the logging level uncomment the following
 # logger.setLevel(logging.CRITICAL)
 
-
-
 # GNs can request at this port
 port_for_gn = 7001
 
@@ -76,7 +74,6 @@ buffered_msg = namedtuple('buffered_msg', ['msg_type',\
 
 
 
-
 # Constants
 registration_type = '0'
 data_type = '1'
@@ -119,28 +116,6 @@ def get_instance_id():
     return get_instance_id.instance_id
 # instance_id is a static variable    
 get_instance_id.instance_id = None
-
-        
-####################################################    
-        #mac_addr = ''
-        #mmcid = "sdcardid"
-        #try:
-            #interface_no = 0
-            #while 1:
-                #if os.path.exists('/sys/class/net/eth'+str(interface_no)+'/address'):
-                    #mac_addr = open('/sys/class/net/eth'+str(interface_no)+"/address").read()
-                    #mac_addr = mac_addr.split('\n')
-                    #mac_addr = mac_addr[0].replace(':','')
-                    #break
-                #else:
-                    #interface_no += 1
-            #if os.path.exists('/sys/block/mmcblk0/device/cid'):
-                #mmcid = open('/sys/block/mmcblk0/device/cid').read()
-                #mmcid = mmcid.split('\n')
-                #mmcid = mmcid[0]
-            #get_instance_id.instance_id = mac_addr + mmcid
-       
-#####################################################            
 
 
 ##############################################################################

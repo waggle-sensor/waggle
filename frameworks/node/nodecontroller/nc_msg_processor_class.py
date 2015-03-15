@@ -46,14 +46,12 @@ class msg_processor_class():
             wait_time_set=0;
             while True:
                 if not self.incoming_moduleMsgBfr.empty():
-                    #print "GN DATA MSG^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"+str('%0.4f' % time.time())
                     item = self.incoming_moduleMsgBfr.get()
                     logger.debug("Msg from GN received.")
                     self.process_external_msg(item)
                     self.incoming_moduleMsgBfr.task_done()
                     time.sleep(0.0001)
                     wait_time_set=0
-                    #print "DATA MSG PROCESSED^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"+str('%0.4f' % time.time())
                 else:
                     if wait_time_set==0: 
                         wait_time = time.time() + wait_time_for_next_msg
@@ -98,14 +96,6 @@ class msg_processor_class():
             return 1
 
 
-    ###############################################################################
-    ## Returns True if the bfr_for_in_to_out_msgs of this inst_id is empty or the msg is reg/data
-    ## and not a command, so the reply is simple ACK which is not saved in sent_msgs bfr.
-    ## So as per the protocol even if bfr_for_in_to_out_msgs is full the ACK can be sent.
-    #def can_send_msg(self, inst_id, msg_type):
-        #return self.buffer_mngr.bfr_for_in_to_out_msgs[inst_id].empty() or (msg_type != command_type)
-
-
     ##############################################################################
     # Dispatches the msg to proper function by examining msg_type
     def process_external_msg(self, item):
@@ -114,8 +104,6 @@ class msg_processor_class():
             self.process_gn_registration_msg(item)
         elif item.msg_type == data_type:
             self.process_data_msg(item)
-        elif item.msg_type == command_type:
-            self.process_cmd_msg(item)
         else:
             logger.critical("Unknown Msg type received......")
 

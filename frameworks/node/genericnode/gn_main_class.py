@@ -48,21 +48,6 @@ class main_class():
             wait_time_set = 1
             while True:
                 time.sleep(10)
-                #while (not self.input_buffer.empty()):
-                    #item = self.input_buffer.get()
-                    #logger.debug("Msg received in buffer:"+str(item)+ "\n\n")
-                        #process_external_msg(item)
-                    #else:
-                        #logger.critical("Unknown Msg Received: Discarding the msg\
-                        #............." + "\n\n")
-                    #self.input_buffer.task_done()
-                    ## set time to remain attentive for next 200 ms
-                    #wait_time = time.time() + wait_time_for_next_msg
-                    #time.sleep(0.0001)
-                #if wait_time > time.time():
-                    #time.sleep(0.0001)
-                #else:
-                    #time.sleep(1)
         except Exception as inst:
             logger.critical("Exception in main_class: " + str(inst)+ "\n\n")
         finally:
@@ -93,23 +78,7 @@ class main_class():
     # Calls apt function based on whether it is registered or not
     def register_gn(self):
         logger.debug("Checking whether registration is done or not."+ "\n\n")
-        #if self.check_registration_status():
-            ## Registration already done so just send msg to NC saying that I am up
-            #self.send_ready_notification()
-        #else:
         self.send_GN_registration_request()
-
-
-    ###############################################################################
-    ## Checks by reading the config file whether registration has been done or not.
-    #def check_registration_status(self):
-        #config = ConfigObj(config_file_name)
-        #if config["Registered"] == "YES":
-            #logger.debug("System Info: " + config["Systems Info"]+ "\n\n")
-            #logger.info("Registration already done."+ "\n\n")
-            #return True
-        #logger.info("Registration not done."+ "\n\n")
-        #return False
 
 
     ##############################################################################
@@ -147,25 +116,6 @@ class main_class():
         buff_msg = buffered_msg(msg_type, None, reply_id, msg)
         add_to_thread_buffer(self.buffer_mngr.outgoing_gnMsgBfr, buff_msg, "Buffer Mngr")
         logger.debug ("Msg sent to buffer_mngr."+ "\n\n")
-
-
-    ###############################################################################
-    ## Hook
-    #def process_external_msg(self, item):
-        #logger.debug("Processing NC's msg."+ "\n\n")
-        ## Add stuff to process any command received from NC
-
-    ###############################################################################
-    ## Hook
-    #def process_cmd(self, msg):
-        #logger.debug("Command from NC received."+ "\n\n")
-        #if msg == "Update":
-            ##TODO
-            #update_cmd_handler()
-
-        #elif msg == "Status":
-            ##TODO
-            #get_status()
 
 
     ##############################################################################

@@ -39,8 +39,6 @@ buffered_msg = namedtuple('buffered_msg', ['msg_type',\
 
 """
 # When msg sent from external_communicator to buffr_mngr:
-#	internal_msg_header = "msg_from_nc",  can be changed to anything depending\
-#	on the sender of the msg
 #	msg_type = None
 #   seq_no: None
 #   reply_id: None
@@ -48,19 +46,8 @@ buffered_msg = namedtuple('buffered_msg', ['msg_type',\
 """
 
 
-
-"""
-# When msg sent to sensor_controller's input_buffer:
-#	
-#	msg_type = data_type (as currently only data is sent from sensors)
-#   seq_no: None as seq_no is managed by buffr_mngr
-#   reply_id: -1
-#   msg = data msg from sensor
-"""
-
 """
 # When msg sent from main_thread/sensor_controller to buffr_mngr:
-#	
 #	msg_type = msg_type of the msg to be sent
 #   seq_no: None as seq_no is managed by buffr_mngr
 #   reply_id: if msg = ACK then sequence no of the msg whose ACK is being sent else None
@@ -73,9 +60,6 @@ buffered_msg = namedtuple('buffered_msg', ['msg_type',\
 #	attached is added to the output buffer
 """
 #################################################################################
-
-
-
 
 # To signal successful registration
 start_communication_with_nc_event = threading.Event()

@@ -93,7 +93,7 @@ class external_communicator_class(asynchat.async_chat, threading.Thread):
     def handle_request(self):
         try:
             msg = ''
-                # recreates msg by concatenating (input_buffer) list's elements
+            # recreates msg by concatenating (input_buffer) list's elements
             for single_msg in self.input_buffer:
                 msg = msg + single_msg
             msg = buffered_msg(None, None, None, msg) 

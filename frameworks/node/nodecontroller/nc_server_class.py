@@ -8,8 +8,8 @@ from nc_global_definition_section import gn_socket_list, logger, gn_socket_list_
 
 """
 # Listens for incoming registration requests of guest nodes and once a request
-# is received, it creates a new object of class internal_communicator and passes
-# the new socket's details to that.
+# is received, it creates a new object of class internal_communicator for that GN and all further communication 
+# with that GN is handled by that socket
 """
 class nc_server_class(threading.Thread, asyncore.dispatcher):
 
@@ -65,10 +65,11 @@ class nc_server_class(threading.Thread, asyncore.dispatcher):
             logger.info("New GN connection available." + "\n\n")
             # returns the newly allocated socket and ip address
             gn_socket_conn, gn_addr = self.accept()
+            # for each new GN a new socket is created and then all communication with that GN is managed by that socket
             socket = internal_communicator(gn_socket_conn, gn_addr, self.buffer_mngr)
             # Lock acquired to access global list variable and released when the 'with' block ends
             with gn_socket_list_lock:
-                # Pass GN's details and new socket's details to a new socket object created for that GN
+                # Add the new socket to the LIVE socket's list to be used by buffer_mngr class
                 gn_socket_list.append(socket)
             #logger.debug("Socket object corresponding to new GN created and running.")
         except:
@@ -91,7 +92,6 @@ class nc_server_class(threading.Thread, asyncore.dispatcher):
         # Lock acquired to access global list variable and released when the 'with' block ends
         with gn_socket_list_lock:
             for socket in gn_socket_list:
-                #socket.shutdown = 1
                 gn_socket_list.remove(socket)
                 socket.close()
                 logger.info("Individual GN socket closed.")
