@@ -1,5 +1,5 @@
 import pika
-from localconfig import *
+from cloud_localconfig import *
 
 class Consumer:
     global _connections
@@ -21,8 +21,8 @@ class Producer:
         self._channel = None                         # needed by send
         self._properties = pika.BasicProperties(content_type='text/plain', delivery_mode=1)
         self.connect()
-    
-    
+
+
     def connect(self):
         print "Producer.connect()"
         """ Connect to the RabbitMQ server and a create a channel from that

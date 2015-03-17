@@ -1,5 +1,5 @@
 #!/usr/bin/env python2.7
-from pika_connections import Consume, Connect, Send, CreateQueue
+from cloud_pika_connections import Consume, Connect, Send, CreateQueue
 from waggle.common.messaging_d import *
 import time
 con = Connect()

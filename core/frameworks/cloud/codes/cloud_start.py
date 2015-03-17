@@ -1,23 +1,32 @@
 import time
 import multiprocessing
-import router
-import data_proc
-import forward
-import reg_proc
+import cloud_router
+import cloud_data_proc
+import cloud_forward
+import cloud_reg_proc
 from commands import getoutput as bash
-from localconfig import *
+from cloud_localconfig import *
 
-bash('mkdir '+LOCAL_DIR)
-funcs = [router.run,
-         data_proc.run,
-         forward.run,
-         reg_proc.run]
-print forward.run.__name__
 
-procs_list = [multiprocessing.Process(target = i) for i in funcs]
-print procs_list
-exit()
-for procs in procs_list:
-    procs.start()
+if __name__ == '__main__':
+    bash('mkdir '+LOCAL_DIR)
+    funcs = [cloud_router.run,
+         cloud_data_proc.run,
+         cloud_forward.run,
+         cloud_reg_proc.run]
+    process_list = {}
+    #start all the processes
+    for procs in funcs:
+        process_list[procs] = multiprocessing.Process(target = procs)
+        process_list[procs].start()
 
-    #we have to restart the processes when they die, so need to add that feature
+    #auto restart processes if they die
+    while 1:
+        time.sleep(5)
+        print time.asctime(), "I am alive and watching..."
+        for procs in process_list:
+            if process_list[procs].is_alive() == False:
+                print procs
+                process_list[procs] = multiprocessing.Process(target = procs)
+                process_list[procs].start()
+

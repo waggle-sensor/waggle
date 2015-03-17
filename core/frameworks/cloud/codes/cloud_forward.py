@@ -1,4 +1,4 @@
-from pika_connections import Send, CreateQueue, Consume, Connect
+from cloud_pika_connections import Send, CreateQueue, Consume, Connect
 import time
 con = Connect()
 numberOfForwards = 0
@@ -10,6 +10,7 @@ def callback(ch, method, properties, body):
         numberOfForwards = numberOfForwards + 1
         if numberOfForwards % 10 == 0:
             print time.asctime(), numberOfForwards
+            pass
         #ch.basic_ack(delivery_tag = method.delivery_tag)
     except:
         print time.asctime(), "Something has gone horribly wrong, I am quitting! - ",  numberOfForwards
@@ -22,9 +23,12 @@ def callback(ch, method, properties, body):
 
 
 def run():
+    print "Starting forwarder - ", time.asctime()
     CreateQueue(con, "weather")
     CreateQueue(con, "cloud_entrance")
     Consume(callback, 'weather')
+
+
 if __name__ == "__main__":
     print "Starting forwarder - ", time.asctime()
     run()

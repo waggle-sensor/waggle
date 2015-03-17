@@ -1,7 +1,7 @@
-from pika_connections import Consume, Connect, Send, CreateQueue
+from cloud_pika_connections import Consume, Connect, Send, CreateQueue
 from waggle.common.messaging_d import *
 import time
-from localconfig import *
+from cloud_localconfig import *
 
 queues = dict()
 con = Connect()

@@ -1,6 +1,6 @@
-from pika_connections import Consume, Connect, Send, CreateQueue
+from cloud_pika_connections import Consume, Connect, Send, CreateQueue
 from waggle.common.messaging_d import *
-from localconfig import *
+from cloud_localconfig import *
 import time
 
 def run():
@@ -10,7 +10,7 @@ def run():
     Consume(callback, "data")
 
 def write_to_file(dataStr, filePath):
-    bufsize = 0 
+    bufsize = 0
     fileStream = open(filePath, 'a+', bufsize)
     fileStream.write(dataStr.encode("UTF-8"))
 
@@ -37,8 +37,9 @@ def callback(ch, method, properties, body):
         Send(con, "malformed_data", body)
         return
     try:
-        print time.asctime(),
-        print "%s" % repr(writeString)
+        #print time.asctime(),
+        #print "%s" % repr(writeString)
+        pass
     except:
         print "Processed unprintable."
     write_to_file(writeString.replace('\n', '\\n') + '\n', SENSOR_DATA_EXCHANGE_FILE)
