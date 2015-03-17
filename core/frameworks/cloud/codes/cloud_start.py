@@ -14,7 +14,10 @@ funcs = [router.run,
          reg_proc.run]
 print forward.run.__name__
 
-procs = [multiprocessing.Process(target = i) for i in funcs]
+procs_list = [multiprocessing.Process(target = i) for i in funcs]
+print procs_list
+exit()
+for procs in procs_list:
+    procs.start()
 
-for p in procs:
-    p.start()
+    #we have to restart the processes when they die, so need to add that feature
