@@ -192,6 +192,7 @@ while 1:
     try:
         linecache.checkcache(COUNTER_FILE)
         lines_proc = int(linecache.getline(COUNTER_FILE, 1))
+        print lines_proc
     except:
         bash("echo '0' > "+COUNTER_FILE)
         lines_proc = 0
@@ -214,6 +215,7 @@ while 1:
                 for payload in msg.payloads:
                  
                     payload.inst_id = safe_string(payload.inst_id)
+                    print payload.inst_id
                     sensorConnected = 1
                     try:
                         sensor_current_data[sensors_list.index(to_easy_parse_string(payload).split(',')[0])] = to_easy_parse_string(payload)
