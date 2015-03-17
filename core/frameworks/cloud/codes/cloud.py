@@ -8,12 +8,10 @@ from commands import getoutput as bash
 from localconfig import *
 
 bash('mkdir '+LOCAL_DIR)
-
 funcs = [router.run,
          data_proc.run,
          forward.run,
          reg_proc.run]
-
 print forward.run.__name__
 
 procs = [multiprocessing.Process(target = i) for i in funcs]

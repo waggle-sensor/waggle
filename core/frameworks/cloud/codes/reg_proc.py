@@ -9,7 +9,7 @@ con = Connect()
 def run():
     CreateQueue(con, "malformed_registration")
     Consume(callback, "registration")
-    
+
 
 def write_to_file(dataStr, filePath):
     bufsize = 0 #100000000
@@ -19,7 +19,7 @@ def write_to_file(dataStr, filePath):
 
 def callback(ch, method, properties, body):
     #print "GOT: '%s'" % body
-    #writeString = body  + '\n'
+    writeString = body  + '\n'
 
     try:
         a = Message.decode(body)
@@ -34,6 +34,6 @@ def callback(ch, method, properties, body):
         Send(con, "malformed_registration", body)
         ch.basic_ack(delivery_tag = method.delivery_tag)
         return
-    
+
 if __name__ == "__main__":
     run()
