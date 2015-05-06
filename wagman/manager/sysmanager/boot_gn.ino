@@ -16,8 +16,8 @@
 */
 void boot_gn()
 {
-	// Is guest node 1 enabled?
-	if(eeprom_read_byte(&E_GN1_ENABLED))
+	// Is guest node 2 enabled?
+	if(eeprom_read_byte(&E_GN2_ENABLED))
 	{
 		// Set relay pin to output mode
 		pinMode(PIN_RELAY2, OUTPUT);

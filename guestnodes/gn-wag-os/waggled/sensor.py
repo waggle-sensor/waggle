@@ -158,8 +158,8 @@ try:
                                 #packs and sends the data
                                 data_packet(sendData)
                         time.sleep(1)
-    except KeyboardInterrupt, k:
-        try:
-            wxsensor.close()
-        except: 
-            pass
+except KeyboardInterrupt, k:
+    try:
+        wxsensor.close()
+    except: 
+        pass

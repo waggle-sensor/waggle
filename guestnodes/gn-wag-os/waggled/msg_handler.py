@@ -13,7 +13,7 @@ def msg_handler(msg):
         :param string msg: The packed message sent to the node.
         
     """
-    
+    #TODO Add new message types that are created for waggle 
     try:
         #unpacks the header
         header = get_header(msg)
@@ -23,8 +23,6 @@ def msg_handler(msg):
     #get the major header type
     major = chr(header['msg_mj_type'])
     minor = chr(header['msg_mi_type'])
-    print 'major message: ', major
-    print 'minor message: ', minor
     
     #large file transfer
     if major == 'F':
@@ -80,7 +78,7 @@ def msg_handler(msg):
     
     #registration
     elif major =='r':
-        #TODO do stuff here 
+        #TODO do stuff here if ever neccessary
         #unpack the message
         reg = unpack(msg)
         #print out the body of the message

@@ -1,23 +1,43 @@
 #!/bin/bash
 [ `whoami` = root ] || { sudo "$0" "$@"; exit $?; }
+
+# Install all of the dependencies that the Waggle server needs
 dpkg -i packages_o/*.deb
 cd packages_o/
 pip install -e pika-0.9.14
+pip install blist
+pip install cassandra-driver
 cd ..
+
+# Set up a folder for the waggle hostname
 mkdir /etc/waggle/
 echo 0 > /etc/waggle/hostname # The cloud's hostname is defined as 0
+
+# All of the general configuration files for Waggle are stored here
 mkdir /usr/lib/waggle
 echo Moving waggle server folder to proper place.
 cd ..
+
+# All of the code is moved into the usr/lib/waggle folder
 mv server/ /usr/lib/waggle/
 cp -R devtools/protocol_common/* /usr/lib/waggle/
+
+# Create a user that all nodes can use to send info to.
+# Feel free to fiddle with rabbitmq if you want to have other users and accounts.
 rabbitmqctl add_user waggle waggle
 rabbitmqctl set_permissions waggle ".*" ".*" ".*"
 
+# Set up the SSL files, and generate a new SSL Certificate Authority
+# For the Certificate Authority setup, see waggle/server/SSL/caconfig.sh
 echo Setting up SSL
 mkdir /usr/lib/waggle/SSL
 mv /usr/lib/waggle/server/SSL/* /usr/lib/waggle/SSL
 cd /usr/lib/waggle/SSL/
+chmod 777 -R /usr/lib/waggle
 source caconfig.sh
+
+# Get the IP for the cassandra node you want to send data to.
+read -p "Enter the IP address of the Cassandra server you want to use: " c_ip
+echo $c_ip > /etc/waggle/cassandra_ip
 
 exit 0

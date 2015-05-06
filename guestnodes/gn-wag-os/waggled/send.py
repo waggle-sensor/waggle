@@ -4,11 +4,16 @@ import socket, os, os.path, time
 
 """ 
     This is a client socket that connects to the push_server of the node controller to send messages. It is called as a function with the packed message as an argument. 
+    
+    :param string msg: The packed waggle message that needs to be sent.
 """
+#gets the IP address for the nodecontroller
+with open('/etc/waggle/NCIP','r') as file_:
+    IP = file_.read().strip() 
 
 def send(msg):
     #HOST = '10.10.10.108' #node controller Odroid IP
-    HOST = '10.10.10.10' #biship IP
+    HOST = IP #should set it to NodeController IP
     PORT = 9090 #port for push_server
     
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

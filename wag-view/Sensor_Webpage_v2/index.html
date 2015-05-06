@@ -25,19 +25,31 @@
 
 	<body>
 		<!-- Top area -->
-		<div class="container-fluid" id="header">
-			<div class="col-md-2">
-				<h3><strong>EnvSense V1</strong></h3>
+		<div class="container=fluid" id="header">
+			<div class="row" style="margin: auto">
+				<div class="col-md-12" style="color: #fff">
+					<h3>University of Chicago | Regenstein Library, Southeast fa&#231ade</h3>
+				</div>
 			</div>
-			<div class="col-md-4">
-				<img id="EnvSense" src="EnvSense1.JPG" alt="Sensor Board"/>
+			<div class="row" style="margin: auto">
+				<div class="col-md-6" style="color: #fff">
+					<h4>Lat: 41.7917 &nbsp Lon: -87.5995</h4>
+				</div>
+				<div class="col-md-6" style="color: #fff">
+					<h4>Installed April 19, 2015</h4>
+				</div>
 			</div>
-			<div class="col-md-4">
-				<img id="SysMon" src="IntelBoard.JPG" alt="System Monitor"/>
+			<div class="row">
+				<div class="col-md-12" style="height: 468px">
+					<img id="photo" src="photo.png" alt="Photo" style="position: relative; right: 1%"/>
+					<img id="photoLoc" src="photoLoc.png" alt="Location" style="height: 232px; width: 585px; position: relative; top: -25.2%; left: 1%"/>
+					<img id="EnvSense" src="EnvSense2.jpg" alt="Sensor Board" style="height: 232px; width: 585px; position: relative; top: -49.5%; left: 14.45%"/>
+				</div>
 			</div>
-			<div class="col-md-2">
-				<h3 id="date"><strong></strong></h3>
-				<h3 id="time"><strong></strong></h3>
+			<div class="row">
+				<div class="col-md-3" style="position: relative; left: 2.5%">
+					<h3 id="date"><h3>
+				</div>
 			</div>
 		</div>
 
@@ -45,6 +57,177 @@
 		<!-- Container is broken into 12 segments, each div takes up a certain amount of segments, and fills the space up going from right to left,
 			 top to bottom. If a div element will push past the 12 segments, it moves down a row to the next open space -->
 		<div class="container-fluid" id="data_container">
+			<div class="col-md-4" style="height: 60px">
+				<p><strong>RHT03</strong></p>
+				<div class="col-md-6"><p style="width: 50%; float: left">Temperature</p><p id="RHT03_temp" style="width: 50%; float: left">&degC</p></div>
+				<div class="col-md-6" id="graph00"></div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<p><strong>SHT15</strong></p>
+				<div class="col-md-6"><p style="width: 50%; float: left">Temperature</p><p id="SHT15_temp" style="width: 50%; float: left">&degC</p></div>
+				<div class="col-md-6" id="graph10"></div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<p><strong>SHT75</strong></p>
+				<div class="col-md-6"><p style="width: 50%; float: left">Temperature</p><p id="SHT75_temp" style="width: 50%; float: left">&degC</p></div>
+				<div class="col-md-6" id="graph20"></div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<p><strong>&nbsp</strong></p>
+				<div class="col-md-6"><p style="width: 50%; float: left">Humidity</p><p id="RHT03_hum" style="width: 50%; float: left">%RH</p></div>
+				<div class="col-md-6" id="graph01"></div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<p><strong>&nbsp</strong></p>
+				<div class="col-md-6"><p style="width: 50%; float: left">Humidity</p><p id="SHT15_hum" style="width: 50%; float: left">%RH</p></div>
+				<div class="col-md-6" id="graph11"></div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<p><strong>&nbsp</strong></p>
+				<div class="col-md-6"><p style="width: 50%; float: left">Humidity</p><p id="SHT75_hum" style="width: 50%; float: left">%RH</p></div>
+				<div class="col-md-6" id="graph21"></div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<div id="divide"></div>
+				<p><strong>HTU21D</strong></p>
+				<div class="col-md-6"><p style="width: 50%; float: left">Temperature</p><p id="HTU21D_temp" style="width: 50%; float: left">&degC</p></div>
+				<div class="col-md-6" id="graph02"></div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<div id="divide"></div>
+				<p><strong>D6T44L06</strong></p>
+				<div class="col-md-6"><p style="width: 50%; float: left">Avg. Temperature</p><p id="D6T44L06_avg_temp" style="width: 50%; float: left">&degC</p></div>
+				<div class="col-md-6" id="graph12"></div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<div id="divide"></div>
+				<p><strong>BMP180</strong></p>
+				<div class="col-md-6"><p style="width: 50%; float: left">Temperature</p><p id="BMP180_temp" style="width: 50%; float: left">&degC</p></div>
+				<div class="col-md-6" id="graph22"></div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<p><strong>&nbsp</strong></p>
+				<div class="col-md-6"><p style="width: 50%; float: left">Humidity</p><p id="HTU21D_hum" style="width: 50%; float: left">%RH</p></div>
+				<div class="col-md-6" id="graph03"></div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<p><strong>&nbsp</strong></p>
+				<div class="col-md-6"><p style="width: 58%; float: left">Casing Temperature&nbsp</p><p id="D6T44L06_case_temp" style="width: 42%; float: left">&degC</p></div>
+				<div class="col-md-6" id="graph13"></div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<p><strong>&nbsp</strong></p>
+				<div class="col-md-6"><p style="width: 50%; float: left">Pressure</p><p id="BMP180_pres" style="width: 50%; float: left">hPa</p></div>
+				<div class="col-md-6" id="graph23"></div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<div id="divide"></div>
+				<p><strong>HIH6130</strong></p>
+				<div class="col-md-6"><p style="width: 50%; float: left">Temperature</p><p id="HIH6130_temp" style="width: 50%; float: left">&degC</p></div>
+				<div class="col-md-6" id="graph04"></div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<div id="divide"></div>
+				<p><strong>HIH4030</strong></p>
+				<div class="col-md-6"><p style="width: 50%; float: left">Humidity</p><p id="HIH4030" style="width: 50%; float: left">%RH</p></div>
+				<div class="col-md-6" id="graph14"></div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<div id="divide"></div>
+				<p><strong>DS18B20</strong></p>
+				<div class="col-md-6"><p style="width: 50%; float: left">Temperature</p><p id="DS18B20" style="width: 50%; float: left">&degC</p></div>
+				<div class="col-md-6" id="graph24"></div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<p><strong>&nbsp</strong></p>
+				<div class="col-md-6"><p style="width: 50%; float: left">Humidity</p><p id="HIH6130_hum" style="width: 50%; float: left">%RH</p></div>
+				<div class="col-md-6" id="graph05"></div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<div id="divide"></div>
+				<p><strong>TMP102</strong></p>
+				<div class="col-md-6"><p style="width: 50%; float: left">Temperature</p><p id="TMP102" style="width: 50%; float: left">&degC</p></div>
+				<div class="col-md-6" id="graph15"></div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<div id="divide"></div>
+				<p><strong>TMP421</strong></p>
+				<div class="col-md-6"><p style="width: 50%; float: left">Temperature</p><p id="TMP421" style="width: 50%; float: left">&degC</p></div>
+				<div class="col-md-6" id="graph25"></div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<div id="divide"></div>
+				<p><strong>MLX90614ESF</strong></p>
+				<div class="col-md-6"><p style="width: 50%; float: left">Temperature</p><p id="MLX90614ESF" style="width: 50%; float: left">&degC</p></div>
+				<div class="col-md-6" id="graph06"></div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<div id="divide"></div>
+				<p><strong>PR103J2</strong></p>
+				<div class="col-md-6"><p style="width: 50%; float: left">Temperature</p><p id="PR103J2" style="width: 50%; float: left">&degC</p></div>
+				<div class="col-md-6" id="graph16"></div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<div id="divide"></div>
+				<p><strong>GA1A1S201WP</strong></p>
+				<div class="col-md-6"><p style="width: 56%; float: left">Luminous Intensity&nbsp</p><p id="GA1A1S201WP" style="width: 44%; float: left">raw A/D</p></div>
+				<div class="col-md-6" id="graph26"></div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<div id="divide"></div>
+				<p><strong>MMA8452Q</strong></p>
+				<div class="col-md-6"><p style="width: 50%; float: left">Acceleration x</p><p id="MMA8452Q_x" style="width: 50%; float: left">g</p></div>
+				<div class="col-md-6" id="graph07"></div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<div id="divide"></div>
+				<p><strong>HMC5883</strong></p>
+				<div class="col-md-6"><p style="width: 58%; float: left">Magnetic Field x</p><p id="HMC5883_x" style="width: 42%; float: left">&microT</p></div>
+				<div class="col-md-6" id="graph17"></div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<div id="divide"></div>
+				<p><strong>PDVP8104</strong></p>
+				<div class="col-md-6"><p style="width: 56%; float: left">Luminous Intensity&nbsp</p><p id="PDVP8104" style="width: 44%; float: left">raw A/D</p></div>
+				<div class="col-md-6" id="graph27"></div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<p><strong>&nbsp</strong></p>
+				<div class="col-md-6"><p style="width: 50%; float: left">Accleration y</p><p id="MMA8452Q_y" style="width: 50%; float: left">g</p></div>
+				<div class="col-md-6" id="graph08"></div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<p><strong>&nbsp</strong></p>
+				<div class="col-md-6"><p style="width: 58%; float: left">Magnetic Field y</p><p id="HMC5883_y" style="width: 42%; float: left">&microT</p></div>
+				<div class="col-md-6" id="graph18"></div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<div id="divide"></div>
+				<p><strong>MAX4466</strong></p>
+				<div class="col-md-6"><p style="width: 56%; float: left">Acoustic Intensity</p><p id="MAX4466" style="width: 44%; float: left">raw A/D</p></div>
+				<div class="col-md-6" id="graph28"></div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<p><strong>&nbsp</strong></p>
+				<div class="col-md-6"><p style="width: 50%; float: left">Acceleration z</p><p id="MMA8452Q_z" style="width: 50%; float: left">g</p></div>
+				<div class="col-md-6" id="graph09"></div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<p><strong>&nbsp</strong></p>
+				<div class="col-md-6"><p style="width: 58%; float: left">Magnetic Field z</p><p id="HMC5883_z" style="width: 42%; float: left">&microT</p></div>
+				<div class="col-md-6" id="graph19"></div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<p><strong>&nbsp</strong></p>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<p><strong>&nbsp</strong></p>
+				<div class="col-md-6"><p style="width: 50%; float: left">RMS Vibration</p><p id="MMA8452Q_rms" style="width: 50%; float: left">g</p></div>
+				<div class="col-md-6" id="graph010"></div>
+			</div>
+
+
+		<!--<div class="container-fluid" id="data_container">
 			<div class="col-md-4" style="height: 120px">
 				<p><strong>RHT03</strong></p>
 				<div class="col-md-6"><p style="width: 50%; float: left">Temperature</p><p id="RHT03_temp" style="width: 50%; float: left">&degC</p></div>
@@ -236,12 +419,12 @@
 				<div class="col-md-6" id="graph1110"></div>
 				<div class="col-md-6"><p style="width: 60%; float: left">Casing Temperature</p><p id="D6T44L06_case_temp" style="width: 40%; float: left">&degC</p></div>
 				<div class="col-md-6" id="graph1111"></div>
-			</div>
-		</div>
+			</div>-->
 
-		<!-- Bottom Banner -->
-		<div class="col-md-12" style="width: 100%; margin: auto; text-align: center">
-			<img src="Waggle_Banner.png" alt="Waggle" align="middle"/>
+			<!-- Bottom Banner -->
+			<div class="col-md-12" style="width: 100%; margin: auto; text-align: center">
+				<img src="Waggle_Banner.png" alt="Waggle" align="middle"/>
+			</div>
 		</div>
 	</body>
 </html>
