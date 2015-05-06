@@ -6,20 +6,9 @@ import sys
 sys.path.append('../../../../devtools/protocol_common/')
 from protocol.PacketHandler import *
 #sys.path.append('..')
-from device_dict import DEVICE_DICT
-    
-#gets the NC hostname 
-with open('/etc/waggle/hostname','r') as file_:
-    HOSTNAME = file_.read().strip()
-    
-#gets the queuename
-with open('/etc/waggle/queuename','r') as file_:
-    QUEUENAME = file_.read().strip() 
-    
-#gets the IP address for the nodecontroller
-with open('/etc/waggle/NCIP','r') as file_:
-    IP = file_.read().strip() 
-    
+#from device_dict import DEVICE_DICT
+sys.path.append('../NC/')
+from NC_configuration import *
 
     
 """
@@ -144,7 +133,7 @@ class push_server(Process):
     
     def run(self):
         comm = internal_communicator()
-        HOST = IP #This should set the IP address as itself
+        HOST = NCIP #This should set the IP address as itself
         PORT = 9090
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.bind((HOST,PORT))
@@ -162,7 +151,8 @@ class push_server(Process):
                     if not data:
                         break #breaks the loop when the client socket closes
                     elif data == 'Hello': #a handshake from a new guest node. #TODO This will change in the future
-                        client_sock.sendall(QUEUENAME) #NC sends the queuename so the GN can register with the cloud
+                        client_sock.sendall('Hi') #NC sends the queuename so the GN can register with the cloud
+                        client_sock.sendall(HOSTNAME)
                     else:
                         #print 'Push server pushing msg into DC: ', data
                         comm.DC_push.put(data)
@@ -182,7 +172,7 @@ class pull_server(Process):
     
     def run(self):
         comm = internal_communicator()
-        HOST = IP #This should set the IP address as itself
+        HOST = NCIP #This should set the IP address as itself
         PORT = 9091
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.bind((HOST,PORT))
@@ -200,27 +190,37 @@ class pull_server(Process):
                     if not data:
                         break
                     else:
-                        try:
-                            data = DEVICE_DICT[data] #gets the device queue location from dictionary
-                        except:
-                            logging.warning('Error...Internal pull server device not in dictionary.')
-                            #print 'Error...Internal pull server device not in dictionary.'
-                        comm.incoming_request.put(str(data)) #Unique ID goes into incoming requests queue. These get pulled out by the pull_client as pull requests
-                        while comm.incoming_msg[data-1].empty():
-                            time.sleep(1) #sleeps then tries again
-                        msg = comm.incoming_msg[data-1].get() #returns incoming messages. 
-                        try: 
-                            client_sock.sendall(msg) #sends the msg to the GN 
-                        except: 
-                            #puts the message back into the DC_push queue if the GN disconnects before the message is sent.
-                            #print 'Putting message back into DC_push queue...'
-                            comm.DC_push.put(data)
+                        #print 'Data: ',data
+                        for i in range(2): 
+                            try:
+                                dev_loc = DEVICE_DICT[data] #gets the device queue location from dictionary
+                                comm.incoming_request.put(str(dev_loc)) #Unique ID goes into incoming requests queue. These get pulled out by the pull_client as pull requests
+                                while comm.incoming_msg[int(dev_loc)-1].empty():
+                                    time.sleep(1) #sleeps then tries again
+                                msg = comm.incoming_msg[int(dev_loc)-1].get() #returns incoming messages. 
+                                try: 
+                                    client_sock.sendall(msg) #sends the msg to the GN 
+                                except: 
+                                    #puts the message back into the DC_push queue if the GN disconnects before the message is sent.
+                                    #print 'Putting message back into DC_push queue...'
+                                    comm.DC_push.put(str(dev_loc))
+                                #If the device is registered and the push is successful, no need to try again, break the loop
+                                break 
+                            except Exception as e:
+                                #print e
+                                #print 'Device dict: ', DEVICE_DICT
+                                #The device dictionary may not be up to date. Need to update and try again.
+                                #If the device is still not found after first try, move on.
+                                DEVICE_DICT = update_dev_dict()
+                                #logging.warning('Error...Internal pull server device not in dictionary.')
+                                #print 'Error...Internal pull server device not in dictionary.' , data
+                            
                 except KeyboardInterrupt, k:
                     print "Internal pull server shutting down."
                     server.close()
                     break
         server.close()
-    
+
 ##uncomment for testing
 #if __name__ == "__main__":
     #try:

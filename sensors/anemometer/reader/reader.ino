@@ -159,9 +159,10 @@ static void i2c_read8(byte address, byte reg, uint8_t *value)
 }
 
 void calc_windspeed()
-// Calculate frequency from dominant index
+// .684 offset only to be used when freq > 0
+// Coefficient determined experimentally to be .7324
 {
-    speed_mps = freq * 1.0876; // constant obtained experimentally
+    speed_mps = freq * .7324 + .684*(freq>0); // constant obtained experimentally in wind tunnel
     #ifdef POST
     wdt_reset();
     #endif
@@ -181,6 +182,9 @@ void loop()
         calc_windspeed();    // Calculate speed based from frequency in meters/sec
         
         Serial.print("WXSensor;");
+        Serial.print("WindVel_1_F_RPS:");
+        Serial.print(freq);
+        Serial.print(";");
         Serial.print("WindVel_1_V_M/S:");
         Serial.print(speed_mps);
         Serial.print(";");

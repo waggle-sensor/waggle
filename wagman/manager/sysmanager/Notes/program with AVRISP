@@ -1,0 +1,1 @@
+/opt/arduino-1.6.4/hardware/tools/avr/bin/avrdude -C/opt/arduino-1.6.4/hardware/tools/avr/etc/avrdude.conf -v -patmega32u4 -cstk500v2 -Pusb -Uflash:w:/home/danny/repos/git/waggle/wagman/manager/sysmanager/bin/sysmanager.cpp.hex:i

@@ -95,8 +95,8 @@ def pack(header_data, message_data=""):
     #Jump to the end of the file
     message_data.seek(0,2)
 
-    #See if it is less than 1K
-    if(message_data.tell() < 1024):
+    #See if it is less than 2K
+    if(message_data.tell() < 2048):
         try:
             header = pack_header(auto_header)
         except KeyError as e: 

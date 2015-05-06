@@ -1,18 +1,19 @@
 #!/usr/bin/env python
 
-import os, os.path, pika, logging, datetime
-#from external_communicator import *
-#from internal_communicator import *
+import os, os.path, pika, logging, datetime, sys
+sys.path.append('../NC/')
+from NC_configuration import *
+
+
 
 time = str(datetime.datetime.now())
 LOG_FILE = 'comms_' + time + '.log'
-#f = open(LOG_FILE, 'w') #make the new log file
-#f.close()
 logging.basicConfig(filename=LOG_FILE)
 
 """
 
-    Communications main starts the internal and external communication processes. It then continuously monitors each of the processes. It restarts the processes of it ever crashes.
+    Communications main starts the internal and external communication processes and starts the process to start receiving messages. 
+    It then continuously monitors each of the processes. It restarts the processes of it ever crashes.
 """
 
 if __name__ == "__main__":
@@ -20,7 +21,8 @@ if __name__ == "__main__":
         #TODO if the pika_push and pika_pull clients can be combined into one process, add an if statement to that process that checks for initial contact with the cloud
         if not os.path.isfile('/etc/waggle/queuename'):
             #get the connection parameters
-            params = pika.connection.URLParameters("amqps://waggle:waggle@10.10.10.110:5671/%2F") #This will need to change according to where the server is
+            #params = pika.connection.URLParameters("amqps://waggle:waggle@10.10.10.110:5671/%2F") #This will need to change according to where the server is
+            params = pika.connection.URLParameters(CLOUD_ADDR)
             #make the connection
             connection = pika.BlockingConnection(params)
             #create the channel
@@ -34,6 +36,9 @@ if __name__ == "__main__":
             
             #strip 'amq.gen-' from queuename
             junk, queuename = queuename.split('-', 1)
+            
+            #write the queuename into the configuration file
+            NC_configuration.QUEUENAME = queuename
             
             #write the queuename to a file
             file_ = open('/etc/waggle/queuename', 'w') 
@@ -76,6 +81,8 @@ if __name__ == "__main__":
         #start the pull client
         internal_pull_client = internal_client_pull()
         internal_pull_client.start()
+        
+        
         
         while True:
             if not pika_pull.is_alive():
@@ -142,22 +149,23 @@ if __name__ == "__main__":
                 logging.info('internal_pull_client restarted.')
                 #print 'internal_pull_client restarted.'
                 
+                
             time.sleep(3)
 
-        ##terminate the external communication processes
-        #pika_pull.terminate()
-        #pika_push.terminate()
-        #external_push_client.terminate()
-        #external_pull_client.terminate()
-        #print 'External communications shut down.'
+        #terminate the external communication processes
+        pika_pull.terminate()
+        pika_push.terminate()
+        external_push_client.terminate()
+        external_pull_client.terminate()
+        print 'External communications shut down.'
 
-        ##terminate the internal communication processes
-        #pull_serv.terminate()
-        #push_serv.terminate()
-        #internal_push_client.terminate()
-        #internal_pull_client.terminate()
-        #print 'Internal communications shut down.'                
-                
+        #terminate the internal communication processes
+        pull_serv.terminate()
+        push_serv.terminate()
+        internal_push_client.terminate()
+        internal_pull_client.terminate()
+        print 'Internal communications shut down.'   
+       
                 
         
     except KeyboardInterrupt, k:
@@ -174,3 +182,4 @@ if __name__ == "__main__":
         internal_push_client.terminate()
         internal_pull_client.terminate()
         print 'Internal communications shut down.'
+        

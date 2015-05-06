@@ -1,2 +1,0 @@
-- All EEPROM addresses that are used need to have zero written to them by avrdude
--- Some bytes are treated as flags, so having zero be the default is more logical

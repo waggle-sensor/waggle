@@ -7,6 +7,7 @@ from data_packet import data_packet
    
    
 """
+print 'Beginning sensor script...'
 
 Sensor_Index=["D6T_44L_06_1_T_C","MMA8452_1_A_X_Units","MMA8452_1_A_Y_Units",
               "MMA8452_1_A_Z_Units","MMA8452_1_A_RMS_Units","SHT15_1_T_C","SHT15_1_H_%","SHT75_1_T_C",
