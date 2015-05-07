@@ -7,7 +7,7 @@ import operator
 import re
 import linecache
 import time
-from localconfig import *
+from cloud_localconfig import *
 
 sensors_list = ["BMP180.Bosch.2_5-2013",
                 "D6T-44L-06.Omron.2012",
@@ -179,6 +179,7 @@ on_break = False
 sleep_time = 1.0
 i = 0
 
+
 #create local directory if not present.
 bash('mkdir '+LOCAL_DIR)
 bash('mkdir '+WORKING_CACHE_DIR)
@@ -192,6 +193,7 @@ while 1:
     try:
         linecache.checkcache(COUNTER_FILE)
         lines_proc = int(linecache.getline(COUNTER_FILE, 1))
+        print lines_proc
     except:
         bash("echo '0' > "+COUNTER_FILE)
         lines_proc = 0
@@ -210,10 +212,11 @@ while 1:
             lines_proc = lines_proc + 1
             msg = Message.decode(line)
             if int(msg.header.message_type) == DataPayload.PAYLOAD_ID:
-                
+
                 for payload in msg.payloads:
-                 
+
                     payload.inst_id = safe_string(payload.inst_id)
+                    print time.asctime(), payload.inst_id
                     sensorConnected = 1
                     try:
                         sensor_current_data[sensors_list.index(to_easy_parse_string(payload).split(',')[0])] = to_easy_parse_string(payload)
@@ -226,18 +229,18 @@ while 1:
                         print "New device, creating directory structure..."
                         bash("mkdir -p " + WWW_PREFIX + payload.inst_id)
                         log_payload(payload)
-                    
+
             #write every now and then if batch processing messages...
             if lines_proc % 1000 == 0:
                 f = open(COUNTER_FILE, 'w')
                 f.write(str(lines_proc))
                 f.close()
-                
-        print lines_proc        
+
+        print lines_proc
         f = open(COUNTER_FILE, 'w')
         f.write(str(lines_proc))
         f.close()
-        
+
     else:
         time.sleep(1)
         snapshot_time = snapshot_time + 1
@@ -256,6 +259,6 @@ while 1:
                 bash('touch '+WWW_PREFIX + payload.inst_id + '/current.txt')
                 snapShotFH = open (WWW_PREFIX + payload.inst_id + '/current.txt', 'w')
             snapShotFH.write(snapshot)
-            snapShotFH.close() 
+            snapShotFH.close()
         snapshot_time = 0
-        
+
