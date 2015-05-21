@@ -1,61 +1,78 @@
 /***************************************************************************************
-Connects to UART on sensor board and forwards received data to Due's USB port.
-
-Arduino Due connections:
-  +5V ---> sensor board JP1 (closest to USB port)
-  GND ---> sensor board JP1 (furthest from USB port)
-  GND ---> sensor board JP2 (middle)
-  RX1 (19) <--- sensor board JP2 (closest to J1)
-  USB (programming) --> recipient of data
-  
+I2C master that requests slave's data and forwards it out to serial.
+ 
+Arduino Mega2560 connections:
+  GND ---> GND
+  SDA (Pin 20) ---> Slave's SDA
+  SCL (Pin 21) ---> Slave's SCL
+ 
 Author: Daniel Schrader (dschrader@anl.gov)
+ 
+Last updated: 20 May 2015
 ***************************************************************************************/
-
-
-
+ 
+ 
+ 
+/** Includes **************************************************************************/
+#include <Wire.h>
 /**************************************************************************************/
-// Global vars
-String sensorData = "";
-boolean _newData = false;
+ 
+ 
+ 
+/** Constants *************************************************************************/
+const byte PACKET_SIZE = 199;
+const unsigned int DELAY_MS = 2000;
+const byte I2C_SLAVE_ADDRESS = 0x03;
 /**************************************************************************************/
-
-
-
+ 
+ 
+ 
+/** Global vars ***********************************************************************/
+ 
 /**************************************************************************************/
+ 
+ 
+ 
+/** Arduino: setup ********************************************************************/
 void setup() {
-  // Start serial port for comms with final recipient
+  // Fire up serial port at 115200 baud
   Serial.begin(115200);
-  
-  // Start serial port for comms with sensor board
-  Serial1.begin(115200);
+ 
+  // Join I2C bus as master
+  Wire.begin();
+  Serial.print("Starting...\n");
 }
 /**************************************************************************************/
+ 
+ 
+ 
+/** Arduino: loop *********************************************************************/
 void loop() {
-  // New data available?
-  if(_newData) {
-    // Send it
-    Serial.print(sensorData);
-    
-    // Reset flag
-    _newData = false;
-    
-    // Empty sensorData to avoid overflow
-    sensorData = "";
+  // Array to store received data
+  byte packet[PACKET_SIZE];
+  // Index for packet array
+  int i = 0;
+ 
+  // Request packet from slave (and grab the number of bytes to be transferred)
+  byte num_bytes = Wire.requestFrom(I2C_SLAVE_ADDRESS, PACKET_SIZE);
+ 
+  // Grab bytes until slave is finished sending
+  while(Wire.available())
+    packet[i++] = Wire.read();
+ 
+  // Got anything from slave?
+  if(num_bytes > 0)
+  {
+    // Write data to serial
+    for(int x = 0; x < num_bytes; x++)
+    {
+        Serial.print(packet[x]);
+        Serial.print(',');
+    }
+    Serial.print("\n");
   }
-
-}
-/**************************************************************************************/
-// Interrupt for Serial1
-void serialEvent1() {
-  // Get byte from serial buffer
-  char newByte = Serial1.read();
-  
-  // Add new byte to string
-  sensorData += newByte;
-  
-  // Received terminator?
-  if(newByte == '\n')
-    // Set flag to let main() know there is new data
-    _newData = true;
+ 
+  // Wait awhile before making another request to slave
+  delay(DELAY_MS);
 }
 /**************************************************************************************/
