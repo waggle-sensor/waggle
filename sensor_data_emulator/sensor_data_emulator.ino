@@ -626,17 +626,6 @@ void assemble_packet_whole()
 /**************************************************************************************/
 
 
-
-/** Assemble empty packet *************************************************************/
-void assemble_packet_empty()
-{
-    packet_whole[0x02]= 0x00;
-    packet_whole[LENGTH_WHOLE-2] = 0x00;
-}
-/**************************************************************************************/
-
-
-
 /** Calculate CRC, byte by byte *******************************************************/
 byte CRC_8(byte data, byte crc)
 {
@@ -670,23 +659,6 @@ byte CRC_calc(byte length_data)
 }
 /**************************************************************************************/
 
-
-
-/** I2C request interrupt *************************************************************/
-void requestEvent()
-{
-    // Send it!
-    Wire.write(packet_whole, packet_whole[0x02]+0x05);
-    // Assemble empty packet, in case master requests more data before its available
-    //  assemble_packet_empty();
-
-    // Generate fake sensor data
-    generate_data();
-    // Put whole packet together
-    assemble_packet_whole();
-    // Simulate sensor data accumulation period
-}
-/**************************************************************************************/
 
 
 /** Generate fake sensor data *********************************************************/
@@ -1297,6 +1269,30 @@ void generate_data()
 
 
 
+
+/** Assemble empty packet *************************************************************/
+void assemble_packet_empty()
+{
+    packet_whole[0x02]= 0x00;
+    packet_whole[LENGTH_WHOLE-2] = 0x00;
+}
+/**************************************************************************************/
+
+
+
+
+/** I2C request interrupt *************************************************************/
+void requestEvent()
+{
+    // Send it!
+    Wire.write(packet_whole, packet_whole[0x02]+0x05);
+    // Assemble empty packet, in case master requests more data before its available
+    assemble_packet_empty();
+}
+/**************************************************************************************/
+
+
+
 /** Arduino: setup ********************************************************************/
 void setup()
 {
@@ -1326,11 +1322,11 @@ void setup()
 /** Arduino: loop *********************************************************************/
 void loop()
 {
-//     // Generate fake sensor data
-//     generate_data();
-//     // Put whole packet together
-//     assemble_packet_whole();
-//     // Simulate sensor data accumulation period
+    // Generate fake sensor data
+    generate_data();
+    // Put whole packet together
+    assemble_packet_whole();
+    // Simulate sensor data accumulation period
     delay(DELAY_MS);
 }
 /**************************************************************************************/

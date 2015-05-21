@@ -2,7 +2,7 @@
 /** Constants *************************************************************************/
 #define I2C_SLAVE_ADDRESS 0x03
 
-#define DELAY_MS 30000
+#define DELAY_MS 15000
 
 #define LENGTH_DATA  194
 #define LENGTH_WHOLE  LENGTH_DATA + 5
