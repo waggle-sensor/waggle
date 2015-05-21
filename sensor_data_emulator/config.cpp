@@ -97,5 +97,4 @@
 
 
 #define RANDOMIZE_VALID 0x01
-
-
+#define SERIAL_DEBUG 0x01

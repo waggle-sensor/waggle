@@ -23,6 +23,12 @@ void generate_data()
     MAC_ID[5] = 0x04;
     MAC_ID[6] = 0x05;
     MAC_ID[7] = 0x06;
+    #ifdef SERIAL_DEBUG
+    Serial.print("MAC ID: ");
+    for (int i = 2; i < (LENGTH_FORMAT3 + 2); i++)
+      Serial.print(MAC_ID[i], HEX);
+    Serial.println("");
+    #endif
     #endif
 
     #ifdef TMP112_include
@@ -42,6 +48,10 @@ void generate_data()
     TMP112[1] = (valid << 7) | LENGTH_FORMAT1;
     TMP112[2] = packet_format1[0];
     TMP112[3] = packet_format1[1];
+    #ifdef SERIAL_DEBUG
+    Serial.print("TMP112: ");
+    Serial.println(value_f);
+    #endif
     #endif
 
     #ifdef HTU21D_include
@@ -61,6 +71,10 @@ void generate_data()
     HTU21D[1] = (valid << 7) | (LENGTH_FORMAT1 * 2);
     HTU21D[2] = packet_format1[0];
     HTU21D[3] = packet_format1[1];
+    #ifdef SERIAL_DEBUG
+    Serial.print("HTU21D temp: ");
+    Serial.println(value_f);
+    #endif
 
     // RH (format 1)
     integer1 = random(0, 101); // percentage
@@ -69,6 +83,10 @@ void generate_data()
     format1(value_f);  // Put it into format 1
     HTU21D[4] = packet_format1[0];
     HTU21D[5] = packet_format1[1];
+    #ifdef SERIAL_DEBUG
+    Serial.print("HTU21D RH: ");
+    Serial.println(value_f);
+    #endif
     #endif
 
     #ifdef GP2Y1010AU0F_include
@@ -85,11 +103,16 @@ void generate_data()
     GP2Y1010AU0F[1] = (valid << 7) | LENGTH_FORMAT2;
     GP2Y1010AU0F[2] = packet_format2[0];
     GP2Y1010AU0F[3] = packet_format2[1];
+    #ifdef SERIAL_DEBUG
+    Serial.print("GP2Y1010AU0F: ");
+    Serial.println(value_i);
+    #endif
     #endif
 
     #ifdef BMP180_include
     // Temp (format 1)
     #ifdef RANDOMIZE_VALID
+    
     valid = random(0, 2);
     #endif
 
@@ -104,6 +127,10 @@ void generate_data()
     BMP180[1] = (valid << 7) | (LENGTH_FORMAT1 + LENGTH_FORMAT6);
     BMP180[2] = packet_format1[0];
     BMP180[3] = packet_format1[1];
+    #ifdef SERIAL_DEBUG
+    Serial.print("BMP180 temp: ");
+    Serial.println(value_f);
+    #endif
 
     // Atmospheric pressure (format 6)
     integer1 = random(0, 64);
@@ -117,6 +144,10 @@ void generate_data()
     BMP180[4] = packet_format6[0];
     BMP180[5] = packet_format6[1];
     BMP180[6] = packet_format6[2];
+    #ifdef SERIAL_DEBUG
+    Serial.print("BMP180 pressure: ");
+    Serial.println(value_i);
+    #endif
     #endif
 
     #ifdef PR103J2_include
@@ -133,6 +164,10 @@ void generate_data()
     PR103J2[1] = (valid << 7) | LENGTH_FORMAT2;
     PR103J2[2] = packet_format2[0];
     PR103J2[3] = packet_format2[1];
+    #ifdef SERIAL_DEBUG
+    Serial.print("PR103J2: ");
+    Serial.println(value_i);
+    #endif
     #endif
 
     #ifdef TSL250RD_1_include
@@ -149,6 +184,10 @@ void generate_data()
     TSL250RD_1[1] = (valid << 7) | LENGTH_FORMAT2;
     TSL250RD_1[2] = packet_format2[0];
     TSL250RD_1[3] = packet_format2[1];
+    #ifdef SERIAL_DEBUG
+    Serial.print("TSL250RD: ");
+    Serial.println(value_i);
+    #endif
     #endif
 
     #ifdef MMA8452Q_include
@@ -168,6 +207,10 @@ void generate_data()
     MMA8452Q[1] = (valid << 7) | (LENGTH_FORMAT1 * 4);
     MMA8452Q[2] = packet_format1[0];
     MMA8452Q[3] = packet_format1[1];
+    #ifdef SERIAL_DEBUG
+    Serial.print("MMA8452Q x: ");
+    Serial.println(value_f);
+    #endif
 
     // Accel_y (format 1)
     integer1 = random(0, 128);
@@ -179,6 +222,10 @@ void generate_data()
     format1(value_f);  // Put it into format 1
     MMA8452Q[4] = packet_format1[0];
     MMA8452Q[5] = packet_format1[1];
+    #ifdef SERIAL_DEBUG
+    Serial.print("MMA8452Q y: ");
+    Serial.println(value_f);
+    #endif
 
     // Accel_x (format 1)
     integer1 = random(0, 128);
@@ -190,6 +237,10 @@ void generate_data()
     format1(value_f);  // Put it into format 1
     MMA8452Q[6] = packet_format1[0];
     MMA8452Q[7] = packet_format1[1];
+    #ifdef SERIAL_DEBUG
+    Serial.print("MMA8452Q z: ");
+    Serial.println(value_f);
+    #endif
 
     // Accel RMS (format 1)
     integer1 = random(0, 128);
@@ -201,6 +252,10 @@ void generate_data()
     format1(value_f);  // Put it into format 1
     MMA8452Q[8] = packet_format1[0];
     MMA8452Q[9] = packet_format1[1];
+    #ifdef SERIAL_DEBUG
+    Serial.print("MMA8452Q rms: ");
+    Serial.println(value_f);
+    #endif
     #endif
 
     #ifdef SPV1840LR5HB_1_include
@@ -217,6 +272,10 @@ void generate_data()
     SPV1840LR5HB_1[1] = (valid << 7) | LENGTH_FORMAT2;
     SPV1840LR5HB_1[2] = packet_format2[0];
     SPV1840LR5HB_1[3] = packet_format2[1];
+    #ifdef SERIAL_DEBUG
+    Serial.print("SPV1840LR5HB: ");
+    Serial.println(value_i);
+    #endif
     #endif
 
     #ifdef TSYS01_include
@@ -233,6 +292,10 @@ void generate_data()
     TSYS01[1] = (valid << 7) | LENGTH_FORMAT2;
     TSYS01[2] = packet_format2[0];
     TSYS01[3] = packet_format2[1];
+    #ifdef SERIAL_DEBUG
+    Serial.print("TSYS01: ");
+    Serial.println(value_i);
+    #endif
     #endif
 
     #ifdef HMC5883L_include
@@ -252,6 +315,10 @@ void generate_data()
     HMC5883L[1] = (valid << 7) | (LENGTH_FORMAT4 * 3);
     HMC5883L[2] = packet_format4[0];
     HMC5883L[3] = packet_format4[1];
+    #ifdef SERIAL_DEBUG
+    Serial.print("HMC5883L x: ");
+    Serial.println(value_f);
+    #endif
 
     // Magnetic field strength y (format 4)
     integer1 = random(0, 8);
@@ -263,6 +330,10 @@ void generate_data()
     format4(value_f);  // Put it into format 4
     HMC5883L[4] = packet_format4[0];
     HMC5883L[5] = packet_format4[1];
+    #ifdef SERIAL_DEBUG
+    Serial.print("HMC5883L y: ");
+    Serial.println(value_f);
+    #endif
 
     // Magnetic field strength z (format 4)
     integer1 = random(0, 8);
@@ -274,6 +345,10 @@ void generate_data()
     format4(value_f);  // Put it into format 4
     HMC5883L[6] = packet_format4[0];
     HMC5883L[7] = packet_format4[1];
+    #ifdef SERIAL_DEBUG
+    Serial.print("HMC5883L z: ");
+    Serial.println(value_f);
+    #endif
     #endif
 
     #ifdef HIH6130_include
@@ -293,6 +368,10 @@ void generate_data()
     HIH6130[1] = (valid << 7) | (LENGTH_FORMAT1 * 2);
     HIH6130[2] = packet_format1[0];
     HIH6130[3] = packet_format1[1];
+    #ifdef SERIAL_DEBUG
+    Serial.print("HIH6130 temp: ");
+    Serial.println(value_f);
+    #endif
 
     // RH inside transparent box (format 1)
     integer1 = random(0, 128);
@@ -304,6 +383,10 @@ void generate_data()
     format1(value_f);  // Put it into format 1
     HIH6130[4] = packet_format1[0];
     HIH6130[5] = packet_format1[1];
+    #ifdef SERIAL_DEBUG
+    Serial.print("HIH6130 RH: ");
+    Serial.println(value_f);
+    #endif
     #endif
 
     #ifdef APDS9006020_include
@@ -320,6 +403,10 @@ void generate_data()
     APDS9006020[1] = (valid << 7) | LENGTH_FORMAT2;
     APDS9006020[2] = packet_format2[0];
     APDS9006020[3] = packet_format2[1];
+    #ifdef SERIAL_DEBUG
+    Serial.print("APDS9006020: ");
+    Serial.println(value_i);
+    #endif
     #endif
 
     #ifdef TSL260RD_include
@@ -336,6 +423,10 @@ void generate_data()
     TSL260RD[1] = (valid << 7) | LENGTH_FORMAT2;
     TSL260RD[2] = packet_format2[0];
     TSL260RD[3] = packet_format2[1];
+    #ifdef SERIAL_DEBUG
+    Serial.print("TSL260RD: ");
+    Serial.println(value_i);
+    #endif
     #endif
 
     #ifdef TSL250RD_2_include
@@ -352,6 +443,10 @@ void generate_data()
     TSL250RD_2[1] = (valid << 7) | LENGTH_FORMAT2;
     TSL250RD_2[2] = packet_format2[0];
     TSL250RD_2[3] = packet_format2[1];
+    #ifdef SERIAL_DEBUG
+    Serial.print("TSL250RD: ");
+    Serial.println(value_i);
+    #endif
     #endif
 
     #ifdef MLX75305_include
@@ -368,6 +463,10 @@ void generate_data()
     MLX75305[1] = (valid << 7) | LENGTH_FORMAT2;
     MLX75305[2] = packet_format2[0];
     MLX75305[3] = packet_format2[1];
+    #ifdef SERIAL_DEBUG
+    Serial.print("MLX75305: ");
+    Serial.println(value_i);
+    #endif
     #endif
 
     #ifdef ML8511_include
@@ -384,6 +483,10 @@ void generate_data()
     ML8511[1] = (valid << 7) | LENGTH_FORMAT2;
     ML8511[2] = packet_format2[0];
     ML8511[3] = packet_format2[1];
+    #ifdef SERIAL_DEBUG
+    Serial.print("ML8511: ");
+    Serial.println(value_i);
+    #endif
     #endif
 
     #ifdef D6T_include
@@ -394,6 +497,9 @@ void generate_data()
     #endif
     D6T[0] = ID_D6T;
     D6T[1] = (valid << 7) | (LENGTH_FORMAT1 * 17);
+    #ifdef SERIAL_DEBUG
+    Serial.print("D6T: ");
+    #endif
     // Temp of surrounding objects 1-17 (format 1)
     for (int i = 2; i < LENGTH_FORMAT1 * 18; i += 2)
     {
@@ -406,7 +512,14 @@ void generate_data()
         format1(value_f);  // Put it into format 1
         D6T[i] = packet_format1[0];
         D6T[i + 1] = packet_format1[1];
+        #ifdef SERIAL_DEBUG
+        Serial.print(value_f);
+        Serial.print(" ");
+        #endif
     }
+    #ifdef SERIAL_DEBUG
+    Serial.println("");
+    #endif
     #endif
 
     #ifdef MLX90614_include
@@ -426,6 +539,10 @@ void generate_data()
     MLX90614[1] = (valid << 7) | LENGTH_FORMAT1;
     MLX90614[2] = packet_format1[0];
     MLX90614[3] = packet_format1[1];
+    #ifdef SERIAL_DEBUG
+    Serial.print("MLX90614: ");
+    Serial.println(value_f);
+    #endif
     #endif
 
     #ifdef TMP421_include
@@ -445,6 +562,10 @@ void generate_data()
     TMP421[1] = (valid << 7) | LENGTH_FORMAT1;
     TMP421[2] = packet_format1[0];
     TMP421[3] = packet_format1[1];
+    #ifdef SERIAL_DEBUG
+    Serial.print("TMP421: ");
+    Serial.println(value_f);
+    #endif
     #endif
 
     #ifdef SPV1840LR5HB_2_include
@@ -461,6 +582,10 @@ void generate_data()
     SPV1840LR5HB_2[1] = (valid << 7) | LENGTH_FORMAT2;
     SPV1840LR5HB_2[2] = packet_format2[0];
     SPV1840LR5HB_2[3] = packet_format2[1];
+    #ifdef SERIAL_DEBUG
+    Serial.print("SPV1840LR5HB: ");
+    Serial.println(value_i);
+    #endif
     #endif
 
     #ifdef total_reducing_gases_include
@@ -477,6 +602,10 @@ void generate_data()
     total_reducing_gases[1] = (valid << 7) | LENGTH_FORMAT2;
     total_reducing_gases[2] = packet_format2[0];
     total_reducing_gases[3] = packet_format2[1];
+    #ifdef SERIAL_DEBUG
+    Serial.print("Total reducing gases: ");
+    Serial.println(value_i);
+    #endif
     #endif
 
     #ifdef ethanol_include
@@ -493,6 +622,10 @@ void generate_data()
     ethanol[1] = (valid << 7) | LENGTH_FORMAT2;
     ethanol[2] = packet_format2[0];
     ethanol[3] = packet_format2[1];
+    #ifdef SERIAL_DEBUG
+    Serial.print("Ethanol: ");
+    Serial.println(value_i);
+    #endif
     #endif
 
     #ifdef nitrogen_dioxide_include
@@ -509,6 +642,10 @@ void generate_data()
     nitrogen_dioxide[1] = (valid << 7) | LENGTH_FORMAT2;
     nitrogen_dioxide[2] = packet_format2[0];
     nitrogen_dioxide[3] = packet_format2[1];
+    #ifdef SERIAL_DEBUG
+    Serial.print("Nitrogen dioxide: ");
+    Serial.println(value_i);
+    #endif
     #endif
 
     #ifdef ozone_include
@@ -525,6 +662,10 @@ void generate_data()
     ozone[1] = (valid << 7) | LENGTH_FORMAT2;
     ozone[2] = packet_format2[0];
     ozone[3] = packet_format2[1];
+    #ifdef SERIAL_DEBUG
+    Serial.print("Ozone: ");
+    Serial.println(value_i);
+    #endif
     #endif
 
     #ifdef hydrogen_sulphide_include
@@ -541,6 +682,10 @@ void generate_data()
     hydrogen_sulphide[1] = (valid << 7) | LENGTH_FORMAT2;
     hydrogen_sulphide[2] = packet_format2[0];
     hydrogen_sulphide[3] = packet_format2[1];
+    #ifdef SERIAL_DEBUG
+    Serial.print("Hydrogen sulphide: ");
+    Serial.println(value_i);
+    #endif
     #endif
 
     #ifdef total_oxidizing_gases_include
@@ -557,6 +702,10 @@ void generate_data()
     total_oxidizing_gases[1] = (valid << 7) | LENGTH_FORMAT2;
     total_oxidizing_gases[2] = packet_format2[0];
     total_oxidizing_gases[3] = packet_format2[1];
+    #ifdef SERIAL_DEBUG
+    Serial.print("Total oxidizing gases: ");
+    Serial.println(value_i);
+    #endif
     #endif
 
     #ifdef carbon_monoxide_include
@@ -573,6 +722,10 @@ void generate_data()
     carbon_monoxide[1] = (valid << 7) | LENGTH_FORMAT2;
     carbon_monoxide[2] = packet_format2[0];
     carbon_monoxide[3] = packet_format2[1];
+    #ifdef SERIAL_DEBUG
+    Serial.print("Carbon monoxide: ");
+    Serial.println(value_i);
+    #endif
     #endif
 
     #ifdef sulfur_dioxide_include
@@ -589,6 +742,10 @@ void generate_data()
     sulfur_dioxide[1] = (valid << 7) | LENGTH_FORMAT2;
     sulfur_dioxide[2] = packet_format2[0];
     sulfur_dioxide[3] = packet_format2[1];
+    #ifdef SERIAL_DEBUG
+    Serial.print("Sulfur dioxide: ");
+    Serial.println(value_i);
+    #endif
     #endif
 
     #ifdef sensirion_include
@@ -608,6 +765,10 @@ void generate_data()
     sensirion[1] = (valid << 7) | (LENGTH_FORMAT1 * 2);
     sensirion[2] = packet_format1[0];
     sensirion[3] = packet_format1[1];
+    #ifdef SERIAL_DEBUG
+    Serial.print("Sensirion temp: ");
+    Serial.println(value_f);
+    #endif
 
     // RH (format 1)
     integer1 = random(0, 101); // percentage
@@ -616,6 +777,10 @@ void generate_data()
     format1(value_f);  // Put it into format 1
     sensirion[4] = packet_format1[0];
     sensirion[5] = packet_format1[1];
+    #ifdef SERIAL_DEBUG
+    Serial.print("Sensirion RH: ");
+    Serial.println(value_f);
+    #endif
     #endif
 
     #ifdef bosh_include
@@ -637,6 +802,10 @@ void generate_data()
     bosh[2] = packet_format6[0];
     bosh[3] = packet_format6[1];
     bosh[4] = packet_format6[2];
+    #ifdef SERIAL_DEBUG
+    Serial.print("Bosh: ");
+    Serial.println(value_i);
+    #endif
     #endif
 
     #ifdef intel_MAC_ID_include
@@ -650,6 +819,12 @@ void generate_data()
     intel_MAC_ID[5] = 0x0A;
     intel_MAC_ID[6] = 0x0B;
     intel_MAC_ID[7] = 0x0C;
+    #ifdef SERIAL_DEBUG
+    Serial.print("Intel MAC ID: ");
+    for (int i = 2; i < (LENGTH_FORMAT3 + 2); i++)
+      Serial.print(intel_MAC_ID[i], HEX);
+    Serial.println("");
+    #endif
     #endif
 
     #ifdef system_health_include
@@ -663,6 +838,11 @@ void generate_data()
     {
         sensor_health[i+2] = 0xFF;
     }
+    #endif
+    
+    #ifdef SERIAL_DEBUG
+    Serial.println("");
+    Serial.println("");
     #endif
 }
 /**************************************************************************************/

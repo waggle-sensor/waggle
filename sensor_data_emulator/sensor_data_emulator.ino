@@ -111,7 +111,8 @@ void setup()
     Wire.begin(I2C_SLAVE_ADDRESS);
     // Register interrupt
     Wire.onRequest(requestEvent);
-
+    
+    Serial.begin(115200);
 }
 /**************************************************************************************/
 
