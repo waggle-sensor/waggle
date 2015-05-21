@@ -191,7 +191,7 @@ def parse_sensor (sensor_id,sensor_data):
 
 while Link_unavailable:
     try:
-        link = serial.Serial('/dev/ttyACM0',115200)
+        link = serial.Serial('/dev/ttyACM2',115200)
         Link_unavailable = False
         link.flushInput()
         link.flushOutput()
