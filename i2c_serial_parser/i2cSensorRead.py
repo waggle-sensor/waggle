@@ -87,7 +87,7 @@ def parse_sensor (sensor_id,sensor_data):
 
     elif sensor_id == '9':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@',
-        print "Data:", format1(sensor_data)
+        print "Data:", format2(sensor_data)
 
     elif sensor_id == '10':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@',
@@ -191,7 +191,7 @@ def parse_sensor (sensor_id,sensor_data):
 
 while Link_unavailable:
     try:
-        link = serial.Serial('/dev/ttyACM2',115200)
+        link = serial.Serial('/dev/ttyACM1',115200)
         Link_unavailable = False
         link.flushInput()
         link.flushOutput()
