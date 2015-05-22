@@ -85,7 +85,11 @@ void requestEvent()
     // Send it!
     Wire.write(packet_whole, packet_whole[0x02]+0x05);
     // Assemble empty packet, in case master requests more data before its available
-    assemble_packet_empty();
+    //assemble_packet_empty();
+    // Generate fake sensor data
+    generate_data();
+    // Put whole packet together
+    assemble_packet_whole();
 }
 /**************************************************************************************/
 
@@ -121,10 +125,10 @@ void setup()
 /** Arduino: loop *********************************************************************/
 void loop()
 {
-    // Generate fake sensor data
-    generate_data();
-    // Put whole packet together
-    assemble_packet_whole();
+//    // Generate fake sensor data
+//    generate_data();
+//    // Put whole packet together
+//    assemble_packet_whole();
     // Simulate sensor data accumulation period
     delay(DELAY_MS);
 }
