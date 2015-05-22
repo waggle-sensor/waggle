@@ -18,12 +18,12 @@ void generate_data()
     // Store validity in temp array
     MAC_ID[0] = ID_MAC; // ID
     MAC_ID[1] = (valid << 7) | LENGTH_FORMAT3;
-    MAC_ID[2] = 0x01;
-    MAC_ID[3] = 0x02;
-    MAC_ID[4] = 0x03;
-    MAC_ID[5] = 0x04;
-    MAC_ID[6] = 0x05;
-    MAC_ID[7] = 0x06;
+    MAC_ID[2] = 0x06;
+    MAC_ID[3] = 0x05;
+    MAC_ID[4] = 0x04;
+    MAC_ID[5] = 0x03;
+    MAC_ID[6] = 0x02;
+    MAC_ID[7] = 0x01;
     #ifdef SERIAL_DEBUG
     Serial.print("MAC ID: ");
     for (int i = 2; i < (LENGTH_FORMAT3 + 2); i++)
@@ -801,7 +801,11 @@ void generate_data()
     integer1 = random(0, 64);
     integer2 = random(0, 256);
     integer3 = random(0, 256);
-    value_l = (integer1 << 16) | (integer2 << 8) | integer3;
+    value_l = integer1;
+    value_l =  value_l << 8;
+    value_l = value_l + integer2;
+    value_l =  value_l << 8;
+    value_l = value_l + integer3;
     neg = random(0, 2);
     if (neg)
         value_l *= -1;
@@ -822,12 +826,12 @@ void generate_data()
     valid = 1;
     intel_MAC_ID[0] = ID_INTEL_MAC;
     intel_MAC_ID[1] = (valid << 7) | LENGTH_FORMAT3;
-    intel_MAC_ID[2] = 0x07;
-    intel_MAC_ID[3] = 0x08;
-    intel_MAC_ID[4] = 0x09;
-    intel_MAC_ID[5] = 0x0A;
-    intel_MAC_ID[6] = 0x0B;
-    intel_MAC_ID[7] = 0x0C;
+    intel_MAC_ID[2] = 0x0C;
+    intel_MAC_ID[3] = 0x0B;
+    intel_MAC_ID[4] = 0x0A;
+    intel_MAC_ID[5] = 0x09;
+    intel_MAC_ID[6] = 0x08;
+    intel_MAC_ID[7] = 0x07;
     #ifdef SERIAL_DEBUG
     Serial.print("Intel MAC ID: ");
     for (int i = 2; i < (LENGTH_FORMAT3 + 2); i++)
@@ -838,12 +842,13 @@ void generate_data()
 
     #ifdef system_health_include
     // Health status
+    valid = 1;
     #ifdef RANDOMIZE_VALID
-    valid = random(0, 2);
+    //valid = random(0, 2);
     #endif
     sensor_health[0] = ID_HEALTH;
     sensor_health[1] = (valid << 7) | SENSOR_HEALTH_SIZE;
-    for (int i; i < SENSOR_HEALTH_SIZE; i++ )
+    for (int i = 0; i < SENSOR_HEALTH_SIZE; i++ )
     {
         sensor_health[i+2] = 0xFF;
     }
