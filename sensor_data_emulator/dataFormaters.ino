@@ -2,12 +2,8 @@
 
 /** Format 1 assembler ****************************************************************/
 void format1(float input)
-{
-    Serial.print("debug: ");
-  Serial.println(input);
-  
-  
-  // Flag to store pos/neg info
+{  
+    // Flag to store pos/neg info
     byte _negative;
 
     // Input negative?
@@ -23,12 +19,7 @@ void format1(float input)
     // Extract integer component
     unsigned int integer = (int)input;
     // Extract fractional component (and turn it into an integer)
-    Serial.println(input*100);
-    Serial.println(integer*100);
-    unsigned int fractional = ((int)(input*100) - integer*100);
-    
-    Serial.println(fractional);
-    
+    unsigned int fractional = ((int)(input*100) - integer*100);    
 
     // Second byte (for integer) (1 = converted data)
     byte byte1 = (1 << 7) | integer;
@@ -39,11 +30,6 @@ void format1(float input)
     // Assemble sub-packet
     packet_format1[0] = byte1;
     packet_format1[1] = byte2;
-    
-    Serial.print(byte1, HEX);
-    Serial.print(" ");
-    Serial.print(byte2, HEX);
-    Serial.println(" ");
 }
 /**************************************************************************************/
 

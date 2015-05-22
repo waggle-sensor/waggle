@@ -125,12 +125,19 @@ void setup()
 /** Arduino: loop *********************************************************************/
 void loop()
 {
-//    // Generate fake sensor data
-//    generate_data();
-//    // Put whole packet together
-//    assemble_packet_whole();
+    // Generate fake sensor data
+    generate_data();
+    // Put whole packet together
+    assemble_packet_whole();
     // Simulate sensor data accumulation period
     delay(DELAY_MS);
+    
+    for(int i = 0; i < LENGTH_WHOLE; i++)
+    {
+      Serial.print(packet_whole[i], HEX);
+      Serial.print(" ");
+    }
+    Serial.print("\n");
 }
 /**************************************************************************************/
 
