@@ -8,6 +8,7 @@ void generate_data()
     byte neg;
     int value_i;
     float value_f;
+    long value_l;
     int valid_index = 0;
 
 
@@ -40,7 +41,7 @@ void generate_data()
     integer1 = random(0, 128);
     fractional = random(0, 100);
     neg = random(0, 2);
-    value_f = integer1 + ((float)fractional / 100);
+    value_f = integer1 + ((float)fractional * 0.01);
     if (neg)
         value_f *= -1;
     format1(value_f);  // Put it into format 1
@@ -51,6 +52,10 @@ void generate_data()
     #ifdef SERIAL_DEBUG
     Serial.print("TMP112: ");
     Serial.println(value_f);
+    Serial.print("TMP112: ");
+    Serial.print(TMP112[2]);
+    Serial.print(" ");
+    Serial.println(TMP112[3]);
     #endif
     #endif
 
@@ -136,17 +141,21 @@ void generate_data()
     integer1 = random(0, 64);
     integer2 = random(0, 256);
     integer3 = random(0, 256);
-    value_i = (integer1 << 16) | (integer2 << 8) | integer3;
+    value_l = integer1;
+    value_l = value_l << 8;
+    value_l = value_l + integer2;
+    value_l = value_l << 8;
+    value_l = value_l + integer3;
     neg = random(0, 2);
     if (neg)
-        value_i *= -1;
-    format6(value_i);
+        value_l *= -1;
+    format6(value_l);
     BMP180[4] = packet_format6[0];
     BMP180[5] = packet_format6[1];
     BMP180[6] = packet_format6[2];
     #ifdef SERIAL_DEBUG
     Serial.print("BMP180 pressure: ");
-    Serial.println(value_i);
+    Serial.println(value_l);
     #endif
     #endif
 
@@ -317,7 +326,7 @@ void generate_data()
     HMC5883L[3] = packet_format4[1];
     #ifdef SERIAL_DEBUG
     Serial.print("HMC5883L x: ");
-    Serial.println(value_f);
+    Serial.println(value_f, 3);
     #endif
 
     // Magnetic field strength y (format 4)
@@ -332,7 +341,7 @@ void generate_data()
     HMC5883L[5] = packet_format4[1];
     #ifdef SERIAL_DEBUG
     Serial.print("HMC5883L y: ");
-    Serial.println(value_f);
+    Serial.println(value_f, 3);
     #endif
 
     // Magnetic field strength z (format 4)
@@ -347,7 +356,7 @@ void generate_data()
     HMC5883L[7] = packet_format4[1];
     #ifdef SERIAL_DEBUG
     Serial.print("HMC5883L z: ");
-    Serial.println(value_f);
+    Serial.println(value_f, 3);
     #endif
     #endif
 
@@ -792,11 +801,11 @@ void generate_data()
     integer1 = random(0, 64);
     integer2 = random(0, 256);
     integer3 = random(0, 256);
-    value_i = (integer1 << 16) | (integer2 << 8) | integer3;
+    value_l = (integer1 << 16) | (integer2 << 8) | integer3;
     neg = random(0, 2);
     if (neg)
-        value_i *= -1;
-    format6(value_i);  // Put it into format 6
+        value_l *= -1;
+    format6(value_l);  // Put it into format 6
     bosh[0] = ID_BOSH;
     bosh[1] = (valid << 7) | LENGTH_FORMAT6;
     bosh[2] = packet_format6[0];
@@ -804,7 +813,7 @@ void generate_data()
     bosh[4] = packet_format6[2];
     #ifdef SERIAL_DEBUG
     Serial.print("Bosh: ");
-    Serial.println(value_i);
+    Serial.println(value_l);
     #endif
     #endif
 

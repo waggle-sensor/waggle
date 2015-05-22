@@ -59,40 +59,40 @@
 // Main board
 #define MAC_ID_include 0x01
 #define TMP112_include 0x01
-#define HTU21D_include 0x01
-#define GP2Y1010AU0F_include 0x01
-#define BMP180_include 0x01
-#define PR103J2_include 0x01
-#define TSL250RD_1_include 0x01
-#define MMA8452Q_include 0x01
-#define SPV1840LR5HB_1_include 0x01
-#define TSYS01_include 0x01
-
-// Aux board
-#define HMC5883L_include 0x01
-#define HIH6130_include 0x01
-#define APDS9006020_include 0x01
-#define TSL260RD_include 0x01
-#define TSL250RD_2_include 0x01
-#define MLX75305_include 0x01
-#define ML8511_include 0x01
-#define D6T_include 0x01
-#define MLX90614_include 0x01
-#define TMP421_include 0x01
-#define SPV1840LR5HB_2_include 0x01
-
-// Intel board
-#define total_reducing_gases_include 0x01
-#define ethanol_include 0x01
-#define nitrogen_dioxide_include 0x01
-#define ozone_include 0x01
-#define hydrogen_sulphide_include 0x01
-#define total_oxidizing_gases_include 0x01
-#define carbon_monoxide_include 0x01
-#define sulfur_dioxide_include 0x01
-#define sensirion_include 0x01
-#define bosh_include 0x01
-#define intel_MAC_ID_include 0x01
+//#define HTU21D_include 0x01
+//#define GP2Y1010AU0F_include 0x01
+//#define BMP180_include 0x01
+//#define PR103J2_include 0x01
+//#define TSL250RD_1_include 0x01
+//#define MMA8452Q_include 0x01
+//#define SPV1840LR5HB_1_include 0x01
+//#define TSYS01_include 0x01
+//
+//// Aux board
+//#define HMC5883L_include 0x01
+//#define HIH6130_include 0x01
+//#define APDS9006020_include 0x01
+//#define TSL260RD_include 0x01
+//#define TSL250RD_2_include 0x01
+//#define MLX75305_include 0x01
+//#define ML8511_include 0x01
+//#define D6T_include 0x01
+//#define MLX90614_include 0x01
+//#define TMP421_include 0x01
+//#define SPV1840LR5HB_2_include 0x01
+//
+//// Intel board
+//#define total_reducing_gases_include 0x01
+//#define ethanol_include 0x01
+//#define nitrogen_dioxide_include 0x01
+//#define ozone_include 0x01
+//#define hydrogen_sulphide_include 0x01
+//#define total_oxidizing_gases_include 0x01
+//#define carbon_monoxide_include 0x01
+//#define sulfur_dioxide_include 0x01
+//#define sensirion_include 0x01
+//#define bosh_include 0x01
+//#define intel_MAC_ID_include 0x01
 // #define system_health_include 0x01
 
 

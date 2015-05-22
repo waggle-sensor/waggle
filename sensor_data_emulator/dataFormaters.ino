@@ -3,7 +3,11 @@
 /** Format 1 assembler ****************************************************************/
 void format1(float input)
 {
-    // Flag to store pos/neg info
+    Serial.print("debug: ");
+  Serial.println(input);
+  
+  
+  // Flag to store pos/neg info
     byte _negative;
 
     // Input negative?
@@ -17,19 +21,29 @@ void format1(float input)
     // Get abs. value of input
     input = abs(input);
     // Extract integer component
-    int integer = (int)input;
+    unsigned int integer = (int)input;
     // Extract fractional component (and turn it into an integer)
-    int fractional = (input - integer) * 100;
+    Serial.println(input*100);
+    Serial.println(integer*100);
+    unsigned int fractional = ((int)(input*100) - integer*100);
+    
+    Serial.println(fractional);
+    
 
     // Second byte (for integer) (1 = converted data)
     byte byte1 = (1 << 7) | integer;
 
     // Third byte (for fractional)
-    byte byte2 = (_negative << 7) | fractional;
+    byte byte2 = (_negative << 7) | (fractional & 0x7F);
 
     // Assemble sub-packet
     packet_format1[0] = byte1;
     packet_format1[1] = byte2;
+    
+    Serial.print(byte1, HEX);
+    Serial.print(" ");
+    Serial.print(byte2, HEX);
+    Serial.println(" ");
 }
 /**************************************************************************************/
 
@@ -86,15 +100,15 @@ void format4(float input)
     // Extract integer component
     int integer = (int)input;
     // Extract fractional component (and turn it into an integer)
-    int fractional = (input - integer) * 1000;
+    int fractional = (input*1000 - integer*1000);
 
     // Second byte
     byte byte1 = (1 << 7) | (_negative << 6); // 1 = converted data
-    byte1 |= (integer << 2);  // Insert integer component
-    byte1 |= (fractional >> 8); // Insert fractional component
+    byte1 |= ((integer & 0x0F) << 2);  // Insert integer component
+    byte1 |= ((fractional & 0x0300) >> 8); // Insert fractional component
 
     // Third byte
-    byte byte2 = fractional;
+    byte byte2 = (fractional & 0x00FF);
 
     // Assemble sub-packet
     packet_format4[0] = byte1;
@@ -138,8 +152,8 @@ void format5(int input)
 
 
 /** Format 6 assembler ****************************************************************/
-void format6(int input)
-{
+void format6(long input)
+{  
     // Flag to store pos/neg info
     byte _negative;
 
@@ -153,6 +167,7 @@ void format6(int input)
 
     // Get abs. value of input
     input = abs(input);
+    
 
     // Second byte
     byte byte1 = (1 << 7) | (_negative << 6); // 1 = converted data
