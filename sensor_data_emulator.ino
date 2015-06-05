@@ -84,12 +84,17 @@ void requestEvent()
 {
     // Send it!
     Wire.write(packet_whole, packet_whole[0x02]+0x05);
-    // Assemble empty packet, in case master requests more data before its available
-    //assemble_packet_empty();
     // Generate fake sensor data
     generate_data();
     // Put whole packet together
     assemble_packet_whole();
+    Serial.print("Request rcvd\n");
+    for(int i = 0; i < packet_whole[0x02]+0x05; i++)
+    {
+      Serial.print(packet_whole[i], HEX);
+      Serial.print(" ");
+    }
+    Serial.print("\n");
 }
 /**************************************************************************************/
 
@@ -100,6 +105,7 @@ void setup()
 {
     // Let us wait for the processor and the sensors to settle down
     delay(3000);
+    Serial.begin(115200);
     //     Setup the I2C buffer
     for (byte i=0x00; i<LENGTH_WHOLE; i++)
     {
@@ -110,13 +116,11 @@ void setup()
     packet_whole[0x02] = 0x00;
     packet_whole[0x03] = 0x00;
     packet_whole[0x04] = END_BYTE;
-
+    Serial.print("This is the emulator...");
     // Join I2C bus as slave
     Wire.begin(I2C_SLAVE_ADDRESS);
     // Register interrupt
     Wire.onRequest(requestEvent);
-    
-    Serial.begin(115200);
 }
 /**************************************************************************************/
 
@@ -125,19 +129,12 @@ void setup()
 /** Arduino: loop *********************************************************************/
 void loop()
 {
-    // Generate fake sensor data
-    generate_data();
-    // Put whole packet together
-    assemble_packet_whole();
-    // Simulate sensor data accumulation period
+//     // Generate fake sensor data
+//     generate_data();
+//     // Put whole packet together
+//     assemble_packet_whole();
+//     // Simulate sensor data accumulation period
     delay(DELAY_MS);
-    
-    for(int i = 0; i < LENGTH_WHOLE; i++)
-    {
-      Serial.print(packet_whole[i], HEX);
-      Serial.print(" ");
-    }
-    Serial.print("\n");
 }
 /**************************************************************************************/
 

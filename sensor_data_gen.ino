@@ -117,7 +117,7 @@ void generate_data()
     #ifdef BMP180_include
     // Temp (format 1)
     #ifdef RANDOMIZE_VALID
-    
+
     valid = random(0, 2);
     #endif
 
@@ -853,7 +853,7 @@ void generate_data()
         sensor_health[i+2] = 0xFF;
     }
     #endif
-    
+
     #ifdef SERIAL_DEBUG
     Serial.println("");
     Serial.println("");
