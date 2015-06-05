@@ -1,8 +1,20 @@
 import serial
 import time
 Link_unavailable = True
+PORT_DEV='/dev/ttyACM1'
 
 sensor_list = ["Board MAC","TMP112","HTU21D","GP2Y1010AU0F","BMP180","PR103J2","TSL250RD","MMA8452Q","SPV1840LR5H-B","TSYS01","HMC5883L","HIH6130","APDS-9006-020","TSL260RD","TSL250RD","MLX75305","ML8511","D6T","MLX90614","TMP421","SPV1840LR5H-B","Total reducing gases","Ethanol (C2H5-OH)","Nitrogen Di-oxide (NO2)","Ozone (03)","Hydrogen Sulphide (H2S)","Total Oxidizing gases","Carbon Monoxide (C0)","Sulfur Dioxide (SO2)","Temperature and Humidity (Sensirion)","Atmospheric Pressure (Bosh)","Intel MAC"]
+
+
+def calc_crc (data_byte,CRC_Value):
+    CRC_Value = data_byte ^ CRC_Value
+    for j in range(8):
+        if (CRC_Value  & 0x01):
+            CRC_Value  = (CRC_Value  >> 0x01) ^ 0x8C
+        else:
+            CRC_Value  =  CRC_Value  >> 0x01
+    return CRC_Value
+
 
 def format1 (input):
     byte1 = int(input[0])
@@ -191,7 +203,7 @@ def parse_sensor (sensor_id,sensor_data):
 
 while Link_unavailable:
     try:
-        link = serial.Serial('/dev/ttyACM1',115200)
+        link = serial.Serial(PORT_DEV,115200)
         Link_unavailable = False
         link.flushInput()
         link.flushOutput()
@@ -207,25 +219,34 @@ while 1:
         if data_bytes[0x00] == '170':
             protocol = data_bytes[1]
             print "------------------------"
-
             if protocol == '0':
                 print 'protocol version:', protocol,
                 length_of_packet = int(data_bytes[0x02])
                 print "Packet Length:",length_of_packet
                 if len(data_bytes) > length_of_packet+4:
                     if data_bytes[length_of_packet+4] == '85':
-                        consume_ptr = 0x03
-                        while consume_ptr < length_of_packet:
-                            This_id = data_bytes[consume_ptr]
-                            This_id_msg_size_valid = int(data_bytes [consume_ptr+1])
-                            This_id_msg_size = This_id_msg_size_valid & 0x7F
-                            This_id_msg_valid = (This_id_msg_size_valid & 0x80) >> 7
-                            This_id_msg = data_bytes [consume_ptr+2:consume_ptr+2+This_id_msg_size]
-                            if (This_id_msg_valid == 1):
-                                parse_sensor (This_id, This_id_msg)
-                            else:
-                                parse_sensor (This_id, This_id_msg)
-                                print "Invalid Message from sensor_id - ", This_id
-                            consume_ptr = consume_ptr + 2 + This_id_msg_size
+                        CRC_Value = 0x00
+                        #we will calculate the CRC with teh CRC byte included, and
+                        #that should give us zero.
+                        for current_byte in range(length_of_packet+1):
+                            CRC_Value = calc_crc( int(data_bytes[current_byte+3]), CRC_Value)
+                        if CRC_Value == 0:
+                            print "====>Packet CRC correct."
+                            consume_ptr = 0x03
+                            while consume_ptr < length_of_packet:
+                                This_id = data_bytes[consume_ptr]
+                                This_id_msg_size_valid = int(data_bytes [consume_ptr+1])
+                                This_id_msg_size = This_id_msg_size_valid & 0x7F
+                                This_id_msg_valid = (This_id_msg_size_valid & 0x80) >> 7
+                                This_id_msg = data_bytes [consume_ptr+2:consume_ptr+2+This_id_msg_size]
+                                if (This_id_msg_valid == 1):
+                                    parse_sensor (This_id, This_id_msg)
+                                else:
+                                    parse_sensor (This_id, This_id_msg)
+                                    print "Invalid Message from sensor_id - ", This_id
+                                consume_ptr = consume_ptr + 2 + This_id_msg_size
+
+                        else:
+                            print "Invalid CRC, not parsing packet.<===="
     except:
         pass
