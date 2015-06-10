@@ -1,9 +1,14 @@
 void sensor_print()
 {
-
-
+    #ifdef debug_serial
+    Serial.println(" print");
+    Serial.flush();
+    #endif
+    #ifdef POST
+    wdt_reset();
+    #endif
     #ifdef MLX90614_ADD
-    if(EEPROM.read(9+128))
+    if((EEPROM.read(9+128) & Consistency_Mask) == Consistency_Mask)
     {
         Serial.print("WXSensor;");
         if (start_err == 1 || write_err == 1 || rep_start_err == 1)
@@ -23,8 +28,12 @@ void sensor_print()
     }
     #endif //MLX90614_ADD
 
+    #ifdef POST
+    wdt_reset();
+    #endif
+    
     #ifdef IR_D6T_44L_06_ADD
-    if(EEPROM.read(14+128))
+    if((EEPROM.read(14+128) & Consistency_Mask) == Consistency_Mask)
     {
         Serial.print("WXSensor;");
         if (data_check == true) {
@@ -42,9 +51,12 @@ void sensor_print()
     }
     #endif //IR_D6T_44L_06_ADD
 
+    #ifdef POST
+    wdt_reset();
+    #endif
 
     #ifdef TMP421_ADD
-    if(EEPROM.read(13+128))
+    if((EEPROM.read(13+128) & Consistency_Mask) == Consistency_Mask)
     {
         Serial.print("WXSensor;");
         if (TMP421_1_temperature == -999) {
@@ -63,8 +75,12 @@ void sensor_print()
     }
     #endif //TMP421_ADD
 
+    #ifdef POST
+    wdt_reset();
+    #endif
+    
     #ifdef BMP180_ADD
-    if(EEPROM.read(2+128))
+    if((EEPROM.read(2+128) & Consistency_Mask) == Consistency_Mask)
     {
         Serial.print("WXSensor;");
         if (BMP_180_1_temperature == -999 || BMP_180_1_pressure == -999) {
@@ -88,9 +104,12 @@ void sensor_print()
         Serial.println("WXSensor");
     }
     #endif //BMP180_ADD
+    #ifdef POST
+    wdt_reset();
+    #endif
 
     #ifdef MMA8452
-    if(EEPROM.read(6+128))
+    if((EEPROM.read(6+128) & Consistency_Mask) == Consistency_Mask)
     {
         Serial.print("WXSensor;");
         if (MMA_found == true) {
@@ -129,8 +148,12 @@ void sensor_print()
     }
     #endif //MMA8452
 
+    #ifdef POST
+    wdt_reset();
+    #endif
+
     #ifdef PhoRes_ADD
-    if(EEPROM.read(16+128))
+    if((EEPROM.read(16+128) & Consistency_Mask) == Consistency_Mask)
     {
         Serial.print("WXSensor;");
         Serial.print("PhoRes_10K4.7K_1_Units:");
@@ -140,8 +163,12 @@ void sensor_print()
     }
     #endif //PhoRes_ADD
 
+    #ifdef POST
+    wdt_reset();
+    #endif
+
     #ifdef THERMIS_100K_ADD
-    if(EEPROM.read(11+128))
+    if((EEPROM.read(11+128) & Consistency_Mask) == Consistency_Mask)
     {
         Serial.print("WXSensor;");
         Serial.print("THERMIS_100K_1_Units:");
@@ -151,8 +178,12 @@ void sensor_print()
     }
     #endif //THERMIS_100K_ADD
 
+    #ifdef POST
+    wdt_reset();
+    #endif
+
     #ifdef HIH6130_ADD
-    if(EEPROM.read(15+128))
+    if((EEPROM.read(7+128) & Consistency_Mask) == Consistency_Mask)
     {
         Serial.print("WXSensor;");
         Serial.print("HIH_6130_1_T_C:");
@@ -165,8 +196,12 @@ void sensor_print()
     }
     #endif //HIH6130_ADD
 
+    #ifdef POST
+    wdt_reset();
+    #endif
+
     #ifdef SHT15_ADD
-    if(EEPROM.read(5+128))
+    if((EEPROM.read(5+128) & Consistency_Mask) == Consistency_Mask)
     {
         Serial.print("WXSensor;");
         Serial.print("SHT15_1_T_C:");
@@ -179,8 +214,12 @@ void sensor_print()
     }
     #endif //SHT15_ADD
 
+    #ifdef POST
+    wdt_reset();
+    #endif
+
     #ifdef DS18B20_ADD
-    if(EEPROM.read(8+128))
+    if((EEPROM.read(8+128) & Consistency_Mask) == Consistency_Mask)
     {
         Serial.print("WXSensor;");
         Serial.print("DS18B20_1_T_C:");
@@ -190,8 +229,12 @@ void sensor_print()
     }
     #endif //DS18B20_ADD
 
+    #ifdef POST
+    wdt_reset();
+    #endif
+
     #ifdef RHT03_ADD
-    if(EEPROM.read(3+128))
+    if((EEPROM.read(3+128) & Consistency_Mask) == Consistency_Mask)
     {
         Serial.print("WXSensor;");
         if (chk_RHT03_1 == DHTLIB_OK)
@@ -207,8 +250,12 @@ void sensor_print()
     }
     #endif //RHT03_ADD
 
+    #ifdef POST
+    wdt_reset();
+    #endif
+
     #ifdef TMP102_ADD
-    if(EEPROM.read(4+128))
+    if((EEPROM.read(4+128) & Consistency_Mask) == Consistency_Mask)
     {
         Serial.print("WXSensor;");
         if (err != 0) {
@@ -228,7 +275,7 @@ void sensor_print()
     #endif //TMP102_ADD
 
     #ifdef SHT75_ADD
-    if(EEPROM.read(1+128))
+    if((EEPROM.read(1+128) & Consistency_Mask) == Consistency_Mask)
     {
         Serial.print("WXSensor;");
         Serial.print("SHT75_1_T_C:");
@@ -241,8 +288,12 @@ void sensor_print()
     }
     #endif //SHT75_ADD
 
+    #ifdef POST
+    wdt_reset();
+    #endif
+
     #ifdef HIH4030_ADD
-    if(EEPROM.read(7+128))
+    if((EEPROM.read(7+128) & Consistency_Mask) == Consistency_Mask)
     {
         Serial.print("WXSensor;");
         Serial.print("HIH4030_1_Units:");
@@ -252,8 +303,12 @@ void sensor_print()
     }
     #endif //HIH4030_ADD
 
+    #ifdef POST
+    wdt_reset();
+    #endif
+
     #ifdef GA1A1S201WP_ADD
-    if(EEPROM.read(10+128))
+    if((EEPROM.read(10+128) & Consistency_Mask) == Consistency_Mask)
     {
         Serial.print("WXSensor;");
         Serial.print("AMBI_1_Units:");
@@ -263,8 +318,12 @@ void sensor_print()
     }
     #endif //GA1A1S201WP_ADD
 
+    #ifdef POST
+    wdt_reset();
+    #endif
+
     #ifdef MAX4466_ADD
-    if(EEPROM.read(10+128))
+    if((EEPROM.read(12+128) & Consistency_Mask) == Consistency_Mask)
     {
         Serial.print("WXSensor;");
         Serial.print("MAX4466_1_MaxN_Units:");
@@ -274,8 +333,12 @@ void sensor_print()
     }
     #endif //MAX4466_ADD
 
+    #ifdef POST
+    wdt_reset();
+    #endif
+
     #ifdef WindVel_ADD
-    if(EEPROM.read(17+128))
+    if((EEPROM.read(17+128) & Consistency_Mask) == Consistency_Mask)
     {
         Serial.print("WXSensor;");
         Serial.print("WindVel_1_MaxV_M/S:");
@@ -288,8 +351,12 @@ void sensor_print()
     }
     #endif //WindVel_ADD
 
+    #ifdef POST
+    wdt_reset();
+    #endif
+
     #ifdef HTU21D_ADD
-    if(EEPROM.read(18+128))
+    if((EEPROM.read(18+128) & Consistency_Mask) == Consistency_Mask)
     {
         Serial.print("WXSensor;");
         Serial.print("HTU21D_T_C:");
@@ -302,9 +369,12 @@ void sensor_print()
     }
     #endif //HTU21D_ADD
 
+    #ifdef POST
+    wdt_reset();
+    #endif
 
     #ifdef HMC5883_ADD
-    if(EEPROM.read(19+128))
+    if((EEPROM.read(19+128) & Consistency_Mask) == Consistency_Mask)
     {
         /* Display the results (magnetic vector values are in micro-Tesla (uT)) */
         Serial.print("WXSensor;");
@@ -320,4 +390,8 @@ void sensor_print()
         Serial.println("WXSensor");
     }
     #endif //HMC5883_ADD
+    
+    #ifdef POST
+    wdt_reset();
+    #endif
 }

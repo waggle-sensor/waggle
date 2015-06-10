@@ -502,15 +502,26 @@ int testing_addr = 0;
 int numSensors = 19;    // must be >= 1
 
 
+
 void quick_sensors()
 {
     #ifdef MMA8452
-    MMA8452_get_means();
+    if((EEPROM.read(6+128) & Consistency_Mask) == Consistency_Mask)
+        MMA8452_get_means();
+    #ifdef POST
+    wdt_reset();
+    #endif
     #endif
 
     #ifdef MAX4466_ADD
-    for (int i = 0; i < 900; i++) {
-        MAX4466_get_max();
+    if((EEPROM.read(12+128) & Consistency_Mask) == Consistency_Mask)
+    {
+        for (int i = 0; i < 900; i++) {
+            MAX4466_get_max();
+            #ifdef POST
+            wdt_reset();
+            #endif
+        }
     }
     #endif //MAX4466_ADD
 }
@@ -523,11 +534,14 @@ void increment_time() {
 
 void setup()
 {
+    
+    delay(10000);
     Serial.begin(Communication_Rate);
     #ifdef debug_serial
     Serial.println("\nStarting Up");
+    Serial.flush();
     #endif //debug_serial
-    // delay(2000);
+ 
     
     #ifdef POST
     post();
@@ -535,31 +549,19 @@ void setup()
     Serial.println("Post test completed");
     #endif
 
-    #ifndef BMP180_ADD
-    if(EEPROM.read(2+128))
-    {
-        Wire.begin();
-        wdt_reset();
-    }
-    #endif //BMP180_ADD
-    Serial.println(__LINE__);
-    delay(1500); // waiting for the sensors to settle
-    wdt_reset(); // reset watchdog
-    delay(1500); // continue waiting
-    wdt_reset();
-
-
     #ifdef BMP180_ADD
-    if(EEPROM.read(2+128))
+    if((EEPROM.read(2+128) & Consistency_Mask) == Consistency_Mask)
     {
         BMP_180_1.begin();
+        #ifdef POST
         wdt_reset();
+        #endif
     }
     #endif //BMP180_ADD
     // set the resolution to 10 bit (good enough?)
 
     #ifdef TMP421_ADD
-    if(EEPROM.read(13+128))
+    if((EEPROM.read(13+128) & Consistency_Mask) == Consistency_Mask)
     {
         /************ The LibTemp421 library turns on Arduino pins A2, A3 (aka 16, 17) to power the sensor.
         *  This is necessary due to the fact that Wire.begin() is called in the constructor and needs to be
@@ -568,30 +570,39 @@ void setup()
         *  A2 & A3 pins for use as analog inputs. */
 
         //  Uncomment the three lines below to reset the analog pins A2 & A3
+        #ifndef POST
         pinMode(A2, INPUT);        // GND pin
         pinMode(A3, INPUT);        // VCC pin
         digitalWrite(A3, LOW);     // turn off pullups
+        #endif
+        #ifdef POST
         wdt_reset();
+        #endif
     }
     #endif //TMP421_ADD
 
-    Serial.println(__LINE__);
     #ifdef MLX90614_ADD
-    if(EEPROM.read(9+128))
+    if((EEPROM.read(9+128) & Consistency_Mask) == Consistency_Mask)
     {
+        #ifndef POST
         Serial.println("Initializing MLX");
         i2c_init(); //Initialise the i2c bus
         #define I2C_INIT_ADD 1
         PORTC = (1 << PORTC4) | (1 << PORTC5);//enable pullups
+        #ifdef POST
         wdt_reset();
+        #endif
+        #endif
     }
     #endif //MLX90614_ADD
 
-    Serial.println(__LINE__);
     #ifdef IR_D6T_44L_06_ADD
-    if(EEPROM.read(14+128))
+    if((EEPROM.read(14+128) & Consistency_Mask) == Consistency_Mask)
     {
+        #ifndef POST
+        #ifdef debug_serial
         Serial.println("Initializing IR");
+        #endif
         #ifndef I2C_INIT_ADD
         i2c_init();
         #define I2C_INIT_ADD 1
@@ -604,55 +615,67 @@ void setup()
         digitalWrite(A4,HIGH); // Pull-up resistor for SDA
         pinMode(A5,INPUT);
         digitalWrite(A5,HIGH); // Pull-up resistor for SCL
+        #ifdef POST
         wdt_reset();
+        #endif
+        #endif
     }
     #endif //IR_D6T_44L_06_ADD
 
-    Serial.println(__LINE__);
     #ifdef MMA8452
-    if(EEPROM.read(6+128))
+    if((EEPROM.read(6+128) & Consistency_Mask) == Consistency_Mask)
     {
         #ifndef I2C_INIT_ADD
         i2c_init();
         #endif //I2C_INIT_ADD
+        #ifdef debug_serial
         Serial.println("Initializing MMA");
+        #endif
         MMA_found = initMMA8452();
+        #ifdef POST
         wdt_reset();
+        #endif
     }
     #endif //MMA8452
 
-    Serial.println(__LINE__);
     #if FASTADC
     Serial.println("FASTACD");
     // set prescale to 16
     sbi(ADCSRA,ADPS2) ;
     cbi(ADCSRA,ADPS1) ;
     cbi(ADCSRA,ADPS0) ;
+    #ifdef POST
     wdt_reset();
+    #endif
     #endif //FASTADC
 
-    Serial.println(__LINE__);
     #ifdef HTU21D_ADD
-    if(EEPROM.read(18+128))
+    if((EEPROM.read(18+128) & Consistency_Mask) == Consistency_Mask)
     {
         Serial.println("Initializing HTU");
+        #ifndef POST
         myHumidity.begin();
+        #endif
+        #ifdef POST
         wdt_reset();
+        #endif
     }
     #endif //HTU21D_ADD
 
-    Serial.println(__LINE__);
     #ifdef HMC5883_ADD
-    if(EEPROM.read(19+128))
+    if((EEPROM.read(19+128) & Consistency_Mask) == Consistency_Mask)
     {
         Serial.println("Initializing HMC");
         mag.begin();
+        #ifdef POST
         wdt_reset();
+        #endif
     }
     #endif //HMC5883_ADD
     
-    Serial.println(__LINE__);
+    #ifdef POST
     wdt_disable();
-    wdt_enable(WDTO_2S);
+    wdt_enable(WDTO_8S);
+    #endif
 }
 

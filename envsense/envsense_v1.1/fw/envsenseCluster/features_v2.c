@@ -20,6 +20,7 @@
 
 // #define debug_serial 1
 #define SILENCE_BAD_SENSORS 1
+#define POST
 
 // I2C devices
 #define MMA8452 6
@@ -32,7 +33,7 @@
 #define HTU21D_ADD 18
 #define HMC5883_ADD 19
 
-// // Single Wire devices
+// Single Wire devices
 #define RHT03_ADD 3
 #define RHT03_1_PIN 8 // RHT03 Sensor pin
 
@@ -47,7 +48,7 @@
 #define SHT75_1_dataPin 10  // SHT15_1 serial data
 #define SHT75_1_sclkPin 9   // SHT15_1 serial clock
 
-// // 1-wire devices
+// 1-wire devices
 #define DS18B20_ADD 8
 #define DS18B20_1_Pin 7
 
@@ -68,11 +69,12 @@
 #define PhoRes_PIN A3
 
 
-// #define WindVel_ADD 17
+#define WindVel_ADD 17
 
 
 #define MMA_Buff_size 40 //460
 #define Communication_Rate 57600
+#define Consistency_Mask 0x03  // Sensor must pass 2 consecutive tests to be considered active
 
 
 
