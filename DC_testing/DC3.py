@@ -1,21 +1,19 @@
+#!/usr/bin/env python
+
 import Queue
-#internal (node) DC
 import random 
 from operator import itemgetter
-from multiprocessing import Process
+from daemon import Daemon
+import sys, os, time, atexit, socket
 
-""" Internal data cache as a service. It stores messages in buffers that are named and ordered by device priority and message priority. It also removes messages from storage when they are sent. 
-    This version is initialized by the system admin. """
+""" The Data Cache stores messages in buffers that are named and ordered by device priority and message priority. It also removes messages from storage when they are sent. 
+    This version is a service/process that is started by the system admin. """
     
     
 #Each buffer is a matrix of queues for organization and indexing purposes.
 
 
-class Data_Cache(object):
-    
-    def __init__(self): 
-        pass
-    
+class Data_Cache(Daemon):
     
     msg_counter = 0  #keeps track of how many messages are in the dc. It is incremented when messages are stored and decremented when messages are removed
     incoming_available_queues = set() #keeps a record of non-empty queues
@@ -25,18 +23,33 @@ class Data_Cache(object):
     
     #initially assumes that the highest number is the highest priority for now TODO figure out where the priority actually comes from
     priority_list = [5,4,3,2,1] #The priority list is now a list containing the number corresponding to a unique device. The highest priority no longer corresponds to the highest number, but rather the order in which the elements are in the list.
-    #make external buffer
-    incoming_bffr = Data_Cache.make_bffr(len(priority))
-    #make internal fifo buffer 
-    outgoing_fifo_bffr = Data_Cache.make_bffr(len(priority))
     
-    #make internal lifo buffer 
-    outgoing_lifo_bffr = Data_Cache.make_bffr(len(priority))
+    #dummy variables 
+    incoming_bffr = []
+    outgoing_fifo_bffr = []
+    outgoing_lifo_bffr = []
+    
+    def run(self):
+        #make external buffer
+        incoming_bffr = Data_Cache.make_bffr(len(Data_Cache.priority_list))
+        #make internal fifo buffer 
+        outgoing_fifo_bffr = Data_Cache.make_bffr(len(Data_Cache.priority_list))
         
-    #should only be initilized by sys admin like this:
-    #dc = Process(target=Data_Cache, args=(self))
-    #dc.start()
-    
+        #make internal lifo buffer 
+        outgoing_lifo_bffr = Data_Cache.make_bffr(len(Data_Cache.priority_list))
+        print 'started'
+        #create an INET, STREAMing socket
+        serversocket = socket.socket(
+            socket.AF_INET, socket.SOCK_STREAM)
+        #bind the socket to a public host,
+        # and a well-known port
+        serversocket.bind(('localhost', 8080))
+        #become a server socket
+        serversocket.listen(5)
+
+        while 1:
+        #accept connections from outside
+            (clientsocket, address) = serversocket.accept()
         
     def outgoing_push(self, data):
         """ Stores outgoing messages to the cloud. Expects to get a tuple with pull order (lifo or fifo),device ID, message priority, and the msg. """ 
@@ -128,7 +141,7 @@ class Data_Cache(object):
         Data_Cache.available_mem = memory
         
     @staticmethod
-    def make_bffr(self, length):
+    def make_bffr(length):
         """ Generates a buffer that is a list of lists containing queues. """
         buff = []
         for i in range(length):
@@ -159,7 +172,27 @@ class Data_Cache(object):
                     pass
             return (highest_de_p, highest_msg_p)           
                 
-                
+if __name__ == "__main__":
+    dc = Data_Cache('/tmp/waggle.d/daemon-example.pid')
+    if len(sys.argv) == 2:
+        if 'start' == sys.argv[1]:
+            dc.start()
+            print 'starting.'
+        elif 'stop' == sys.argv[1]:
+            dc.stop()
+            print 'stopping'
+        elif 'restart' == sys.argv[1]:
+            dc.restart()
+            print 'restart'
+        elif 'foreground' == sys.argv[1]:
+            dc.run()
+        else:
+            print "Unknown command"
+            sys.exit(2)
+        sys.exit(0)
+    else:
+        print "usage: %s start|stop|restart" % sys.argv[0]
+        sys.exit(2)                
                 
                 
                 
