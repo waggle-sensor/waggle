@@ -8,9 +8,7 @@ from multiprocessing import Process
     This version is initialized by the system admin. """
     
     
-#This version uses queue objects instead of lists. The queues are stored in a list of lists for organization and indexing purposes.
-
-
+#Each buffer is a matrix of queues for organization and indexing purposes.
 
 
 class Data_Cache(object):
@@ -68,26 +66,6 @@ class Data_Cache(object):
         device, msg_p, msg = data
         Data_Cache.incoming_bffr[device - 1][msg_p - 1].put(msg)
         Data_Cache.incoming_available_queues.add((device, msg_p))
-    
-    def get_priority(a_list):
-        """ Returns the highest priority queue index from list of available queues """ 
-        if a_list.empty():
-            return None
-        else:
-            highest_de_p = Data_Cache.prioritylist[(len(Data_Cache.prioritylist)-1)] #sets it to the lowest priority as default
-            highest_msg_p = 0 #default
-            for i in range(len(a_list)): #i has to be an int
-                device_p, msg_p = a_list[i]
-                if msg_p >= highest_msg_p: #if the msg_p is higher or equal to the current highest
-                    if Data_Cache.prioritylist.index(device_p) < Data_Cache.prioritylist.index(highest_de_p): #and the device_p is higher
-                        highest_de_p = device_p #then that element becomes the new highest_p
-                        highest_msg_p = msg_p
-                    else: #but, if the device_p is lower, the element should still be the new highest_p that gets checked next
-                        highest_de_p = device_p #then that element becomes the new highest_p
-                        highest_msg_p = msg_p
-                else:
-                    pass
-            return (highest_de_p, highest_msg_p)
 
     def outgoing_pull(self):
         """ Retrieves and removes outgoing messages from the DC. Gets the first (highest priority) buffer from the priority list and returns the first message stored there. 
@@ -113,7 +91,18 @@ class Data_Cache(object):
             Data_Cache.outgoing_lifo_available_queues.remove(lifo_cache_index) # removes it from the list of available queues
             return False #outgoing messages can be pulled in a loop until there are no messages left
         
-        
+    def incoming_pull(self, device):
+        """ Pulls messages from the DC to send to guest nodes. Returns False if no messages are available.""" 
+        if len(incoming_available_queues) > 0: # checks to see if there are any messages available
+            for i in range(4,-1,-1): # loop to search for messages starting with highest priority
+                if incoming_bffr[device - 1][i].empty(): #checks for an empty queue 
+                    pass
+                else: 
+                    return incoming_bffr[device- 1][i].get()
+                    break
+        else:
+            return False
+               
     def sys_flush():
         """ Called by the system monitor before a reboot. Flushes all messages into a file.""" 
         pass
@@ -125,17 +114,15 @@ class Data_Cache(object):
     
     @staticmethod
     def get_status():
-        """ Returns the number of messages currently stored to the system admin. """
+        """ Returns the number of messages currently stored. """
         return Data_Cache.msg_counter
     
-    @staticmethod  
-    def update_device_priority(new_list):
-        """ Updates the order of devices in the priority list/dictionary."""
+     
+    def update_device_priority(self, new_list):
+        """ Updates the order of devices in the priority list/dictionary. """
         Data_Cache.priority = new_list
-        pass
-    
-    @staticmethod  
-    def update_mem(memory):
+     
+    def update_mem(self, memory):
         """ Updates the amount of memory allocated to the data cache. """
         #can put it in a config file 
         Data_Cache.available_mem = memory
@@ -151,7 +138,26 @@ class Data_Cache(object):
             buff.append(buff_in)
         return buff
                 
-                
+    @staticmethod
+    def get_priority(a_list):
+        """ Returns the highest priority queue index from list of available queues """ 
+        if a_list.empty():
+            return None
+        else:
+            highest_de_p = Data_Cache.prioritylist[(len(Data_Cache.prioritylist)-1)] #sets it to the lowest priority as default
+            highest_msg_p = 0 #default
+            for i in range(len(a_list)): #i has to be an int
+                device_p, msg_p = a_list[i]
+                if msg_p >= highest_msg_p: #if the msg_p is higher or equal to the current highest
+                    if Data_Cache.prioritylist.index(device_p) < Data_Cache.prioritylist.index(highest_de_p): #and the device_p is higher
+                        highest_de_p = device_p #then that element becomes the new highest_p
+                        highest_msg_p = msg_p
+                    else: #but, if the device_p is lower, the element should still be the new highest_p that gets checked next
+                        highest_de_p = device_p #then that element becomes the new highest_p
+                        highest_msg_p = msg_p
+                else:
+                    pass
+            return (highest_de_p, highest_msg_p)           
                 
                 
                 
