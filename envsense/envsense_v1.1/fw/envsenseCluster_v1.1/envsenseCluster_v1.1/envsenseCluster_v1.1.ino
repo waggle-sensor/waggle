@@ -463,25 +463,68 @@ float BMP_180_1_temperature, BMP_180_1_pressure;
 #define FHT_N 256 // set to 256 point fht
 #ifndef HMC5883_ADD  // Requires operation of sensor HMC5883
 Adafruit_HMC5883_Unified mag = Adafruit_HMC5883_Unified(12345);
-sensors_event_t HMC5883_event;
 #endif  //HMC5883_ADD
 float freq = 0.0;
-float sample_rate = 
+float sample_rate = 189.0;
 
 void build_fht()
 // Collects samples and generates FHT array
 {
+    // Initially, data NOT ready
+    mag.setDataReady(0);
+    #ifdef POST
+    wdt_reset();
+    #endif
     for (int i = 0; i<FHT_N; i++)
     {
-        mag.getEvent(&HMC5883_event);
-        float y_val = HMC5883_event.magnetic.y;
+        mag.setSingleMeasurementMode(); // Let the measurement begin
+        delay(3); // Give sensor time to take measurement
+        while((mag.getDataReady() & 0x01) != 0x01); //wait until data is ready
+        
+        // Read 16 bit Y value output
+        int16_t y_val;
+        Wire.beginTransmission(HMC5883_ADDRESS_MAG);  // Open communication w/ HMC
+        Wire.write(HMC5883_REGISTER_MAG_OUT_Y_H_M);   // Send call to register Y output
+        Wire.endTransmission();
+        #ifdef POST
+        wdt_reset();
+        #endif
+        Wire.beginTransmission(HMC5883_ADDRESS_MAG);     // Begin reading
+        Wire.requestFrom(HMC5883_ADDRESS_MAG, 2);     // Request 2 bytes
+        #ifdef POST
+        wdt_reset();
+        #endif
+        while(!Wire.available()) {};
+        #ifdef POST
+        wdt_reset();
+        #endif
+        uint8_t vha = Wire.read();
+        uint8_t vla = Wire.read();
+        Wire.endTransmission();
+        
+        y_val = vha << 8 | vla;          // Adjust output for MSB's and LSB's
         fht_input[i] = y_val; // put real data into bins
-        delay(10);
+        
+        #ifdef POST
+        wdt_reset();
+        #endif
     }
     fht_window(); // window the data for better frequency response
+    #ifdef POST
+    wdt_reset();
+    #endif
     fht_reorder(); // reorder the data before doing the fht
+    #ifdef POST
+    wdt_reset();
+    #endif
     fht_run(); // process the data in the fht
+    #ifdef POST
+    wdt_reset();
+    #endif
     fht_mag_lin(); // take the output of the fht
+    #ifdef POST
+    wdt_reset();
+    #endif
 }
 
 float calc_freq()
@@ -490,10 +533,17 @@ float calc_freq()
     int dominant_idx = 0;
     for (byte i = 0 ; i < FHT_N/2 ; i++) 
     {
-        if(fht_lin_out[i] > dominant_idx)
+        if(fht_lin_out[i] > fht_lin_out[dominant_idx])
             dominant_idx = i; 
+        #ifdef POST
+        wdt_reset();
+        #endif
     }
-    freq = dominant_idx*(sample_rate/2)/FHT_N;
+    freq = dominant_idx*sample_rate/FHT_N;
+    #ifdef POST
+    wdt_reset();
+    #endif
+    return freq;
 }
 
 // unsigned int pulse_count = 0;
@@ -720,6 +770,14 @@ void setup()
     {
         Serial.println("Initializing HMC");
         mag.begin();
+        #ifdef POST
+        wdt_reset();
+        #endif
+        // Set Single measurement mode on sensor
+        #ifdef POST
+        wdt_reset();
+        #endif 
+        mag.setSingleMeasurementMode();
         #ifdef POST
         wdt_reset();
         #endif

@@ -617,9 +617,9 @@ void post() {
         }
         #endif
                     
-        #ifdef WindVel_ADD           // k=19, status is same as HMC below. Modified after loop
-        #ifndef HMC5883_ADD
-        if(k==19)
+        #ifdef WindVel_ADD 
+        #ifdef HMC5883_ADD
+        if(k==17)
         {
             EEPROM.write(k, 1);
             #ifdef debug_serial
@@ -628,15 +628,42 @@ void post() {
             #endif
             
             Adafruit_HMC5883_Unified test = Adafruit_HMC5883_Unified(23181);
-            sensors_event_t test_event;
             
+            // Initially, data NOT ready
+            test.setDataReady(0);
+            
+            
+            // Set Single measurement mode on sensor
+            test.setSingleMeasurementMode();
             
             test.begin();
             for(int a = 0; a<10; a++)
             // Perform test 10 times
             {
-                test.getEvent(test_event);   // read sensor
+                mag.setSingleMeasurementMode();
+                
                 wdt_reset();
+                delay(3); // Give sensor time to take measurement
+                while((mag.getDataReady() & 0x01) != 0x01); //wait until data is ready
+                wdt_reset();
+                
+                // Read 16 bit Y value output
+                int16_t y_val;
+                Wire.beginTransmission(HMC5883_ADDRESS_MAG);  // Open communication w/ HMC
+                Wire.write(HMC5883_REGISTER_MAG_OUT_Y_H_M);   // Send call to register Y output
+                Wire.endTransmission();
+                wdt_reset();
+                Wire.beginTransmission(HMC5883_ADDRESS_MAG);     // Begin reading
+                Wire.requestFrom(HMC5883_ADDRESS_MAG, 2);     // Request 2 bytes (y output)
+                wdt_reset();
+                while(!Wire.available()) {};
+                wdt_reset();
+                uint8_t vha = Wire.read();
+                uint8_t vla = Wire.read();
+                wdt_reset();
+                Wire.endTransmission();
+                wdt_reset();
+                
                 delay(500);
                 wdt_reset();
             }
@@ -825,7 +852,7 @@ void post() {
         Serial.println("Offline");
 
     Serial.print("WindVel:\t");
-    if((EEPROM.read(19+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor (based off HMC)
+    if((EEPROM.read(17+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor (based off HMC)
         Serial.println("Functioning");
     else
         Serial.println("Offline");

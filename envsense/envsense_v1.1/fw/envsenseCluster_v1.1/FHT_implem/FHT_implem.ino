@@ -28,49 +28,81 @@ void setup(void) {
         Serial.println("Ooops, no HMC5883 detected ... Check your wiring!");
         while(1);
     }
-  Serial.println("Setup complete");
-  Serial.flush();
+  
+  // Initially, data NOT ready
+  mag.setDataReady(0);
+  
+  
+  // Set Single measurement mode on sensor
+  mag.setSingleMeasurementMode();
+
+  // For timing purposes
+  pinMode(2,OUTPUT);
+  pinMode(4,OUTPUT);
+  digitalWrite(2,LOW);
 }
 
 void loop(void) {
     while(1) { // reduces jitter
-//         cli();  // UDRE interrupt slows this way down on arduino1.0
-//         Serial.println("cli");
-        sensors_event_t HMC5883_event;
-//         Serial.println(millis());
         for (int i = 0; i<FHT_N; i++)
         {
-            mag.getEvent(&HMC5883_event);
-            y_val = HMC5883_event.magnetic.y;
+            
+            digitalWrite(4,HIGH); // For timing purposes
+            mag.setSingleMeasurementMode();
+  
+            digitalWrite(4,LOW);
+            delay(3); // Give sensor time to take measurement
+            while((mag.getDataReady() & 0x01) != 0x01); //wait until data is ready
+            
+            // Read 16 bit Y value output
+            int16_t y_val;
+            Wire.beginTransmission(HMC5883_ADDRESS_MAG);  // Open communication w/ HMC
+            Wire.write(HMC5883_REGISTER_MAG_OUT_Y_H_M);   // Send call to register Y output
+            Wire.endTransmission();
+            Wire.beginTransmission(HMC5883_ADDRESS_MAG);     // Begin reading
+            Wire.requestFrom(HMC5883_ADDRESS_MAG, 2);     // Request 2 bytes
+            while(!Wire.available()) {};
+            uint8_t vha = Wire.read();
+            uint8_t vla = Wire.read();
+            Wire.endTransmission();
+            
+            y_val = vha << 8 | vla;          // Adjust output for MSB's and LSB's
             fht_input[i] = y_val; // put real data into bins
-            Serial.print(fht_input[i]);
-            Serial.print(" ");
-//             Serial.print(millis());
+//             Serial.print(fht_input[i]);
 //             Serial.print(" ");
-            delay(50);
         }
-//         Serial.print("\n");
         fht_window(); // window the data for better frequency response
         fht_reorder(); // reorder the data before doing the fht
         fht_run(); // process the data in the fht
         fht_mag_lin(); // take the output of the fht
-//         sei();
+
         int dominant_idx = 0;
-        float sample_rate = 160.0;
+        float sample_rate = 189.0;
         for (byte i = 0 ; i < FHT_N/2 ; i++) {
-            if(fht_lin_out[i] > fht_lin_out[dominant_idx] )//&& i <= max_index)
+            if(fht_lin_out[i] > fht_lin_out[dominant_idx] )
                 dominant_idx = i; 
-            Serial.print(fht_lin_out[i]);
-            Serial.print(" ");
+//             Serial.print(fht_lin_out[i]);
+//             Serial.print(" ");
         }
         Serial.print("\n");
         float freq = dominant_idx*sample_rate/FHT_N;
 //         Serial.print("Dominant frequency: ");
-        float speed_mph = freq;
-        Serial.print(speed_mph);
+        float speed_mph = freq * 2.433; // Constant obtained experimentally
+        Serial.print(freq);
         Serial.print("\t");
-        Serial.println(dominant_idx);
-        delay(500);
-        
+        Serial.println(speed_mph);
+//         delay(500);
+//          Adafruit_HMC5883_Unified test = Adafruit_HMC5883_Unified(23181);
+//             sensors_event_t test_event;
+//             
+//             
+//             test.begin();
+//             for(int a = 0; a<10; a++)
+//             // Perform test 10 times
+//             {
+//                 test.getEvent(&test_event);   // read sensor
+//                 delay(500);
+//             }
+//         
     }
 }
