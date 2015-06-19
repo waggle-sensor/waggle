@@ -4,7 +4,7 @@ import Queue
 import random 
 from operator import itemgetter
 from daemon import Daemon
-import sys, os, time, atexit, socket
+import sys, os, os.path, time, atexit, socket
 
 """ The Data Cache stores messages in buffers that are named and ordered by device priority and message priority. It also removes messages from storage when they are sent. 
     This version is a service/process that is started by the system admin. """
@@ -19,7 +19,7 @@ class Data_Cache(Daemon):
     incoming_available_queues = set() #keeps a record of non-empty queues
     outgoing_lifo_available_queues = set() # a set prevents multiples of the same queue reference
     outgoing_fifo_available_queues = set()
-    available_mem = 255999
+    available_mem = 255999 #default
     
     #initially assumes that the highest number is the highest priority for now TODO figure out where the priority actually comes from
     priority_list = [5,4,3,2,1] #The priority list is now a list containing the number corresponding to a unique device. The highest priority no longer corresponds to the highest number, but rather the order in which the elements are in the list.
@@ -34,22 +34,39 @@ class Data_Cache(Daemon):
         incoming_bffr = Data_Cache.make_bffr(len(Data_Cache.priority_list))
         #make internal fifo buffer 
         outgoing_fifo_bffr = Data_Cache.make_bffr(len(Data_Cache.priority_list))
-        
         #make internal lifo buffer 
         outgoing_lifo_bffr = Data_Cache.make_bffr(len(Data_Cache.priority_list))
-        print 'started'
-        #create an INET, STREAMing socket
-        serversocket = socket.socket(
-            socket.AF_INET, socket.SOCK_STREAM)
-        #bind the socket to a public host,
-        # and a well-known port
-        serversocket.bind(('localhost', 8080))
+        
+        print 'Data Cache started.'
+        
+        if os.path.exists('/tmp/Data_Cache_unix_socket_example'): #checking for the file
+            os.remove('/tmp/Data_Cache_unix_socket_example')
+        print "opening socket..."
+        
+        #creates a UNIX, STREAMing socket
+        server_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        server_sock.bind('/tmp/Data_Cache_unix_socket_example') #binds to this file path
         #become a server socket
-        serversocket.listen(5)
+        server_sock.listen(5)
 
-        while 1:
+        while True:
         #accept connections from outside
-            (clientsocket, address) = serversocket.accept()
+            client_sock, address = server_sock.accept()
+            print "connection accepted."
+            
+            while True:
+                data = client_sock.recv(1024)
+                if not data:
+                    break
+                else:
+                    print "-" * 20 
+                    print data
+                    if "DONE" == data:
+                        break
+        print "-" * 20
+        print "Data Cache server socket shutting down..."
+        serversocket.close()
+        os.remove('/tmp/Data_Cache_unix_socket_example')
         
     def outgoing_push(self, data):
         """ Stores outgoing messages to the cloud. Expects to get a tuple with pull order (lifo or fifo),device ID, message priority, and the msg. """ 
@@ -173,7 +190,7 @@ class Data_Cache(Daemon):
             return (highest_de_p, highest_msg_p)           
                 
 if __name__ == "__main__":
-    dc = Data_Cache('/tmp/waggle.d/daemon-example.pid')
+    dc = Data_Cache('/tmp/waggle.d/Data_Cache-example.pid')
     if len(sys.argv) == 2:
         if 'start' == sys.argv[1]:
             dc.start()
