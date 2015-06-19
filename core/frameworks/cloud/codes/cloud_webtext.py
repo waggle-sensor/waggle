@@ -189,6 +189,7 @@ bash("touch"+COUNTER_FILE)
 
 
 while 1:
+    time.sleep(0.01)
     #checking how many lines have been processed
     try:
         linecache.checkcache(COUNTER_FILE)
@@ -197,24 +198,22 @@ while 1:
     except:
         bash("echo '0' > "+COUNTER_FILE)
         lines_proc = 0
-
     totalData = file_len(SENSOR_DATA_EXCHANGE_FILE)
     linesToProcess = max(totalData - lines_proc, 0)
     #print linesToProcess,"--",lines_proc
     if linesToProcess > 0:
+        time.sleep(0.01)
         rawHandler = open(SENSOR_DATA_EXCHANGE_FILE,'r')
         #do not process already processed lines, seek the appropriate line.
         for i in range(lines_proc):
             rawHandler.readline()
-
         for i in xrange(linesToProcess):
             line = rawHandler.readline().split('\n')[0]
             lines_proc = lines_proc + 1
             msg = Message.decode(line)
             if int(msg.header.message_type) == DataPayload.PAYLOAD_ID:
-
                 for payload in msg.payloads:
-
+                    time.sleep(0.001)
                     payload.inst_id = safe_string(payload.inst_id)
                     print time.asctime(), payload.inst_id
                     sensorConnected = 1
@@ -222,7 +221,6 @@ while 1:
                         sensor_current_data[sensors_list.index(to_easy_parse_string(payload).split(',')[0])] = to_easy_parse_string(payload)
                     except:
                         print payload.inst_id, "@@@@@@@@", to_easy_parse_string(payload).split(',')[0]
-
                     try:
                         log_payload(payload)
                     except:
@@ -240,15 +238,15 @@ while 1:
         f = open(COUNTER_FILE, 'w')
         f.write(str(lines_proc))
         f.close()
-
     else:
-        time.sleep(1)
-        snapshot_time = snapshot_time + 1
+        time.sleep(3)
+        snapshot_time = snapshot_time + 3
 
     if snapshot_time > SNAPSHOT_FREQ:
         #print time.asctime()
         snapshot = ''
         for i in range(len(sensor_current_data)):
+            time.sleep(0.01)
             snapshot = snapshot + sensor_current_data[i]
         #print snapshot
         if  sensorConnected == 1:
