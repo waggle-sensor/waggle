@@ -53,16 +53,19 @@ class Data_Cache(Daemon):
         #accept connections from outside
             client_sock, address = server_sock.accept()
             print "connection accepted."
-            
+            #TODO change all of this to actually do something meaningful
             while True:
-                data = client_sock.recv(1024)
-                if not data:
-                    break
-                else:
-                    print "-" * 20 
-                    print data
-                    if "DONE" == data:
+                try:
+                    data = client_sock.recv(1024) #TODO change this
+                    if not data:
                         break
+                    else:
+                        print "-" * 20 
+                        print data
+                        if "DONE" == data:
+                            break
+                except KeyboardInterrupt, k:
+                    print "Data Cache shutting down..."
         print "-" * 20
         print "Data Cache server socket shutting down..."
         serversocket.close()
