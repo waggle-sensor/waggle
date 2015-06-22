@@ -1,16 +1,28 @@
+//---------- I N C L U D E S --------------------------------------------------
 #include <avr/io.h>
+#include <avr/sleep.h>
+#include <avr/power.h>
+#include <EEPROM.h>
 
-// Debug
-static byte LED = 13;
 
-void setup() {
-	// Debug
-	pinMode(LED, OUTPUT);
-	digitalWrite(LED, HIGH);
-	POST();
-	//digitalWrite(LED, LOW);
+
+//---------- C O N S T A N T S ------------------------------------------------
+const byte LED = 13;
+
+
+
+//---------- S E T U P --------------------------------------------------------
+void setup() 
+{
+  delay(5000);
+  Serial.begin(115200);
+  POST();
 }
 
-void loop() {
+
+
+//---------- L O O P ----------------------------------------------------------
+void loop() 
+{
 
 }
