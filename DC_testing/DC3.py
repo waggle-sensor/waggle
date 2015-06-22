@@ -56,22 +56,29 @@ class Data_Cache(Daemon):
             #TODO change all of this to actually do something meaningful
             while True:
                 try:
-                    data = client_sock.recv(1024) #TODO change this
+                    buffer = ''
+                    data = client_sock.recv(4096) #TODO change this
                     if not data:
-                        break
+                        time.sleep(1)
                     else:
-                        print "-" * 20 
-                        print data
+                        buffer += data
+                        while buffer.find(')') != -1: #splits the incoming data into individual messages just in case many messages are sent at once
+                            line, buffer = buffer.split(')', 1) #TODO need to change to reflect message protocol
+                            Data_Cache.parse_data(list(line))
+                            print "-" * 20 
+                            print data
                         if "DONE" == data:
                             break
                 except KeyboardInterrupt, k:
                     print "Data Cache shutting down..."
+                    break
         print "-" * 20
         print "Data Cache server socket shutting down..."
         serversocket.close()
         os.remove('/tmp/Data_Cache_unix_socket_example')
         
-    def outgoing_push(self, data):
+    @staticmethod    
+    def outgoing_push(data):
         """ Stores outgoing messages to the cloud. Expects to get a tuple with pull order (lifo or fifo),device ID, message priority, and the msg. """ 
         if Data_Cache.msg_counter > Data_Cache.available_mem:
             #TODO write the function that writes all current stored messages to files
@@ -80,15 +87,15 @@ class Data_Cache(Daemon):
             pass
         Data_Cache.msg_counter += 1
         order, device, msg_p, msg = data
-        if order == 'lifo': #TODO does this work?
+        if order == 'l': #TODO does this work?
             Data_Cache.outgoing_lifo_bffr[device - 1][msg_p - 1].put(msg)
             Data_Cache.outgoing_lifo_available_queues.add((device, msg_p))
-        elif order == 'fifo': #TODO does this work?
+        elif order == 'f': #TODO does this work?
             Data_Cache.outgoing_fifo_bffr[device - 1][msg_p - 1].put(msg)
             Data_Cache.outgoing_fifo_available_queues.add((device, msg_p))
                 
-            
-    def incoming_push(self, data):
+    @staticmethod        
+    def incoming_push(data):
         """ Stores messages going to guest nodes. Expects to get a tuple with device #, message priority, and the msg. """ 
         if Data_Cache.msg_counter > Data_Cache.available_mem:
             #TODO write the function that writes all current stored messages to files
@@ -100,7 +107,8 @@ class Data_Cache(Daemon):
         Data_Cache.incoming_bffr[device - 1][msg_p - 1].put(msg)
         Data_Cache.incoming_available_queues.add((device, msg_p))
 
-    def outgoing_pull(self):
+    @staticmethod
+    def outgoing_pull():
         """ Retrieves and removes outgoing messages from the DC. Gets the first (highest priority) buffer from the priority list and returns the first message stored there. 
             For fairness, it removes one msg from fifo then lifo each time it is called.""" 
         #TODO implement fairness, avoid starvation
@@ -124,7 +132,8 @@ class Data_Cache(Daemon):
             Data_Cache.outgoing_lifo_available_queues.remove(lifo_cache_index) # removes it from the list of available queues
             return False #outgoing messages can be pulled in a loop until there are no messages left
         
-    def incoming_pull(self, device):
+    @staticmethod    
+    def incoming_pull(device):
         """ Pulls messages from the DC to send to guest nodes. Returns False if no messages are available.""" 
         if len(incoming_available_queues) > 0: # checks to see if there are any messages available
             for i in range(4,-1,-1): # loop to search for messages starting with highest priority
@@ -135,7 +144,8 @@ class Data_Cache(Daemon):
                     break
         else:
             return False
-               
+        
+    @staticmethod           
     def sys_flush():
         """ Called by the system monitor before a reboot. Flushes all messages into a file.""" 
         pass
@@ -191,6 +201,18 @@ class Data_Cache(Daemon):
                 else:
                     pass
             return (highest_de_p, highest_msg_p)           
+        
+    @staticmethod    
+    def parse_data(data):
+        #TODO This may just be for testing purposes.
+        #TODO This is probably where it'll parse the header to find where the messages needs to be stored.
+        print data
+        destination = data.pop(1)
+        if destination == 'o':
+            Data_Cache.outgoing_push((data[2], data[3], data[4], data[5])) 
+        else: 
+            pass #TODO finish this
+                
                 
 if __name__ == "__main__":
     dc = Data_Cache('/tmp/waggle.d/Data_Cache-example.pid')
