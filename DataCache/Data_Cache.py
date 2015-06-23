@@ -39,13 +39,13 @@ class Data_Cache(Daemon):
         
         print 'Data Cache started.'
         
-        if os.path.exists('/tmp/Data_Cache_unix_socket_example'): #checking for the file
-            os.remove('/tmp/Data_Cache_unix_socket_example')
+        if os.path.exists('/tmp/Data_Cache_unix_socket'): #checking for the file
+            os.remove('/tmp/Data_Cache_unix_socket')
         print "opening socket..."
         
         #creates a UNIX, STREAMing socket
         server_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        server_sock.bind('/tmp/Data_Cache_unix_socket_example') #binds to this file path
+        server_sock.bind('/tmp/Data_Cache_unix_socket') #binds to this file path
         #become a server socket
         server_sock.listen(5)
 
@@ -75,7 +75,7 @@ class Data_Cache(Daemon):
         print "-" * 20
         print "Data Cache server socket shutting down..."
         serversocket.close()
-        os.remove('/tmp/Data_Cache_unix_socket_example')
+        os.remove('/tmp/Data_Cache_unix_socket')
         
     @staticmethod    
     def outgoing_push(data):
@@ -215,7 +215,7 @@ class Data_Cache(Daemon):
                 
                 
 if __name__ == "__main__":
-    dc = Data_Cache('/tmp/waggle.d/Data_Cache-example.pid')
+    dc = Data_Cache('/tmp/waggle.d/Data_Cache.pid')
     if len(sys.argv) == 2:
         if 'start' == sys.argv[1]:
             dc.start()
