@@ -157,18 +157,26 @@ infraRedCamera : SensorHistory -> SensorHistory
 infraRedCamera history = 
     let casing = "TemperaturePTAT"
 
-        average : Int -> Value -> Value
-        average n sumTotal = { sumTotal | value <- sumTotal.value / toFloat n }
+        average : (Int, Value) -> Value
+        average (n, sumTotal) = { sumTotal | value <- sumTotal.value / toFloat n }
 
         byTimestamp : Value -> Value -> Bool 
         byTimestamp v1 v2 = v1.timestamp == v2.timestamp
 
-        sumValues : Value -> Value -> Value
-        sumValues v1 v2 = { v1 | value <- v1.value + v2.value } 
+        -- Add two values, keeping track of the number of values that
+        -- have been added so far. We use this state to get the average.
+        sumValues : Value -> (Int, Value) -> (Int, Value)
+        sumValues v1 (summed, v2) = 
+            (summed + 1, { v1 | value <- v1.value + v2.value })
+
+        -- Generate the initial value for a fold (see Util.groupFold)
+        initialValue : Value -> (Int, Value)
+        initialValue seed = (0, { seed | value <- 0 })
 
         averageTemperature : ValueHistory
         averageTemperature = QueueBuffer.fromList Config.historySize 
-            <| Util.groupFold byTimestamp sumValues (\v -> { v | value <- 0 })
+            <| List.map average
+            <| Util.groupFold byTimestamp sumValues initialValue
             <| List.concatMap QueueBuffer.toList
             <| Dict.values (Dict.remove casing history)
 

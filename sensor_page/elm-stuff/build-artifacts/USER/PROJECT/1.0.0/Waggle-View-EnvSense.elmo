@@ -24,34 +24,49 @@ Elm.Waggle.View.EnvSense.make = function (_elm) {
    $Waggle$View$Util = Elm.Waggle.View.Util.make(_elm);
    var infraRedCamera = function (history) {
       return function () {
+         var initialValue = function (seed) {
+            return {ctor: "_Tuple2"
+                   ,_0: 0
+                   ,_1: _U.replace([["value",0]],
+                   seed)};
+         };
          var sumValues = F2(function (v1,
-         v2) {
-            return _U.replace([["value"
-                               ,v1.value + v2.value]],
-            v1);
+         _v0) {
+            return function () {
+               switch (_v0.ctor)
+               {case "_Tuple2":
+                  return {ctor: "_Tuple2"
+                         ,_0: _v0._0 + 1
+                         ,_1: _U.replace([["value"
+                                          ,v1.value + _v0._1.value]],
+                         v1)};}
+               _U.badCase($moduleName,
+               "on line 170, column 14 to 63");
+            }();
          });
          var byTimestamp = F2(function (v1,
          v2) {
             return _U.eq(v1.timestamp,
             v2.timestamp);
          });
-         var average = F2(function (n,
-         sumTotal) {
-            return _U.replace([["value"
-                               ,sumTotal.value / $Basics.toFloat(n)]],
-            sumTotal);
-         });
+         var average = function (_v4) {
+            return function () {
+               switch (_v4.ctor)
+               {case "_Tuple2":
+                  return _U.replace([["value"
+                                     ,_v4._1.value / $Basics.toFloat(_v4._0)]],
+                    _v4._1);}
+               _U.badCase($moduleName,
+               "on line 161, column 44 to 81");
+            }();
+         };
          var casing = "TemperaturePTAT";
-         var averageTemperature = $QueueBuffer.fromList($Waggle$Config.historySize)(A3($Util.groupFold,
+         var averageTemperature = $QueueBuffer.fromList($Waggle$Config.historySize)($List.map(average)(A3($Util.groupFold,
          byTimestamp,
          sumValues,
-         function (v) {
-            return _U.replace([["value"
-                               ,0]],
-            v);
-         })($List.concatMap($QueueBuffer.toList)($Dict.values(A2($Dict.remove,
+         initialValue)($List.concatMap($QueueBuffer.toList)($Dict.values(A2($Dict.remove,
          casing,
-         history)))));
+         history))))));
          var casingTemperature = $Maybe.withDefault($QueueBuffer.empty(0))(A2($Dict.get,
          casing,
          history));

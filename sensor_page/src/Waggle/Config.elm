@@ -58,7 +58,7 @@ primaryEm = "em"
     |> heightOf
 
 {- Urls -}
-sensorDataUrl = "./data/current/current"
+sensorDataUrl = "../data/current.txt"
 sensorImageUrl = "./assets/env-sense-cropped.jpg"
 
 {- Content -}

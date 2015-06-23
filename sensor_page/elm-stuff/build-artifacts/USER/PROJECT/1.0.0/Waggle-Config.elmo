@@ -21,7 +21,7 @@ Elm.Waggle.Config.make = function (_elm) {
    var secondary = "";
    var title = "EnvSense V1";
    var sensorImageUrl = "./assets/env-sense-cropped.jpg";
-   var sensorDataUrl = "./data/current/current";
+   var sensorDataUrl = "../data/current.txt";
    var physicalQuantity = {_: {}
                           ,width: 140};
    var image = {_: {}
