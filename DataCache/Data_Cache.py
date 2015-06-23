@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import Queue
+from multiprocessing import Process, Queue
 import random 
 from operator import itemgetter
 from daemon import Daemon
@@ -39,63 +39,38 @@ class Data_Cache(Daemon):
         
         print 'Data Cache started.'
         
-        if os.path.exists('/tmp/Data_Cache_unix_socket'): #checking for the file
-            os.remove('/tmp/Data_Cache_unix_socket')
-        print "opening socket..."
+       try:
+            pull = pull_server()
+            pull.start()
         
-        #creates a UNIX, STREAMing socket
-        server_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        server_sock.bind('/tmp/Data_Cache_unix_socket') #binds to this file path
-        #become a server socket
-        server_sock.listen(5)
-
-        while True:
-        #accept connections from outside
-            client_sock, address = server_sock.accept()
-            print "connection accepted."
-            #TODO change all of this to actually do something meaningful
+            push = push_server()
+            push.start()
             while True:
-                try:
-                    buffer = ''
-                    data = client_sock.recv(4096) #TODO change this
-                    if not data:
-                        time.sleep(1)
-                    else:
-                        buffer += data
-                        while buffer.find(')') != -1: #splits the incoming data into individual messages just in case many messages are sent at once
-                            line, buffer = buffer.split(')', 1) #TODO need to change to reflect message protocol
-                            Data_Cache.parse_data(list(line))
-                            print "-" * 20 
-                            print data
-                        if "DONE" == data:
-                            break
-                except KeyboardInterrupt, k:
-                    print "Data Cache shutting down..."
-                    break
-        print "-" * 20
-        print "Data Cache server socket shutting down..."
-        serversocket.close()
-        os.remove('/tmp/Data_Cache_unix_socket')
+                pass
+            
+        except KeyboardInterrupt, k:
+            pull.terminate()
+            push.terminate()
+            print 'Data Cache shutting down...'
         
     @staticmethod    
-    def outgoing_push(data):
-        """ Stores outgoing messages to the cloud. Expects to get a tuple with pull order (lifo or fifo),device ID, message priority, and the msg. """ 
+    def outgoing_push(order, dev, msg_p, msg):
+        """ Stores outgoing messages to the cloud. Expects to get pull order (lifo or fifo),device ID, message priority, and the msg. """ 
         if Data_Cache.msg_counter > Data_Cache.available_mem:
             #TODO write the function that writes all current stored messages to files
             Data_Cache.msg_counter = 0 #resets the message counter after all buffers have been saved to a file
         else:
             pass
         Data_Cache.msg_counter += 1
-        order, device, msg_p, msg = data
-        if order == 'l': #TODO does this work?
+        if order == 'False': #TODO does this work?
             Data_Cache.outgoing_lifo_bffr[device - 1][msg_p - 1].put(msg)
             Data_Cache.outgoing_lifo_available_queues.add((device, msg_p))
-        elif order == 'f': #TODO does this work?
+        elif order == 'True': #TODO does this work?
             Data_Cache.outgoing_fifo_bffr[device - 1][msg_p - 1].put(msg)
             Data_Cache.outgoing_fifo_available_queues.add((device, msg_p))
                 
     @staticmethod        
-    def incoming_push(data):
+    def incoming_push(device, msg_p, msg):
         """ Stores messages going to guest nodes. Expects to get a tuple with device #, message priority, and the msg. """ 
         if Data_Cache.msg_counter > Data_Cache.available_mem:
             #TODO write the function that writes all current stored messages to files
@@ -103,7 +78,6 @@ class Data_Cache(Daemon):
         else:
             pass
         Data_Cache.msg_counter += 1
-        device, msg_p, msg = data
         Data_Cache.incoming_bffr[device - 1][msg_p - 1].put(msg)
         Data_Cache.incoming_available_queues.add((device, msg_p))
 
@@ -202,18 +176,101 @@ class Data_Cache(Daemon):
                     pass
             return (highest_de_p, highest_msg_p)           
         
-    @staticmethod    
-    def parse_data(data):
-        #TODO This may just be for testing purposes.
-        #TODO This is probably where it'll parse the header to find where the messages needs to be stored.
-        print data
-        destination = data.pop(1)
-        if destination == 'o':
-            Data_Cache.outgoing_push((data[2], data[3], data[4], data[5])) 
-        else: 
-            pass #TODO finish this
+@staticmethod    
+def parse_data(data, msg):
+    """ Parses data string to store message in correct queue. """ 
+    #TODO there's probably a better way to do this.
+    dest, data = data.split(',',1) #incoming or outgoing
+    dev, data = data.split(',',1) # device
+    msg_p, order = data.split(',',1) #message priority and order
+    if dest == 'o': #outgoing push 
+        Data_Cache.outgoing_push(int(dev),int(msg_p),order, msg)
+    else: 
+        Data_Cache.incoming_push(int(dev),int(msg_p),msg)
                 
-                
+def push_server(Process):
+    """ The Data Cache server that handles push requests. """
+    def run(self):
+        if os.path.exists('/tmp/Data_Cache_pull_server'): #checking for the file
+            os.remove('/tmp/Data_Cache_pull_server')
+        print "opening socket..."
+        
+        #creates a UNIX, STREAMing socket
+        server_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        server_sock.bind('/tmp/Data_Cache_pull_server') #binds to this file path
+        #become a server socket
+        server_sock.listen(5)
+
+        while True:
+        #accept connections from outside
+            client_sock, address = server_sock.accept()
+            print "connection accepted."
+            #TODO Is there a better way to do this?
+            while True:
+                try:
+                    buffer = ''
+                    data = client_sock.recv(4028) #arbitrary 
+                    if not data:
+                        time.sleep(1)
+                    else:
+                        buffer += data #this is probably unnecccessary 
+                        line, msg = buffer.split('|', 1) #TODO probably a better way to do this
+                        parse_data(line, msg)
+                        print "-" * 20 
+                        print data
+                except KeyboardInterrupt, k:
+                    print "Data Cache shutting down..."
+                    break
+        print "-" * 20
+        print "Data Cache server socket shutting down..."
+        serversocket.close()
+        os.remove('/tmp/Data_Cache_pull_server')
+        
+
+def pull_server(Process):
+    """ The Data Cache server that handles pull requests. An incoming pull request will be a string in the format 'i,deviceP'. An outgoing pull request will be a string in the format 'o'. """
+    def run(self):
+        if os.path.exists('/tmp/Data_Cache_pull_server'): #checking for the file
+            os.remove('/tmp/Data_Cache_pull_server')
+        print "opening socket..."
+        
+        #creates a UNIX, STREAMing socket
+        server_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        server_sock.bind('/tmp/Data_Cache_pull_server') #binds to this file path
+        #become a server socket
+        server_sock.listen(5)
+
+        while True:
+        #accept connections from outside
+            client_sock, address = server_sock.accept()
+            print "connection accepted."
+            #TODO Is there a better way to do this?
+            while True:
+                try:
+                    buffer = ''
+                    data = client_sock.recv(40) #TODO 40 bites is the expected size of pull requests
+                    if not data:
+                        time.sleep(1)
+                    else:
+                        buffer += data #this is probably unnecccessary 
+                        if buffer.find(',') != -1: #splits the incoming data into individual messages just in case many messages are sent at once
+                            line, dev = buffer.split(',', 1) #TODO need to change to reflect message protocol
+                            msg = Data_Cache.incoming_pull(dev) #pulls a message from that device's queue
+                        else:
+                            msg = Data_Cache.outgoing_pull()
+                        
+                        server_sock.send(msg) #sends the message
+                        print "-" * 20 
+                        print data
+                except KeyboardInterrupt, k:
+                    print "Data Cache shutting down..."
+                    break
+        print "-" * 20
+        print "Data Cache server socket shutting down..."
+        serversocket.close()
+        os.remove('/tmp/Data_Cache_pull_server')
+    
+        
 if __name__ == "__main__":
     dc = Data_Cache('/tmp/waggle.d/Data_Cache.pid')
     if len(sys.argv) == 2:

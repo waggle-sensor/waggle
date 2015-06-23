@@ -21,9 +21,9 @@ class client_push(Process):
         while True:
             try:
                 if not comm.DC_push.empty(): #if the queue is not empty, connect to DC and send msg
-                    if os.path.exists('/tmp/Data_Cache_unix_socket'):
+                    if os.path.exists('/tmp/Data_Cache_push_server'):
                         client_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-                        client_sock.connect('/tmp/Data_Cache_unix_socket')
+                        client_sock.connect('/tmp/Data_Cache_push_server')
                         print "Ready"
                         data = comm.DC_push.get() #theoretically pushes messages from the GN into a queue
                         print "sending: " , data
@@ -65,15 +65,15 @@ class client_push(Process):
         #print "Done."
         
 class client_pull(Process):
-    """ A client process that connects to the data cache and pulls incoming messages out. """
+    """ A client process that connects to the data cache and pulls incoming messages out. Sends a request in the format 'i,dev' and recieves the message"""
     #TODO fix this! 
     
     def run(self):
         comm = internal_communicator()
         print "Connecting to data cache... client_pull"
-        if os.path.exists('/tmp/Data_Cache_unix_socket'):
+        if os.path.exists('/tmp/Data_Cache_pull_server'):
             client_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-            client_sock.connect('/tmp/Data_Cache_unix_socket')
+            client_sock.connect('/tmp/Data_Cache_pull_server')
             print "Ready"
             print "Ctrl-C to quit."
             print "Sending 'DONE' shuts down the server and quits."
@@ -130,9 +130,10 @@ def processor(data):
         if header['r_uniqid'] == 'cloud': #TODO replace with the actual unique ID for the cloud
             dev, msg, order = header['flags'] #unpacks the tuple containing the flags
             #adds each onto the msg string #TODO will this work with pickled things?
-            data += order
-            data += msg
-            data += dev
+            data += (str(order) + '|')
+            data += (str(msg) + ',')
+            data += (str(dev) +',')
+            data += 'o,' #indicates that it is an outgoing message
             internal_communicator.DC_push.put(data)
         else:
             pass 
