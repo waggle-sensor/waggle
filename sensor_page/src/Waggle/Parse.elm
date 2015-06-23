@@ -52,7 +52,7 @@ parseExtra extra = case extra of
     "none" -> ""
     "non-standard" -> ""
     "Voltage_Divider_5V_PDV_Tap_4K7_GND" -> ""
-    "Voltage_Divider_5V_NTC_Tap_68K_GN" -> ""
+    "Voltage_Divider_5V_NTC_Tap_68K_GND" -> ""
     "RH" -> ""
     "Barometric" -> ""
     "RMS_3Axis" -> ""

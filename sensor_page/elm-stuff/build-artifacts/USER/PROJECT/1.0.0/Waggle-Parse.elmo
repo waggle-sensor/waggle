@@ -46,7 +46,7 @@ Elm.Waggle.Parse.make = function (_elm) {
          {case "Barometric": return "";
             case "RH": return "";
             case "RMS_3Axis": return "";
-            case "Voltage_Divider_5V_NTC_Tap_68K_GN":
+            case "Voltage_Divider_5V_NTC_Tap_68K_GND":
             return "";
             case "Voltage_Divider_5V_PDV_Tap_4K7_GND":
             return "";

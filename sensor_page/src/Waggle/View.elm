@@ -21,7 +21,7 @@ import Chart exposing (chart)
 import QueueBuffer
 import Util
 import Waggle.Config as Config exposing (physicalQuantity, primaryStyle)
-import Waggle.Pointer exposing (pointer)
+--import Waggle.Pointer exposing (pointer)
 import Waggle.Sensor exposing 
     ( SensorBoard, SensorId, Value
     , PhysicalQuantity, SensorHistory, ValueHistory )
@@ -62,17 +62,17 @@ view (windowWidth, windowHeight) (currentTime, data) =
                 <| Dict.toList rightLayout
             ]
 
-        pointers : Element
+        {-pointers : Element
         pointers = center
             <| Collage.collage windowWidth windowHeight
             <| List.map (pointer pointerStart side index)
-            <| Dict.keys data
+            <| Dict.keys data-}
 
     in layers 
         [ h1 Config.title
         , container windowWidth windowHeight topRight (datetime currentTime)
         , dataDisplay
-        , pointers
+        --, pointers
         ]
 
 viewSensorHistory : (SensorId, SensorHistory) -> Element

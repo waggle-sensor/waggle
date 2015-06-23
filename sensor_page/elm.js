@@ -12602,7 +12602,7 @@ Elm.Waggle.Parse.make = function (_elm) {
          {case "Barometric": return "";
             case "RH": return "";
             case "RMS_3Axis": return "";
-            case "Voltage_Divider_5V_NTC_Tap_68K_GN":
+            case "Voltage_Divider_5V_NTC_Tap_68K_GND":
             return "";
             case "Voltage_Divider_5V_PDV_Tap_4K7_GND":
             return "";
@@ -12724,52 +12724,6 @@ Elm.Waggle.Parse.make = function (_elm) {
                               ,parsePhysicalQuantity: parsePhysicalQuantity
                               ,parseUnits: parseUnits};
    return _elm.Waggle.Parse.values;
-};
-Elm.Waggle = Elm.Waggle || {};
-Elm.Waggle.Pointer = Elm.Waggle.Pointer || {};
-Elm.Waggle.Pointer.make = function (_elm) {
-   "use strict";
-   _elm.Waggle = _elm.Waggle || {};
-   _elm.Waggle.Pointer = _elm.Waggle.Pointer || {};
-   if (_elm.Waggle.Pointer.values)
-   return _elm.Waggle.Pointer.values;
-   var _op = {},
-   _N = Elm.Native,
-   _U = _N.Utils.make(_elm),
-   _L = _N.List.make(_elm),
-   $moduleName = "Waggle.Pointer",
-   $Basics = Elm.Basics.make(_elm),
-   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
-   $Waggle$Config = Elm.Waggle.Config.make(_elm),
-   $Waggle$Sensor = Elm.Waggle.Sensor.make(_elm),
-   $Waggle$View$Util = Elm.Waggle.View.Util.make(_elm);
-   var pointer = F4(function (pointerStart,
-   side,
-   index,
-   sensorId) {
-      return function () {
-         var endY = 0 - $Basics.toFloat($Waggle$Config.image.height + $Waggle$Config.sensor.height) / 2 + $Basics.toFloat(($Waggle$Config.sensor.height + 2 * $Waggle$Config.sensor.marginY) * (10 - index(sensorId)));
-         var endX = ($Basics.toFloat($Waggle$Config.image.width) + 2 * $Waggle$Config.image.marginX) / 2 * function () {
-            var _v0 = side(sensorId);
-            switch (_v0.ctor)
-            {case "Left": return -1;
-               case "Right": return 1;}
-            _U.badCase($moduleName,
-            "between lines 16 and 19");
-         }();
-         var start = pointerStart(sensorId);
-         var dot = $Graphics$Collage.move(start)($Graphics$Collage.filled($Waggle$Config.pointerStyle.color)($Graphics$Collage.circle(6)));
-         return $Graphics$Collage.group(_L.fromArray([dot
-                                                     ,$Graphics$Collage.traced($Waggle$Config.pointerStyle)(A2($Graphics$Collage.segment,
-                                                     start,
-                                                     {ctor: "_Tuple2"
-                                                     ,_0: endX
-                                                     ,_1: endY}))]));
-      }();
-   });
-   _elm.Waggle.Pointer.values = {_op: _op
-                                ,pointer: pointer};
-   return _elm.Waggle.Pointer.values;
 };
 Elm.Waggle = Elm.Waggle || {};
 Elm.Waggle.Sensor = Elm.Waggle.Sensor || {};
@@ -12957,7 +12911,6 @@ Elm.Waggle.View.make = function (_elm) {
    $Date = Elm.Date.make(_elm),
    $Date$Format = Elm.Date.Format.make(_elm),
    $Dict = Elm.Dict.make(_elm),
-   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
    $Graphics$Element = Elm.Graphics.Element.make(_elm),
    $List = Elm.List.make(_elm),
    $QueueBuffer = Elm.QueueBuffer.make(_elm),
@@ -12966,7 +12919,6 @@ Elm.Waggle.View.make = function (_elm) {
    $Time = Elm.Time.make(_elm),
    $Util = Elm.Util.make(_elm),
    $Waggle$Config = Elm.Waggle.Config.make(_elm),
-   $Waggle$Pointer = Elm.Waggle.Pointer.make(_elm),
    $Waggle$Sensor = Elm.Waggle.Sensor.make(_elm),
    $Waggle$View$EnvSense = Elm.Waggle.View.EnvSense.make(_elm),
    $Waggle$View$Util = Elm.Waggle.View.Util.make(_elm);
@@ -13072,12 +13024,6 @@ Elm.Waggle.View.make = function (_elm) {
                          _v11._0,
                          _v11._1,
                          $Graphics$Element.middle);
-                         var pointers = center(A2($Graphics$Collage.collage,
-                         _v11._0,
-                         _v11._1)($List.map(A3($Waggle$Pointer.pointer,
-                         $Waggle$View$EnvSense.pointerStart,
-                         $Waggle$View$EnvSense.side,
-                         $Waggle$View$EnvSense.index))($Dict.keys(_v12._1))));
                          var $ = A2($Dict.partition,
                          F2(function (sensorId,_v19) {
                             return function () {
@@ -13122,8 +13068,7 @@ Elm.Waggle.View.make = function (_elm) {
                                                                       _v11._1,
                                                                       $Graphics$Element.topRight,
                                                                       datetime(_v12._0))
-                                                                      ,dataDisplay
-                                                                      ,pointers]));
+                                                                      ,dataDisplay]));
                       }();}
                  _U.badCase($moduleName,
                  "between lines 40 and 76");

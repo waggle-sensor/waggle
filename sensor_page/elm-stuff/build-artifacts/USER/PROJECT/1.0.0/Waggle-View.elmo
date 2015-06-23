@@ -17,7 +17,6 @@ Elm.Waggle.View.make = function (_elm) {
    $Date = Elm.Date.make(_elm),
    $Date$Format = Elm.Date.Format.make(_elm),
    $Dict = Elm.Dict.make(_elm),
-   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
    $Graphics$Element = Elm.Graphics.Element.make(_elm),
    $List = Elm.List.make(_elm),
    $QueueBuffer = Elm.QueueBuffer.make(_elm),
@@ -26,7 +25,6 @@ Elm.Waggle.View.make = function (_elm) {
    $Time = Elm.Time.make(_elm),
    $Util = Elm.Util.make(_elm),
    $Waggle$Config = Elm.Waggle.Config.make(_elm),
-   $Waggle$Pointer = Elm.Waggle.Pointer.make(_elm),
    $Waggle$Sensor = Elm.Waggle.Sensor.make(_elm),
    $Waggle$View$EnvSense = Elm.Waggle.View.EnvSense.make(_elm),
    $Waggle$View$Util = Elm.Waggle.View.Util.make(_elm);
@@ -132,12 +130,6 @@ Elm.Waggle.View.make = function (_elm) {
                          _v11._0,
                          _v11._1,
                          $Graphics$Element.middle);
-                         var pointers = center(A2($Graphics$Collage.collage,
-                         _v11._0,
-                         _v11._1)($List.map(A3($Waggle$Pointer.pointer,
-                         $Waggle$View$EnvSense.pointerStart,
-                         $Waggle$View$EnvSense.side,
-                         $Waggle$View$EnvSense.index))($Dict.keys(_v12._1))));
                          var $ = A2($Dict.partition,
                          F2(function (sensorId,_v19) {
                             return function () {
@@ -182,8 +174,7 @@ Elm.Waggle.View.make = function (_elm) {
                                                                       _v11._1,
                                                                       $Graphics$Element.topRight,
                                                                       datetime(_v12._0))
-                                                                      ,dataDisplay
-                                                                      ,pointers]));
+                                                                      ,dataDisplay]));
                       }();}
                  _U.badCase($moduleName,
                  "between lines 40 and 76");
