@@ -1,6 +1,0 @@
-[
-	{"node_name":"Depaul", "lat":"41.923692", "lng":"-87.656895", "active":"Active", "page":"node.txt"},
-	{"node_name":"Uchicago1", "lat":"41.85570", "lng":"-87.604168", "active":"Active", "page":"node.txt"},
-	{"node_name":"Uchicago2", "lat":"41.791776", "lng":"-87.599533", "active":"Active", "page":"node.txt"},
-	{"node_name":"ANL_TCS", "lat":"41.717599", "lng":"-87.982428", "active":"Inactive", "page":"node.txt"}
-]
