@@ -1,0 +1,5 @@
+[
+{"node_name":"ANL", "lat":"10.5", "lng":"40", "active":"Active", "page":"#"},
+{"node_name":"UIUC", "lat":"24.7905", "lng":"-87.2854", "active":"Active", "page":"#"},
+{"node_name":"UIC", "lat":"23.32", "lng":"-2.333", "active":"Inactive", "page":"#"}
+]
