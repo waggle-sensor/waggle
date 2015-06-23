@@ -1,0 +1,103 @@
+Elm.ElmTest = Elm.ElmTest || {};
+Elm.ElmTest.Test = Elm.ElmTest.Test || {};
+Elm.ElmTest.Test.make = function (_elm) {
+   "use strict";
+   _elm.ElmTest = _elm.ElmTest || {};
+   _elm.ElmTest.Test = _elm.ElmTest.Test || {};
+   if (_elm.ElmTest.Test.values)
+   return _elm.ElmTest.Test.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "ElmTest.Test",
+   $Basics = Elm.Basics.make(_elm),
+   $ElmTest$Assertion = Elm.ElmTest.Assertion.make(_elm),
+   $List = Elm.List.make(_elm);
+   var numberOfSuites = function (test) {
+      return function () {
+         switch (test.ctor)
+         {case "Suite":
+            return 1 + $List.sum($List.map(numberOfSuites)(test._1));
+            case "TestCase": return 0;}
+         _U.badCase($moduleName,
+         "between lines 26 and 30");
+      }();
+   };
+   var numberOfTests = function (test) {
+      return function () {
+         switch (test.ctor)
+         {case "Suite":
+            return $List.sum($List.map(numberOfTests)(test._1));
+            case "TestCase": return 1;}
+         _U.badCase($moduleName,
+         "between lines 21 and 23");
+      }();
+   };
+   var nameOf = function (test) {
+      return function () {
+         switch (test.ctor)
+         {case "Suite": return test._0;
+            case "TestCase":
+            return test._0;}
+         _U.badCase($moduleName,
+         "between lines 16 and 18");
+      }();
+   };
+   var Suite = F2(function (a,b) {
+      return {ctor: "Suite"
+             ,_0: a
+             ,_1: b};
+   });
+   var suite = Suite;
+   var TestCase = F2(function (a,
+   b) {
+      return {ctor: "TestCase"
+             ,_0: a
+             ,_1: b};
+   });
+   var test = F2(function (name,
+   a) {
+      return A2(TestCase,name,a);
+   });
+   var defaultTest = function (a) {
+      return function () {
+         var name = function () {
+            switch (a.ctor)
+            {case "AssertEqual":
+               return A2($Basics._op["++"],
+                 a._1,
+                 A2($Basics._op["++"],
+                 " == ",
+                 a._2));
+               case "AssertNotEqual":
+               return A2($Basics._op["++"],
+                 a._1,
+                 A2($Basics._op["++"],
+                 " /= ",
+                 a._2));
+               case "AssertTrue":
+               return "True";}
+            _U.badCase($moduleName,
+            "between lines 41 and 46");
+         }();
+         return A2(test,name,a);
+      }();
+   };
+   var equals = F2(function (a,b) {
+      return defaultTest(A2($ElmTest$Assertion.assertEqual,
+      a,
+      b));
+   });
+   _elm.ElmTest.Test.values = {_op: _op
+                              ,TestCase: TestCase
+                              ,Suite: Suite
+                              ,nameOf: nameOf
+                              ,numberOfTests: numberOfTests
+                              ,numberOfSuites: numberOfSuites
+                              ,equals: equals
+                              ,test: test
+                              ,defaultTest: defaultTest
+                              ,suite: suite};
+   return _elm.ElmTest.Test.values;
+};

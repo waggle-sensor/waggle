@@ -1,0 +1,108 @@
+Elm.QueueBuffer = Elm.QueueBuffer || {};
+Elm.QueueBuffer.make = function (_elm) {
+   "use strict";
+   _elm.QueueBuffer = _elm.QueueBuffer || {};
+   if (_elm.QueueBuffer.values)
+   return _elm.QueueBuffer.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "QueueBuffer",
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Queue = Elm.Queue.make(_elm),
+   $Queue$Internal = Elm.Queue.Internal.make(_elm);
+   var map = F2(function (f,buf) {
+      return _U.replace([["queue"
+                         ,A2($Queue.map,f,buf.queue)]],
+      buf);
+   });
+   var mapLast = F3(function (f,
+   $default,
+   buf) {
+      return function () {
+         var _v0 = buf.queue;
+         switch (_v0.ctor)
+         {case "Queue":
+            return function () {
+                 switch (_v0._1.ctor)
+                 {case "::": return f(_v0._1._0);
+                    case "[]": return function () {
+                         switch (_v0._0.ctor)
+                         {case "::": return f(_v0._0._0);
+                            case "[]": return $default;}
+                         _U.badCase($moduleName,
+                         "between lines 43 and 45");
+                      }();}
+                 _U.badCase($moduleName,
+                 "between lines 41 and 45");
+              }();}
+         _U.badCase($moduleName,
+         "between lines 40 and 45");
+      }();
+   });
+   var last = A2(mapLast,
+   $Maybe.Just,
+   $Maybe.Nothing);
+   var maxSize = function (buf) {
+      return buf.available + $Queue.length(buf.queue);
+   };
+   var toList = function (buf) {
+      return $Queue.toList(buf.queue);
+   };
+   var empty = function (bufSize) {
+      return {_: {}
+             ,available: bufSize
+             ,queue: $Queue.empty};
+   };
+   var push = F2(function (x,buf) {
+      return _U.eq(buf.available,
+      0) ? function () {
+         var _v9 = $Queue.pop(buf.queue);
+         switch (_v9.ctor)
+         {case "Just":
+            switch (_v9._0.ctor)
+              {case "_Tuple2":
+                 return _U.replace([["queue"
+                                    ,A2($Queue.push,x,_v9._0._1)]],
+                   buf);}
+              break;
+            case "Nothing":
+            return _U.replace([["queue"
+                               ,A2($Queue.push,
+                               x,
+                               $Queue.empty)]],
+              buf);}
+         _U.badCase($moduleName,
+         "between lines 15 and 18");
+      }() : _U.replace([["queue"
+                        ,A2($Queue.push,x,buf.queue)]
+                       ,["available"
+                        ,buf.available - 1]],
+      buf);
+   });
+   var fromList = function (bufSize) {
+      return A2($List.foldl,
+      push,
+      empty(bufSize));
+   };
+   var QueueBuffer = F2(function (a,
+   b) {
+      return {_: {}
+             ,available: b
+             ,queue: a};
+   });
+   _elm.QueueBuffer.values = {_op: _op
+                             ,QueueBuffer: QueueBuffer
+                             ,push: push
+                             ,empty: empty
+                             ,toList: toList
+                             ,fromList: fromList
+                             ,maxSize: maxSize
+                             ,last: last
+                             ,mapLast: mapLast
+                             ,map: map};
+   return _elm.QueueBuffer.values;
+};

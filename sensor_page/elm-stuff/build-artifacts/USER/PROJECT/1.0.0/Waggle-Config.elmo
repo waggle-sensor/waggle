@@ -1,0 +1,88 @@
+Elm.Waggle = Elm.Waggle || {};
+Elm.Waggle.Config = Elm.Waggle.Config || {};
+Elm.Waggle.Config.make = function (_elm) {
+   "use strict";
+   _elm.Waggle = _elm.Waggle || {};
+   _elm.Waggle.Config = _elm.Waggle.Config || {};
+   if (_elm.Waggle.Config.values)
+   return _elm.Waggle.Config.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Waggle.Config",
+   $Basics = Elm.Basics.make(_elm),
+   $Color = Elm.Color.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Text = Elm.Text.make(_elm),
+   $Time = Elm.Time.make(_elm);
+   var secondary = "";
+   var title = "EnvSense V1";
+   var sensorImageUrl = "./assets/env-sense-cropped.jpg";
+   var sensorDataUrl = "./data/current/current";
+   var physicalQuantity = {_: {}
+                          ,width: 140};
+   var image = {_: {}
+               ,height: 586
+               ,marginX: 32
+               ,width: 293};
+   var chart = {_: {}
+               ,height: 20
+               ,width: 190};
+   var headerStyle = _U.replace([["typeface"
+                                 ,_L.fromArray(["EB Garamond"
+                                               ,"serif"])]],
+   $Text.defaultStyle);
+   var h1Style = _U.replace([["height"
+                             ,$Maybe.Just(40)]],
+   headerStyle);
+   var h2Style = _U.replace([["height"
+                             ,$Maybe.Just(30)]],
+   headerStyle);
+   var primaryStyle = _U.replace([["height"
+                                  ,$Maybe.Just(12)]
+                                 ,["typeface"
+                                  ,_L.fromArray(["Lato"
+                                                ,"sans"])]],
+   $Text.defaultStyle);
+   var primaryEm = $Graphics$Element.heightOf($Graphics$Element.leftAligned($Text.style(primaryStyle)($Text.fromString("em"))));
+   var value = {_: {}
+               ,height: chart.height + 1 * primaryEm
+               ,marginX: 16
+               ,width: 90};
+   var sensor = {_: {}
+                ,height: value.height + 1 * primaryEm
+                ,marginX: 8
+                ,marginY: 2
+                ,padding: 1
+                ,width: chart.width + value.width + physicalQuantity.width};
+   var sensorBackgroundColor = $Color.lightGrey;
+   var pointerStyle = _U.replace([["color"
+                                  ,$Color.lightGrey]
+                                 ,["width",3]],
+   $Graphics$Collage.defaultLine);
+   var updateInterval = 1 * $Time.second;
+   var historySize = 60;
+   _elm.Waggle.Config.values = {_op: _op
+                               ,historySize: historySize
+                               ,updateInterval: updateInterval
+                               ,pointerStyle: pointerStyle
+                               ,sensorBackgroundColor: sensorBackgroundColor
+                               ,primaryStyle: primaryStyle
+                               ,headerStyle: headerStyle
+                               ,h1Style: h1Style
+                               ,h2Style: h2Style
+                               ,chart: chart
+                               ,image: image
+                               ,sensor: sensor
+                               ,value: value
+                               ,physicalQuantity: physicalQuantity
+                               ,primaryEm: primaryEm
+                               ,sensorDataUrl: sensorDataUrl
+                               ,sensorImageUrl: sensorImageUrl
+                               ,title: title
+                               ,secondary: secondary};
+   return _elm.Waggle.Config.values;
+};

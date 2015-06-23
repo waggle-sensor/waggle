@@ -1,0 +1,95 @@
+Elm.Waggle = Elm.Waggle || {};
+Elm.Waggle.View = Elm.Waggle.View || {};
+Elm.Waggle.View.Util = Elm.Waggle.View.Util || {};
+Elm.Waggle.View.Util.make = function (_elm) {
+   "use strict";
+   _elm.Waggle = _elm.Waggle || {};
+   _elm.Waggle.View = _elm.Waggle.View || {};
+   _elm.Waggle.View.Util = _elm.Waggle.View.Util || {};
+   if (_elm.Waggle.View.Util.values)
+   return _elm.Waggle.View.Util.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Waggle.View.Util",
+   $Basics = Elm.Basics.make(_elm),
+   $Color = Elm.Color.make(_elm),
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $Text = Elm.Text.make(_elm),
+   $Waggle$Config = Elm.Waggle.Config.make(_elm);
+   var hline = function (width) {
+      return A3($Graphics$Element.container,
+      width,
+      6 + 1,
+      $Graphics$Element.middle)($Graphics$Element.color($Color.lightGrey)(A4($Graphics$Element.container,
+      width,
+      1,
+      $Graphics$Element.middle,
+      $Graphics$Element.empty)));
+   };
+   var padding = F2(function (p,
+   el) {
+      return A4($Graphics$Element.container,
+      $Graphics$Element.widthOf(el) + 2 * p,
+      $Graphics$Element.heightOf(el) + 2 * p,
+      $Graphics$Element.middle,
+      el);
+   });
+   var marginY = F2(function (m,
+   el) {
+      return A4($Graphics$Element.container,
+      $Graphics$Element.widthOf(el),
+      $Graphics$Element.heightOf(el) + 2 * m,
+      $Graphics$Element.midBottom,
+      el);
+   });
+   var marginX = F2(function (margin,
+   el) {
+      return A4($Graphics$Element.container,
+      $Graphics$Element.widthOf(el) + 2 * margin,
+      $Graphics$Element.heightOf(el),
+      $Graphics$Element.middle,
+      el);
+   });
+   var h2 = function ($) {
+      return marginY(10)($Graphics$Element.leftAligned($Text.style($Waggle$Config.h2Style)($Text.fromString($))));
+   };
+   var h1 = function ($) {
+      return marginY(10)($Graphics$Element.leftAligned($Text.style($Waggle$Config.h1Style)($Text.fromString($))));
+   };
+   var primaryText = function ($) {
+      return $Text.style($Waggle$Config.primaryStyle)($Text.fromString($));
+   };
+   var valueContainer = function (el) {
+      return A4($Graphics$Element.container,
+      $Waggle$Config.value.width,
+      $Graphics$Element.heightOf(el),
+      $Graphics$Element.bottomLeft,
+      el);
+   };
+   var sensorContainer = function (sensorName) {
+      return function ($) {
+         return $Graphics$Element.link(A2($Basics._op["++"],
+         "./assets/SensorDataSheets/",
+         A2($Basics._op["++"],
+         sensorName,
+         ".pdf")))($Graphics$Element.above($Graphics$Element.leftAligned(primaryText(sensorName)))($));
+      };
+   };
+   var Right = {ctor: "Right"};
+   var Left = {ctor: "Left"};
+   _elm.Waggle.View.Util.values = {_op: _op
+                                  ,Left: Left
+                                  ,Right: Right
+                                  ,sensorContainer: sensorContainer
+                                  ,valueContainer: valueContainer
+                                  ,primaryText: primaryText
+                                  ,h1: h1
+                                  ,h2: h2
+                                  ,marginX: marginX
+                                  ,marginY: marginY
+                                  ,padding: padding
+                                  ,hline: hline};
+   return _elm.Waggle.View.Util.values;
+};

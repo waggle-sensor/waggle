@@ -1,0 +1,344 @@
+Elm.Waggle = Elm.Waggle || {};
+Elm.Waggle.View = Elm.Waggle.View || {};
+Elm.Waggle.View.EnvSense = Elm.Waggle.View.EnvSense || {};
+Elm.Waggle.View.EnvSense.make = function (_elm) {
+   "use strict";
+   _elm.Waggle = _elm.Waggle || {};
+   _elm.Waggle.View = _elm.Waggle.View || {};
+   _elm.Waggle.View.EnvSense = _elm.Waggle.View.EnvSense || {};
+   if (_elm.Waggle.View.EnvSense.values)
+   return _elm.Waggle.View.EnvSense.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Waggle.View.EnvSense",
+   $Basics = Elm.Basics.make(_elm),
+   $Dict = Elm.Dict.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $QueueBuffer = Elm.QueueBuffer.make(_elm),
+   $Util = Elm.Util.make(_elm),
+   $Waggle$Config = Elm.Waggle.Config.make(_elm),
+   $Waggle$Sensor = Elm.Waggle.Sensor.make(_elm),
+   $Waggle$View$Util = Elm.Waggle.View.Util.make(_elm);
+   var infraRedCamera = function (history) {
+      return function () {
+         var sumValues = F2(function (v1,
+         v2) {
+            return _U.replace([["value"
+                               ,v1.value + v2.value]],
+            v1);
+         });
+         var byTimestamp = F2(function (v1,
+         v2) {
+            return _U.eq(v1.timestamp,
+            v2.timestamp);
+         });
+         var average = F2(function (n,
+         sumTotal) {
+            return _U.replace([["value"
+                               ,sumTotal.value / $Basics.toFloat(n)]],
+            sumTotal);
+         });
+         var casing = "TemperaturePTAT";
+         var averageTemperature = $QueueBuffer.fromList($Waggle$Config.historySize)(A3($Util.groupFold,
+         byTimestamp,
+         sumValues,
+         function (v) {
+            return _U.replace([["value"
+                               ,0]],
+            v);
+         })($List.concatMap($QueueBuffer.toList)($Dict.values(A2($Dict.remove,
+         casing,
+         history)))));
+         var casingTemperature = $Maybe.withDefault($QueueBuffer.empty(0))(A2($Dict.get,
+         casing,
+         history));
+         return $Dict.fromList(_L.fromArray([{ctor: "_Tuple2"
+                                             ,_0: "Casing Temperature"
+                                             ,_1: casingTemperature}
+                                            ,{ctor: "_Tuple2"
+                                             ,_0: "Average Temperature"
+                                             ,_1: averageTemperature}]));
+      }();
+   };
+   var viewXYZ = F3(function (prefix,
+   sensorId,
+   history) {
+      return function () {
+         var component = function (suffix) {
+            return function () {
+               var measurement = A2($Basics._op["++"],
+               prefix,
+               suffix);
+               return F2(function (v0,v1) {
+                  return {ctor: "_Tuple2"
+                         ,_0: v0
+                         ,_1: v1};
+               })(A2($Basics._op["++"],
+               prefix,
+               A2($Basics._op["++"],
+               " ",
+               suffix)))($Maybe.withDefault($QueueBuffer.empty(0))(A2($Dict.get,
+               measurement,
+               history)));
+            }();
+         };
+         return _L.fromArray([component("X")
+                             ,component("Y")
+                             ,component("Z")]);
+      }();
+   });
+   var magneticField = F2(function (sensorId,
+   sensorHistory) {
+      return $Dict.fromList(A3(viewXYZ,
+      "Magnetic Field",
+      sensorId,
+      sensorHistory));
+   });
+   var acceleration = F2(function (sensorId,
+   history) {
+      return function () {
+         var xyz = A3(viewXYZ,
+         "Acceleration",
+         sensorId,
+         history);
+         var vibration = $Maybe.withDefault($QueueBuffer.empty(0))(A2($Dict.get,
+         "Vibration",
+         history));
+         return $Dict.fromList(A2($List._op["::"],
+         {ctor: "_Tuple2"
+         ,_0: "RMS Vibration"
+         ,_1: vibration},
+         xyz));
+      }();
+   });
+   var side = function (sensorId) {
+      return function () {
+         switch (sensorId)
+         {case "BMP180.Bosch.2_5-2013":
+            return $Waggle$View$Util.Right;
+            case "D6T-44L-06.Omron.2012":
+            return $Waggle$View$Util.Left;
+            case "DS18B20.Maxim.2008":
+            return $Waggle$View$Util.Right;
+            case "GA1A1S201WP.Sharp.2007":
+            return $Waggle$View$Util.Right;
+            case "HIH4030.Honeywell.2008":
+            return $Waggle$View$Util.Left;
+            case "HIH6130.Honeywell.2011":
+            return $Waggle$View$Util.Left;
+            case "HMC5883.Honeywell.2013":
+            return $Waggle$View$Util.Left;
+            case "HTU21D.MeasSpec.2013":
+            return $Waggle$View$Util.Right;
+            case "MAX4466.Maxim.2001":
+            return $Waggle$View$Util.Left;
+            case "MLX90614ESF-DAA.Melexis.008-2013":
+            return $Waggle$View$Util.Right;
+            case "MMA8452Q.Freescale.8_1-2013":
+            return $Waggle$View$Util.Right;
+            case "PDV_P8104.API.2006":
+            return $Waggle$View$Util.Left;
+            case "RHT03.Maxdetect.2011":
+            return $Waggle$View$Util.Left;
+            case "SHT15.Sensirion.4_3-2010":
+            return $Waggle$View$Util.Left;
+            case "SHT75.Sensirion.5_2011":
+            return $Waggle$View$Util.Right;
+            case "TMP102.Texas_Instruments.2008":
+            return $Waggle$View$Util.Left;
+            case "TMP421.Texas_Instruments.2012":
+            return $Waggle$View$Util.Right;
+            case "Thermistor_NTC_PR103J2.US_Sensor.2003":
+            return $Waggle$View$Util.Right;}
+         return $Waggle$View$Util.Left;
+      }();
+   };
+   var name = function (sensorId) {
+      return function () {
+         switch (sensorId)
+         {case "BMP180.Bosch.2_5-2013":
+            return "BMP180";
+            case "D6T-44L-06.Omron.2012":
+            return "D6T44L06";
+            case "DS18B20.Maxim.2008":
+            return "DS18B20";
+            case "GA1A1S201WP.Sharp.2007":
+            return "GA1A1S201WP";
+            case "HIH4030.Honeywell.2008":
+            return "HIH4030";
+            case "HIH6130.Honeywell.2011":
+            return "HIH6130";
+            case "HMC5883.Honeywell.2013":
+            return "HMC5883";
+            case "HTU21D.MeasSpec.2013":
+            return "HTU21D";
+            case "MAX4466.Maxim.2001":
+            return "MAX4466";
+            case "MLX90614ESF-DAA.Melexis.008-2013":
+            return "MLX90614ESF";
+            case "MMA8452Q.Freescale.8_1-2013":
+            return "MMA8452Q";
+            case "PDV_P8104.API.2006":
+            return "PDVP8104";
+            case "RHT03.Maxdetect.2011":
+            return "RHT03";
+            case "SHT15.Sensirion.4_3-2010":
+            return "SHT15";
+            case "SHT75.Sensirion.5_2011":
+            return "SHT75";
+            case "TMP102.Texas_Instruments.2008":
+            return "TMP102";
+            case "TMP421.Texas_Instruments.2012":
+            return "TMP421";
+            case "Thermistor_NTC_PR103J2.US_Sensor.2003":
+            return "PR103J2";}
+         return A2($Basics._op["++"],
+         "Error: ",
+         A2($Basics._op["++"],
+         sensorId,
+         " not recognized."));
+      }();
+   };
+   var index = function (sensorId) {
+      return function () {
+         switch (sensorId)
+         {case "BMP180.Bosch.2_5-2013":
+            return 6;
+            case "D6T-44L-06.Omron.2012":
+            return 7;
+            case "DS18B20.Maxim.2008":
+            return 1;
+            case "GA1A1S201WP.Sharp.2007":
+            return 3;
+            case "HIH4030.Honeywell.2008":
+            return 5;
+            case "HIH6130.Honeywell.2011":
+            return 6;
+            case "HMC5883.Honeywell.2013":
+            return 9;
+            case "HTU21D.MeasSpec.2013":
+            return 8;
+            case "MAX4466.Maxim.2001":
+            return 4;
+            case "MLX90614ESF-DAA.Melexis.008-2013":
+            return 7;
+            case "MMA8452Q.Freescale.8_1-2013":
+            return 9;
+            case "PDV_P8104.API.2006":
+            return 3;
+            case "RHT03.Maxdetect.2011":
+            return 1;
+            case "SHT15.Sensirion.4_3-2010":
+            return 2;
+            case "SHT75.Sensirion.5_2011":
+            return 4;
+            case "TMP102.Texas_Instruments.2008":
+            return 8;
+            case "TMP421.Texas_Instruments.2012":
+            return 5;
+            case "Thermistor_NTC_PR103J2.US_Sensor.2003":
+            return 2;}
+         return 0;
+      }();
+   };
+   var order = F2(function (s1,
+   s2) {
+      return A2($Basics.compare,
+      index(s1),
+      index(s2));
+   });
+   var pointerStart = function (sensorId) {
+      return function () {
+         switch (sensorId)
+         {case "BMP180.Bosch.2_5-2013":
+            return {ctor: "_Tuple2"
+                   ,_0: 18
+                   ,_1: -105};
+            case "D6T-44L-06.Omron.2012":
+            return {ctor: "_Tuple2"
+                   ,_0: -65
+                   ,_1: -160};
+            case "DS18B20.Maxim.2008":
+            return {ctor: "_Tuple2"
+                   ,_0: 50
+                   ,_1: 155};
+            case "GA1A1S201WP.Sharp.2007":
+            return {ctor: "_Tuple2"
+                   ,_0: 45
+                   ,_1: 40};
+            case "HIH4030.Honeywell.2008":
+            return {ctor: "_Tuple2"
+                   ,_0: -23
+                   ,_1: -102};
+            case "HIH6130.Honeywell.2011":
+            return {ctor: "_Tuple2"
+                   ,_0: -23
+                   ,_1: -160};
+            case "HMC5883.Honeywell.2013":
+            return {ctor: "_Tuple2"
+                   ,_0: -45
+                   ,_1: -280};
+            case "HTU21D.MeasSpec.2013":
+            return {ctor: "_Tuple2"
+                   ,_0: 42
+                   ,_1: -235};
+            case "MAX4466.Maxim.2001":
+            return {ctor: "_Tuple2"
+                   ,_0: -32
+                   ,_1: -20};
+            case "MLX90614ESF-DAA.Melexis.008-2013":
+            return {ctor: "_Tuple2"
+                   ,_0: 35
+                   ,_1: -187};
+            case "MMA8452Q.Freescale.8_1-2013":
+            return {ctor: "_Tuple2"
+                   ,_0: 45
+                   ,_1: -280};
+            case "PDV_P8104.API.2006":
+            return {ctor: "_Tuple2"
+                   ,_0: -32
+                   ,_1: 35};
+            case "RHT03.Maxdetect.2011":
+            return {ctor: "_Tuple2"
+                   ,_0: -10
+                   ,_1: 210};
+            case "SHT15.Sensirion.4_3-2010":
+            return {ctor: "_Tuple2"
+                   ,_0: -28
+                   ,_1: 117};
+            case "SHT75.Sensirion.5_2011":
+            return {ctor: "_Tuple2"
+                   ,_0: 45
+                   ,_1: -10};
+            case "TMP102.Texas_Instruments.2008":
+            return {ctor: "_Tuple2"
+                   ,_0: -23
+                   ,_1: -240};
+            case "TMP421.Texas_Instruments.2012":
+            return {ctor: "_Tuple2"
+                   ,_0: 35
+                   ,_1: -65};
+            case "Thermistor_NTC_PR103J2.US_Sensor.2003":
+            return {ctor: "_Tuple2"
+                   ,_0: -10
+                   ,_1: 80};}
+         return {ctor: "_Tuple2"
+                ,_0: 0
+                ,_1: 0};
+      }();
+   };
+   _elm.Waggle.View.EnvSense.values = {_op: _op
+                                      ,pointerStart: pointerStart
+                                      ,index: index
+                                      ,order: order
+                                      ,name: name
+                                      ,side: side
+                                      ,viewXYZ: viewXYZ
+                                      ,magneticField: magneticField
+                                      ,acceleration: acceleration
+                                      ,infraRedCamera: infraRedCamera};
+   return _elm.Waggle.View.EnvSense.values;
+};

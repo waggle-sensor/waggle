@@ -1,0 +1,85 @@
+Elm.Signal = Elm.Signal || {};
+Elm.Signal.Time = Elm.Signal.Time || {};
+Elm.Signal.Time.make = function (_elm) {
+   "use strict";
+   _elm.Signal = _elm.Signal || {};
+   _elm.Signal.Time = _elm.Signal.Time || {};
+   if (_elm.Signal.Time.values)
+   return _elm.Signal.Time.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Signal.Time",
+   $Basics = Elm.Basics.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Signal$Discrete = Elm.Signal.Discrete.make(_elm),
+   $Signal$Extra = Elm.Signal.Extra.make(_elm),
+   $Time = Elm.Time.make(_elm);
+   var timestamp = $Time.timestamp;
+   var delay = $Time.delay;
+   var since = $Time.since;
+   var settledAfter = F2(function (delay,
+   sig) {
+      return function () {
+         var trailing = $Signal$Discrete.whenChangeTo(false)(A2(since,
+         delay,
+         sig));
+         return A2($Signal.sampleOn,
+         trailing,
+         sig);
+      }();
+   });
+   var dropWithin = F2(function (delay,
+   sig) {
+      return function () {
+         var leading = $Signal$Discrete.whenChangeTo(true)(A2(since,
+         delay,
+         sig));
+         return A2($Signal.sampleOn,
+         leading,
+         sig);
+      }();
+   });
+   var timestamps = function (s) {
+      return A2($Signal$Extra._op["~>"],
+      timestamp(s),
+      $Basics.fst);
+   };
+   var limitRate = F2(function (freq,
+   sig) {
+      return function () {
+         var within = F2(function (newt,
+         oldt) {
+            return _U.cmp(newt - oldt,
+            $Time.second / freq) > 0 ? newt : oldt;
+         });
+         var windowStart = A2($Signal.foldp,
+         within,
+         0)(timestamps(sig));
+         return A2($Signal.sampleOn,
+         $Signal$Discrete.whenChange(windowStart),
+         sig);
+      }();
+   });
+   var startTime = timestamps($Signal.constant({ctor: "_Tuple0"}));
+   var relativeTime = function (s) {
+      return A2($Signal._op["~"],
+      A2($Signal._op["<~"],
+      F2(function (x,y) {
+         return x - y;
+      }),
+      s),
+      startTime);
+   };
+   _elm.Signal.Time.values = {_op: _op
+                             ,limitRate: limitRate
+                             ,dropWithin: dropWithin
+                             ,settledAfter: settledAfter
+                             ,startTime: startTime
+                             ,relativeTime: relativeTime
+                             ,since: since
+                             ,delay: delay
+                             ,timestamp: timestamp};
+   return _elm.Signal.Time.values;
+};
