@@ -26,7 +26,7 @@ function read_file() {
 	data.overrideMimeType("application/json");
 
 	//Change this to the appropriate server address
-	data.open("GET", "http://127.0.0.1:31338/node.json", true);
+	data.open("GET", "http://outworld.mcs.anl.gov/internal/dashboard/node.json", true);
 	data.onreadystatechange = function() {
 		if(data.readyState == 4 && data.status == "200") {
 			var json = JSON.parse(data.responseText);
