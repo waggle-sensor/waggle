@@ -70,7 +70,7 @@
 #define PhoRes_PIN A3
 
 
-//#define WindVel_ADD 17
+#define WindVel_ADD 17
 
 
 #define MMA_Buff_size 40 //460

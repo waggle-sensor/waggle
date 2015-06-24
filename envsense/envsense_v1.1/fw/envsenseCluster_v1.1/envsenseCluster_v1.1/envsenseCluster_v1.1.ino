@@ -38,7 +38,6 @@ nop();
 // #include <TimerOne.h>
 // #include <TimerThree.h>
 #include "HTU21D.h"
-#include <FHT.h> 
 #include "features_v2.c"
 
 // int timer1_runs = 0;
@@ -459,15 +458,33 @@ float BMP_180_1_temperature, BMP_180_1_pressure;
 #endif //BMP180_ADD
 
 #ifdef WindVel_ADD
-#define LIN_OUT 1 // use the lin output function
-#define FHT_N 256 // set to 256 point fht
 #ifndef HMC5883_ADD  // Requires operation of sensor HMC5883
 Adafruit_HMC5883_Unified mag = Adafruit_HMC5883_Unified(12345);
 #endif  //HMC5883_ADD
-float freq = 0.0;
-float sample_rate = 189.0;
+// DELAY: 1  - Sampling Rate: 310  Hz    Max observed freq: 155   Hz   Max observed speed: 168.6 m/s
+// DELAY: 2  - Sampling Rate: 238  Hz    Max observed freq: 119   Hz   Max observed speed: 129.4 m/s
+// DELAY: 3  - Sampling Rate: 192  Hz    Max observed freq: 96    Hz   Max observed speed: 104.4 m/s
+// DELAY: 4  - Sampling Rate: 160  Hz    Max observed freq: 80    Hz   Max observed speed: 87.0  m/s
+// DELAY: 5  - Sampling Rate: 139  Hz    Max observed freq: 69.5  Hz   Max observed speed: 75.6  m/s
+// DELAY: 6  - Sampling Rate: 121  Hz    Max observed freq: 60.5  Hz   Max observed speed: 65.8  m/s
+// DELAY: 7  - Sampling Rate: 109  Hz    Max observed freq: 54.5  Hz   Max observed speed: 59.3  m/s
+// DELAY: 8  - Sampling Rate: 98.4 Hz    Max observed freq: 49.20 Hz   Max observed speed: 53.5  m/s
+// DELAY: 9  - Sampling Rate: 89.3 Hz    Max observed freq: 44.65 Hz   Max observed speed: 48.6  m/s
+// DELAY: 10 - Sampling Rate: 81.7 Hz    Max observed freq: 41.35 Hz   Max observed speed: 45.0  m/s
+// DELAY: 15 - Sampling Rate: 58.1 Hz    Max observed freq: 29.05 Hz   Max observed speed: 31.6  m/s
+// DELAY: 20 - Sampling Rate: 45.0 Hz    Max observed freq: 20.50 Hz   Max observed speed: 22.3  m/s
+// DELAY: 25 - Sampling Rate: 36.8 Hz    Max observed freq: 18.40 Hz   Max observed speed: 20.0  m/s
+int sample_delay = 4;// Give sensor time to take measurement (must be >= 1)
+float sample_rate = 160.0;
+// This delay sets the sampling frequency. 
+// The rest of the measurement takes ~2.4 ms
 
-void build_fht()
+int previous=0;
+float freq = 0.0;
+int sample_time = 3;    // Seconds to sample
+float speed_mps = 0;
+
+void take_samples()
 // Collects samples and generates FHT array
 {
     // Initially, data NOT ready
@@ -475,75 +492,56 @@ void build_fht()
     #ifdef POST
     wdt_reset();
     #endif
-    for (int i = 0; i<FHT_N; i++)
+    int sign = 0;
+    for (int i = 0; i<sample_rate*sample_time; i++)
     {
         mag.setSingleMeasurementMode(); // Let the measurement begin
-        delay(3); // Give sensor time to take measurement
-        while((mag.getDataReady() & 0x01) != 0x01); //wait until data is ready
+        delay(sample_delay); // Give sensor time to take measurement(must be >=1)
+        while((mag.getDataReady() & 0x01) != 0x01); //do nothing until data is ready
+        // DRDY bit monitoring only needed for high sampling frequencies
         
         // Read 16 bit Y value output
         int16_t y_val;
         Wire.beginTransmission(HMC5883_ADDRESS_MAG);  // Open communication w/ HMC
         Wire.write(HMC5883_REGISTER_MAG_OUT_Y_H_M);   // Send call to register Y output
         Wire.endTransmission();
-        #ifdef POST
-        wdt_reset();
-        #endif
         Wire.beginTransmission(HMC5883_ADDRESS_MAG);     // Begin reading
         Wire.requestFrom(HMC5883_ADDRESS_MAG, 2);     // Request 2 bytes
-        #ifdef POST
-        wdt_reset();
-        #endif
         while(!Wire.available()) {};
-        #ifdef POST
-        wdt_reset();
-        #endif
         uint8_t vha = Wire.read();
         uint8_t vla = Wire.read();
         Wire.endTransmission();
-        
         y_val = vha << 8 | vla;          // Adjust output for MSB's and LSB's
-        fht_input[i] = y_val; // put real data into bins
         
+        if(y_val < 0)   // Establish new hemisphere
+            sign = -1;
+        else
+            sign = 1;
+        
+        if(sign != previous)    // If hemisphere differs from previous,
+        {                       // Count it as a rotation
+            previous = sign;
+            if(i!=0)            // First measurement to establish initial hemisphere
+                freq++;
+        }
         #ifdef POST
         wdt_reset();
         #endif
     }
-    fht_window(); // window the data for better frequency response
-    #ifdef POST
-    wdt_reset();
-    #endif
-    fht_reorder(); // reorder the data before doing the fht
-    #ifdef POST
-    wdt_reset();
-    #endif
-    fht_run(); // process the data in the fht
-    #ifdef POST
-    wdt_reset();
-    #endif
-    fht_mag_lin(); // take the output of the fht
+    freq = freq/2/sample_time;  //Overcounted originally
+    
     #ifdef POST
     wdt_reset();
     #endif
 }
 
-float calc_freq()
+void calc_speed()
 // Calculate frequency from dominant index
 {
-    int dominant_idx = 0;
-    for (byte i = 0 ; i < FHT_N/2 ; i++) 
-    {
-        if(fht_lin_out[i] > fht_lin_out[dominant_idx])
-            dominant_idx = i; 
-        #ifdef POST
-        wdt_reset();
-        #endif
-    }
-    freq = dominant_idx*sample_rate/FHT_N;
+    speed_mps = freq * 1.0876; // constant obtained experimentally
     #ifdef POST
     wdt_reset();
     #endif
-    return freq;
 }
 
 // unsigned int pulse_count = 0;
@@ -593,7 +591,7 @@ int numSensors = 19;    // must be >= 1
 void quick_sensors()
 {
     #ifdef MMA8452
-    if((EEPROM.read(6+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
+    if((EEPROM.read(MMA8452+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
         MMA8452_get_means();
     #ifdef POST
     wdt_reset();
@@ -601,7 +599,7 @@ void quick_sensors()
     #endif
 
     #ifdef MAX4466_ADD
-    if((EEPROM.read(12+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor    
+    if((EEPROM.read(MAX4466_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor    
     {
         for (int i = 0; i < 900; i++) {
             MAX4466_get_max();
@@ -637,7 +635,7 @@ void setup()
     #endif
 
     #ifdef BMP180_ADD
-    if((EEPROM.read(2+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
+    if((EEPROM.read(BMP180_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
     {
         BMP_180_1.begin();
         #ifdef POST
@@ -648,7 +646,7 @@ void setup()
     // set the resolution to 10 bit (good enough?)
 
     #ifdef TMP421_ADD
-    if((EEPROM.read(13+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor    
+    if((EEPROM.read(TMP421_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor    
     {
         /************ The LibTemp421 library turns on Arduino pins A2, A3 (aka 16, 17) to power the sensor.
         *  This is necessary due to the fact that Wire.begin() is called in the constructor and needs to be
@@ -669,7 +667,7 @@ void setup()
     #endif //TMP421_ADD
 
     #ifdef MLX90614_ADD
-    if((EEPROM.read(9+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor    
+    if((EEPROM.read(MLX90614_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor    
     {
         #ifndef POST
         Serial.println("Initializing MLX");
@@ -684,7 +682,7 @@ void setup()
     #endif //MLX90614_ADD
 
     #ifdef IR_D6T_44L_06_ADD
-    if((EEPROM.read(14+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor    
+    if((EEPROM.read(IR_D6T_44L_06_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor    
     {
         #ifndef POST
         #ifdef debug_serial
@@ -710,7 +708,7 @@ void setup()
     #endif //IR_D6T_44L_06_ADD
 
     #ifdef MMA8452
-    if((EEPROM.read(6+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor    
+    if((EEPROM.read(MMA8452+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor    
     {
         #ifndef I2C_INIT_ADD
         i2c_init();
@@ -740,7 +738,7 @@ void setup()
 
     #ifdef HTU21D_ADD
     #ifndef POST    // Command executed in self test
-    if((EEPROM.read(18+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor    
+    if((EEPROM.read(HTU21D_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor    
     {
         #ifdef debug_serial
         Serial.println("Initializing HTU");
@@ -753,22 +751,34 @@ void setup()
     #endif //POST
     #endif //HTU21D_ADD
 
+    
+    #ifdef POST
+    wdt_reset();
+    #endif
+
     #ifdef HMC5883_ADD
-    if((EEPROM.read(19+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor    
+    if((EEPROM.read(HMC5883_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor    
     {
+        #ifdef debug_serial
         Serial.println("Initializing HMC");
-        mag.begin();
+        #endif
+//         mag.begin();     function called in POST
         #ifdef POST
         wdt_reset();
         #endif
     }
     #endif //HMC5883_ADD
     
+    #ifdef POST
+    wdt_reset();
+    #endif
+        
     #ifdef WindVel_ADD
-    #ifndef HMC5883_ADD
-    if((EEPROM.read(19+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor    
+    if((EEPROM.read(WindVel_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor    
     {
-        Serial.println("Initializing HMC");
+        #ifdef debug_serial
+        Serial.println("Initializing WindVel");
+        #endif
         mag.begin();
         #ifdef POST
         wdt_reset();
@@ -782,7 +792,6 @@ void setup()
         wdt_reset();
         #endif
     }
-    #endif //HMC5883_ADD
     #endif //WindVel
     
     #ifdef POST

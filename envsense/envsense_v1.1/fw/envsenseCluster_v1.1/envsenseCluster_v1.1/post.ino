@@ -17,14 +17,11 @@ void post() {
         #endif
         for(byte i = 1; i <= numSensors; i++)
         {
-            if(i!=17)   // Skip WindVel test, so don't worry about address 17
-            {
-                EEPROM.write(i, 0);     // clear "tested" array
-                
-                byte history = EEPROM.read(i+128);
-                history = history << 1;         // left shift "passed" array to shift history
-                EEPROM.write(i+128, history); 
-            }
+            EEPROM.write(i, 0);     // clear "tested" array
+            
+            byte history = EEPROM.read(i+128);
+            history = history << 1;         // left shift "passed" array to shift history
+            EEPROM.write(i+128, history); 
         }
         EEPROM.write(testing_addr, 1);   // POST has begun
     }
@@ -60,7 +57,7 @@ void post() {
         #ifdef SHT75_ADD              // k=1
         if(k==1)
         {
-            EEPROM.write(k,1);
+            EEPROM.write(SHT75_ADD,1);
             #ifdef debug_serial
             Serial.print("Testing SHT75\t");
             Serial.flush();
@@ -77,16 +74,19 @@ void post() {
             // Perform test 10x to ensure accuracy
             {
                 SHT75_1_error = SHT75_1_tempSensor.measTemp(&SHT75_1_rawData);
+                wdt_reset();
                 SHT75_1_temperature = SHT75_1_tempSensor.calcTemp(SHT75_1_rawData);
+                wdt_reset();
                 SHT75_1_error = SHT75_1_tempSensor.measHumi(&SHT75_1_rawData);
+                wdt_reset();
                 SHT75_1_humidity = SHT75_1_tempSensor.calcHumi(SHT75_1_rawData, SHT75_1_temperature);
                 wdt_reset();
                 delay(500);     // 
                 wdt_reset();
             }
-            byte history = EEPROM.read(k+128);
+            byte history = EEPROM.read(SHT75_ADD+128);
             history = history | 0x01;           // Demonstrate successful test pass
-            EEPROM.write(k+128,history);
+            EEPROM.write(SHT75_ADD+128,history);
             #ifdef debug_serial
             Serial.print("Test passed successfully: History = ");
             Serial.println(history);
@@ -99,7 +99,7 @@ void post() {
         #ifdef BMP180_ADD             // k=2
         if(k==2)
         {
-            EEPROM.write(k, 1);
+            EEPROM.write(BMP180_ADD, 1);
             
             #ifdef debug_serial
             Serial.print("Testing BMP\t");
@@ -118,9 +118,9 @@ void post() {
                 delay(500);
                 wdt_reset();
             }
-            byte history = EEPROM.read(k+128);
+            byte history = EEPROM.read(BMP180_ADD+128);
             history = history | 0x01;           // Demonstrate successful test pass
-            EEPROM.write(k+128,history);
+            EEPROM.write(BMP180_ADD+128,history);
             #ifdef debug_serial
             Serial.print("Test passed successfully: History = ");
             Serial.println(history);
@@ -133,7 +133,7 @@ void post() {
         #ifdef RHT03_ADD              // k=3
         if(k==3)
         {
-            EEPROM.write(k, 1);
+            EEPROM.write(RHT03_ADD, 1);
             #ifdef debug_serial
             Serial.print("Testing RHT03\t");
             Serial.flush();
@@ -149,9 +149,9 @@ void post() {
                 delay(500);
                 wdt_reset();
             }
-            byte history = EEPROM.read(k+128);
+            byte history = EEPROM.read(RHT03_ADD+128);
             history = history | 0x01;           // Demonstrate successful test pass
-            EEPROM.write(k+128,history);
+            EEPROM.write(RHT03_ADD+128,history);
             #ifdef debug_serial
             Serial.print("Test passed successfully: History = ");
             Serial.println(history);
@@ -164,7 +164,7 @@ void post() {
         #ifdef TMP102_ADD             // k=4
         if(k==4)
         {
-            EEPROM.write(k, 1);
+            EEPROM.write(TMP102_ADD, 1);
             
             const int tmp102_1_Address = 0x48;
             float tmp102_1_temperature;
@@ -189,9 +189,9 @@ void post() {
                 delay(500);
                 wdt_reset();
             }
-            byte history = EEPROM.read(k+128);
+            byte history = EEPROM.read(TMP102_ADD+128);
             history = history | 0x01;           // Demonstrate successful test pass
-            EEPROM.write(k+128,history);        // Update history
+            EEPROM.write(TMP102_ADD+128,history);        // Update history
             #ifdef debug_serial
             Serial.print("Test passed successfully: History = ");
             Serial.println(history);
@@ -207,7 +207,7 @@ void post() {
         #define SHT15_1_sclkPin  12     // SHT15_1 serial clock
         if(k==5)
         {
-            EEPROM.write(k, 1);
+            EEPROM.write(SHT15_ADD, 1);
             
             float SHT15_1_temperature;
             float SHT15_1_humidity;
@@ -230,9 +230,9 @@ void post() {
                 delay(500);
                 wdt_reset();
             }
-            byte history = EEPROM.read(k+128);
+            byte history = EEPROM.read(SHT15_ADD+128);
             history = history | 0x01;           // Demonstrate successful test pass
-            EEPROM.write(k+128,history);
+            EEPROM.write(SHT15_ADD+128,history);
             #ifdef debug_serial
             Serial.print("Test passed successfully: History = ");
             Serial.println(history);
@@ -245,7 +245,7 @@ void post() {
         #ifdef MMA8452        // k=6
         if(k==6)
         {
-            EEPROM.write(k,1);
+            EEPROM.write(MMA8452,1);
             int accelCount[3]; // Stores the 12-bit signed value
             float accelG[3]; // Stores the real accel value in g's
             
@@ -269,9 +269,9 @@ void post() {
                 delay(500);
                 wdt_reset();
             }
-            byte history = EEPROM.read(k+128);
+            byte history = EEPROM.read(MMA8452+128);
             history = history | 0x01;           // Demonstrate successful test pass
-            EEPROM.write(k+128,history);
+            EEPROM.write(MMA8452+128,history);
             #ifdef debug_serial
             Serial.print("Test passed successfully: History = ");
             Serial.println(history);
@@ -284,7 +284,7 @@ void post() {
         #ifdef HIH6130_ADD            // k=7
         if(k==7)
         {
-            EEPROM.write(k,1);
+            EEPROM.write(HIH6130_ADD,1);
             #ifdef debug_serial
             Serial.print("Testing HIH6130\t");
             Serial.flush();
@@ -301,9 +301,9 @@ void post() {
                 delay(500);
                 wdt_reset();
             }
-            byte history = EEPROM.read(k+128);
+            byte history = EEPROM.read(HIH6130_ADD+128);
             history = history | 0x01;           // Demonstrate successful test pass
-            EEPROM.write(k+128,history);
+            EEPROM.write(HIH6130_ADD+128,history);
             #ifdef debug_serial
             Serial.print("Test passed successfully: History = ");
             Serial.println(history);
@@ -317,7 +317,7 @@ void post() {
         #ifdef DS18B20_ADD            // k=8
         if(k==8)
         {
-            EEPROM.write(k,1);
+            EEPROM.write(DS18B20_ADD,1);
             #ifdef debug_serial
             Serial.print("Testing DS18B20\t");
             Serial.flush();
@@ -329,9 +329,9 @@ void post() {
                 delay(500);
                 wdt_reset();
             }
-            byte history = EEPROM.read(k+128);
+            byte history = EEPROM.read(DS18B20_ADD+128);
             history = history | 0x01;           // Demonstrate successful test pass
-            EEPROM.write(k+128,history);
+            EEPROM.write(DS18B20_ADD+128,history);
             #ifdef debug_serial
             Serial.print("Test passed successfully: History = ");
             Serial.println(history);
@@ -345,7 +345,7 @@ void post() {
         #ifdef MLX90614_ADD   // k=9
         if(k==9)
         {
-            EEPROM.write(k,1);
+            EEPROM.write(MLX90614_ADD,1);
             #ifdef debug_serial
             Serial.print("Testing MLX\t");
             Serial.flush();
@@ -375,9 +375,9 @@ void post() {
                 delay(500);
                 wdt_reset();
             }
-            byte history = EEPROM.read(k+128);
+            byte history = EEPROM.read(MLX90614_ADD+128);
             history = history | 0x01;           // Demonstrate successful test pass
-            EEPROM.write(k+128,history);
+            EEPROM.write(MLX90614_ADD+128,history);
             #ifdef debug_serial
             Serial.print("Test passed successfully: History = ");
             Serial.println(history);
@@ -391,7 +391,7 @@ void post() {
         #ifdef GA1A1S201WP_ADD       // k=10
         if(k==10)
         {
-            EEPROM.write(k, 1);
+            EEPROM.write(GA1A1S201WP_ADD, 1);
             #ifdef debug_serial
             Serial.print("Testing GA1A\t");
             Serial.flush();
@@ -404,9 +404,9 @@ void post() {
                 delay(500);
                 wdt_reset();
             }
-            byte history = EEPROM.read(k+128);
+            byte history = EEPROM.read(GA1A1S201WP_ADD+128);
             history = history | 0x01;           // Demonstrate successful test pass
-            EEPROM.write(k+128,history);
+            EEPROM.write(GA1A1S201WP_ADD+128,history);
             #ifdef debug_serial
             Serial.print("Test passed successfully: History = ");
             Serial.println(history);
@@ -420,7 +420,7 @@ void post() {
         #ifdef THERMIS_100K_ADD      // k=11
         if(k==11)
         {
-            EEPROM.write(k, 1);
+            EEPROM.write(THERMIS_100K_ADD, 1);
             #ifdef debug_serial
             Serial.print("Testing THERMIS\t");
             Serial.flush();
@@ -434,9 +434,9 @@ void post() {
                 delay(500);
                 wdt_reset();
             }
-            byte history = EEPROM.read(k+128);
+            byte history = EEPROM.read(THERMIS_100K_ADD+128);
             history = history | 0x01;           // Demonstrate successful test pass
-            EEPROM.write(k+128,history);
+            EEPROM.write(THERMIS_100K_ADD+128,history);
             #ifdef debug_serial
             Serial.print("Test passed successfully: History = ");
             Serial.println(history);
@@ -450,7 +450,7 @@ void post() {
         #ifdef MAX4466_ADD          // k=12
         if(k==12)
         {
-            EEPROM.write(k, 1);
+            EEPROM.write(MAX4466_ADD, 1);
             #ifdef debug_serial
             Serial.print("Testing MAX\t");
             Serial.flush();
@@ -464,9 +464,9 @@ void post() {
                 delay(500);
                 wdt_reset();
             }
-            byte history = EEPROM.read(k+128);
+            byte history = EEPROM.read(MAX4466_ADD+128);
             history = history | 0x01;           // Demonstrate successful test pass
-            EEPROM.write(k+128,history);
+            EEPROM.write(MAX4466_ADD+128,history);
             #ifdef debug_serial
             Serial.print("Test passed successfully: History = ");
             Serial.println(history);
@@ -479,7 +479,7 @@ void post() {
         #ifdef TMP421_ADD           // k=13
         if(k==13)
         {
-            EEPROM.write(k, 1);
+            EEPROM.write(TMP421_ADD, 1);
             pinMode(A2, INPUT);        // GND pin
             pinMode(A3, INPUT);        // VCC pin
             digitalWrite(A3, LOW);     // turn off pullups
@@ -497,9 +497,9 @@ void post() {
                 delay(500);
                 wdt_reset();
             }
-            byte history = EEPROM.read(k+128);
+            byte history = EEPROM.read(TMP421_ADD+128);
             history = history | 0x01;           // Demonstrate successful test pass
-            EEPROM.write(k+128,history);
+            EEPROM.write(TMP421_ADD+128,history);
             #ifdef debug_serial
             Serial.print("Test passed successfully: History = ");
             Serial.println(history);
@@ -512,7 +512,7 @@ void post() {
         #ifdef IR_D6T_44L_06_ADD    // k=14
         if(k==14)
         {
-            EEPROM.write(k,1);
+            EEPROM.write(IR_D6T_44L_06_ADD,1);
             #ifdef debug_serial
             Serial.print("Testing IR_D6T\t");
             Serial.flush();
@@ -548,9 +548,9 @@ void post() {
             }
             i2c_stop();
             
-            byte history = EEPROM.read(k+128);
+            byte history = EEPROM.read(IR_D6T_44L_06_ADD+128);
             history = history | 0x01;           // Demonstrate successful test pass
-            EEPROM.write(k+128,history);
+            EEPROM.write(IR_D6T_44L_06_ADD+128,history);
             #ifdef debug_serial
             Serial.print("Test passed successfully: History = ");
             Serial.println(history);
@@ -563,7 +563,7 @@ void post() {
         #ifdef HIH4030_ADD          // k=15
         if(k==15)
         {
-            EEPROM.write(k, 1);
+            EEPROM.write(HIH4030_ADD, 1);
             #ifdef debug_serial
             Serial.print("Testing HIH4030\t");
             Serial.flush();
@@ -576,9 +576,9 @@ void post() {
                 delay(500);
                 wdt_reset();
             }
-            byte history = EEPROM.read(k+128);
+            byte history = EEPROM.read(HIH4030_ADD+128);
             history = history | 0x01;           // Demonstrate successful test pass
-            EEPROM.write(k+128,history);
+            EEPROM.write(HIH4030_ADD+128,history);
             #ifdef debug_serial
             Serial.print("Test passed successfully: History = ");
             Serial.println(history);
@@ -592,7 +592,7 @@ void post() {
         #ifdef PhoRes_ADD           // k=16
         if(k==16)
         {
-            EEPROM.write(k,1);
+            EEPROM.write(PhoRes_ADD,1);
             #ifdef debug_serial
             Serial.print("Testing PhoRes\t");
             Serial.flush();
@@ -605,9 +605,9 @@ void post() {
                 delay(500);
                 wdt_reset();
             }
-            byte history = EEPROM.read(k+128);
+            byte history = EEPROM.read(PhoRes_ADD+128);
             history = history | 0x01;           // Demonstrate successful test pass
-            EEPROM.write(k+128,history);
+            EEPROM.write(PhoRes_ADD+128,history);
             #ifdef debug_serial
             Serial.print("Test passed successfully: History = ");
             Serial.println(history);
@@ -617,33 +617,28 @@ void post() {
         }
         #endif
                     
-        #ifdef WindVel_ADD 
-        #ifdef HMC5883_ADD
+        #ifdef WindVel_ADD      // k=17
         if(k==17)
         {
-            EEPROM.write(k, 1);
+            EEPROM.write(WindVel_ADD, 1);
             #ifdef debug_serial
             Serial.print("Testing WindVel\t");
             Serial.flush();
             #endif
             
-            Adafruit_HMC5883_Unified test = Adafruit_HMC5883_Unified(23181);
-            
+            mag.begin();
             // Initially, data NOT ready
-            test.setDataReady(0);
+            mag.setDataReady(0);
+            delay(2000);
             
-            
-            // Set Single measurement mode on sensor
-            test.setSingleMeasurementMode();
-            
-            test.begin();
             for(int a = 0; a<10; a++)
             // Perform test 10 times
             {
                 mag.setSingleMeasurementMode();
-                
+                #ifdef POST
                 wdt_reset();
-                delay(3); // Give sensor time to take measurement
+                #endif
+                delay(sample_delay); // Give sensor time to take measurement
                 while((mag.getDataReady() & 0x01) != 0x01); //wait until data is ready
                 wdt_reset();
                 
@@ -652,24 +647,37 @@ void post() {
                 Wire.beginTransmission(HMC5883_ADDRESS_MAG);  // Open communication w/ HMC
                 Wire.write(HMC5883_REGISTER_MAG_OUT_Y_H_M);   // Send call to register Y output
                 Wire.endTransmission();
+                #ifdef POST
                 wdt_reset();
+                #endif
                 Wire.beginTransmission(HMC5883_ADDRESS_MAG);     // Begin reading
                 Wire.requestFrom(HMC5883_ADDRESS_MAG, 2);     // Request 2 bytes (y output)
+                #ifdef POST
                 wdt_reset();
+                #endif
                 while(!Wire.available()) {};
+                #ifdef POST
                 wdt_reset();
+                #endif
                 uint8_t vha = Wire.read();
                 uint8_t vla = Wire.read();
+                #ifdef POST
                 wdt_reset();
+                #endif
                 Wire.endTransmission();
+                #ifdef POST
                 wdt_reset();
+                #endif
                 
                 delay(500);
                 wdt_reset();
             }
-            byte history = EEPROM.read(k+128);
+            byte history = EEPROM.read(WindVel_ADD+128);
             history = history | 0x01;           // Demonstrate successful test pass
-            EEPROM.write(k+128,history);
+            EEPROM.write(WindVel_ADD+128,history);
+            #ifdef POST
+            wdt_reset();
+            #endif
             #ifdef debug_serial
             Serial.print("Test passed successfully: History = ");
             Serial.println(history);
@@ -677,13 +685,12 @@ void post() {
             #endif
             wdt_reset();
         }
-        #endif // HMC5883_ADD
         #endif // WindVel_ADD
 
         #ifdef HTU21D_ADD            // k=18
         if(k==18)
         {
-            EEPROM.write(k, 1);
+            EEPROM.write(HTU21D_ADD, 1);
             
             #ifdef debug_serial
             Serial.print("Testing HTU21D\t");
@@ -696,9 +703,9 @@ void post() {
             //  HTU21D built in function returns 998 for temp and/or humidity if timeout 
             {   
                 wdt_reset();
-                byte history = EEPROM.read(k+128);
+                byte history = EEPROM.read(HTU21D_ADD+128);
                 history = history | 0x01;           // Demonstrate successful test pass
-                EEPROM.write(k+128,history);
+                EEPROM.write(HTU21D_ADD+128,history);
                 #ifdef debug_serial
                 Serial.print("Test passed successfully: History = ");
                 Serial.println(history);
@@ -717,7 +724,7 @@ void post() {
         #ifdef HMC5883_ADD          // k=19
         if(k==19)
         {
-            EEPROM.write(k, 1);
+            EEPROM.write(HMC5883_ADD, 1);
             #ifdef debug_serial
             Serial.print("Testing HMC\t");
             Serial.flush();
@@ -736,9 +743,9 @@ void post() {
                 delay(500);
                 wdt_reset();
             }
-            byte history = EEPROM.read(k+128);
+            byte history = EEPROM.read(HMC5883_ADD+128);
             history = history | 0x01;           // Demonstrate successful test pass
-            EEPROM.write(k+128,history);
+            EEPROM.write(HMC5883_ADD+128,history);
             #ifdef debug_serial
             Serial.print("Test passed successfully: History = ");
             Serial.println(history);
@@ -754,122 +761,160 @@ void post() {
     EEPROM.write(testing_addr, 0);      // Self test complete
     #ifdef debug_serial
     Serial.println("POST TEST RESULTS:");
-    Serial.print("SHT75:\t\t");
     
-    if((EEPROM.read(1+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
+    #ifdef SHT75_ADD
+    Serial.print("SHT75:\t\t");
+    if((EEPROM.read(SHT75_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
         Serial.println("Functioning");
     else
         Serial.println("Offline");
-
+    #endif
+        
+    #ifdef BMP180_ADD
     Serial.print("BMP180:\t\t");
-    if((EEPROM.read(2+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
+    if((EEPROM.read(BMP180_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
         Serial.println("Functioning");
     else
         Serial.println("Offline");
-
+    #endif
+        
+    #ifdef RHT03_ADD
     Serial.print("RHT03:\t\t");
-    if((EEPROM.read(3+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
+    if((EEPROM.read(RHT03_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
         Serial.println("Functioning");
     else
         Serial.println("Offline");
-
+    #endif
+        
+    #ifdef TMP102_ADD
     Serial.print("TMP102:\t\t");
-    if((EEPROM.read(4+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
+    if((EEPROM.read(TMP102_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
         Serial.println("Functioning");
     else
         Serial.println("Offline");
-
+    #endif
+    
+    #ifdef SHT15_ADD
     Serial.print("SHT15:\t\t");
-    if((EEPROM.read(5+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
+    if((EEPROM.read(SHT15_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
         Serial.println("Functioning");
     else
         Serial.println("Offline");
-
+    #endif
+        
+    #ifdef MMA8452
     Serial.print("MMA8452:\t");
-    if((EEPROM.read(6+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
+    if((EEPROM.read(MMA8452+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
         Serial.println("Functioning");
     else
         Serial.println("Offline");
-
+    #endif
+        
+    #ifdef HIH6130_ADD
     Serial.print("HIH6130:\t");
-    if((EEPROM.read(7+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
+    if((EEPROM.read(HIH6130_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
         Serial.println("Functioning");
     else
         Serial.println("Offline");
-
+    #endif
+        
+    #ifdef DS18B20_ADD
     Serial.print("DS18B20:\t");
-    if((EEPROM.read(8+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
+    if((EEPROM.read(DS18B20_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
         Serial.println("Functioning");
     else
         Serial.println("Offline");
-
+    #endif
+        
+    #ifdef MLX90614_ADD
     Serial.print("MLX90614\t");
-    if((EEPROM.read(9+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
+    if((EEPROM.read(MLX90614_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
         Serial.println("Functioning");
     else
         Serial.println("Offline");
-
+    #endif
+        
+    #ifdef GA1A1S201WP_ADD
     Serial.print("GA1A1S201WP:\t");
-    if((EEPROM.read(10+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
+    if((EEPROM.read(GA1A1S201WP_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
         Serial.println("Functioning");
     else
         Serial.println("Offline");
+    #endif
 
+    #ifdef THERMIS_100K_ADD
     Serial.print("THERMIS_100K:\t");
-    if((EEPROM.read(11+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
+    if((EEPROM.read(THERMIS_100K_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
         Serial.println("Functioning");
     else
         Serial.println("Offline");
-
+    #endif
+        
+    #ifdef MAX4466_ADD
     Serial.print("MAX4466:\t");
-    if((EEPROM.read(12+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor 
+    if((EEPROM.read(MAX4466_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor 
         Serial.println("Functioning");
     else
         Serial.println("Offline");
+    #endif
 
+    #ifdef TMP421_ADD
     Serial.print("TMP421:\t\t");
-    if((EEPROM.read(13+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
+    if((EEPROM.read(TMP421_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
         Serial.println("Functioning");
     else
         Serial.println("Offline");
+    #endif
 
+    #ifdef IR_D6T_44L_06_ADD
     Serial.print("IR_D6T:\t\t");
-    if((EEPROM.read(14+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
+    if((EEPROM.read(IR_D6T_44L_06_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
         Serial.println("Functioning");
     else
         Serial.println("Offline");
+    #endif
 
+    #ifdef HIH4030_ADD
     Serial.print("HIH4030:\t");
-    if((EEPROM.read(15+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
+    if((EEPROM.read(HIH4030_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
         Serial.println("Functioning");
     else
         Serial.println("Offline");
-
+    #endif
+        
+    #ifdef PhoRes_ADD
     Serial.print("PhoRes:\t\t");
-    if((EEPROM.read(16+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
+    if((EEPROM.read(PhoRes_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
         Serial.println("Functioning");
     else
         Serial.println("Offline");
-
+    #endif    
+    
+    #ifdef WindVel_ADD
     Serial.print("WindVel:\t");
-    if((EEPROM.read(17+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor (based off HMC)
+    if((EEPROM.read(WindVel_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor (based off HMC)
         Serial.println("Functioning");
     else
         Serial.println("Offline");
-
+    #endif
+    
+    #ifdef HTU21D_ADD
     Serial.print("HTU21D:\t\t");
-    if((EEPROM.read(18+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
+    if((EEPROM.read(HTU21D_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
         Serial.println("Functioning");
     else
         Serial.println("Offline");
-
+    #endif
+    
+    #ifdef HMC5883_ADD
     Serial.print("HMC5883:\t");
-    if((EEPROM.read(19+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
+    if((EEPROM.read(HMC5883_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
         Serial.println("Functioning");
     else
         Serial.println("Offline");
 
     Serial.flush();
+    #endif //HMC5883
     #endif
     wdt_reset();
 }
