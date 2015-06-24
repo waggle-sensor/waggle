@@ -39,6 +39,7 @@ class client_push(Process):
             except KeyboardInterrupt, k:
                     print "Shutting down."
                     break
+        client_sock.close()
 
 class client_pull(Process):
     """ A client process that connects to the data cache and pulls incoming messages out. Sends a request in the format 'i,dev' and recieves the message"""
@@ -111,7 +112,8 @@ class push_server(Process):
                 except KeyboardInterrupt, k:
                     print "Shutting down."
                     break
-            server.close()
+            break
+        server.close()
             
 class pull_server(Process):
     """ Server process that listens for connections from GNs. Gets messages from the Data Cache and sends them to connected GNs. """
@@ -148,6 +150,7 @@ class pull_server(Process):
                 except KeyboardInterrupt, k:
                     print "Shutting down."
                     break
+            break
         server.close()
     
 
