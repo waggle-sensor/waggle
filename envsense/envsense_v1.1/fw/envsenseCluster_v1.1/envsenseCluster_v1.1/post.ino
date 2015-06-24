@@ -1,6 +1,4 @@
 #ifdef POST
-
-
 void post() { 
     byte testing_bit = EEPROM.read(testing_addr); 
     // Do I have to start testing or am I in the middle of a test?
@@ -635,9 +633,7 @@ void post() {
             // Perform test 10 times
             {
                 mag.setSingleMeasurementMode();
-                #ifdef POST
                 wdt_reset();
-                #endif
                 delay(sample_delay); // Give sensor time to take measurement
                 while((mag.getDataReady() & 0x01) != 0x01); //wait until data is ready
                 wdt_reset();
@@ -647,27 +643,17 @@ void post() {
                 Wire.beginTransmission(HMC5883_ADDRESS_MAG);  // Open communication w/ HMC
                 Wire.write(HMC5883_REGISTER_MAG_OUT_Y_H_M);   // Send call to register Y output
                 Wire.endTransmission();
-                #ifdef POST
                 wdt_reset();
-                #endif
                 Wire.beginTransmission(HMC5883_ADDRESS_MAG);     // Begin reading
                 Wire.requestFrom(HMC5883_ADDRESS_MAG, 2);     // Request 2 bytes (y output)
-                #ifdef POST
                 wdt_reset();
-                #endif
                 while(!Wire.available()) {};
-                #ifdef POST
                 wdt_reset();
-                #endif
                 uint8_t vha = Wire.read();
                 uint8_t vla = Wire.read();
-                #ifdef POST
                 wdt_reset();
-                #endif
                 Wire.endTransmission();
-                #ifdef POST
                 wdt_reset();
-                #endif
                 
                 delay(500);
                 wdt_reset();
@@ -675,9 +661,7 @@ void post() {
             byte history = EEPROM.read(WindVel_ADD+128);
             history = history | 0x01;           // Demonstrate successful test pass
             EEPROM.write(WindVel_ADD+128,history);
-            #ifdef POST
             wdt_reset();
-            #endif
             #ifdef debug_serial
             Serial.print("Test passed successfully: History = ");
             Serial.println(history);
@@ -721,7 +705,7 @@ void post() {
         #endif
         wdt_reset();
 
-        #ifdef HMC5883_ADD          // k=19
+        #ifdef HMC5883_ADD
         if(k==19)
         {
             EEPROM.write(HMC5883_ADD, 1);
@@ -753,7 +737,7 @@ void post() {
             #endif
             wdt_reset();
         }
-        #endif
+        #endif // HMC5883
         
         wdt_reset();
         
@@ -768,7 +752,7 @@ void post() {
         Serial.println("Functioning");
     else
         Serial.println("Offline");
-    #endif
+    #endif  // SHT75
         
     #ifdef BMP180_ADD
     Serial.print("BMP180:\t\t");
@@ -776,7 +760,7 @@ void post() {
         Serial.println("Functioning");
     else
         Serial.println("Offline");
-    #endif
+    #endif  // BMP180
         
     #ifdef RHT03_ADD
     Serial.print("RHT03:\t\t");
@@ -784,7 +768,7 @@ void post() {
         Serial.println("Functioning");
     else
         Serial.println("Offline");
-    #endif
+    #endif  //RHT03
         
     #ifdef TMP102_ADD
     Serial.print("TMP102:\t\t");
@@ -792,7 +776,7 @@ void post() {
         Serial.println("Functioning");
     else
         Serial.println("Offline");
-    #endif
+    #endif  // TMP102
     
     #ifdef SHT15_ADD
     Serial.print("SHT15:\t\t");
@@ -800,7 +784,7 @@ void post() {
         Serial.println("Functioning");
     else
         Serial.println("Offline");
-    #endif
+    #endif  // SHT15
         
     #ifdef MMA8452
     Serial.print("MMA8452:\t");
@@ -808,7 +792,7 @@ void post() {
         Serial.println("Functioning");
     else
         Serial.println("Offline");
-    #endif
+    #endif  // MMA8452
         
     #ifdef HIH6130_ADD
     Serial.print("HIH6130:\t");
@@ -816,7 +800,7 @@ void post() {
         Serial.println("Functioning");
     else
         Serial.println("Offline");
-    #endif
+    #endif // HIH6130
         
     #ifdef DS18B20_ADD
     Serial.print("DS18B20:\t");
@@ -824,7 +808,7 @@ void post() {
         Serial.println("Functioning");
     else
         Serial.println("Offline");
-    #endif
+    #endif // DS18B20
         
     #ifdef MLX90614_ADD
     Serial.print("MLX90614\t");
@@ -832,7 +816,7 @@ void post() {
         Serial.println("Functioning");
     else
         Serial.println("Offline");
-    #endif
+    #endif // MLX90614
         
     #ifdef GA1A1S201WP_ADD
     Serial.print("GA1A1S201WP:\t");
@@ -840,7 +824,7 @@ void post() {
         Serial.println("Functioning");
     else
         Serial.println("Offline");
-    #endif
+    #endif //GA1A1S201WP
 
     #ifdef THERMIS_100K_ADD
     Serial.print("THERMIS_100K:\t");
@@ -848,7 +832,7 @@ void post() {
         Serial.println("Functioning");
     else
         Serial.println("Offline");
-    #endif
+    #endif //THERMIS
         
     #ifdef MAX4466_ADD
     Serial.print("MAX4466:\t");
@@ -856,7 +840,7 @@ void post() {
         Serial.println("Functioning");
     else
         Serial.println("Offline");
-    #endif
+    #endif // MAX4466
 
     #ifdef TMP421_ADD
     Serial.print("TMP421:\t\t");
@@ -864,7 +848,7 @@ void post() {
         Serial.println("Functioning");
     else
         Serial.println("Offline");
-    #endif
+    #endif // TMP421
 
     #ifdef IR_D6T_44L_06_ADD
     Serial.print("IR_D6T:\t\t");
@@ -872,7 +856,7 @@ void post() {
         Serial.println("Functioning");
     else
         Serial.println("Offline");
-    #endif
+    #endif // IR_D6T
 
     #ifdef HIH4030_ADD
     Serial.print("HIH4030:\t");
@@ -880,7 +864,7 @@ void post() {
         Serial.println("Functioning");
     else
         Serial.println("Offline");
-    #endif
+    #endif  //HIH4030
         
     #ifdef PhoRes_ADD
     Serial.print("PhoRes:\t\t");
@@ -888,7 +872,7 @@ void post() {
         Serial.println("Functioning");
     else
         Serial.println("Offline");
-    #endif    
+    #endif // PhoRes
     
     #ifdef WindVel_ADD
     Serial.print("WindVel:\t");
@@ -896,7 +880,7 @@ void post() {
         Serial.println("Functioning");
     else
         Serial.println("Offline");
-    #endif
+    #endif  //WindVel
     
     #ifdef HTU21D_ADD
     Serial.print("HTU21D:\t\t");
@@ -904,7 +888,7 @@ void post() {
         Serial.println("Functioning");
     else
         Serial.println("Offline");
-    #endif
+    #endif // HTU21D
     
     #ifdef HMC5883_ADD
     Serial.print("HMC5883:\t");
@@ -915,7 +899,7 @@ void post() {
 
     Serial.flush();
     #endif //HMC5883
-    #endif
+    #endif //debug_serial
     wdt_reset();
 }
 #endif   

@@ -333,8 +333,6 @@ void loop() {
     #endif
     
     //Interrupt based continuous sampling devices begin here
-    if(((EEPROM.read(MMA8452+128) & Consistency_Mask) == Consistency_Mask) || 
-        ( (EEPROM.read(MAX4466_ADD+128) & Consistency_Mask) == Consistency_Mask))
     for (unsigned int perform_loop = 0; perform_loop < MMA_Buff_size - 10 ; perform_loop ++ )
     {
         increment_time();

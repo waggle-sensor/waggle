@@ -619,7 +619,7 @@ void increment_time() {
 
 void setup()
 {
-    
+    ;
     delay(10000);
     Serial.begin(Communication_Rate);
     #ifdef debug_serial
@@ -630,8 +630,14 @@ void setup()
     
     #ifdef POST
     post();
-    // wdt_disable();   // option to disable watchdog
+    #ifdef debug_serial
     Serial.println("Post test completed");
+    #endif // debug_serial
+    #else
+    for(int i = 1; i <= numSensors; i++) // Display all sensors as fully functional
+    {
+        EEPROM.write(i+128, 0xFF);
+    }
     #endif
 
     #ifdef BMP180_ADD

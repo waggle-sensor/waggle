@@ -20,8 +20,8 @@
 
 // #define debug_serial 1
 #define SILENCE_BAD_SENSORS 1
-// #define debug_serial
-#define POST
+#define debug_serial
+// #define POST    // enables power on self test to prevent sensors hanging up
 
 // I2C devices
 #define MMA8452 6
