@@ -1,7 +1,7 @@
 #!/usr/bin/env python
+
 import socket, os, os.path, time, PacketHandler
 from multiprocessing import Process, Queue
-#from internal_communicator import server, client_push, client_pull
     
 class internal_communicator(object):
     """ This class acts as the channel of communication to and from the GN and the NC. The internal_msg_handler pulls messages from the data cache, parses the header, and sends the message to the appropriate location. 
@@ -48,12 +48,13 @@ class client_pull(Process):
         print "Connecting to data cache... client_pull"
         if os.path.exists('/tmp/Data_Cache_pull_server'):
             client_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-            client_sock.connect('/tmp/Data_Cache_pull_server')
             print "Ready"
             while True:
                 while incoming_request.empty(): #sleeps until a GN initiates a pull request
                     time.sleep(1)
                 try: 
+                    
+                    client_sock.connect('/tmp/Data_Cache_pull_server')#opens socket when there is an incoming pull request
                     dev = comm.incoming_request.get() #gets the dev ID that is initiating the pull request
                     dev += 'i,' + str(dev) #puts the request in the correct format for the DC
                         print "sending: " , dev
@@ -93,14 +94,14 @@ class push_server(Process):
                     data = conn.recv(4028) 
                     if not data:
                         header = PacketHandler.unpack_header(data)
-                        if header['r_uniqid'] == 'cloud': #TODO replace with the actual unique ID for the cloud
+                        if header['r_uniqid'] == 0: #TODO assuming the cloud ID is 0. May need to change later
                             dev, msg, order = header['flags'] #unpacks the tuple containing the flags
                             #adds each onto the msg string #TODO will this work with pickled things?
                             data += (str(order) + '|')
                             data += (str(msg) + ',')
                             data += (str(dev) +',')
                             data += 'o,' #indicates that it is an outgoing message
-                            internal_communicator.DC_push.put(data)
+                            comm.DC_push.put(data)
                         elif header['r_uniqid'] == 'NC': #TODO replace with NC ID
                             pass #TODO messages just gets unpacked and handled by NC
                         else: 
@@ -131,7 +132,7 @@ class pull_server(Process):
                 try:
                     data = conn.recv(40) #Guest Nodes connect and send their uniq_ID
                     if not data:
-                        incoming_requests.put(data) #Unique ID goes into incoming requests queue. These get pulled out by the pull_client as pull requests
+                        comm.incoming_requests.put(data) #Unique ID goes into incoming requests queue. These get pulled out by the pull_client as pull requests
                         msg = False #if the DC takes longer than 15 seconds to put something in the queue, there is a connection problem. 
                         for i in range(15): #allows 15 seconds to get message from DC
                             if incoming.empty(): #TODO each GN should have a queue
@@ -147,7 +148,7 @@ class pull_server(Process):
                 except KeyboardInterrupt, k:
                     print "Shutting down."
                     break
-            server.close()
+        server.close()
     
 
 if __name__ == "__main__":
