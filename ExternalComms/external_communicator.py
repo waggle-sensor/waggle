@@ -5,6 +5,7 @@ from multiprocessing import Process, Queue
 
 """ This is the communication channel between the cloud and the DC. It consists of a pika client process for RabbitMQ to push and pull messages to and from the cloud and push and pull client processes connected to the DC. """
 #TODO add checks for any priorities outside of range - send back to cloud. -- probably need to unpack and repack the message or can just send an error with previous header as payload or something?
+#TODO dictionary needs to be made to map device with their 'priority' 
 
 class external_communicator(object):
     

@@ -7,6 +7,8 @@ class internal_communicator(object):
     """ This class acts as the channel of communication to and from the GN and the NC. The internal_msg_handler pulls messages from the data cache, parses the header, and sends the message to the appropriate location. 
     It also recieves messages from the GNs and pushes them into the data cache.""" 
     #TODO write logic for putting messages back in DC if GN disconnects before message is sent
+    #TODO dictionary needs to be made to map device with their 'priority' 
+    #TODO write the thing that handles messages going to the NC
     
     def __init__(self):
         pass
@@ -122,7 +124,7 @@ class pull_server(Process):
         print 'server process started'
         comm = internal_communicator()
         HOST = '0.0.0.0'
-        PORT = 9090
+        PORT = 9091
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.bind((HOST,PORT))
         server.listen(5) #supports up to 5 threads, one for each GN
