@@ -1,0 +1,11 @@
+Everything that is installed on the Node Controller lives here.  There
+are three basic pieces: 
+
+* the baseOS (a Linux distro) for the ODROID
+
+* the waggle-customized OS that includes all basic management
+  features and cloud communication layers
+
+* the in-situ processing components for processing audio, images,
+  hyperspectral data, etc.
+

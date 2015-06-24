@@ -1,0 +1,5 @@
+The Waggle system has two parts, the sensor nodes themselves, and the
+cloud "beehive", where all the nodes report in their data. The beehive
+includes tools to manage the waggle nodes, archiving the data, viewing
+the data.
+
