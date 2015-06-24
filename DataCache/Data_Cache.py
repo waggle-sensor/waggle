@@ -121,12 +121,12 @@ class Data_Cache(Daemon):
         
     @staticmethod           
     def sys_flush():
-        """ Called by the system monitor before a reboot. Flushes all messages into a file.""" 
+        """ TODO Called by the system monitor before a reboot. Flushes all messages into a file.""" 
         pass
     
     @staticmethod
     def self_flush():
-        """ Flushes all messages to a file when the max number of messages has been reached. """ 
+        """ TODO Flushes all messages to a file when the max number of messages has been reached. """ 
         pass
     
     @staticmethod
@@ -228,7 +228,7 @@ def push_server(Process):
         
 
 def pull_server(Process):
-    """ The Data Cache server that handles pull requests. An incoming pull request will be a string in the format 'i,deviceP'. An outgoing pull request will be a string in the format 'o'. """
+    """ The Data Cache server that handles pull requests. An incoming pull request will be a string in the format 'i,deviceP'. An outgoing pull request will be a string in the format 'o '. """
     def run(self):
         if os.path.exists('/tmp/Data_Cache_pull_server'): #checking for the file
             os.remove('/tmp/Data_Cache_pull_server')
