@@ -26,7 +26,6 @@
 
 static float _hmc5883_Gauss_LSB_XY = 1100.0F;  // Varies with gain
 static float _hmc5883_Gauss_LSB_Z  = 980.0F;   // Varies with gain
-static uint8_t _rdy = 0;
 
 /***************************************************************************
  MAGNETOMETER
@@ -75,6 +74,7 @@ byte Adafruit_HMC5883_Unified::read8(byte address, byte reg)
   #else
     value = Wire.receive();
   #endif  
+  Wire.endTransmission();
 
   return value;
 }
@@ -86,14 +86,6 @@ byte Adafruit_HMC5883_Unified::read8(byte address, byte reg)
 /**************************************************************************/
 void Adafruit_HMC5883_Unified::read()
 {
-  write8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_MR_REG_M, 0x01);
-  delay(5);
-  _rdy = 0;
-  while (!(_rdy | 0x01)) {
-    Wire.requestFrom((byte)HMC5883_REGISTER_MAG_SR_REG_Mg, (byte)1);
-    while (Wire.available() < 1);
-    _rdy = Wire.read();
-  }
   // Read the magnetometer
   Wire.beginTransmission((byte)HMC5883_ADDRESS_MAG);
   #if ARDUINO >= 100
@@ -128,6 +120,9 @@ void Adafruit_HMC5883_Unified::read()
   _magData.x = (int16_t)(xlo | ((int16_t)xhi << 8));
   _magData.y = (int16_t)(ylo | ((int16_t)yhi << 8));
   _magData.z = (int16_t)(zlo | ((int16_t)zhi << 8));
+  
+  // ToDo: Calculate orientation
+  _magData.orientation = 0.0;
 }
 
 /***************************************************************************
@@ -158,7 +153,7 @@ bool Adafruit_HMC5883_Unified::begin()
   Wire.begin();
 
   // Enable the magnetometer
-  // write8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_MR_REG_M, 0x00);
+  write8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_MR_REG_M, 0x00);
   
   // Set the gain to a known level
   setMagGain(HMC5883_MAGGAIN_1_3);
@@ -250,4 +245,28 @@ void Adafruit_HMC5883_Unified::getSensor(sensor_t *sensor) {
   sensor->max_value   = 800; // 8 gauss == 800 microTesla
   sensor->min_value   = -800; // -8 gauss == -800 microTesla
   sensor->resolution  = 0.2; // 2 milligauss == 0.2 microTesla
+}
+
+void Adafruit_HMC5883_Unified::setSingleMeasurementMode() {
+    /* Put the sensor into single measurement mode */
+    uint8_t value;
+
+    value = read8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_MR_REG_M);
+    value &= 0b11111100;
+    value |= 0b01;  // Single measurement
+
+    write8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_MR_REG_M, value);
+}
+
+void Adafruit_HMC5883_Unified::setDataReady(uint8_t data) {
+    /* Sets the DRDY bit for first single measurement to occur */
+    data = data & 0x01;     // Make sure to only set one bit
+    uint8_t drdy = read8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_SR_REG_Mg);   // Get current bit
+    drdy = drdy & 0xFE;     // Clear last bit
+    drdy = drdy | data;     // Set last bit to desired value
+    write8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_SR_REG_Mg, drdy);    
+}
+
+uint8_t Adafruit_HMC5883_Unified::getDataReady() {
+    return read8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_SR_REG_Mg);   // Get current bit
 }

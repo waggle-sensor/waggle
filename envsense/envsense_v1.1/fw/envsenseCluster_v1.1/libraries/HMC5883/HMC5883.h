@@ -74,9 +74,10 @@
     -----------------------------------------------------------------------*/
     typedef struct hmc5883MagData_s
     {
-        int x;
-        int y;
-        int z;
+        float x;
+        float y;
+        float z;
+      float orientation;
     } hmc5883MagData;
 /*=========================================================================*/
 
@@ -97,6 +98,9 @@ class Adafruit_HMC5883_Unified : public Adafruit_Sensor
     void setMagGain(hmc5883MagGain gain);
     void getEvent(sensors_event_t*);
     void getSensor(sensor_t*);
+    void setSingleMeasurementMode();
+    void setDataReady(uint8_t data);
+    uint8_t getDataReady();
 
   private:
     hmc5883MagGain   _magGain;
