@@ -9,7 +9,7 @@ const int SRAM_END_ADDR = SRAM_START_ADDR + SRAM_SIZE - 1;
 const int STACK_SAVE = 0x0250;
 const int STACK_ADDR = 0x0099;
 
-const int WDT_TIMER = 0x18;
+const byte WDT_TIMER = 0x18;
 
 const byte EEPROM_RESET_REASON_ADDR = 0x00;
 const byte EEPROM_POST_RESULT_ADDR = 0x01;
@@ -17,6 +17,7 @@ const byte EEPROM_POST_RESULT_ADDR = 0x01;
 const byte FAIL_GPRF = 1;
 const byte FAIL_STACK = 2;
 const byte FAIL_SREG = 3;
+const byte FAIL_SRAM = 4;
 
 const byte RESET_POWER_ON = 0;
 const byte RESET_EXTERNAL = 1;
@@ -36,15 +37,25 @@ boolean _SOS_BOOT_MODE = false;
 //---------- P O S T ----------------------------------------------------------
 byte POST() 
 {
+	String ch = "success";
+
 	// General Purpose Register File failed?
 	if(!gprf_test())
 		test_failure(FAIL_GPRF, true);
 
-	// stack_pointer_test
+	// Stack pointer failed?
+	if(!stack_pointer_test())
+		test_failure(FAIL_STACK, true);
 
 	// Status register (SREG) test failed?
 	if(!status_register_test())
 		test_failure(FAIL_SREG, true);
+
+	// SRAM test failed?
+	if(!sram_test())
+		test_failure(FAIL_SRAM, true);
+
+	Serial.println(ch);
 }
 
 
@@ -52,122 +63,142 @@ byte POST()
 //---------- G P R F _ T E S T ------------------------------------------------
 /*
 	 Checks the General Purpose Register File (R31 - R0) for stuck bits.
-	 If the test fails, 
+	 Return of TRUE means it passed the test.
+	 Return of FALSE means it failed the test.
+
+	 This code is designed to work in the default Arduino environment, so 
+	 setting compiler flags is not an option.  The "noinline" attribute is 
+	 used to prevent the compiler from inlining this function.
+
+	 :rtype: boolean
 */
-void gprf_test()
+__attribute__((noinline)) boolean gprf_test()
 {
+	// Insurance against the compiler optimizing away this function through
+	// means other than inlining.
+	asm("");
+
+	boolean result;
+
 	// This is done in assembly because we're pretty close to metal here.
 	// Each register (R31 - R0) has 0x55 and 0xAA written to and read from it, 
 	// to verify that there aren't any stuck bits.
 	asm volatile(
 		// ZH register
-		"R31_0x55_TST:                             \n"
-    "							ldi  R31, 0x55               \n"
-    "             cpi  R31, 0x55               \n"
-    "             breq  R31_0xAA_TST           \n"
-    "             jmp  Fail_GPRF               \n"
-    "R31_0xAA_TST:  													 \n"
-    "							ldi  R31, 0xAA               \n"
-    "             cpi  R31, 0xAA               \n"
-    "             breq  R30_0x55_TST           \n"
-    "             jmp  Fail_GPRF               \n"
+		"R31_0x55_TST:                             \n\t"
+    "							ldi   R31, 0x55              \n\t"
+    "             cpi   R31, 0x55              \n\t"
+    "             breq  R31_0xAA_TST           \n\t"
+    "             jmp   Fail_GPRF              \n\t"
+    "R31_0xAA_TST:  													 \n\t"
+    "							ldi   R31, 0xAA              \n\t"
+    "             cpi   R31, 0xAA              \n\t"
+    "             breq  R30_0x55_TST           \n\t"
+    "             jmp   Fail_GPRF              \n\t"
     // ZL register
-    "R30_0x55_TST:                             \n"
-    "							ldi  R30, 0x55               \n"
-    "             cpi  R30, 0x55               \n"
-    "             breq  R30_0xAA_TST           \n"
-    "             jmp  Fail_GPRF               \n"
-    "R30_0xAA_TST:  													 \n"
-    "							ldi  R30, 0xAA               \n"
-    "             cpi  R30, 0xAA               \n"
-    "             breq  R29_0x55_TST           \n"
-    "             jmp  Fail_GPRF               \n"
+    "R30_0x55_TST:                             \n\t"
+    "							ldi   R30, 0x55              \n\t"
+    "             cpi   R30, 0x55              \n\t"
+    "             breq  R30_0xAA_TST           \n\t"
+    "             jmp   Fail_GPRF              \n\t"
+    "R30_0xAA_TST:  													 \n\t"
+    "							ldi   R30, 0xAA              \n\t"
+    "             cpi   R30, 0xAA              \n\t"
+    "             breq  R29_0x55_TST           \n\t"
+    "             jmp   Fail_GPRF              \n\t"
     
     // YH register
-    "R29_0x55_TST:                             \n"
-    "							mov R31, R29       ; save R29\n"
-    "							ldi  R29, 0x55               \n"
-    "             cpi  R29, 0x55               \n"
-    "             breq  R29_0xAA_TST           \n"
-    "             jmp  Fail_GPRF               \n"
-    "R29_0xAA_TST:  													 \n"
-    "							ldi  R29, 0xAA               \n"
-    "             cpi  R29, 0xAA               \n"
-    "             breq  R28_0x55_TST           \n"
-    "             jmp  Fail_GPRF               \n"
-    "R29_END_TST: 														 \n"
-    "							mov R29, R31    ; restore R29\n"
+    "R29_0x55_TST:                             \n\t"
+    "							mov   R31, R29     ; save R29\n\t"
+    "							ldi   R29, 0x55              \n\t"
+    "             cpi   R29, 0x55              \n\t"
+    "             breq  R29_0xAA_TST           \n\t"
+    "             jmp   Fail_GPRF              \n\t"
+    "R29_0xAA_TST:  													 \n\t"
+    "							ldi   R29, 0xAA              \n\t"
+    "             cpi   R29, 0xAA              \n\t"
+    "             breq  R29_END_TST            \n\t"
+    "             jmp   Fail_GPRF              \n\t"
+    "R29_END_TST: 														 \n\t"
+    "							mov   R29, R31  ; restore R29\n\t"
     // YL register
-    "R28_0x55_TST:                             \n"
-    "							mov R31, R28       ; save R28\n"
-    "							ldi  R28, 0x55               \n"
-    "             cpi  R28, 0x55               \n"
-    "             breq  R28_0xAA_TST           \n"
-    "             jmp  Fail_GPRF               \n"
-    "R28_0xAA_TST:  													 \n"
-    "							ldi  R28, 0xAA               \n"
-    "             cpi  R28, 0xAA               \n"
-    "             breq  R27_0x55_TST           \n"
-    "             jmp  Fail_GPRF               \n"
-    "R28_END_TST: 														 \n"
-    "							mov R28, R31    ; restore R28\n"
+    "R28_0x55_TST:                             \n\t"
+    "							mov   R31, R28     ; save R28\n\t"
+    "							ldi   R28, 0x55              \n\t"
+    "             cpi   R28, 0x55              \n\t"
+    "             breq  R28_0xAA_TST           \n\t"
+    "             jmp   Fail_GPRF              \n\t"
+    "R28_0xAA_TST:  													 \n\t"
+    "							ldi   R28, 0xAA              \n\t"
+    "             cpi   R28, 0xAA              \n\t"
+    "             breq  R28_END_TST            \n\t"
+    "             jmp   Fail_GPRF              \n\t"
+    "R28_END_TST: 														 \n\t"
+    "							mov   R28, R31  ; restore R28\n\t"
     
     // XH register
-    "R27_0x55_TST:                             \n"
-    "							ldi  R27, 0x55               \n"
-    "             cpi  R27, 0x55               \n"
-    "             breq  R27_0xAA_TST           \n"
-    "             jmp  Fail_GPRF               \n"
-    "R27_0xAA_TST:  													 \n"
-    "							ldi  R27, 0xAA               \n"
-    "             cpi  R27, 0xAA               \n"
-    "             breq  R26_0x55_TST           \n"
-    "             jmp  Fail_GPRF               \n"
+    "R27_0x55_TST:                             \n\t"
+    "							ldi   R27, 0x55              \n\t"
+    "             cpi   R27, 0x55              \n\t"
+    "             breq  R27_0xAA_TST           \n\t"
+    "             jmp   Fail_GPRF              \n\t"
+    "R27_0xAA_TST:  													 \n\t"
+    "							ldi   R27, 0xAA              \n\t"
+    "             cpi   R27, 0xAA              \n\t"
+    "             breq  R26_0x55_TST           \n\t"
+    "             jmp   Fail_GPRF              \n\t"
     // XL register
-    "R26_0x55_TST:                             \n"
-    "							ldi  R26, 0x55               \n"
-    "             cpi  R26, 0x55               \n"
-    "             breq  R26_0xAA_TST           \n"
-    "             jmp  Fail_GPRF               \n"
-    "R26_0xAA_TST:  													 \n"
-    "							ldi  R26, 0xAA               \n"
-    "             cpi  R26, 0xAA               \n"
-    "             breq  R26_END_TST            \n"
-    "							jmp  Fail_GPRF               \n"
-    "R26_END_TST:															 \n"
+    "R26_0x55_TST:                             \n\t"
+    "							ldi   R26, 0x55              \n\t"
+    "             cpi   R26, 0x55              \n\t"
+    "             breq  R26_0xAA_TST           \n\t"
+    "             jmp   Fail_GPRF              \n\t"
+    "R26_0xAA_TST:  													 \n\t"
+    "							ldi   R26, 0xAA              \n\t"
+    "             cpi   R26, 0xAA              \n\t"
+    "             breq  RX_TST                 \n\t"
+    "							jmp   Fail_GPRF              \n\t"
 
     // R25 - R0
-    "RX_TST:     															 \n"   
-    "							ldi  R30, 0x00               \n"
-    "             ldi  R31, 0x00               \n"
-    "RX_0x55_TST:   													 \n"
-    "							ldi  R25, 0x55               \n"
-    "             st  Z, R25                   \n"
-    "             ldi  R25, 0x00               \n"
-    "             ld  R25, Z                   \n"
-    "             cpi  R25, 0x55               \n"
-    "             breq  RX_0xAA_TST            \n"
-    "             jmp  Fail_GPRF               \n"
-    "RX_0xAA_TST:   													 \n"
-    "							ldi  R25, 0xAA               \n"
-    "             ST  Z, R25                   \n"
-    "             ldi  R25, 0x00               \n"
-    "             ld  R25, Z+                  \n"
-    "             cpi  R25, 0xAA               \n"
-    "             breq  RX_TST_2               \n"
-    "             jmp  Fail_GPRF               \n"
-    "RX_TST_2:      													 \n"
-    "							cpi  r30, 25 ; test until R25\n"
-    "             brne  RX_0x55_TST            \n"
-    "							rjmp  Pass_GPRF 						 \n"
+    "RX_TST:     															 \n\t"   
+    "							ldi   R30, 0x00    ; clear ZL\n\t"
+    "             ldi   R31, 0x00    ; clear ZH\n\t"
+    "RX_0x55_TST:   													 \n\t"
+    "							ldi   R25, 0x55              \n\t"
+    "             st    Z, R25                 \n\t"
+    "             ldi   R25, 0x00              \n\t"
+    "             ld    R25, Z                 \n\t"
+    "             cpi   R25, 0x55              \n\t"
+    "             breq  RX_0xAA_TST            \n\t"
+    "             jmp   Fail_GPRF              \n\t"
+    "RX_0xAA_TST:   													 \n\t"
+    "							ldi   R25, 0xAA              \n\t"
+    "             ST    Z, R25                 \n\t"
+    "             ldi   R25, 0x00              \n\t"
+    "             ld    R25, Z+                \n\t"
+    "             cpi   R25, 0xAA              \n\t"
+    "             breq  RX_TST_2               \n\t"
+    "             jmp   Fail_GPRF              \n\t"
+    "RX_TST_2:      													 \n\t"
+    "							cpi   r30, 25; test until R25\n\t"
+    "             brne  RX_0x55_TST            \n\t"
+    "							clr   r1 ; R1 must be cleared\n\t"
+    "							jmp   Pass_GPRF 						 \n\t"
+  );
 
-    // End
-    "Fail_GPRF:																 \n"
-    "							jmp  Fail_GPRF 							 \n"
-    "Pass_GPRF:                                \n"
+	// Test failure
+  asm volatile(
+    "Fail_GPRF:																 \n\t"
+  );
+  result = false;
+
+  // Test success
+  asm volatile(
+    "Pass_GPRF:                                \n\t"
 	);
-	Serial.print("here");
-	delay(100);
+	result = true;
+
+	return result;
 }
 
 
@@ -178,11 +209,82 @@ void gprf_test()
 	 Return of TRUE means it passed the test.
 	 Return of FALSE means it failed the test.
 
+	 This code is designed to work in the default Arduino environment, so 
+	 setting compiler flags is not an option.  The "noinline" attribute is 
+	 used to prevent the compiler from inlining this function.
+
 	 :rtype: boolean
 */
-boolean stack_pointer_test()
+__attribute__((noinline)) boolean stack_pointer_test()
 {
+	// Insurance against the compiler optimizing away this function through
+	// means other than inlining.
+	asm("");
 
+	boolean result;
+
+	// This is done in assembly because we're pretty close to metal here.
+	// Each register (SPL & SPH) has 0x55 and 0xAA written to and read from it,
+	// to verify that there aren't any stuck bits.
+	asm volatile(
+		"SP_TST:																	 \n\t"
+			// Save stack pointer   
+			"						in    R23, 0x3E              \n\t"
+      "           in    R22, 0x3D              \n\t"
+
+      // SPL register
+      "SPL_0x55_TST:  												 \n\t"
+      "						ldi   R24, 0x55              \n\t"
+      "           out   0x3D, R24              \n\t"
+      "           in    R24, 0x3D              \n\t"
+      "           cpi   R24, 0x55              \n\t"
+      "           breq  SPL_0xAA_TST           \n\t"
+      "           jmp   Fail_SP                \n\t"
+      "SPL_0xAA_TST:  												 \n\t"
+      "						ldi   R24, 0xAA              \n\t"
+      "           out   0x3D, R24              \n\t"
+      "           in    R24, 0x3D              \n\t"
+      "           cpi   R24, 0xAA              \n\t"
+      "           breq  SPH_0x55_TST           \n\t"
+      "           jmp   Fail_SP                \n\t"
+      // SPH register
+      "SPH_0x55_TST:  												 \n\t"
+      "						ldi   R25, 0x07			         \n\t"
+      "           andi  R25, 0x55              \n\t"
+      "           out   0x3E, R25              \n\t"
+      "           in    R24, 0x3E              \n\t"
+      "           cp    R24, R25               \n\t"
+      "           breq  SPH_0xAA_TST           \n\t"
+      "           jmp   Fail_SP                \n\t"
+      "SPH_0xAA_TST:  												 \n\t"
+      "						ldi   R25, 0x07              \n\t"
+      "           andi  R25, 0xAA              \n\t"
+      "           out   0x3E, R25              \n\t"
+      "           in    R24, 0x3E              \n\t"
+      "           cp    R24, R25               \n\t"
+      "           breq  RESTORE_SP             \n\t"
+      "           jmp   Fail_SP                \n\t"
+
+      // Restore stack pointer
+      "RESTORE_SP:    												 \n\t"
+      "						out   0x3E, R23              \n\t"
+      "           out   0x3D, R22              \n\t"
+      "           jmp   Pass_SP                \n\t"
+  );
+
+	// Test failure
+  asm volatile(
+    "Fail_SP:																   \n\t"
+  );
+  result = false;
+
+  // Test success
+  asm volatile(
+    "Pass_SP:																   \n\t"
+	);
+	result = true;
+
+	return result;
 }
 
 
@@ -193,10 +295,18 @@ boolean stack_pointer_test()
    Return of TRUE means it passed the test.
 	 Return of FALSE means it failed the test.
 
+	 This code is designed to work in the default Arduino environment, so 
+	 setting compiler flags is not an option.  The "noinline" attribute is 
+	 used to prevent the compiler from inlining this function.
+
    :rtype: boolean
 */
-boolean status_register_test() 
+__attribute__((noinline)) boolean status_register_test() 
 {
+	// Insurance against the compiler optimizing away this function through
+	// means other than inlining.
+	asm("");
+
 	byte read_sreg, save_sreg;
 
 	// Save current state of SREG
@@ -237,6 +347,65 @@ boolean status_register_test()
 			// Exit test with failure
 			return false;
 	}
+}
+
+
+
+//---------- S R A M _ T E S T ------------------------------------------------
+/*
+   Checks the SRAM for stuck bits.
+   Return of TRUE means it passed the test.
+	 Return of FALSE means it failed the test.
+
+	 This code is designed to work in the default Arduino environment, so 
+	 setting compiler flags is not an option.  The "noinline" attribute is 
+	 used to prevent the compiler from inlining this function.
+
+   :rtype: boolean
+*/
+__attribute__((noinline)) boolean sram_test()
+{   
+  // Insurance against the compiler optimizing away this function through
+	// means other than inlining.
+	asm("");
+
+  // Tell the compiler to put these into registers, since putting them
+  // into memory means they're trying to verify themselves.
+  register byte *p_val, i, save;
+ 
+  // Each location has 0x55 and 0xAA written to and read from it,
+  // to verify that there aren't any stuck bits.
+  for(p_val = (byte *) SRAM_START_ADDR;
+  		p_val < ((byte *) (SRAM_END_ADDR + 1));
+  		p_val++)
+    {
+    	// Save the value being stored at the current memory address
+      save = *p_val;
+
+      // Write 0x55
+      *p_val = 0x55;
+      // Read the stored value
+      i = *p_val;
+      // Is stored value not 0x55?
+      if(i != 0x55)
+      	// Exit test with failure
+      	return false;
+
+      // Write 0xAA
+      *p_val = 0xAA;
+      // Read the stored value
+      i = *p_val;
+      // Is stored value not 0xAA?
+      if(i != 0xAA)
+      	// Exit test with failure
+      	return false;
+
+      // Restore the original value to the current memory address
+      *p_val = save;
+    }
+  
+  // Exit test with success
+  return true;
 }
 
 
