@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 ARD_HOME = /home/max/repos/waggle_version0.3_max/resources/compilers/arduino-1.6.5-linux/arduino_64
+=======
+ARD_HOME = /home/rajesh/repos/waggle/GIT/waggle_max//resources/compilers/arduino-1.6.5-linux/arduino_64
+>>>>>>> b2569f8d1990588c1ce209923879524b8d4e43e6
 TARGET = envsenseCluster_v1.1
 PACKAGE = arduino
 ARCH = avr
