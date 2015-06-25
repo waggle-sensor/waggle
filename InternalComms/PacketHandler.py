@@ -7,21 +7,23 @@
 from crcmod.predefined import mkCrcFun 
 from struct import pack
 import cStringIO as StringIO
+import time
+
 #Where each piece of information in a packet header is stored, by byte
 HEADER_LOCATIONS = {
-    "prot_ver"         : 0,
+    "prot_ver"         : 0,     # TODO: Make this always 0.3
     "flags"            : 1,
-    "len_body"         : 2,
-    "time"             : 4,
+    "len_body"         : 2,     # TODO: Automatic
+    "time"             : 4,     # TODO: Make this automatic
     "msg_mj_type"      : 8,
     "msg_mi_type"      : 9,
-    "snd_session"      : 10,
-    "s_uniqid"         : 12,
-    "ext_header"       : 20,
-    "resp_session"     : 22,
-    "r_uniqid"         : 24,
-    "snd_seq"          : 32,
-    "resp_seq"         : 35,
+    "snd_session"      : 10,    # For Friday: just zero. Eventually automatic
+    "s_uniqid"         : 12,    # Find from /etc/waggle/hostname
+    "ext_header"       : 20,    # Just 0
+    "resp_session"     : 22,    # Normally 0, sometimes used
+    "r_uniqid"         : 24,    # Defined as 0 for the cloud
+    "snd_seq"          : 32,    # Tracked by this module
+    "resp_seq"         : 35,    # Normally 0, sometimes used
     "crc-16"           : 38
 }
 #The length of each piece of data, in bytes
@@ -45,17 +47,43 @@ HEADER_BYTELENGTHS = {
 #The total header length
 HEADER_LENGTH = 40
 FOOTER_LENGTH = 4
+VERSION = "0.3"
+SEQUENCE = 0
 
-def pack(header_data, message_data):
+with open('/etc/waggle/hostname','r') as file_:
+    UNIQUEID = int(file_.read())
+
+
+
+
+def pack(header_data, message_data=""):
     """
-        Takes header and message information and yields packets representing that data.
+        Takes header and message information and returns packets representing that data.
 
         :param dictionary header_data: A dictionary containing the header data
         :param string/FileObject message_data: The data to be packed into a Packet
         :rtype: string
         :raises KeyError: A KeyError will be raised if the header_data dictionary is not properly formatted
     """
+    global SEQUENCE
+    global UNIQUEID
+    global VERSION
 
+    #Generate the automatic fields and update them with user-supplied values
+    auto_header = {
+        "prot_ver"         : VERSION, 
+        "flags"            : (0,0,False),
+        "len_body"         : len(message_data),
+        "time"             : int(time.time()),
+        "snd_session"      : 0,    
+        "s_uniqid"         : UNIQUEID,    
+        "ext_header"       : 0,    
+        "resp_session"     : 0,   
+        "r_uniqid"         : 0,   
+        "snd_seq"          : SEQUENCE,   
+        "resp_seq"         : 0,
+    }
+    auto_header.update(header_data)
     #Create the CRC function 
     crc32fun = mkCrcFun('crc-32')
 
@@ -70,7 +98,7 @@ def pack(header_data, message_data):
     #See if it is less than 1K
     if(message_data.tell() < 1024):
         try:
-            header = pack_header(header_data)
+            header = pack_header(auto_header)
         except KeyError as e: 
             raise
 
@@ -79,8 +107,10 @@ def pack(header_data, message_data):
         msg = message_data.read()
         message_data.close()
 
-        #Calculate the CRC, pack it all up, and yield the result.
+        #Calculate the CRC, pack it all up, and return the result.
+        SEQUENCE = (SEQUENCE + 1) % 16777216
         msg_crc32 = _bin_pack(crc32fun(msg),FOOTER_LENGTH)
+
         return header + msg + msg_crc32
 
     #Multi-packet
