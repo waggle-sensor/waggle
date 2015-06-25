@@ -39,11 +39,11 @@ class Data_Cache(Daemon):
         
         print 'Data Cache started.'
         
-       try:
-            pull = pull_server()
+        try:
+            pull = Process(target=pull_server)
             pull.start()
         
-            push = push_server()
+            push = Process(target=push_server)
             push.start()
             while True:
                 pass
@@ -52,6 +52,7 @@ class Data_Cache(Daemon):
             pull.terminate()
             push.terminate()
             print 'Data Cache shutting down...'
+           
         
     @staticmethod    
     def outgoing_push(order, dev, msg_p, msg):
@@ -151,7 +152,7 @@ class Data_Cache(Daemon):
         for i in range(length):
             buff_in = []
             for j in range(5):
-                buff_in.append(Queue.Queue())
+                buff_in.append(Queue())
             buff.append(buff_in)
         return buff
                 
@@ -188,87 +189,85 @@ def parse_data(data, msg):
     else: 
         Data_Cache.incoming_push(int(dev),int(msg_p),msg)
                 
-def push_server(Process):
+def push_server():
     """ The Data Cache server that handles push requests. """
-    def run(self):
-        if os.path.exists('/tmp/Data_Cache_pull_server'): #checking for the file
-            os.remove('/tmp/Data_Cache_pull_server')
-        print "opening socket..."
-        
-        #creates a UNIX, STREAMing socket
-        server_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        server_sock.bind('/tmp/Data_Cache_pull_server') #binds to this file path
-        #become a server socket
-        server_sock.listen(5)
-
-        while True:
-        #accept connections from outside
-            client_sock, address = server_sock.accept()
-            print "connection accepted."
-            #TODO Is there a better way to do this?
-            while True:
-                try:
-                    buffer = ''
-                    data = client_sock.recv(4028) #arbitrary 
-                    if not data:
-                        time.sleep(1)
-                    else:
-                        buffer += data #this is probably unnecccessary 
-                        line, msg = buffer.split('|', 1) #TODO probably a better way to do this
-                        parse_data(line, msg)
-                        print "-" * 20 
-                        print data
-                except KeyboardInterrupt, k:
-                    print "Data Cache shutting down..."
-                    break
-        print "-" * 20
-        print "Data Cache server socket shutting down..."
-        serversocket.close()
+    if os.path.exists('/tmp/Data_Cache_pull_server'): #checking for the file
         os.remove('/tmp/Data_Cache_pull_server')
+    print "Opening push socket..."
+    
+    #creates a UNIX, STREAMing socket
+    server_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    server_sock.bind('/tmp/Data_Cache_pull_server') #binds to this file path
+    #become a server socket
+    server_sock.listen(5)
+
+    while True:
+    #accept connections from outside
+        client_sock, address = server_sock.accept()
+        print "connection accepted."
+        #TODO Is there a better way to do this?
+        while True:
+            try:
+                buffer = ''
+                data = client_sock.recv(4028) #arbitrary 
+                if not data:
+                    time.sleep(1)
+                else:
+                    buffer += data #this is probably unnecccessary 
+                    line, msg = buffer.split('|', 1) #TODO probably a better way to do this
+                    parse_data(line, msg)
+                    print "-" * 20 
+                    print data
+            except KeyboardInterrupt, k:
+                print "Data Cache shutting down..."
+                break
+    print "-" * 20
+    print "Data Cache server socket shutting down..."
+    serversocket.close()
+    os.remove('/tmp/Data_Cache_pull_server')
         
 
-def pull_server(Process):
+def pull_server():
     """ The Data Cache server that handles pull requests. An incoming pull request will be a string in the format 'i,deviceP'. An outgoing pull request will be a string in the format 'o '. """
-    def run(self):
-        if os.path.exists('/tmp/Data_Cache_pull_server'): #checking for the file
-            os.remove('/tmp/Data_Cache_pull_server')
-        print "opening socket..."
-        
-        #creates a UNIX, STREAMing socket
-        server_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        server_sock.bind('/tmp/Data_Cache_pull_server') #binds to this file path
-        #become a server socket
-        server_sock.listen(5)
-
-        while True:
-        #accept connections from outside
-            client_sock, address = server_sock.accept()
-            print "connection accepted."
-            #TODO Is there a better way to do this?
-            while True:
-                try:
-                    buffer = ''
-                    data = client_sock.recv(40) #TODO 40 bites is the expected size of pull requests
-                    if not data:
-                        time.sleep(1)
-                    else:
-                        buffer += data #this is probably unnecccessary 
-                        if buffer.find(',') != -1: #splits the incoming data into individual messages just in case many messages are sent at once
-                            line, dev = buffer.split(',', 1) #TODO need to change to reflect message protocol
-                            msg = Data_Cache.incoming_pull(dev) #pulls a message from that device's queue
-                        else:
-                            msg = Data_Cache.outgoing_pull()
-                        
-                        server_sock.send(msg) #sends the message
-                        print "-" * 20 
-                        print data
-                except KeyboardInterrupt, k:
-                    print "Data Cache shutting down..."
-                    break
-        print "-" * 20
-        print "Data Cache server socket shutting down..."
-        serversocket.close()
+    if os.path.exists('/tmp/Data_Cache_pull_server'): #checking for the file
         os.remove('/tmp/Data_Cache_pull_server')
+    print "Opening pull socket..."
+    
+    #creates a UNIX, STREAMing socket
+    server_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    server_sock.bind('/tmp/Data_Cache_pull_server') #binds to this file path
+    #become a server socket
+    server_sock.listen(5)
+
+    while True:
+    #accept connections from outside
+        client_sock, address = server_sock.accept()
+        print "connection accepted."
+        #TODO Is there a better way to do this?
+        while True:
+            try:
+                buffer = ''
+                data = client_sock.recv(40) #TODO 40 bites is the expected size of pull requests
+                if not data:
+                    time.sleep(1)
+                else:
+                    buffer += data #this is probably unnecccessary 
+                    if buffer.find(',') != -1: #splits the incoming data into individual messages just in case many messages are sent at once
+                        line, dev = buffer.split(',', 1) #TODO need to change to reflect message protocol
+                        msg = Data_Cache.incoming_pull(dev) #pulls a message from that device's queue
+                    else:
+                        msg = Data_Cache.outgoing_pull()
+                    
+                    server_sock.send(msg) #sends the message
+                    print "-" * 20 
+                    print data
+            except KeyboardInterrupt, k:
+                print "Data Cache shutting down..."
+                break
+    print "-" * 20
+    print "Data Cache server socket shutting down..."
+    serversocket.close()
+    os.remove('/tmp/Data_Cache_pull_server')
     
         
 if __name__ == "__main__":

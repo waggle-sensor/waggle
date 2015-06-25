@@ -28,7 +28,7 @@ class client_push(Process):
                     if os.path.exists('/tmp/Data_Cache_push_server'):
                         client_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
                         client_sock.connect('/tmp/Data_Cache_push_server')
-                        print "Ready"
+                        print "client_push connected to data cache... "
                         data = comm.DC_push.get() #theoretically pushes messages from the GN into a queue
                         print "sending: " , data
                         client_sock.sendall()
@@ -36,7 +36,6 @@ class client_push(Process):
                     else: 
                         print 'Unable to connect to DC...'
                 else: 
-                    print 'sleeping'
                     time.sleep(1) #else, wait until messages are in queue
             except KeyboardInterrupt, k:
                     print "Shutting down."
@@ -48,25 +47,23 @@ class client_pull(Process):
     
     def run(self):
         comm = internal_communicator()
-        print "Connecting to data cache... client_pull"
         if os.path.exists('/tmp/Data_Cache_pull_server'):
             client_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-            print "Ready"
             while True:
-                while incoming_request.empty(): #sleeps until a GN initiates a pull request
+                while comm.incoming_request.empty(): #sleeps until a GN initiates a pull request
                     time.sleep(1)
                 try: 
-                    
+                    print "client_pull connected to data cache... "
                     client_sock.connect('/tmp/Data_Cache_pull_server')#opens socket when there is an incoming pull request
                     dev = comm.incoming_request.get() #gets the dev ID that is initiating the pull request
                     dev += 'i,' + str(dev) #puts the request in the correct format for the DC
-                        print "sending: " , dev
-                        client_sock.send(dev)
-                        msg = client_sock.recv(4028) #arbitrary, can go in config file
-                        if not data:
-                            comm.incoming.put(msg) #will be False if no messages are available in the DC for the GN
-                        else: 
-                            print 'Client_pull error...'
+                    print "sending: " , dev
+                    client_sock.send(dev)
+                    msg = client_sock.recv(4028) #arbitrary, can go in config file
+                    if not data:
+                        comm.incoming.put(msg) #will be False if no messages are available in the DC for the GN
+                    else: 
+                        print 'Client_pull error...'
                         
                 except KeyboardInterrupt, k:
                     print "Shutting down."
@@ -81,13 +78,13 @@ class push_server(Process):
     adds it to the message, along with indicator flag specifying that it is an outgoing message, stores it in DC_push queue... for now."""
     
     def run(self):
-        print 'server process started'
         comm = internal_communicator()
         HOST = '0.0.0.0'
         PORT = 9090
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.bind((HOST,PORT))
         server.listen(5) #supports up to 5 threads, one for each GN
+        print 'Push server process started...'
         
         while True:
             conn, addr = server.accept()
@@ -121,7 +118,7 @@ class pull_server(Process):
     """ Server process that listens for connections from GNs. Gets messages from the Data Cache and sends them to connected GNs. """
     
     def run(self):
-        print 'server process started'
+        print 'Pull server process started...'
         comm = internal_communicator()
         HOST = '0.0.0.0'
         PORT = 9091
@@ -144,9 +141,9 @@ class pull_server(Process):
                             else:
                                 msg = incoming.get()#if there are no messages for this GN, this returns False
                                 break
-                    conn.sendto(msg, addr) #sends the msg to the GN #TODO this may break
-                    conn.close() #closes connection to GN? 
-                    break #TODO does this break the while or the try?
+                        conn.sendto(msg, addr) #sends the msg to the GN #TODO this may break
+                        conn.close() #closes connection to GN? 
+                    
                     else:
                        pass
                 except KeyboardInterrupt, k:
