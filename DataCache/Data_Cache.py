@@ -191,13 +191,13 @@ def parse_data(data, msg):
                 
 def push_server():
     """ The Data Cache server that handles push requests. """
-    if os.path.exists('/tmp/Data_Cache_pull_server'): #checking for the file
-        os.remove('/tmp/Data_Cache_pull_server')
+    if os.path.exists('/tmp/Data_Cache_push_server'): #checking for the file
+        os.remove('/tmp/Data_Cache_push_server')
     print "Opening push socket..."
     
     #creates a UNIX, STREAMing socket
     server_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-    server_sock.bind('/tmp/Data_Cache_pull_server') #binds to this file path
+    server_sock.bind('/tmp/Data_Cache_push_server') #binds to this file path
     #become a server socket
     server_sock.listen(5)
 
@@ -224,7 +224,7 @@ def push_server():
     print "-" * 20
     print "Data Cache server socket shutting down..."
     serversocket.close()
-    os.remove('/tmp/Data_Cache_pull_server')
+    os.remove('/tmp/Data_Cache_push_server')
         
 
 def pull_server():
@@ -251,7 +251,7 @@ def pull_server():
                 if not data:
                     time.sleep(1)
                 else:
-                    buffer += data #this is probably unnecccessary 
+                    buffer += data #this is probably unnecccessary  #TODO write logic in case the NC breaks before msg is sent
                     if buffer.find(',') != -1: #splits the incoming data into individual messages just in case many messages are sent at once
                         line, dev = buffer.split(',', 1) #TODO need to change to reflect message protocol
                         msg = Data_Cache.incoming_pull(dev) #pulls a message from that device's queue

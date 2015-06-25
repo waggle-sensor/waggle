@@ -34,9 +34,10 @@ class client_push(Process):
                         print "client_push connected to data cache... "
                         data = comm.DC_push.get() #theoretically pushes messages from the GN into a queue
                         print "sending: " , data
-                        client_sock.sendall()
+                        client_sock.sendall(data)
                         client_sock.close() #closes socket after each message is sent #TODO is there a better way to do this?
                     else: 
+                        time.sleep(10)
                         print 'Unable to connect to DC...'
                 else: 
                     time.sleep(1) #else, wait until messages are in queue
@@ -94,14 +95,22 @@ class push_server(Process):
             print "Connected to ", addr
             while True:
                 try:
+                    buffer = ''
                     data = conn.recv(4028) 
+                    buffer +=data
                     if not data:
-                        header = PacketHandler.unpack_header(data)
+                        pass
+                        
+                    else:
+                        print 'if not data'
+                        print 'buff len ' ,len(buffer)
+                        header = get_header(data)
+                        
                         if header['r_uniqid'] == 0: #TODO assuming the cloud ID is 0. May need to change later
-                            dev, msg, order = header['flags'] #unpacks the tuple containing the flags
+                            dev, msg_p, order = header['flags'] #unpacks the tuple containing the flags
                             #adds each onto the msg string #TODO will this work with pickled things?
                             data += (str(order) + '|')
-                            data += (str(msg) + ',')
+                            data += (str(msg_p) + ',')
                             data += (str(dev) +',')
                             data += 'o,' #indicates that it is an outgoing message
                             comm.DC_push.put(data)
@@ -109,11 +118,11 @@ class push_server(Process):
                             pass #TODO messages just gets unpacked and handled by NC
                         else: 
                             print "Unknown recipient"
-                    else:
-                       pass
                 except KeyboardInterrupt, k:
                     print "Shutting down."
                     break
+                #except: 
+                    #server.close()
             break
         server.close()
             

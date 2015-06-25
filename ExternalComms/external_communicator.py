@@ -115,7 +115,7 @@ class client_push(Process):
                 try: 
                     client_sock.connect('/tmp/Data_Cache_push_server') #opens socket when a message is in the queue
                     msg = comm.incoming.get() #gets the incoming message from the queue
-                    header = PacketHandler.unpack_header(msg)
+                    header = get_header(msg)
                     #TODO may need to do a check to make sure the recipient is actually a part of this node
                     #TODO Need to confirm that the cloud will send the correct device priority or need to make a dictionary stored on the node itself.
                     flags = header['flags'] #extracts priorities
