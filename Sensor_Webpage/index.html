@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<title>The Waggle Platform</title>
+
+		<!-- Grab necessary Bootstrap, JavaScript, JQuery, and styles -->
+		<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+		<link rel="stylesheet" href="style.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+		<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+		<script src="Chart.js-master/Chart.js"></script>
+		<script src="Chart.js-master/src/Chart.Line.js"></script>
+		<script src="update.js"></script>
+		<script src="parse.js"></script>
+
+		<!-- Start the timer to update the webpage -->
+		<script>
+			timer();
+		</script>
+	</head>
+
+	<body>
+		<!-- Top area -->
+		<div class="container-fluid" id="header">
+			<div class="col-md-2">
+				<h3><strong>EnvSense V1</strong></h3>
+			</div>
+			<div class="col-md-4">
+				<img id="EnvSense" src="EnvSense1.JPG" alt="Sensor Board"/>
+			</div>
+			<div class="col-md-4">
+				<img id="SysMon" src="IntelBoard.JPG" alt="System Monitor"/>
+			</div>
+			<div class="col-md-2">
+				<h3 id="date"><strong></strong></h3>
+				<h3 id="time"><strong></strong></h3>
+			</div>
+		</div>
+
+		<!-- Sensor data -->
+		<div class="container-fluid" id="data_container">
+			<div class="col-md-4" style="height: 60px">
+				<p><strong>RHT103</strong></p>
+				<div class="col-md-6"><p style="width: 95px; float: left">Temperature</p><p style="width: 95px; float: left">25 &degC</p></div>
+				<div class="col-md-6" id="graph">
+					<canvas id="canvas00" height="60"></canvas>
+				</div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<p><strong>DS18B20</strong></p>
+				<div class="col-md-6"><p style="width: 95px; float: left">Temperature</p><p style="width: 95px; float: left">25 &degC</p></div>
+				<div class="col-md-6" id="graph">
+					<canvas id="canvas01" height="60"></canvas>
+				</div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<p><strong>Total Reducing Gases</strong></p>
+				<div class="col-md-6"><p style="width: 95px; float: left">???</p><p style="width: 95px; float: left">???</p></div>
+				<div class="col-md-6" id="graph">
+					<canvas id="canvas02" height="60"></canvas>
+				</div>
+			</div>
+			<div class="col-md-4" style="height: 120px">
+				<div id="divide"></div>
+				<p><strong>SHT15</strong></p>
+				<div class="col-md-6"><p style="width: 95px; float: left">Temperature</p><p style="width: 95px; float: left">?? &degC</p></div>
+				<div class="col-md-6" id="graph">
+					<canvas id="canvas100" height="60"></canvas>
+				</div>
+				<div class="col-md-6"><p style="width: 95px; float: left">Humidity</p><p style="width: 95px; float: left">?? %RH</p></div>
+				<div class="col-md-6" id="graph">
+					<canvas id="canvas101" height="60"></canvas>
+				</div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<div id="divide"></div>
+				<p><strong>PR103J2</strong></p>
+				<div class="col-md-6"><p style="width: 95px; float: left">Temperature</p><p style="width: 95px; float: left">?? &degC</p></div>
+				<div class="col-md-6" id="graph">
+					<canvas id="canvas11" height="60"></canvas>
+				</div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<div id="divide"></div>
+				<p><strong>Ethanol</strong></p>
+				<div class="col-md-6"><p style="width: 95px; float: left">???</p><p style="width: 95px; float: left">???</p></div>
+				<div class="col-md-6" id="graph">
+					<canvas id="canvas12" height="60"></canvas>
+				</div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<div id="divide"></div>
+				<p><strong>GA1A1SP20WP</strong></p>
+				<div class="col-md-6"><p style="width: 105px; float: left">Luminous Intensity</p><p style="width: 85px; float: left">raw A/D</p></div>
+				<div class="col-md-6" id="graph">
+					<canvas id="canvas20" height="60"></canvas>
+				</div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<div id="divide"></div>
+				<p><strong>Nitrogen</strong></p>
+				<div class="col-md-6"><p style="width: 95px; float: left">???</p><p style="width: 95px; float: left">???</p></div>
+				<div class="col-md-6" id="graph">
+					<canvas id="canvas21" height="60"></canvas>
+				</div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<div id="divide"></div>
+				<p><strong>PDVP8104</strong></p>
+				<div class="col-md-6"><p style="width: 105px; float: left">Luminous Intensity</p><p style="width: 85px; float: left">raw A/D</p></div>
+				<div class="col-md-6" id="graph">
+					<canvas id="canvas22" height="60"></canvas>
+				</div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<div id="divide"></div>
+				<p><strong>SHT75</strong></p>
+				<div class="col-md-6"><p style="width: 95px; float: left">Temperature</p><p style="width: 95px; float: left">?? &degC</p></div>
+				<div class="col-md-6" id="graph">
+					<canvas id="canvas30" height="60"></canvas>
+				</div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<div id="divide"></div>
+				<p><strong>Ozone</strong></p>
+				<div class="col-md-6"><p style="width: 95px; float: left">???</p><p style="width: 95px; float: left">???</p></div>
+				<div class="col-md-6" id="graph">
+					<canvas id="canvas31" height="60"></canvas>
+				</div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<div id="divide"></div>
+				<p><strong>MAX4466</strong></p>
+				<div class="col-md-6"><p style="width: 105px; float: left">Acoustic Intensity</p><p style="width: 85px; float: left">raw A/D</p></div>
+				<div class="col-md-6" id="graph">
+					<canvas id="canvas32" height="60"></canvas>
+				</div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<div id="divide"></div>
+				<p><strong>TMP421</strong></p>
+				<div class="col-md-6"><p style="width: 95px; float: left">Temperature</p><p style="width: 95px; float: left">?? &degC</p></div>
+				<div class="col-md-6" id="graph">
+					<canvas id="canvas40" height="60"></canvas>
+				</div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<div id="divide"></div>
+				<p><strong>Hydrogen Sulphide</strong></p>
+				<div class="col-md-6"><p style="width: 95px; float: left">???</p><p style="width: 95px; float: left">???</p></div>
+				<div class="col-md-6" id="graph">
+					<canvas id="canvas41" height="60"></canvas>
+				</div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<div id="divide"></div>
+				<p><strong>HIH4030</strong></p>
+				<div class="col-md-6"><p style="width: 95px; float: left">Humidity</p><p style="width: 95px; float: left">?? %RH</p></div>
+				<div class="col-md-6" id="graph">
+					<canvas id="canvas42" height="60"></canvas>
+				</div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<div id="divide"></div>
+				<p><strong>MLX90614ESF</strong></p>
+				<div class="col-md-6"><p style="width: 95px; float: left">Temperature</p><p style="width: 95px; float: left">?? &degC</p></div>
+				<div class="col-md-6" id="graph">
+					<canvas id="canvas50" height="60"></canvas>
+				</div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<div id="divide"></div>
+				<p><strong>Total Oxidizing Gases</strong></p>
+				<div class="col-md-6"><p style="width: 95px; float: left">???</p><p style="width: 95px; float: left">???</p></div>
+				<div class="col-md-6" id="graph">
+					<canvas id="canvas51" height="60"></canvas>
+				</div>
+			</div>
+			<div class="col-md-4" style="height: 120px">
+				<div id="divide"></div>
+				<p><strong>HIH6130</strong></p>
+				<div class="col-md-6"><p style="width: 95px; float: left">Temperature</p><p style="width: 95px; float: left">25 &degC</p></div>
+				<div class="col-md-6" id="graph">
+					<canvas id="canvas520" height="60"></canvas>
+				</div>
+				<div class="col-md-6"><p style="width: 95px; float: left">Humidity</p><p style="width: 95px; float: left">?? %RH</p></div>
+				<div class="col-md-6" id="graph">
+					<canvas id="canvas521" height="60"></canvas>
+				</div>
+			</div>
+			<div class="col-md-4" style="height: 120px">
+				<div id="divide"></div>
+				<p><strong>BMP180</strong></p>
+				<div class="col-md-6"><p style="width: 95px; float: left">Temperature</p><p style="width: 95px; float: left">?? &degC</p></div>
+				<div class="col-md-6" id="graph">
+					<canvas id="canvas60" height="60"></canvas>
+				</div>
+				<div class="col-md-6"><p style="width: 95px; float: left">Pressure</p><p style="width: 95px; float: left">?? PA</p></div>
+				<div class="col-md-6" id="graph">
+					<canvas id="canvas60" height="60"></canvas>
+				</div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<div id="divide"></div>
+				<p><strong>Carbon Monoxide</strong></p>
+				<div class="col-md-6"><p style="width: 95px; float: left">???</p><p style="width: 95px; float: left">??</p></div>
+				<div class="col-md-6" id="graph">
+					<canvas id="canvas61" height="60"></canvas>
+				</div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<div id="divide"></div>
+				<p><strong>Sulphur Dioxide</strong></p>
+				<div class="col-md-6"><p style="width: 95px; float: left">???</p><p style="width: 95px; float: left">???</p></div>
+				<div class="col-md-6" id="graph">
+					<canvas id="canvas62" height="60"></canvas>
+				</div>
+			</div>
+			<div class="col-md-4" style="height: 120px">
+				<div id="divide"></div>
+				<p><strong>D6T44L06</strong></p>
+				<div class="col-md-6"><p style="width: 105px; float: left">Avg. Temperature</p><p style="width: 85px; float: left">?? &degC</p></div>
+				<div class="col-md-6" id="graph">
+					<canvas id="canvas700" height="60"></canvas>
+				</div>
+				<div class="col-md-6"><p style="width: 115px; float: left">Casing Temperature</p><p style="width: 75px; float: left">?? &degC</p></div>
+				<div class="col-md-6" id="graph">
+					<canvas id="canvas701" height="60"></canvas>
+				</div>
+			</div>
+			<div class="col-md-4" style="height: 120px">
+				<div id="divide"></div>
+				<p><strong>HTU21D</strong></p>
+				<div class="col-md-6"><p style="width: 95px; float: left">Temperature</p><p style="width: 95px; float: left">?? &degC</p></div>
+				<div class="col-md-6" id="graph">
+					<canvas id="canvas710" height="60"></canvas>
+				</div>
+				<div class="col-md-6"><p style="width: 95px; float: left">Humidity</p><p style="width: 95px; float: left">?? %RH</p></div>
+				<div class="col-md-6" id="graph">
+					<canvas id="canvas711" height="60"></canvas>
+				</div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<div id="divide"></div>
+				<p><strong></strong></p>
+				<div class="col-md-6"><p style="width: 95px; float: left"></p><p style="width: 95px; float: left"></p></div>
+				<div class="col-md-6" id="graph">
+					<canvas id="canvas72" height="60"></canvas>
+				</div>
+			</div>
+			<div class="col-md-4" style="height: 60px">
+				<p><strong></strong></p>
+				<div class="col-md-6"><p style="width: 95px; float: left"></p><p style="width: 95px; float: left"></p></div>
+				<div class="col-md-6" id="graph">
+					<canvas id="canvas80" height="60"></canvas>
+				</div>
+			</div>
+			<div class="col-md-4" style="height: 180px">
+				<div id="divide"></div>
+				<p><strong>HMC5883</strong></p>
+				<div class="col-md-6"><p style="width: 110px; float: left">Magnetic Field x</p><p style="width: 80px; float: left">?? uT</p></div>
+				<div class="col-md-6" id="graph">
+					<canvas id="canvas81" height="60"></canvas>
+				</div>
+				<div class="col-md-6"><p style="width: 110px; float: left">Magnetic Field y</p><p style="width: 80px; float: left">?? uT</p></div>
+				<div class="col-md-6" id="graph">
+					<canvas id="canvas81" height="60"></canvas>
+				</div>
+				<div class="col-md-6"><p style="width: 110px; float: left">Magnetic Field z</p><p style="width: 80px; float: left">?? uT</p></div>
+				<div class="col-md-6" id="graph">
+					<canvas id="canvas81" height="60"></canvas>
+				</div>
+			</div>
+			<div class="col-md-4" style="height: 240px">
+				<div id="divide"></div>
+				<p><strong>MMA8452Q</strong></p>
+				<div class="col-md-6"><p style="width: 95px; float: left">Acceleration x</p><p style="width: 95px; float: left">?? g</p></div>
+				<div class="col-md-6" id="graph">
+					<canvas id="canvas82" height="60"></canvas>
+				</div>
+				<div class="col-md-6"><p style="width: 95px; float: left">Acceleration y</p><p style="width: 95px; float: left">?? g</p></div>
+				<div class="col-md-6" id="graph">
+					<canvas id="canvas82" height="60"></canvas>
+				</div>
+				<div class="col-md-6"><p style="width: 95px; float: left">Acceleration z</p><p style="width: 95px; float: left">?? g</p></div>
+				<div class="col-md-6" id="graph">
+					<canvas id="canvas82" height="60"></canvas>
+				</div>
+				<div class="col-md-6"><p style="width: 95px; float: left">RMS Vibration</p><p style="width: 95px; float: left">?? g</p></div>
+				<div class="col-md-6" id="graph">
+					<canvas id="canvas82" height="60"></canvas>
+				</div>
+			</div>
+		</div>
+
+		<script>
+		Chart.defaults.global.showScale = false;
+		var randomScalingFactor = function(){ return Math.round(Math.random()*100)};
+		var lineChartData = {
+			labels: ["", "", "", "", "", "", "", "", "", "",
+					 "", "", "", "", "", "", "", "", "", "",
+					 "", "", "", "", "", "", "", "", "", "",
+					 "", "", "", "", "", "", "", "", "", "",
+					 "", "", "", "", "", "", "", "", "", "",
+					 "", "", "", "", "", "", "", "", "", "",],
+			datasets: [
+				{
+					label: "tmp",
+					fillColor: "rgba(220,22,220,0.2)",
+					strokeColor: "rgba(22,220,220,1)",
+					pointColor: "rgba(220,220,22,1)",
+					pointStrokeColor: "#fff",
+					pointHighlightFill: "#fff",
+					pointHighlightStroke: "rgba(0,0,0,0)",
+					data: [0, 1.2, 1.5, 1.3, 2.0, 0.5, 0, 0.3, 0.4, 0.9,
+						   0, 1.2, 1.5, 1.3, 2.0, 0.5, 0, 0.3, 0.4, 0.9,
+						   0, 1.2, 1.5, 1.3, 2.0, 0.5, 0, 0.3, 0.4, 0.9,
+			 			   0, 1.2, 1.5, 1.3, 2.0, 0.5, 0, 0.3, 0.4, 0.9,
+						   0, 1.2, 1.5, 1.3, 2.0, 0.5, 0, 0.3, 0.4, 0.9,
+						   0, 1.2, 1.5, 1.3, 2.0, 0.5, 0, 0.3, 0.4, 0.9,]
+				}
+			]
+		};
+		window.onload = function(){
+			var ctx00 = document.getElementById("canvas00").getContext("2d");
+			window.myLine = new Chart(ctx00).Line(lineChartData, {
+				responsive: true,
+				scaleShowGridLines: false,
+				pointDotRadius: 1
+			});
+
+			var ctx01 = document.getElementById("canvas01").getContext("2d");
+			window.myLine = new Chart(ctx01).Line(lineChartData, {
+				responsive: true,
+				scaleShowGridLines: false,
+				pointDotRadius: 1
+			});
+
+			var ctx02 = document.getElementById("canvas02").getContext("2d");
+			window.myLine = new Chart(ctx02).Line(lineChartData, {
+				responsive: true,
+				scaleShowGridLines: false,
+				pointDotRadius: 1
+			});
+
+			var ctx100 = document.getElementById("canvas100").getContext("2d");
+			window.myLine = new Chart(ctx100).Line(lineChartData, {
+				responsive: true,
+				scaleShowGridLines: false,
+				pointDotRadius: 1
+			});
+
+			var ctx101 = document.getElementById("canvas101").getContext("2d");
+			window.myLine = new Chart(ctx101).Line(lineChartData, {
+				responsive: true,
+				scaleShowGridLines: false,
+				pointDotRadius: 1
+			});
+
+			var ctx11 = document.getElementById("canvas11").getContext("2d");
+			window.myLine = new Chart(ctx11).Line(lineChartData, {
+				responsive: true,
+				scaleShowGridLines: false,
+				pointDotRadius: 1
+			});
+		}
+		</script>
+		<div class="col-md-12" style="width: 100%; margin: auto; text-align: center">
+			<img src="Waggle_Banner.png" alt="Waggle" align="middle"/>
+		</div>
+	</body>
