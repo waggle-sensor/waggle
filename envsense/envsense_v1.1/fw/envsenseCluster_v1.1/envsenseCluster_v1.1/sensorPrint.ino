@@ -187,10 +187,10 @@ void sensor_print()
     {
         Serial.print("WXSensor;");
         Serial.print("HIH_6130_1_T_C:");
-        Serial.print(HIH_6130_1_hih.temperature(), 2);
+        Serial.print((float(HIH61XX_temp) / 16382) * 165 - 40 , 2);
         Serial.print(";");
         Serial.print("HIH_6130_1_H_%:");
-        Serial.print(HIH_6130_1_hih.humidity(), 2);
+        Serial.println((float(HIH61XX_humidity) * 100) / 16382, 2);
         Serial.print(";");
         Serial.println("WXSensor");
     }

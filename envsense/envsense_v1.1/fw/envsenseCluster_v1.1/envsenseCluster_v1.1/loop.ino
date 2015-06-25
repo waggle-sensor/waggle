@@ -229,15 +229,15 @@ void loop() {
         Serial.flush();
         #endif //debug_serial
         
-        HIH_6130_1_hih.start();
+        HIH61XX_start();
         #ifdef POST
         wdt_reset();
         #endif
-        HIH_6130_1_hih.update();
+        HIH61XX_update();
         #ifdef POST
         wdt_reset();
         #endif
-        HIH_6130_1_hih.stop();
+        HIH61XX_stop();
         #ifdef POST
         wdt_reset();
         #endif

@@ -287,14 +287,12 @@ void post() {
             Serial.print("Testing HIH6130\t");
             Serial.flush();
             #endif
-            
+            Wire.begin();
             for(int a = 0; a<10; a++)
             {
-                HIH_6130_1_hih.start();
-                HIH_6130_1_hih.update();
-                HIH_6130_1_hih.humidity();
-                HIH_6130_1_hih.temperature();
-                HIH_6130_1_hih.stop();
+                HIH61XX_start();
+                HIH61XX_update();
+                HIH61XX_stop();
                 wdt_reset();
                 delay(500);
                 wdt_reset();

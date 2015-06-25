@@ -25,7 +25,6 @@ nop();
 #include <OneWire.h>
 #include <dht.h>
 #include <Wire.h>
-#include <HIH61XX.h>
 #include <LibTempTMP421.h>
 #include <DallasTemperature.h>
 #include <Adafruit_Sensor.h>
@@ -444,7 +443,94 @@ int err;
 
 #ifdef HIH6130_ADD
 //  Create an HIH61XX with I2C address 0x27, powered by pin 22, need to modify this
-HIH61XX HIH_6130_1_hih(0x27,22);
+//  Taken directly from HIH61XX Library
+uint8_t hih6130_address = 0x27;
+uint8_t hih6130_powerPin = 22;
+uint8_t f = 0;
+uint16_t HIH61XX_humidity = 0;
+uint16_t HIH61XX_temp = 0;
+uint8_t NoError = 0;
+uint8_t ConnectionError = 1;
+uint8_t CommunicationError = 2;
+uint8_t NotRunningError = 3;
+uint8_t CommandModeError = 4;
+uint8_t ErrorMask = 15;
+uint8_t RunningFlag = 128;
+uint8_t CommandModeFlag = 64;
+uint8_t FlagsMask = ~ErrorMask;
+
+uint8_t setError(uint8_t error) { 
+    f = (f & ~ErrorMask) | error; 
+    return error; 
+}
+
+uint8_t HIH61XX_start()
+{
+  if(hih6130_powerPin < 255) {
+    digitalWrite(hih6130_powerPin, HIGH);
+  }
+  f |= RunningFlag;
+  return setError(0);
+}
+
+uint8_t HIH61XX_update()
+{
+  if(!(f & RunningFlag)) {
+    f = (f & ~ErrorMask) | NotRunningError;
+  }
+  
+  uint8_t x, y, s;
+  
+  Wire.beginTransmission(hih6130_address);
+  int azer = Wire.endTransmission();
+  if(azer == 0) {    
+    while(true) {
+      delay(10);
+      
+      int c = Wire.requestFrom(hih6130_address, (uint8_t) 4);
+      if (c == 0) Serial.println("Problem with request");
+      if(Wire.available()) {
+        x = Wire.read();
+        y = Wire.read();
+        s = x >> 6;
+        
+        switch(s) { 
+          case 0:
+            HIH61XX_humidity = (((uint16_t) (x & 0x3f)) << 8) | y;
+            x = Wire.read();
+            y = Wire.read();
+            HIH61XX_temp = ((((uint16_t) x) << 8) | y) >> 2;
+            Wire.endTransmission();
+            return setError(0);
+            
+          case 1:
+            Wire.endTransmission();
+            break;
+            
+          case 2:
+            Wire.endTransmission();
+            return setError(CommandModeError);
+        }
+      }
+      else {
+        return setError(CommunicationError);
+      }
+    }
+  }
+  else {
+    Serial.print("...");
+    Serial.println(azer);
+    return setError(ConnectionError);
+  }
+}
+uint8_t HIH61XX_stop()
+{
+  if(hih6130_powerPin < 255) {
+    digitalWrite(hih6130_powerPin, LOW);
+  }
+  f &= ~RunningFlag;
+  return setError(0);
+}
 #endif //HIH6130_ADD
 
 #ifdef TMP421_ADD
@@ -459,7 +545,7 @@ float BMP_180_1_temperature, BMP_180_1_pressure;
 
 #ifdef WindVel_ADD
 #ifndef HMC5883_ADD  // Requires operation of sensor HMC5883
-Adafruit_HMC5883_Unified mag = Adafruit_HMC5883_Unified(12345);
+Adafruit_HMC5883_Unified mag = Adafruit_HMC5883_Unified(23181);
 #endif  //HMC5883_ADD
 // DELAY: 1  - Sampling Rate: 310  Hz    Max observed freq: 155   Hz   Max observed speed: 168.6 m/s
 // DELAY: 2  - Sampling Rate: 238  Hz    Max observed freq: 119   Hz   Max observed speed: 129.4 m/s
@@ -583,7 +669,7 @@ float HTU21D_H, HTU21D_T;
 #endif //HTU21D_ADD
 
 
-int testing_addr = 0;
+int testing_addr = 0;   // address in EEPROM where testing bit is kept
 int numSensors = 19;    // must be >= 1
 
 
