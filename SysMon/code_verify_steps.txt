@@ -1,0 +1,8 @@
+- turn on "verbose" compilation output in Arduino IDE
+- click "verify"
+- click "verify" again if this is the first compilation with the "verbose" setting (it'll make it much easier to find the desired dir)
+- find temp directory where Arduino dumps the intermediate files
+- go to that dir
+- avr-objdump -S <sketch name>.cpp.elf
+-- might need sudo
+-- can also add "> filename.txt" to send it to a file

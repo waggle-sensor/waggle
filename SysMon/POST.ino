@@ -32,12 +32,22 @@ const byte RESET_WAITING = 0x80;
 //---------- G L O B A L S ----------------------------------------------------
 boolean _SOS_BOOT_MODE = false;
 
+/* See http://www.nongnu.org/avr-libc/user-manual/mem_sections.html and 
+http://www.atmel.com/webdoc/AVRLibcReferenceManual/
+group__demo__project_1demo_project_map.html for more. */
+// Symbol from the linker that contains the last word of data (vars and such).
+// The .data section follows the .text section, so this is the end of the
+// flash memory that we would want to verify.
+extern int __data_load_end;
+
 
 
 //---------- P O S T ----------------------------------------------------------
-byte POST() 
+void POST() 
 {
 	String ch = "success";
+
+	Serial.println((unsigned int)&__data_load_end, HEX);
 
 	// General Purpose Register File failed?
 	if(!gprf_test())
@@ -371,7 +381,11 @@ __attribute__((noinline)) boolean sram_test()
 
   // Tell the compiler to put these into registers, since putting them
   // into memory means they're trying to verify themselves.
-  register byte *p_val, i, save;
+
+  // 16 bits
+  register byte *p_val asm("Z");
+  register byte i asm("GPIOR1");
+  register byte save asm("GPIOR2");
  
   // Each location has 0x55 and 0xAA written to and read from it,
   // to verify that there aren't any stuck bits.
@@ -450,6 +464,9 @@ void test_failure(byte reason, boolean fatal)
 {
 	// Save POST failure to EEPROM
 	EEPROM.update(EEPROM_POST_RESULT_ADDR, reason);
+
+	// Allow time for EEPROM to finish writing
+	delay(10);
 
 	// Is POST failure fatal?
 	if(fatal)
