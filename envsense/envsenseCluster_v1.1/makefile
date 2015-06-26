@@ -1,3 +1,11 @@
+ARD_HOME = /home/rajesh/repos/waggle/GIT/waggle_max/resources/compilers/arduino-1.6.5-linux/arduino_64
+TARGET = envsenseCluster_v1.1
+PACKAGE = arduino
+ARCH = avr
+BOARD = mega
+TYPE = atmega2560
+FLASHER_BAUD_RATE = 115200
+PORT = /dev/ttyACM0
 CC = $(ARD_HOME)/arduino
 BUILD_DIR = ./build
 BIN_DIR = ./bin

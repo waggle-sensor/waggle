@@ -33,9 +33,23 @@ byte readRegister(byte addressToRead);
 void writeRegister(byte addressToWrite, byte dataToWrite);
 void MAX4466_get_max();
 float DS18B20_1_getTemp();
-void take_samples();
-void calc_speed();
+uint8_t setError(uint8_t error);
+uint8_t HIH61XX_start();
+uint8_t HIH61XX_update();
+uint8_t HIH61XX_stop();
+bool BMP_begin();
+void BMP180_getPressure(float *pressure);
+void BMP180_getTemperature(float *temp);
+bool HMC5883_begin();
+void HMC5883_setDataReady(uint8_t data);
+void HMC5883_setSingleMeasurementMode();
+void take_wind_samples();
+void calc_windspeed();
 void quick_sensors();
+static void i2c_write8(uint8_t address, byte reg, uint8_t value);
+static void i2c_read8(byte address, byte reg, uint8_t *value);
+static void i2c_read16(byte address, byte reg, uint16_t *value);
+static void i2c_readS16(byte address, byte reg, int16_t *value);
 void increment_time();
 void setup();
 void loop();
@@ -51,7 +65,6 @@ nop();
 #include <OneWire.h>
 #include <dht.h>
 #include <Wire.h>
-#include <HIH61XX.h>
 #include <LibTempTMP421.h>
 #include <DallasTemperature.h>
 #include <Adafruit_Sensor.h>
@@ -59,7 +72,6 @@ nop();
 #include <avr/wdt.h>
 #include <Sensirion.h>
 #include <i2cmaster.h>
-#include <Adafruit_BMP085_U.h>
 #include <HMC5883.h>
                         
                           
@@ -470,7 +482,94 @@ int err;
 
 #ifdef HIH6130_ADD
                                                                                    
-HIH61XX HIH_6130_1_hih(0x27,22);
+                                       
+uint8_t hih6130_address = 0x27;
+uint8_t hih6130_powerPin = 22;
+uint8_t f = 0;
+uint16_t HIH61XX_humidity = 0;
+uint16_t HIH61XX_temp = 0;
+uint8_t NoError = 0;
+uint8_t ConnectionError = 1;
+uint8_t CommunicationError = 2;
+uint8_t NotRunningError = 3;
+uint8_t CommandModeError = 4;
+uint8_t ErrorMask = 15;
+uint8_t RunningFlag = 128;
+uint8_t CommandModeFlag = 64;
+uint8_t FlagsMask = ~ErrorMask;
+
+uint8_t setError(uint8_t error) { 
+    f = (f & ~ErrorMask) | error; 
+    return error; 
+}
+
+uint8_t HIH61XX_start()
+{
+  if(hih6130_powerPin < 255) {
+    digitalWrite(hih6130_powerPin, HIGH);
+  }
+  f |= RunningFlag;
+  return setError(0);
+}
+
+uint8_t HIH61XX_update()
+{
+  if(!(f & RunningFlag)) {
+    f = (f & ~ErrorMask) | NotRunningError;
+  }
+  
+  uint8_t x, y, s;
+  
+  Wire.beginTransmission(hih6130_address);
+  int azer = Wire.endTransmission();
+  if(azer == 0) {    
+    while(true) {
+      delay(10);
+      
+      int c = Wire.requestFrom(hih6130_address, (uint8_t) 4);
+      if (c == 0) Serial.println("Problem with request");
+      if(Wire.available()) {
+        x = Wire.read();
+        y = Wire.read();
+        s = x >> 6;
+        
+        switch(s) { 
+          case 0:
+            HIH61XX_humidity = (((uint16_t) (x & 0x3f)) << 8) | y;
+            x = Wire.read();
+            y = Wire.read();
+            HIH61XX_temp = ((((uint16_t) x) << 8) | y) >> 2;
+            Wire.endTransmission();
+            return setError(0);
+            
+          case 1:
+            Wire.endTransmission();
+            break;
+            
+          case 2:
+            Wire.endTransmission();
+            return setError(CommandModeError);
+        }
+      }
+      else {
+        return setError(CommunicationError);
+      }
+    }
+  }
+  else {
+    Serial.print("...");
+    Serial.println(azer);
+    return setError(ConnectionError);
+  }
+}
+uint8_t HIH61XX_stop()
+{
+  if(hih6130_powerPin < 255) {
+    digitalWrite(hih6130_powerPin, LOW);
+  }
+  f &= ~RunningFlag;
+  return setError(0);
+}
 #endif              
 
 #ifdef TMP421_ADD
@@ -479,14 +578,238 @@ float TMP421_1_temperature;
 #endif             
 
 #ifdef BMP180_ADD
-Adafruit_BMP085_Unified BMP_180_1 = Adafruit_BMP085_Unified(10085);
-float BMP_180_1_temperature, BMP_180_1_pressure;
+int BMP_mode = 3;                                   
+int32_t BMP_id = 10085;
+uint8_t BMP_address = 0x77;
+float BMP_180_temperature, BMP_180_pressure;
+
+
+const int BMP085_MODE_ULTRALOWPOWER          = 0;
+const int BMP085_MODE_STANDARD               = 1;
+const int BMP085_MODE_HIGHRES                = 2;
+const int BMP085_MODE_ULTRAHIGHRES           = 3;
+enum
+{
+    BMP085_REGISTER_CAL_AC1            = 0xAA,                                   
+    BMP085_REGISTER_CAL_AC2            = 0xAC,                                   
+    BMP085_REGISTER_CAL_AC3            = 0xAE,                                   
+    BMP085_REGISTER_CAL_AC4            = 0xB0,                                   
+    BMP085_REGISTER_CAL_AC5            = 0xB2,                                   
+    BMP085_REGISTER_CAL_AC6            = 0xB4,                                   
+    BMP085_REGISTER_CAL_B1             = 0xB6,                                   
+    BMP085_REGISTER_CAL_B2             = 0xB8,                                   
+    BMP085_REGISTER_CAL_MB             = 0xBA,                                   
+    BMP085_REGISTER_CAL_MC             = 0xBC,                                   
+    BMP085_REGISTER_CAL_MD             = 0xBE,                                   
+    BMP085_REGISTER_CHIPID             = 0xD0,
+    BMP085_REGISTER_VERSION            = 0xD1,
+    BMP085_REGISTER_SOFTRESET          = 0xE0,
+    BMP085_REGISTER_CONTROL            = 0xF4,
+    BMP085_REGISTER_TEMPDATA           = 0xF6,
+    BMP085_REGISTER_PRESSUREDATA       = 0xF6,
+    BMP085_REGISTER_READTEMPCMD        = 0x2E,
+    BMP085_REGISTER_READPRESSURECMD    = 0x34
+};
+int16_t bmp085_coeffs_ac1;
+int16_t bmp085_coeffs_ac2;
+int16_t bmp085_coeffs_ac3;
+uint16_t bmp085_coeffs_ac4;
+uint16_t bmp085_coeffs_ac5;
+uint16_t bmp085_coeffs_ac6;
+int16_t bmp085_coeffs_b1;
+int16_t bmp085_coeffs_b2;
+int16_t bmp085_coeffs_mb;
+int16_t bmp085_coeffs_mc;
+int16_t bmp085_coeffs_md;
+
+
+                                                                            
+   
+                          
+   
+                                                                            
+bool BMP_begin()
+{
+                 
+    Wire.begin();
+                             
+    if ((BMP_mode > BMP085_MODE_ULTRAHIGHRES) || (BMP_mode < 0))
+    {
+        BMP_mode = BMP085_MODE_ULTRAHIGHRES;  
+    }
+    
+                           
+    i2c_readS16(BMP_address, BMP085_REGISTER_CAL_AC1, &bmp085_coeffs_ac1);
+    i2c_readS16(BMP_address, BMP085_REGISTER_CAL_AC2, &bmp085_coeffs_ac2);
+    i2c_readS16(BMP_address, BMP085_REGISTER_CAL_AC3, &bmp085_coeffs_ac3);
+    i2c_read16(BMP_address, BMP085_REGISTER_CAL_AC4, &bmp085_coeffs_ac4);
+    i2c_read16(BMP_address, BMP085_REGISTER_CAL_AC5, &bmp085_coeffs_ac5);
+    i2c_read16(BMP_address, BMP085_REGISTER_CAL_AC6, &bmp085_coeffs_ac6);
+    i2c_readS16(BMP_address, BMP085_REGISTER_CAL_B1, &bmp085_coeffs_b1);
+    i2c_readS16(BMP_address, BMP085_REGISTER_CAL_B2, &bmp085_coeffs_b2);
+    i2c_readS16(BMP_address, BMP085_REGISTER_CAL_MB, &bmp085_coeffs_mb);
+    i2c_readS16(BMP_address, BMP085_REGISTER_CAL_MC, &bmp085_coeffs_mc);
+    i2c_readS16(BMP_address, BMP085_REGISTER_CAL_MD, &bmp085_coeffs_md);
+    
+                                            
+    uint8_t checkid;
+    
+                                         
+    i2c_read8(BMP_address, BMP085_REGISTER_CHIPID, &checkid);
+    if(checkid != 0x55)
+    {
+        return false;
+    }
+    return true;
+}
+
+                                                                            
+   
+                                                       
+   
+                                                                            
+void BMP180_getPressure(float *pressure)
+{
+    int32_t  ut = 0, up = 0, compp = 0;
+    int32_t  x1, x2, b5, b6, x3, b3, p;
+    uint32_t b4, b7;
+    
+                                                     
+    
+    uint16_t t;
+    i2c_write8(BMP_address, BMP085_REGISTER_CONTROL, BMP085_REGISTER_READTEMPCMD);
+    delay(5);
+    i2c_read16(BMP_address, BMP085_REGISTER_TEMPDATA, &t);
+    ut = t;
+    
+    uint8_t  p8;
+    uint16_t p16;
+    int32_t  p32;
+    
+    i2c_write8(BMP_address, BMP085_REGISTER_CONTROL, BMP085_REGISTER_READPRESSURECMD + (BMP_mode << 6));
+    switch(BMP_mode)
+    {
+        case BMP085_MODE_ULTRALOWPOWER:
+            delay(5);
+            break;
+        case BMP085_MODE_STANDARD:
+            delay(8);
+            break;
+        case BMP085_MODE_HIGHRES:
+            delay(14);
+            break;
+        case BMP085_MODE_ULTRAHIGHRES:
+        default:
+            delay(26);
+            break;
+    }
+    i2c_read16(BMP_address, BMP085_REGISTER_PRESSUREDATA, &p16);
+    if (p16 != -999) {
+        p32 = (uint32_t)p16 << 8;
+        i2c_read8(BMP_address, BMP085_REGISTER_PRESSUREDATA+2, &p8);
+        p32 += p8;
+        p32 >>= (8 - BMP_mode);
+        
+        up = p32;
+    }
+    else {
+        up = p16;
+    }
+    
+    if (ut != -999 && up != -999) {
+                                      
+        x1 = (ut - (int32_t)(bmp085_coeffs_ac6))*((int32_t)(bmp085_coeffs_ac5))/pow(2,15);
+        x2 = ((int32_t)(bmp085_coeffs_mc*pow(2,11)))/(x1+(int32_t)(bmp085_coeffs_md));
+        b5 = x1 + x2;
+        
+                                   
+        b6 = b5 - 4000;
+        x1 = (bmp085_coeffs_b2 * ((b6 * b6) >> 12)) >> 11;
+        x2 = (bmp085_coeffs_ac2 * b6) >> 11;
+        x3 = x1 + x2;
+        b3 = (((((int32_t) bmp085_coeffs_ac1) * 4 + x3) << BMP_mode) + 2) >> 2;
+        x1 = (bmp085_coeffs_ac3 * b6) >> 13;
+        x2 = (bmp085_coeffs_b1 * ((b6 * b6) >> 12)) >> 16;
+        x3 = ((x1 + x2) + 2) >> 2;
+        b4 = (bmp085_coeffs_ac4 * (uint32_t) (x3 + 32768)) >> 15;
+        b7 = ((uint32_t) (up - b3) * (50000 >> BMP_mode));
+        
+        if (b7 < 0x80000000)
+        {
+            p = (b7 << 1) / b4;
+        }
+        else
+        {
+            p = (b7 / b4) << 1;
+        }
+        
+        x1 = (p >> 8) * (p >> 8);
+        x1 = (x1 * 3038) >> 16;
+        x2 = (-7357 * p) >> 16;
+        compp = p + ((x1 + x2 + 3791) >> 4);
+    }
+    else {
+        compp = up;
+    }
+                                           
+    *pressure = compp;
+}
+
+                                                                            
+   
+                                                      
+   
+                                                                            
+void BMP180_getTemperature(float *temp)
+{
+    int32_t UT, X1, X2, B5;                               
+    float t;
+    
+    uint16_t temp2;
+    i2c_write8(BMP_address, BMP085_REGISTER_CONTROL, BMP085_REGISTER_READTEMPCMD);
+    delay(5);
+    i2c_read16(BMP_address, BMP085_REGISTER_TEMPDATA, &temp2);
+    UT = temp2;
+    
+    
+    if (UT != -999) {
+                 
+        X1 = (UT - (int32_t)bmp085_coeffs_ac6) * ((int32_t)bmp085_coeffs_ac5) / pow(2,15);
+        X2 = ((int32_t)bmp085_coeffs_mc * pow(2,11)) / (X1+(int32_t)bmp085_coeffs_md);
+        B5 = X1 + X2;
+        t = (B5+8)/pow(2,4);
+        t /= 10;
+    }
+    else {
+        t = UT;
+    }
+    *temp = t;
+}
 #endif             
 
 #ifdef WindVel_ADD
-#ifndef HMC5883_ADD                                         
-Adafruit_HMC5883_Unified mag = Adafruit_HMC5883_Unified(12345);
-#endif               
+               
+    
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                        
+                           
+
+#define HMC5883_ADDRESS_MAG            (0x3C >> 1)                    
+int HMCid = 23181;
+
                                                                                                     
                                                                                                     
                                                                                                     
@@ -510,20 +833,57 @@ float freq = 0.0;
 int sample_time = 3;                        
 float speed_mps = 0;
 
-void take_samples()
+bool HMC5883_begin()
+{
+               
+  Wire.begin();
+
+                            
+  i2c_write8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_MR_REG_M, 0x00);
+  
+                                  
+  return true;
+}
+
+
+void HMC5883_setDataReady(uint8_t data) {
+                                                                 
+    data = data & 0x01;                                     
+    uint8_t drdy;
+    i2c_read8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_SR_REG_Mg, &drdy);                     
+    drdy = drdy & 0xFE;                      
+    drdy = drdy | data;                                     
+    i2c_write8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_SR_REG_Mg, drdy);    
+}
+
+void HMC5883_setSingleMeasurementMode() {
+                                                     
+    uint8_t value;
+
+    i2c_read8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_MR_REG_M, &value);
+    value &= 0b11111100;
+    value |= 0b01;                       
+
+    i2c_write8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_MR_REG_M, value);
+}
+
+void take_wind_samples()
                                            
 {
                                 
-    mag.setDataReady(0);
+   HMC5883_setDataReady(0);
     #ifdef POST
     wdt_reset();
     #endif
     int sign = 0;
     for (int i = 0; i<sample_rate*sample_time; i++)
     {
-        mag.setSingleMeasurementMode();                             
-        delay(sample_delay);                                                     
-        while((mag.getDataReady() & 0x01) != 0x01);                                 
+        HMC5883_setSingleMeasurementMode();                             
+        delay(sample_delay);                                                        
+        byte ready_bit;     
+        i2c_read8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_SR_REG_Mg, &ready_bit);
+        while((ready_bit & 0x01) != 0x01)
+            i2c_read8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_SR_REG_Mg, &ready_bit);
                                                                         
         
                                      
@@ -561,7 +921,7 @@ void take_samples()
     #endif
 }
 
-void calc_speed()
+void calc_windspeed()
                                           
 {
     speed_mps = freq * 1.0876;                                    
@@ -570,37 +930,7 @@ void calc_speed()
     #endif
 }
 
-                                
-                                         
-                              
-               
-   
-                           
-                     
-    
-   
-                                                                  
-                                    
-                       
-                        
-        
-             
-                                                                  
-        
-                                                  
-                              
-             
-                       
-    
-   
-                          
-                                         
-                                    
-                                    
-        
-                                  
-                         
-    
+
 #endif              
 
 #ifdef HTU21D_ADD
@@ -609,7 +939,7 @@ float HTU21D_H, HTU21D_T;
 #endif             
 
 
-int testing_addr = 0;
+int testing_addr = 0;                                                 
 int numSensors = 19;                   
 
 
@@ -637,11 +967,76 @@ void quick_sensors()
     #endif              
 }
 
+                                                                            
+   
+                                           
+   
+                                                                            
+static void i2c_write8(uint8_t address, byte reg, uint8_t value)
+{
+    Wire.beginTransmission((uint8_t)address);
+    Wire.write((uint8_t)reg);
+    Wire.write((uint8_t)value);
+    Wire.endTransmission();
+}
+
+                                                                            
+   
+                                          
+   
+                                                                            
+static void i2c_read8(byte address, byte reg, uint8_t *value)
+{
+    Wire.beginTransmission((uint8_t)address);
+    Wire.write((uint8_t)reg);
+    Wire.endTransmission();
+    int err = Wire.requestFrom((uint8_t)address, (byte)1);
+    if (err != 0) {
+        *value = Wire.read();
+    }
+    else {
+        *value = -999;
+    }
+    Wire.endTransmission();
+}
+
+                                                                            
+   
+                                          
+   
+                                                                            
+static void i2c_read16(byte address, byte reg, uint16_t *value)
+{
+    Wire.beginTransmission((uint8_t) address);
+    Wire.write((uint8_t)reg);
+    Wire.endTransmission();
+    int err = Wire.requestFrom((uint8_t) address, (byte)2);
+    if (err != 0) {
+        *value = (Wire.read() << 8) | Wire.read();
+    }
+    else{
+        *value = -999;
+    }
+    Wire.endTransmission();
+}
+
+                                                                            
+   
+                                               
+   
+                                                                            
+static void i2c_readS16(byte address, byte reg, int16_t *value)
+{
+    uint16_t i;
+    i2c_read16(address, reg, &i);
+    *value = (int16_t)i;
+}
 
 void increment_time() {
     current_time++;                             
     quick_sensors();
 }
+
 
 void setup()
 {
@@ -665,17 +1060,6 @@ void setup()
         EEPROM.write(i+128, 0xFF);
     }
     #endif
-
-    #ifdef BMP180_ADD
-    if((EEPROM.read(BMP180_ADD+128) & Consistency_Mask) == Consistency_Mask)                                 
-    {
-        BMP_180_1.begin();
-        #ifdef POST
-        wdt_reset();
-        #endif
-    }
-    #endif             
-                                                  
 
     #ifdef TMP421_ADD
     if((EEPROM.read(TMP421_ADD+128) & Consistency_Mask) == Consistency_Mask)                                     
@@ -738,6 +1122,21 @@ void setup()
         #endif
     }
     #endif                    
+    
+    #ifdef BMP180_ADD
+    if((EEPROM.read(BMP180_ADD+128) & Consistency_Mask) == Consistency_Mask)                                     
+    {
+        #ifdef debug_serial
+        Serial.println("Initializing BMP");
+        Serial.flush();
+        #endif                 
+        BMP_begin();                                          
+    }
+    #endif         
+    
+    #ifdef POST
+    wdt_reset();
+    #endif
 
     #ifdef MMA8452
     if((EEPROM.read(MMA8452+128) & Consistency_Mask) == Consistency_Mask)                                     
@@ -747,6 +1146,7 @@ void setup()
         #endif               
         #ifdef debug_serial
         Serial.println("Initializing MMA");
+        Serial.flush();
         #endif
         MMA_found = initMMA8452();
         #ifdef POST
@@ -811,7 +1211,7 @@ void setup()
         #ifdef debug_serial
         Serial.println("Initializing WindVel");
         #endif
-        mag.begin();
+        HMC5883_begin();
         #ifdef POST
         wdt_reset();
         #endif
@@ -819,7 +1219,7 @@ void setup()
         #ifdef POST
         wdt_reset();
         #endif 
-        mag.setSingleMeasurementMode();
+        HMC5883_setSingleMeasurementMode();
         #ifdef POST
         wdt_reset();
         #endif
@@ -1027,8 +1427,8 @@ void loop() {
         Serial.println("BMP180");
         Serial.flush();
         #endif               
-        BMP_180_1.getPressure(&BMP_180_1_pressure);
-        BMP_180_1.getTemperature(&BMP_180_1_temperature);
+        BMP180_getPressure(&BMP_180_pressure);
+        BMP180_getTemperature(&BMP_180_temperature);
     }
     #endif             
     
@@ -1064,15 +1464,15 @@ void loop() {
         Serial.flush();
         #endif               
         
-        HIH_6130_1_hih.start();
+        HIH61XX_start();
         #ifdef POST
         wdt_reset();
         #endif
-        HIH_6130_1_hih.update();
+        HIH61XX_update();
         #ifdef POST
         wdt_reset();
         #endif
-        HIH_6130_1_hih.stop();
+        HIH61XX_stop();
         #ifdef POST
         wdt_reset();
         #endif
@@ -1175,8 +1575,8 @@ void loop() {
         wdt_reset();
         #endif
         #ifdef debug_serial
-        Serial.println("increment time");
-        Serial.flush();
+                                            
+                          
         #endif               
         #ifdef POST
         wdt_reset();
@@ -1186,8 +1586,8 @@ void loop() {
         wdt_reset();
         #endif
         #ifdef debug_serial
-        Serial.println("delay");
-        Serial.flush();
+                                   
+                          
         #endif               
         #ifdef POST
         wdt_reset();
@@ -1205,9 +1605,9 @@ void loop() {
         Serial.flush();
         #endif
         
-        take_samples();                                           
+        take_wind_samples();                                           
                                                                           
-        calc_speed();                                         
+        calc_windspeed();                                         
                                                         
     }
     #endif
@@ -1397,18 +1797,15 @@ void post() {
             Serial.print("Testing BMP\t");
             Serial.flush();
             #endif
-            Wire.begin();
-            Adafruit_BMP085_Unified BMP_180_2 = Adafruit_BMP085_Unified(10085);
-            float BMP_180_2_temperature, BMP_180_2_pressure;
-            BMP_180_2.begin();
+            BMP_begin();
+            wdt_reset();
             
             for(int a = 0; a<10; a++)
             {
-                BMP_180_2.getTemperature(&BMP_180_2_temperature);
-                BMP_180_2.getPressure(&BMP_180_2_pressure);
+                BMP180_getTemperature(&BMP_180_temperature);
+                BMP180_getPressure(&BMP_180_pressure);
                 wdt_reset();
                 delay(500);
-                wdt_reset();
             }
             byte history = EEPROM.read(BMP180_ADD+128);
             history = history | 0x01;                                              
@@ -1581,14 +1978,12 @@ void post() {
             Serial.print("Testing HIH6130\t");
             Serial.flush();
             #endif
-            
+            Wire.begin();
             for(int a = 0; a<10; a++)
             {
-                HIH_6130_1_hih.start();
-                HIH_6130_1_hih.update();
-                HIH_6130_1_hih.humidity();
-                HIH_6130_1_hih.temperature();
-                HIH_6130_1_hih.stop();
+                HIH61XX_start();
+                HIH61XX_update();
+                HIH61XX_stop();
                 wdt_reset();
                 delay(500);
                 wdt_reset();
@@ -1918,18 +2313,23 @@ void post() {
             Serial.flush();
             #endif
             
-            mag.begin();
+            HMC5883_begin();
                                         
-            mag.setDataReady(0);
+            HMC5883_setDataReady(0);
             delay(2000);
             
             for(int a = 0; a<10; a++)
                                     
             {
-                mag.setSingleMeasurementMode();
+                HMC5883_setSingleMeasurementMode();
                 wdt_reset();
                 delay(sample_delay);                                        
-                while((mag.getDataReady() & 0x01) != 0x01);                           
+                byte ready_bit;
+                i2c_read8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_SR_REG_Mg, &ready_bit);
+                while((ready_bit & 0x01) != 0x01)
+                    i2c_read8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_SR_REG_Mg, &ready_bit);
+                                                
+                                                                                
                 wdt_reset();
                 
                                              
@@ -2283,22 +2683,22 @@ void sensor_print()
     if((EEPROM.read(BMP180_ADD+128) & Consistency_Mask) == Consistency_Mask)                                 
     {
         Serial.print("WXSensor;");
-        if (BMP_180_1_temperature == -999 || BMP_180_1_pressure == -999) {
+        if (BMP_180_temperature == -999 || BMP_180_pressure == -999) {
             #ifndef SILENCE_BAD_SENSORS
             Serial.print("BMP_180_1_T_C:");
-            Serial.print(BMP_180_1_temperature, 2);
+            Serial.print(BMP_180_temperature, 2);
             Serial.print(";");
             Serial.print("BMP_180_1_P_PA:");
-            Serial.print(BMP_180_1_pressure, 2);
+            Serial.print(BMP_180_pressure, 2);
             Serial.print(";");
             #endif
         }
         else {
             Serial.print("BMP_180_1_T_C:");
-            Serial.print(BMP_180_1_temperature, 2);
+            Serial.print(BMP_180_temperature,BIN);
             Serial.print(";");
             Serial.print("BMP_180_1_P_PA:");
-            Serial.print(BMP_180_1_pressure, 2);
+            Serial.print(BMP_180_pressure, BIN);
             Serial.print(";");
         }
         Serial.println("WXSensor");
@@ -2387,10 +2787,10 @@ void sensor_print()
     {
         Serial.print("WXSensor;");
         Serial.print("HIH_6130_1_T_C:");
-        Serial.print(HIH_6130_1_hih.temperature(), 2);
+        Serial.print((float(HIH61XX_temp) / 16382) * 165 - 40 , 2);
         Serial.print(";");
         Serial.print("HIH_6130_1_H_%:");
-        Serial.print(HIH_6130_1_hih.humidity(), 2);
+        Serial.print((float(HIH61XX_humidity) * 100) / 16382, 2);
         Serial.print(";");
         Serial.println("WXSensor");
     }

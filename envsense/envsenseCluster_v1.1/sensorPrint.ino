@@ -83,22 +83,22 @@ void sensor_print()
     if((EEPROM.read(BMP180_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
     {
         Serial.print("WXSensor;");
-        if (BMP_180_1_temperature == -999 || BMP_180_1_pressure == -999) {
+        if (BMP_180_temperature == -999 || BMP_180_pressure == -999) {
             #ifndef SILENCE_BAD_SENSORS
             Serial.print("BMP_180_1_T_C:");
-            Serial.print(BMP_180_1_temperature, 2);
+            Serial.print(BMP_180_temperature, 2);
             Serial.print(";");
             Serial.print("BMP_180_1_P_PA:");
-            Serial.print(BMP_180_1_pressure, 2);
+            Serial.print(BMP_180_pressure, 2);
             Serial.print(";");
             #endif
         }
         else {
             Serial.print("BMP_180_1_T_C:");
-            Serial.print(BMP_180_1_temperature, 2);
+            Serial.print(BMP_180_temperature,BIN);
             Serial.print(";");
             Serial.print("BMP_180_1_P_PA:");
-            Serial.print(BMP_180_1_pressure, 2);
+            Serial.print(BMP_180_pressure, BIN);
             Serial.print(";");
         }
         Serial.println("WXSensor");
@@ -190,7 +190,7 @@ void sensor_print()
         Serial.print((float(HIH61XX_temp) / 16382) * 165 - 40 , 2);
         Serial.print(";");
         Serial.print("HIH_6130_1_H_%:");
-        Serial.println((float(HIH61XX_humidity) * 100) / 16382, 2);
+        Serial.print((float(HIH61XX_humidity) * 100) / 16382, 2);
         Serial.print(";");
         Serial.println("WXSensor");
     }

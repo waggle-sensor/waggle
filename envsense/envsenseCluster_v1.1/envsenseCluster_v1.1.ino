@@ -32,7 +32,6 @@ nop();
 #include <avr/wdt.h>
 #include <Sensirion.h>
 #include <i2cmaster.h>
-#include <Adafruit_BMP085_U.h>
 #include <HMC5883.h>
 // #include <TimerOne.h>
 // #include <TimerThree.h>
@@ -539,14 +538,238 @@ float TMP421_1_temperature;
 #endif //TMP421_ADD
 
 #ifdef BMP180_ADD
-Adafruit_BMP085_Unified BMP_180_1 = Adafruit_BMP085_Unified(10085);
-float BMP_180_1_temperature, BMP_180_1_pressure;
+int BMP_mode = 3;         //BMP085_MODE_ULTRAHIGHRES
+int32_t BMP_id = 10085;
+uint8_t BMP_address = 0x77;
+float BMP_180_temperature, BMP_180_pressure;
+
+
+const int BMP085_MODE_ULTRALOWPOWER          = 0;
+const int BMP085_MODE_STANDARD               = 1;
+const int BMP085_MODE_HIGHRES                = 2;
+const int BMP085_MODE_ULTRAHIGHRES           = 3;
+enum
+{
+    BMP085_REGISTER_CAL_AC1            = 0xAA,  // R   Calibration data (16 bits)
+    BMP085_REGISTER_CAL_AC2            = 0xAC,  // R   Calibration data (16 bits)
+    BMP085_REGISTER_CAL_AC3            = 0xAE,  // R   Calibration data (16 bits)
+    BMP085_REGISTER_CAL_AC4            = 0xB0,  // R   Calibration data (16 bits)
+    BMP085_REGISTER_CAL_AC5            = 0xB2,  // R   Calibration data (16 bits)
+    BMP085_REGISTER_CAL_AC6            = 0xB4,  // R   Calibration data (16 bits)
+    BMP085_REGISTER_CAL_B1             = 0xB6,  // R   Calibration data (16 bits)
+    BMP085_REGISTER_CAL_B2             = 0xB8,  // R   Calibration data (16 bits)
+    BMP085_REGISTER_CAL_MB             = 0xBA,  // R   Calibration data (16 bits)
+    BMP085_REGISTER_CAL_MC             = 0xBC,  // R   Calibration data (16 bits)
+    BMP085_REGISTER_CAL_MD             = 0xBE,  // R   Calibration data (16 bits)
+    BMP085_REGISTER_CHIPID             = 0xD0,
+    BMP085_REGISTER_VERSION            = 0xD1,
+    BMP085_REGISTER_SOFTRESET          = 0xE0,
+    BMP085_REGISTER_CONTROL            = 0xF4,
+    BMP085_REGISTER_TEMPDATA           = 0xF6,
+    BMP085_REGISTER_PRESSUREDATA       = 0xF6,
+    BMP085_REGISTER_READTEMPCMD        = 0x2E,
+    BMP085_REGISTER_READPRESSURECMD    = 0x34
+};
+int16_t bmp085_coeffs_ac1;
+int16_t bmp085_coeffs_ac2;
+int16_t bmp085_coeffs_ac3;
+uint16_t bmp085_coeffs_ac4;
+uint16_t bmp085_coeffs_ac5;
+uint16_t bmp085_coeffs_ac6;
+int16_t bmp085_coeffs_b1;
+int16_t bmp085_coeffs_b2;
+int16_t bmp085_coeffs_mb;
+int16_t bmp085_coeffs_mc;
+int16_t bmp085_coeffs_md;
+
+
+/**************************************************************************/
+/*!
+ *   @brief  Setups the HW
+ */
+/**************************************************************************/
+bool BMP_begin()
+{
+    // Enable I2C
+    Wire.begin();
+    /* Mode boundary check */
+    if ((BMP_mode > BMP085_MODE_ULTRAHIGHRES) || (BMP_mode < 0))
+    {
+        BMP_mode = BMP085_MODE_ULTRAHIGHRES;  
+    }
+    
+    // Calibrate the device
+    i2c_readS16(BMP_address, BMP085_REGISTER_CAL_AC1, &bmp085_coeffs_ac1);
+    i2c_readS16(BMP_address, BMP085_REGISTER_CAL_AC2, &bmp085_coeffs_ac2);
+    i2c_readS16(BMP_address, BMP085_REGISTER_CAL_AC3, &bmp085_coeffs_ac3);
+    i2c_read16(BMP_address, BMP085_REGISTER_CAL_AC4, &bmp085_coeffs_ac4);
+    i2c_read16(BMP_address, BMP085_REGISTER_CAL_AC5, &bmp085_coeffs_ac5);
+    i2c_read16(BMP_address, BMP085_REGISTER_CAL_AC6, &bmp085_coeffs_ac6);
+    i2c_readS16(BMP_address, BMP085_REGISTER_CAL_B1, &bmp085_coeffs_b1);
+    i2c_readS16(BMP_address, BMP085_REGISTER_CAL_B2, &bmp085_coeffs_b2);
+    i2c_readS16(BMP_address, BMP085_REGISTER_CAL_MB, &bmp085_coeffs_mb);
+    i2c_readS16(BMP_address, BMP085_REGISTER_CAL_MC, &bmp085_coeffs_mc);
+    i2c_readS16(BMP_address, BMP085_REGISTER_CAL_MD, &bmp085_coeffs_md);
+    
+    /* Make sure we have the right device */
+    uint8_t checkid;
+    
+    // Read 8 from BMP085_REGISTER_CHIPID
+    i2c_read8(BMP_address, BMP085_REGISTER_CHIPID, &checkid);
+    if(checkid != 0x55)
+    {
+        return false;
+    }
+    return true;
+}
+
+/**************************************************************************/
+/*!
+ *   @brief  Gets the compensated pressure level in kPa
+ */
+/**************************************************************************/
+void BMP180_getPressure(float *pressure)
+{
+    int32_t  ut = 0, up = 0, compp = 0;
+    int32_t  x1, x2, b5, b6, x3, b3, p;
+    uint32_t b4, b7;
+    
+    /* Get the raw pressure and temperature values */
+    
+    uint16_t t;
+    i2c_write8(BMP_address, BMP085_REGISTER_CONTROL, BMP085_REGISTER_READTEMPCMD);
+    delay(5);
+    i2c_read16(BMP_address, BMP085_REGISTER_TEMPDATA, &t);
+    ut = t;
+    
+    uint8_t  p8;
+    uint16_t p16;
+    int32_t  p32;
+    
+    i2c_write8(BMP_address, BMP085_REGISTER_CONTROL, BMP085_REGISTER_READPRESSURECMD + (BMP_mode << 6));
+    switch(BMP_mode)
+    {
+        case BMP085_MODE_ULTRALOWPOWER:
+            delay(5);
+            break;
+        case BMP085_MODE_STANDARD:
+            delay(8);
+            break;
+        case BMP085_MODE_HIGHRES:
+            delay(14);
+            break;
+        case BMP085_MODE_ULTRAHIGHRES:
+        default:
+            delay(26);
+            break;
+    }
+    i2c_read16(BMP_address, BMP085_REGISTER_PRESSUREDATA, &p16);
+    if (p16 != -999) {
+        p32 = (uint32_t)p16 << 8;
+        i2c_read8(BMP_address, BMP085_REGISTER_PRESSUREDATA+2, &p8);
+        p32 += p8;
+        p32 >>= (8 - BMP_mode);
+        
+        up = p32;
+    }
+    else {
+        up = p16;
+    }
+    
+    if (ut != -999 && up != -999) {
+        /* Temperature compensation */
+        x1 = (ut - (int32_t)(bmp085_coeffs_ac6))*((int32_t)(bmp085_coeffs_ac5))/pow(2,15);
+        x2 = ((int32_t)(bmp085_coeffs_mc*pow(2,11)))/(x1+(int32_t)(bmp085_coeffs_md));
+        b5 = x1 + x2;
+        
+        /* Pressure compensation */
+        b6 = b5 - 4000;
+        x1 = (bmp085_coeffs_b2 * ((b6 * b6) >> 12)) >> 11;
+        x2 = (bmp085_coeffs_ac2 * b6) >> 11;
+        x3 = x1 + x2;
+        b3 = (((((int32_t) bmp085_coeffs_ac1) * 4 + x3) << BMP_mode) + 2) >> 2;
+        x1 = (bmp085_coeffs_ac3 * b6) >> 13;
+        x2 = (bmp085_coeffs_b1 * ((b6 * b6) >> 12)) >> 16;
+        x3 = ((x1 + x2) + 2) >> 2;
+        b4 = (bmp085_coeffs_ac4 * (uint32_t) (x3 + 32768)) >> 15;
+        b7 = ((uint32_t) (up - b3) * (50000 >> BMP_mode));
+        
+        if (b7 < 0x80000000)
+        {
+            p = (b7 << 1) / b4;
+        }
+        else
+        {
+            p = (b7 / b4) << 1;
+        }
+        
+        x1 = (p >> 8) * (p >> 8);
+        x1 = (x1 * 3038) >> 16;
+        x2 = (-7357 * p) >> 16;
+        compp = p + ((x1 + x2 + 3791) >> 4);
+    }
+    else {
+        compp = up;
+    }
+    /* Assign compensated pressure value */
+    *pressure = compp;
+}
+
+/**************************************************************************/
+/*!
+ *   @brief  Reads the temperatures in degrees Celsius
+ */
+/**************************************************************************/
+void BMP180_getTemperature(float *temp)
+{
+    int32_t UT, X1, X2, B5;     // following ds convention
+    float t;
+    
+    uint16_t temp2;
+    i2c_write8(BMP_address, BMP085_REGISTER_CONTROL, BMP085_REGISTER_READTEMPCMD);
+    delay(5);
+    i2c_read16(BMP_address, BMP085_REGISTER_TEMPDATA, &temp2);
+    UT = temp2;
+    
+    
+    if (UT != -999) {
+        // step 1
+        X1 = (UT - (int32_t)bmp085_coeffs_ac6) * ((int32_t)bmp085_coeffs_ac5) / pow(2,15);
+        X2 = ((int32_t)bmp085_coeffs_mc * pow(2,11)) / (X1+(int32_t)bmp085_coeffs_md);
+        B5 = X1 + X2;
+        t = (B5+8)/pow(2,4);
+        t /= 10;
+    }
+    else {
+        t = UT;
+    }
+    *temp = t;
+}
 #endif //BMP180_ADD
 
 #ifdef WindVel_ADD
-#ifndef HMC5883_ADD  // Requires operation of sensor HMC5883
-Adafruit_HMC5883_Unified mag = Adafruit_HMC5883_Unified(23181);
-#endif  //HMC5883_ADD
+// typedef enum
+// {
+//     HMC5883_REGISTER_MAG_CRA_REG_M             = 0x00,
+//     HMC5883_REGISTER_MAG_CRB_REG_M             = 0x01,
+//     HMC5883_REGISTER_MAG_MR_REG_M              = 0x02,
+//     HMC5883_REGISTER_MAG_OUT_X_H_M             = 0x03,
+//     HMC5883_REGISTER_MAG_OUT_X_L_M             = 0x04,
+//     HMC5883_REGISTER_MAG_OUT_Z_H_M             = 0x05,
+//     HMC5883_REGISTER_MAG_OUT_Z_L_M             = 0x06,
+//     HMC5883_REGISTER_MAG_OUT_Y_H_M             = 0x07,
+//     HMC5883_REGISTER_MAG_OUT_Y_L_M             = 0x08,
+//     HMC5883_REGISTER_MAG_SR_REG_Mg             = 0x09,
+//     HMC5883_REGISTER_MAG_IRA_REG_M             = 0x0A,
+//     HMC5883_REGISTER_MAG_IRB_REG_M             = 0x0B,
+//     HMC5883_REGISTER_MAG_IRC_REG_M             = 0x0C,
+//     HMC5883_REGISTER_MAG_TEMP_OUT_H_M          = 0x31,
+//     HMC5883_REGISTER_MAG_TEMP_OUT_L_M          = 0x32
+// } hmc5883MagRegisters_t;
+
+#define HMC5883_ADDRESS_MAG            (0x3C >> 1)         // 0011110x
+int HMCid = 23181;
+
 // DELAY: 1  - Sampling Rate: 310  Hz    Max observed freq: 155   Hz   Max observed speed: 168.6 m/s
 // DELAY: 2  - Sampling Rate: 238  Hz    Max observed freq: 119   Hz   Max observed speed: 129.4 m/s
 // DELAY: 3  - Sampling Rate: 192  Hz    Max observed freq: 96    Hz   Max observed speed: 104.4 m/s
@@ -570,20 +793,57 @@ float freq = 0.0;
 int sample_time = 3;    // Seconds to sample
 float speed_mps = 0;
 
-void take_samples()
+bool HMC5883_begin()
+{
+  // Enable I2C
+  Wire.begin();
+
+  // Enable the magnetometer
+  i2c_write8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_MR_REG_M, 0x00);
+  
+  // Set the gain to a known level
+  return true;
+}
+
+
+void HMC5883_setDataReady(uint8_t data) {
+    /* Sets the DRDY bit for first single measurement to occur */
+    data = data & 0x01;     // Make sure to only set one bit
+    uint8_t drdy;
+    i2c_read8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_SR_REG_Mg, &drdy);   // Get current bit
+    drdy = drdy & 0xFE;     // Clear last bit
+    drdy = drdy | data;     // Set last bit to desired value
+    i2c_write8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_SR_REG_Mg, drdy);    
+}
+
+void HMC5883_setSingleMeasurementMode() {
+    /* Put the sensor into single measurement mode */
+    uint8_t value;
+
+    i2c_read8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_MR_REG_M, &value);
+    value &= 0b11111100;
+    value |= 0b01;  // Single measurement
+
+    i2c_write8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_MR_REG_M, value);
+}
+
+void take_wind_samples()
 // Collects samples and generates FHT array
 {
     // Initially, data NOT ready
-    mag.setDataReady(0);
+   HMC5883_setDataReady(0);
     #ifdef POST
     wdt_reset();
     #endif
     int sign = 0;
     for (int i = 0; i<sample_rate*sample_time; i++)
     {
-        mag.setSingleMeasurementMode(); // Let the measurement begin
-        delay(sample_delay); // Give sensor time to take measurement(must be >=1)
-        while((mag.getDataReady() & 0x01) != 0x01); //do nothing until data is ready
+        HMC5883_setSingleMeasurementMode(); // Let the measurement begin
+        delay(sample_delay); // Give sensor time to take measurement(must be >=1)   
+        byte ready_bit;     
+        i2c_read8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_SR_REG_Mg, &ready_bit);
+        while((ready_bit & 0x01) != 0x01)
+            i2c_read8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_SR_REG_Mg, &ready_bit);
         // DRDY bit monitoring only needed for high sampling frequencies
         
         // Read 16 bit Y value output
@@ -621,7 +881,7 @@ void take_samples()
     #endif
 }
 
-void calc_speed()
+void calc_windspeed()
 // Calculate frequency from dominant index
 {
     speed_mps = freq * 1.0876; // constant obtained experimentally
@@ -630,37 +890,7 @@ void calc_speed()
     #endif
 }
 
-// unsigned int pulse_count = 0;
-// float RPM, airspeed, max_airspeed = 0;
-// float speeds[5], avg_speed;
-// int pos = 0;
-// 
-// void inc_pulse_count() {
-//     pulse_count++;
-// }
-// 
-// void calc_airspeed(unsigned int pulse_count, int seconds = 2) {
-//     RPM = pulse_count*20/seconds;
-//     if (RPM < 200) {
-//         airspeed = 0;
-//     }
-//     else {
-//         airspeed = 0.000975*RPM+0.341; // units = meters/second
-//     }
-//     max_airspeed = max(max_airspeed, airspeed);
-//     speeds[pos] = airspeed;
-//     pos++;
-//     pulse_count = 0;
-// }
-// 
-// float mean_airspeed() {
-//     float speed_total = 0, mean_speed;
-//     for (int i = 0; i < 5; i++) {
-//         speed_total += speeds[i];
-//     }
-//     mean_speed = speed_total/5;
-//     return mean_speed;
-// }
+
 #endif //WindVel_ADD
 
 #ifdef HTU21D_ADD
@@ -697,11 +927,76 @@ void quick_sensors()
     #endif //MAX4466_ADD
 }
 
+/**************************************************************************/
+/*!
+ *   @brief  Writes an 8 bit value over I2C
+ */
+/**************************************************************************/
+static void i2c_write8(uint8_t address, byte reg, uint8_t value)
+{
+    Wire.beginTransmission((uint8_t)address);
+    Wire.write((uint8_t)reg);
+    Wire.write((uint8_t)value);
+    Wire.endTransmission();
+}
+
+/**************************************************************************/
+/*!
+ *   @brief  Reads an 8 bit value over I2C
+ */
+/**************************************************************************/
+static void i2c_read8(byte address, byte reg, uint8_t *value)
+{
+    Wire.beginTransmission((uint8_t)address);
+    Wire.write((uint8_t)reg);
+    Wire.endTransmission();
+    int err = Wire.requestFrom((uint8_t)address, (byte)1);
+    if (err != 0) {
+        *value = Wire.read();
+    }
+    else {
+        *value = -999;
+    }
+    Wire.endTransmission();
+}
+
+/**************************************************************************/
+/*!
+ *   @brief  Reads a 16 bit value over I2C
+ */
+/**************************************************************************/
+static void i2c_read16(byte address, byte reg, uint16_t *value)
+{
+    Wire.beginTransmission((uint8_t) address);
+    Wire.write((uint8_t)reg);
+    Wire.endTransmission();
+    int err = Wire.requestFrom((uint8_t) address, (byte)2);
+    if (err != 0) {
+        *value = (Wire.read() << 8) | Wire.read();
+    }
+    else{
+        *value = -999;
+    }
+    Wire.endTransmission();
+}
+
+/**************************************************************************/
+/*!
+ *   @brief  Reads the factory-set coefficients
+ */
+/**************************************************************************/
+static void i2c_readS16(byte address, byte reg, int16_t *value)
+{
+    uint16_t i;
+    i2c_read16(address, reg, &i);
+    *value = (int16_t)i;
+}
 
 void increment_time() {
     current_time++; // Increases every 7 seconds
     quick_sensors();
 }
+
 
 void setup()
 {
@@ -725,17 +1020,6 @@ void setup()
         EEPROM.write(i+128, 0xFF);
     }
     #endif
-
-    #ifdef BMP180_ADD
-    if((EEPROM.read(BMP180_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
-    {
-        BMP_180_1.begin();
-        #ifdef POST
-        wdt_reset();
-        #endif
-    }
-    #endif //BMP180_ADD
-    // set the resolution to 10 bit (good enough?)
 
     #ifdef TMP421_ADD
     if((EEPROM.read(TMP421_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor    
@@ -798,6 +1082,21 @@ void setup()
         #endif
     }
     #endif //IR_D6T_44L_06_ADD
+    
+    #ifdef BMP180_ADD
+    if((EEPROM.read(BMP180_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor    
+    {
+        #ifdef debug_serial
+        Serial.println("Initializing BMP");
+        Serial.flush();
+        #endif  // debug_serial
+        BMP_begin(); //Initialise and calibrate the sensor bus
+    }
+    #endif //BMP180
+    
+    #ifdef POST
+    wdt_reset();
+    #endif
 
     #ifdef MMA8452
     if((EEPROM.read(MMA8452+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor    
@@ -807,6 +1106,7 @@ void setup()
         #endif //I2C_INIT_ADD
         #ifdef debug_serial
         Serial.println("Initializing MMA");
+        Serial.flush();
         #endif
         MMA_found = initMMA8452();
         #ifdef POST
@@ -871,7 +1171,7 @@ void setup()
         #ifdef debug_serial
         Serial.println("Initializing WindVel");
         #endif
-        mag.begin();
+        HMC5883_begin();
         #ifdef POST
         wdt_reset();
         #endif
@@ -879,7 +1179,7 @@ void setup()
         #ifdef POST
         wdt_reset();
         #endif 
-        mag.setSingleMeasurementMode();
+        HMC5883_setSingleMeasurementMode();
         #ifdef POST
         wdt_reset();
         #endif

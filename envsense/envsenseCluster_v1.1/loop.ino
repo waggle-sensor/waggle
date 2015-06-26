@@ -192,8 +192,8 @@ void loop() {
         Serial.println("BMP180");
         Serial.flush();
         #endif //debug_serial
-        BMP_180_1.getPressure(&BMP_180_1_pressure);
-        BMP_180_1.getTemperature(&BMP_180_1_temperature);
+        BMP180_getPressure(&BMP_180_pressure);
+        BMP180_getTemperature(&BMP_180_temperature);
     }
     #endif //BMP180_ADD
     
@@ -340,8 +340,8 @@ void loop() {
         wdt_reset();
         #endif
         #ifdef debug_serial
-        Serial.println("increment time");
-        Serial.flush();
+//         Serial.println("increment time");
+//         Serial.flush();
         #endif //debug_serial
         #ifdef POST
         wdt_reset();
@@ -351,8 +351,8 @@ void loop() {
         wdt_reset();
         #endif
         #ifdef debug_serial
-        Serial.println("delay");
-        Serial.flush();
+//         Serial.println("delay");
+//         Serial.flush();
         #endif //debug_serial
         #ifdef POST
         wdt_reset();
@@ -370,9 +370,9 @@ void loop() {
         Serial.flush();
         #endif
         
-        take_samples();        // Takes samples, take FHT of them.
+        take_wind_samples();        // Takes samples, take FHT of them.
                             // output stored in global array "fht_lin_out"
-        calc_speed();    // Obtain dominant frequency from FHT
+        calc_windspeed();    // Obtain dominant frequency from FHT
                         // stored in global float "freq"
     }
     #endif

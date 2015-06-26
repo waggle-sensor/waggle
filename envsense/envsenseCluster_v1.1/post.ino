@@ -103,18 +103,15 @@ void post() {
             Serial.print("Testing BMP\t");
             Serial.flush();
             #endif
-            Wire.begin();
-            Adafruit_BMP085_Unified BMP_180_2 = Adafruit_BMP085_Unified(10085);
-            float BMP_180_2_temperature, BMP_180_2_pressure;
-            BMP_180_2.begin();
+            BMP_begin();
+            wdt_reset();
             
             for(int a = 0; a<10; a++)
             {
-                BMP_180_2.getTemperature(&BMP_180_2_temperature);
-                BMP_180_2.getPressure(&BMP_180_2_pressure);
+                BMP180_getTemperature(&BMP_180_temperature);
+                BMP180_getPressure(&BMP_180_pressure);
                 wdt_reset();
                 delay(500);
-                wdt_reset();
             }
             byte history = EEPROM.read(BMP180_ADD+128);
             history = history | 0x01;           // Demonstrate successful test pass
@@ -622,18 +619,23 @@ void post() {
             Serial.flush();
             #endif
             
-            mag.begin();
+            HMC5883_begin();
             // Initially, data NOT ready
-            mag.setDataReady(0);
+            HMC5883_setDataReady(0);
             delay(2000);
             
             for(int a = 0; a<10; a++)
             // Perform test 10 times
             {
-                mag.setSingleMeasurementMode();
+                HMC5883_setSingleMeasurementMode();
                 wdt_reset();
                 delay(sample_delay); // Give sensor time to take measurement
-                while((mag.getDataReady() & 0x01) != 0x01); //wait until data is ready
+                byte ready_bit;
+                i2c_read8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_SR_REG_Mg, &ready_bit);
+                while((ready_bit & 0x01) != 0x01)
+                    i2c_read8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_SR_REG_Mg, &ready_bit);
+                //do nothing until data is ready
+                // DRDY bit monitoring only needed for high sampling frequencies
                 wdt_reset();
                 
                 // Read 16 bit Y value output

@@ -5,9 +5,9 @@ build.core.path = /home/rajesh/repos/waggle/GIT/waggle_max/resources/compilers/a
 build.extra_flags = 
 build.f_cpu = 16000000L
 build.mcu = atmega2560
-build.path = /home/rajesh/repos/waggle/GIT/waggle_max/sensors/envsense/envsense_v1.1/fw/envsenseCluster_v1.1/envsenseCluster_v1.1/./build
+build.path = /home/rajesh/GIT/waggle_max/sensors/envsense/envsenseCluster_v1.1/./build
 build.project_name = envsenseCluster_v1.1.cpp
-build.source.path = /home/rajesh/repos/waggle/GIT/waggle_max/sensors/envsense/envsense_v1.1/fw/envsenseCluster_v1.1/envsenseCluster_v1.1
+build.source.path = /home/rajesh/GIT/waggle_max/sensors/envsense/envsenseCluster_v1.1
 build.system.path = /home/rajesh/repos/waggle/GIT/waggle_max/resources/compilers/arduino-1.6.5-linux/arduino_64/hardware/arduino/avr/system
 build.usb_flags = -DUSB_VID={build.vid} -DUSB_PID={build.pid} '-DUSB_MANUFACTURER={build.usb_manufacturer}' '-DUSB_PRODUCT={build.usb_product}'
 build.usb_manufacturer = "Unknown"
