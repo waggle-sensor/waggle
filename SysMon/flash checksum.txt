@@ -15,8 +15,8 @@
 - go to that dir
 - for ATmega32U:
 -- might need sudo
--- srec_cat SysMon.cpp.hex -intel --crop 0x0000 <end address - 4> --fill 0xFF 0x0000 <end address - 4> --l-e-crc32 <end address - 3> 4 4 -o SysMon.cpp.hex -intel
---- example above: srec_cat SysMon.cpp.hex -intel --crop 0x0000 0x6FFB --fill 0xFF 0x0000 0x6FFB --l-e-crc32 0x6FFC 4 4 -o SysMon.cpp.hex -intel
+-- srec_cat SysMon.cpp.hex -intel --fill 0xFF 0x0000 <end address - 4> --l-e-crc32 <end address - 3> -o SysMon.cpp.hex -intel
+--- example above: srec_cat SysMon.cpp.hex -intel --fill 0xFF 0x0000 0x6FFB --l-e-crc32 0x6FFC -o SysMon.cpp.hex -intel
 ---- this is for the application space
 -- srecord uses CCITT polynomials by default (see SRecord Reference Manual for more info)
 

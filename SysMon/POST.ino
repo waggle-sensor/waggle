@@ -18,6 +18,19 @@ const byte FAIL_GPRF = 1;
 const byte FAIL_STACK = 2;
 const byte FAIL_SREG = 3;
 const byte FAIL_SRAM = 4;
+const byte FAIL_FLASH = 5;
+const byte FAIL_WATCHDOG = 6;
+const byte FAIL_INTERRUPT = 7;
+const byte FAIL_ADC = 8;
+
+const boolean FATAL_GPRF = true;
+const boolean FATAL_STACK = true;
+const boolean FATAL_SREG = true;
+const boolean FATAL_SRAM = true;
+const boolean FATAL_FLASH = true;
+const boolean FATAL_WATCHDOG = true;
+const boolean FATAL_INTERRUPT = false;
+const boolean FATAL_ADC = false;
 
 const byte RESET_POWER_ON = 0;
 const byte RESET_EXTERNAL = 1;
@@ -25,47 +38,42 @@ const byte RESET_BROWN_OUT = 2;
 const byte RESET_WATCHDOG = 3;
 const byte RESET_JTAG = 4;
 const byte RESET_USB = 5;
-const byte RESET_WAITING = 0x80;
 
 
 
 //---------- G L O B A L S ----------------------------------------------------
 boolean _SOS_BOOT_MODE = false;
 
-/* See http://www.nongnu.org/avr-libc/user-manual/mem_sections.html and 
-http://www.atmel.com/webdoc/AVRLibcReferenceManual/
-group__demo__project_1demo_project_map.html for more. */
-// Symbol from the linker that contains the last word of data (vars and such).
-// The .data section follows the .text section, so this is the end of the
-// flash memory that we would want to verify.
-extern int __data_load_end;
-
 
 
 //---------- P O S T ----------------------------------------------------------
 void POST() 
 {
-	String ch = "success";
-
-	Serial.println((unsigned int)&__data_load_end, HEX);
-
 	// General Purpose Register File failed?
 	if(!gprf_test())
-		test_failure(FAIL_GPRF, true);
+		test_failure(FAIL_GPRF, FATAL_GPRF);
 
 	// Stack pointer failed?
 	if(!stack_pointer_test())
-		test_failure(FAIL_STACK, true);
+		test_failure(FAIL_STACK, FATAL_STACK);
 
 	// Status register (SREG) test failed?
 	if(!status_register_test())
-		test_failure(FAIL_SREG, true);
+		test_failure(FAIL_SREG, FATAL_SREG);
 
 	// SRAM test failed?
 	if(!sram_test())
-		test_failure(FAIL_SRAM, true);
+		test_failure(FAIL_SRAM, FATAL_SRAM);
 
-	Serial.println(ch);
+	// Flash test failed?
+	//if(!flash_test())
+		//test_failure(FAIL_FLASH, FATAL_FLASH);
+
+	// Watchdog test failed?
+	if(!watchdog_test(find_reset_reason()));
+		test_failure(FAIL_WATCHDOG, FATAL_WATCHDOG);
+
+	Serial.println("Success");
 }
 
 
@@ -381,8 +389,6 @@ __attribute__((noinline)) boolean sram_test()
 
   // Tell the compiler to put these into registers, since putting them
   // into memory means they're trying to verify themselves.
-
-  // 16 bits
   register byte *p_val asm("Z");
   register byte i asm("GPIOR1");
   register byte save asm("GPIOR2");
@@ -424,6 +430,44 @@ __attribute__((noinline)) boolean sram_test()
 
 
 
+//---------- W A T C H D O G _ T E S T ----------------------------------------
+/*
+	 Checks the reason for reset.  If it was a watchdog reset, we move on.
+	 If it wasn't, enable the watchdog and wait.
+	 Return of TRUE means it passed the test.
+	 Return of FALSE means it failed the test.
+
+	 This code is designed to work in the default Arduino environment, so 
+	 setting compiler flags is not an option.  The "noinline" attribute is 
+	 used to prevent the compiler from inlining this function.
+
+   :rtype: boolean
+*/
+__attribute__((noinline)) boolean watchdog_test(byte reason)
+{
+	// Insurance against the compiler optimizing away this function through
+	// means other than inlining.
+	asm("");
+
+	Serial.print("watchdog_test reason: ");
+	Serial.println(reason);
+
+	// Was reset due to watchdog?
+	if(reason != RESET_WATCHDOG)
+	{
+		Serial.println("not watchdog reset");
+
+		wdt_enable(WDTO_1S);
+		Serial.println("enabled");
+	}
+	if(reason == RESET_WATCHDOG)
+		Serial.println("watchdog reset");
+
+	return true;
+}
+
+
+
 //---------- F I N D _ R E S E T _ R E A S O N --------------------------------
 /*
    Reads the MCU status register (MCUSR) for the reset flag.
@@ -435,17 +479,29 @@ byte find_reset_reason()
 	byte i;
 	byte mask = 0x01;
 
-	// Check bits 0-5 in MCUSR
-	for(i = 0; i < 6; i++)
-	{
-		// Is the current bit set?
-		if(MCUSR & mask)
-			// Found the reset flag, so exit the loop
-			break;
+	MCUSR = 0x08;
+	delay(5);
 
-		// Shift the mask left by 1
-		mask = mask << 1;
-	}
+	Serial.print("find_reset_reason reason: ");
+	if(MCUSR == 0x08)
+		Serial.println(0x08);
+	else
+		Serial.println("?");
+
+	// // Check bits 0-5 in MCUSR
+	// for(i = 0; i < 6; i++)
+	// {
+	// 	// Is the current bit set?
+	// 	if(MCUSR & mask)
+	// 		// Found the reset flag, so exit the loop
+	// 		break;
+
+	// 	// Shift the mask left by 1
+	// 	mask <<= 1;
+	// }
+
+	// Clear MCUSR
+	MCUSR = 0;
 
 	// Return the reset reason
 	return i;	
