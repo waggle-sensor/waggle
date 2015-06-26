@@ -1,1 +1,1 @@
-All the libraries in the folder are vetted for use with Waggle.
+For information on installing libraries, see: http://arduino.cc/en/Guide/Libraries
