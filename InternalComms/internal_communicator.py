@@ -36,6 +36,7 @@ class client_push(Process):
                         print "sending: " , data
                         client_sock.sendall(data)
                         client_sock.close() #closes socket after each message is sent #TODO is there a better way to do this?
+                        print 'client_push closed'
                     else: 
                         time.sleep(10)
                         print 'Unable to connect to DC...'
@@ -95,24 +96,18 @@ class push_server(Process):
             print "Connected to ", addr
             while True:
                 try:
-                    buffer = ''
                     data = conn.recv(4028) 
-                    buffer +=data
                     if not data:
-                        pass
-                        
+                        break #breaks the loop when the client socket closes
                     else:
-                        print 'if not data'
-                        print 'buff len ' ,len(buffer)
                         header = get_header(data)
-                        
                         if header['r_uniqid'] == 0: #TODO assuming the cloud ID is 0. May need to change later
                             dev, msg_p, order = header['flags'] #unpacks the tuple containing the flags
                             #adds each onto the msg string #TODO will this work with pickled things?
-                            data += (str(order) + '|')
-                            data += (str(msg_p) + ',')
-                            data += (str(dev) +',')
-                            data += 'o,' #indicates that it is an outgoing message
+                            data = (str(order) + '|') + data
+                            data = (str(msg_p) + ',') + data
+                            data = (str(dev) +',') + data
+                            data = 'o,' + data #indicates that it is an outgoing message
                             comm.DC_push.put(data)
                         elif header['r_uniqid'] == 'NC': #TODO replace with NC ID
                             pass #TODO messages just gets unpacked and handled by NC
@@ -121,9 +116,6 @@ class push_server(Process):
                 except KeyboardInterrupt, k:
                     print "Shutting down."
                     break
-                #except: 
-                    #server.close()
-            break
         server.close()
             
 class pull_server(Process):

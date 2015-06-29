@@ -4,6 +4,10 @@ This module contains a few utilities that autogenerate complete simple packets,
 such as ping and time request packets.
 """
 
+with open('/etc/waggle/hostname','r') as file_:
+    QUEUENAME = file_.read()
+    
+
 from gPickler import gPickle
 import sys
 sys.path.append("..")
@@ -48,6 +52,21 @@ def make_data_packet(data):
     msg = gPickle(data)
     header_dict = {
         "msg_mj_type" : ord('s'),
-        "msg_mi_type" : ord('d')
+        "msg_mi_type" : ord('d'),
+        "flags"       : (1,5,True) #TODO this should not be specified here. Maybe put in a config file or have a method to change these values.
         }
+    return pack(header_dict, message_data = msg)
+
+def registration_packet():
+    """
+    Returns a registration packet. 
+    """ 
+   
+    header_dict = {
+        "msg_mj_type" : ord('r'),
+        "msg_mi_type" : ord('r'),
+        "flags"       : (1,5,True)
+        }
+    msg = str(QUEUENAME) #TODO Should be a randomly generated string
+        
     return pack(header_dict, message_data = msg)
