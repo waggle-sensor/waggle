@@ -25,20 +25,13 @@ nop();
 #include <OneWire.h>
 #include <dht.h>
 #include <Wire.h>
-#include <LibTempTMP421.h>
-#include <DallasTemperature.h>
 #include <EEPROM.h>
 #include <avr/wdt.h>
 #include <Sensirion.h>
 #include <i2cmaster.h>
-// #include <HMC5883.h>
-// #include <TimerOne.h>
-// #include <TimerThree.h>
 #include "HTU21D.h"
 #include "features_v2.c"
 
-// int timer1_runs = 0;
-// int timer3_runs = 0;
 int counter = 0;
 volatile int current_time = 0;
 int sleep_time_loop = int(13500.0/MMA_Buff_size);
@@ -93,19 +86,16 @@ void HMC5883_getEvent() {
     /* Read new data */
     HMC5883_read();
     
-    //   event->version   = sizeof(sensors_event_t);
-    //   event->sensor_id = sensorID;
-    //   event->type      = 2; // Sensor type Magnetic field
-    //   event->timestamp = 0;
+    /* Process the raw data */
     HMC5883_data_x = HMC5883_data_x / _hmc5883_Gauss_LSB_XY * SENSORS_GAUSS_TO_MICROTESLA;
     HMC5883_data_y = HMC5883_data_y / _hmc5883_Gauss_LSB_XY * SENSORS_GAUSS_TO_MICROTESLA;
     HMC5883_data_z = HMC5883_data_z / _hmc5883_Gauss_LSB_Z * SENSORS_GAUSS_TO_MICROTESLA;
 }
 
-// Obtain data from sensor
+// Obtain raw data from sensor
 void HMC5883_read()
 {
-    // Read the magnetometer
+    // Read 6 bytes from the magnetometer
     Wire.beginTransmission((byte)HMC5883_ADDRESS_MAG);
     #if ARDUINO >= 100
     Wire.write(HMC5883_REGISTER_MAG_OUT_X_H_M);
@@ -142,7 +132,7 @@ float t_PTAT;
 float tPEC;
 bool data_check;
 
-
+/* Get data from the D6T Sensor */
 bool D6T_get_data(void) {
     int k, start_err = 0, write_err = 0;
     start_err = i2c_start(0x14);
@@ -255,7 +245,8 @@ void MMA8452_get_means()
     
     else {
         for (int i = 0 ; i < 3 ; i++) {
-            accelG[i] = (float) accelCount[i] / ((1<<12)/(2*GSCALE)); // get actual g value, this depends on scale being set
+            accelG[i] = (float) accelCount[i] / ((1<<12)/(2*GSCALE)); 
+            // get actual g value, this depends on scale being set
         }
     }
     
@@ -461,10 +452,9 @@ int THERMIS_1_Value;
 OneWire DS18B20_1_ds(DS18B20_1_Pin);  // Temperature chip i/o on digital pin 2
 float DS18B20_1_temperature;
 
+//returns the temperature from one DS18B20 in DEG Celsius
 float DS18B20_1_getTemp()
 {
-    //returns the temperature from one DS18B20 in DEG Celsius
-    
     byte data[12];
     byte addr[8];
     
@@ -616,8 +606,91 @@ uint8_t HIH61XX_stop()
 #endif //HIH6130_ADD
 
 #ifdef TMP421_ADD
-LibTempTMP421 TMP421_1 = LibTempTMP421(0);
+#include <inttypes.h>
 float TMP421_1_temperature;
+
+/**********************************************************
+ * getRegisterValue
+ *  Get the TMP421 register value via I2C
+ *
+ * @return uint8_t - The register value
+ **********************************************************/
+uint8_t TMP421_getRegisterValue(void) {
+    
+    int TMP_err = Wire.requestFrom(0x2A, 1);
+    if (TMP_err != 0) {
+        while(Wire.available() <= 0) {
+            ; //wait
+        }
+        return Wire.read();
+    }
+    else {
+        return -999;
+    }
+}
+
+/**********************************************************
+ * setPtrLoc
+ *  Sets the TMP421 pointer register location via I2C
+ *
+ * @param ptrLoc - The pointer register address
+ **********************************************************/
+void TMP421_setPtrLoc(uint8_t ptrLoc) {
+    
+    //Set the pointer location
+    Wire.beginTransmission(0x2A);   //begin
+    Wire.write(ptrLoc);             //send the pointer location
+    Wire.endTransmission();         //end
+    delay(8);
+}
+
+/**********************************************************
+ * GetTemperature
+ *  Gets the current temperature from the sensor.
+ *
+ * @return float - The local temperature in degrees C
+ **********************************************************/
+float TMP421_GetTemperature(void) {
+    uint8_t in[2];
+    float frac = 0.0;
+    uint8_t bit;
+    
+    TMP421_setPtrLoc(0x00);                //high-byte
+    in[0] = TMP421_getRegisterValue();
+    
+    TMP421_setPtrLoc(0x10);                //low-byte
+    in[1] = TMP421_getRegisterValue();
+    in[1] >>=4;                     //shift-off the unused bits
+    
+    if (in[0] == -999 || in[1] == -999) {
+        frac = -999;
+    }
+    else {
+        /* Assemble the fraction */
+        bit = in[1] & 0x01;
+        frac += (bit * 0.5) * (bit * 0.5) * (bit * 0.5) * (bit * 0.5);
+        
+        in[1] >>= 1;
+        bit = in[1] & 0x01;
+        frac += (bit * 0.5) * (bit * 0.5) * (bit * 0.5);
+        
+        in[1] >>= 1;
+        bit = in[1] & 0x01;
+        frac += (bit * 0.5) * (bit * 0.5);
+        
+        in[1] >>= 1;
+        bit = in[1] & 0x01;
+        frac += (bit * 0.5);
+        
+        /* Add the MSB to the fraction */
+        frac += in[0];
+        
+        /* frac is unsigned, make it signed to allow for negative temps */
+        if (frac > 128.0)
+            frac -= 256;
+    }
+    return frac;
+}
 #endif //TMP421_ADD
 
 #ifdef BMP180_ADD
@@ -1176,6 +1249,7 @@ void setup()
         pinMode(A2, INPUT);        // GND pin
         pinMode(A3, INPUT);        // VCC pin
         digitalWrite(A3, LOW);     // turn off pullups
+        Wire.begin();
         #endif
         #ifdef POST
         wdt_reset();

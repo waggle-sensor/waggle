@@ -1,6 +1,7 @@
 #ifdef POST
 void post() { 
     byte testing_bit = EEPROM.read(testing_addr); 
+    int numTests = 10;  // Number of times to test each sensor
     // Do I have to start testing or am I in the middle of a test?
     byte current_sensor = 1; 
     // which sensor am I going to be testing, starts with 1, but if I rebooted in 
@@ -68,7 +69,7 @@ void post() {
             float SHT75_1_humidity;
             uint16_t SHT75_1_rawData;
             uint8_t SHT75_1_error;
-            for(int a = 0; a<10; a++)
+            for(int a = 0; a<numTests; a++)
             // Perform test 10x to ensure accuracy
             {
                 SHT75_1_error = SHT75_1_tempSensor.measTemp(&SHT75_1_rawData);
@@ -106,7 +107,7 @@ void post() {
             BMP_begin();
             wdt_reset();
             
-            for(int a = 0; a<10; a++)
+            for(int a = 0; a<numTests; a++)
             {
                 BMP180_getTemperature(&BMP_180_temperature);
                 BMP180_getPressure(&BMP_180_pressure);
@@ -137,7 +138,7 @@ void post() {
             dht RHT03_1;
             int chk_RHT03_1;
             
-            for(int a = 0; a<10; a++)
+            for(int a = 0; a<numTests; a++)
             {
                 chk_RHT03_1 = RHT03_1.read22(RHT03_1_PIN);
                 wdt_reset();
@@ -171,7 +172,7 @@ void post() {
             Serial.print("Testing TMP102\t");
             Serial.flush();
             #endif
-            for(int a = 0; a<10; a++)
+            for(int a = 0; a<numTests; a++)
             {
                 err = Wire.requestFrom(tmp102_1_Address,2);
                 if (err != 0) {
@@ -215,7 +216,7 @@ void post() {
             #endif
             
             Sensirion SHT15_1_tempSensor = Sensirion(SHT15_1_dataPin, SHT15_1_sclkPin);
-            for(int a = 0; a<10; a++)
+            for(int a = 0; a<numTests; a++)
             {
                 SHT15_1_error = SHT15_1_tempSensor.measTemp(&SHT15_1_rawData);
                 SHT15_1_temperature = SHT15_1_tempSensor.calcTemp(SHT15_1_rawData);
@@ -254,7 +255,7 @@ void post() {
 //                 #endif //I2C_INIT_ADD
 //                 
 //                 MMA_found = initMMA8452();
-            for(int a = 0; a<10; a++)
+            for(int a = 0; a<numTests; a++)
             {
 //                 bool good_data = readAccelData(accelCount); // Read the x/y/z adc values
             
@@ -285,7 +286,7 @@ void post() {
             Serial.flush();
             #endif
             Wire.begin();
-            for(int a = 0; a<10; a++)
+            for(int a = 0; a<numTests; a++)
             {
                 HIH61XX_start();
                 HIH61XX_update();
@@ -315,11 +316,11 @@ void post() {
             Serial.print("Testing DS18B20\t");
             Serial.flush();
             #endif
-            for(int a = 0; a<10; a++)
+            for(int a = 0; a<numTests; a++)
             {
                 float data = DS18B20_1_getTemp();
-                if(data==-1000)
-                    delay(3000);                // Device not functioning
+                if(data==-1000)     // If data is -1000, device is not communicating
+                    delay(10000);
                 wdt_reset();
                 delay(500);
                 wdt_reset();
@@ -348,7 +349,7 @@ void post() {
             
             i2c_init(); //Initialise the i2c bus
             #define I2C_INIT_ADD 1
-            for(int a = 0; a<10; a++)
+            for(int a = 0; a<numTests; a++)
             {
                 PORTC = (1 << PORTC4) | (1 << PORTC5);//enable pullups
                 
@@ -391,7 +392,7 @@ void post() {
             Serial.print("Testing GA1A\t");
             Serial.flush();
             #endif
-            for(int a = 0; a<10; a++)
+            for(int a = 0; a<numTests; a++)
             {
                 AMBI_1_Value = analogRead(AMBI_1_Pin);
                 
@@ -421,7 +422,7 @@ void post() {
             Serial.flush();
             #endif
             
-            for(int a = 0; a<10; a++)
+            for(int a = 0; a<numTests; a++)
             {
                 THERMIS_1_Value = analogRead(THERMIS_100K_Pin);
                 
@@ -450,7 +451,7 @@ void post() {
             Serial.print("Testing MAX\t");
             Serial.flush();
             #endif
-            for(int a = 0; a<10; a++)
+            for(int a = 0; a<numTests; a++)
             {
 //                 int data = analogRead(MAX4466_PIN);
                 MAX4466_get_max();
@@ -478,16 +479,18 @@ void post() {
             pinMode(A2, INPUT);        // GND pin
             pinMode(A3, INPUT);        // VCC pin
             digitalWrite(A3, LOW);     // turn off pullups
+            Wire.begin();
             
             #ifdef debug_serial
             Serial.print("Testing TMP421\t");
             Serial.flush();
             #endif
             
-            for(int a = 0; a<10; a++)
+            for(int a = 0; a<numTests; a++)
             {
-                TMP421_1_temperature = TMP421_1.GetTemperature();
-                
+                TMP421_1_temperature = TMP421_GetTemperature();
+                if(TMP421_1_temperature==-999)
+                    delay(10000);       // Bad sensor, should be disabled
                 wdt_reset();
                 delay(500);
                 wdt_reset();
@@ -532,7 +535,7 @@ void post() {
             pinMode(A5,INPUT);
             digitalWrite(A5,HIGH); // Pull-up resistor for SCL
             
-            for(int a = 0; a<10; a++)
+            for(int a = 0; a<numTests; a++)
             // Perform test 10x
             {
                 bool temp = D6T_get_data(); // Read sensor
@@ -563,7 +566,7 @@ void post() {
             Serial.print("Testing HIH4030\t");
             Serial.flush();
             #endif
-            for(int a = 0; a<10; a++)
+            for(int a = 0; a<numTests; a++)
             // Perform test 10 times
             {
                 HIH4030_1_Value = analogRead(HIH4030_PIN);  // Read sensor
@@ -592,7 +595,7 @@ void post() {
             Serial.print("Testing PhoRes\t");
             Serial.flush();
             #endif
-            for(int a = 0; a<10; a++)
+            for(int a = 0; a<numTests; a++)
             // Perform test 10 times
             {
                 PhoRes_1_Value = analogRead(PhoRes_PIN);    // Read sensor
@@ -626,7 +629,7 @@ void post() {
             HMC5883_setDataReady(0);
             delay(2000);
             
-            for(int a = 0; a<10; a++)
+            for(int a = 0; a<numTests; a++)
             // Perform test 10 times
             {
                 HMC5883_setSingleMeasurementMode();
@@ -717,7 +720,7 @@ void post() {
             #endif
             
             HMC5883_begin();
-            for(int a = 0; a<10; a++)
+            for(int a = 0; a<numTests; a++)
             // Perform test 10 times
             {
                 HMC5883_getEvent();   // read sensor

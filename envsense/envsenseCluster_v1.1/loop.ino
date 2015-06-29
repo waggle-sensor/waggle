@@ -165,7 +165,7 @@ void loop() {
         Serial.println("TMP421");
         Serial.flush();
         #endif //debug_serial
-        TMP421_1_temperature = TMP421_1.GetTemperature(); // Some error, check this out!
+        TMP421_1_temperature = TMP421_GetTemperature(); // Some error, check this out!
     }
     #endif //TMP421_ADD
     
