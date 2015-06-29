@@ -16,11 +16,17 @@ const byte LED = 13;
 //---------- S E T U P --------------------------------------------------------
 void setup() 
 {
-  wdt_disable();
+  // Start serial comms @ 115200 bps
   Serial.begin(115200);
-  delay(8000);
+
+  // Set LED pin to output so we can turn on the LED
   pinMode(LED, OUTPUT);
+  
+  // Power on self test
   POST();
+
+  // Debug
+  Serial.println("POST done");
 }
 
 

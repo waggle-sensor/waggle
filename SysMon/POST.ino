@@ -9,8 +9,6 @@ const int SRAM_END_ADDR = SRAM_START_ADDR + SRAM_SIZE - 1;
 const int STACK_SAVE = 0x0250;
 const int STACK_ADDR = 0x0099;
 
-const byte WDT_TIMER = 0x18;
-
 const byte EEPROM_RESET_REASON_ADDR = 0x00;
 const byte EEPROM_POST_RESULT_ADDR = 0x01;
 
@@ -22,6 +20,7 @@ const byte FAIL_FLASH = 5;
 const byte FAIL_WATCHDOG = 6;
 const byte FAIL_INTERRUPT = 7;
 const byte FAIL_ADC = 8;
+const byte FAIL_TIMER0 = 9;
 
 const boolean FATAL_GPRF = true;
 const boolean FATAL_STACK = true;
@@ -31,6 +30,7 @@ const boolean FATAL_FLASH = true;
 const boolean FATAL_WATCHDOG = true;
 const boolean FATAL_INTERRUPT = false;
 const boolean FATAL_ADC = false;
+const boolean FATAL_TIMER0 = false;
 
 const byte RESET_POWER_ON = 0;
 const byte RESET_EXTERNAL = 1;
@@ -39,17 +39,27 @@ const byte RESET_WATCHDOG = 3;
 const byte RESET_JTAG = 4;
 const byte RESET_USB = 5;
 
+const byte ADC_TEST_THRESHOLD = 512;
+
 
 
 //---------- G L O B A L S ----------------------------------------------------
 boolean _SOS_BOOT_MODE = false;
+// Flag to use while waiting for interrupt
+boolean volatile interrupt_fired = false;
 
 
 
 //---------- P O S T ----------------------------------------------------------
 void POST() 
 {
-	// General Purpose Register File failed?
+  // Find reason for reset
+  byte reason = find_reset_reason();
+
+  // Disable watchdog so it doesn't reset the chip before we're ready
+  wdt_disable();
+
+  // General Purpose Register File failed?
 	if(!gprf_test())
 		test_failure(FAIL_GPRF, FATAL_GPRF);
 
@@ -69,11 +79,20 @@ void POST()
 	//if(!flash_test())
 		//test_failure(FAIL_FLASH, FATAL_FLASH);
 
-	// Watchdog test failed?
-	if(!watchdog_test(find_reset_reason()));
-		test_failure(FAIL_WATCHDOG, FATAL_WATCHDOG);
+  // Debug
+  delay(8000);
 
-	Serial.println("Success");
+	// Watchdog test failed?
+	// if(!watchdog_test(reason));
+	// 	test_failure(FAIL_WATCHDOG, FATAL_WATCHDOG);
+
+  // ADC test failed?
+  if(!ADC_test())
+    test_failure(FAIL_ADC, FATAL_ADC);
+
+  // Timer0 (watchdog reset timer) test failed?
+  if(!timer0_test())
+    test_failure(FAIL_TIMER0, FATAL_TIMER0);
 }
 
 
@@ -449,21 +468,182 @@ __attribute__((noinline)) boolean watchdog_test(byte reason)
 	// means other than inlining.
 	asm("");
 
-	Serial.print("watchdog_test reason: ");
-	Serial.println(reason);
-
-	// Was reset due to watchdog?
-	if(reason != RESET_WATCHDOG)
+	// Was reset not due to watchdog?
+	if((reason & RESET_WATCHDOG) != RESET_WATCHDOG)
 	{
 		Serial.println("not watchdog reset");
 
 		wdt_enable(WDTO_1S);
 		Serial.println("enabled");
 	}
-	if(reason == RESET_WATCHDOG)
-		Serial.println("watchdog reset");
+	if((reason & RESET_WATCHDOG) == RESET_WATCHDOG)
+    Serial.println("watchdog reset");
 
 	return true;
+}
+
+// TEMP
+int data = 0;
+//---------- A D C _ T E S T --------------------------------------------------
+/*
+   Checks that the ADC is functioning correctly.
+   Return of TRUE means it passed the test.
+   Return of FALSE means it failed the test.
+
+   This code is designed to work in the default Arduino environment, so 
+   setting compiler flags is not an option.  The "noinline" attribute is 
+   used to prevent the compiler from inlining this function.
+
+   :rtype: boolean
+*/
+__attribute__((noinline)) boolean ADC_test()
+{
+  // Insurance against the compiler optimizing away this function through
+  // means other than inlining.
+  asm("");
+
+  // Set AREF to the ATmega's internal reference
+  analogReference(INTERNAL);
+
+  // Wait, then read ADC a few times to let things settle down
+  delay(50);
+  analogRead(INTERNAL);
+  analogRead(INTERNAL);
+  analogRead(INTERNAL);
+
+  // Read ADC with INTERNAL as input
+  int value = analogRead(INTERNAL);
+
+  Serial.println(value);
+
+  // Is the reported ADC value close enough?
+  // Theoretically, the value should be 1023 (10-bit conversion)
+  if(value > ADC_TEST_THRESHOLD)
+    // Exit test with success
+    return true;
+  else
+    // Exit test with failure
+    return false;
+
+  // TEMP
+  data = 5;
+}
+
+
+
+//---------- T I M E R 0 _ T E S T --------------------------------------------
+/*
+   Checks all registers for stuck bits and lets the timer overflow, which
+   tests the timer and the interrupt.
+   Return of TRUE means it passed the test.
+   Return of FALSE means it failed the test.
+
+   This code is designed to work in the default Arduino environment, so 
+   setting compiler flags is not an option.  The "noinline" attribute is 
+   used to prevent the compiler from inlining this function.
+
+   :rtype: boolean
+*/
+__attribute__((noinline)) boolean timer0_test()
+{
+  // Insurance against the compiler optimizing away this function through
+  // means other than inlining.
+  asm("");
+
+  /* These comments apply to all register tests in this function */
+  // Load first test value
+  TCCR0A = 0x55;
+  // Is the register not storing the test value?
+  // See datasheet for unused bits
+  if(TCCR0A != 0x51)
+    // Exit test with failure
+    return false;
+  // Load second test value
+  TCCR0A = 0xAA;
+  // Is the register not storing the test value?
+  // See datasheet for unused bits
+  if(TCCR0A != 0xA2)
+    // Exit test with failure
+    return false;
+  // Reset the register
+  TCCR0A = 0;
+
+  TCCR0B = 0x55;
+  if(TCCR0B != 0x45)
+    return false;
+  TCCR0B = 0xAA;
+  if(TCCR0B != 0x8A)
+    return false;
+  TCCR0B = 0;
+
+  TCNT0 = 0x55;
+  if(TCNT0 != 0x55)
+    return false;
+  TCNT0 = 0xAA;
+  if(TCNT0 != 0xAA)
+    return false;
+  TCNT0 = 0;
+
+  OCR0A = 0x55;
+  if(OCR0A != 0x55)
+    return false;
+  OCR0A = 0xAA;
+  if(OCR0A != 0xAA)
+    return false;
+  OCR0A = 0;
+
+  OCR0B = 0x55;
+  if(OCR0B != 0x55)
+    return false;
+  OCR0B = 0xAA;
+  if(OCR0B != 0xAA)
+    return false;
+  OCR0B = 0;
+
+  TIMSK0 = 0x55;
+  if(TIMSK0 != 0x05)
+    return false;
+  TIMSK0 = 0xAA;
+  if(TIMSK0 != 0x02)
+    return false;
+  TIMSK0 = 0;
+
+  TIFR0 = 0x55;
+  if(TIFR0 != 0x05)
+    return false;
+  TIFR0 = 0xAA;
+  if(TIFR0 != 0x02)
+    return false;
+  TIFR0 = 0;
+
+  // By default, timer is set for normal, overflow, non-PWM mode.
+  // Enable overflow interrupt
+  TIMSK0 |= (1 << TOIE0);
+  // Set timer for no clock prescaling (this starts the timer)
+  TCCR0B |= (1 << CS00);
+
+  // Wait for timer interrupt
+  while(!interrupt_fired);
+  // Reset flag
+  interrupt_fired = false;
+
+  // Exit test with success
+  return true;
+}
+
+/*
+
+
+CAN'T USE TIMER0.  ARDUINO USES THAT FOR delay() AND millis()
+
+
+*/
+
+//---------- T I M E R 0 _ O V E R F L O W _ I N T E R R U P T ----------------
+ISR(TIMER0_OVF_vect)
+{
+  // Set flag to indicate that the interrupt fired
+  interrupt_fired = true;
 }
 
 
@@ -479,29 +659,20 @@ byte find_reset_reason()
 	byte i;
 	byte mask = 0x01;
 
-	MCUSR = 0x08;
-	delay(5);
+	// Check bits 0-5 in MCUSR
+	for(i = 0; i < 6; i++)
+	{
+		// Is the current bit set?
+		if(MCUSR & mask)
+			// Found the reset flag, so exit the loop
+			break;
 
-	Serial.print("find_reset_reason reason: ");
-	if(MCUSR == 0x08)
-		Serial.println(0x08);
-	else
-		Serial.println("?");
+		// Shift the mask left by 1
+		mask <<= 1;
+	}
 
-	// // Check bits 0-5 in MCUSR
-	// for(i = 0; i < 6; i++)
-	// {
-	// 	// Is the current bit set?
-	// 	if(MCUSR & mask)
-	// 		// Found the reset flag, so exit the loop
-	// 		break;
-
-	// 	// Shift the mask left by 1
-	// 	mask <<= 1;
-	// }
-
-	// Clear MCUSR
-	MCUSR = 0;
+  // Clear MCUSR
+  MCUSR = 0;
 
 	// Return the reset reason
 	return i;	
