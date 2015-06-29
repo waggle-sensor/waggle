@@ -318,6 +318,8 @@ void post() {
             for(int a = 0; a<10; a++)
             {
                 float data = DS18B20_1_getTemp();
+                if(data==-1000)
+                    delay(3000);                // Device not functioning
                 wdt_reset();
                 delay(500);
                 wdt_reset();
