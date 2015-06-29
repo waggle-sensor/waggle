@@ -15,5 +15,5 @@ clean:
 	rm -rf $(BIN_DIR)/*
 	rm -rf $(BUILD_DIR)/*
 
-install: all
+install:
 	$(FLASHER) -C$(FLASHER_CONFIGS) -v -p$(TYPE) -cwiring -P$(PORT) -b$(FLASHER_BAUD_RATE) -D -Uflash:w:$(BIN_DIR)/$(TARGET).cpp.hex:i

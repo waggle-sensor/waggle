@@ -1,0 +1,65 @@
+#!/bin/bash
+echo "Creting directories..."
+DIRECTORY=bin
+if [ ! -d "$DIRECTORY" ]; then
+  # Control will enter here if $DIRECTORY exists.
+  mkdir $DIRECTORY
+fi
+
+DIRECTORY=build
+if [ ! -d "$DIRECTORY" ]; then
+  # Control will enter here if $DIRECTORY exists.
+  mkdir $DIRECTORY
+fi
+echo "Checking CPU arch..."
+ARCH=$(uname -p)
+echo "Found arch $ARCH"
+echo "Reading build target info from board.info..."
+
+BOARD_INFO=board.info
+
+if [ -f $BOARD_INFO ];
+then
+   BOARD_NAME=$(cat $BOARD_INFO | grep TARGET)
+   PORT_NAME=$(cat $BOARD_INFO | grep PORT)
+else
+   echo "Unable to file board.info file. Configure failed..."
+   exit
+fi
+
+if [ -z "$BOARD_NAME" ]; then
+    echo "No board name specified. Configure failed..."
+    exit
+fi
+
+if [ -z "$PORT_NAME" ]; then
+    echo "No port specified. Configure failed..."
+    exit
+fi
+
+echo "Setting up Arduino build environment..."
+if [ "$ARCH" == "x86_64" ]
+then
+  echo "ARD_HOME = $WAGGLE_GIT_ROOT/resources/compilers/arduino-1.6.5-linux/arduino_64" > makefile
+else
+  echo "ARD_HOME = $WAGGLE_GIT_ROOT/resources/compilers/arduino-1.6.5-linux/arduino_32" > makefile
+fi
+echo "Creating makefile..."
+echo "TARGET = ${PWD##*/}" >> makefile
+
+if [ -z "${PWD##*/}".ino ]; then
+    echo "Warning, no sources file found. A source file of the name ${PWD##*/}.ino is required for building."
+fi
+
+
+if [ "${BOARD_NAME##*=}" == "envsenseV1" ]
+then 
+    echo "PACKAGE = arduino" >> makefile
+    echo "ARCH = avr" >> makefile
+    echo "BOARD = mega" >> makefile
+    echo "TYPE = atmega2560" >> makefile
+    echo "FLASHER_BAUD_RATE = 115200" >> makefile
+    echo "PORT = ${PORT_NAME##*=}" >> makefile
+fi
+cat MakeFile >> makefile
+echo "Success! Now you can compile and flash the CPU with make and make install."
