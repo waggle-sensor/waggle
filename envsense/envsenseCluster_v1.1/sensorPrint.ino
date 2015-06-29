@@ -381,13 +381,13 @@ void sensor_print()
         /* Display the results (magnetic vector values are in micro-Tesla (uT)) */
         Serial.print("WXSensor;");
         Serial.print("HMC5883_X_uT:");
-        Serial.print(HMC5883_event.magnetic.x);
+        Serial.print(HMC5883_data_x);
         Serial.print(";");
         Serial.print("HMC5883_Y_uT:");
-        Serial.print(HMC5883_event.magnetic.y);
+        Serial.print(HMC5883_data_y);
         Serial.print(";");
         Serial.print("HMC5883_Z_uT:");
-        Serial.print(HMC5883_event.magnetic.z);
+        Serial.print(HMC5883_data_z);
         Serial.print(";");
         Serial.println("WXSensor");
     }

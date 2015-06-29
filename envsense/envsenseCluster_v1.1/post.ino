@@ -714,15 +714,11 @@ void post() {
             Serial.flush();
             #endif
             
-            Adafruit_HMC5883_Unified mag = Adafruit_HMC5883_Unified(23181);
-            sensors_event_t HMC5883_event;
-            
-            
-            mag.begin();
+            HMC5883_begin();
             for(int a = 0; a<10; a++)
             // Perform test 10 times
             {
-                mag.getEvent(&HMC5883_event);   // read sensor
+                HMC5883_getEvent();   // read sensor
                 wdt_reset();
                 delay(500);
                 wdt_reset();

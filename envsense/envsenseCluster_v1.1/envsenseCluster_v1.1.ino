@@ -27,12 +27,11 @@ nop();
 #include <Wire.h>
 #include <LibTempTMP421.h>
 #include <DallasTemperature.h>
-#include <Adafruit_Sensor.h>
 #include <EEPROM.h>
 #include <avr/wdt.h>
 #include <Sensirion.h>
 #include <i2cmaster.h>
-#include <HMC5883.h>
+// #include <HMC5883.h>
 // #include <TimerOne.h>
 // #include <TimerThree.h>
 #include "HTU21D.h"
@@ -45,9 +44,92 @@ volatile int current_time = 0;
 int sleep_time_loop = int(13500.0/MMA_Buff_size);
 
 #ifdef HMC5883_ADD
-Adafruit_HMC5883_Unified mag = Adafruit_HMC5883_Unified(23181);
-sensors_event_t HMC5883_event;
-float HMC5883_heading, HMC5883_declinationAngle, HMC5883_headingDegrees;
+#define HMC5883_ADDRESS_MAG            (0x3C >> 1)         // 0011110x
+#define SENSORS_GAUSS_TO_MICROTESLA       (100)                   /**< Gauss to micro-Tesla multiplier */
+typedef enum
+{
+    HMC5883_REGISTER_MAG_CRA_REG_M             = 0x00,
+    HMC5883_REGISTER_MAG_CRB_REG_M             = 0x01,
+    HMC5883_REGISTER_MAG_MR_REG_M              = 0x02,
+    HMC5883_REGISTER_MAG_OUT_X_H_M             = 0x03,
+    HMC5883_REGISTER_MAG_OUT_X_L_M             = 0x04,
+    HMC5883_REGISTER_MAG_OUT_Z_H_M             = 0x05,
+    HMC5883_REGISTER_MAG_OUT_Z_L_M             = 0x06,
+    HMC5883_REGISTER_MAG_OUT_Y_H_M             = 0x07,
+    HMC5883_REGISTER_MAG_OUT_Y_L_M             = 0x08,
+    HMC5883_REGISTER_MAG_SR_REG_Mg             = 0x09,
+    HMC5883_REGISTER_MAG_IRA_REG_M             = 0x0A,
+    HMC5883_REGISTER_MAG_IRB_REG_M             = 0x0B,
+    HMC5883_REGISTER_MAG_IRC_REG_M             = 0x0C,
+    HMC5883_REGISTER_MAG_TEMP_OUT_H_M          = 0x31,
+    HMC5883_REGISTER_MAG_TEMP_OUT_L_M          = 0x32
+} hmc5883MagRegisters_t;
+float HMC5883_data_x, HMC5883_data_y, HMC5883_data_z;
+static float _hmc5883_Gauss_LSB_XY = 1100.0F;  // Varies with gain
+static float _hmc5883_Gauss_LSB_Z  = 980.0F;   // Varies with gain
+#ifndef WindVel_ADD
+bool HMC5883_begin()
+{
+  // Enable I2C
+  Wire.begin();
+
+  // Enable the magnetometer
+  i2c_write8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_MR_REG_M, 0x00);
+  
+  // Set the gain to a known level
+  i2c_write8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_CRB_REG_M, (byte)0x20);
+  return true;
+}
+#endif  // WindVel
+
+// Read data and process it
+void HMC5883_getEvent() {
+  /* Clear the event */
+  HMC5883_data_x = 0;
+  HMC5883_data_y = 0;
+  HMC5883_data_z = 0;
+
+  /* Read new data */
+  HMC5883_read();
+  
+//   event->version   = sizeof(sensors_event_t);
+//   event->sensor_id = sensorID;
+//   event->type      = 2; // Sensor type Magnetic field
+//   event->timestamp = 0;
+  HMC5883_data_x = HMC5883_data_x / _hmc5883_Gauss_LSB_XY * SENSORS_GAUSS_TO_MICROTESLA;
+  HMC5883_data_y = HMC5883_data_y / _hmc5883_Gauss_LSB_XY * SENSORS_GAUSS_TO_MICROTESLA;
+  HMC5883_data_z = HMC5883_data_z / _hmc5883_Gauss_LSB_Z * SENSORS_GAUSS_TO_MICROTESLA;
+}
+
+// Obtain data from sensor
+void HMC5883_read()
+{
+  // Read the magnetometer
+  Wire.beginTransmission((byte)HMC5883_ADDRESS_MAG);
+  #if ARDUINO >= 100
+    Wire.write(HMC5883_REGISTER_MAG_OUT_X_H_M);
+  #else
+    Wire.send(HMC5883_REGISTER_MAG_OUT_X_H_M);
+  #endif
+  Wire.endTransmission();
+  Wire.requestFrom((byte)HMC5883_ADDRESS_MAG, (byte)6);
+  
+  // Wait around until enough data is available
+  while (Wire.available() < 6);
+
+  // Note high before low (different than accel)  
+    uint8_t xhi = Wire.read();
+    uint8_t xlo = Wire.read();
+    uint8_t zhi = Wire.read();
+    uint8_t zlo = Wire.read();
+    uint8_t yhi = Wire.read();
+    uint8_t ylo = Wire.read();
+  
+  // Shift values to create properly formed integer (low byte first)
+  HMC5883_data_x = (int16_t)(xlo | ((int16_t)xhi << 8));
+  HMC5883_data_y = (int16_t)(ylo | ((int16_t)yhi << 8));
+  HMC5883_data_z = (int16_t)(zlo | ((int16_t)zhi << 8));
+}
 #endif //HMC5883_ADD
 
 
@@ -748,27 +830,28 @@ void BMP180_getTemperature(float *temp)
 #endif //BMP180_ADD
 
 #ifdef WindVel_ADD
-// typedef enum
-// {
-//     HMC5883_REGISTER_MAG_CRA_REG_M             = 0x00,
-//     HMC5883_REGISTER_MAG_CRB_REG_M             = 0x01,
-//     HMC5883_REGISTER_MAG_MR_REG_M              = 0x02,
-//     HMC5883_REGISTER_MAG_OUT_X_H_M             = 0x03,
-//     HMC5883_REGISTER_MAG_OUT_X_L_M             = 0x04,
-//     HMC5883_REGISTER_MAG_OUT_Z_H_M             = 0x05,
-//     HMC5883_REGISTER_MAG_OUT_Z_L_M             = 0x06,
-//     HMC5883_REGISTER_MAG_OUT_Y_H_M             = 0x07,
-//     HMC5883_REGISTER_MAG_OUT_Y_L_M             = 0x08,
-//     HMC5883_REGISTER_MAG_SR_REG_Mg             = 0x09,
-//     HMC5883_REGISTER_MAG_IRA_REG_M             = 0x0A,
-//     HMC5883_REGISTER_MAG_IRB_REG_M             = 0x0B,
-//     HMC5883_REGISTER_MAG_IRC_REG_M             = 0x0C,
-//     HMC5883_REGISTER_MAG_TEMP_OUT_H_M          = 0x31,
-//     HMC5883_REGISTER_MAG_TEMP_OUT_L_M          = 0x32
-// } hmc5883MagRegisters_t;
+#ifndef HMC5883_ADD
+typedef enum
+{
+    HMC5883_REGISTER_MAG_CRA_REG_M             = 0x00,
+    HMC5883_REGISTER_MAG_CRB_REG_M             = 0x01,
+    HMC5883_REGISTER_MAG_MR_REG_M              = 0x02,
+    HMC5883_REGISTER_MAG_OUT_X_H_M             = 0x03,
+    HMC5883_REGISTER_MAG_OUT_X_L_M             = 0x04,
+    HMC5883_REGISTER_MAG_OUT_Z_H_M             = 0x05,
+    HMC5883_REGISTER_MAG_OUT_Z_L_M             = 0x06,
+    HMC5883_REGISTER_MAG_OUT_Y_H_M             = 0x07,
+    HMC5883_REGISTER_MAG_OUT_Y_L_M             = 0x08,
+    HMC5883_REGISTER_MAG_SR_REG_Mg             = 0x09,
+    HMC5883_REGISTER_MAG_IRA_REG_M             = 0x0A,
+    HMC5883_REGISTER_MAG_IRB_REG_M             = 0x0B,
+    HMC5883_REGISTER_MAG_IRC_REG_M             = 0x0C,
+    HMC5883_REGISTER_MAG_TEMP_OUT_H_M          = 0x31,
+    HMC5883_REGISTER_MAG_TEMP_OUT_L_M          = 0x32
+} hmc5883MagRegisters_t;
 
 #define HMC5883_ADDRESS_MAG            (0x3C >> 1)         // 0011110x
-int HMCid = 23181;
+#endif
 
 // DELAY: 1  - Sampling Rate: 310  Hz    Max observed freq: 155   Hz   Max observed speed: 168.6 m/s
 // DELAY: 2  - Sampling Rate: 238  Hz    Max observed freq: 119   Hz   Max observed speed: 129.4 m/s
@@ -802,6 +885,7 @@ bool HMC5883_begin()
   i2c_write8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_MR_REG_M, 0x00);
   
   // Set the gain to a known level
+  i2c_write8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_CRB_REG_M, (byte)0x20);
   return true;
 }
 
@@ -1151,10 +1235,12 @@ void setup()
     #ifdef HMC5883_ADD
     if((EEPROM.read(HMC5883_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor    
     {
+        #ifndef POST
         #ifdef debug_serial
         Serial.println("Initializing HMC");
-        #endif
-//         mag.begin();     function called in POST
+        #endif // debug_serial
+        HMC5883_begin();    // function called in POST
+        #endif  // POST
         #ifdef POST
         wdt_reset();
         #endif

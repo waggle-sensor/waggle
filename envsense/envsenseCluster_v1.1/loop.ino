@@ -304,8 +304,9 @@ void loop() {
         Serial.println("HMC5883");
         Serial.flush();
         #endif
-        mag.getEvent(&HMC5883_event);
-        /*
+        HMC5883_getEvent();
+        /*       // Below is taken from Adafruit_Sensor and HMC5883 libraries
+         *
          *       // Changing for Verical mount
          *       HMC5883_heading = atan2(HMC5883_event.magnetic.y, HMC5883_event.magnetic.z);
          * 
