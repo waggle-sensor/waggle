@@ -226,6 +226,7 @@ def push_server(incoming_available_queues, outgoing_fifo_available_queues, outgo
 
     while True:
     #accept connections from outside
+        
         client_sock, address = server_sock.accept()
         print "connected to " , address
         #TODO Is there a better way to do this?

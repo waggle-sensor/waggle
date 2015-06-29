@@ -15,6 +15,9 @@ from protocol.src.PacketHandler import *
 with open('/etc/waggle/hostname','r') as file_:
     QUEUENAME = file_.read()
     
+creds = pika.PlainCredentials('guest1', 'guest1')
+params = pika.ConnectionParameters('10.10.10.104',5672, '/', creds)
+    
 class external_communicator(object):
     
     def __init__(self):
@@ -36,25 +39,25 @@ class pika_push(Process):
             try:
                 try: #TODO find out what happens if cloud isn't readily available. Does it time out after a certain time or just keep hanging on until a connection is made?
                     #connecting to cloud
-                    connection = pika.BlockingConnection(pika.ConnectionParameters('reptile.mcs.anl.gov')) #TODO change this to cloud IP
+                    connection = pika.BlockingConnection(params) #TODO change this to cloud IP
                     channel = connection.channel()
                     comm.__cloud_connected__(True) #set the flag to true when connected to cloud
+                    #Creating a queue
+                    channel.queue_declare(queue=QUEUENAME) #TODO change this to queue ID
+                    while comm.outgoing.empty(): #sleeps until there are messages to send
+                        
+                        time.sleep(1)
+                    #Sending a message through the default exchange ' '. 
+                    msg = comm.outgoing.get() # gets the first item in the outgoing queue
+                    channel.basic_publish(exchange= 'waggle_in', routing_key= 'in', body= msg) #sends to cloud 
+                    
+                    #close connection to flush the network buffers and send msg
+                    connection.close()
+                    comm.cloud_connected = False #change the flag to false when not connected to cloud
                 except: 
                     print 'Pika_push currently unable to connect to cloud...' 
                     comm.__cloud_connected__(False) #set the flag to false when not connected to the cloud
-                
-                #Creating a queue
-                channel.queue_declare(queue=QUEUENAME) #TODO change this to queue ID
-                while comm.outgoing.empty(): #sleeps until there are messages to send
-                    
-                    time.sleep(1)
-                #Sending a message through the default exchange ' '. 
-                msg = comm.outgoing.get() # gets the first item in the outgoing queue
-                channel.basic_publish(exchange= 'waggle_in', routing_key= 'in', body= msg) #sends to cloud #TODO change routing_key to unique ID
-                
-                #close connection to flush the network buffers and send msg
-                connection.close()
-                comm.cloud_connected = False #change the flag to false when not connected to cloud
+                    time.sleep(10)
             except KeyboardInterrupt, k:
                         print "Shutting down."
                         break
@@ -69,7 +72,7 @@ class pika_pull(Process):
         while True: 
             try:#TODO find out what happens if cloud isn't readily available. Does it time out after a certain time or just keep hanging on until a connection is made?
                 #connecting to a broker on the local machine
-                connection = pika.BlockingConnection(pika.ConnectionParameters('reptile.mcs.anl.gov')) 
+                connection = pika.BlockingConnection(params) 
                 channel = connection.channel()
                 
             except:
@@ -84,6 +87,7 @@ class pika_pull(Process):
                 
 #pulls the message from the cloud and puts it into incoming queue 
 def callback(ch, method, properties, body):
+    comm = external_communicator()
     comm.incoming.put(body) #TODO does this work?
     ch.basic_ack(delivery_tag=method.delivery_tag) #RabbitMQ will not delete message until ack received
                 
