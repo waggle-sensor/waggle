@@ -1,4 +1,4 @@
-ARD_HOME = /home/rajesh/git/localwaggle/waggle_max/resources/compilers/arduino-1.6.5-linux/arduino_64
+ARD_HOME = /home/rajesh/repos/waggle/GIT/waggle_max/resources/compilers/arduino-1.6.5-linux/arduino_64
 TARGET = i2c_rs232_forwarder
 PACKAGE = arduino
 ARCH = avr

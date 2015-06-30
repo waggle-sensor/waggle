@@ -1,3 +1,2 @@
-
-*.hex
+.hex
 makefile
