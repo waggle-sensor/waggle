@@ -7,7 +7,7 @@
 //First column
 
 //RHT103 Temperature Sensor
-var canvas00 = [{"x":0, "y":30}, {"x":10, "y":30}, {"x":20, "y":30}, {"x":30, "y":30}, {"x":40, "y":30},
+var canvas000 = [{"x":0, "y":30}, {"x":10, "y":30}, {"x":20, "y":30}, {"x":30, "y":30}, {"x":40, "y":30},
 				{"x":50, "y":30}, {"x":60, "y":30}, {"x":70, "y":30}, {"x":80, "y":30}, {"x":90, "y":30},
 				{"x":100, "y":30}, {"x":110, "y":30}, {"x":120, "y":30}, {"x":130, "y":30}, {"x":140, "y":30},
 				{"x":150, "y":30}, {"x":160, "y":30}, {"x":170, "y":30}, {"x":180, "y":30}, {"x":190, "y":30}];
@@ -224,7 +224,7 @@ window.onload = function() {
 							 .interpolate("basis");
 
 	//Create the svg elements
-	var svg00 = d3.select("div#graph00")
+	var svg000 = d3.select("div#graph000")
 				  .append("svg")
 				  .attr("width", w)
 				  .attr("height", h);
@@ -400,15 +400,15 @@ window.onload = function() {
 				   .attr("height", h);
 
 	//Create the surfaces and current value circles
-	var _svg00 = svg00.append("path")
-					  .attr("d", lineFunction(canvas00))
+	var _svg000 = svg000.append("path")
+					  .attr("d", lineFunction(canvas000))
 					  .attr("stroke", "#ff5000")
 					  .attr("stroke-width", 1)
 					  .attr("fill", "none");
 
-	var _svg00_c = svg00.append("circle")
+	var _svg000_c = svg000.append("circle")
 						.attr("cx", 190)
-						.attr("cy", canvas00[19].y)
+						.attr("cy", canvas000[19].y)
 						.attr("r", 2)
 						.attr("fill", "#3f3f3f");
 
@@ -830,37 +830,37 @@ window.onload = function() {
 	function update_graphs() {
 		//First column
 		//RHT103
-		canvas00[0].y = canvas00[1].y;
-		canvas00[1].y = canvas00[2].y;
-		canvas00[2].y = canvas00[3].y;
-		canvas00[3].y = canvas00[4].y;
-		canvas00[4].y = canvas00[5].y;
-		canvas00[5].y = canvas00[6].y;
-		canvas00[6].y = canvas00[7].y;
-		canvas00[7].y = canvas00[8].y;
-		canvas00[8].y = canvas00[9].y;
-		canvas00[9].y = canvas00[10].y;
-		canvas00[10].y = canvas00[11].y;
-		canvas00[11].y = canvas00[12].y;
-		canvas00[12].y = canvas00[13].y;
-		canvas00[13].y = canvas00[14].y;
-		canvas00[14].y = canvas00[15].y;
-		canvas00[15].y = canvas00[16].y;
-		canvas00[16].y = canvas00[17].y;
-		canvas00[17].y = canvas00[18].y;
-		canvas00[18].y = canvas00[19].y;
-		canvas00[19].y = 58 - (parseFloat(get_graph_data(14))+40)*0.448;
+		canvas000[0].y = canvas000[1].y;
+		canvas000[1].y = canvas000[2].y;
+		canvas000[2].y = canvas000[3].y;
+		canvas000[3].y = canvas000[4].y;
+		canvas000[4].y = canvas000[5].y;
+		canvas000[5].y = canvas000[6].y;
+		canvas000[6].y = canvas000[7].y;
+		canvas000[7].y = canvas000[8].y;
+		canvas000[8].y = canvas000[9].y;
+		canvas000[9].y = canvas000[10].y;
+		canvas000[10].y = canvas000[11].y;
+		canvas000[11].y = canvas000[12].y;
+		canvas000[12].y = canvas000[13].y;
+		canvas000[13].y = canvas000[14].y;
+		canvas000[14].y = canvas000[15].y;
+		canvas000[15].y = canvas000[16].y;
+		canvas000[16].y = canvas000[17].y;
+		canvas000[17].y = canvas000[18].y;
+		canvas000[18].y = canvas000[19].y;
+		canvas000[19].y = 58 - (parseFloat(get_graph_data(14))+40)*0.448;
 	
-		_svg00.transition()
-			  .attr("d", lineFunction(canvas00))
+		_svg000.transition()
+			  .attr("d", lineFunction(canvas000))
 			  .duration(2000);
 
-		_svg00_c.transition()
-				.attr("cy", canvas00[19].y)
+		_svg000_c.transition()
+				.attr("cy", canvas000[19].y)
 				.duration(2000);
 
 		document.getElementById('RHT103_temp').innerHTML = get_graph_data(14).concat(" &degC");
-		//sensor00.addData([get_graph_data(14)], "");
+		//sensor000.addData([get_graph_data(14)], "");
 	
 		//SHT15
 		canvas010[0].y = canvas010[1].y;
