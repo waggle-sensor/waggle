@@ -1,11 +1,12 @@
-ARD_HOME = /home/rajesh/repos/waggle/GIT/waggle_max/resources/compilers/arduino-1.6.5-linux/arduino_64
+ARD_HOME = /home/max/repos/waggle_version0.3_max/resources/compilers/arduino-1.6.5-linux/arduino_64
 TARGET = SysMon
 PACKAGE = arduino
 ARCH = avr
-BOARD = mega
-TYPE = atmega2560
-FLASHER_BAUD_RATE = 115200
+BOARD = micro
+TYPE = m32u4
+FLASHER_BAUD_RATE = 57600
 PORT = /dev/ttyACM0
+BOARD_FLASH = $(PACKAGE):$(ARCH):$(BOARD)
 CC = $(ARD_HOME)/arduino
 BUILD_DIR = ./build
 BIN_DIR = ./bin
@@ -16,7 +17,7 @@ FLASHER_CONFIGS = $(ARD_HOME)/hardware/tools/avr/etc/avrdude.conf
 all: $(TARGET)
 
 $(TARGET): $(TARGET).ino
-	$(CC) --board $(PACKAGE):$(ARCH):$(BOARD):cpu=$(TYPE) $(CFLAGS) --pref build.path=$(BUILD_DIR) $(TARGET).ino
+	$(CC) --board $(BOARD_FLASH) $(CFLAGS) --pref build.path=$(BUILD_DIR) $(TARGET).ino
 	mv $(BUILD_DIR)/$(TARGET).cpp.hex $(BIN_DIR)
 	rm -rf $(BUILD_DIR)/*
 clean:
@@ -24,4 +25,5 @@ clean:
 	rm -rf $(BUILD_DIR)/*
 
 install:
+	python test.py
 	$(FLASHER) -C$(FLASHER_CONFIGS) -v -p$(TYPE) -cwiring -P$(PORT) -b$(FLASHER_BAUD_RATE) -D -Uflash:w:$(BIN_DIR)/$(TARGET).cpp.hex:i
