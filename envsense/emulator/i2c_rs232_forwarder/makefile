@@ -1,11 +1,11 @@
-ARD_HOME = /home/max/repos/waggle_version0.3_max/resources/compilers/arduino-1.6.5-linux/arduino_64
+ARD_HOME = /home/rajesh/git/localwaggle/waggle_max/resources/compilers/arduino-1.6.5-linux/arduino_64
 TARGET = i2c_rs232_forwarder
 PACKAGE = arduino
 ARCH = avr
 BOARD = mega
 TYPE = atmega2560
 FLASHER_BAUD_RATE = 115200
-PORT = /dev/ttyACM0
+PORT = /dev/ttyACM1
 CC = $(ARD_HOME)/arduino
 BUILD_DIR = ./build
 BIN_DIR = ./bin

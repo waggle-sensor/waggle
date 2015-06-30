@@ -1,4 +1,4 @@
-ARD_HOME = /home/max/repos/waggle_version0.3_max/resources/compilers/arduino-1.6.5-linux/arduino_64
+ARD_HOME = /home/rajesh/git/localwaggle/waggle_max/resources/compilers/arduino-1.6.5-linux/arduino_64
 TARGET = SysMon
 PACKAGE = arduino
 ARCH = avr
@@ -18,7 +18,7 @@ all: $(TARGET)
 $(TARGET): $(TARGET).ino
 	$(CC) --board $(PACKAGE):$(ARCH):$(BOARD):cpu=$(TYPE) $(CFLAGS) --pref build.path=$(BUILD_DIR) $(TARGET).ino
 	mv $(BUILD_DIR)/$(TARGET).cpp.hex $(BIN_DIR)
-	#rm -rf $(BUILD_DIR)/*
+	rm -rf $(BUILD_DIR)/*
 clean:
 	rm -rf $(BIN_DIR)/*
 	rm -rf $(BUILD_DIR)/*

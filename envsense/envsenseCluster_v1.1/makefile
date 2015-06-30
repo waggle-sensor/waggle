@@ -1,4 +1,4 @@
-ARD_HOME = /home/max/repos/waggle_version0.3_max/resources/compilers/arduino-1.6.5-linux/arduino_64
+ARD_HOME = /home/rajesh/git/localwaggle/waggle_max/resources/compilers/arduino-1.6.5-linux/arduino_64
 TARGET = envsenseCluster_v1.1
 PACKAGE = arduino
 ARCH = avr
@@ -23,5 +23,5 @@ clean:
 	rm -rf $(BIN_DIR)/*
 	rm -rf $(BUILD_DIR)/*
 
-install:
+install: all
 	$(FLASHER) -C$(FLASHER_CONFIGS) -v -p$(TYPE) -cwiring -P$(PORT) -b$(FLASHER_BAUD_RATE) -D -Uflash:w:$(BIN_DIR)/$(TARGET).cpp.hex:i
