@@ -100,19 +100,22 @@ class push_server(Process):
                     if not data:
                         break #breaks the loop when the client socket closes
                     else:
-                        header = get_header(data)
-                        if header['r_uniqid'] == 0: #TODO assuming the cloud ID is 0. May need to change later
-                            dev, msg_p, order = header['flags'] #unpacks the tuple containing the flags
-                            #adds each onto the msg string #TODO will this work with pickled things?
-                            data = (str(order) + '|') + data
-                            data = (str(msg_p) + ',') + data
-                            data = (str(dev) +',') + data
-                            data = 'o,' + data #indicates that it is an outgoing message
-                            comm.DC_push.put(data)
-                        elif header['r_uniqid'] == 'NC': #TODO replace with NC ID
-                            pass #TODO messages just gets unpacked and handled by NC
-                        else: 
-                            print "Unknown recipient"
+                        try:
+                            header = get_header(data)
+                            if header['r_uniqid'] == 0: #TODO assuming the cloud ID is 0. May need to change later
+                                dev, msg_p, order = header['flags'] #unpacks the tuple containing the flags
+                                #adds each onto the msg string #TODO will this work with pickled things?
+                                data = (str(order) + '|') + data
+                                data = (str(msg_p) + ',') + data
+                                data = (str(dev) +',') + data
+                                data = 'o,' + data #indicates that it is an outgoing message
+                                comm.DC_push.put(data)
+                            elif header['r_uniqid'] == 'NC': #TODO replace with NC ID
+                                pass #TODO messages just gets unpacked and handled by NC
+                            else: 
+                                print "Unknown recipient"
+                        except:
+                            print "Not a valid message."
                 except KeyboardInterrupt, k:
                     print "Shutting down."
                     break

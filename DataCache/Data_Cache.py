@@ -108,36 +108,41 @@ def outgoing_pull(outgoing_fifo_available_queues, outgoing_lifo_available_queues
         For fairness, it removes one msg from fifo then lifo each time it is called.""" 
     #TODO implement fairness, avoid starvation
     #TODO this needs to be reworked 
-    if len(outgoing_fifo_available_queues) == 0: #no messages available
-        print 'outgoing PULL fifo queue len: ', len(outgoing_fifo_available_queues)
-        print ' No messages available.'
-        return 'False'
-    else: 
-        fifo_cache_index = get_priority(outgoing_fifo_available_queues) #returns the index of the highest priority queue in fifo buffer
-        if fifo_cache_index is not None: #Checks for an empty queue
+    #TODO might want to find a better way to remove empty queues from list 
+    queue_check = True #continues until a message is sent. Neccessary to check for empty queues whose index has not yet been removed from the list
+    while queue_check:
+        if len(outgoing_fifo_available_queues) == 0: #no messages available
+            print ' No messages available.'
+            queue_check = False
+            return 'False' 
+        else:
+            fifo_cache_index = get_priority(outgoing_fifo_available_queues) #returns the index of the highest priority queue in fifo buffer
             sender_p, msg_p = fifo_cache_index
-            Data_Cache.msg_counter -= 1 #decrements the list by 1
             current_q = Data_Cache.outgoing_fifo_bffr[sender_p - 1][msg_p - 1]
-            return current_q.get()
-        else:
-            outgoing_fifo_available_queues.remove(fifo_cache_index) # removes it from the list of available queues 
-            return 'False' #outgoing messages can be pulled in a loop until there are no messages left
+            if current_q.empty():
+                outgoing_fifo_available_queues.remove(fifo_cache_index) # removes it from the list of available queues 
+            else: 
+                Data_Cache.msg_counter -= 1 #decrements the list by 1
+                queue_check = False
+                return current_q.get()       
         
-    if len(outgoing_lifo_available_queues) == 0: #no messages available
-        print 'outgoing PULL queue len: ', len(Doutgoing_lifo_available_queues)
-        print ' No messages available.'
-        return 'False'
-    else:
-        lifo_cache_index = Data_Cache.get_priority(outgoing_lifo_available_queues) #returns the index of the highest priority queue in lifo buffer
-        if lifo_cache_index is not None: #Checks for an empty list
-            sender_p, msg_p = lifo_cache_index
-            Data_Cache.msg_counter -= 1 #decrements the list by 1
-            current_q = Data_Cache.outgoing_lifo_bffr[sender_p - 1][msg_p - 1]
-            return current_q.get()
-        else:
-            outgoing_lifo_available_queues.remove(lifo_cache_index) # removes it from the list of available queues
-            return 'False' #outgoing messages can be pulled in a loop until there are no messages left
-    
+    #if len(outgoing_lifo_available_queues) == 0: #no messages available
+        #print 'outgoing PULL queue len: ', len(outgoing_lifo_available_queues)
+        #print ' No messages available.'
+        #return 'False'
+    #else:
+        #lifo_cache_index = Data_Cache.get_priority(outgoing_lifo_available_queues) #returns the index of the highest priority queue in lifo buffer
+        #if lifo_cache_index is not None: #Checks for an empty list
+            #sender_p, msg_p = lifo_cache_index
+            #Data_Cache.msg_counter -= 1 #decrements the list by 1
+            #current_q = Data_Cache.outgoing_lifo_bffr[sender_p - 1][msg_p - 1]
+            #return current_q.get()
+        #else:
+            #outgoing_lifo_available_queues.remove(lifo_cache_index) # removes it from the list of available queues
+            #return 'False' #outgoing messages can be pulled in a loop until there are no messages left
+    #print 'outgoing PULL fifo queue len: ', len(outgoing_fifo_available_queues)
+        #print ' No messages available.'
+        #return 'False'
    
 def incoming_pull(device, incoming_available_queues):
     """ Pulls messages from the DC to send to guest nodes. Returns False if no messages are available.""" 
@@ -165,7 +170,7 @@ def self_flush():
 def get_status():
     """ Returns the number of messages currently stored. """
     
-    return shared.msg_counter
+    return Data_Cache.msg_counter
     
 
 def update_device_priority(new_list):
@@ -176,7 +181,7 @@ def update_device_priority(new_list):
     def update_mem(memory):
         """ Updates the amount of memory allocated to the data cache. """
         #can put it in a config file 
-        Shared_Spaces.available_mem = memory #TODO this probably wont work
+        Data_Cache.available_mem = memory #TODO this probably wont work
         
 
 def make_bffr(length):
@@ -228,7 +233,7 @@ def push_server(incoming_available_queues, outgoing_fifo_available_queues, outgo
     #accept connections from outside
         
         client_sock, address = server_sock.accept()
-        print "connected to " , address
+        print "Push server connected."
         #TODO Is there a better way to do this?
         while True:
             try:
@@ -277,31 +282,30 @@ def pull_server(incoming_available_queues, outgoing_fifo_available_queues, outgo
     while True:
     #accept connections from outside
         client_sock, address = server_sock.accept()
-        print "Connected to ", address
+        print "Pull server connected."
         #TODO Is there a better way to do this?
-        while True: #TODO I don't think this needs to be in a loop
-            try:
-                buffer = ''
-                data = client_sock.recv(40) #TODO 40 bites is the expected size of pull requests
-                print 'Pull server recieved: ', data
-                if not data:
-                    break
-                else:
-                    buffer += data #this is probably unnecccessary  #TODO write logic in case the NC breaks before msg is sent
-                    if buffer.find(',') != -1: #splits the incoming data into individual messages just in case many messages are sent at once
-                        line, dev = buffer.split(',', 1) #TODO need to change to reflect message protocol
-                        msg = incoming_pull(dev, incoming_available_queues) #pulls a message from that device's queue
-                        print 'Pull server sending: ', msg
-                    else:
-                        msg = outgoing_pull(outgoing_fifo_available_queues, outgoing_lifo_available_queues)
-                        print 'Pull server sending: ', msg
-                    
-                    client_sock.sendall(msg) #sends the message
-                    print "-" * 20 
-                    print data
-            except KeyboardInterrupt, k:
-                print "Data Cache shutting down..."
+        try:
+            buffer = ''
+            data = client_sock.recv(40) #TODO 40 bites is the expected size of pull requests
+            print 'Pull server recieved: ', data
+            if not data:
                 break
+            else:
+                buffer += data #this is probably unnecccessary  #TODO write logic in case the NC breaks before msg is sent
+                if buffer.find(',') != -1: #splits the incoming data into individual messages just in case many messages are sent at once
+                    line, dev = buffer.split(',', 1) #TODO need to change to reflect message protocol
+                    msg = incoming_pull(dev, incoming_available_queues) #pulls a message from that device's queue
+                    print 'Pull server sending: ', msg
+                else:
+                    msg = outgoing_pull(outgoing_fifo_available_queues, outgoing_lifo_available_queues)
+                    print 'Pull server sending: ', msg
+                
+                client_sock.sendall(msg) #sends the message
+                
+        except KeyboardInterrupt, k:
+            print "Data Cache shutting down..."
+            serversocket.close()
+            os.remove('/tmp/Data_Cache_pull_server')
     print "-" * 20
     print "Data Cache server socket shutting down..."
     serversocket.close()

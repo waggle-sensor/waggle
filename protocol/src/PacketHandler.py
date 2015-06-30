@@ -72,7 +72,7 @@ def pack(header_data, message_data=""):
     #Generate the automatic fields and update them with user-supplied values
     auto_header = {
         "prot_ver"         : VERSION, 
-        "flags"            : (0,0,False),
+        "flags"            : (1,1,True),
         "len_body"         : len(message_data),
         "time"             : int(time.time()),
         "snd_session"      : 0,    

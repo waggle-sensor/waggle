@@ -45,7 +45,7 @@ def make_time_packet():
 def make_data_packet(data):
     """
     Compresses sensor data and returns a sensor data packet. 
-    
+    #TODO add dictionary information in param
     :param data: sensor data 
     :rtype: string 
     """ 
