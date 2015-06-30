@@ -3,10 +3,12 @@ TARGET = SysMon
 PACKAGE = arduino
 ARCH = avr
 BOARD = micro
-TYPE = atmega32u4 
+TYPE = m32u4
 FLASHER_BAUD_RATE = 57600
 PORT = /dev/ttyACM0
 BOARD_FLASH = $(PACKAGE):$(ARCH):$(BOARD)
+BOOT_LOADER_TYPE = avr109
+PRE_FLASH_COMMAND = stty -F /dev/ttyACM0 1200 hupcl; sleep 2
 CC = $(ARD_HOME)/arduino
 BUILD_DIR = ./build
 BIN_DIR = ./bin
@@ -25,5 +27,5 @@ clean:
 	rm -rf $(BUILD_DIR)/*
 
 install:
-	stty -F $(PORT) 1200
-	$(FLASHER) -C$(FLASHER_CONFIGS) -v -p$(TYPE) -cavr109 -P$(PORT) -b$(FLASHER_BAUD_RATE) -D -Uflash:w:$(BIN_DIR)/$(TARGET).cpp.hex:i
+	$(PRE_FLASH_COMMAND)
+	$(FLASHER) -C$(FLASHER_CONFIGS) -v -p$(TYPE) -c$(BOOT_LOADER_TYPE) -P$(PORT) -b$(FLASHER_BAUD_RATE) -D -Uflash:w:$(BIN_DIR)/$(TARGET).cpp.hex:i

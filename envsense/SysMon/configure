@@ -61,6 +61,9 @@ then
     echo "FLASHER_BAUD_RATE = 115200" >> makefile
     echo "PORT = ${PORT_NAME##*=}" >> makefile
     echo "BOARD_FLASH = \$(PACKAGE):\$(ARCH):\$(BOARD):cpu=\$(TYPE)" >> makefile
+    echo "BOOT_LOADER_TYPE = wiring" >>  makefile
+    echo "PRE_FLASH_COMMAND = #"  >> makefile
+
 elif [ "${BOARD_NAME##*=}" == "sysmonV1" ]
 then
     echo "PACKAGE = arduino" >> makefile
@@ -70,7 +73,12 @@ then
     echo "FLASHER_BAUD_RATE = 57600" >> makefile
     echo "PORT = ${PORT_NAME##*=}" >> makefile
     echo "BOARD_FLASH = \$(PACKAGE):\$(ARCH):\$(BOARD)" >> makefile
+    echo "BOOT_LOADER_TYPE = avr109" >>  makefile
+    echo "PRE_FLASH_COMMAND = stty -F /dev/ttyACM0 1200 hupcl; sleep 2"  >> makefile
+
 fi
 
 cat MakeFile >> makefile
 echo "Success! Now you can compile and flash the CPU with make and make install."
+
+
