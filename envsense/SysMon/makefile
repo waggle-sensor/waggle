@@ -3,7 +3,7 @@ TARGET = SysMon
 PACKAGE = arduino
 ARCH = avr
 BOARD = micro
-TYPE = m32u4
+TYPE = atmega32u4 
 FLASHER_BAUD_RATE = 57600
 PORT = /dev/ttyACM0
 BOARD_FLASH = $(PACKAGE):$(ARCH):$(BOARD)
@@ -25,5 +25,5 @@ clean:
 	rm -rf $(BUILD_DIR)/*
 
 install:
-	python test.py
-	$(FLASHER) -C$(FLASHER_CONFIGS) -v -p$(TYPE) -cwiring -P$(PORT) -b$(FLASHER_BAUD_RATE) -D -Uflash:w:$(BIN_DIR)/$(TARGET).cpp.hex:i
+	stty -F $(PORT) 1200
+	$(FLASHER) -C$(FLASHER_CONFIGS) -v -p$(TYPE) -cavr109 -P$(PORT) -b$(FLASHER_BAUD_RATE) -D -Uflash:w:$(BIN_DIR)/$(TARGET).cpp.hex:i
