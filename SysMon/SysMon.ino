@@ -1,5 +1,6 @@
 //---------- I N C L U D E S --------------------------------------------------
 #include <avr/io.h>
+#include <avr/interrupt.h>
 #include <avr/sleep.h>
 #include <avr/power.h>
 #include <avr/pgmspace.h>

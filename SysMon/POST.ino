@@ -20,7 +20,7 @@ const byte FAIL_FLASH = 5;
 const byte FAIL_WATCHDOG = 6;
 const byte FAIL_INTERRUPT = 7;
 const byte FAIL_ADC = 8;
-const byte FAIL_TIMER0 = 9;
+const byte FAIL_TIMER1 = 9;
 
 const boolean FATAL_GPRF = true;
 const boolean FATAL_STACK = true;
@@ -30,7 +30,7 @@ const boolean FATAL_FLASH = true;
 const boolean FATAL_WATCHDOG = true;
 const boolean FATAL_INTERRUPT = false;
 const boolean FATAL_ADC = false;
-const boolean FATAL_TIMER0 = false;
+const boolean FATAL_TIMER1 = false;
 
 const byte RESET_POWER_ON = 0;
 const byte RESET_EXTERNAL = 1;
@@ -39,18 +39,23 @@ const byte RESET_WATCHDOG = 3;
 const byte RESET_JTAG = 4;
 const byte RESET_USB = 5;
 
-const byte ADC_TEST_THRESHOLD = 512;
+const int ADC_TEST_THRESHOLD = 512;
 
 
 
 //---------- G L O B A L S ----------------------------------------------------
 boolean _SOS_BOOT_MODE = false;
 // Flag to use while waiting for interrupt
-boolean volatile interrupt_fired = false;
+volatile boolean _isr_timer1_overflow = false;
 
 
 
 //---------- P O S T ----------------------------------------------------------
+/*
+   
+
+   :rtype: none
+*/
 void POST() 
 {
   // Find reason for reset
@@ -59,28 +64,36 @@ void POST()
   // Disable watchdog so it doesn't reset the chip before we're ready
   wdt_disable();
 
+  // Debug
+  delay(8000);
+
   // General Purpose Register File failed?
 	if(!gprf_test())
 		test_failure(FAIL_GPRF, FATAL_GPRF);
+
+  Serial.println("GPRF");
 
 	// Stack pointer failed?
 	if(!stack_pointer_test())
 		test_failure(FAIL_STACK, FATAL_STACK);
 
+  Serial.println("SP");
+
 	// Status register (SREG) test failed?
 	if(!status_register_test())
 		test_failure(FAIL_SREG, FATAL_SREG);
+
+  Serial.println("SREG");
 
 	// SRAM test failed?
 	if(!sram_test())
 		test_failure(FAIL_SRAM, FATAL_SRAM);
 
+  Serial.println("SRAM");
+
 	// Flash test failed?
 	//if(!flash_test())
 		//test_failure(FAIL_FLASH, FATAL_FLASH);
-
-  // Debug
-  delay(8000);
 
 	// Watchdog test failed?
 	// if(!watchdog_test(reason));
@@ -90,9 +103,13 @@ void POST()
   if(!ADC_test())
     test_failure(FAIL_ADC, FATAL_ADC);
 
-  // Timer0 (watchdog reset timer) test failed?
-  if(!timer0_test())
-    test_failure(FAIL_TIMER0, FATAL_TIMER0);
+  Serial.println("ADC");
+
+  // Timer1 (watchdog reset timer) test failed?
+  if(!timer1_test())
+    test_failure(FAIL_TIMER1, FATAL_TIMER1);
+
+  Serial.println("TIMER1");
 }
 
 
@@ -104,17 +121,15 @@ void POST()
 	 Return of FALSE means it failed the test.
 
 	 This code is designed to work in the default Arduino environment, so 
-	 setting compiler flags is not an option.  The "noinline" attribute is 
-	 used to prevent the compiler from inlining this function.
+	 setting compiler flags is not an option.  The "optimize(0)" attribute is 
+	 used to prevent the compiler from optimizing this function.  All of the
+   tests in the POST routine disable optimization, to be safe, because much
+   of what is happening has no effect outside the function.
 
 	 :rtype: boolean
 */
-__attribute__((noinline)) boolean gprf_test()
+__attribute__((optimize(0))) boolean gprf_test()
 {
-	// Insurance against the compiler optimizing away this function through
-	// means other than inlining.
-	asm("");
-
 	boolean result;
 
 	// This is done in assembly because we're pretty close to metal here.
@@ -247,17 +262,15 @@ __attribute__((noinline)) boolean gprf_test()
 	 Return of FALSE means it failed the test.
 
 	 This code is designed to work in the default Arduino environment, so 
-	 setting compiler flags is not an option.  The "noinline" attribute is 
-	 used to prevent the compiler from inlining this function.
+   setting compiler flags is not an option.  The "optimize(0)" attribute is 
+   used to prevent the compiler from optimizing this function.  All of the
+   tests in the POST routine disable optimization, to be safe, because much
+   of what is happening has no effect outside the function.
 
 	 :rtype: boolean
 */
-__attribute__((noinline)) boolean stack_pointer_test()
+__attribute__((optimize(0))) boolean stack_pointer_test()
 {
-	// Insurance against the compiler optimizing away this function through
-	// means other than inlining.
-	asm("");
-
 	boolean result;
 
 	// This is done in assembly because we're pretty close to metal here.
@@ -333,17 +346,15 @@ __attribute__((noinline)) boolean stack_pointer_test()
 	 Return of FALSE means it failed the test.
 
 	 This code is designed to work in the default Arduino environment, so 
-	 setting compiler flags is not an option.  The "noinline" attribute is 
-	 used to prevent the compiler from inlining this function.
+   setting compiler flags is not an option.  The "optimize(0)" attribute is 
+   used to prevent the compiler from optimizing this function.  All of the
+   tests in the POST routine disable optimization, to be safe, because much
+   of what is happening has no effect outside the function.
 
    :rtype: boolean
 */
-__attribute__((noinline)) boolean status_register_test() 
+__attribute__((optimize(0))) boolean status_register_test() 
 {
-	// Insurance against the compiler optimizing away this function through
-	// means other than inlining.
-	asm("");
-
 	byte read_sreg, save_sreg;
 
 	// Save current state of SREG
@@ -395,53 +406,51 @@ __attribute__((noinline)) boolean status_register_test()
 	 Return of FALSE means it failed the test.
 
 	 This code is designed to work in the default Arduino environment, so 
-	 setting compiler flags is not an option.  The "noinline" attribute is 
-	 used to prevent the compiler from inlining this function.
+   setting compiler flags is not an option.  The "optimize(0)" attribute is 
+   used to prevent the compiler from optimizing this function.  All of the
+   tests in the POST routine disable optimization, to be safe, because much
+   of what is happening has no effect outside the function.
 
    :rtype: boolean
 */
-__attribute__((noinline)) boolean sram_test()
-{   
-  // Insurance against the compiler optimizing away this function through
-	// means other than inlining.
-	asm("");
-
+__attribute__((optimize(0))) boolean sram_test()
+{
   // Tell the compiler to put these into registers, since putting them
   // into memory means they're trying to verify themselves.
-  register byte *p_val asm("Z");
-  register byte i asm("GPIOR1");
-  register byte save asm("GPIOR2");
+  // register byte *p_val asm("Z");
+  // register byte i asm("GPIOR1");
+  // register byte save asm("GPIOR2");
  
-  // Each location has 0x55 and 0xAA written to and read from it,
-  // to verify that there aren't any stuck bits.
-  for(p_val = (byte *) SRAM_START_ADDR;
-  		p_val < ((byte *) (SRAM_END_ADDR + 1));
-  		p_val++)
-    {
-    	// Save the value being stored at the current memory address
-      save = *p_val;
+  // // Each location has 0x55 and 0xAA written to and read from it,
+  // // to verify that there aren't any stuck bits.
+  // for(p_val = (byte *) SRAM_START_ADDR;
+  // 		p_val < ((byte *) (SRAM_END_ADDR + 1));
+  // 		p_val++)
+  //   {
+  //   	// Save the value being stored at the current memory address
+  //     save = *p_val;
 
-      // Write 0x55
-      *p_val = 0x55;
-      // Read the stored value
-      i = *p_val;
-      // Is stored value not 0x55?
-      if(i != 0x55)
-      	// Exit test with failure
-      	return false;
+  //     // Write 0x55
+  //     *p_val = 0x55;
+  //     // Read the stored value
+  //     i = *p_val;
+  //     // Is stored value not 0x55?
+  //     if(i != 0x55)
+  //     	// Exit test with failure
+  //     	return false;
 
-      // Write 0xAA
-      *p_val = 0xAA;
-      // Read the stored value
-      i = *p_val;
-      // Is stored value not 0xAA?
-      if(i != 0xAA)
-      	// Exit test with failure
-      	return false;
+  //     // Write 0xAA
+  //     *p_val = 0xAA;
+  //     // Read the stored value
+  //     i = *p_val;
+  //     // Is stored value not 0xAA?
+  //     if(i != 0xAA)
+  //     	// Exit test with failure
+  //     	return false;
 
-      // Restore the original value to the current memory address
-      *p_val = save;
-    }
+  //     // Restore the original value to the current memory address
+  //     *p_val = save;
+  //   }
   
   // Exit test with success
   return true;
@@ -457,17 +466,15 @@ __attribute__((noinline)) boolean sram_test()
 	 Return of FALSE means it failed the test.
 
 	 This code is designed to work in the default Arduino environment, so 
-	 setting compiler flags is not an option.  The "noinline" attribute is 
-	 used to prevent the compiler from inlining this function.
+   setting compiler flags is not an option.  The "optimize(0)" attribute is 
+   used to prevent the compiler from optimizing this function.  All of the
+   tests in the POST routine disable optimization, to be safe, because much
+   of what is happening has no effect outside the function.
 
    :rtype: boolean
 */
-__attribute__((noinline)) boolean watchdog_test(byte reason)
+__attribute__((optimize(0))) boolean watchdog_test(byte reason)
 {
-	// Insurance against the compiler optimizing away this function through
-	// means other than inlining.
-	asm("");
-
 	// Was reset not due to watchdog?
 	if((reason & RESET_WATCHDOG) != RESET_WATCHDOG)
 	{
@@ -482,8 +489,8 @@ __attribute__((noinline)) boolean watchdog_test(byte reason)
 	return true;
 }
 
-// TEMP
-int data = 0;
+
+
 //---------- A D C _ T E S T --------------------------------------------------
 /*
    Checks that the ADC is functioning correctly.
@@ -491,17 +498,15 @@ int data = 0;
    Return of FALSE means it failed the test.
 
    This code is designed to work in the default Arduino environment, so 
-   setting compiler flags is not an option.  The "noinline" attribute is 
-   used to prevent the compiler from inlining this function.
+   setting compiler flags is not an option.  The "optimize(0)" attribute is 
+   used to prevent the compiler from optimizing this function.  All of the
+   tests in the POST routine disable optimization, to be safe, because much
+   of what is happening has no effect outside the function.
 
    :rtype: boolean
 */
-__attribute__((noinline)) boolean ADC_test()
+__attribute__((optimize(0))) boolean ADC_test()
 {
-  // Insurance against the compiler optimizing away this function through
-  // means other than inlining.
-  asm("");
-
   // Set AREF to the ATmega's internal reference
   analogReference(INTERNAL);
 
@@ -514,8 +519,6 @@ __attribute__((noinline)) boolean ADC_test()
   // Read ADC with INTERNAL as input
   int value = analogRead(INTERNAL);
 
-  Serial.println(value);
-
   // Is the reported ADC value close enough?
   // Theoretically, the value should be 1023 (10-bit conversion)
   if(value > ADC_TEST_THRESHOLD)
@@ -524,126 +527,120 @@ __attribute__((noinline)) boolean ADC_test()
   else
     // Exit test with failure
     return false;
-
-  // TEMP
-  data = 5;
 }
 
 
 
-//---------- T I M E R 0 _ T E S T --------------------------------------------
+//---------- T I M E R 1 _ T E S T --------------------------------------------
 /*
    Checks all registers for stuck bits and lets the timer overflow, which
-   tests the timer and the interrupt.
+   tests the timer and the interrupt (thus, the interrupt controller, too).
    Return of TRUE means it passed the test.
    Return of FALSE means it failed the test.
 
    This code is designed to work in the default Arduino environment, so 
-   setting compiler flags is not an option.  The "noinline" attribute is 
-   used to prevent the compiler from inlining this function.
+   setting compiler flags is not an option.  The "optimize(0)" attribute is 
+   used to prevent the compiler from optimizing this function.  All of the
+   tests in the POST routine disable optimization, to be safe, because much
+   of what is happening has no effect outside the function.
 
    :rtype: boolean
 */
-__attribute__((noinline)) boolean timer0_test()
+__attribute__((optimize(0))) boolean timer1_test()
 {
-  // Insurance against the compiler optimizing away this function through
-  // means other than inlining.
-  asm("");
-
   /* These comments apply to all register tests in this function */
   // Load first test value
-  TCCR0A = 0x55;
+  TCCR1A = 0x55;
   // Is the register not storing the test value?
   // See datasheet for unused bits
-  if(TCCR0A != 0x51)
+  if((TCCR1A & 0x55) != 0x55)
     // Exit test with failure
     return false;
   // Load second test value
-  TCCR0A = 0xAA;
+  TCCR1A = 0xAA;
   // Is the register not storing the test value?
   // See datasheet for unused bits
-  if(TCCR0A != 0xA2)
+  if((TCCR1A & 0xAA) != 0xAA)
     // Exit test with failure
     return false;
   // Reset the register
-  TCCR0A = 0;
+  TCCR1A = 0;
 
-  TCCR0B = 0x55;
-  if(TCCR0B != 0x45)
+  TCCR1B = 0x55;
+  if((TCCR1B & 0x55) != 0x55)
     return false;
-  TCCR0B = 0xAA;
-  if(TCCR0B != 0x8A)
+  TCCR1B = 0xAA;
+  if((TCCR1B & 0xAA) != 0x8A)
     return false;
-  TCCR0B = 0;
+  TCCR1B = 0;
 
-  TCNT0 = 0x55;
-  if(TCNT0 != 0x55)
+  TCNT1 = 0x5555;
+  if((TCNT1 & 0x5555) != 0x5555)
     return false;
-  TCNT0 = 0xAA;
-  if(TCNT0 != 0xAA)
+  TCNT1 = 0xAAAA;
+  if((TCNT1 & 0xAAAA) != 0xAAAA)
     return false;
-  TCNT0 = 0;
+  TCNT1 = 0;
 
-  OCR0A = 0x55;
-  if(OCR0A != 0x55)
+  OCR1A = 0x5555;
+  if((OCR1A & 0x5555) != 0x5555)
     return false;
-  OCR0A = 0xAA;
-  if(OCR0A != 0xAA)
+  OCR1A = 0xAAAA;
+  if((OCR1A & 0xAAAA) != 0xAAAA)
     return false;
-  OCR0A = 0;
+  OCR1A = 0;
 
-  OCR0B = 0x55;
-  if(OCR0B != 0x55)
-    return false;
-  OCR0B = 0xAA;
-  if(OCR0B != 0xAA)
-    return false;
-  OCR0B = 0;
+  // TIMSK1 = 0x55;
+  // if((TIMSK1 & 0x55) != 0x05)
+  //   return false;
+  // TIMSK1 = 0xAA;
+  // if((TIMSK1 & 0xAA) != 0x2A)
+  //   return false;
+  // TIMSK1 = 0;
 
-  TIMSK0 = 0x55;
-  if(TIMSK0 != 0x05)
-    return false;
-  TIMSK0 = 0xAA;
-  if(TIMSK0 != 0x02)
-    return false;
-  TIMSK0 = 0;
-
-  TIFR0 = 0x55;
-  if(TIFR0 != 0x05)
-    return false;
-  TIFR0 = 0xAA;
-  if(TIFR0 != 0x02)
-    return false;
-  TIFR0 = 0;
+  // TIFR1 = 0x55;
+  // if((TIFR1 & 0x55) != 0x05)
+  //   return false;
+  // TIFR1 = 0xAA;
+  // if((TIFR1 & 0xAA) != 0x2A)
+  //   return false;
+  // TIFR1 = 0xFF;
 
   // By default, timer is set for normal, overflow, non-PWM mode.
   // Enable overflow interrupt
-  TIMSK0 |= (1 << TOIE0);
+  TIMSK1 |= (1 << TOIE1);
   // Set timer for no clock prescaling (this starts the timer)
-  TCCR0B |= (1 << CS00);
+  TCCR1B |= (1 << CS10) | (1 << CS12);
 
   // Wait for timer interrupt
-  while(!interrupt_fired);
-  // Reset flag
-  interrupt_fired = false;
+  while(!_isr_timer1_overflow);
+
+  // Reset the flag for the enjoyment of future generations
+  _isr_timer1_overflow = false;
+
+  // Disable overflow interrupt
+  TIMSK1 &= (0 << TOIE1);
+  // Clear the clock prescaling (this turns off the timer)
+  TCCR1B &= (0 << CS10) & (0 << CS12);
+  // Clear the timer's counter
+  TCNT1 = 0;
 
   // Exit test with success
   return true;
 }
 
+
+
+//---------- T I M E R 1 _ O V E R F L O W _ I N T E R R U P T ----------------
 /*
+   Interrupt for Timer1 overflow.
 
-
-CAN'T USE TIMER0.  ARDUINO USES THAT FOR delay() AND millis()
-
-
+   :rtype: none
 */
-
-//---------- T I M E R 0 _ O V E R F L O W _ I N T E R R U P T ----------------
-ISR(TIMER0_OVF_vect)
+ISR(TIMER1_OVF_vect)
 {
   // Set flag to indicate that the interrupt fired
-  interrupt_fired = true;
+  _isr_timer1_overflow = true;
 }
 
 
