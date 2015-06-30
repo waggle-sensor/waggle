@@ -1188,7 +1188,6 @@ void setup()
         while(DS18B20_1_ds.search(board_ID)) {
             #ifdef debug_serial
             Serial.println("Found \'1-Wire\' device with address:");
-            #endif
             for( i = 1; i < 7; i++) {
 //                 Serial.print("0x");
                 if (board_ID[i] < 16) {
@@ -1206,6 +1205,7 @@ void setup()
                 Serial.print("CRC is not valid!\n");
                 continue;
             }
+            #endif
             #ifdef POST
             wdt_reset();
             #endif
@@ -1221,19 +1221,7 @@ void setup()
     for (int i = 0; i<8; i++)
         board_ID[i] = 0;
     #endif  // DS18B20
-    for(byte i = 1; i < 7; i++) {
-//                 Serial.print("0x");
-    if (board_ID[i] < 16) {
-        Serial.print('0');
-    }
-    Serial.print(board_ID[i], HEX);
-    if (i < 6) {
-        Serial.print(":");
-    }
-    else
-        Serial.print("\n");
-    Serial.flush();
-    }
+
 
     #ifdef TMP421_ADD
     if((EEPROM.read(TMP421_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor    

@@ -7,6 +7,19 @@ void sensor_print()
     #ifdef POST
     wdt_reset();
     #endif
+    for(byte i = 1; i < 7; i++) {
+//                 Serial.print("0x");
+    if (board_ID[i] < 16) {
+        Serial.print('0');
+    }
+    Serial.print(board_ID[i], HEX);
+    if (i < 6) {
+        Serial.print(":");
+    }
+    else
+        Serial.println("");
+    Serial.flush();
+    }
     #ifdef MLX90614_ADD
     if((EEPROM.read(MLX90614_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
     {
