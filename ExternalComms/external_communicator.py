@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import socket, os, os.path, time, pika
-from multiprocessing import Process, Queue
+from multiprocessing import Process, Queue, Value
 import sys
 sys.path.append("..")
 from protocol.src.PacketHandler import *
@@ -15,8 +15,6 @@ from protocol.src.PacketHandler import *
 with open('/etc/waggle/hostname','r') as file_:
     QUEUENAME = file_.read().strip()
     
-creds = pika.PlainCredentials('guest1', 'guest1')
-params = pika.ConnectionParameters('10.10.10.104',5672, '/', creds)
     
 class external_communicator(object):
     
@@ -25,28 +23,27 @@ class external_communicator(object):
     
     incoming = Queue() #stores messages to push into DC
     outgoing = Queue() #stores messages going out to cloud
-    
-    @staticmethod
-    def __cloud_connected__(data):
-        cloud_connected = data
+    cloud_connected = Value('i')
     
 class pika_push(Process):
     """ A pika client for rabbitMQ to push messages to the cloud. """ 
     def run(self):
         comm = external_communicator()
         creds = pika.PlainCredentials('guest1', 'guest1')
-        params = pika.ConnectionParameters('10.10.10.104',5672, '/', creds)
+        params = pika.ConnectionParameters('beehive.wa8.gl',5672, '/', creds) #beehive.wa8.gl
+        #params = pika.ConnectionParameters('10.10.10.108',5672, '/', creds) #beehive.wa8.gl
         print 'Pika push started...'
         while True:
             try:
                 try: #TODO find out what happens if cloud isn't readily available. Does it time out after a certain time or just keep hanging on until a connection is made?
                     #connecting to cloud
-                    connection = pika.BlockingConnection(params) #TODO change this to cloud IP
+                    connection = pika.BlockingConnection(params)
                     channel = connection.channel()
-                    comm.__cloud_connected__(True) #set the flag to true when connected to cloud
+                    comm.cloud_connected.value = 1 #set the flag to true when connected to cloud
                     #Creating a queue
-                    channel.queue_declare(queue=QUEUENAME) #TODO change this to queue ID
+                    channel.queue_declare(queue=QUEUENAME)
                     print 'Pika push connections successful'
+                    print 'pika cloud connected value: ', comm.cloud_connected.value
                     while comm.outgoing.empty(): #sleeps until there are messages to send
                         time.sleep(1)
                     
@@ -55,11 +52,14 @@ class pika_push(Process):
                     channel.basic_publish(exchange='waggle_in', routing_key= 'in', body= msg) #sends to cloud 
                 except: 
                     print 'Pika_push currently unable to connect to cloud...' 
-                    comm.__cloud_connected__(False) #set the flag to false when not connected to the cloud
-                    time.sleep(10)
-            except KeyboardInterrupt, k:
-                        print "Pika_push shutting down."
-                        break
+                    comm.cloud_connected.value = 0 #set the flag to false when not connected to the cloud
+                    print 'pika cloud connected value: ', comm.cloud_connected.value
+                    time.sleep(5)
+            except pika.exceptions.ConnectionClosed:
+                        print "Pika push connection closed. Waiting 5 seconds and trying again."
+                        comm.cloud_connected.value = 0
+                        print 'pika cloud connected value: ', comm.cloud_connected.value
+                        time.sleep(5)
         connection.close()
         
 class pika_pull(Process):
@@ -70,28 +70,30 @@ class pika_pull(Process):
         comm = external_communicator()
         creds = pika.PlainCredentials('guest1', 'guest1')
         params = pika.ConnectionParameters('beehive.wa8.gl',5672, '/', creds) #beehive.wa8.gl
+        #params = pika.ConnectionParameters('10.10.10.108',5672, '/', creds) #beehive.wa8.gl
         while True: 
             try:
-                try:#TODO find out what happens if cloud isn't readily available. Does it time out after a certain time or just keep hanging on until a connection is made?
-                    #connecting to a broker on the local machine
+                try:
                     connection = pika.BlockingConnection(params) 
                     channel = connection.channel()
                     print 'Pika pull connection successful.'
-                    
+                    comm.cloud_connected.value = 1
+                     #Creating a queue
+                    channel.queue_declare(queue=QUEUENAME)
+                    channel.basic_consume(callback, queue=QUEUENAME)
+                    #loop that waits for data 
+                    channel.start_consuming()
                 except:
-                    print 'Pika_pull currently unable to connect to cloud...' 
+                    print 'Pika_pull currently unable to connect to cloud. Waiting 10 seconds before trying again.' 
+                    comm.cloud_connected.value = 0 #set the flag to false when not connected to the cloud
                     time.sleep(5)
-                #Creating a queue
-                channel.queue_declare(queue=QUEUENAME) #TODO change this to queue ID
-                print 'QUEUENAME: ', QUEUENAME
-                channel.basic_consume(callback, queue=QUEUENAME) 
-                #TODO need to find out if it will send all messages in queue at once or if it will push one at a time?
-                #loop that waits for data 
-                channel.start_consuming()
-            except KeyboardInterrupt, k:
-                print "Shutting down."
-                connection.close()
-                break
+               
+            except pika.exceptions.ConnectionClosed:
+                        print "Pika pull connection closed. Waiting 10 seconds before trying again."
+                        comm.cloud_connected.value = 0 #set the flag to false when not connected to the cloud
+                        time.sleep(5)
+        connection.close()
+                
                 
 #pulls the message from the cloud and puts it into incoming queue 
 def callback(ch, method, properties, body):
@@ -105,21 +107,20 @@ def callback(ch, method, properties, body):
 class client_pull(Process):
     """ A client process that connects to the data cache and pulls outgoing messages. Sends a pull request in the format 'o '"""
     #TODO pika needs a flag to signal that the cloud is connected
+    #TODO find out what happens if the server disconnects
     
     def run(self):
         print 'Client pull started...'
         comm = external_communicator()
         while True:
             try:
-                
-                while comm.__cloud_connected__: #checks if the cloud is connected
-                    print 'while cloud connected ...'
+                print 'client cloud connected value: ', comm.cloud_connected.value
+                if comm.cloud_connected.value == 1: #checks if the cloud is connected
                     if os.path.exists('/tmp/Data_Cache_pull_server'):
                         client_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
                         client_sock.connect('/tmp/Data_Cache_pull_server') #connects to server
                         print "Client_pull connected to data cache... "
                         data = 'o  ' #sends the pull request in the correct format
-                        print "sending: " , data
                         client_sock.send(data)
                         msg = client_sock.recv(4028) #can be changed #TODO find out what happens if the server closes the client's connection...
                         if not msg:
@@ -132,14 +133,18 @@ class client_pull(Process):
                                 comm.outgoing.put(msg) #puts the message in the outgoing queue
                                 client_sock.close() #closes socket after each message is sent #TODO is there a better way to do this?
                             else: 
-                                time.sleep(10)
+                                time.sleep(5)
                     else:
                         print 'Client pull unable to connect to the cloud...'
-                print 'Cloud connected must be false...?'
+                else:
+                    print 'Client pull...cloud is not connected. Waiting 5 seconds and trying again.'
+                    time.sleep(5)
             except KeyboardInterrupt, k:
                     print "Shutting down."
                     break
-
+        client_sock.close()
+        
+        
 class client_push(Process):
     """ A client process that connects to the data cache and pushes incoming messages. """
     
@@ -165,10 +170,13 @@ class client_push(Process):
                         dev = header['r_uniqid'] #gets the recipient ID
                         #TODO write dictionary mapping device ID to priorities
                         if dev == int(QUEUENAME): 
-                            print 'Message recieved from cloud', msg #just prints the message to the screen if the recipient is the NC #TODO handle messages being sent to NC 
+                            try:
+                                msg = unpack(msg)
+                                print 'Message recieved from cloud: ', msg[1] #just prints the message to the screen if the recipient is the NC #TODO handle messages being sent to NC 
+                            except:
+                                print 'Unpack unsuccessful.'
                             client_sock.close() #closes the socket
                         else:
-                            print 'Message recieved from cloud and dev !=queuename: ', msg 
                             msg_p = flags[1]
                             #add flags to msg in correct format
                             msg += (str(msg_p) + '|')
@@ -181,7 +189,7 @@ class client_push(Process):
                         print "Not a valid message."
                         client_sock.close() #closes the socket
                 else:
-                    print "Couldn't Connect!"
+                    print "Unable to connect to Data Cache."
             except KeyboardInterrupt, k:
                 print "Shutting down."
                 break
