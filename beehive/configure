@@ -1,5 +1,5 @@
 #!/bin/bash
-dpkg -i ../packages_o/*.deb
+dpkg -i msging/cloud_serverpackages_o/*.deb
 
 mkdir /etc/waggle/
 rm /etc/smsc95xx_mac_addr
