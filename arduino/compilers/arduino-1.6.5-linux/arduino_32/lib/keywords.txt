@@ -1,0 +1,250 @@
+#FUNCTIONS COLOR 			#D35400 - ORANGE			KEYWORD1
+#FUNCTIONS COLOR			#D35400 - ORANGE			KEYWORD2
+#STRUCTURE COLORS 			#5E6D03 - GREEN			KEYWORD3
+#VARIABLES COLOR 				#00979C - BLUE				LITERAL2
+
+# LITERAL2 specifies constants
+
+HIGH	LITERAL2	Constants	RESERVED_WORD_2
+LOW	LITERAL2	Constants	RESERVED_WORD_2
+INPUT	LITERAL2	Constants	RESERVED_WORD_2
+INPUT_PULLUP	LITERAL2	Constants	RESERVED_WORD_2
+OUTPUT	LITERAL2	Constants	RESERVED_WORD_2
+DEC	LITERAL2	Serial_Print	RESERVED_WORD_2
+BIN	LITERAL2	Serial_Print	RESERVED_WORD_2
+HEX	LITERAL2	Serial_Print	RESERVED_WORD_2
+OCT	LITERAL2	Serial_Print	RESERVED_WORD_2
+PI	LITERAL2		RESERVED_WORD_2
+HALF_PI	LITERAL2		RESERVED_WORD_2
+TWO_PI	LITERAL2		RESERVED_WORD_2
+LSBFIRST	LITERAL2	ShiftOut	RESERVED_WORD_2
+MSBFIRST	LITERAL2	ShiftOut	RESERVED_WORD_2
+CHANGE	LITERAL2	AttachInterrupt	RESERVED_WORD_2
+FALLING	LITERAL2	AttachInterrupt	RESERVED_WORD_2
+RISING	LITERAL2	AttachInterrupt	RESERVED_WORD_2
+DEFAULT	LITERAL2	AnalogReference	RESERVED_WORD_2
+EXTERNAL	LITERAL2	AnalogReference	RESERVED_WORD_2
+INTERNAL	LITERAL2	AnalogReference	RESERVED_WORD_2
+INTERNAL1V1	LITERAL2	AnalogReference	RESERVED_WORD_2
+INTERNAL2V56	LITERAL2	AnalogReference	RESERVED_WORD_2
+
+auto	LITERAL2		RESERVED_WORD_2
+constexpr	LITERAL2		RESERVED_WORD_2
+decltype	LITERAL2		RESERVED_WORD_2
+nullptr	LITERAL2		RESERVED_WORD_2
+wchar_t	LITERAL2		RESERVED_WORD_2
+
+int8_t	LITERAL2		RESERVED_WORD_2
+int16_t	LITERAL2		RESERVED_WORD_2
+int32_t	LITERAL2		RESERVED_WORD_2
+int64_t	LITERAL2		RESERVED_WORD_2
+uint8_t	LITERAL2		RESERVED_WORD_2
+uint16_t	LITERAL2		RESERVED_WORD_2
+uint32_t	LITERAL2		RESERVED_WORD_2
+uint64_t	LITERAL2		RESERVED_WORD_2
+
+char16_t	LITERAL2		RESERVED_WORD_2
+char32_t	LITERAL2		RESERVED_WORD_2
+static_assert	LITERAL2		RESERVED_WORD_2
+operator	LITERAL2		RESERVED_WORD_2
+enum	LITERAL2		RESERVED_WORD_2
+delete	LITERAL2		RESERVED_WORD_2
+bool	LITERAL2		RESERVED_WORD_2
+boolean	LITERAL2	BooleanVariables	RESERVED_WORD_2
+byte	LITERAL2	Byte	RESERVED_WORD_2
+char	LITERAL2	Char	RESERVED_WORD_2
+const	LITERAL2	Const	RESERVED_WORD_2
+false	LITERAL2	Constants	LITERAL_BOOLEAN
+float	LITERAL2	Float	RESERVED_WORD_2
+double	LITERAL2		RESERVED_WORD_2
+null	LITERAL2		RESERVED_WORD_2
+int	LITERAL2	Int	RESERVED_WORD_2
+long	LITERAL2	Long	RESERVED_WORD_2
+new	LITERAL2		RESERVED_WORD_2
+private	LITERAL2		RESERVED_WORD_2
+protected	LITERAL2		RESERVED_WORD_2
+public	LITERAL2		RESERVED_WORD_2
+short	LITERAL2		RESERVED_WORD_2
+signed	LITERAL2		RESERVED_WORD_2
+static	LITERAL2	Static	RESERVED_WORD_2
+goto	LITERAL2		RESERVED_WORD_2
+String	LITERAL2	String	RESERVED_WORD_2
+void	LITERAL2	Void	RESERVED_WORD_2
+true	LITERAL2		LITERAL_BOOLEAN
+unsigned	LITERAL2		RESERVED_WORD_2
+word	LITERAL2		RESERVED_WORD_2
+
+# KEYWORD2 specifies methods and functions
+
+abs	KEYWORD2	Abs
+acos	KEYWORD2	ACos
+asin	KEYWORD2	ASin
+atan	KEYWORD2	ATan
+atan2	KEYWORD2	ATan2
+ceil	KEYWORD2	Ceil
+constrain	KEYWORD2	Constrain
+cos	KEYWORD2	Cos
+degrees	KEYWORD2
+exp	KEYWORD2	Exp
+floor	KEYWORD2	Floor
+log	KEYWORD2	Log
+map	KEYWORD2	Map
+max	KEYWORD2	Max
+min	KEYWORD2	Min
+radians	KEYWORD2
+random	KEYWORD2	Random
+randomSeed	KEYWORD2	RandomSeed
+round	KEYWORD2
+sin	KEYWORD2	Sin
+sq	KEYWORD2	Sq
+sqrt	KEYWORD2	Sqrt
+tan	KEYWORD2	Tan
+pow	KEYWORD2	Pow
+
+bitRead	KEYWORD2	BitRead
+bitWrite	KEYWORD2	BitWrite
+bitSet	KEYWORD2	BitSet
+bitClear	KEYWORD2	BitClear
+bit	KEYWORD2	Bit
+highByte	KEYWORD2	HighByte
+lowByte	KEYWORD2	LowByte
+
+analogReference	KEYWORD2	AnalogReference
+analogRead	KEYWORD2	AnalogRead
+analogWrite	KEYWORD2	AnalogWrite
+attachInterrupt	KEYWORD2	AttachInterrupt
+detachInterrupt	KEYWORD2	DetachInterrupt
+delay	KEYWORD2	Delay
+delayMicroseconds	KEYWORD2	DelayMicroseconds
+digitalWrite	KEYWORD2	DigitalWrite
+digitalRead	KEYWORD2	DigitalRead
+interrupts	KEYWORD2
+millis	KEYWORD2	Millis
+micros	KEYWORD2	Micros
+noInterrupts	KEYWORD2	NoInterrupts
+noTone	KEYWORD2	NoTone
+pinMode	KEYWORD2	PinMode
+pulseIn	KEYWORD2	PulseIn
+shiftIn	KEYWORD2	ShiftIn
+shiftOut	KEYWORD2	ShiftOut
+tone	KEYWORD2	Tone
+yield	KEYWORD2	Yield
+
+Serial	KEYWORD1	Serial	DATA_TYPE
+Serial1	KEYWORD1	Serial	DATA_TYPE
+Serial2	KEYWORD1	Serial	DATA_TYPE
+Serial3	KEYWORD1	Serial	DATA_TYPE
+SerialUSB	KEYWORD1	Serial	DATA_TYPE
+begin	KEYWORD2	Serial_Begin
+end	KEYWORD2	Serial_End
+peek	KEYWORD2	Serial_Peek
+read	KEYWORD2	Serial_Read
+print	KEYWORD2	Serial_Print
+println	KEYWORD2	Serial_Println
+available	KEYWORD2	Serial_Available
+availableForWrite	KEYWORD2
+flush	KEYWORD2	Serial_Flush
+setTimeout	KEYWORD2
+find	KEYWORD2
+findUntil	KEYWORD2
+parseInt	KEYWORD2
+parseFloat	KEYWORD2
+readBytes	KEYWORD2
+readBytesUntil	KEYWORD2
+readString	KEYWORD2
+readStringUntil	KEYWORD2
+trim	KEYWORD2
+toUpperCase	KEYWORD2
+toLowerCase	KEYWORD2
+charAt	KEYWORD2
+compareTo	KEYWORD2
+concat	KEYWORD2
+endsWith	KEYWORD2
+startsWith	KEYWORD2
+equals	KEYWORD2
+equalsIgnoreCase	KEYWORD2
+getBytes	KEYWORD2
+indexOf	KEYWORD2
+lastIndexOf	KEYWORD2
+length	KEYWORD2
+replace	KEYWORD2
+setCharAt	KEYWORD2
+substring	KEYWORD2
+toCharArray	KEYWORD2
+toInt	KEYWORD2
+
+Keyboard	KEYWORD1		DATA_TYPE
+Mouse	KEYWORD1		DATA_TYPE
+press	KEYWORD2
+release	KEYWORD2
+releaseAll	KEYWORD2
+accept	KEYWORD2
+click	KEYWORD2
+move	KEYWORD2
+isPressed	KEYWORD2
+
+# KEYWORD3 specifies structures
+
+break	KEYWORD3	Break	RESERVED_WORD
+case	KEYWORD3	SwitchCase	RESERVED_WORD
+class	KEYWORD3		RESERVED_WORD
+continue	KEYWORD3	Continue	RESERVED_WORD
+default	KEYWORD3	SwitchCase	RESERVED_WORD
+do	KEYWORD3	DoWhile	RESERVED_WORD
+else	KEYWORD3	Else	RESERVED_WORD
+for	KEYWORD3	For	RESERVED_WORD
+if	KEYWORD3	If	RESERVED_WORD
+register	KEYWORD3		RESERVED_WORD
+return	KEYWORD3	Return	RESERVED_WORD
+	
+switch	KEYWORD3	SwitchCase	RESERVED_WORD
+this	KEYWORD3		RESERVED_WORD
+throw	KEYWORD3		RESERVED_WORD
+try	KEYWORD3		RESERVED_WORD
+while	KEYWORD3	While	RESERVED_WORD
+
+setup	KEYWORD3	Setup	RESERVED_WORD
+loop	KEYWORD3	Loop	RESERVED_WORD
+
+alignas	KEYWORD3		RESERVED_WORD
+alignof	KEYWORD3		RESERVED_WORD
+asm	KEYWORD3		RESERVED_WORD
+export	KEYWORD3		RESERVED_WORD
+thread_local	KEYWORD3		RESERVED_WORD
+noexcept	KEYWORD3		RESERVED_WORD
+export	KEYWORD3		RESERVED_WORD
+
+# operators aren't highlighted, but may have documentation
+
++=		IncrementCompound
++		Arithmetic
+[]		arrayaccess
+=		assign
+&		BitwiseAnd
+|		BitwiseAnd
+,
+//		Comments
+?:
+{}		Braces
+--		Increment
+/		Arithmetic
+/*		Comments
+.		dot
+==
+<		greaterthan
+<=		greaterthanorequalto
+++		Increment
+!=		inequality
+<<		Bitshift
+<		lessthan
+<=		lessthanorequalto
+&&		Boolean
+!		Boolean
+||		Boolean
+-		Arithmetic
+%		Modulo
+*		Arithmetic
+()		parentheses
+>>		Bitshift
+;		SemiColon
+-=		DecrementCompound
