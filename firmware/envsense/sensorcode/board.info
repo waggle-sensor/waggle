@@ -1,2 +1,0 @@
-TARGET=envsenseV1
-PORT=/dev/ttyACM0
