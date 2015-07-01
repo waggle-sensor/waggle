@@ -1,0 +1,33 @@
+﻿WindVel Sensor
+
+Max Sampling Frequency: 192 Hz
+With 256 samples, the highest possible frequency to observe is 96 Hz, which translates to 233.6 mph wind speeds
+Sensor must be about 1-2 inches from rotating magnet for best results
+
+To take a measurement, what happens is the following:
+1. The sensor is put into Single Measurement Mode by sending a write command on the I2C bus, changing the Mode Register to 0x01
+2. Next, a delay is given to allow the device to reset the data ready bit and to begin taking the measurement. This delay must be at least 3 ms, or else a new measurement will not occur, and the old one will simply be reused
+3. After that, the program waits and monitors the data ready bit, which is the last bit on the status register
+4. Once the data is ready, the program reads 16 bits from the Data Output Y registers A and B, 8 bits from each
+
+Then, each sample (measurement) is added into an array, which is then reordered, windowed, and converted to the frequency domain using an FHT (Fast Harley Transform). Once in the frequency domain, we simply find the index with the largest magnitude in the output array, and find the frequency of that bin. From a frequency, we convert the value into a velocity by multiplying it by a constant obtained experimentally, because rotational frequency and linear velocity are linearly related.
+
+I found the best way to measure frequency was to have a digital pin on the Arduino pulled high and then dropped low every time the loop executed. This way, I could tell the period visually on an oscilloscope. I found that the highest sampling frequency at which I could obtain discrete values for every measurement was 192 Hz.
+
+The table below shows how changing the delay in the loop affects the sampling frequency, and maximum possible wind speed to observe:
+
+// DELAY: 3  - Sampling Rate: 192  Hz    Max observed freq: 96    Hz   Max observed speed: 104.4 m/s
+// DELAY: 4  - Sampling Rate: 160  Hz    Max observed freq: 80    Hz   Max observed speed: 87.0  m/s
+// DELAY: 5  - Sampling Rate: 139  Hz    Max observed freq: 69.5  Hz   Max observed speed: 75.6  m/s
+// DELAY: 6  - Sampling Rate: 121  Hz    Max observed freq: 60.5  Hz   Max observed speed: 65.8  m/s
+// DELAY: 7  - Sampling Rate: 109  Hz    Max observed freq: 54.5  Hz   Max observed speed: 59.3  m/s
+// DELAY: 8  - Sampling Rate: 98.4 Hz    Max observed freq: 49.20 Hz   Max observed speed: 53.5  m/s
+// DELAY: 9  - Sampling Rate: 89.3 Hz    Max observed freq: 44.65 Hz   Max observed speed: 48.6  m/s
+// DELAY: 10 - Sampling Rate: 81.7 Hz    Max observed freq: 41.35 Hz   Max observed speed: 45.0  m/s
+// DELAY: 15 - Sampling Rate: 58.1 Hz    Max observed freq: 29.05 Hz   Max observed speed: 31.6  m/s
+// DELAY: 20 - Sampling Rate: 45.0 Hz    Max observed freq: 20.50 Hz   Max observed speed: 22.3  m/s
+// DELAY: 25 - Sampling Rate: 36.8 Hz    Max observed freq: 18.40 Hz   Max observed speed: 20.0  m/s
+
+As for testing, please refer to the image enclosed. I set up a motor with a DC power supply so I could regulate how fast it was turning. Then, I attached a rod to the motor and connected the Vaavud wind collector device to the end of that, so it would rotate and create a changing magnetic field. The rod was necessary so that the magnets in the motor would not interfere with the magnetometer's measurements.
+
+With that setup, I would set a certain voltage on the power supply so the motor would start spinning. Then, I would determine the frequency, and compare that to what the Vaavud app was reading at the same frequency. I was able to establish the linear relationship by calibrating with the Vaavud app, to find that the wind speed was simply frequency of rotation, multiplied by the coefficient 1.0876. 
