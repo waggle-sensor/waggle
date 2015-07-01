@@ -1,0 +1,5 @@
+1505ad37724ae74bbe5a70c51109017c  usr/lib/arm-linux-gnueabihf/libedit.so.2.0.47
+4959b54a4e8042b998561e290f5f77e1  usr/share/doc/libedit2/TODO.Debian
+6caaa862aa7ed44747e8104357669db8  usr/share/doc/libedit2/changelog.Debian.gz
+eda44fd56a0ef44c440ecc106650ed2d  usr/share/doc/libedit2/copyright
+5aa1af3cfbc185b05ee615dae85f1d30  usr/share/lintian/overrides/libedit2

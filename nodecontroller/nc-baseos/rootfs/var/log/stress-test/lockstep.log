@@ -1,0 +1,2 @@
+CPU_LOCKSTEP,cpu_max,1,util_max,25
+CPU_LOCKSTEP,cpu_max,1,util_max,50

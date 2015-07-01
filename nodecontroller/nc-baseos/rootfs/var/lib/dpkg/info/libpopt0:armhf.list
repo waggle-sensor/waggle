@@ -1,0 +1,12 @@
+/.
+/lib
+/lib/arm-linux-gnueabihf
+/lib/arm-linux-gnueabihf/libpopt.so.0.0.0
+/usr
+/usr/share
+/usr/share/doc
+/usr/share/doc/libpopt0
+/usr/share/doc/libpopt0/changelog.Debian.gz
+/usr/share/doc/libpopt0/README
+/usr/share/doc/libpopt0/copyright
+/lib/arm-linux-gnueabihf/libpopt.so.0

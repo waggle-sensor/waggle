@@ -1,0 +1,15 @@
+/usr/share/man/man1/pod2latex.1.gz
+/usr/share/man/man1/pod2latex.bundled.1.gz
+libpod-latex-perl
+/usr/bin/pod2latex
+/usr/bin/pod2latex.bundled
+libpod-latex-perl
+/sbin/start-stop-daemon
+/sbin/start-stop-daemon.distrib
+:
+/usr/share/man/man1/sh.1.gz
+/usr/share/man/man1/sh.distrib.1.gz
+dash
+/bin/sh
+/bin/sh.distrib
+dash

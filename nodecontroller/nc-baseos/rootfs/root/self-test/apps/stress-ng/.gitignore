@@ -1,0 +1,4 @@
+# exclude backup files, object files, and final executable
+*~
+*.o
+stress-ng

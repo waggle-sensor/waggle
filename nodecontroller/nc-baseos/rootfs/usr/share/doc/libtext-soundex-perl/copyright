@@ -1,0 +1,33 @@
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: Text-Soundex
+Source: https://metacpan.org/release/Text-Soundex/
+Upstream-Contact: Ricardo SIGNES <rjbs@cpan.org>
+
+Files: *
+Copyright: 1998-2007, Mark Mielke
+License: other
+ Freedom to use these sources for whatever you want, as long as credit
+ is given where credit is due, is hereby granted. You may make modifications
+ where you see fit but leave this copyright somewhere visible. As well, try
+ to initial any changes you make so that if I like the changes I can
+ incorporate them into later versions.
+
+Files: debian/*
+Copyright: 2013, gregor herrmann <gregoa@debian.org>
+License: Artistic or GPL-1+
+
+License: Artistic
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the Artistic License, which comes with Perl.
+ .
+ On Debian systems, the complete text of the Artistic License can be
+ found in `/usr/share/common-licenses/Artistic'.
+
+License: GPL-1+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 1, or (at your option)
+ any later version.
+ .
+ On Debian systems, the complete text of version 1 of the GNU General
+ Public License can be found in `/usr/share/common-licenses/GPL-1'.

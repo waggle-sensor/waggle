@@ -1,0 +1,4 @@
+libpcre 3 libpcre3
+libpcreposix 3 libpcre3
+udeb: libpcre 3 libpcre3-udeb
+udeb: libpcreposix 3 libpcre3-udeb

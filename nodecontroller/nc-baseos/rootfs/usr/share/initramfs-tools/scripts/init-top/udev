@@ -1,0 +1,21 @@
+#!/bin/sh -e
+
+PREREQS="all_generic_ide blacklist"
+
+prereqs() { echo "$PREREQS"; }
+
+case "$1" in
+    prereqs)
+    prereqs
+    exit 0
+    ;;
+esac
+
+echo > /sys/kernel/uevent_helper
+
+/lib/systemd/systemd-udevd --daemon --resolve-names=never
+
+udevadm trigger --action=add
+
+# Leave udev running to process events that come in out-of-band (like USB
+# connections)

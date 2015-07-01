@@ -1,0 +1,4 @@
+libncurses 5 libncurses5 (>= 5.9+20131221)
+libform 5 libncurses5 (>= 5.9+20131221)
+libpanel 5 libncurses5 (>= 5.9+20131221)
+libmenu 5 libncurses5 (>= 5.9+20131221)

@@ -1,0 +1,5 @@
+# here you can provide what to run instead of /bin/login
+AUTOGETTY_ARGS="-n -l /bin/auto-root-login"
+
+# Should autogetty be enabled?
+ENABLED=1

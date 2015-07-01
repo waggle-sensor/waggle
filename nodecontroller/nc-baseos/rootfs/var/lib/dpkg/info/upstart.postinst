@@ -1,0 +1,73 @@
+#!/bin/sh -e
+
+if dpkg --compare-versions "$2" lt-nl 0.6.0; then
+	# We're upgrading from a version of Upstart that doesn't use
+	# D-Bus for its IPC.  We have to tell it to re-exec into one
+	# that does.  It'll lose all state, but we didn't keep much
+	# in those days.
+	telinit u
+elif ! ischroot; then
+	# Do not honour re-exec when requested from within a
+	# chroot since:
+	#
+	# (a) The version of Upstart outside might not support it.
+	# (b) An isolated environment such as a chroot should
+	#     not be able to modify its containing environment.
+	#
+	# A sufficiently new Upstart will actually handle a re-exec
+	# request coming from telinit within a chroot correctly,
+	# but it's simple enough to perform the check here and save
+	# Upstart the effort.
+
+	# Query running version of Upstart, but only when we know
+	# that initctl will work.
+	#
+	# The calculated version string may be the null string if
+	# Upstart is not running (where for example an alternative
+	# init is running outside a chroot environment) or if the
+	# query failed for some reason. However, the version check
+	# below handles a null version string correctly.
+	UPSTART_VERSION_RUNNING=$(initctl version 2>/dev/null |\
+		awk '{print $3}'|tr -d ')' || :)
+	
+	if dpkg --compare-versions "$UPSTART_VERSION_RUNNING" ge 1.9 || [ "$UPSTART_VERSION_RUNNING" = 1.8-ubuntu-full-serialization ]; then
+		# We are not running inside a chroot and the running version
+		# of Upstart supports lossless stateful re-exec, so we can
+		# restart immediately.
+		#
+		# XXX: Note that the check on the running version must
+		# remain *indefinitely* since it's the only safe way to
+		# know if stateful re-exec is supported: simply checking
+		# packaged version numbers is not sufficient since
+		# the package could be upgraded multiple times without a
+		# reboot.
+		telinit u || :
+	elif [ "$UPSTART_JOB" = "cloud-config" ]; then
+		# If upgraded by cloud-init, do not perform partial
+		# stateful re-exec, as cloud-init instance will fail
+		# to initialise.
+		touch /var/run/init.upgraded || :
+		[ -x /usr/share/update-notifier/notify-reboot-required ] && \
+		    /usr/share/update-notifier/notify-reboot-required || true
+
+	elif dpkg --compare-versions "$UPSTART_VERSION_RUNNING" ge 1.6.1; then
+		# Otherwise, perform partial stateful re-exec and
+		# request a reboot.
+		telinit u || :
+		[ -x /usr/share/update-notifier/notify-reboot-required ] && \
+		    /usr/share/update-notifier/notify-reboot-required || true			    
+	else
+		# Before we shutdown or reboot, we need to re-exec so that we
+		# can safely remount the root filesystem; we can't just do that
+		# here because we lose state.
+		touch /var/run/init.upgraded || :
+	fi
+fi
+
+# Automatically added by dh_installdeb
+dpkg-maintscript-helper rm_conffile /etc/init/dbus-reconnect.conf 0.6.3-7 -- "$@"
+# End automatically added section
+# Automatically added by dh_installdeb
+dpkg-maintscript-helper rm_conffile /etc/init/upstart-dbus-bridge.conf 1.9.1-0ubuntu4 -- "$@"
+# End automatically added section
+

@@ -1,0 +1,12 @@
+#! /bin/sh
+set -e
+
+
+
+if [ -L /var/lib/python-support ]; then
+  rm -f /var/lib/python-support
+fi
+
+if [ "$1" = "purge" ]; then
+  rm -rf /usr/lib/pymodules
+fi

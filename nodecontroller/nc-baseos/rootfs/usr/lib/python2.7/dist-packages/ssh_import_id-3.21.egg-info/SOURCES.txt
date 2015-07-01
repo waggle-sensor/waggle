@@ -1,0 +1,9 @@
+setup.py
+bin/ssh-import-id
+bin/ssh-import-id-gh
+bin/ssh-import-id-lp
+ssh_import_id.egg-info/PKG-INFO
+ssh_import_id.egg-info/SOURCES.txt
+ssh_import_id.egg-info/dependency_links.txt
+ssh_import_id.egg-info/requires.txt
+ssh_import_id.egg-info/top_level.txt

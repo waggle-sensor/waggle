@@ -1,0 +1,11 @@
+libgpg-error.so.0 libgpg-error0 #MINVER#
+ gpg_err_code_from_errno@Base 1.10
+ gpg_err_code_from_syserror@Base 1.10
+ gpg_err_code_to_errno@Base 1.10
+ gpg_err_deinit@Base 1.10
+ gpg_err_init@Base 1.10
+ gpg_err_set_errno@Base 1.10
+ gpg_error_check_version@Base 1.12
+ gpg_strerror@Base 1.10
+ gpg_strerror_r@Base 1.10
+ gpg_strsource@Base 1.10
