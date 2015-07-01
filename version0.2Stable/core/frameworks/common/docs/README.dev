@@ -1,0 +1,25 @@
+################
+DEVELOPERS
+################
+To devlop with this library do the following:
+
+1. Setup a local directory - with the appropiate python suffix
+    mkdir $HOME/local/lib/python2.7/site-packages
+          ^         ^ ^                         ^
+          |-local---| |                         |
+             part     |-python suffix ----------|
+
+    note: python suffix is fixed, local part is up to you to choose
+
+2. Export Python path (maybe even put it in your .bashrc), same directory as before
+    export PYTHONPATH=$HOME/local/lib/python2.7/site-packages
+                      ^         ^ ^                         ^
+                      |-local---| |                         |
+                         part     |-python suffix ----------|
+                      
+
+3. Locally run ./setup_all, running it from a different directory has undefined behavior
+    ./setup_all.py develop --prefix=$HOME/local
+                                    ^         ^
+                                    |-local---|
+                                       part

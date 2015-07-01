@@ -1,0 +1,20 @@
+1. INSTALL: Install rabbitmq server.  On standard Ubuntu/Debian
+   bash cmd: sudo apt-get install rabbitmq-server
+
+2. CONFIG: We will run the server on port 23181, instead of teh regular 5672. To accomplish 
+this, please put the rabbitmq-env.conf file in /etc/rabbitmq, change the RABBITMQ_NODENAME 
+to reflect the servername.
+
+3. START: Restart the rabbit mqserver server.
+   bash cmd: sudo service rabbitmq-server restart
+
+
+4. PROVISION: Set up usernames and passwords.
+   bash cmds: 
+   rabbitmqctl delete_user guest
+   rabbitmqctl add_user beehive queenB
+   rabbitmqctl add_user honeybee buzz
+   rabbitmqctl set_permissions -p / honeybee ".*" ".*" ".*"
+   rabbitmqctl set_permissions -p / beehive ".*" ".*" ".*"
+   rabbitmqctl list_users
+    
