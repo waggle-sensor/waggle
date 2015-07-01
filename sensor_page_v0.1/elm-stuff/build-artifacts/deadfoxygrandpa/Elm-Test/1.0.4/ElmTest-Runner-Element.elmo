@@ -1,0 +1,148 @@
+Elm.ElmTest = Elm.ElmTest || {};
+Elm.ElmTest.Runner = Elm.ElmTest.Runner || {};
+Elm.ElmTest.Runner.Element = Elm.ElmTest.Runner.Element || {};
+Elm.ElmTest.Runner.Element.make = function (_elm) {
+   "use strict";
+   _elm.ElmTest = _elm.ElmTest || {};
+   _elm.ElmTest.Runner = _elm.ElmTest.Runner || {};
+   _elm.ElmTest.Runner.Element = _elm.ElmTest.Runner.Element || {};
+   if (_elm.ElmTest.Runner.Element.values)
+   return _elm.ElmTest.Runner.Element.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "ElmTest.Runner.Element",
+   $Basics = Elm.Basics.make(_elm),
+   $Color = Elm.Color.make(_elm),
+   $ElmTest$Run = Elm.ElmTest.Run.make(_elm),
+   $ElmTest$Runner$String = Elm.ElmTest.Runner.String.make(_elm),
+   $ElmTest$Test = Elm.ElmTest.Test.make(_elm),
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $List = Elm.List.make(_elm),
+   $String = Elm.String.make(_elm),
+   $Text = Elm.Text.make(_elm);
+   var maxOrZero = function (l) {
+      return A3($List.foldl,
+      $Basics.max,
+      0,
+      l);
+   };
+   var indent = function (s) {
+      return function () {
+         var trimmed = $String.trimLeft(s);
+         return $String.length(s) - $String.length(trimmed);
+      }();
+   };
+   var plainText = function (s) {
+      return $Graphics$Element.leftAligned($Text.fromString(s));
+   };
+   var pretty = function (_v0) {
+      return function () {
+         switch (_v0.ctor)
+         {case "_Tuple2":
+            return function () {
+                 var w$ = 5;
+                 var w = indent(_v0._0) * 10;
+                 return function () {
+                    switch (_v0._1.ctor)
+                    {case "Fail":
+                       return $Graphics$Element.color($Color.red)(A2($Graphics$Element.flow,
+                         $Graphics$Element.right,
+                         _L.fromArray([A2($Graphics$Element.spacer,
+                                      w,
+                                      1)
+                                      ,plainText(_v0._0)
+                                      ,A2($Graphics$Element.spacer,
+                                      w$,
+                                      1)])));
+                       case "Pass":
+                       return $Graphics$Element.color($Color.green)(A2($Graphics$Element.flow,
+                         $Graphics$Element.right,
+                         _L.fromArray([A2($Graphics$Element.spacer,
+                                      w,
+                                      1)
+                                      ,plainText(_v0._0)
+                                      ,A2($Graphics$Element.spacer,
+                                      w$,
+                                      1)])));
+                       case "Report":
+                       return function () {
+                            var c = _U.cmp($ElmTest$Run.failedTests(_v0._1),
+                            0) > 0 ? $Color.red : $Color.green;
+                            return $Graphics$Element.color(c)(A2($Graphics$Element.flow,
+                            $Graphics$Element.right,
+                            _L.fromArray([A2($Graphics$Element.spacer,
+                                         w,
+                                         1)
+                                         ,$Graphics$Element.leftAligned($Text.bold($Text.fromString(_v0._0)))
+                                         ,A2($Graphics$Element.spacer,
+                                         w$,
+                                         1)])));
+                         }();}
+                    _U.badCase($moduleName,
+                    "between lines 29 and 33");
+                 }();
+              }();}
+         _U.badCase($moduleName,
+         "between lines 27 and 33");
+      }();
+   };
+   var runDisplay = function (tests) {
+      return function () {
+         var _ = $ElmTest$Runner$String.run(tests);
+         var allPassed = function () {
+            switch (_.ctor)
+            {case "::": switch (_._0.ctor)
+                 {case "_Tuple2":
+                    return _._0._1;}
+                 break;}
+            _U.badCase($moduleName,
+            "on line 45, column 45 to 61");
+         }();
+         var results = function () {
+            switch (_.ctor)
+            {case "::": switch (_._0.ctor)
+                 {case "_Tuple2": return _._1;}
+                 break;}
+            _U.badCase($moduleName,
+            "on line 45, column 45 to 61");
+         }();
+         var summary = function () {
+            switch (_.ctor)
+            {case "::": switch (_._0.ctor)
+                 {case "_Tuple2":
+                    return _._0._0;}
+                 break;}
+            _U.badCase($moduleName,
+            "on line 45, column 45 to 61");
+         }();
+         var results$ = A2($List.map,
+         pretty,
+         results);
+         var maxWidth = maxOrZero($List.map($Graphics$Element.widthOf)(results$));
+         var maxHeight = maxOrZero($List.map($Graphics$Element.heightOf)(results$));
+         var elements = _U.eq(results,
+         _L.fromArray([{ctor: "_Tuple2"
+                       ,_0: ""
+                       ,_1: allPassed}])) ? _L.fromArray([]) : A2($List.map,
+         function ($) {
+            return $Graphics$Element.color($Color.black)(A3($Graphics$Element.container,
+            maxWidth + 2,
+            maxHeight + 2,
+            $Graphics$Element.midLeft)($Graphics$Element.width(maxWidth)($)));
+         },
+         results$);
+         return $Graphics$Element.flow($Graphics$Element.down)(A2($List._op["::"],
+         plainText(summary),
+         A2($List._op["::"],
+         A2($Graphics$Element.spacer,
+         1,
+         10),
+         elements)));
+      }();
+   };
+   _elm.ElmTest.Runner.Element.values = {_op: _op
+                                        ,runDisplay: runDisplay};
+   return _elm.ElmTest.Runner.Element.values;
+};

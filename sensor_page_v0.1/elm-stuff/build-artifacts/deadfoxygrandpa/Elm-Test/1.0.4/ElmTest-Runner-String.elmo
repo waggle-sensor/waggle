@@ -1,0 +1,183 @@
+Elm.ElmTest = Elm.ElmTest || {};
+Elm.ElmTest.Runner = Elm.ElmTest.Runner || {};
+Elm.ElmTest.Runner.String = Elm.ElmTest.Runner.String || {};
+Elm.ElmTest.Runner.String.make = function (_elm) {
+   "use strict";
+   _elm.ElmTest = _elm.ElmTest || {};
+   _elm.ElmTest.Runner = _elm.ElmTest.Runner || {};
+   _elm.ElmTest.Runner.String = _elm.ElmTest.Runner.String || {};
+   if (_elm.ElmTest.Runner.String.values)
+   return _elm.ElmTest.Runner.String.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "ElmTest.Runner.String",
+   $Basics = Elm.Basics.make(_elm),
+   $ElmTest$Run = Elm.ElmTest.Run.make(_elm),
+   $ElmTest$Test = Elm.ElmTest.Test.make(_elm),
+   $List = Elm.List.make(_elm),
+   $String = Elm.String.make(_elm);
+   var replicate = F2(function (n,
+   c) {
+      return function () {
+         var go = function (n) {
+            return _U.cmp(n,
+            0) < 1 ? _L.fromArray([]) : A2($List._op["::"],
+            c,
+            go(n - 1));
+         };
+         return $String.fromList(go(n));
+      }();
+   });
+   var vcat = function ($) {
+      return $String.concat($List.intersperse("\n")($));
+   };
+   var indent = function (n) {
+      return function () {
+         var indents = A2(replicate,
+         n,
+         _U.chr(" "));
+         return function ($) {
+            return vcat($List.map($String.append(indents))($String.lines($)));
+         };
+      }();
+   };
+   var pretty = F2(function (n,
+   result) {
+      return function () {
+         var passed = $ElmTest$Run.pass(result);
+         return function () {
+            switch (result.ctor)
+            {case "Fail":
+               return _L.fromArray([{ctor: "_Tuple2"
+                                    ,_0: indent(n)(A2($Basics._op["++"],
+                                    result._0,
+                                    A2($Basics._op["++"],
+                                    ": FAILED. ",
+                                    result._1)))
+                                    ,_1: result}]);
+               case "Pass":
+               return _L.fromArray([{ctor: "_Tuple2"
+                                    ,_0: indent(n)(A2($Basics._op["++"],
+                                    result._0,
+                                    ": passed."))
+                                    ,_1: result}]);
+               case "Report":
+               return function () {
+                    var allPassed = _U.eq($ElmTest$Run.failedTests(result),
+                    0);
+                    var subResults = allPassed ? _L.fromArray([]) : A2($List.concatMap,
+                    pretty(n + 2),
+                    result._1.results);
+                    var msg = A2($Basics._op["++"],
+                    "Test Suite: ",
+                    A2($Basics._op["++"],
+                    result._0,
+                    A2($Basics._op["++"],
+                    ": ",
+                    passed ? "all tests passed" : "FAILED")));
+                    return A2($List._op["::"],
+                    {ctor: "_Tuple2"
+                    ,_0: A2(indent,n,msg)
+                    ,_1: result},
+                    subResults);
+                 }();}
+            _U.badCase($moduleName,
+            "between lines 34 and 43");
+         }();
+      }();
+   });
+   var run = function (t) {
+      return function () {
+         var tests = function () {
+            switch (t.ctor)
+            {case "Suite": return t._1;
+               case "TestCase":
+               return _L.fromArray([A2($ElmTest$Test.TestCase,
+                 t._0,
+                 t._1)]);}
+            _U.badCase($moduleName,
+            "between lines 48 and 51");
+         }();
+         var result = $ElmTest$Run.run(t);
+         var passedTests$ = $ElmTest$Run.passedTests(result);
+         var passedSuites$ = $ElmTest$Run.passedSuites(result);
+         var failedTests$ = $ElmTest$Run.failedTests(result);
+         var allPassed = _U.eq(failedTests$,
+         0) ? $ElmTest$Run.Pass("") : A2($ElmTest$Run.Fail,
+         "",
+         "");
+         var failedSuites$ = $ElmTest$Run.failedSuites(result);
+         var summary = vcat($List.map(indent(2))(_L.fromArray([A2($Basics._op["++"],
+                                                              $Basics.toString($ElmTest$Test.numberOfSuites(t)),
+                                                              A2($Basics._op["++"],
+                                                              " suites run, containing ",
+                                                              A2($Basics._op["++"],
+                                                              $Basics.toString($ElmTest$Test.numberOfTests(t)),
+                                                              " tests")))
+                                                              ,_U.eq(failedTests$,
+                                                              0) ? "All tests passed" : A2($Basics._op["++"],
+                                                              $Basics.toString(passedSuites$),
+                                                              A2($Basics._op["++"],
+                                                              " suites and ",
+                                                              A2($Basics._op["++"],
+                                                              $Basics.toString(passedTests$),
+                                                              " tests passed")))
+                                                              ,_U.eq(failedTests$,
+                                                              0) ? "" : A2($Basics._op["++"],
+                                                              $Basics.toString(failedSuites$),
+                                                              A2($Basics._op["++"],
+                                                              " suites and ",
+                                                              A2($Basics._op["++"],
+                                                              $Basics.toString(failedTests$),
+                                                              " tests failed")))])));
+         var results$ = function () {
+            switch (allPassed.ctor)
+            {case "Pass":
+               return _L.fromArray([{ctor: "_Tuple2"
+                                    ,_0: ""
+                                    ,_1: allPassed}]);}
+            return A2(pretty,0,result);
+         }();
+         return A2($List._op["::"],
+         {ctor: "_Tuple2"
+         ,_0: summary
+         ,_1: allPassed},
+         results$);
+      }();
+   };
+   var runDisplay = function (t) {
+      return function () {
+         var _ = run(t);
+         var results = function () {
+            switch (_.ctor)
+            {case "::": switch (_._0.ctor)
+                 {case "_Tuple2": return _._1;}
+                 break;}
+            _U.badCase($moduleName,
+            "on line 74, column 37 to 42");
+         }();
+         var summary = function () {
+            switch (_.ctor)
+            {case "::": switch (_._0.ctor)
+                 {case "_Tuple2":
+                    return _._0._0;}
+                 break;}
+            _U.badCase($moduleName,
+            "on line 74, column 37 to 42");
+         }();
+         return vcat(A2($List._op["::"],
+         A2($Basics._op["++"],
+         summary,
+         "\n"),
+         A2($List.map,
+         $Basics.fst,
+         results)));
+      }();
+   };
+   _elm.ElmTest.Runner.String.values = {_op: _op
+                                       ,runDisplay: runDisplay
+                                       ,run: run};
+   return _elm.ElmTest.Runner.String.values;
+};

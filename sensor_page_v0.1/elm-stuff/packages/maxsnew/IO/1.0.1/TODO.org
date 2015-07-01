@@ -1,0 +1,22 @@
+* TODO
+  - [-] Make compilation packagable
+    - [X] Remove need for elm-runtime.js to be in the repo. (new feature?)
+    - [ ] Allow node modules to import elm IO modules
+      - Look at https://github.com/arsatiki/elmloader
+    - [ ] Allow elm IO modules to import node modules
+  - [X] Get rid of the `every millisecond` pump in the interpreter
+    - Should be able to do this by sending lists of requests
+  - [ ] Add error handling
+    - [ ] Use the Either monad?
+      - Possibly add special binds for EitherT IO/Either (?>>=)
+    - [ ] What to do with exceptions?
+  - [ ] More IO primitives
+    - [ ] File operations
+    - [ ] Network operations
+    - [ ] Concurrency operations (simulated coroutines)
+    - [ ] Mutable variables
+  - [ ] Applications using IO
+    - [ ] Interpreter
+    - [ ] Server
+    - [ ] Bindings into external libraries (basically an IO FFI built
+          on top of the real FFI)

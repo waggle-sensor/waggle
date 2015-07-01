@@ -1,0 +1,145 @@
+Elm.Util = Elm.Util || {};
+Elm.Util.make = function (_elm) {
+   "use strict";
+   _elm.Util = _elm.Util || {};
+   if (_elm.Util.values)
+   return _elm.Util.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Util",
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $String = Elm.String.make(_elm);
+   var groupFold = F4(function (eq,
+   f,
+   mkDefault,
+   list) {
+      return function () {
+         switch (list.ctor)
+         {case "::": return function () {
+                 var $ = A2($List.partition,
+                 eq(list._0),
+                 list._1),
+                 ys = $._0,
+                 zs = $._1;
+                 var foldedGroup = A3($List.foldr,
+                 f,
+                 mkDefault(list._0),
+                 A2($List._op["::"],list._0,ys));
+                 return A2($List._op["::"],
+                 foldedGroup,
+                 A4(groupFold,
+                 eq,
+                 f,
+                 mkDefault,
+                 zs));
+              }();
+            case "[]":
+            return _L.fromArray([]);}
+         _U.badCase($moduleName,
+         "between lines 52 and 59");
+      }();
+   });
+   var truncateFloat = F2(function (digits,
+   num) {
+      return function () {
+         var num$ = A2($String.split,
+         ".",
+         $Basics.toString(num));
+         return function () {
+            switch (num$.ctor)
+            {case "::":
+               switch (num$._1.ctor)
+                 {case "::":
+                    return A2($Maybe.withDefault,
+                      num,
+                      $Result.toMaybe($String.toFloat(A2($Basics._op["++"],
+                      num$._0,
+                      A2($Basics._op["++"],
+                      ".",
+                      A2($String.left,
+                      digits,
+                      num$._1._0))))));
+                    case "[]":
+                    return A2($Maybe.withDefault,
+                      num,
+                      $Result.toMaybe($String.toFloat(num$._0)));}
+                 break;
+               case "[]": return num;}
+            _U.badCase($moduleName,
+            "between lines 34 and 37");
+         }();
+      }();
+   });
+   var map3 = F4(function (f,
+   a,
+   b,
+   c) {
+      return function () {
+         switch (a.ctor)
+         {case "Just":
+            return function () {
+                 switch (b.ctor)
+                 {case "Just":
+                    return A2($Maybe.map,
+                      A2(f,a._0,b._0),
+                      c);
+                    case "Nothing":
+                    return $Maybe.Nothing;}
+                 _U.badCase($moduleName,
+                 "between lines 26 and 29");
+              }();
+            case "Nothing":
+            return $Maybe.Nothing;}
+         _U.badCase($moduleName,
+         "between lines 25 and 29");
+      }();
+   });
+   var take = F2(function (n,
+   input) {
+      return function () {
+         var next = F2(function (inp,
+         prev) {
+            return A2($List.take,
+            n,
+            A2($List._op["::"],inp,prev));
+         });
+         return A3($Signal.foldp,
+         next,
+         _L.fromArray([]),
+         input);
+      }();
+   });
+   var filterJust = function (maybes) {
+      return function () {
+         switch (maybes.ctor)
+         {case "::": return function () {
+                 switch (maybes._0.ctor)
+                 {case "Just":
+                    return A2($List._op["::"],
+                      maybes._0._0,
+                      filterJust(maybes._1));
+                    case "Nothing":
+                    return filterJust(maybes._1);}
+                 _U.badCase($moduleName,
+                 "between lines 15 and 17");
+              }();
+            case "[]":
+            return _L.fromArray([]);}
+         _U.badCase($moduleName,
+         "between lines 13 and 17");
+      }();
+   };
+   _elm.Util.values = {_op: _op
+                      ,filterJust: filterJust
+                      ,take: take
+                      ,map3: map3
+                      ,truncateFloat: truncateFloat
+                      ,groupFold: groupFold};
+   return _elm.Util.values;
+};

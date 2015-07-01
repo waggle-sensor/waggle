@@ -1,0 +1,227 @@
+Elm.IO = Elm.IO || {};
+Elm.IO.IO = Elm.IO.IO || {};
+Elm.IO.IO.make = function (_elm) {
+   "use strict";
+   _elm.IO = _elm.IO || {};
+   _elm.IO.IO = _elm.IO.IO || {};
+   if (_elm.IO.IO.values)
+   return _elm.IO.IO.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "IO.IO",
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $String = Elm.String.make(_elm);
+   var Impure = function (a) {
+      return {ctor: "Impure"
+             ,_0: a};
+   };
+   var Pure = function (a) {
+      return {ctor: "Pure",_0: a};
+   };
+   var WriteF = F2(function (a,b) {
+      return {ctor: "WriteF"
+             ,_0: a
+             ,_1: b};
+   });
+   var Exit = function (a) {
+      return {ctor: "Exit",_0: a};
+   };
+   var GetC = function (a) {
+      return {ctor: "GetC",_0: a};
+   };
+   var PutS = F2(function (a,b) {
+      return {ctor: "PutS"
+             ,_0: a
+             ,_1: b};
+   });
+   var mapF = F2(function (f,iof) {
+      return function () {
+         switch (iof.ctor)
+         {case "Exit":
+            return Exit(iof._0);
+            case "GetC":
+            return GetC(function ($) {
+                 return f(iof._0($));
+              });
+            case "PutS": return A2(PutS,
+              iof._0,
+              function ($) {
+                 return f(iof._1($));
+              });
+            case "WriteF": return A2(WriteF,
+              iof._0,
+              function ($) {
+                 return f(iof._1($));
+              });}
+         _U.badCase($moduleName,
+         "between lines 130 and 134");
+      }();
+   });
+   var foldIO = F3(function (pur,
+   impur,
+   io) {
+      return function () {
+         switch (io.ctor)
+         {case "Impure":
+            return impur(A2(mapF,
+              A2(foldIO,pur,impur),
+              io._0));
+            case "Pure": return pur(io._0);}
+         _U.badCase($moduleName,
+         "between lines 138 and 140");
+      }();
+   });
+   var andThen = F2(function (io,
+   f) {
+      return function () {
+         switch (io.ctor)
+         {case "Impure":
+            return Impure(A2(mapF,
+              A2($Basics.flip,andThen,f),
+              io._0));
+            case "Pure": return f(io._0);}
+         _U.badCase($moduleName,
+         "between lines 98 and 102");
+      }();
+   });
+   _op[">>="] = andThen;
+   var seq = F2(function (x,y) {
+      return A2(_op[">>="],
+      x,
+      function (_v13) {
+         return function () {
+            return y;
+         }();
+      });
+   });
+   _op[">>>"] = seq;
+   var forever = function (m) {
+      return A2(_op[">>="],
+      m,
+      function (_v15) {
+         return function () {
+            return forever(m);
+         }();
+      });
+   };
+   var pure = Pure;
+   var apply = F2(function (iof,
+   iom) {
+      return A2(_op[">>="],
+      iof,
+      function (f) {
+         return A2(_op[">>="],
+         iom,
+         function (m) {
+            return pure(f(m));
+         });
+      });
+   });
+   _op["<*>"] = apply;
+   var mapIO = F2(function (f,xs) {
+      return A3($List.foldr,
+      function ($) {
+         return seq(f($));
+      },
+      pure({ctor: "_Tuple0"}),
+      xs);
+   });
+   var forEach = F2(function (xs,
+   f) {
+      return A2(mapIO,f,xs);
+   });
+   var map = F2(function (f,io) {
+      return function () {
+         switch (io.ctor)
+         {case "Impure":
+            return Impure(A2(mapF,
+              map(f),
+              io._0));
+            case "Pure":
+            return Pure(f(io._0));}
+         _U.badCase($moduleName,
+         "between lines 70 and 74");
+      }();
+   });
+   var writeFile = function (obj) {
+      return Impure(A2(WriteF,
+      obj,
+      function (_v20) {
+         return function () {
+            return Pure({ctor: "_Tuple0"});
+         }();
+      }));
+   };
+   var putStr = function (s) {
+      return Impure(A2(PutS,
+      s,
+      function (_v22) {
+         return function () {
+            return Pure({ctor: "_Tuple0"});
+         }();
+      }));
+   };
+   var exit = function ($) {
+      return Impure(Exit($));
+   };
+   var getChar = Impure(GetC(Pure));
+   var readUntil = function (end) {
+      return function () {
+         var go = function (s) {
+            return A2(_op[">>="],
+            getChar,
+            function (c) {
+               return _U.eq(c,
+               end) ? pure(s) : go(A2($String.append,
+               s,
+               A2($String.cons,c,"")));
+            });
+         };
+         return go("");
+      }();
+   };
+   var getLine = readUntil(_U.chr("\n"));
+   var putChar = function (c) {
+      return Impure(A2(PutS,
+      A2($String.cons,c,""),
+      function (_v24) {
+         return function () {
+            return Pure({ctor: "_Tuple0"});
+         }();
+      }));
+   };
+   var putStrLn = function (s) {
+      return A2(_op[">>>"],
+      putStr(s),
+      putChar(_U.chr("\n")));
+   };
+   _elm.IO.IO.values = {_op: _op
+                       ,putChar: putChar
+                       ,getChar: getChar
+                       ,exit: exit
+                       ,putStr: putStr
+                       ,putStrLn: putStrLn
+                       ,readUntil: readUntil
+                       ,writeFile: writeFile
+                       ,getLine: getLine
+                       ,map: map
+                       ,mapIO: mapIO
+                       ,forEach: forEach
+                       ,pure: pure
+                       ,apply: apply
+                       ,andThen: andThen
+                       ,seq: seq
+                       ,forever: forever
+                       ,PutS: PutS
+                       ,GetC: GetC
+                       ,Exit: Exit
+                       ,WriteF: WriteF
+                       ,Pure: Pure
+                       ,Impure: Impure
+                       ,mapF: mapF
+                       ,foldIO: foldIO};
+   return _elm.IO.IO.values;
+};

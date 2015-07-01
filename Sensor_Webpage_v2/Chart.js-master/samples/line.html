@@ -1,0 +1,139 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Line Chart</title>
+		<script src="../Chart.js"></script>
+	</head>
+	<body>
+		<div style="width:40%">
+			<div>
+				<canvas id="canvas1" height="40" width="200" />
+			</div>
+			<div>
+				<canvas id="canvas2" height="40" width="100" />
+			</div>
+				<div style="display: inline">
+					<h3 id="data1">Dataset 1: -</h3>
+					<h3 id="data2">Dataset 2: -</h3>
+					<h3 id="readings">Readings: -</h3>
+			</div>
+		</div>
+
+
+	<script>
+		/*Chart.defaults.global.animation = false;
+		Chart.defaults.global.scaleBeginAtZero = false;
+		Chart.defaults.global.scaleIntegersOnly = true;
+		Chart.defaults.global.scaleOverride = true;
+		Chart.defaults.global.scaleSteps = 150;
+		Chart.defaults.global.scaleStepWidth = 1;
+		Chart.defaults.global.scaleStartValue = -50;
+		Chart.defaults.global.maintainAspectRatio = true;*/
+		var randomScalingFactor = function(){return(Math.random()*2+20);}
+		var lineChartData1 = {
+			labels : ["","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""],
+			datasets : [
+				{
+					label: "My First dataset",
+					fillColor : "rgba(255,255,255,0.2)",
+					strokeColor : "rgba(220,220,220,1)",
+					pointColor : "rgba(220,220,220,1)",
+					pointStrokeColor : "#DCDCDC",
+					pointHighlightFill : "#fff",
+					pointHighlightStroke : "rgba(220,220,220,1)",
+					data : [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,]
+				}
+			]
+
+		}
+
+		var lineChartData2 = {
+			labels : [],
+			datasets : [
+				{
+					label: "My Second dataset",
+					fillColor : "rgba(255,255,255,0.2)",
+					strokeColor : "rgba(151,187,205,1)",
+					pointColor : "rgba(151,187,205,1)",
+					pointStrokeColor : "#fff",
+					pointHighlightFill : "#fff",
+					pointHighlightStroke : "rgba(151,187,205,1)",
+					data : []
+				}
+			]
+
+		}
+
+	window.onload = function(){
+		/*var ctx1 = document.getElementById("canvas1").getContext("2d");
+		window.myLine1 = new Chart(ctx1).Line(lineChartData1, {
+			responsive: true,
+			scaleShowGridLines: false,
+			showScale: true,
+			bezierCurveTension: 0.4,
+			pointDotRadius: 0,
+			scaleGridLineWidth: 1
+		});*/func1();
+
+		/*var ctx2 = document.getElementById("canvas2").getContext("2d");
+		window.myLine2 = new Chart(ctx2).Line(lineChartData2, {
+			responsive: true,
+			scaleShowGridLines: false,
+			showScale: true,
+			bezierCurveTension: 0.4,
+			pointDotRadius: 0,
+			datasetStrokeWidth: 2
+		});*/func2();
+
+		var data1 = 20;
+		var data2 = 20;
+		var size2 = 0;
+		setInterval(function() {data1 = randomScalingFactor(); data2 = randomScalingFactor();}, 3000);
+
+		setInterval(function() {
+			myLine1.addData([data1], "");
+			myLine2.addData([data2], "");
+			(size2 > 60) ? "" : size2++;
+			myLine1.removeData();
+			if(size2 > 60){myLine2.removeData();}
+			document.getElementById("data1").innerHTML = "Dataset 1: "+data1.toFixed(3);
+			document.getElementById("data2").innerHTML = "Dataset 2: "+data2.toFixed(3);
+			document.getElementById("readings").innerHTML = "Readings: "+size2;}
+			, 1000);
+	}
+
+	function func1() {
+		Chart.defaults.global.animation = true;
+		var ctx1 = document.getElementById("canvas1").getContext("2d");
+		window.myLine1 = new Chart(ctx1).Line(lineChartData1, {
+			responsive: true,
+			scaleShowGridLines: false,
+			showScale: true,
+			bezierCurveTension: 2.5,
+			pointDotRadius: 0,
+			scaleGridLineWidth: 1
+		});
+	}
+
+	function func2() {
+		Chart.defaults.global.animation = false;
+		/*Chart.defaults.global.scaleOverride = true;
+		Chart.defaults.global.scaleSteps = 150;
+		Chart.defaults.global.scaleStepWidth = 1;
+		Chart.defaults.global.scaleStartValue = -50;
+		Chart.defaults.global.maintainAspectRatio = true;*/
+		var ctx2 = document.getElementById("canvas2").getContext("2d");
+		window.myLine2 = new Chart(ctx2).Line(lineChartData2, {
+			responsive: true,
+			scaleShowGridLines: false,
+			showScale: true,
+			bezierCurveTension: 0.4,
+			pointDotRadius: 0,
+			datasetStrokeWidth: 2
+		});
+	}
+
+
+	</script>
+	</body>
+</html>

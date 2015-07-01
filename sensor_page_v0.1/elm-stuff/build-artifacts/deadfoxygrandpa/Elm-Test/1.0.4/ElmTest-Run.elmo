@@ -1,0 +1,162 @@
+Elm.ElmTest = Elm.ElmTest || {};
+Elm.ElmTest.Run = Elm.ElmTest.Run || {};
+Elm.ElmTest.Run.make = function (_elm) {
+   "use strict";
+   _elm.ElmTest = _elm.ElmTest || {};
+   _elm.ElmTest.Run = _elm.ElmTest.Run || {};
+   if (_elm.ElmTest.Run.values)
+   return _elm.ElmTest.Run.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "ElmTest.Run",
+   $Basics = Elm.Basics.make(_elm),
+   $ElmTest$Assertion = Elm.ElmTest.Assertion.make(_elm),
+   $ElmTest$Test = Elm.ElmTest.Test.make(_elm),
+   $List = Elm.List.make(_elm);
+   var failedSuites = function (result) {
+      return function () {
+         switch (result.ctor)
+         {case "Report":
+            return function () {
+                 var failed = _U.cmp($List.length(result._1.failures),
+                 0) > 0 ? 1 : 0;
+                 return failed + $List.sum($List.map(failedSuites)(result._1.results));
+              }();}
+         return 0;
+      }();
+   };
+   var passedSuites = function (result) {
+      return function () {
+         switch (result.ctor)
+         {case "Report":
+            return function () {
+                 var passed = _U.eq($List.length(result._1.failures),
+                 0) ? 1 : 0;
+                 return passed + $List.sum($List.map(passedSuites)(result._1.results));
+              }();}
+         return 0;
+      }();
+   };
+   var failedTests = function (result) {
+      return function () {
+         switch (result.ctor)
+         {case "Fail": return 1;
+            case "Pass": return 0;
+            case "Report":
+            return $List.sum($List.map(failedTests)(result._1.results));}
+         _U.badCase($moduleName,
+         "between lines 59 and 62");
+      }();
+   };
+   var passedTests = function (result) {
+      return function () {
+         switch (result.ctor)
+         {case "Fail": return 0;
+            case "Pass": return 1;
+            case "Report":
+            return $List.sum($List.map(passedTests)(result._1.results));}
+         _U.badCase($moduleName,
+         "between lines 53 and 56");
+      }();
+   };
+   var pass = function (m) {
+      return function () {
+         switch (m.ctor)
+         {case "Fail": return false;
+            case "Pass": return true;
+            case "Report":
+            return _U.cmp($List.length(function (_) {
+                 return _.failures;
+              }(m._1)),
+              0) > 0 ? false : true;}
+         _U.badCase($moduleName,
+         "between lines 43 and 48");
+      }();
+   };
+   var fail = function ($) {
+      return $Basics.not(pass($));
+   };
+   var Report = F2(function (a,b) {
+      return {ctor: "Report"
+             ,_0: a
+             ,_1: b};
+   });
+   var Fail = F2(function (a,b) {
+      return {ctor: "Fail"
+             ,_0: a
+             ,_1: b};
+   });
+   var Pass = function (a) {
+      return {ctor: "Pass",_0: a};
+   };
+   var run = function (test) {
+      return function () {
+         switch (test.ctor)
+         {case "Suite":
+            return function () {
+                 var results = A2($List.map,
+                 run,
+                 test._1);
+                 var $ = A2($List.partition,
+                 pass,
+                 results),
+                 passes = $._0,
+                 fails = $._1;
+                 return A2(Report,
+                 test._0,
+                 {_: {}
+                 ,failures: fails
+                 ,passes: passes
+                 ,results: results});
+              }();
+            case "TestCase":
+            return function () {
+                 var runAssertion = F2(function (t,
+                 m) {
+                    return t({ctor: "_Tuple0"}) ? Pass(test._0) : A2(Fail,
+                    test._0,
+                    m);
+                 });
+                 return function () {
+                    switch (test._1.ctor)
+                    {case "AssertEqual":
+                       return runAssertion(test._1._0)(A2($Basics._op["++"],
+                         "Expected: ",
+                         A2($Basics._op["++"],
+                         test._1._1,
+                         A2($Basics._op["++"],
+                         "; got: ",
+                         test._1._2))));
+                       case "AssertFalse":
+                       return runAssertion(test._1._0)("not False");
+                       case "AssertNotEqual":
+                       return runAssertion(test._1._0)(A2($Basics._op["++"],
+                         test._1._1,
+                         A2($Basics._op["++"],
+                         " equals ",
+                         test._1._2)));
+                       case "AssertTrue":
+                       return runAssertion(test._1._0)("not True");}
+                    _U.badCase($moduleName,
+                    "between lines 29 and 34");
+                 }();
+              }();}
+         _U.badCase($moduleName,
+         "between lines 25 and 41");
+      }();
+   };
+   _elm.ElmTest.Run.values = {_op: _op
+                             ,Pass: Pass
+                             ,Fail: Fail
+                             ,Report: Report
+                             ,run: run
+                             ,pass: pass
+                             ,fail: fail
+                             ,passedTests: passedTests
+                             ,failedTests: failedTests
+                             ,passedSuites: passedSuites
+                             ,failedSuites: failedSuites};
+   return _elm.ElmTest.Run.values;
+};

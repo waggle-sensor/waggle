@@ -1,0 +1,193 @@
+Elm.Waggle = Elm.Waggle || {};
+Elm.Waggle.View = Elm.Waggle.View || {};
+Elm.Waggle.View.make = function (_elm) {
+   "use strict";
+   _elm.Waggle = _elm.Waggle || {};
+   _elm.Waggle.View = _elm.Waggle.View || {};
+   if (_elm.Waggle.View.values)
+   return _elm.Waggle.View.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Waggle.View",
+   $Basics = Elm.Basics.make(_elm),
+   $Chart = Elm.Chart.make(_elm),
+   $Color = Elm.Color.make(_elm),
+   $Date = Elm.Date.make(_elm),
+   $Date$Format = Elm.Date.Format.make(_elm),
+   $Dict = Elm.Dict.make(_elm),
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $List = Elm.List.make(_elm),
+   $QueueBuffer = Elm.QueueBuffer.make(_elm),
+   $String = Elm.String.make(_elm),
+   $Text = Elm.Text.make(_elm),
+   $Time = Elm.Time.make(_elm),
+   $Util = Elm.Util.make(_elm),
+   $Waggle$Config = Elm.Waggle.Config.make(_elm),
+   $Waggle$Sensor = Elm.Waggle.Sensor.make(_elm),
+   $Waggle$View$EnvSense = Elm.Waggle.View.EnvSense.make(_elm),
+   $Waggle$View$Util = Elm.Waggle.View.Util.make(_elm);
+   var datetime = function (time) {
+      return $Waggle$View$Util.h2($Date$Format.format("%B %d, %Y at %H:%M:%S")($Date.fromTime(time)));
+   };
+   var valueLabel = F2(function (quantityName,
+   v) {
+      return function () {
+         var quantity = $Text.color($Color.red)(function ($) {
+            return $Text.style($Waggle$Config.primaryStyle)($Text.fromString($));
+         }($Basics.toString($Util.truncateFloat(2)(v.value))));
+         var units = $Waggle$View$Util.primaryText(v.units);
+         var name = function (el) {
+            return A4($Graphics$Element.container,
+            $Waggle$Config.physicalQuantity.width,
+            $Graphics$Element.heightOf(el),
+            $Graphics$Element.midBottom,
+            el);
+         }(function ($) {
+            return $Graphics$Element.leftAligned($Waggle$View$Util.primaryText($String.toLower($)));
+         }(quantityName));
+         return A2($Graphics$Element.beside,
+         name,
+         $Graphics$Element.leftAligned(A2($Text.append,
+         quantity,
+         units)));
+      }();
+   });
+   var viewValueHistory = function (_v0) {
+      return function () {
+         switch (_v0.ctor)
+         {case "_Tuple2":
+            return function () {
+                 var label = A3($QueueBuffer.mapLast,
+                 valueLabel(_v0._0),
+                 $Graphics$Element.empty,
+                 _v0._1);
+                 var historyChart = $Chart.chart($Waggle$Config.chart)(A2($QueueBuffer.map,
+                 function (_v4) {
+                    return function () {
+                       return {ctor: "_Tuple2"
+                              ,_0: _v4.timestamp
+                              ,_1: _v4.value};
+                    }();
+                 },
+                 _v0._1));
+                 return A2($Graphics$Element.beside,
+                 historyChart,
+                 label);
+              }();}
+         _U.badCase($moduleName,
+         "between lines 91 and 98");
+      }();
+   };
+   var viewSensorHistory = function (_v6) {
+      return function () {
+         switch (_v6.ctor)
+         {case "_Tuple2":
+            return function () {
+                 var viewOrdinary = function ($) {
+                    return $Graphics$Element.flow($Graphics$Element.down)($List.map(viewValueHistory)($Dict.toList($)));
+                 };
+                 return $Waggle$View$Util.sensorContainer($Waggle$View$EnvSense.name(_v6._0))(function () {
+                    var _v10 = $Waggle$View$EnvSense.name(_v6._0);
+                    switch (_v10)
+                    {case "D6T44L06":
+                       return function ($) {
+                            return viewOrdinary($Waggle$View$EnvSense.infraRedCamera($));
+                         }(_v6._1);
+                       case "HMC5883":
+                       return function ($) {
+                            return viewOrdinary($Waggle$View$EnvSense.magneticField(_v6._0)($));
+                         }(_v6._1);
+                       case "MMA8452Q":
+                       return function ($) {
+                            return viewOrdinary($Waggle$View$EnvSense.acceleration(_v6._0)($));
+                         }(_v6._1);}
+                    return viewOrdinary(_v6._1);
+                 }());
+              }();}
+         _U.badCase($moduleName,
+         "between lines 80 and 87");
+      }();
+   };
+   var view = F2(function (_v11,
+   _v12) {
+      return function () {
+         switch (_v12.ctor)
+         {case "_Tuple2":
+            return function () {
+                 switch (_v11.ctor)
+                 {case "_Tuple2":
+                    return function () {
+                         var centerVertically = function (el) {
+                            return A4($Graphics$Element.container,
+                            $Graphics$Element.widthOf(el),
+                            _v11._1,
+                            $Graphics$Element.middle,
+                            el);
+                         };
+                         var center = A3($Graphics$Element.container,
+                         _v11._0,
+                         _v11._1,
+                         $Graphics$Element.middle);
+                         var $ = A2($Dict.partition,
+                         F2(function (sensorId,_v19) {
+                            return function () {
+                               return _U.eq($Waggle$View$EnvSense.side(sensorId),
+                               $Waggle$View$Util.Left);
+                            }();
+                         }),
+                         _v12._1),
+                         leftLayout = $._0,
+                         rightLayout = $._1;
+                         var dataDisplay = function ($) {
+                            return center($Graphics$Element.flow($Graphics$Element.right)($List.map(centerVertically)($)));
+                         }(_L.fromArray([$Graphics$Element.flow($Graphics$Element.down)($List.intersperse($Waggle$View$Util.hline(function (_) {
+                                           return _.width;
+                                        }($Waggle$Config.sensor)))($List.map(viewSensorHistory)($List.sortWith(F2(function (s1,
+                                        s2) {
+                                           return A2($Waggle$View$EnvSense.order,
+                                           $Basics.fst(s1),
+                                           $Basics.fst(s2));
+                                        }))($Dict.toList(leftLayout)))))
+                                        ,$Waggle$View$Util.marginX(function (_) {
+                                           return _.marginX;
+                                        }($Waggle$Config.image))(A3($Graphics$Element.image,
+                                        function (_) {
+                                           return _.width;
+                                        }($Waggle$Config.image),
+                                        function (_) {
+                                           return _.height;
+                                        }($Waggle$Config.image),
+                                        $Waggle$Config.sensorImageUrl))
+                                        ,$Graphics$Element.flow($Graphics$Element.down)($List.intersperse($Waggle$View$Util.hline(function (_) {
+                                           return _.width;
+                                        }($Waggle$Config.sensor)))($List.map(viewSensorHistory)($List.sortWith(F2(function (s1,
+                                        s2) {
+                                           return A2($Waggle$View$EnvSense.order,
+                                           $Basics.fst(s1),
+                                           $Basics.fst(s2));
+                                        }))($Dict.toList(rightLayout)))))]));
+                         return $Graphics$Element.layers(_L.fromArray([$Waggle$View$Util.h1($Waggle$Config.title)
+                                                                      ,A4($Graphics$Element.container,
+                                                                      _v11._0,
+                                                                      _v11._1,
+                                                                      $Graphics$Element.topRight,
+                                                                      datetime(_v12._0))
+                                                                      ,dataDisplay]));
+                      }();}
+                 _U.badCase($moduleName,
+                 "between lines 40 and 76");
+              }();}
+         _U.badCase($moduleName,
+         "between lines 40 and 76");
+      }();
+   });
+   _elm.Waggle.View.values = {_op: _op
+                             ,view: view
+                             ,viewSensorHistory: viewSensorHistory
+                             ,viewValueHistory: viewValueHistory
+                             ,valueLabel: valueLabel
+                             ,datetime: datetime};
+   return _elm.Waggle.View.values;
+};

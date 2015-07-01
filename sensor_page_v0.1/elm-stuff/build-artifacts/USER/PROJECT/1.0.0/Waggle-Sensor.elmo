@@ -1,0 +1,39 @@
+Elm.Waggle = Elm.Waggle || {};
+Elm.Waggle.Sensor = Elm.Waggle.Sensor || {};
+Elm.Waggle.Sensor.make = function (_elm) {
+   "use strict";
+   _elm.Waggle = _elm.Waggle || {};
+   _elm.Waggle.Sensor = _elm.Waggle.Sensor || {};
+   if (_elm.Waggle.Sensor.values)
+   return _elm.Waggle.Sensor.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Waggle.Sensor",
+   $Dict = Elm.Dict.make(_elm),
+   $QueueBuffer = Elm.QueueBuffer.make(_elm),
+   $Time = Elm.Time.make(_elm);
+   var InternalSensor = F2(function (a,
+   b) {
+      return {_: {},data: b,id: a};
+   });
+   var InternalValue = F4(function (a,
+   b,
+   c,
+   d) {
+      return _U.insert("physicalQuantity",
+      c,
+      _U.insert("units",
+      b,
+      _U.insert("value",a,d)));
+   });
+   var Sensor = F2(function (a,b) {
+      return {_: {},data: b,id: a};
+   });
+   _elm.Waggle.Sensor.values = {_op: _op
+                               ,Sensor: Sensor
+                               ,InternalValue: InternalValue
+                               ,InternalSensor: InternalSensor};
+   return _elm.Waggle.Sensor.values;
+};

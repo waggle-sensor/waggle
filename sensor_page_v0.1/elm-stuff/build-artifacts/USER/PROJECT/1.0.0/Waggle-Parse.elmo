@@ -1,0 +1,171 @@
+Elm.Waggle = Elm.Waggle || {};
+Elm.Waggle.Parse = Elm.Waggle.Parse || {};
+Elm.Waggle.Parse.make = function (_elm) {
+   "use strict";
+   _elm.Waggle = _elm.Waggle || {};
+   _elm.Waggle.Parse = _elm.Waggle.Parse || {};
+   if (_elm.Waggle.Parse.values)
+   return _elm.Waggle.Parse.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Waggle.Parse",
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $String = Elm.String.make(_elm),
+   $Waggle$Sensor = Elm.Waggle.Sensor.make(_elm);
+   var parseUnits = function (units) {
+      return function () {
+         switch (units)
+         {case "C": return "&deg;C";
+            case "F": return "&deg;F";
+            case "Units10B0V5":
+            return " raw A/D";
+            case "gauss": return "G";}
+         return units;
+      }();
+   };
+   var parsePhysicalQuantity = function (physicalQuantity) {
+      return function () {
+         switch (physicalQuantity)
+         {case "Acoustic_Intensity":
+            return "Acoustic Intensity";
+            case "Luminous_Intensity":
+            return "Luminous Intensity";
+            case "Magnetic_Field":
+            return "Magnetic Field";}
+         return physicalQuantity;
+      }();
+   };
+   var parseExtra = function (extra) {
+      return function () {
+         switch (extra)
+         {case "Barometric": return "";
+            case "RH": return "";
+            case "RMS_3Axis": return "";
+            case "Voltage_Divider_5V_NTC_Tap_68K_GND":
+            return "";
+            case "Voltage_Divider_5V_PDV_Tap_4K7_GND":
+            return "";
+            case "non-standard": return "";
+            case "none": return "";}
+         return extra;
+      }();
+   };
+   var parseValue = function (s) {
+      return function () {
+         var _v3 = A2($String.split,
+         ";",
+         s);
+         switch (_v3.ctor)
+         {case "::": switch (_v3._1.ctor)
+              {case "::":
+                 switch (_v3._1._1.ctor)
+                   {case "::":
+                      switch (_v3._1._1._1.ctor)
+                        {case "::":
+                           switch (_v3._1._1._1._1.ctor)
+                             {case "[]": return function () {
+                                     var _v12 = $String.toFloat(_v3._1._0);
+                                     switch (_v12.ctor)
+                                     {case "Err":
+                                        return $Maybe.Nothing;
+                                        case "Ok":
+                                        return $Maybe.Just({_: {}
+                                                           ,physicalQuantity: A2($Basics._op["++"],
+                                                           parsePhysicalQuantity(_v3._0),
+                                                           parseExtra(_v3._1._1._1._0))
+                                                           ,units: parseUnits(_v3._1._1._0)
+                                                           ,value: _v12._0});}
+                                     _U.badCase($moduleName,
+                                     "between lines 41 and 48");
+                                  }();}
+                             break;}
+                        break;}
+                   break;}
+              break;}
+         return $Maybe.Nothing;
+      }();
+   };
+   var parseSensor = function (s) {
+      return function () {
+         var data = A2($String.split,
+         ",",
+         s);
+         return function () {
+            switch (data.ctor)
+            {case "::":
+               switch (data._1.ctor)
+                 {case "::": return function () {
+                         var mkSensor = function (values) {
+                            return {_: {}
+                                   ,data: values
+                                   ,id: data._0};
+                         };
+                         var combine = F2(function (str,
+                         maybeState) {
+                            return function () {
+                               var _v20 = parseValue(str);
+                               switch (_v20.ctor)
+                               {case "Just":
+                                  return A2($Maybe.map,
+                                    F2(function (x,y) {
+                                       return A2($List._op["::"],
+                                       x,
+                                       y);
+                                    })(_v20._0),
+                                    maybeState);
+                                  case "Nothing":
+                                  return $Maybe.Nothing;}
+                               _U.badCase($moduleName,
+                               "between lines 30 and 33");
+                            }();
+                         });
+                         var vs = A3($List.foldr,
+                         combine,
+                         $Maybe.Just(_L.fromArray([])),
+                         data._1._1);
+                         return A2($Maybe.map,
+                         mkSensor,
+                         vs);
+                      }();}
+                 break;}
+            return $Maybe.Nothing;
+         }();
+      }();
+   };
+   var parse = function () {
+      var parseLine = F2(function (line,
+      sensors) {
+         return function () {
+            var _v22 = parseSensor(line);
+            switch (_v22.ctor)
+            {case "Just":
+               return A2($List._op["::"],
+                 _v22._0,
+                 sensors);
+               case "Nothing": return sensors;}
+            _U.badCase($moduleName,
+            "between lines 13 and 16");
+         }();
+      });
+      return function ($) {
+         return A2($List.foldr,
+         parseLine,
+         _L.fromArray([]))($List.filter(function ($) {
+            return $Basics.not($String.isEmpty($));
+         })($String.lines($)));
+      };
+   }();
+   _elm.Waggle.Parse.values = {_op: _op
+                              ,parse: parse
+                              ,parseSensor: parseSensor
+                              ,parseValue: parseValue
+                              ,parseExtra: parseExtra
+                              ,parsePhysicalQuantity: parsePhysicalQuantity
+                              ,parseUnits: parseUnits};
+   return _elm.Waggle.Parse.values;
+};

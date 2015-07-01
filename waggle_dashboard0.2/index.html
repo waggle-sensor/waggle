@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<title>The Waggle Platform</title>
+
+		<!-- Grab necessary bootstrap JavaScript and JQuery files -->
+		<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+  		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  		<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+  		<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=w.exp&signed_in=true"></script>
+  		<script src="linked_list.js"></script>
+		<script src="google_maps.js"></script>
+		<script src="update.js"></script>
+		<script src="test.js"></script>
+		<script src="node.json"></script>
+
+  		<style>
+  			body {padding-top: 50px; background-color: #fff}
+			th {background-color: #fff; font-size: larger; text-align: center; height: 30px}
+  			tr {background-color: #fff; text-align: center; vertical-align: middle; height: 100px; width: 25%}
+  			/*#node_row + #node_row:before {content: ""; height: 1px; background: -moz-linear-gradient(left, #ffffff 0%, #000000 50%, #ffffff 100%);
+  										  background: -webkit-linear-gradient(left, #ffffff 0%, #000000 50%, #ffffff 100%);
+  										  background: linear-gradient(left, #ffffff 0%, #000000 50%, #ffffff 100%); width: 100%; display: block}*/
+  			.navbar-inverse {background-color: #444444}
+  			.navbar-inverse .navbar-brand {color: #fff}
+  			.navbar-inverse .navbar-nav > li >a {color: #cccccc}
+  		</style>
+
+  		<!-- Update page every 2 seconds -->
+  		<script>timer()</script>
+	</head>
+
+	<body>
+
+		<!-- Top Navbar -->
+		<nav class="navbar navbar-inverse navbar-fixed-top">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="#">Waggle Dash</a>
+					<!--<a class="navbar-brand"></a>-->
+					<a class="navbar-brand">|</a>
+				</div>
+				<div id="navbar" class="collapse navbar-collapse">
+					<ul class="nav navbar-nav">
+						<li><a href="http://wa8.gl">Home</a></li>
+						<li><a></a></li>
+						<li><a href="http://wa8.gl/?page_id=154">The Node</a></li>
+						<li><a></a></li>
+						<li><a href="http://wa8.gl/?page_id=27">About</a></li>
+						<li><a></a></li>
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">Other <span class="caret"></span></a>
+							<ul class="dropdown-menu" role="menu">
+								<li><a href="#">eins</a></li>
+								<li><a href="#">zwei</a></li>
+								<li><a href="#">drei</a></li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+
+<!-- ?key=AlzaSyDslGsHWL58w9zltVU8l7S-U61WgaOmZWs
+
+		<script src="https://googleapis.com/maps/api/js?key=AlzaSyDslGsHWL58w9zltVU8l7S-U61WgaOmZWs"></script>-->
+		<div class="container" width="100%" style="margin: auto">
+			<div class="table-responsive">
+				<form name="node_form" id="node_form">
+					<table class="center-div" id="node_header" width="100%">
+						<thead>
+							<th width="25%">Name</th>
+							<th width="25%">Location</th>
+							<th width="25%">Status</th>
+							<th width="25%"></th>
+						</thead>
+					</table>
+					<table class="center-div" id="node_table" width="100%">
+					</table>
+				</form>
+			</div>
+		</div>
+		<!-- TEST AREA
+		<button type="button" id="add" class="btn btn-success">Add Rows</button>
+		<button type="button" id="delete" class="btn btn-alert">Delete Rows</button>
+		<button type="button" id="extra" class="btn btn-primary">Stuffs</buttion>-->
+	</body>
+</html>
