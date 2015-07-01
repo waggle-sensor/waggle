@@ -17,6 +17,10 @@ const byte LED = 13;
 //---------- S E T U P --------------------------------------------------------
 void setup() 
 {
+  TIMSK1 = 0;
+  TCCR1B = 0;
+  TCNT1 = 0;
+
   // Start serial comms @ 115200 bps
   Serial.begin(115200);
 
