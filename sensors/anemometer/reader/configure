@@ -74,7 +74,7 @@ then
     echo "PORT = ${PORT_NAME##*=}" >> makefile
     echo "BOARD_FLASH = \$(PACKAGE):\$(ARCH):\$(BOARD)" >> makefile
     echo "BOOT_LOADER_TYPE = avr109" >>  makefile
-    echo "PRE_FLASH_COMMAND = stty -F /dev/ttyACM0 1200 hupcl; sleep 2"  >> makefile
+    echo "PRE_FLASH_COMMAND = stty -F \$(PORT) 1200 hupcl; sleep 2"  >> makefile
 
 fi
 
