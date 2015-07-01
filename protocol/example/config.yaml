@@ -1,0 +1,5 @@
+--- 
+id: 1
+port: 5672
+session_number: 1
+exchange: waggle

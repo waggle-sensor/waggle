@@ -1,0 +1,51 @@
+Metadata-Version: 1.1
+Name: hypothesis
+Version: 1.4.1
+Summary: A library for property based testing
+Home-page: https://github.com/DRMacIver/hypothesis
+Author: David R. MacIver
+Author-email: david@drmaciver.com
+License: MPL v2
+Description: ==========
+        Hypothesis
+        ==========
+        
+        Hypothesis is a library for testing your Python code against a much larger range
+        of examples than you would ever want to write by hand. It's based on the Haskell
+        library, Quickcheck, and is designed to integrate seamlessly into your existing
+        Python unit testing work flow.
+        
+        Hypothesis is both extremely practical and also advances the state of the art of
+        unit testing by some way. It's easy to use, stable, and extremely powerful. If
+        you're not using Hypothesis to test your project then you're missing out.
+        
+        -----------------
+        Links of interest
+        -----------------
+        
+        To learn more about how to use Hypothesis, extensive documentation and
+        examples of usage are `available at readthedocs <https://hypothesis.readthedocs.org/en/master/>`_.
+        
+        If you want to talk to people about using Hypothesis, `we have both an IRC channel
+        and a mailing list <https://hypothesis.readthedocs.org/en/latest/community.html>`_.
+        
+        If you want to contribute to Hypothesis, `guidelines are here <https://hypothesis.readthedocs.org/en/latest/contributing.html>`_.
+        
+        If you're looking for inspiration for writing your own QuickCheck clone,
+        `here's a list of ideas you might want to borrow <https://hypothesis.readthedocs.org/en/latest/internals.html>`_.
+        
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)
+Classifier: Operating System :: Unix
+Classifier: Operating System :: POSIX
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3.2
+Classifier: Programming Language :: Python :: 3.3
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Programming Language :: Python :: Implementation :: PyPy
+Classifier: Topic :: Software Development :: Testing

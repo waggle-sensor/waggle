@@ -1,0 +1,15 @@
+COPYING
+MANIFEST.in
+README
+README.rst
+setup.cfg
+setup.py
+pyaml/__init__.py
+pyaml/__main__.py
+pyaml.egg-info/PKG-INFO
+pyaml.egg-info/SOURCES.txt
+pyaml.egg-info/dependency_links.txt
+pyaml.egg-info/requires.txt
+pyaml.egg-info/top_level.txt
+pyaml/tests/__init__.py
+pyaml/tests/dump.py
