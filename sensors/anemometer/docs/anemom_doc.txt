@@ -1,18 +1,17 @@
 ﻿WindVel Sensor
 
-Max Sampling Frequency: 192 Hz
-With 256 samples, the highest possible frequency to observe is 96 Hz, which translates to 233.6 mph wind speeds
+Max Sampling Frequency: 310 Hz
 Sensor must be about 1-2 inches from rotating magnet for best results
+
+The basic principle of this device is that a magnet is spun as a result of wind blowing on it. The magnetometer will take measurements of the magnetic field in a single axis, and as the magnet spins, the magnetometer should collect sinusoidal results. Then, we can take the sign of every measurement. Each time that value changes sign, a half rotation has been completed. That way, we can measure for a certain period of time and count the revolutions to determine the frequency. This frequency can be related to a linear wind velocity by multiplying it by a coefficient.
 
 To take a measurement, what happens is the following:
 1. The sensor is put into Single Measurement Mode by sending a write command on the I2C bus, changing the Mode Register to 0x01
-2. Next, a delay is given to allow the device to reset the data ready bit and to begin taking the measurement. This delay must be at least 3 ms, or else a new measurement will not occur, and the old one will simply be reused
+2. Next, a delay is given to allow the device to reset the data ready bit and to begin taking the measurement. This delay must be at least 2 ms, or else a new measurement will not occur, and the old one will simply be reused
 3. After that, the program waits and monitors the data ready bit, which is the last bit on the status register
 4. Once the data is ready, the program reads 16 bits from the Data Output Y registers A and B, 8 bits from each
 
-Then, each sample (measurement) is added into an array, which is then reordered, windowed, and converted to the frequency domain using an FHT (Fast Harley Transform). Once in the frequency domain, we simply find the index with the largest magnitude in the output array, and find the frequency of that bin. From a frequency, we convert the value into a velocity by multiplying it by a constant obtained experimentally, because rotational frequency and linear velocity are linearly related.
-
-I found the best way to measure frequency was to have a digital pin on the Arduino pulled high and then dropped low every time the loop executed. This way, I could tell the period visually on an oscilloscope. I found that the highest sampling frequency at which I could obtain discrete values for every measurement was 192 Hz.
+I found the best way to measure frequency was to store the millis() output before execution, and after execution, then print them both after the measurement was completed. I found that the highest frequency at which I could obtain discrete values for every measurement was 310 Hz.
 
 The table below shows how changing the delay in the loop affects the sampling frequency, and maximum possible wind speed to observe:
 
@@ -30,6 +29,8 @@ The table below shows how changing the delay in the loop affects the sampling fr
 // DELAY: 20 - Sampling Rate: 45.0 Hz    Max observed freq: 20.50 Hz   Max observed speed: 22.3  m/s
 // DELAY: 25 - Sampling Rate: 36.8 Hz    Max observed freq: 18.40 Hz   Max observed speed: 20.0  m/s
 
-As for testing, I set up a motor with a DC power supply so I could regulate how fast the it was turning. Then, I attached a rod to the motor and connected the Vaavud wind collector device to the end of that, so it would rotate and create a changing magnetic field. The rod was necessary so that the magnets in the motor would not interfere with the magnetometer's measurements.
+My whole test setup was the one shown in the enclosed image. I had a motor connected to a DC power supply so I could regulate how fast it was turning. Then, I used a rod to connect the spinning motor to the Vaavud device which had a spinning magnet. The rod later turned out to be unnecessary because the magnetic field of the motor was not interfering in any way with the magnetic field of the Vaavud device.
 
-With that setup, I would set a certain voltage on the power supply so the motor would start spinning. Then, I would determine the frequency, and compare that to what the Vaavud app was reading at the same frequency. I was able to establish the linear relationship by calibrating with the Vaavud app, to find that the wind speed was simply frequency of rotation, multiplied by the coefficient 1.0876. 
+The speeds were determined experimentally, by comparing the dominant frequency generated to the reading on the Vaavud mobile app. I was able to establish a linear relationsihp between the frequency and the wind speed, which is where the coefficient of 1.0876 came from. In order to find wind speed, simply multiply the frequency by that coefficient. 
+
+It is also important to note that when I implemented the board without the motor rotating it at a constant rate, the output frequency started becoming 0 no matter how hard I blew on it or tried to turn it. This was caused by the sampling frequency being too slow. The sensor was sampling for too long and although the waveforms did appear to be sinusoidal, without the constant periodicity of the motor, the algorithm was not able to resolve a single dominant frequency, so it determined the wind speed to be 0. This occurred when the sampling frequency was less than 160 Hz.

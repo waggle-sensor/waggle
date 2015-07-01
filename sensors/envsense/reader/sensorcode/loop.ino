@@ -1,3 +1,11 @@
+/*
+ * This function serves as the body of the sensor collection. It loops continuously
+ * once the setup function is complete. The Loop function iterates through every
+ * sensor and takes a measurement. If POST is enabled and the sensor has been
+ * determined to not be functioning, the function will skip it and not take a
+ * reading.
+ * :rtype:void
+ */
 void loop() {
     #ifdef debug_serial
     Serial.println("...entering Sensor Loop...");

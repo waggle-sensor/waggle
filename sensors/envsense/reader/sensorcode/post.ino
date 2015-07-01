@@ -1,4 +1,23 @@
 #ifdef POST
+/*
+ * This function sets a watchdog timer and goes through every sensor to make sure
+ * it is responsive. It takes numTests measurements with every sensor, and stores
+ * the results in the EEPROM. Each time a test is performed, the previous results
+ * are read from the EEPROM and bit shifted. This way, a history of each sensor is
+ * maintained.
+ *
+ * For a sensor to be enabled, it must have passed at least 2 tests in a row. This
+ * is determine by bitwise ANDing the history with 0x03, and seeing if it equals 
+ * 0x03. 
+ *
+ * Whenever a sensor times out, the whole board resets. There is a spot in EEPROM
+ * reserved for determining whether the board is currently is in the middle of a 
+ * POST. If that is 1, then it goes to the next sensor, and resumes the test there.
+ *
+ * For more detailed information on the Power On Self Test function, see the documentation
+ * in the folder "docs"
+ * :rtype:void
+ */
 void post() { 
     byte testing_bit = EEPROM.read(testing_addr); 
     int numTests = 10;  // Number of times to test each sensor
