@@ -37,6 +37,16 @@ devtools: tools needed to build and install waggle
 docs: waggle-wide documentation.  This directory is the result of
       		  building all the docs found in the subdirectories
 
+guestnode: All the software that lives on the guestnodes (ODROID)
+    docs: documentation of guestnodes
+    nc-baseos: The core Linux OS distro from which we start
+    nc-wag-os: The guestnode software stack, including the basic OS
+        waggled: The command controller and client console
+        resilience: tools and scripts, such as heartbeat for deep-space operation
+        personalization: scripts and config files for personalizing a node
+	externs: external packages added to make the basic Waggle OS better
+    in-situ: audio and image computing done inside the guestnode
+
 nodecontroller: All the software that lives on the Node Controller (ODROID)
     docs: documentation of node controller
     nc-baseos: The core Linux OS distro from which we start
@@ -46,7 +56,6 @@ nodecontroller: All the software that lives on the Node Controller (ODROID)
         resilience: tools and scripts, such as heartbeat for deep-space operation
         personalization: scripts and config files for personalizing a node
 	externs: external packages added to make the basic Waggle OS better
-    in-situ: audio and image computing done inside the nodecontroller
 
 sensors: all of the code to interact with and read data from sensors
     envsense: the core environmental sensing board
