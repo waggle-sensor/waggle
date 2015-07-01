@@ -43,8 +43,9 @@ for queueName in queue_bindings.keys():
 	rabbitChannel.queue_declare(queueName)
 
 for exchName in exchage_list:
+	print("declaring %s" % exchName)
 	rabbitChannel.exchange_declare(exchName)
-
+print queue_bindings
 for key in queue_bindings.keys():
 	bind = queue_bindings[key]
 	print "binding {} to {} under {}".format(key,bind[0],bind[1])
