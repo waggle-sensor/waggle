@@ -1,5 +1,5 @@
 body {
-	background-color: #192d40; /*Raj's Favorite Color: #192d40*/;
+	background-color: #192d40; /*Raj's Favorite Color*/;
 	font-size: 10
 }
 
@@ -17,7 +17,6 @@ div[id^='graph'] {
 }
 
 .col-md-6 {
-	width: 194px;
 	height: 60px;
 	padding-left: 0px;
 	padding-right: 0px;
@@ -54,12 +53,6 @@ div[id^='graph'] {
 	padding-bottom: 0px;
 	background-color: #fff;
 }
-
-/*#graph {
-	position: relative;
-	top: -20px;
-	right: 10px;
-}*/
 
 #divide {
 	position: relative;
