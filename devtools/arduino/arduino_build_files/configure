@@ -40,9 +40,9 @@ fi
 echo "Setting up Arduino build environment..."
 if [ "$ARCH" == "x86_64" ]
 then
-  echo "ARD_HOME = $WAGGLE_GIT_ROOT/resources/compilers/arduino-1.6.5-linux/arduino_64" > makefile
+  echo "ARD_HOME = $WAGGLE_GIT_ROOT/devtools/arduino/compilers/arduino-1.6.5-linux/arduino_64" > makefile
 else
-  echo "ARD_HOME = $WAGGLE_GIT_ROOT/resources/compilers/arduino-1.6.5-linux/arduino_32" > makefile
+  echo "ARD_HOME = $WAGGLE_GIT_ROOT/devtools/arduino/compilers/arduino-1.6.5-linux/arduino_32" > makefile
 fi
 echo "Creating makefile..."
 echo "TARGET = ${PWD##*/}" >> makefile
