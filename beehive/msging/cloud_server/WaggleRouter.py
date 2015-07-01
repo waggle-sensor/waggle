@@ -1,6 +1,6 @@
 # WaggleRouter.py
 import sys
-sys.path.append("..")
+sys.path.append("../../../devtools/protocol_common")
 from multiprocessing import Process, Manager
 import pika
 from protocol.PacketHandler import *

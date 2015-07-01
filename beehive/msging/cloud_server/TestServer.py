@@ -1,6 +1,6 @@
 
 import sys
-sys.path.append("..")
+sys.path.append("../../../devtools/protocol_common")
 import pika
 from protocol.PacketHandler import *
 import logging
