@@ -1,5 +1,3 @@
-// Adapted from Atmel Application Note AVR998 (c) 2006 Atmel
-
 //---------- C O N S T A N T S ------------------------------------------------
 const int SRAM_START_ADDR = 0x0060;
 const int SRAM_START_PAGE2 = 0x0100;
@@ -45,14 +43,27 @@ const int ADC_TEST_THRESHOLD = 512;
 
 //---------- G L O B A L S ----------------------------------------------------
 boolean _SOS_BOOT_MODE = false;
-// Flag to use while waiting for interrupt
+
 volatile boolean _isr_timer1_overflow = false;
 
 
 
 //---------- P O S T ----------------------------------------------------------
 /*
-   
+   Power on self test.  This subroutine calls the tests to verify correct
+   operation of the MCU.  Nothing external to the MCU is tested here.
+
+   If everything is working correctly, this function will return void.
+   If a fatal failure occurs, the MCU will either sleep or enter an infinite 
+   loop, thus preventing the rest of the MCU's program from running.
+   If a non-fatal failure occurs, the partial (SOS) boot procedure will be
+   called.  Failures will (attempt to) be recorded into EEPROM.
+
+   Note: This POST is not perfect.  There is some redundancy and a few
+   assumptions are made, so do not rely solely on this for mission-critical
+   applications.
+
+   Adapted from Atmel Application Note AVR998 (c) 2006 Atmel.
 
    :rtype: none
 */
@@ -61,9 +72,6 @@ void POST()
   // Find reason for reset
   byte reason = find_reset_reason();
 
-  // Disable watchdog so it doesn't reset the chip before we're ready
-  wdt_disable();
-
   // Debug
   delay(8000);
 
@@ -71,25 +79,17 @@ void POST()
 	if(!gprf_test())
 		test_failure(FAIL_GPRF, FATAL_GPRF);
 
-  Serial.println("GPRF");
-
 	// Stack pointer failed?
 	if(!stack_pointer_test())
 		test_failure(FAIL_STACK, FATAL_STACK);
-
-  Serial.println("SP");
 
 	// Status register (SREG) test failed?
 	if(!status_register_test())
 		test_failure(FAIL_SREG, FATAL_SREG);
 
-  Serial.println("SREG");
-
 	// SRAM test failed?
 	if(!sram_test())
 		test_failure(FAIL_SRAM, FATAL_SRAM);
-
-  Serial.println("SRAM");
 
 	// Flash test failed?
 	//if(!flash_test())
@@ -103,13 +103,9 @@ void POST()
   if(!ADC_test())
     test_failure(FAIL_ADC, FATAL_ADC);
 
-  Serial.println("ADC");
-
   // Timer1 (watchdog reset timer) test failed?
   if(!timer1_test())
     test_failure(FAIL_TIMER1, FATAL_TIMER1);
-
-  Serial.println("TIMER1");
 }
 
 
@@ -250,7 +246,13 @@ __attribute__((optimize(0))) boolean gprf_test()
 	);
 	result = true;
 
-	return result;
+  // Is the result TRUE?
+	if(result)
+    // Exit test with success
+    return true;
+  else
+    // Exit test with failure
+    return false;
 }
 
 
@@ -334,7 +336,13 @@ __attribute__((optimize(0))) boolean stack_pointer_test()
 	);
 	result = true;
 
-	return result;
+	// Is the result TRUE?
+  if(result)
+    // Exit test with success
+    return true;
+  else
+    // Exit test with failure
+    return false;
 }
 
 
@@ -415,45 +423,66 @@ __attribute__((optimize(0))) boolean status_register_test()
 */
 __attribute__((optimize(0))) boolean sram_test()
 {
-  // Tell the compiler to put these into registers, since putting them
-  // into memory means they're trying to verify themselves.
-  // register byte *p_val asm("Z");
-  // register byte i asm("GPIOR1");
-  // register byte save asm("GPIOR2");
- 
-  // // Each location has 0x55 and 0xAA written to and read from it,
-  // // to verify that there aren't any stuck bits.
-  // for(p_val = (byte *) SRAM_START_ADDR;
-  // 		p_val < ((byte *) (SRAM_END_ADDR + 1));
-  // 		p_val++)
-  //   {
-  //   	// Save the value being stored at the current memory address
-  //     save = *p_val;
-
-  //     // Write 0x55
-  //     *p_val = 0x55;
-  //     // Read the stored value
-  //     i = *p_val;
-  //     // Is stored value not 0x55?
-  //     if(i != 0x55)
-  //     	// Exit test with failure
-  //     	return false;
-
-  //     // Write 0xAA
-  //     *p_val = 0xAA;
-  //     // Read the stored value
-  //     i = *p_val;
-  //     // Is stored value not 0xAA?
-  //     if(i != 0xAA)
-  //     	// Exit test with failure
-  //     	return false;
-
-  //     // Restore the original value to the current memory address
-  //     *p_val = save;
-  //   }
+  boolean result;
   
-  // Exit test with success
-  return true;
+  // This is done in assembly because we're pretty close to metal here.
+  // Each RAM address (0x0100 - 0x0AFF) has 0x55 and 0xAA written to and read from it, 
+  // to verify that there aren't any stuck bits.
+  asm volatile(
+    "LD_INITS:                                 \n\t"
+    "             ldi   R31, 0x01              \n\t"
+    "             ldi   R30, 0x00              \n\t"
+    "             ldi   R28, 0x55              \n\t"
+    "             ldi   R29, 0xAA              \n\t"
+    "CHECK_DONE:                               \n\t"
+                  // Compare ZH to 0x0A
+    "             cpi   R31, 0x0A              \n\t"
+    "             brne  LOOP                   \n\t"
+                  // Compare ZL to 0xFF
+    "             cpi   R30, 0xFF              \n\t"
+                  // If both match, test complete
+    "             breq  Pass_RAM               \n\t"
+    "LOOP:                                     \n\t"
+                  // Temp store contents in R26
+    "             ld    R26, Z                 \n\t"
+                  // Store 0x55 at RAM location
+    "             st    Z, R28                 \n\t"
+                  // Read to confirm 0x55
+    "             ld    R27, Z                 \n\t"
+    "             cpi   R27, 0x55              \n\t" 
+                  // If equal, continue to 0xAA Test
+    "             brne  Fail_RAM               \n\t"
+                  // Store 0xAA at RAM location
+    "             st    Z, R29                 \n\t"
+                  // Read to confirm 0xAA
+    "             ld    R27, Z                 \n\t"
+                  // Place old contents back in, increment addr
+    "             st    Z+, R26                \n\t"
+    "             cpi   R27, 0xAA              \n\t" 
+    "             brne  Fail_RAM               \n\t"
+                  // If equal, continue to next iteration
+    "             jmp   CHECK_DONE             \n\t"
+  );
+
+  // Test failure
+  asm volatile(
+    "Fail_RAM:                                 \n\t"
+  );
+  result = false;
+
+  // Test success
+  asm volatile(
+    "Pass_RAM:                                 \n\t"
+  );
+  result = true;
+
+  // Is the result TRUE?
+  if(result)
+    // Exit test with success
+    return true;
+  else
+    // Exit test with failure
+    return false;
 }
 
 
@@ -590,38 +619,39 @@ __attribute__((optimize(0))) boolean timer1_test()
     return false;
   OCR1A = 0;
 
-  // TIMSK1 = 0x55;
-  // if((TIMSK1 & 0x55) != 0x05)
-  //   return false;
-  // TIMSK1 = 0xAA;
-  // if((TIMSK1 & 0xAA) != 0x2A)
-  //   return false;
-  // TIMSK1 = 0;
+  // Disable interrupts so we can fiddle with the interrupt controls
+  noInterrupts();
 
-  // TIFR1 = 0x55;
-  // if((TIFR1 & 0x55) != 0x05)
-  //   return false;
-  // TIFR1 = 0xAA;
-  // if((TIFR1 & 0xAA) != 0x2A)
-  //   return false;
-  // TIFR1 = 0xFF;
+  TIMSK1 = 0x55;
+  if((TIMSK1 & 0x55) != 0x05)
+    return false;
+  TIMSK1 = 0xAA;
+  if((TIMSK1 & 0xAA) != 0x2A)
+    return false;
+  TIMSK1 = 0;
+
+  // We return you to your normally scheduled programming (enable interrupts)
+  interrupts();
 
   // By default, timer is set for normal, overflow, non-PWM mode.
   // Enable overflow interrupt
   TIMSK1 |= (1 << TOIE1);
-  // Set timer for no clock prescaling (this starts the timer)
+  // Set prescaler to clk/256 (this starts the timer).
+  // Timer overflows in a little over 1 second
   TCCR1B |= (1 << CS10) | (1 << CS12);
 
+  Serial.println("start");
   // Wait for timer interrupt
   while(!_isr_timer1_overflow);
+  Serial.println("end");
 
   // Reset the flag for the enjoyment of future generations
   _isr_timer1_overflow = false;
 
   // Disable overflow interrupt
-  TIMSK1 &= (0 << TOIE1);
+  TIMSK1 = 0;
   // Clear the clock prescaling (this turns off the timer)
-  TCCR1B &= (0 << CS10) & (0 << CS12);
+  TCCR1B = 0;
   // Clear the timer's counter
   TCNT1 = 0;
 
