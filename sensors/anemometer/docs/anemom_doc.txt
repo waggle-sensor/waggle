@@ -16,6 +16,8 @@ I found the best way to measure frequency was to have a digital pin on the Ardui
 
 The table below shows how changing the delay in the loop affects the sampling frequency, and maximum possible wind speed to observe:
 
+// DELAY: 1  - Sampling Rate: 310  Hz    Max observed freq: 155   Hz   Max observed speed: 168.6 m/s
+// DELAY: 2  - Sampling Rate: 238  Hz    Max observed freq: 119   Hz   Max observed speed: 129.4 m/s
 // DELAY: 3  - Sampling Rate: 192  Hz    Max observed freq: 96    Hz   Max observed speed: 104.4 m/s
 // DELAY: 4  - Sampling Rate: 160  Hz    Max observed freq: 80    Hz   Max observed speed: 87.0  m/s
 // DELAY: 5  - Sampling Rate: 139  Hz    Max observed freq: 69.5  Hz   Max observed speed: 75.6  m/s
@@ -28,6 +30,6 @@ The table below shows how changing the delay in the loop affects the sampling fr
 // DELAY: 20 - Sampling Rate: 45.0 Hz    Max observed freq: 20.50 Hz   Max observed speed: 22.3  m/s
 // DELAY: 25 - Sampling Rate: 36.8 Hz    Max observed freq: 18.40 Hz   Max observed speed: 20.0  m/s
 
-As for testing, please refer to the image enclosed. I set up a motor with a DC power supply so I could regulate how fast it was turning. Then, I attached a rod to the motor and connected the Vaavud wind collector device to the end of that, so it would rotate and create a changing magnetic field. The rod was necessary so that the magnets in the motor would not interfere with the magnetometer's measurements.
+As for testing, I set up a motor with a DC power supply so I could regulate how fast the it was turning. Then, I attached a rod to the motor and connected the Vaavud wind collector device to the end of that, so it would rotate and create a changing magnetic field. The rod was necessary so that the magnets in the motor would not interfere with the magnetometer's measurements.
 
 With that setup, I would set a certain voltage on the power supply so the motor would start spinning. Then, I would determine the frequency, and compare that to what the Vaavud app was reading at the same frequency. I was able to establish the linear relationship by calibrating with the Vaavud app, to find that the wind speed was simply frequency of rotation, multiplied by the coefficient 1.0876. 
