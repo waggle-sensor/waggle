@@ -2,10 +2,10 @@
 dpkg -i ./packages_o/*.deb
 
 mkdir /etc/waggle/
+rm /etc/smsc95xx_mac_addr
 hostName=$RANDOM
 echo $hostName > /etc/waggle/hostname
 
-service rabbitmq-server start
 rabbitmqctl add_user guest1 guest1
 rabbitmqctl set_permissions guest1 ".*" ".*" ".*"
 
