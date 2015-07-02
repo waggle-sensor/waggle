@@ -17,7 +17,6 @@ creds = pika.PlainCredentials('guest1','guest1')
 params = pika.ConnectionParameters('10.10.10.139',5672,'/',creds)
 connection = pika.BlockingConnection(params)
 channel = connection.channel()
-channel.confirm_delivery()
 print("Channel to RabbitMQ opened.")
 
 queue = "jf93kod93j0fu3kd93hf9hy309gtu"
