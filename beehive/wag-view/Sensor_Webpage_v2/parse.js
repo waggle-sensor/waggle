@@ -13,11 +13,14 @@ function parse_data(data_str) {
 	var data = [];
 	var avg_sum = 0;
 	var n = 0;
-	var size = 0;
+	var graph_data_size = 0;
+	var token_size = 0;
+	var data_size = 0;
 
-	//Check that graph_data is empty before proceeding
+	//Ensure graph_data is empty before proceeding
 	if(graph_data.length > 0) {
-		for(var m=0; m<29; m++) {
+		graph_data_size = graph_data.length;
+		for(var a=0; a<graph_data_size; a++) {
 			graph_data.pop();
 		}
 	}
@@ -26,34 +29,39 @@ function parse_data(data_str) {
 	//Ex. sensor[0]: 1st sensor, sensor[1]: 2nd sensor...
 	sensor = data_str.split("\n");
 
-	//Loop through each sensor dataset and split into array holding partitioned data
-	//Ex. token[0][0]: name, token[0][1]: date/time of reading, token[0][2]: 1st reading...
+	//Loop through each sensor dataset and split into arrays holding partitioned data
 	for(var i=0; i<sensor.length; i++) {
-		token[i] = sensor[i].split(",");
+		//Ensure the token and data arrays are empty for each iteration
+		if(token.length > 0) {
+			token_size = token.length;
+			for(var b=0; b<token_size; b++) {
+				token.pop();
+			}
+		}
 
-		//Check that the data array is empty so it doesn't give extra garbage values
 		if(data.length > 0) {
-			size = data.length;
-			for(var n=0; n<size; n++) {
+			data_size = data.length;
+			for(var c=0; c<data_size; c++) {
 				data.pop();
 			}
 		}
-		/*for(var test_idx=0; test_idx<token[i].length; test_idx++) {
-			console.log("token["+i+"]["+test_idx+"]: "+token[i][test_idx]);
-		}*/
+
+		//Parse the sensor data
+		//Ex. token[0]: name, token[1]: date/time of reading, token[2]: 1st reading...
+		token = sensor[i].split(",");
+
+		//console.log("token["+i+"]: "+token[i]);
 
 		//Loop through each sensor reading and split into array holding partitioned readings
 		//Ex. data[0][0]: data type, data[0][1]: value, data[0][2]: units, data[0][3]: extra...
-		for(var j=2; j<token[i].length; j++) {
-			data[j-2] = token[i][j].split(";");
+		for(var j=2; j<token.length; j++) {
+			data[j-2] = token[j].split(";");
 
-			/*for(var test_idx_2=0; test_idx_2<data.length; test_idx_2++) {
-				console.log("data["+test_idx_2+"]: "+data[test_idx_2]+" data[0][1]: "+data[0][1]+" End");
-			}*/
+			//console.log("data["+j-2+"]: "+data[j-2]+" data[0][1]: "+data[0][1]+" End");
 		}
 
 		//Determine which sensor is being read to calculate and put data in appropriate place
-		switch(token[i][0]) {
+		switch(token[0]) {
 			case "D6T-44L-06.Omron.2012":
 				avg_sum = 0;
 				n = data.length - 1;
@@ -115,9 +123,9 @@ function parse_data(data_str) {
 				graph_data.push(parseFloat(data[1][1]).toFixed(2)); //Placed in graph_data[20]
 				break;
 			case "SHT75.Sensirion.5_2011":
-				//Temp
+				//Temp, Hum
 				graph_data.push(parseFloat(data[0][1]).toFixed(2));
-				graph_data.push(parseFloat(data[0][1]).toFixed(2));
+				graph_data.push(parseFloat(data[1][1]).toFixed(2));
 				break;
 			case "MAX4466.Maxim.2001":
 				//Acoustic Intensity

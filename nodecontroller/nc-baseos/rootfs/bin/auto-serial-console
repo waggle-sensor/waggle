@@ -1,0 +1,35 @@
+#!/bin/sh -e
+
+[ -f /etc/default/autogetty ] && . /etc/default/autogetty
+
+[ 1 -gt $ENABLED ] && exit
+
+for arg in $(cat /proc/cmdline)
+do
+    case $arg in
+	console=*)
+	    tty=${arg#console=}
+	    tty=${tty#/dev/}
+
+	    case $tty in
+		tty[a-zA-Z]* )
+		    PORT=${tty%%,*}
+
+		    # check for service which do something on this port
+		    if [ -f /etc/init/$PORT.conf ];then continue;fi 
+
+		    tmp=${tty##$PORT,}
+		    SPEED=${tmp%%n*}
+		    BITS=${tmp##${SPEED}n}
+
+		    # 8bit serial is default
+		    [ -z $BITS ] && BITS=8
+		    [ 8 -eq $BITS ] && GETTY_ARGS="$GETTY_ARGS -8 "
+
+		    [ -z $SPEED ] && SPEED='115200,57600,38400,19200,9600'
+
+		    GETTY_ARGS="$AUTOGETTY_ARGS $GETTY_ARGS $SPEED $PORT"
+		    exec /sbin/getty $GETTY_ARGS
+	    esac
+    esac
+done

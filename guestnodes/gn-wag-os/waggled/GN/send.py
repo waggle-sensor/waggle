@@ -5,7 +5,8 @@ import socket, os, os.path, time
 """ This is a client socket that connects to the push_server of the node controller to send messages. It is called as a function with the packed message as an argument. """
 
 def send(msg):
-    HOST = '10.10.10.10'
+    HOST = '10.10.10.108' #node controller IP
+    #HOST = '10.10.10.10'
     PORT = 9090 #port for push_server
     
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

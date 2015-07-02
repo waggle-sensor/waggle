@@ -1,0 +1,11 @@
+/.
+/usr
+/usr/share
+/usr/share/doc
+/usr/share/doc/libestr0
+/usr/share/doc/libestr0/changelog.Debian.gz
+/usr/share/doc/libestr0/copyright
+/usr/lib
+/usr/lib/arm-linux-gnueabihf
+/usr/lib/arm-linux-gnueabihf/libestr.so.0.0.0
+/usr/lib/arm-linux-gnueabihf/libestr.so.0

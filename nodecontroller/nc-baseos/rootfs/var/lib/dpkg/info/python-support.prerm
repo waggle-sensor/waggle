@@ -1,0 +1,9 @@
+#! /bin/sh
+set -e
+
+
+
+# Don't fail if this command fails, it's not important enough.
+# In this case, make the cleanup by hand.
+update-python-modules -c -b python-support.private || \
+	rm -f /usr/share/python-support/private/*.pyc

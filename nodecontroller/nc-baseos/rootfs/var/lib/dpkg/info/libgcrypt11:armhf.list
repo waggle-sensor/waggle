@@ -1,0 +1,15 @@
+/.
+/lib
+/lib/arm-linux-gnueabihf
+/lib/arm-linux-gnueabihf/libgcrypt.so.11.8.2
+/usr
+/usr/share
+/usr/share/doc
+/usr/share/doc/libgcrypt11
+/usr/share/doc/libgcrypt11/NEWS.gz
+/usr/share/doc/libgcrypt11/changelog.Debian.gz
+/usr/share/doc/libgcrypt11/README.gz
+/usr/share/doc/libgcrypt11/copyright
+/usr/share/doc/libgcrypt11/AUTHORS.gz
+/usr/share/doc/libgcrypt11/THANKS.gz
+/lib/arm-linux-gnueabihf/libgcrypt.so.11

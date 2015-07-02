@@ -1,0 +1,4 @@
+# this is the only package that can depend on it
+depends-on-python-minimal depends
+# manpage is in python-minimal package:
+binary-without-manpage usr/bin/pyversions

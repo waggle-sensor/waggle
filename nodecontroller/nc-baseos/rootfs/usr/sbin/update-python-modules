@@ -1,0 +1,502 @@
+#! /usr/bin/python
+#
+# copyright (c) 2006 Josselin Mouette <joss@debian.org>
+# Licensed under the GNU Lesser General Public License, version 2.1
+# See COPYING for details
+
+# Everything prefixed by old_ is compatibility code with older versions
+# Modules used to lie in /usr/{lib,share}/python-support/$package
+# They now lie in /usr/{lib,share}/pyshared
+
+import sys,os,shutil
+from optparse import OptionParser
+from subprocess import call
+from py_compile import compile, PyCompileError
+sys.path.append("/usr/share/python-support/private/")
+import pysupport
+from pysupport import py_supported,py_installed,py_oldversions
+
+basepath='/usr/lib/pymodules'
+sourcepath='/usr/share/python-support'
+old_extensionpath='/usr/lib/python-support'
+shared_path='/usr/share/pyshared'
+shared_extensionpath='/usr/lib/pyshared'
+
+parser = OptionParser(usage="usage: %prog [-v] [-c] package_directory [...]\n"+
+                            "       %prog [-v] [-c] package.dirs [...]\n"+
+                            "       %prog [-v] [-a|-f|-p]")
+parser.add_option("-v", "--verbose", action="store_true", dest="verbose",
+                  help="verbose output", default=False)
+parser.add_option("-c", "--clean", action="store_true", dest="clean_mode",
+                  help="clean modules instead of compiling them",
+                  default=False)
+parser.add_option("-a", "--rebuild-all", action="store_true",
+                  dest="rebuild_all", default=False,
+                  help="rebuild all private modules for a new default python version")
+parser.add_option("-f", "--force-rebuild-all", action="store_true",
+                  dest="rebuild_everything", default=False,
+                  help="rebuild all modules, including public modules for all python versions")
+parser.add_option("-p", "--post-install", action="store_true", dest="post_install",
+                  help="run post-installation operations, common to many packages",
+                  default=False)
+parser.add_option("-b", "--bytecompile", action="store_true", dest="force_private",
+                  help="[deprecated] byte-compilation mode: only handle private modules",
+                  default=False)
+parser.add_option("-i", "--install", action="store_true", dest="force_public",
+                  help="[deprecated] installation mode: only handle public modules",
+                  default=False)
+(options, args) = parser.parse_args()
+
+def debug(x):
+    if(options.verbose):
+        print x
+
+def warning(x):
+    sys.stderr.write("WARNING: %s\n"%x)
+
+def isect(l1,l2):
+    return [i for i in l1 if i in l2]
+
+def concat(l1,l2):
+    return l1 + [i for i in l2 if i not in l1]
+
+
+# Abstract class implementing the methods related to public modules
+class _PublicList (list):
+    pyversions = py_supported
+    def install (self, versions):
+        versions = isect (self.pyversions, versions)
+        for filename in self:
+            version = None
+            rng = versions
+            try:
+                if filename.startswith (shared_path+"/"):
+                    # New layout, module
+                    relname = filename[len(shared_path)+1:]
+                elif filename.startswith (shared_extensionpath+"/python"):
+                    # New layout, extension
+                    [ version, relname ] = filename[len(shared_extensionpath)+1:].split("/", 1)
+                elif filename.startswith (sourcepath+"/"):
+                    [ package, relname ] = filename[len(sourcepath)+1:].split("/",1)
+                elif filename.startswith (old_extensionpath+"/"):
+                    [ package, version, relname ] = filename[len(old_extensionpath)+1:].split("/",2)
+                else:
+                    raise ValueError
+            except ValueError:
+                warning ("%s contains an invalid filename (%s)"%(self.name, filename))
+                continue
+            if version:
+                if version not in versions:
+                    continue
+                rng = [version]
+            for pyversion in rng:
+                destpath = os.path.join (basepath, pyversion, relname)
+                try:
+                    os.makedirs(os.path.dirname(destpath))
+                except OSError:
+                    pass
+                if filename[-4:] not in ['.pyc', '.pyo']:
+                    debug("link "+destpath)
+                    # os.path.exists returns False for broken symbolic links
+                    if os.path.exists(destpath) or os.path.islink(destpath):
+                        if file!="__init__.py" or (os.path.exists(destpath) and os.path.getsize(destpath)):
+                            # The file is already here, probably from the previous version. 
+                            # No need to check for conflicts, dpkg catches them earlier now
+                            debug("overwrite "+destpath)
+                        else:
+                            debug("overwrite namespace "+destpath)
+                        if os.path.isdir(destpath):
+                            shutil.rmtree(destpath)
+                        else:
+                            os.remove(destpath)
+                    os.symlink(filename,destpath)
+
+
+# Abstract class implementing the methods related to private modules
+class _PrivateList (list):
+    pyversion = None
+    def bytecompile (self):
+        if self.pyversion:
+            debug("Byte-compilation of whole %s with python%s..."%(self.name,self.pyversion))
+            call(['/usr/bin/python'+self.pyversion, 
+                  os.path.join('/usr/lib','python'+self.pyversion,'py_compile.py')]
+                 + self)
+        else:
+            for filename in self:
+                debug("compile "+filename+'c')
+                try:
+                    # Note that compile doesn't raise PyCompileError by default
+                    compile(filename, doraise=True)
+                except IOError, (errno, strerror):
+                    warning("I/O error while trying to byte-compile %s (%s): %s" % (filename, errno, strerror))
+                except PyCompileError, inst:
+                    warning("compile error while trying to byte-compile %s: %s" % (filename, inst.msg))
+                except:
+                    warning("unexpected error while trying to byte-compile %s: %s" % (filename, sys.exc_info()[0]))
+    def clean(self):
+        for filename in self:
+            for ext in ['c', 'o']:
+                fullpath=filename+ext
+                if os.path.exists(fullpath):
+                    debug("remove "+fullpath)
+                    os.remove(fullpath)
+
+
+# Abstract class for PrivateFileList and SharedFileList
+class _FileList(list):
+    def __init__ (self, path):
+        self.name = path
+        for line in file(path):
+            line = line.strip()
+            if (not line) or line.startswith('#'):
+                continue
+            if line.startswith('/'):
+                self.append(line)
+                continue
+            line = [x.strip() for x in line.split('=',1)]
+            if len(line) != 2:
+                warning("Parse error in %s"%path)
+                continue
+            self.parse_option(*line)
+
+# This class represents a file list as provided in the /usr/share/python-support/$package.public
+# Useful for public modules and extensions
+class SharedFileList(_FileList, _PublicList):
+    def parse_option (self, arg, value):
+        if arg=='pyversions':
+            self.pyversions = pysupport.version_list(value)
+        # Ignore unknown arguments for extensivity
+
+# This class represents a file list as provided in the /usr/share/python-support/$package.private
+# Useful for private modules
+class PrivateFileList(_FileList, _PrivateList):
+    def parse_option (self, arg, value):
+        if arg=='pyversion':
+            self.pyversion = value
+
+# This is a helper generator that goes through files of interest in a given directory
+def allfiles(path, onlypy=False):
+    for root, dirs, files in os.walk(path):
+        for f in files:
+            if (onlypy and not f.endswith(".py")) or f== ".version":
+                continue
+            yield os.path.join(root,f)
+        if not onlypy:
+            for d in dirs:
+                d = os.path.join(root, d)
+                if os.path.islink(d):
+                    yield d
+
+# This class emulates the file listing as provided by /usr/share/python-support/$package.public
+# with the deprecated layout /usr/{lib,share}/python-support/$package/
+class SharedDirList(_PublicList):
+    def __init__ (self, path):
+        self.name = path
+        # Add all files to the file listing
+        self.extend(allfiles(path))
+        verfile=os.path.join(path,'.version')
+        extdir=path.replace(sourcepath,old_extensionpath,1)
+        if os.path.isfile(verfile):
+            # If we have a .version, use it
+            self.pyversions = pysupport.version_list(file(verfile).readline())
+        elif os.path.isdir(extdir):
+            # Try to obtain the list of supported versions
+            # from the extensions in /usr/lib
+            self.pyversions = isect(py_supported,os.listdir(extdir))
+        else:
+            # Otherwise, support all versions
+            pass
+
+        if os.path.isdir(extdir):
+            # Add the extensions to the file listing
+            for version in self.pyversions:
+                self.extend(allfiles(os.path.join(extdir,version)))
+
+# This class emulates the file listing as provided by /usr/share/python-support/$package.private
+# with the deprecated layout /usr/share/python-support/$package.dirs
+class PrivateDirList(_PrivateList):
+    def __init__ (self, path):
+        self.name = path
+        self.extend(allfiles(path, onlypy=True))
+        versionfile = os.path.join(path, ".pyversion")
+        if os.path.isfile(versionfile):
+            self.pyversion = file(versionfile).readline().strip()
+
+
+class CachedFileList(dict):
+    def __getitem__ (self, name):
+        if name in self and dict.__getitem__(self, name) == None:
+            if name.startswith("/"):
+                # The case of old-style private directories
+                self[name] = PrivateDirList (name)
+            else:
+                path = os.path.join (sourcepath, name)
+                if name.endswith(".public"):
+                    self[name] = SharedFileList (path)
+                elif name.endswith(".private"):
+                    self[name] = PrivateFileList (path)
+                elif os.path.isdir(path):
+                    self[name] = SharedDirList (path)
+                else:
+                    raise Exception("[Internal Error] I don't know what to do with this path: %s"%path)
+        return dict.__getitem__(self, name)
+
+
+def bytecompile_all(py,path=None):
+    if not path:
+        path=os.path.join(basepath,py)
+    if not os.path.isdir(path):
+        return
+    debug("Byte-compilation of whole %s..."%path)
+    os.spawnl(os.P_WAIT, '/usr/bin/'+py, py,
+              os.path.join('/usr/lib/',py,'compileall.py'), '-q', path)
+
+# A function to create the ".path" at the root of the installed directory
+# Returns the list of affected directories
+def create_dotpath(py):
+  path=os.path.join(basepath,py)
+  if not os.path.isdir(path):
+    return
+  pathfile=os.path.join(path,".path")
+  debug("Generation of %s..."%pathfile)
+  pathlist=[path]
+  ret=[]
+  for f in os.listdir(path):
+    f=os.path.join(path,f)
+    if f.endswith(".pth") and os.path.isfile(f):
+      for l in file(f):
+        l=l.rstrip('\n')
+        if l.startswith('import'):
+          # Do not ship lines starting with "import", they are executed! (complete WTF)
+          continue
+        pathlist.append(l)
+        l2=os.path.join(path,l)
+        pathlist.append(l2)
+        ret.append(l2)
+  fd=file(pathfile,"w")
+  fd.writelines([l+'\n' for l in pathlist])
+  fd.close()
+  return ret
+
+def post_change_stuff(py):
+  # All the changes that need to be done after anything has changed
+  # in a /usr/lib/pymodules/pythonX.Y directory
+  # * Cleanup of all dangling symlinks that are left out after a package
+  #   is upgraded/removed.
+  # * The namespace packages are here because python doesn't consider a
+  #   directory to be able to contain packages if there is no __init__.py
+  #   file (yes, this is completely stupid).
+  # * The .path file must be created by concatenating all those .pth
+  #   files that extend sys.path (this also badly sucks).
+  # * Byte-compilation of all .py files that haven't already been
+  path=os.path.join(basepath,py)
+  if not os.path.isdir(path):
+    return
+  # First, remove any dangling symlinks.
+  # In the same loop, we find which directories may need a namespace package
+  dirhash={}
+  for dir, dirs, files in os.walk(path):
+    dirhash[dir]=False
+    files.sort() # We need the .py to appear before the .pyc
+    for f in files+dirs:
+      # We also examine dirs as some symlinks are dirs
+      abspath=os.path.join(dir,f)
+      islink=os.path.islink(abspath)
+      if islink:
+        if not os.path.exists(abspath):
+          # We refer to a file that was removed
+          debug("remove "+abspath)
+          os.remove(abspath)
+          continue
+        srcfile = os.readlink (abspath)
+        # Remove links left here after a change in the supported python versions for a package
+        removed = False
+        for package in public_packages:
+          if srcfile in public_packages[package]:
+            if py not in public_packages[package].pyversions:
+              debug("remove "+abspath)
+              os.remove(abspath)
+              removed = True
+            break
+        else:
+          # Remove files provided by packages that do not use python-support anymore
+          debug("remove "+abspath)
+          os.remove(abspath)
+          removed = True
+        if removed:
+          # Do not go further, the file was removed
+          continue
+      if f[-4:] in ['.pyc', '.pyo']:
+        if not os.path.exists(abspath[:-1]):
+          debug("remove "+abspath)
+          os.remove(abspath)
+          continue
+      elif f[-3:] in ['.py', '.so']:
+        if islink or f!='__init__.py':
+          # List the directory as maybe needing a namespace packages
+          d=dir
+          while dirhash.has_key(d) and not dirhash[d]:
+            dirhash[d]=True
+            d=os.path.dirname(d)
+    # Remove the directory if it is empty after our crazy removals
+    try:
+      os.removedirs(dir)
+    except OSError:
+      pass
+  dirhash[path]=False
+  # Then, find which directories belong in a .pth file
+  # These directories don't need a namespace package, so we
+  # set them to False in dirhash
+  for p in create_dotpath (py):
+    dirhash[p] = False
+  # Finally, create/remove namespace packages
+  for dir in dirhash:
+    initfile=os.path.join(dir,"__init__.py")
+    noinitfile=os.path.join(dir,".noinit")
+    if dirhash[dir] and not os.path.exists(noinitfile):
+      if not os.path.exists(initfile):
+        debug("create namespace "+initfile)
+        file(initfile,"w").close()
+    else:
+      for e in ['','c','o']:
+        if os.path.exists(initfile+e):
+          debug('remove namespace '+initfile+e)
+          os.remove(initfile+e)
+      try:
+        os.removedirs(dir)
+      except OSError:
+        pass
+  bytecompile_all(py)
+
+
+# A helper function for older $package.dirs files
+def dirlist_file(f):
+    return [ l.rstrip('\n') for l in file(f) if len(l)>1 ]
+
+# End of function definitions - Start of the script itself
+
+# Ensure that the umask is sane
+os.umask(022)
+
+# Read all modules listing
+public_packages = CachedFileList()
+private_packages = CachedFileList()
+dirlisting = os.listdir(sourcepath)
+for name in dirlisting:
+    path=os.path.join(sourcepath,name)
+    if name == "private":
+        continue
+    ext = name.split(".")[-1]
+    if os.path.isdir(path):
+        if ext in ["public", "private", "dirs"]:
+            # Presumably a bogus directory, see #528130
+            warning("%s is a directory"%name)
+        else:
+            public_packages[name] = None
+        continue
+    if not os.path.isfile(path):
+        # Ignore whatever is not a file, like dangling symlinks
+        continue
+    if ext == "public":
+        public_packages[name] = None
+    elif ext == "private":
+        private_packages[name] = None
+    elif ext == "dirs":
+        for dirname in dirlist_file (path):
+            private_packages[dirname] = None
+    # Just ignore all other files
+
+# Parse arguments
+do_public=[]
+do_private=[]
+for arg in args:
+    if arg.startswith(sourcepath):
+        arg = arg[len(sourcepath):].lstrip("/")
+    if arg.endswith(".dirs") and arg in dirlisting:
+        for dirname in dirlist_file(os.path.join(sourcepath, arg)):
+            do_private.append(private_packages[dirname])
+    elif arg in public_packages:
+        do_public.append(public_packages[arg])
+    elif arg in private_packages:
+        do_private.append(private_packages[arg])
+    else:
+        if options.clean_mode:
+            warning("%s does not exist.\n         Some bytecompiled files may be left behind."%arg)
+        else:
+            parser.error("%s is not a recognized python-support module."%arg)
+
+# Check consistency options (although these ones should not exist anymore)
+if do_private and options.force_public:
+    parser.error("Option -i cannot be used with a .private module file.")
+if do_public and options.force_private:
+    parser.error("Option -b cannot be used with a .public module file.")
+
+if options.rebuild_everything:
+    options.rebuild_all = True
+    for pyver in py_supported:
+        dir = os.path.join(basepath,pyver)
+        if os.path.isdir(dir):
+            shutil.rmtree(dir)
+
+# Check for changes in installed python versions
+need_postinstall = []
+for pyver in py_oldversions+py_supported:
+    dir = os.path.join(basepath,pyver)
+    # Check for ".path" because sometimes the directory already exists 
+    # while the python version isn't installed, because of some .so's.
+    if pyver not in py_installed and os.path.isdir(dir):
+        debug("Removing obsolete directory %s..."%(dir))
+        shutil.rmtree(dir)
+    if pyver in py_installed and not os.path.isfile(os.path.join(dir,".path")):
+        need_postinstall.append(pyver)
+if need_postinstall:
+    debug("Building all modules for %s..."%(" ".join(need_postinstall)))
+    for package in public_packages:
+        public_packages[package].install(need_postinstall)
+    for pyver in need_postinstall:
+        # Here we need to launch create_dotpath because otherwise we could
+        # end up without the .path file that is checked 6 lines earlier
+        create_dotpath(pyver)
+
+if options.rebuild_all:
+    for package in private_packages:
+        private_packages[package].bytecompile()
+
+
+# Now for the processing of what was handed on the command line
+for package in do_private:
+    if not options.clean_mode:
+        package.bytecompile()
+    else:
+        package.clean()
+
+need_dotpath = False
+for package in do_public:
+    need_postinstall = concat (need_postinstall, isect(package.pyversions,py_installed))
+    if options.clean_mode:
+        continue
+    package.install(py_installed)
+    for f in package:
+        if f.endswith(".pth"):
+            need_dotpath = True
+
+# Only do the funny and time-consuming things when the -p option is
+# given, e.g when python-support is triggered.
+if need_postinstall and 'DPKG_RUNNING_VERSION' in os.environ and not options.post_install:
+    ret = os.spawnlp(os.P_WAIT, 'dpkg-trigger', 'dpkg-trigger', '--no-await', 'pysupport')
+    if ret:
+        sys.stderr.write("ERROR: dpkg-trigger failed\n")
+        sys.exit(1)
+    if need_dotpath:
+        for py in need_postinstall:
+            create_dotpath (py)
+    need_postinstall = []
+
+if options.post_install:
+    # The trigger has been activated; do it for all installed versions
+    need_postinstall = py_installed
+if need_postinstall:
+    need_dotpath = False
+    for py in need_postinstall:
+        post_change_stuff(py)
+

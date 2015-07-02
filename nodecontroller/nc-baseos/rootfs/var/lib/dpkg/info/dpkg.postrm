@@ -1,0 +1,97 @@
+#!/bin/sh
+# This script can be called in the following ways:
+#
+# After the package was removed:
+#	<postrm> remove
+#
+# After the package was purged:
+#	<postrm> purge
+#
+# After the package was upgraded:
+#	<old-postrm> upgrade <new-version>
+# if that fails:
+#	<new-postrm> failed-upgrade <old-version>
+#
+#
+# After all of the packages files have been replaced:
+#	<postrm> disappear <overwriting-package> <version>
+#
+#
+# If preinst fails during install:
+#	<new-postrm> abort-install
+#
+# If preinst fails during upgrade of removed package:
+#	<new-postrm> abort-install <old-version>
+#
+# If preinst fails during upgrade:
+#	<new-postrm> abort-upgrade <old-version>
+
+set -e
+
+# Remove log file when dpkg is purged
+remove_logfile() {
+    rm -f /var/log/dpkg.log /var/log/dpkg.log.* 2>/dev/null
+}
+
+# Cleanup multiarch infodb leftovers
+cleanup_multiarch_infodb()
+{
+    admindir=${DPKG_ADMINDIR:-/var/lib/dpkg}
+    pkgadmindir=$admindir/info
+
+    echo "Cleaning up the multiarch dpkg control files database ..."
+    ls $pkgadmindir | grep : | while read oldfile; do
+        rm "$pkgadmindir/$oldfile"
+    done
+    rm -f $pkgadmindir/format
+}
+
+restore_multiarch_conffile()
+{
+    if [ -f /etc/dpkg/dpkg.cfg.d/multiarch.dpkg-backup ]; then
+        mv /etc/dpkg/dpkg.cfg.d/multiarch.dpkg-backup /etc/dpkg/dpkg.cfg.d/multiarch
+    elif [ -f /etc/dpkg/dpkg.cfg.d/multiarch.dpkg-remove ]; then
+        mv /etc/dpkg/dpkg.cfg.d/multiarch.dpkg-remove /etc/dpkg/dpkg.cfg.d/multiarch
+    fi
+}
+
+remove_multiarch_conffile()
+{
+    rm -f /etc/dpkg/dpkg.cfg.d/multiarch.dpkg-bak
+}
+
+case "$1" in
+    remove)
+	;;
+
+    purge)
+	remove_logfile
+	remove_multiarch_conffile
+	;;
+
+    upgrade)
+	# Downgrade the multiarch db to a “monoarch” db layout
+	if dpkg --compare-versions "$2" lt 1.16.0~; then
+	    cleanup_multiarch_infodb
+	fi
+	;;
+
+    failed-upgrade|disappear|abort-install)
+	;;
+
+    abort-upgrade)
+	# Restore old multiarch conffile that we moved
+	if dpkg --compare-versions "$2" lt 1.16.3; then
+	    restore_multiarch_conffile
+	fi
+	;;
+
+
+    *)
+	echo "$0 called with unknown argument \`$1'" 1>&2
+	exit 1
+	;;
+esac
+
+
+exit 0

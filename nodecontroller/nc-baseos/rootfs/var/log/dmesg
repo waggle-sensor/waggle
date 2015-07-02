@@ -1,0 +1,432 @@
+[    0.000000] Booting Linux on physical CPU 0xa00
+[    0.000000] Initializing cgroup subsys cpuset
+[    0.000000] Initializing cgroup subsys cpu
+[    0.000000] Linux version 3.8.13.23 (getziadz@weatherman) (gcc version 4.8.3 20140401 (prerelease) (crosstool-NG linaro-1.13.1-4.8-2014.04 - Linaro GCC 4.8-2014.04) ) #1 SMP PREEMPT Fri Sep 26 14:33:42 CDT 2014 ()
+[    0.000000] Kernel was built at commit id '958ff63'
+[    0.000000] CPU: ARMv7 Processor [413fc090] revision 0 (ARMv7), cr=10c5387d
+[    0.000000] CPU: PIPT / VIPT nonaliasing data cache, VIPT aliasing instruction cache
+[    0.000000] Machine: ODROID-U2/U3
+[    0.000000] cma: CMA: reserved 64 MiB at 43000000
+[    0.000000] cma: CMA: reserved 64 MiB at 51000000
+[    0.000000] cma: CMA: reserved 128 MiB at 67800000
+[    0.000000] Memory policy: ECC disabled, Data cache writealloc
+[    0.000000] CPU EXYNOS4412 (id 0xe4412220)
+[    0.000000] exynos4_init_clocks: initializing clocks
+[    0.000000] S3C24XX Clocks, Copyright 2004 Simtec Electronics
+[    0.000000] s3c_register_clksrc: clock armclk has no registers set
+[    0.000000] s3c_register_clksrc: clock audiocdclk has no registers set
+[    0.000000] audiocdclk: no parent clock specified
+[    0.000000] exynos4_setup_clocks: registering clocks
+[    0.000000] exynos4_setup_clocks: xtal is 24000000
+[    0.000000] EXYNOS4: PLL settings, A=1000000000, M=800000000, E=96000000 V=350000000
+[    0.000000] EXYNOS4: ARMCLK=1000000000, DMC=400000000, ACLK200=160000000
+[    0.000000] ACLK100=100000000, ACLK160=160000000, ACLK133=133333333
+[    0.000000] sclk_pwm: source is ext_xtal (0), rate is 24000000
+[    0.000000] sclk_csis: source is xusbxti (1), rate is 1500000
+[    0.000000] sclk_csis: source is xusbxti (1), rate is 1500000
+[    0.000000] sclk_cam0: source is xusbxti (1), rate is 1500000
+[    0.000000] sclk_cam1: source is xusbxti (1), rate is 1500000
+[    0.000000] sclk_fimc: source is xusbxti (1), rate is 1500000
+[    0.000000] sclk_fimc: source is xusbxti (1), rate is 1500000
+[    0.000000] sclk_fimc: source is xusbxti (1), rate is 1500000
+[    0.000000] sclk_fimc: source is xusbxti (1), rate is 1500000
+[    0.000000] sclk_fimd: source is xusbxti (1), rate is 1500000
+[    0.000000] sclk_mfc: source is mout_mfc0 (0), rate is 50000000
+[    0.000000] sclk_g3d: source is mout_g3d0 (0), rate is 50000000
+[    0.000000] On node 0 totalpages: 524032
+[    0.000000]   Normal zone: 1520 pages used for memmap
+[    0.000000]   Normal zone: 0 pages reserved
+[    0.000000]   Normal zone: 193040 pages, LIFO batch:31
+[    0.000000]   HighMem zone: 2574 pages used for memmap
+[    0.000000]   HighMem zone: 326898 pages, LIFO batch:31
+[    0.000000] Running under secure firmware.
+[    0.000000] PERCPU: Embedded 8 pages/cpu @c1bb3000 s8512 r8192 d16064 u32768
+[    0.000000] pcpu-alloc: s8512 r8192 d16064 u32768 alloc=8*4096
+[    0.000000] pcpu-alloc: [0] 0 [0] 1 [0] 2 [0] 3 
+[    0.000000] Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 519938
+[    0.000000] Kernel command line: console=tty1 console=ttySAC1,115200n8 root=/dev/mmcblk0p2 rootwait rw mem=2047M debug
+[    0.000000] PID hash table entries: 4096 (order: 2, 16384 bytes)
+[    0.000000] Dentry cache hash table entries: 131072 (order: 7, 524288 bytes)
+[    0.000000] Inode-cache hash table entries: 65536 (order: 6, 262144 bytes)
+[    0.000000] __ex_table already sorted, skipping sort
+[    0.000000] Memory: 2047MB = 2047MB total
+[    0.000000] Memory: 1804136k/1804136k available, 291992k reserved, 1317888K highmem
+[    0.000000] Virtual kernel memory layout:
+[    0.000000]     vector  : 0xffff0000 - 0xffff1000   (   4 kB)
+[    0.000000]     fixmap  : 0xfff00000 - 0xfffe0000   ( 896 kB)
+[    0.000000]     vmalloc : 0xf0000000 - 0xff000000   ( 240 MB)
+[    0.000000]     lowmem  : 0xc0000000 - 0xef800000   ( 760 MB)
+[    0.000000]     pkmap   : 0xbfe00000 - 0xc0000000   (   2 MB)
+[    0.000000]     modules : 0xbf000000 - 0xbfe00000   (  14 MB)
+[    0.000000]       .text : 0xc0008000 - 0xc064b374   (6413 kB)
+[    0.000000]       .init : 0xc064c000 - 0xc0ae9140   (4725 kB)
+[    0.000000]       .data : 0xc0aea000 - 0xc0b5ad80   ( 452 kB)
+[    0.000000]        .bss : 0xc0b5ad80 - 0xc0b9d1d4   ( 266 kB)
+[    0.000000] SLUB: Genslabs=11, HWalign=64, Order=0-3, MinObjects=0, CPUs=4, Nodes=1
+[    0.000000] Preemptible hierarchical RCU implementation.
+[    0.000000] NR_IRQS:549
+[    0.000000] MCT clocksource init timer with clk_rate=24000000 hz
+[    0.000000] sched_clock: 32 bits at 24MHz, resolution 41ns, wraps every 178956ms
+[    0.000000] Console: colour dummy device 80x30
+[    0.000000] console [tty1] enabled
+[    0.000000] allocated 4194304 bytes of page_cgroup
+[    0.000000] please try 'cgroup_disable=memory' option if you don't want memory cgroups
+[    0.006006] Calibrating delay loop... 1992.29 BogoMIPS (lpj=4980736)
+[    0.050065] pid_max: default: 32768 minimum: 301
+[    0.050294] Security Framework initialized
+[    0.050408] Mount-cache hash table entries: 512
+[    0.051409] Initializing cgroup subsys debug
+[    0.051444] Initializing cgroup subsys cpuacct
+[    0.051465] Initializing cgroup subsys memory
+[    0.051519] Initializing cgroup subsys devices
+[    0.051541] Initializing cgroup subsys freezer
+[    0.051558] Initializing cgroup subsys blkio
+[    0.051574] Initializing cgroup subsys perf_event
+[    0.051700] CPU: Testing write buffer coherency: ok
+[    0.052065] CPU0: thread -1, cpu 0, socket 10, mpidr 80000a00
+[    0.052189] Setting up static identity map for 0x404a3520 - 0x404a3578
+[    0.052266] L310 cache controller enabled
+[    0.052292] l2x0: 16 ways, CACHE_ID 0x4100c4c8, AUX_CTRL 0x7e470001, Cache size: 1048576 B
+[    0.102441] CPU1: Booted secondary processor
+[    0.122119] CPU1: thread -1, cpu 1, socket 10, mpidr 80000a01
+[    0.132430] CPU2: Booted secondary processor
+[    0.152118] CPU2: thread -1, cpu 2, socket 10, mpidr 80000a02
+[    0.162435] CPU3: Booted secondary processor
+[    0.182119] CPU3: thread -1, cpu 3, socket 10, mpidr 80000a03
+[    0.182156] Brought up 4 CPUs
+[    0.182224] SMP: Total of 4 processors activated (7969.17 BogoMIPS).
+[    0.183086] devtmpfs: initialized
+[    0.188306] EVM: security.ima
+[    0.188321] EVM: security.capability
+[    0.188604] pinctrl core: initialized pinctrl subsystem
+[    0.188924] regulator-dummy: no parameters
+[    0.196341] NET: Registered protocol family 16
+[    0.203940] DMA: preallocated 256 KiB pool for atomic coherent allocations
+[    0.206172] s5p_hdmi_cec_set_platdata()
+[    0.208410] hw-breakpoint: found 5 (+1 reserved) breakpoint and 1 watchpoint registers.
+[    0.208432] hw-breakpoint: maximum watchpoint size is 4 bytes.
+[    0.208523] S3C Power Management, Copyright 2004 Simtec Electronics
+[    0.208616] EXYNOS4x12 PMU Initialize
+[    0.209641] EXYNOS: Initializing architecture
+[    0.210116] s3c24xx-pwm s3c24xx-pwm.0: tin at 50000000, tdiv at 50000000, tin=divclk, base 0
+[    0.210192] s3c24xx-pwm s3c24xx-pwm.1: tin at 50000000, tdiv at 50000000, tin=divclk, base 8
+[    0.214443] bio: create slab <bio-0> at 0
+[    0.214793] hdmi_5v: 5000 mV 
+[    0.215134] SCSI subsystem initialized
+[    0.215635] usbcore: registered new interface driver usbfs
+[    0.215689] usbcore: registered new interface driver hub
+[    0.215777] usbcore: registered new device driver usb
+[    0.216036] i2c-gpio i2c-gpio.2: using pins 6 (SDA) and 7 (SCL)
+[    0.216144] s3c-i2c s3c2440-i2c.0: slave address 0x10
+[    0.216165] s3c-i2c s3c2440-i2c.0: bus frequency set to 390 KHz
+[    0.216497] max77686 0-0009: device found
+[    0.217805] LDO1 VDD_ALIVE: 1000 mV 
+[    0.218867] LDO2 VDDQ_M1_1V8: 1800 mV 
+[    0.219820] LDO3 VDDQ_AUD_1V8: 1800 mV 
+[    0.220776] LDO4 VDDQ_MMC2_2V8: 2800 mV 
+[    0.221715] LDO5 VDDQ_MMC1_1V8: 1800 mV 
+[    0.222772] LDO6 VDD10_MPLL_1V0: 1000 mV 
+[    0.223815] LDO7 VDD10_EPLL_1V0: 1000 mV 
+[    0.224773] LDO8 VDD10_MIPI_1V0: 1000 mV 
+[    0.225681] LDO9 VT_CORE_1V0: ODROIDU2: Disabled regulator
+[    0.225700] LDO9 VT_CORE_1V0: 1000 mV 
+[    0.226350] LDO10 VDD18_MIPI_1V8: 1800 mV 
+[    0.227303] LDO11 VDD18_ABB1_1V8: 1800 mV 
+[    0.227948] vdd_ldo12 range: 3300 mV 
+[    0.228910] LDO13 VDD18_MIPIHSI_1V8: 1800 mV 
+[    0.229855] LDO14 VDD18_ADC_1V8: 1800 mV 
+[    0.230508] vdd_ldo15 range: 1000 mV 
+[    0.231451] LDO16 VDD18_HSIC: 1800 mV 
+[    0.232494] LDO17 VDDQ_CAM_1V8: 1800 mV 
+[    0.233305] LDO18 VDDQ_ISP_1V8: ODROIDU2: Disabled regulator
+[    0.233322] LDO18 VDDQ_ISP_1V8: 1800 mV 
+[    0.233736] LDO19 VT_CAM_1V8: ODROIDU2: Disabled regulator
+[    0.233754] LDO19 VT_CAM_1V8: 1800 mV 
+[    0.234400] vddq_emmc_1V8: 1800 <--> 3000 mV at 1800 mV 
+[    0.235321] LDO21 TFLASH_2V8: 2800 mV 
+[    0.236349] vddf_emmc_2V85: 2850 mV 
+[    0.237269] LDO23 VDD_TOUCH_2V8: ODROIDU2: Disabled regulator
+[    0.237288] LDO23 VDD_TOUCH_2V8: 2800 mV 
+[    0.238192] LDO24 VDD_TOUCHLED_3V3: ODROIDU2: Disabled regulator
+[    0.238210] LDO24 VDD_TOUCHLED_3V3: 3300 mV 
+[    0.239207] LDO25 VDDQ_LCD_3V0: 1800 mV 
+[    0.240014] LDO26 VDD_MOTOR_3V0: ODROIDU2: Disabled regulator
+[    0.240031] LDO26 VDD_MOTOR_3V0: 3000 mV 
+[    0.240445] BUCK1 vdd_mif: 1100 mV 
+[    0.240991] BUCK2 vdd_arm: 800 <--> 1500 mV at 1100 mV 
+[    0.241392] BUCK3 vdd_int: 1125 mV 
+[    0.241940] BUCK4 vdd_g3d: 850 <--> 1200 mV at 1000 mV 
+[    0.242888] BUCK5 VDDQ_CKEM1_2: 1200 mV 
+[    0.243844] BUCK6 1V35: 1350 mV 
+[    0.244779] BUCK7 2V0: 2000 mV 
+[    0.245181] ODROIDU2: Regulator BUCK8
+[    0.365732] BUCK8 3V0: 3300 mV 
+[    0.366532] BUCK9 1V2: ODROIDU2: Disabled regulator
+[    0.366549] BUCK9 1V2: 1200 mV 
+[    0.366911] s3c-i2c s3c2440-i2c.0: i2c-0: S3C I2C adapter
+[    0.366986] s3c-i2c s3c2440-i2c.1: slave address 0x10
+[    0.367007] s3c-i2c s3c2440-i2c.1: bus frequency set to 390 KHz
+[    0.367192] s3c-i2c s3c2440-i2c.1: i2c-1: S3C I2C adapter
+[    0.367258] s3c-i2c s3c2440-i2c.3: slave address 0x10
+[    0.367278] s3c-i2c s3c2440-i2c.3: bus frequency set to 390 KHz
+[    0.367384] s3c-i2c s3c2440-i2c.3: i2c-3: S3C I2C adapter
+[    0.367444] s3c-i2c s3c2440-i2c.7: slave address 0x10
+[    0.367465] s3c-i2c s3c2440-i2c.7: bus frequency set to 390 KHz
+[    0.367564] s3c-i2c s3c2440-i2c.7: i2c-7: S3C I2C adapter
+[    0.367632] s3c-i2c s3c2440-hdmiphy-i2c: slave address 0x10
+[    0.367652] s3c-i2c s3c2440-hdmiphy-i2c: bus frequency set to 390 KHz
+[    0.367817] s3c-i2c s3c2440-hdmiphy-i2c: i2c-8: S3C I2C adapter
+[    0.367875] media: Linux media interface: v0.10
+[    0.367919] Linux video capture interface: v2.00
+[    0.368140] Advanced Linux Sound Architecture Driver Initialized.
+[    0.368712] cfg80211: Calling CRDA to update world regulatory domain
+[    0.369430] Switching to clocksource mct-frc
+[    0.377928] NET: Registered protocol family 2
+[    0.378375] TCP established hash table entries: 8192 (order: 4, 65536 bytes)
+[    0.378512] TCP bind hash table entries: 8192 (order: 5, 163840 bytes)
+[    0.378664] TCP: Hash tables configured (established 8192 bind 8192)
+[    0.378726] TCP: reno registered
+[    0.378747] UDP hash table entries: 512 (order: 2, 24576 bytes)
+[    0.378791] UDP-Lite hash table entries: 512 (order: 2, 24576 bytes)
+[    0.379047] NET: Registered protocol family 1
+[    0.403847] CPU PMU: probing PMU on CPU 0
+[    0.403883] hw perfevents: enabled with ARMv7 Cortex-A9 PMU driver, 7 counters available
+[    0.404358] Initialise module verification
+[    0.404406] audit: initializing netlink socket (disabled)
+[    0.404441] type=2000 audit(0.395:1): initialized
+[    0.405243] bounce pool size: 64 pages
+[    0.411136] msgmni has been set to 1461
+[    0.412156] Key type asymmetric registered
+[    0.412174] Asymmetric key parser 'x509' registered
+[    0.412365] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 251)
+[    0.412386] io scheduler noop registered
+[    0.412398] io scheduler deadline registered
+[    0.412531] io scheduler cfq registered (default)
+[    0.421418] SoftPWM v0.2-acme initializing.
+[    0.421434] Clock resolution is 1ns
+[    0.421465] SoftPWM initialized.
+[    0.424323] dma-pl330 dma-pl330.0: Loaded driver for PL330 DMAC-267056
+[    0.424347] dma-pl330 dma-pl330.0: 	DBUFF-32x4bytes Num_Chans-8 Num_Peri-32 Num_Events-32
+[    0.426904] dma-pl330 dma-pl330.1: Loaded driver for PL330 DMAC-267056
+[    0.426927] dma-pl330 dma-pl330.1: 	DBUFF-32x4bytes Num_Chans-8 Num_Peri-32 Num_Events-32
+[    0.427767] dma-pl330 dma-pl330.2: Loaded driver for PL330 DMAC-267056
+[    0.427790] dma-pl330 dma-pl330.2: 	DBUFF-64x8bytes Num_Chans-8 Num_Peri-1 Num_Events-32
+[    0.480922] exynos4210-uart.0: ttySAC0 at MMIO 0x13800000 (irq = 84) is a S3C6400/10
+[    0.481201] exynos4210-uart.1: ttySAC1 at MMIO 0x13810000 (irq = 85) is a S3C6400/10
+[    1.596907] console [ttySAC1] enabled
+[    1.600796] exynos4210-uart.2: ttySAC2 at MMIO 0x13820000 (irq = 86) is a S3C6400/10
+[    1.608512] exynos4210-uart.3: ttySAC3 at MMIO 0x13830000 (irq = 87) is a S3C6400/10
+[    1.616484] [drm] Initialized drm 1.1.0 20060810
+[    1.620946] i2c i2c-2: attached s5p_ddc into i2c adapter successfully
+[    1.627090] i2c i2c-8: attached s5p_hdmiphy into i2c adapter successfully
+[    1.634104] exynos-mixer s5p-mixer: probe start
+[    1.638738] s5p-g2d s5p-g2d.0: The exynos g2d(ver 4.1) successfully probed
+[    1.645868] [drm] Supports vblank timestamp caching Rev 1 (10.10.2010).
+[    1.651774] [drm] No driver support for vblank timestamp query.
+[    1.658210] exynos-drm exynos-drm: No connectors reported connected with modes
+[    1.664888] [drm] Cannot find any crtc or sizes - going 1024x768
+[    1.687758] Console: switching to colour frame buffer device 128x48
+[    1.698587] exynos-drm exynos-drm: fb0:  frame buffer device
+[    1.704226] exynos-drm exynos-drm: registered panic notifier
+[    1.709873] [drm] Initialized exynos 1.0.0 20110530 on minor 0
+[    1.715784] mali-utgard mali-utgard.0: start latency exceeded, new value 625 ns
+[    1.723017] mali-utgard mali-utgard.0: state restore latency exceeded, new value 4458 ns
+[    1.732597] Mali: init_mali_clock mali_clock c0b11d00 
+[    1.737844] mali-utgard mali-utgard.0: stop latency exceeded, new value 625 ns
+[    1.743421] mali-utgard mali-utgard.0: state save latency exceeded, new value 2458 ns
+[    1.751481] pd-g3d: Power-off latency exceeded, new value 247875 ns
+[    1.757490] Mali: Mali device driver loaded
+[    1.767496] brd: module loaded
+[    1.770785] loop: module loaded
+[    1.771005] ehci_hcd: USB 2.0 'Enhanced' Host Controller (EHCI) Driver
+[    1.779631] s5p-ehci s5p-ehci: S5P EHCI Host Controller
+[    1.784672] s5p-ehci s5p-ehci: new USB bus registered, assigned bus number 1
+[    1.792124] s5p-ehci s5p-ehci: irq 102, io mem 0x12580000
+[    1.804506] s5p-ehci s5p-ehci: USB 2.0 started, EHCI 1.00
+[    1.809168] usb usb1: New USB device found, idVendor=1d6b, idProduct=0002
+[    1.815609] usb usb1: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+[    1.822822] usb usb1: Product: S5P EHCI Host Controller
+[    1.827961] usb usb1: Manufacturer: Linux 3.8.13.23 ehci_hcd
+[    1.833566] usb usb1: SerialNumber: s5p-ehci
+[    1.838479] hub 1-0:1.0: USB hub found
+[    1.842909] hub 1-0:1.0: 3 ports detected
+[    1.847616] ohci_hcd: USB 1.1 'Open' Host Controller (OHCI) Driver
+[    1.852525] exynos-ohci exynos-ohci: Already power on PHY
+[    1.857794] exynos-ohci exynos-ohci: EXYNOS OHCI Host Controller
+[    1.863727] exynos-ohci exynos-ohci: new USB bus registered, assigned bus number 2
+[    1.871338] exynos-ohci exynos-ohci: irq 102, io mem 0x12590000
+[    1.933559] usb usb2: New USB device found, idVendor=1d6b, idProduct=0001
+[    1.938887] usb usb2: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+[    1.946085] usb usb2: Product: EXYNOS OHCI Host Controller
+[    1.951459] usb usb2: Manufacturer: Linux 3.8.13.23 ohci_hcd
+[    1.957096] usb usb2: SerialNumber: exynos-ohci
+[    1.961936] hub 2-0:1.0: USB hub found
+[    1.965952] hub 2-0:1.0: 3 ports detected
+[    1.970203] Initializing USB Mass Storage driver...
+[    1.974177] usbcore: registered new interface driver usb-storage
+[    1.979979] USB Mass Storage support registered.
+[    2.104674] usb3503 0-0008: USB3503_SP_ILOCK = 0x32
+[    2.154517] usb 1-2: new high-speed USB device number 2 using s5p-ehci
+[    2.214500] usb3503 0-0008: switched to HUB mode
+[    2.218324] usb3503 0-0008: usb3503_probe: probed on  hub mode
+[    2.244513] Skip request 2, current 0
+[    2.248359] Skip request 3, current 0
+[    2.252256] s3c-hsotg s3c-hsotg: regs f0080000, irq 103
+[    2.256615] s3c-hsotg s3c-hsotg: Already power on PHY
+[    2.260551] s3c-hsotg s3c-hsotg: EPs:15
+[    2.264215] s3c-hsotg s3c-hsotg: dedicated fifos
+[    2.269127] max77686-rtc max77686-rtc: max77686_rtc_probe
+[    2.284835] usb 1-2: New USB device found, idVendor=0424, idProduct=9730
+[    2.289395] usb 1-2: New USB device strings: Mfr=0, Product=0, SerialNumber=0
+[    2.374978] max77686-rtc max77686-rtc: rtc core: registered max77686-rtc as rtc0
+[    2.382460] s5p-fimc exynos4-fimc.0: sclk_fimc rate is 160000000
+[    2.386502] s5p-fimc exynos4-fimc.0: start latency exceeded, new value 625 ns
+[    2.393584] s5p-fimc exynos4-fimc.0: state restore latency exceeded, new value 16458 ns
+[    2.401568] s5p-fimc exynos4-fimc.0: stop latency exceeded, new value 541 ns
+[    2.408589] s5p-fimc exynos4-fimc.0: state save latency exceeded, new value 3375 ns
+[    2.408650] s5p-fimc exynos4-fimc.1: sclk_fimc rate is 160000000
+[    2.422215] s5p-fimc exynos4-fimc.1: start latency exceeded, new value 583 ns
+[    2.429343] s5p-fimc exynos4-fimc.1: state restore latency exceeded, new value 16125 ns
+[    2.437333] s5p-fimc exynos4-fimc.1: stop latency exceeded, new value 458 ns
+[    2.444319] s5p-fimc exynos4-fimc.1: start latency exceeded, new value 625 ns
+[    2.444386] s5p-fimc exynos4-fimc.2: sclk_fimc rate is 160000000
+[    2.457397] s5p-fimc exynos4-fimc.1: state save latency exceeded, new value 2625 ns
+[    2.465100] s5p-fimc exynos4-fimc.1: stop latency exceeded, new value 542 ns
+[    2.472180] s5p-fimc exynos4-fimc.2: start latency exceeded, new value 458 ns
+[    2.479279] s5p-fimc exynos4-fimc.2: state restore latency exceeded, new value 14917 ns
+[    2.487269] s5p-fimc exynos4-fimc.2: stop latency exceeded, new value 458 ns
+[    2.494295] s5p-fimc exynos4-fimc.2: state save latency exceeded, new value 2500 ns
+[    2.494362] s5p-fimc exynos4-fimc.3: sclk_fimc rate is 160000000
+[    2.507913] s5p-fimc exynos4-fimc.3: start latency exceeded, new value 458 ns
+[    2.515020] s5p-fimc exynos4-fimc.3: state restore latency exceeded, new value 14916 ns
+[    2.523021] s5p-fimc exynos4-fimc.3: stop latency exceeded, new value 417 ns
+[    2.530006] s5p-fimc exynos4-fimc.3: start latency exceeded, new value 459 ns
+[    2.530406] s5p-fimc-md: Registered fimc.0.m2m as /dev/video10
+[    2.530543] s5p-fimc-md: Registered fimc.0.capture as /dev/video11
+[    2.530671] s5p-fimc-md: Registered fimc.1.m2m as /dev/video12
+[    2.530817] s5p-fimc-md: Registered fimc.1.capture as /dev/video13
+[    2.530945] s5p-fimc-md: Registered fimc.2.m2m as /dev/video14
+[    2.531077] s5p-fimc-md: Registered fimc.2.capture as /dev/video15
+[    2.531205] s5p-fimc-md: Registered fimc.3.m2m as /dev/video16
+[    2.531336] s5p-fimc-md: Registered fimc.3.capture as /dev/video17
+[    2.532076] s5p-jpeg s5p-jpeg.0: encoder device registered as /dev/video20
+[    2.532208] s5p-jpeg s5p-jpeg.0: decoder device registered as /dev/video21
+[    2.532212] s5p-jpeg s5p-jpeg.0: Samsung S5P JPEG codec
+[    2.532308] sclk_mfc rate is: 200
+[    2.532485] s5p-mfc s5p-mfc: decoder registered as /dev/video8
+[    2.532612] s5p-mfc s5p-mfc: encoder registered as /dev/video9
+[    2.533041] Exynos: Kernel Thermal management registered
+[    2.533232] cpuidle: using governor ladder
+[    2.539526] usb 1-3: new high-speed USB device number 3 using s5p-ehci
+[    2.634692] s5p-fimc exynos4-fimc.3: state save latency exceeded, new value 3333 ns
+[    2.634843] cpuidle: using governor menu
+[    2.634871] sdhci: Secure Digital Host Controller Interface driver
+[    2.634873] sdhci: Copyright(c) Pierre Ossman
+[    2.634979] s3c-sdhci exynos4-sdhci.2: clock source 2: mmc_busclk.2 (400000000 Hz)
+[    2.635041] mmc0: no vqmmc regulator found
+[    2.635048] mmc0: no vmmc regulator found
+[    2.664510] mmc0: SDHCI controller on samsung-hsmmc [exynos4-sdhci.2] using ADMA
+[    2.679829] s5p-fimc exynos4-fimc.3: stop latency exceeded, new value 583 ns
+[    2.687121] pd-cam: Power-off latency exceeded, new value 254125 ns
+[    2.695265] dw_mmc dw_mmc: Using internal DMA controller.
+[    2.724558] dw_mmc dw_mmc: Version ID is 240a
+[    2.728216] dw_mmc dw_mmc: DW MMC controller at irq 109, 32 bit host data width, 128 deep fifo
+[    2.735670] leds-gpio leds-gpio: pins are not configured from the driver
+[    2.742456] ledtrig-cpu: registered to indicate activity on CPUs
+[    2.748479] usbcore: registered new interface driver usbhid
+[    2.753862] usbhid: USB HID core driver
+[    2.757700] cec: Probe start
+[    2.761418] s5p_cec_probe: pdata=e6caf0c0
+[    2.765152] s5p_cec_mem_probe(): mapped cec_base to f007c000, size 0x1000
+[    2.771488] cec: Requesting irq 146 for s5p-cec
+[    2.775810] usb 1-3: New USB device found, idVendor=0424, idProduct=3503
+[    2.775828] cec: probe successful
+[    2.786322] usb 1-3: New USB device strings: Mfr=0, Product=0, SerialNumber=0
+[    2.793449] hub 1-3:1.0: USB hub found
+[    2.797453] hub 1-3:1.0: 3 ports detected
+[    2.801486] max98090 1-0010: MAX98090 REVID=0x43
+[    2.809281] mmc0: new high speed SDHC card at address 55c7
+[    2.813618] mmcblk0: mmc0:55c7 B08GK 7.45 GiB 
+[    2.814401] hkdk-snd-max98090 hkdk-snd-max98090:  HiFi <-> samsung-i2s.0 mapping ok
+[    2.826971] hkdk-snd-max98090 hkdk-snd-max98090:  HiFi <-> samsung-i2s.0 mapping ok
+[    2.833083]  mmcblk0: p1 p2
+[    2.834432] TCP: cubic registered
+[    2.834442] NET: Registered protocol family 17
+[    2.834506] NET: Registered protocol family 15
+[    2.834525] NET: Registered protocol family 35
+[    2.852832] VFP support v0.3: implementor 41 architecture 3 part 30 variant 9 rev 4
+[    2.853391] DWMMC: Div 2 = 130
+[    2.853402] mmc_host mmc1: Bus speed (slot 0) = 104000000Hz (slot req 400000Hz, actual 400000HZ div = 130)
+[    2.873272] ThumbEE CPU extension supported.
+[    2.877524] pd-gps: Power-off latency exceeded, new value 4302250 ns
+[    2.878552] Registering SWP/SWPB emulation handler
+[    2.878986] Loading module verification certificates
+[    2.887315] MODSIGN: Loaded cert 'Magrathea: Glacier signing key: 85e32b6f272718592829385ce05a51226f34249c'
+[    2.887334] registered taskstats version 1
+[    2.890074] Key type trusted registered
+[    2.892026] Key type encrypted registered
+[    2.893971] IMA: No TPM chip found, activating TPM-bypass!
+[    2.920560] pd-tv: Power-off latency exceeded, new value 47313291 ns
+[    2.927034] pd-lcd0: Power-off latency exceeded, new value 667 ns
+[    2.933033] pd-lcd1: Power-off latency exceeded, new value 6027959 ns
+[    2.939515] pd-mfc: Power-off latency exceeded, new value 181917 ns
+[    2.946127] LDO10 VDD18_MIPI_1V8: incomplete constraints, leaving on
+[    2.974833] max77686-rtc max77686-rtc: setting system clock to 2000-01-01 01:00:07 UTC (946688407)
+[    2.982815] exynos4_dvfs_hotplug_init, max(2000000),min(0)
+[    2.987823] DWMMC: Div 1 = 174
+[    2.987841] ### of_selftest(): No testcase data in device tree; not running tests
+[    2.987900] ALSA device list:
+[    2.987903]   #0: Built-in Audio
+[    3.006487] mmc_host mmc1: Bus speed (slot 0) = 104000000Hz (slot req 300000Hz, actual 298850HZ div = 174)
+[    3.009520] Freeing init memory: 4724K
+[    3.064509] DWMMC: Div 1 = 255
+[    3.064528] mmc_host mmc1: Bus speed (slot 0) = 104000000Hz (slot req 203922Hz, actual 203921HZ div = 255)
+[    5.522798] CPU3: shutdown
+[    6.354823] EXT3-fs (mmcblk0p2): error: couldn't mount because of unsupported optional features (240)
+[    6.356912] EXT2-fs (mmcblk0p2): error: couldn't mount because of unsupported optional features (240)
+[    6.390231] EXT4-fs (mmcblk0p2): mounted filesystem with ordered data mode. Opts: (null)
+[    6.473541] CPU2: shutdown
+[    7.717615] init: plymouth-upstart-bridge main process (116) terminated with status 1
+[    7.717765] init: plymouth-upstart-bridge main process ended, respawning
+[    7.793998] init: plymouth-upstart-bridge main process (126) terminated with status 1
+[    7.794113] init: plymouth-upstart-bridge main process ended, respawning
+[    7.836686] init: plymouth-upstart-bridge main process (129) terminated with status 1
+[    7.836816] init: plymouth-upstart-bridge main process ended, respawning
+[    9.328354] systemd-udevd[223]: starting version 204
+[    9.763848] input: gpio-keys as /devices/platform/gpio-keys.0/input/input0
+[    9.928718] pd-cam: Power-on latency exceeded, new value 6662791 ns
+[    9.928760] s5p-fimc exynos4-fimc.1: state restore latency exceeded, new value 17291 ns
+[    9.928782] s5p-fimc exynos4-fimc.1: stop latency exceeded, new value 666 ns
+[    9.929462] s5p-fimc exynos4-fimc.1: state save latency exceeded, new value 2875 ns
+[    9.930852] pd-cam: Power-off latency exceeded, new value 1336166 ns
+[    9.956253] s5p-fimc exynos4-fimc.3: start latency exceeded, new value 500 ns
+[    9.956285] s5p-fimc exynos4-fimc.3: state restore latency exceeded, new value 17583 ns
+[    9.956308] s5p-fimc exynos4-fimc.3: stop latency exceeded, new value 625 ns
+[    9.956947] s5p-fimc exynos4-fimc.2: start latency exceeded, new value 541 ns
+[    9.956973] s5p-fimc exynos4-fimc.2: state restore latency exceeded, new value 15542 ns
+[    9.956993] s5p-fimc exynos4-fimc.3: start latency exceeded, new value 542 ns
+[    9.957003] s5p-fimc exynos4-fimc.3: state save latency exceeded, new value 3375 ns
+[    9.958443] pd-cam: Power-off latency exceeded, new value 1423333 ns
+[    9.967404] pd-mfc: Power-on latency exceeded, new value 805000 ns
+[    9.967782] s5p-mfc s5p-mfc: start latency exceeded, new value 541 ns
+[    9.967794] s5p-mfc s5p-mfc: state restore latency exceeded, new value 1833 ns
+[    9.977200] smsc95xx v1.0.4
+[    9.981982] CPU3: Booted secondary processor
+[    9.983043] CPU2: Booted secondary processor
+[    9.988969] [smsc95xx_read_mac_addr] Mac address = 26:BC:3A:15:03:DD
+[   10.045419] smsc95xx 1-2:1.0 eth0: register 'smsc95xx' at usb-s5p-ehci-2, smsc95xx USB 2.0 Ethernet, 26:bc:3a:15:03:dd
+[   10.045521] usbcore: registered new interface driver smsc95xx
+[   10.344873] s5p_mfc_alloc_and_load_firmware:44: Firmware is not present in the /lib/firmware directory nor compiled in kernel
+[   10.352870] s5p-mfc s5p-mfc: stop latency exceeded, new value 1083 ns
+[   10.352884] s5p-mfc s5p-mfc: state save latency exceeded, new value 1708 ns
+[   10.353477] pd-mfc: Power-off latency exceeded, new value 583084 ns
+[   10.354009] s5p-mfc s5p-mfc: state restore latency exceeded, new value 1875 ns
+[   10.355014] s5p_mfc_alloc_and_load_firmware:44: Firmware is not present in the /lib/firmware directory nor compiled in kernel
+[   10.364716] s5p-mfc s5p-mfc: state save latency exceeded, new value 1833 ns
+[   10.657279] NET: Registered protocol family 10
+[   10.798575] IPv6: ADDRCONF(NETDEV_UP): eth0: link is not ready
+[   12.268991] IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+[   12.269966] smsc95xx 1-2:1.0 eth0: link up, 100Mbps, full-duplex, lpa 0x4DE1
+[   14.318663] CPU3: shutdown
+[   14.922491] CPU2: shutdown
+[   14.954288] init: failsafe main process (377) killed by TERM signal

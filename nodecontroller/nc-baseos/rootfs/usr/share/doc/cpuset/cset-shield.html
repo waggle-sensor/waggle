@@ -1,0 +1,729 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+    "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="generator" content="AsciiDoc 8.4.5" />
+<title>cset-shield(1)</title>
+<style type="text/css">
+/* Debug borders */
+p, li, dt, dd, div, pre, h1, h2, h3, h4, h5, h6 {
+/*
+  border: 1px solid red;
+*/
+}
+
+body {
+  margin: 1em 5% 1em 5%;
+}
+
+a {
+  color: blue;
+  text-decoration: underline;
+}
+a:visited {
+  color: fuchsia;
+}
+
+em {
+  font-style: italic;
+  color: navy;
+}
+
+strong {
+  font-weight: bold;
+  color: #083194;
+}
+
+tt {
+  color: navy;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #527bbd;
+  font-family: sans-serif;
+  margin-top: 1.2em;
+  margin-bottom: 0.5em;
+  line-height: 1.3;
+}
+
+h1, h2, h3 {
+  border-bottom: 2px solid silver;
+}
+h2 {
+  padding-top: 0.5em;
+}
+h3 {
+  float: left;
+}
+h3 + * {
+  clear: left;
+}
+
+div.sectionbody {
+  font-family: serif;
+  margin-left: 0;
+}
+
+hr {
+  border: 1px solid silver;
+}
+
+p {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+ul, ol, li > p {
+  margin-top: 0;
+}
+
+pre {
+  padding: 0;
+  margin: 0;
+}
+
+span#author {
+  color: #527bbd;
+  font-family: sans-serif;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+span#email {
+}
+span#revnumber, span#revdate, span#revremark {
+  font-family: sans-serif;
+}
+
+div#footer {
+  font-family: sans-serif;
+  font-size: small;
+  border-top: 2px solid silver;
+  padding-top: 0.5em;
+  margin-top: 4.0em;
+}
+div#footer-text {
+  float: left;
+  padding-bottom: 0.5em;
+}
+div#footer-badges {
+  float: right;
+  padding-bottom: 0.5em;
+}
+
+div#preamble {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+div.tableblock, div.imageblock, div.exampleblock, div.verseblock,
+div.quoteblock, div.literalblock, div.listingblock, div.sidebarblock,
+div.admonitionblock {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+div.admonitionblock {
+  margin-top: 2.5em;
+  margin-bottom: 2.5em;
+}
+
+div.content { /* Block element content. */
+  padding: 0;
+}
+
+/* Block element titles. */
+div.title, caption.title {
+  color: #527bbd;
+  font-family: sans-serif;
+  font-weight: bold;
+  text-align: left;
+  margin-top: 1.0em;
+  margin-bottom: 0.5em;
+}
+div.title + * {
+  margin-top: 0;
+}
+
+td div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content + div.title {
+  margin-top: 0.0em;
+}
+
+div.sidebarblock > div.content {
+  background: #ffffee;
+  border: 1px solid silver;
+  padding: 0.5em;
+}
+
+div.listingblock > div.content {
+  border: 1px solid silver;
+  background: #f4f4f4;
+  padding: 0.5em;
+}
+
+div.quoteblock {
+  padding-left: 2.0em;
+  margin-right: 10%;
+}
+div.quoteblock > div.attribution {
+  padding-top: 0.5em;
+  text-align: right;
+}
+
+div.verseblock {
+  padding-left: 2.0em;
+  margin-right: 10%;
+}
+div.verseblock > div.content {
+  white-space: pre;
+}
+div.verseblock > div.attribution {
+  padding-top: 0.75em;
+  text-align: left;
+}
+/* DEPRECATED: Pre version 8.2.7 verse style literal block. */
+div.verseblock + div.attribution {
+  text-align: left;
+}
+
+div.admonitionblock .icon {
+  vertical-align: top;
+  font-size: 1.1em;
+  font-weight: bold;
+  text-decoration: underline;
+  color: #527bbd;
+  padding-right: 0.5em;
+}
+div.admonitionblock td.content {
+  padding-left: 0.5em;
+  border-left: 2px solid silver;
+}
+
+div.exampleblock > div.content {
+  border-left: 2px solid silver;
+  padding: 0.5em;
+}
+
+div.imageblock div.content { padding-left: 0; }
+span.image img { border-style: none; }
+a.image:visited { color: white; }
+
+dl {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+dt {
+  margin-top: 0.5em;
+  margin-bottom: 0;
+  font-style: normal;
+  color: navy;
+}
+dd > *:first-child {
+  margin-top: 0.1em;
+}
+
+ul, ol {
+    list-style-position: outside;
+}
+ol.arabic {
+  list-style-type: decimal;
+}
+ol.loweralpha {
+  list-style-type: lower-alpha;
+}
+ol.upperalpha {
+  list-style-type: upper-alpha;
+}
+ol.lowerroman {
+  list-style-type: lower-roman;
+}
+ol.upperroman {
+  list-style-type: upper-roman;
+}
+
+div.compact ul, div.compact ol,
+div.compact p, div.compact p,
+div.compact div, div.compact div {
+  margin-top: 0.1em;
+  margin-bottom: 0.1em;
+}
+
+div.tableblock > table {
+  border: 3px solid #527bbd;
+}
+thead {
+  font-family: sans-serif;
+  font-weight: bold;
+}
+tfoot {
+  font-weight: bold;
+}
+td > div.verse {
+  white-space: pre;
+}
+p.table {
+  margin-top: 0;
+}
+/* Because the table frame attribute is overriden by CSS in most browsers. */
+div.tableblock > table[frame="void"] {
+  border-style: none;
+}
+div.tableblock > table[frame="hsides"] {
+  border-left-style: none;
+  border-right-style: none;
+}
+div.tableblock > table[frame="vsides"] {
+  border-top-style: none;
+  border-bottom-style: none;
+}
+
+
+div.hdlist {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+div.hdlist tr {
+  padding-bottom: 15px;
+}
+dt.hdlist1.strong, td.hdlist1.strong {
+  font-weight: bold;
+}
+td.hdlist1 {
+  vertical-align: top;
+  font-style: normal;
+  padding-right: 0.8em;
+  color: navy;
+}
+td.hdlist2 {
+  vertical-align: top;
+}
+div.hdlist.compact tr {
+  margin: 0;
+  padding-bottom: 0;
+}
+
+.comment {
+  background: yellow;
+}
+
+@media print {
+  div#footer-badges { display: none; }
+}
+
+div#toctitle {
+  color: #527bbd;
+  font-family: sans-serif;
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-top: 1.0em;
+  margin-bottom: 0.1em;
+}
+
+div.toclevel1, div.toclevel2, div.toclevel3, div.toclevel4 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+div.toclevel2 {
+  margin-left: 2em;
+  font-size: 0.9em;
+}
+div.toclevel3 {
+  margin-left: 4em;
+  font-size: 0.9em;
+}
+div.toclevel4 {
+  margin-left: 6em;
+  font-size: 0.9em;
+}
+/* Overrides for manpage documents */
+h1 {
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  border-top: 2px solid silver;
+  border-bottom: 2px solid silver;
+}
+h2 {
+  border-style: none;
+}
+div.sectionbody {
+  margin-left: 5%;
+}
+
+@media print {
+  div#toc { display: none; }
+}
+
+/* Workarounds for IE6's broken and incomplete CSS2. */
+
+div.sidebar-content {
+  background: #ffffee;
+  border: 1px solid silver;
+  padding: 0.5em;
+}
+div.sidebar-title, div.image-title {
+  color: #527bbd;
+  font-family: sans-serif;
+  font-weight: bold;
+  margin-top: 0.0em;
+  margin-bottom: 0.5em;
+}
+
+div.listingblock div.content {
+  border: 1px solid silver;
+  background: #f4f4f4;
+  padding: 0.5em;
+}
+
+div.quoteblock-attribution {
+  padding-top: 0.5em;
+  text-align: right;
+}
+
+div.verseblock-content {
+  white-space: pre;
+}
+div.verseblock-attribution {
+  padding-top: 0.75em;
+  text-align: left;
+}
+
+div.exampleblock-content {
+  border-left: 2px solid silver;
+  padding-left: 0.5em;
+}
+
+/* IE6 sets dynamically generated links as visited. */
+div#toc a:visited { color: blue; }
+</style>
+</head>
+<body>
+<div id="header">
+<h1>
+cset-shield(1) Manual Page
+</h1>
+<h2>NAME</h2>
+<div class="sectionbody">
+<p>cset-shield -
+   cpuset supercommand which implements cpu shielding
+</p>
+</div>
+</div>
+<h2 id="_synopsis">SYNOPSIS</h2>
+<div class="sectionbody">
+<div class="verseblock">
+<div class="verseblock-content"><em>cset</em> [cset options] <em>shield</em> [shield options] [args]
+<em>cset</em> shield --help
+<em>cset</em> shield
+<em>cset</em> shield --cpu 1-7
+<em>cset</em> shield --cpu 1-7 --kthread=on
+<em>cset</em> shield --exec /opt/software/myapp/doit --my_opt1 --my_opt2
+<em>cset</em> shield --user appuser --exec run_benchmark.sh
+<em>cset</em> shield --shield --pid 1024,2048,5000-1000
+<em>cset</em> shield --unshield --pid 6000-8500
+<em>cset</em> shield --kthread=off
+<em>cset</em> shield --kthread=on
+<em>cset</em> shield --shield bash</div>
+<div class="verseblock-attribution">
+</div></div>
+</div>
+<h2 id="_options">OPTIONS</h2>
+<div class="sectionbody">
+<div class="dlist"><dl>
+<dt class="hdlist1">
+-h, --help
+</dt>
+<dd>
+<p>
+  prints the list of options for this command
+</p>
+</dd>
+<dt class="hdlist1">
+-c CPUSPEC, --cpu=CPUSPEC
+</dt>
+<dd>
+<p>
+  modifies or initializes the shield cpusets
+</p>
+</dd>
+<dt class="hdlist1">
+-r, --reset
+</dt>
+<dd>
+<p>
+  destroys the shield
+</p>
+</dd>
+<dt class="hdlist1">
+-e, --exec
+</dt>
+<dd>
+<p>
+  executes args in the shield
+</p>
+</dd>
+<dt class="hdlist1">
+--user=USER
+</dt>
+<dd>
+<p>
+  use this USER for --exec (id or name)
+</p>
+</dd>
+<dt class="hdlist1">
+--group=GROUP
+</dt>
+<dd>
+<p>
+  use this GROUP for --exec (id or name)
+</p>
+</dd>
+<dt class="hdlist1">
+-s, --shield
+</dt>
+<dd>
+<p>
+  shield PIDSPEC specified with -p/--pid of processes or threads
+</p>
+</dd>
+<dt class="hdlist1">
+-u, --unshield
+</dt>
+<dd>
+<p>
+  remove PIDSPEC specified with -p/--pid of processes or threads from
+  the shield, the tasks keep running in the unshielded cpuset
+</p>
+</dd>
+<dt class="hdlist1">
+--threads
+</dt>
+<dd>
+<p>
+  if specified, any processes found in the PIDSPEC to have multiple
+  threads will automatically have all their threads added to the
+  PIDSPEC (use to shield or unshield all related threads)
+</p>
+</dd>
+<dt class="hdlist1">
+-k on|off, --kthread=on|off
+</dt>
+<dd>
+<p>
+  shield from unbound interrupt threads as well
+</p>
+</dd>
+<dt class="hdlist1">
+-f, --force
+</dt>
+<dd>
+<p>
+  force operation, use with care
+</p>
+</dd>
+<dt class="hdlist1">
+-v, --verbose
+</dt>
+<dd>
+<p>
+  prints more detailed output, additive
+</p>
+</dd>
+<dt class="hdlist1">
+--sysset=SYSSET
+</dt>
+<dd>
+<p>
+  optionally specify system cpuset name
+</p>
+</dd>
+<dt class="hdlist1">
+--userset=USERSET
+</dt>
+<dd>
+<p>
+  optionally specify user cpuset name
+</p>
+</dd>
+</dl></div>
+</div>
+<h2 id="_description">DESCRIPTION</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>This is a supercommand that creates basic cpu shielding.  The
+normal cset commands can of course be used to create this basic
+shield, but the shield command combines many such commands to
+create and manage a common type of cpu shielding setup.</p></div>
+<div class="paragraph"><p>The concept of shielding implies at minimum three cpusets, for
+example: root, user and system.  The root cpuset always exists in
+all implementations of cpusets and contains all available CPUs on
+the machine.  The system cpuset is so named because normal system
+tasks are made to run on it.  The user cpuset is so named because
+that is the "shielded" cpuset on which you would run your tasks
+of interest.</p></div>
+<div class="paragraph"><p>Usually, CPU zero would be in the system set and the rest of the
+CPUs would be in the user set.  After creation of the cpusets,
+all processes running in the root cpuset are moved to the system
+cpuset.  Thus any new processes or threads spawned from these
+processes will also run the system cpuset.</p></div>
+<div class="paragraph"><p>If the optional --kthread=on option is given to the shield
+command, then all kernel threads (with exception of the per-CPU
+bound interrupt kernel threads) are also moved to the system set.</p></div>
+<div class="paragraph"><p>One executes processes on the shielded user cpuset with the
+--exec subcommand or moves processes or threads to the shielded
+cpuset with the --shield subcommand with a --pid option.</p></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">You do not need to specify which cpuset a process or thread
+is running in initially when using the --shield subcommand.</td>
+</tr></table>
+</div>
+<div class="paragraph"><p>To create a shield, you would execute the shield command with the
+--cpu option that specifies CPUSPEC argument that assigns CPUs to
+be under the shield (this means assigned to the user cpuset, all
+other cpus will be assigned to the system set).</p></div>
+<div class="paragraph"><p>For example:</p></div>
+<div class="paragraph"><p><strong><tt># cset shield --cpu=1-3</tt></strong></p></div>
+<div class="paragraph"><p>On a 4-way machine, this command will dedicate the first
+processor, CPU0, for the system set (unshielded) and  the last
+three processors, CPU1, CPU2, CPU3, for the user set (shielded).</p></div>
+<div class="paragraph"><p>The CPUSPEC will accept a comma separated list of CPUs and
+inclusive range specifications.   For example, --cpu=1,3,5-7 will
+assign CPU1, CPU3, CPU5, CPU6, and CPU7 to the user (or shielded)
+cpuset and the inverse of that to the system (or unshielded)
+cpuset.</p></div>
+<div class="paragraph"><p>If you do not like the names "system" and "user" for the
+unshielded and shielded sets respectively, or if those names are
+used already, then use the --sysset and --userset options.</p></div>
+<div class="paragraph"><p>For example:</p></div>
+<div class="paragraph"><p><strong><tt># cset shield --sysset=free --userset=cage --cpu=2,3 --kthread=on</tt></strong></p></div>
+<div class="paragraph"><p>The above command will use the name "free" for the unshielded
+system cpuset, the name "cage" for the shielded user cpuset,
+initialize these cpusets and dedicate CPU0 and CPU1 to the "free"
+set and (on a 4-way machine) dedicate CPU2 and CPU3 to the "cage"
+set.  Further, the command moves all processes and threads,
+including kernel threads from the root cpuset to the "free"
+cpuset.</p></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">If you do use the --syset/--userset options, then you must
+continue to use those for every invocation of the shield supercommand.</td>
+</tr></table>
+</div>
+<div class="paragraph"><p>After initialization, you can run the process of interest on the
+shielded cpuset with the --exec subcommand, or move processes or
+threads already running to the shielded cpuset with the --shield
+subcommand and the --pid option.</p></div>
+<div class="paragraph"><p>Note that if your execed command takes options, then use the
+traditional "--" marker to separate cset&#8217;s options from your
+command&#8217;s options.</p></div>
+<div class="paragraph"><p>For example:</p></div>
+<div class="paragraph"><p><strong><tt># cset shield --exec&#8201;&#8212;&#8201;ls -l</tt></strong></p></div>
+<div class="paragraph"><p>This command will execute "ls -l" inside the shield.</p></div>
+<div class="paragraph"><p>The PIDSPEC argument taken for the --pid (or -p) option is a
+comma separated list of PIDs or TIDs.  The list can also include
+brackets of PIDs or TIDs that are inclusive of the endpoints.</p></div>
+<div class="paragraph"><p>For example:</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>1,2,5               Means processes 1, 2 and 5
+1,2,600-700         Means processes 1, 2 and from 600 to 700</tt></pre>
+</div></div>
+<div class="paragraph"><p><strong><tt># cset shield --shield --pid=50-65</tt></strong></p></div>
+<div class="paragraph"><p>The above command moves all processes and threads with PID or TID
+in the range 50-65 inclusive, from the system cpuset into the
+shielded user cpuset.  If they are running in the root cpuset,
+you must use the --force option to actually move them into the
+shield.</p></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">The range of PIDs or TIDs does not need to have every
+position populated.  In other words, for the example above, if
+there is only one process, say PID 57, in the range of 50-65,
+then only that process will be moved.</td>
+</tr></table>
+</div>
+<div class="paragraph"><p>The --unshield (or -u) subcommand will remove the specified
+processes or threads from the shielded cpuset and move them into
+the unshielded (or system) cpuset.  This command is also used in
+conjuction with a -p/--pid option that specifies a PIDSPEC
+argument, the same as for the --shield subcommand.</p></div>
+<div class="paragraph"><p>Both the --shield and the --unshield commands will also finally
+output the number of tasks running in the shield and out of the
+shield if you do not specify a PIDSPEC with --pid.  By specifying
+also a --verbose in addition, then you will get a listing of
+every task that is running in either the shield or out of the
+shield.</p></div>
+<div class="paragraph"><p>Using no subcommand, ie. only "cset shield", will output the
+status of both shield and non-shield.  Tasks will be listed if
+--verbose is used.</p></div>
+<div class="paragraph"><p>You can adjust which CPUs are in the shielded cpuset by issuing
+the --cpu subcommand again anytime after the shield has been
+initialized.</p></div>
+<div class="paragraph"><p>For example if the original shield contained CPU0 and CPU1 in the
+system set and CPU2 and CPU3 in the user set, if you then issue
+the following command:</p></div>
+<div class="paragraph"><p><strong><tt># cset shield --cpu=1,2,3</tt></strong></p></div>
+<div class="paragraph"><p>then that command will move CPU1 into the shielded "user" cpuset.
+Any processes or threads that were running on CPU1 that belonged
+to the unshielded "system" cpuset are migrated to CPU0 by the
+system.</p></div>
+<div class="paragraph"><p>The --reset subcommand will in essence destroy the shield.  For
+example, if there was a shield on a 4-way machine with CPU0 in
+system and CPUs 1-3 in user with processes running on the user
+cpuset (i.e. in the shield), and a --reset subcommand was issued,
+then all processes running in both system and user cpusets would
+be migrated to the root cpuset (which has access to all CPUs and
+never goes away), after which both system and user cpusets would
+be destroyed.</p></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">Even though you can mix general usage of cpusets with
+the shielding concepts described here, you generally will not
+want to.  For more complex shielding or usage scenarios, one
+would generally use the normal cpuset commands (i.e. cset set
+and proc) directly.</td>
+</tr></table>
+</div>
+</div>
+<h2 id="_license">LICENSE</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Cpuset is licensed under the GNU GPL V2 only.</p></div>
+</div>
+<h2 id="_copyright">COPYRIGHT</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Copyright (c) 2008-2011 Novell Inc.</p></div>
+</div>
+<h2 id="_author">AUTHOR</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Written by Alex Tsariounov &lt;alext@novell.com&gt;.</p></div>
+</div>
+<h2 id="_see_also">SEE ALSO</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>cset(1), cset-set(1), cset-proc(1)</p></div>
+<div class="paragraph"><p>/usr/share/doc/packages/cpuset/html/tutorial.html</p></div>
+<div class="paragraph"><p>taskset(1), chrt(1)</p></div>
+<div class="paragraph"><p>/usr/src/linux/Documentation/cpusets.txt</p></div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Version 1.5.6<br />
+Last updated 2011-06-09 12:53:43 EDT
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,16 @@
+/.
+/lib
+/lib/klibc-JsQhEnahZRs4zAFAYMqmbGmjTlY.so
+/usr
+/usr/share
+/usr/share/lintian
+/usr/share/lintian/overrides
+/usr/share/lintian/overrides/libklibc
+/usr/share/doc
+/usr/share/doc/libklibc
+/usr/share/doc/libklibc/changelog.Debian.gz
+/usr/share/doc/libklibc/README.klibc
+/usr/share/doc/libklibc/README
+/usr/share/doc/libklibc/README.klibc.arch
+/usr/share/doc/libklibc/copyright
+/usr/share/doc/libklibc/README.ipconfig.gz

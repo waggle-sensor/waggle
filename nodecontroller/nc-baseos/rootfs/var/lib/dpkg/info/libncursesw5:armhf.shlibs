@@ -1,0 +1,4 @@
+libncursesw 5 libncursesw5 (>= 5.9+20131221)
+libmenuw 5 libncursesw5 (>= 5.9+20131221)
+libpanelw 5 libncursesw5 (>= 5.9+20131221)
+libformw 5 libncursesw5 (>= 5.9+20131221)

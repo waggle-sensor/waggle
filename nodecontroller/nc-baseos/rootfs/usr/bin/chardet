@@ -1,0 +1,159 @@
+#! /usr/bin/python
+# -*- coding: utf-8 -*-
+
+# bin/chardet
+# Part of chardet, the Universal Encoding Detector.
+#
+# Copyright © 2008–2009 Ben Finney <ben+python@benfinney.id.au>
+#
+# This is free software; you may copy, modify and/or distribute this
+# work under the terms of the GNU Lesser General Public License;
+# either version 2.1 or, at your option, any later version.
+# No warranty expressed or implied. See the file COPYING for details.
+
+""" %prog [options] [file ...]
+
+Report heuristically-detected character encoding for each file.
+
+For every specified file (defaulting to stdin if no files are
+specified), reads and determines the character encoding of the file
+content. Reports the name and confidence level for each file's
+detected character encoding.
+"""
+
+import sys
+import optparse
+import chardet
+
+
+class OptionParser(optparse.OptionParser, object):
+    """ Command-line parser for this program """
+
+    def __init__(self, *args, **kwargs):
+        """ Set up a new instance """
+        super(OptionParser, self).__init__(*args, **kwargs)
+
+        global __doc__
+        self.usage = __doc__.strip()
+
+
+def detect_encoding(in_file):
+    """ Detect encoding of text in `in_file`
+
+        Parameters
+          in_file
+            Opened file object to read and examine.
+
+        Return value
+            The mapping as returned by `chardet.detect`.
+
+        """
+    in_data = in_file.read()
+    params = chardet.detect(in_data)
+    return params
+
+
+def report_file_encoding(in_file, encoding_params):
+    """ Return a report of the file's encoding
+
+        Parameters
+          in_file
+            File object being reported. Should have an appropriate
+            `name` attribute.
+
+          encoding_params
+            Mapping as returned by `detect_encoding` on the file's
+            data.
+
+        Return value
+            The report is a single line of text showing filename,
+            detected encoding, and detection confidence.
+
+        """
+    file_name = in_file.name
+    encoding_name = encoding_params['encoding']
+    confidence = encoding_params['confidence']
+    report = (
+        "%(file_name)s: %(encoding_name)s"
+        " (confidence: %(confidence)0.2f)") % vars()
+    return report
+
+
+def process_file(in_file):
+    """ Process a single file
+
+        Parameters
+          in_file
+            Opened file object to read and examine.
+
+        Return value
+            None.
+
+        Reads the file contents, detects the encoding, and writes a
+        report line to stdout.
+        """
+    encoding_params = detect_encoding(in_file)
+    encoding_report = report_file_encoding(in_file, encoding_params)
+    message = "%(encoding_report)s\n" % vars()
+    sys.stdout.write(message)
+
+
+class DetectEncodingApp(object):
+    """ Application behaviour for 'detect-encoding' program """
+
+    def __init__(self, argv):
+        """ Set up a new instance """
+        self._parse_commandline(argv)
+
+    def _parse_commandline(self, argv):
+        """ Parse command-line arguments """
+        option_parser = OptionParser()
+        (options, args) = option_parser.parse_args(argv[1:])
+        self.file_names = args
+
+    def _emit_file_error(self, file_name, error):
+        """ Emit an error message regarding file processing """
+        error_name = error.__class__.__name__
+        message = (
+            "%(file_name)s: %(error_name)s: %(error)s\n") % vars()
+        sys.stderr.write(message)
+
+    def _process_all_files(self, file_names):
+        """ Process all files in list """
+        if not len(file_names):
+            file_names = [None]
+        for file_name in file_names:
+            try:
+                if file_name is None:
+                    file_name = sys.stdin.name
+                    in_file = sys.stdin
+                else:
+                    in_file = open(file_name)
+                process_file(in_file)
+            except IOError, exc:
+                self._emit_file_error(file_name, exc)
+
+    def main(self):
+        """ Main entry point for application """
+        self._process_all_files(self.file_names)
+
+
+def __main__(argv=None):
+    """ Mainline code for this program """
+
+    from sys import argv as sys_argv
+    if argv is None:
+        argv = sys_argv
+
+    app = DetectEncodingApp(argv)
+    exitcode = None
+    try:
+        app.main()
+    except SystemExit, e:
+        exitcode = e.code
+
+    return exitcode
+
+if __name__ == "__main__":
+    exitcode = __main__(argv=sys.argv)
+    sys.exit(exitcode)

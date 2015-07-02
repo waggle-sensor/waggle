@@ -1,0 +1,7 @@
+#!/bin/sh
+set -e
+# Automatically added by dh_installinit
+if [ -x "/etc/init.d/monit" ] || [ -e "/etc/init/monit.conf" ]; then
+	invoke-rc.d monit stop || exit $?
+fi
+# End automatically added section
