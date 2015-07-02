@@ -3,8 +3,8 @@
 import socket, os, os.path, time
 from multiprocessing import Process, Queue
 import sys
-sys.path.append("..")
-from protocol.src.PacketHandler import *
+sys.path.append('../../../../devtools/protocol_common/')
+from protocol.PacketHandler import *
     
 class internal_communicator(object):
     """ This class acts as the channel of communication to and from the GN and the NC. The internal_msg_handler pulls messages from the data cache, parses the header, and sends the message to the appropriate location. 
@@ -22,6 +22,7 @@ class internal_communicator(object):
     
 class client_push(Process):
     """ A client process that connects to the data cache and pushes outgoing messages. """
+    print 'Client push connected...'
     
     def run(self):
         comm = internal_communicator()
@@ -52,6 +53,7 @@ class client_pull(Process):
     
     def run(self):
         comm = internal_communicator()
+        print 'Client pull connected...'
         if os.path.exists('/tmp/Data_Cache_pull_server'):
             client_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
             while True:
@@ -134,29 +136,21 @@ class pull_server(Process):
         server.listen(5) #supports up to 5 threads, one for each GN
         
         while True:
-            conn, addr = server.accept()
+            client_sock, addr = server.accept()
             print "Connected to ", addr
-            while True:
-                try:
-                    data = conn.recv(40) #Guest Nodes connect and send their uniq_ID
-                    if not data:
-                        comm.incoming_requests.put(data) #Unique ID goes into incoming requests queue. These get pulled out by the pull_client as pull requests
-                        msg = False #if the DC takes longer than 15 seconds to put something in the queue, there is a connection problem. 
-                        for i in range(15): #allows 15 seconds to get message from DC
-                            if incoming.empty(): #TODO each GN should have a queue
-                                time.sleep(1) #sleeps for a second then tries again
-                            else:
-                                msg = incoming.get()#if there are no messages for this GN, this returns False
-                                break
-                        conn.sendto(msg, addr) #sends the msg to the GN #TODO this may break
-                        conn.close() #closes connection to GN? 
-                    
-                    else:
-                       pass
-                except KeyboardInterrupt, k:
-                    print "Shutting down."
+            try:
+                data = conn.recv(50) #Guest Nodes connect and send their uniq_ID
+                if not data:
                     break
-            break
+                else:
+                    comm.incoming_requests.put(data) #Unique ID goes into incoming requests queue. These get pulled out by the pull_client as pull requests
+                    while comm.incoming_msg.empty():#TODO each GN should have a queue
+                            time.sleep(1) #sleeps for a second then tries again
+                    msg = comm.incoming_msg.get()#if there are no messages for this GN, this returns False
+                    client_sock.sendall(msg) #sends the msg to the GN #TODO this may break
+            except KeyboardInterrupt, k:
+                print "Shutting down."
+                break
         server.close()
     
 

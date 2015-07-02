@@ -3,8 +3,8 @@
 import socket, os, os.path, time, pika
 from multiprocessing import Process, Queue, Value
 import sys
-sys.path.append("..")
-from protocol.src.PacketHandler import *
+sys.path.append('../../../../devtools/protocol_common/')
+from protocol.PacketHandler import *
 
 """ This is the communication channel between the cloud and the DC. It consists of a pika client process for RabbitMQ to push and pull messages to and from the cloud and push and pull client processes connected to the DC. """
 #TODO add checks for any priorities outside of range - send back to cloud. -- probably need to unpack and repack the message or can just send an error with previous header as payload or something?
@@ -13,8 +13,10 @@ from protocol.src.PacketHandler import *
 #sets the queue name to the hostname of the node for now
 #TODO Queue name and host name need to be different
 with open('/etc/waggle/hostname','r') as file_:
-    QUEUENAME = file_.read().strip()
-    
+    HOSTNAME = file_.read().strip()
+
+with open('/etc/waggle/queuename','r') as file_:
+    QUEUENAME = file_.read().strip()    
     
 class external_communicator(object):
     
@@ -30,35 +32,32 @@ class pika_push(Process):
     def run(self):
         comm = external_communicator()
         creds = pika.PlainCredentials('guest1', 'guest1')
-        params = pika.ConnectionParameters('beehive.wa8.gl',5672, '/', creds) #beehive.wa8.gl
-        #params = pika.ConnectionParameters('10.10.10.108',5672, '/', creds) #beehive.wa8.gl
+        params = pika.ConnectionParameters('beehive.wa8.gl',5672, '/', creds) 
+        #params = pika.ConnectionParameters('10.10.10.108',5672, '/', creds) 
         print 'Pika push started...'
         while True:
             try:
-                try: #TODO find out what happens if cloud isn't readily available. Does it time out after a certain time or just keep hanging on until a connection is made?
+                try: 
                     #connecting to cloud
                     connection = pika.BlockingConnection(params)
                     channel = connection.channel()
                     comm.cloud_connected.value = 1 #set the flag to true when connected to cloud
                     #Creating a queue
                     channel.queue_declare(queue=QUEUENAME)
-                    print 'Pika push connections successful'
-                    print 'pika cloud connected value: ', comm.cloud_connected.value
+                    print 'Pika push connection successful'
                     while comm.outgoing.empty(): #sleeps until there are messages to send
                         time.sleep(1)
                     
                     msg = comm.outgoing.get() # gets the first item in the outgoing queue
-                    print 'Pika_push... sending msg: ', msg
+                    print 'Pika_push... sending msg to cloud.'
                     channel.basic_publish(exchange='waggle_in', routing_key= 'in', body= msg) #sends to cloud 
                 except: 
                     print 'Pika_push currently unable to connect to cloud...' 
-                    comm.cloud_connected.value = 0 #set the flag to false when not connected to the cloud
-                    print 'pika cloud connected value: ', comm.cloud_connected.value
+                    comm.cloud_connected.value = 0 #set the flag to 0 when not connected to the cloud
                     time.sleep(5)
             except pika.exceptions.ConnectionClosed:
                         print "Pika push connection closed. Waiting 5 seconds and trying again."
                         comm.cloud_connected.value = 0
-                        print 'pika cloud connected value: ', comm.cloud_connected.value
                         time.sleep(5)
         connection.close()
         
@@ -84,12 +83,12 @@ class pika_pull(Process):
                     #loop that waits for data 
                     channel.start_consuming()
                 except:
-                    print 'Pika_pull currently unable to connect to cloud. Waiting 10 seconds before trying again.' 
-                    comm.cloud_connected.value = 0 #set the flag to false when not connected to the cloud
+                    print 'Pika_pull currently unable to connect to cloud. Waiting 5 seconds before trying again.' 
+                    comm.cloud_connected.value = 0 #set the flag to 0 when not connected to the cloud
                     time.sleep(5)
                
             except pika.exceptions.ConnectionClosed:
-                        print "Pika pull connection closed. Waiting 10 seconds before trying again."
+                        print "Pika pull connection closed. Waiting 5 seconds before trying again."
                         comm.cloud_connected.value = 0 #set the flag to false when not connected to the cloud
                         time.sleep(5)
         connection.close()
@@ -98,7 +97,6 @@ class pika_pull(Process):
 #pulls the message from the cloud and puts it into incoming queue 
 def callback(ch, method, properties, body):
     comm = external_communicator()
-    print 'callback...'
     comm.incoming.put(body) #TODO does this work?
     ch.basic_ack(delivery_tag=method.delivery_tag) #RabbitMQ will not delete message until ack received
                 
@@ -114,7 +112,6 @@ class client_pull(Process):
         comm = external_communicator()
         while True:
             try:
-                print 'client cloud connected value: ', comm.cloud_connected.value
                 if comm.cloud_connected.value == 1: #checks if the cloud is connected
                     if os.path.exists('/tmp/Data_Cache_pull_server'):
                         client_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
@@ -124,12 +121,10 @@ class client_pull(Process):
                         client_sock.send(data)
                         msg = client_sock.recv(4028) #can be changed #TODO find out what happens if the server closes the client's connection...
                         if not msg:
-                            print 'if not msg'
                             break
                         else:
-                            print 'Recieved msg: ', msg
+                            print 'Client pull recieved msg.'
                             if msg != 'False':
-                                print 'Client pull putting message in outgoing queue...'
                                 comm.outgoing.put(msg) #puts the message in the outgoing queue
                                 client_sock.close() #closes socket after each message is sent #TODO is there a better way to do this?
                             else: 
@@ -169,7 +164,7 @@ class client_push(Process):
                         flags = header['flags'] #extracts priorities
                         dev = header['r_uniqid'] #gets the recipient ID
                         #TODO write dictionary mapping device ID to priorities
-                        if dev == int(QUEUENAME): 
+                        if dev == int(HOSTNAME): 
                             try:
                                 msg = unpack(msg)
                                 print 'Message recieved from cloud: ', msg[1] #just prints the message to the screen if the recipient is the NC #TODO handle messages being sent to NC 
@@ -182,7 +177,7 @@ class client_push(Process):
                             msg += (str(msg_p) + '|')
                             msg += (str(dev) + ',') #TODO need to change to look up device priority in dictionary before sending message 
                             msg += 'i,' #incoming push
-                            print "sending: " , msg
+                            print "Client push sending msg to DC. "
                             client_sock.send(msg) #sends msg
                             client_sock.close()
                     except:
