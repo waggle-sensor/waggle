@@ -7,6 +7,7 @@ from utilitiesprocess import UtilProcess
 from multiprocessing import Manager
 from registrationprocess import RegProcess
 from dataprocess import DataProcess
+import time
 # Queues and exchanges the server will always need.
 exchage_list = ["waggle_in","internal"]
 
@@ -73,14 +74,38 @@ print("Data process online.")
 
 
 print("All processes online. Server is fully operational.")
-procs = [data,reg,util,router]
+
+# Make sure all the processes stay alive.
 while True:
-	for process in procs:
-		if not process.is_alive():
-			print "Process {} has died. Bringing it back from the dead...".format(process.name)
-			process.__init__()
-			process.start()
-	
+	if not router.is_alive():
+		print "The router has died. RIP In Peace."
+		print "Attempting to bring it back from the dead..."
+		router = WaggleRouter(routing_table)
+		router.start()
+		print "The router has risen from the grave!"
+
+	if not util.is_alive():
+		print "The utilProcess has died. RIP In Peace."
+		print "Attempting to bring it back from the dead..."
+		util = UtilProcess()
+		util.start()
+		print "The utilProcess has risen from the grave!"
+
+	if not reg.is_alive():
+		print "The registrar has died. RIP In Peace."
+		print "Attempting to bring it back from the dead..."
+		reg = RegProcess()
+		reg.start()
+		print "The registrar has risen from the grave!"
+
+	if not data.is_alive():
+		print "The data process has died. RIP In Peace."
+		print "Attempting to bring it back from the dead..."
+		data = DataProcess()
+		data.start()
+		print "The router has risen from the grave!"
+
+	time.sleep(3)
 
 data.join()
 reg.join()

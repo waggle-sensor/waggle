@@ -14,7 +14,7 @@ header_dict = {
 }
 
 creds = pika.PlainCredentials('guest1','guest1')
-params = pika.ConnectionParameters('localhost',5672,'/',creds)
+params = pika.ConnectionParameters('10.10.10.139',5672,'/',creds)
 connection = pika.BlockingConnection(params)
 channel = connection.channel()
 print("Channel to RabbitMQ opened.")
@@ -24,8 +24,9 @@ queue = "ppppjf93kod93j0fu3kd93hf9hy309gtu"
 packet = pack(header_dict,queue)
 channel.exchange_declare("waggle_in")
 channel.queue_declare(queue)
-for i in range(1,11):
+for i in range(1,1001):
 	channel.basic_publish(exchange="waggle_in",routing_key="in",body=packet)
+print "All time requests received!"
 
 
 def callback(ch,method,props,body):
