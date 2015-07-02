@@ -18,7 +18,7 @@ const byte FAIL_FLASH = 5;
 const byte FAIL_WATCHDOG = 6;
 const byte FAIL_INTERRUPT = 7;
 const byte FAIL_ADC = 8;
-const byte FAIL_TIMER1 = 9;
+const byte FAIL_TIMER3 = 9;
 
 const boolean FATAL_GPRF = true;
 const boolean FATAL_STACK = true;
@@ -28,7 +28,7 @@ const boolean FATAL_FLASH = true;
 const boolean FATAL_WATCHDOG = true;
 const boolean FATAL_INTERRUPT = false;
 const boolean FATAL_ADC = false;
-const boolean FATAL_TIMER1 = false;
+const boolean FATAL_TIMER3 = false;
 
 const byte RESET_POWER_ON = 0;
 const byte RESET_EXTERNAL = 1;
@@ -44,7 +44,7 @@ const int ADC_TEST_THRESHOLD = 512;
 //---------- G L O B A L S ----------------------------------------------------
 boolean _SOS_BOOT_MODE = false;
 
-volatile boolean _isr_timer1_overflow = false;
+volatile boolean _timer3_overflow = false;
 
 
 
@@ -69,11 +69,11 @@ volatile boolean _isr_timer1_overflow = false;
 */
 void POST() 
 {
-  // Find reason for reset
-  byte reason = find_reset_reason();
-
   // Debug
   delay(8000);
+
+  // Find reason for reset
+  byte reason = find_reset_reason();
 
   // General Purpose Register File failed?
 	if(!gprf_test())
@@ -103,9 +103,9 @@ void POST()
   if(!ADC_test())
     test_failure(FAIL_ADC, FATAL_ADC);
 
-  // Timer1 (watchdog reset timer) test failed?
-  if(!timer1_test())
-    test_failure(FAIL_TIMER1, FATAL_TIMER1);
+  // Timer3 test failed?
+  if(!timer3_test())
+    test_failure(FAIL_TIMER3, FATAL_TIMER3);
 }
 
 
@@ -504,18 +504,22 @@ __attribute__((optimize(0))) boolean sram_test()
 */
 __attribute__((optimize(0))) boolean watchdog_test(byte reason)
 {
-	// Was reset not due to watchdog?
-	if((reason & RESET_WATCHDOG) != RESET_WATCHDOG)
-	{
-		Serial.println("not watchdog reset");
+  Serial.println(reason);
 
-		wdt_enable(WDTO_1S);
-		Serial.println("enabled");
-	}
-	if((reason & RESET_WATCHDOG) == RESET_WATCHDOG)
+  // Was reset not due to watchdog?
+  if((reason & RESET_WATCHDOG) != RESET_WATCHDOG)
+  {
+    Serial.println("not watchdog reset");
+    wdt_enable(WDTO_1S);
+    Serial.println("enabled");
+    delay(2000);
+    Serial.print("watchdog did not reset");
+    return false;
+  }
+
+  if((reason & RESET_WATCHDOG) == RESET_WATCHDOG)
     Serial.println("watchdog reset");
-
-	return true;
+  return true;
 }
 
 
@@ -575,85 +579,88 @@ __attribute__((optimize(0))) boolean ADC_test()
 
    :rtype: boolean
 */
-__attribute__((optimize(0))) boolean timer1_test()
+__attribute__((optimize(0))) boolean timer3_test()
 {
   /* These comments apply to all register tests in this function */
   // Load first test value
-  TCCR1A = 0x55;
+  TCCR3A = 0x55;
   // Is the register not storing the test value?
   // See datasheet for unused bits
-  if((TCCR1A & 0x55) != 0x55)
+  if((TCCR3A & 0x55) != 0x55)
     // Exit test with failure
     return false;
   // Load second test value
-  TCCR1A = 0xAA;
+  TCCR3A = 0xAA;
   // Is the register not storing the test value?
   // See datasheet for unused bits
-  if((TCCR1A & 0xAA) != 0xAA)
+  if((TCCR3A & 0xAA) != 0xAA)
     // Exit test with failure
     return false;
   // Reset the register
-  TCCR1A = 0;
+  TCCR3A = 0;
 
-  TCCR1B = 0x55;
-  if((TCCR1B & 0x55) != 0x55)
+  TCCR3B = 0x55;
+  if((TCCR3B & 0x55) != 0x55)
     return false;
-  TCCR1B = 0xAA;
-  if((TCCR1B & 0xAA) != 0x8A)
+  TCCR3B = 0xAA;
+  if((TCCR3B & 0xAA) != 0x8A)
     return false;
-  TCCR1B = 0;
+  TCCR3B = 0;
 
-  TCNT1 = 0x5555;
-  if((TCNT1 & 0x5555) != 0x5555)
+  TCNT3 = 0x5555;
+  if((TCNT3 & 0x5555) != 0x5555)
     return false;
-  TCNT1 = 0xAAAA;
-  if((TCNT1 & 0xAAAA) != 0xAAAA)
+  TCNT3 = 0xAAAA;
+  if((TCNT3 & 0xAAAA) != 0xAAAA)
     return false;
-  TCNT1 = 0;
+  TCNT3 = 0;
 
-  OCR1A = 0x5555;
-  if((OCR1A & 0x5555) != 0x5555)
+  OCR3A = 0x5555;
+  if((OCR3A & 0x5555) != 0x5555)
     return false;
-  OCR1A = 0xAAAA;
-  if((OCR1A & 0xAAAA) != 0xAAAA)
+  OCR3A = 0xAAAA;
+  if((OCR3A & 0xAAAA) != 0xAAAA)
     return false;
-  OCR1A = 0;
+  OCR3A = 0;
 
   // Disable interrupts so we can fiddle with the interrupt controls
   noInterrupts();
 
-  TIMSK1 = 0x55;
-  if((TIMSK1 & 0x55) != 0x05)
+  TIMSK3 = 0x55;
+  if((TIMSK3 & 0x55) != 0x05)
     return false;
-  TIMSK1 = 0xAA;
-  if((TIMSK1 & 0xAA) != 0x2A)
+  TIMSK3 = 0xAA;
+  if((TIMSK3 & 0xAA) != 0x2A)
     return false;
-  TIMSK1 = 0;
+  TIMSK3 = 0;
 
   // We return you to your normally scheduled programming (enable interrupts)
   interrupts();
 
   // By default, timer is set for normal, overflow, non-PWM mode.
   // Enable overflow interrupt
-  TIMSK1 |= (1 << TOIE1);
-  // Set prescaler to clk/256 (this starts the timer).
-  // Timer overflows in a little over 1 second
-  TCCR1B |= (1 << CS10) | (1 << CS12);
+  TIMSK3 |= (1 << TOIE3);
 
-  Serial.println("start");
+  Serial.println(_timer3_overflow);
+
+  // Set prescaler to clk/1024 (this starts the timer).
+  // Timer overflows in a little over 4 seconds
+  TCCR3B |= (1 << CS30) | (1 << CS32);
+
+  Serial.println(_timer3_overflow);
+
   // Wait for timer interrupt
-  while(!_isr_timer1_overflow);
-  Serial.println("end");
+  while(!_timer3_overflow);
 
   // Reset the flag for the enjoyment of future generations
-  _isr_timer1_overflow = false;
+  _timer3_overflow = false;
 
   // Disable overflow interrupt
-  TIMSK1 = 0;
+  TIMSK3 = 0;
   // Clear the clock prescaling (this turns off the timer)
-  TCCR1B = 0;
+  TCCR3B = 0;
   // Clear the timer's counter
-  TCNT1 = 0;
+  TCNT3 = 0;
 
   // Exit test with success
   return true;
@@ -661,16 +668,27 @@ __attribute__((optimize(0))) boolean timer1_test()
 
 
 
-//---------- T I M E R 1 _ O V E R F L O W _ I N T E R R U P T ----------------
+//---------- T I M E R 3 _ O V E R F L O W _ I N T E R R U P T ----------------
 /*
-   Interrupt for Timer1 overflow.
+   Interrupt for Timer3 overflow.
 
    :rtype: none
 */
-ISR(TIMER1_OVF_vect)
+/*
+
+
+NOTE: program appears to be entering ISR before it runs the rest of the code, 
+but inconsistently.  why?  is the ISR pointed to by the bootloader before the
+jump to main()?  memory corruption/overwrite?
+
+
+*/
+ISR(TIMER3_OVF_vect)
 {
+  Serial.println("ISR");
+
   // Set flag to indicate that the interrupt fired
-  _isr_timer1_overflow = true;
+  _timer3_overflow = true;
 }
 
 
@@ -681,6 +699,13 @@ ISR(TIMER1_OVF_vect)
 
    :rtype: byte
 */
+/*
+
+
+NOTE: bootloader clears MCUSR.  hmm...what to do?
+
+
+*/
 byte find_reset_reason()
 {
 	byte i;
@@ -689,7 +714,7 @@ byte find_reset_reason()
 	// Check bits 0-5 in MCUSR
 	for(i = 0; i < 6; i++)
 	{
-		// Is the current bit set?
+    // Is the current bit set?
 		if(MCUSR & mask)
 			// Found the reset flag, so exit the loop
 			break;
