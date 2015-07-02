@@ -1,0 +1,77 @@
+#!/bin/sh
+
+OPTION=FRAMEBUFFER
+PREREQ="framebuffer"
+
+prereqs()
+{
+        echo "$PREREQ"
+}
+
+case $1 in
+prereqs)
+        prereqs
+        exit 0
+        ;;
+esac
+
+[ -x /sbin/plymouthd ] || exit 0
+
+. /usr/share/initramfs-tools/hook-functions
+
+mkdir -p ${DESTDIR}/lib/arm-linux-gnueabihf/plymouth/renderers
+mkdir -p ${DESTDIR}/lib/plymouth/themes
+
+copy_exec /sbin/plymouthd /sbin
+copy_exec /bin/plymouth /bin
+
+# plugin that is always required
+copy_exec /lib/arm-linux-gnueabihf/plymouth/details.so /lib/arm-linux-gnueabihf/plymouth/
+
+# copy the default themes
+cp -a /lib/plymouth/themes/details ${DESTDIR}/lib/plymouth/themes/
+TEXT_THEME=$(readlink -f /lib/plymouth/themes/text.plymouth)
+if [ -e "$TEXT_THEME" ]; then
+	ln -s $TEXT_THEME ${DESTDIR}/lib/plymouth/themes/text.plymouth
+	cp -a $(dirname $TEXT_THEME) ${DESTDIR}/lib/plymouth/themes/
+	MODULE=$(grep "ModuleName *= *" ${TEXT_THEME} | sed 's/ModuleName *= *//')
+	copy_exec /lib/arm-linux-gnueabihf/plymouth/$MODULE.so /lib/arm-linux-gnueabihf/plymouth/
+fi
+THEME=$(readlink -f /lib/plymouth/themes/default.plymouth)
+if [ -e "$THEME" ]; then
+	ln -s $THEME ${DESTDIR}/lib/plymouth/themes/default.plymouth
+	cp -a $(dirname $THEME) ${DESTDIR}/lib/plymouth/themes/
+	MODULE=$(grep "ModuleName *= *" ${THEME} | sed 's/ModuleName *= *//')
+	copy_exec /lib/arm-linux-gnueabihf/plymouth/$MODULE.so /lib/arm-linux-gnueabihf/plymouth/
+
+	# if we have a non-text theme, make sure we copy all the support libs
+	copy_exec /lib/arm-linux-gnueabihf/plymouth/label.so /lib/arm-linux-gnueabihf/plymouth/
+
+	# suppress a warning in glib (which the label control uses)
+	# about uid 0 by building a dummy NSS stack (LP #649917)
+	if ! grep -q '^root:' ${DESTDIR}/etc/passwd 2>/dev/null; then
+	    echo 'root:x:0:0:root:/root:/bin/sh' >${DESTDIR}/etc/passwd
+	fi
+	echo 'passwd: files' >${DESTDIR}/etc/nsswitch.conf
+	for lib in /lib/arm-linux-gnueabihf/libnss_files* /lib/libnss_files*
+	do
+	    if [ -e "$lib" ]; then
+		copy_exec $lib /lib
+	    fi
+	done
+
+	# output renderers
+	copy_exec /lib/arm-linux-gnueabihf/plymouth/renderers/frame-buffer.so /lib/arm-linux-gnueabihf/plymouth/renderers/
+	copy_exec /lib/arm-linux-gnueabihf/plymouth/renderers/drm.so /lib/arm-linux-gnueabihf/plymouth/renderers/
+	copy_exec /lib/arm-linux-gnueabihf/plymouth/renderers/vga16fb.so /lib/arm-linux-gnueabihf/plymouth/renderers/
+
+	cp /lib/plymouth/ubuntu_logo.png ${DESTDIR}/lib/plymouth
+
+	# and copy the font support files needed in order to actually display
+	# any text
+	mkdir -p ${DESTDIR}/usr/share/fonts/truetype/dejavu
+	mkdir -p ${DESTDIR}/etc/fonts/conf.d
+	cp /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf ${DESTDIR}/usr/share/fonts/truetype/dejavu/
+	cp /etc/fonts/fonts.conf ${DESTDIR}/etc/fonts/fonts.conf
+	cp -L /etc/fonts/conf.d/60-latin.conf ${DESTDIR}/etc/fonts/conf.d
+fi

@@ -1,0 +1,11 @@
+/.
+/usr
+/usr/share
+/usr/share/doc
+/usr/share/doc/libattr1
+/usr/share/doc/libattr1/copyright
+/usr/share/doc/libattr1/changelog.Debian.gz
+/lib
+/lib/arm-linux-gnueabihf
+/lib/arm-linux-gnueabihf/libattr.so.1.1.0
+/lib/arm-linux-gnueabihf/libattr.so.1

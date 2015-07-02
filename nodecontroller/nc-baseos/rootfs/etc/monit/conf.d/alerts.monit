@@ -1,0 +1,6 @@
+
+
+check system localhost
+    if cpu usage (user) > 10%
+        then 
+            exec "/bin/bash -c 'echo \"More than 10% utilization\" >> /var/log/alerts.log'"

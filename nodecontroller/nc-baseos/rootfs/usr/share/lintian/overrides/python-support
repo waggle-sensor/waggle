@@ -1,0 +1,1 @@
+python-support: depends-on-python-minimal depends

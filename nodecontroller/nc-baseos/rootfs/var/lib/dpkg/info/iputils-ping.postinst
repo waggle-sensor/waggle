@@ -1,0 +1,26 @@
+#!/bin/sh
+
+set -e
+
+PATH=/usr/bin:/bin:/usr/sbin:/sbin
+export PATH
+
+for f in /bin/ping /bin/ping6; do
+    # if the admin has set an override, don't do anything at all
+    if ! dpkg-statoverride --list $f > /dev/null 2>&1; then
+        if getcap $f > /dev/null 2>&1; then
+            if echo "cap_net_raw+p" | setcap -q - $f; then
+                # remove the setuid bit!
+                chmod -s $f
+            fi
+        fi
+    fi
+done
+
+
+
+# Local variables:
+# mode: shell-script
+# tab-width: 4
+# indent-tabs-mode: nil
+# end:

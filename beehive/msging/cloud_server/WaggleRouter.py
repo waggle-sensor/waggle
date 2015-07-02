@@ -1,6 +1,6 @@
 # WaggleRouter.py
 import sys
-sys.path.append("..")
+sys.path.append("../../../devtools/protocol_common")
 from multiprocessing import Process, Manager
 import pika
 from protocol.PacketHandler import *
@@ -30,6 +30,8 @@ class WaggleRouter(Process):
 		#Create a connection to the RabbitMQ server.
 		self.rabbitConn = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
 		self.channel = self.rabbitConn.channel()
+		self.channel.basic_qos(prefetch_count=1)
+
 		print "Connection to rabbitMQ broker succeeded."
 		#Load all of the existing registered node queues
 		with open('registrations/nodes.txt','r') as nodes:

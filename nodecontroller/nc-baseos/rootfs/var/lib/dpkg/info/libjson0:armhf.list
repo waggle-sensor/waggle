@@ -1,0 +1,8 @@
+/.
+/lib
+/lib/arm-linux-gnueabihf
+/usr
+/usr/share
+/usr/share/doc
+/lib/arm-linux-gnueabihf/libjson.so.0
+/usr/share/doc/libjson0

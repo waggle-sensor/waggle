@@ -1,0 +1,16 @@
+/.
+/usr
+/usr/lib
+/usr/lib/arm-linux-gnueabihf
+/usr/lib/arm-linux-gnueabihf/libidn.so.11.6.11
+/usr/share
+/usr/share/doc
+/usr/share/doc/libidn11
+/usr/share/doc/libidn11/THANKS
+/usr/share/doc/libidn11/README
+/usr/share/doc/libidn11/TODO
+/usr/share/doc/libidn11/NEWS.gz
+/usr/share/doc/libidn11/AUTHORS.gz
+/usr/share/doc/libidn11/changelog.Debian.gz
+/usr/share/doc/libidn11/copyright
+/usr/lib/arm-linux-gnueabihf/libidn.so.11

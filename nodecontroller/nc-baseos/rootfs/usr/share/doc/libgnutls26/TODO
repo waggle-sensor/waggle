@@ -1,0 +1,3 @@
+* session ticket fix
+* openpgp fix
+* %COMPAT -> key usage toleration

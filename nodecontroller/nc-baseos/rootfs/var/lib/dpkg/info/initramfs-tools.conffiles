@@ -1,0 +1,5 @@
+/etc/bash_completion.d/initramfs-tools
+/etc/initramfs-tools/update-initramfs.conf
+/etc/initramfs-tools/initramfs.conf
+/etc/kernel/postrm.d/initramfs-tools
+/etc/kernel/postinst.d/initramfs-tools

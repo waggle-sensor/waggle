@@ -1,0 +1,103 @@
+#! /usr/bin/python
+#
+# copyright (c) 2006 Josselin Mouette <joss@debian.org>
+# Licensed under the GNU Lesser General Public License, version 2.1
+# See COPYING for details
+
+from optparse import OptionParser
+import sys,os.path
+sys.path.append("/usr/share/python-support/private/")
+import pysupport
+
+parser = OptionParser(usage="usage: %prog [options] file.pyversions")
+
+parser.add_option ("--minmax", action="store_true", dest="minmax", help="display minimum and maximum python versions described by the file", default=False)
+parser.add_option ("-l", "--long", action="store_true", dest="long", help='prepend versions with "python"',default=False)
+parser.add_option ("--pycentral", action="store_true", dest="pycentral", help="Parse a pycentral-type version string instead",default=False)
+parser.add_option ("--raw", action="store_true", dest="raw", help="Output the raw input string (useful with --pycentral)",default=False)
+parser.add_option ("--all", action="store_true", dest="all", help="List all supported versions instead of parsing a file",default=False)
+
+(options, args) = parser.parse_args()
+
+if options.all:
+  f=iter(['-'])
+else:
+  if len(args) < 1:
+    f=sys.stdin
+  else:
+    f=file(args[0])
+
+if options.pycentral:
+  import re
+  l=None
+  paraborder=True
+  for line in f:
+    line=line.strip()
+    if line.startswith('#') or not line: # Empty line or comment
+      if paraborder==True:
+        # We're at the beginning of debian/control
+        continue
+      # We reached the end of the first paragraph, don't keep on reading
+      break
+    paraborder=False
+    if line.lower().startswith(("xs-python-version:", "x-python-version:")):
+      l=line.split(':')[1]
+      break
+  if not l: 
+    print "X(S)-Python-Version header not found."
+    sys.exit(1)
+  min=max=""
+  out=[]
+  for elem in l.split(','):
+    elem=elem.strip()
+    if elem=="all":
+      min=max=""
+      out=["-"]
+      break
+    if elem=="current":
+      out.append(os.readlink("/usr/bin/python")[6:])
+      continue
+    a=re.match(">=\s*([\d\.]+)",elem)
+    if a:
+      min=a.group(1)
+      continue
+    a=re.match("<<\s*([\d\.]+)",elem)
+    if a:
+      try:
+        max=a.group(1).split(".")
+        max[1]=`int(max[1])-1`
+        max='.'.join(max)
+      except IndexError:
+        max=""
+      continue
+    a=re.match("^[\d\.]+$",elem)
+    if a:
+      out.append(elem)
+  if min or max:
+    out.append(min+"-"+max)
+  stringtoparse=','.join(out)
+else:
+  stringtoparse=f.next()
+  if stringtoparse.startswith("pyversions") and "=" in stringtoparse:
+    # Case of a .public file with version info
+    stringtoparse = stringtoparse.split("=",1)[1]
+  elif stringtoparse.startswith("/"):
+    # Case of a .public file without version info
+    stringtoparse = "-"
+
+if options.raw:
+  print stringtoparse.rstrip('\n')
+  sys.exit(0)
+
+v=pysupport.version_list(stringtoparse)
+if options.long:
+  print ' '.join(v)
+else:
+  print ' '.join(v.verlist)
+
+if options.minmax:
+  min=v.min
+  if options.long and min: min="python"+min
+  max=v.max
+  if options.long and max: max="python"+max
+  print min, max

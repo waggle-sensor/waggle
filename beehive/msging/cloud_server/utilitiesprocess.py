@@ -1,6 +1,6 @@
 # utilitiesprocess.py
 import sys
-sys.path.append("..")
+sys.path.append("../../../devtools/protocol_common")
 from multiprocessing import Process, Manager
 import pika
 from protocol.PacketHandler import *
@@ -22,7 +22,7 @@ class UtilProcess(Process):
 		#Make the connection to RabbitMQ
 		self.connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
 		self.channel = self.connection.channel()
-
+		self.channel.basic_qos(prefetch_count=1)
 		# Declare the relevant incoming queue and exchange
 		self.channel.queue_declare("util")
 		self.channel.exchange_declare("waggle_in")
@@ -63,5 +63,3 @@ class UtilProcess(Process):
 	def join(self):
 		super(UtilProcess,self).terminate()
 		self.connection.close()
-		
-

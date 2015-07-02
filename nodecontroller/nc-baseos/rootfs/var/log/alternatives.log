@@ -1,0 +1,10 @@
+update-alternatives 2000-01-01 01:05:15: run with --install /usr/bin/editor editor /bin/nano 40 --slave /usr/share/man/man1/editor.1.gz editor.1.gz /usr/share/man/man1/nano.1.gz
+update-alternatives 2000-01-01 01:05:15: link group editor updated to point to /bin/nano
+update-alternatives 2000-01-01 01:05:15: run with --install /usr/bin/pico pico /bin/nano 10 --slave /usr/share/man/man1/pico.1.gz pico.1.gz /usr/share/man/man1/nano.1.gz
+update-alternatives 2000-01-01 01:05:15: link group pico updated to point to /bin/nano
+update-alternatives 2000-01-01 01:05:15: run with --quiet --install /usr/bin/rsh rsh /usr/bin/ssh 20 --slave /usr/share/man/man1/rsh.1.gz rsh.1.gz /usr/share/man/man1/ssh.1.gz
+update-alternatives 2000-01-01 01:05:15: link group rsh updated to point to /usr/bin/ssh
+update-alternatives 2000-01-01 01:05:15: run with --quiet --install /usr/bin/rlogin rlogin /usr/bin/slogin 20 --slave /usr/share/man/man1/rlogin.1.gz rlogin.1.gz /usr/share/man/man1/slogin.1.gz
+update-alternatives 2000-01-01 01:05:15: link group rlogin updated to point to /usr/bin/slogin
+update-alternatives 2000-01-01 01:05:16: run with --quiet --install /usr/bin/rcp rcp /usr/bin/scp 20 --slave /usr/share/man/man1/rcp.1.gz rcp.1.gz /usr/share/man/man1/scp.1.gz
+update-alternatives 2000-01-01 01:05:16: link group rcp updated to point to /usr/bin/scp

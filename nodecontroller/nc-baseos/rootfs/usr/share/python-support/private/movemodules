@@ -1,0 +1,237 @@
+#! /usr/bin/python
+#
+# copyright (c) 2006 Josselin Mouette <joss@debian.org>
+# Licensed under the GNU Lesser General Public License, version 2.1
+# See COPYING for details
+
+from optparse import OptionParser
+import os,os.path,re,sys
+from hashlib import md5
+
+sourcepath='usr/share/python-support'
+modulepath='usr/share/pyshared'
+extensionpath='usr/lib/pyshared'
+installedpath='usr/lib/pymodules'
+
+parser = OptionParser(usage="usage: %prog [options] [directory [...]]")
+
+parser.add_option("-v", "--verbose", action="store_true", dest="verbose",
+                  help="verbose output", default=False)
+parser.add_option("-p", "--package", dest="package")
+parser.add_option("-V", "--version-info", dest="version")
+
+(options, args) = parser.parse_args()
+
+sys.path.append("/usr/share/python-support/private/")
+from pysupport import py_supported,py_supported_short
+
+# Set the umask so that directories are created with correct permissions
+os.umask(022)
+
+if not args:
+  parser.error("No directory to process.")
+
+for basedir in args:
+  if not os.path.isdir(basedir):
+    parser.error("%s is not a directory."%basedir)
+
+class filelist:
+  def __init__(self):
+    self.d={}
+    self.pylist=set()
+  def addsum(self,file,pyver,sum):
+    if file not in self.d:
+      self.d[file]={}
+    elif pyver in self.d[file] and self.d[file][pyver] != sum:
+      sys.stderr.write("WARNING: %s exists in multiple versions\n"%file)
+    self.d[file][pyver]=sum
+  def addpyver(self,pyver):
+    self.pylist.add(pyver)
+  def isallthesame(self,file):
+    if file.endswith(".so"):
+      # If there is a .so, no need to even check, it must be moved
+      return False
+    elif re.search('\.so(?:\.\d+){0,3}$', file):
+      sys.stderr.write("WARNING: %s: versioned shared object\n"%file)
+      return False
+    try:
+      s=[ self.d[file][pyver] for pyver in self.pylist ]
+    except KeyError:
+      return False
+    return (s.count(s[0]) == len(self.pylist))
+  def list(self,file):
+    return self.d[file].keys()
+  def __iter__(self):
+    return iter(self.d)
+
+# Rename by preserving relative links
+def rename_subtle (source, destination, sourcedir):
+  if os.path.islink (source):
+    linkdest = os.readlink (source)
+    if not os.path.isabs (linkdest):
+      linkdest = os.path.normpath(os.path.join(os.path.dirname(source),linkdest))
+      if not linkdest.startswith(sourcedir+'/'):
+        prefix = os.path.dirname(os.path.commonprefix((linkdest, destination)))
+        linkdest = os.path.normpath(destination)[len(prefix)+1:].count('/') * '../' + \
+                   linkdest[len(prefix)+1:]
+        destdir = os.path.dirname(destination)
+        if not os.path.isdir (destdir):
+          os.makedirs (destdir)
+        if os.path.lexists (destination):
+          os.remove (destination)
+        os.symlink (linkdest, destination)
+        os.remove (source)
+        try:
+          os.removedirs(os.path.dirname(source))
+        except OSError:
+          pass
+        return
+  os.renames (source, destination)
+
+def do_simple_move (basedir, sourcedir):
+  fileset = set()
+  absdir=os.path.join(basedir, sourcedir)
+  for dir, dirs, files in os.walk (absdir):
+    reldir = dir[len(absdir):].lstrip("/")
+    for curfile in files:
+      rename_subtle (os.path.join(absdir, reldir, curfile), os.path.join(basedir, modulepath, reldir, curfile), absdir)
+      fileset.add(os.path.join("/", modulepath, reldir, curfile))
+  return fileset
+
+def do_move (basedir, tuples):
+  file_dict=filelist()
+  for (pybasedir, suffixdir) in tuples:
+    for pyvers in py_supported:
+      pydir=os.path.join(basedir,pybasedir,pyvers,suffixdir)
+      if not os.path.isdir(pydir):
+        continue
+      file_dict.addpyver(pyvers)
+      for dir, dirs, files in os.walk(pydir):
+        reldir = dir[len(pydir):].lstrip('/')
+        for curfile in files:
+          relfile = os.path.join(reldir,curfile)
+          absfile = os.path.join(pydir,relfile)
+          # remove bytecompiled files and libtool cruft
+          if relfile.split('.')[-1] in ["pyc", "pyo", "a", "la"]:
+            os.remove(absfile)
+          elif os.path.islink(absfile):
+            file_dict.addsum(relfile,pyvers,os.readlink(absfile))
+          elif absfile.endswith('/PKG-INFO') or absfile.endswith('.egg-info'):
+            # work-around for bug #575377
+            file_dict.addsum(relfile,pyvers,md5(''.join(line.strip()+'\n' for line in file(absfile))).digest())
+          else:
+            file_dict.addsum(relfile,pyvers,md5(file(absfile).read()).digest())
+
+  files = set()
+  pyversions = set()
+  for relfile in file_dict:
+    splitfile=not file_dict.isallthesame(relfile)
+    destdir=modulepath
+    for pyver in file_dict.list(relfile):
+      for (pybasedir, suffixdir) in tuples:
+        sourcedir=os.path.join(basedir,pybasedir,pyver,suffixdir)
+        sourcefile=os.path.join(sourcedir,relfile)
+        if not os.path.lexists(sourcefile):
+          continue
+        if splitfile:
+          destdir=os.path.join(extensionpath,pyver)
+          pyversions.add(pyver)
+        if sourcefile.endswith("/__init__.py") and not os.path.getsize(sourcefile):
+          # Remove namespace packages, they will be added automatically
+          # by update-python-modules.
+          # This will avoid file conflicts at the dpkg level.
+          os.remove(sourcefile)
+          try:
+            os.removedirs(os.path.dirname(sourcefile))
+          except OSError:
+            pass
+        else:
+          rename_subtle(sourcefile,os.path.join(basedir,destdir,relfile),sourcedir)
+          files.add(os.path.join("/",destdir,relfile))
+  if pyversions:
+    # If we have some versions that appear in the extension path
+    # BUT that more versions were originally supported
+    # We must add these versions to the list of supported versions
+    pyversions.update(file_dict.pylist)
+  return files, pyversions
+
+def do_listonly (basedir):
+  fileset = set()
+  absdir=os.path.join(basedir, modulepath)
+  for dir, dirs, files in os.walk (absdir):
+    reldir = dir[len(basedir):].lstrip("/")
+    for curfile in files:
+      fileset.add(os.path.join("/",reldir,curfile))
+  return fileset
+
+# Remove the -py$(VERSION) part of the egg directories
+def do_eggrename (basedir, pybasedir, suffixdir=""):
+  for vers in py_supported_short:
+    pydir=os.path.join(basedir,pybasedir,"python"+vers,suffixdir)
+    suffix="-py"+vers+".egg-info"
+    if not os.path.isdir(pydir):
+      continue
+    for item in os.listdir(pydir):
+      item=os.path.join(pydir,item)
+      if item.endswith(suffix):
+       new_item = item[:-len(suffix)]+".egg-info"
+       if not os.path.exists(new_item): # You never know
+         os.rename(item, new_item)
+
+for basedir in args:
+  basedir=basedir.rstrip('/')
+  package=options.package
+  if not package:
+    package=os.path.split(basedir)[1]
+  if not package:
+    raise Exception("Unable to extract the package name.")
+
+  public_file = os.path.join(basedir,sourcepath,package+".public")
+  if os.path.isfile (public_file):
+    # movemodules was already run, do nothing
+    sys.exit(0)
+
+  # /usr/share/pyshared (files installed by hand)
+  files = do_listonly (basedir)
+
+  # /usr/lib/pythonX.Y/site-packages (python <= 2.5)
+  # /usr/lib/pythonX.Y/dist-packages (python >= 2.6 with deb layout)
+  # /usr/local/lib/pythonX.Y/dist-packages (python >= 2.6 without deb layout)
+  do_eggrename (basedir, "usr/lib", "site-packages")
+  do_eggrename (basedir, "usr/lib", "dist-packages")
+  do_eggrename (basedir, "usr/local/lib", "dist-packages")
+  files2, pyversions = do_move (basedir, [("usr/lib", "site-packages"),
+                                          ("usr/lib", "dist-packages"),
+                                          ("usr/local/lib", "dist-packages")])
+  files.update(files2)
+
+  # /var/lib/python-support/pythonX.Y
+  do_eggrename (basedir, "var/lib/python-support")
+  files2, pyversions2 = do_move (basedir, [("var/lib/python-support", "")])
+  files.update(files2)
+  pyversions.update(pyversions2)
+
+  # /usr/lib/pymodules/pythonX.Y
+  do_eggrename (basedir, extensionpath)
+  files2, pyversions2 = do_move (basedir, [(installedpath, "")])
+  files.update(files2)
+  pyversions.update(pyversions2)
+
+  # /usr/share/python-support/$package
+  if os.path.isdir(os.path.join(basedir,"usr/share/python-support")):
+    for ent in os.listdir(os.path.join(basedir,"usr/share/python-support")):
+      if os.path.isdir(os.path.join(basedir, "usr/share/python-support", ent)):
+        files.update(do_simple_move(basedir, os.path.join("usr/share/python-support", ent)))
+
+  if files:
+    if not os.path.isdir(os.path.join(basedir,sourcepath)):
+      os.makedirs(os.path.join(basedir,sourcepath))
+    out=file(public_file, "w")
+    if pyversions:
+      out.write("pyversions=%s\n\n"%(','.join(x.replace('python','') for x in sorted(pyversions))))
+    elif options.version:
+      out.write("pyversions=%s\n\n"%options.version)
+    for filename in sorted(files):
+      out.write(filename+"\n")
+    out.close()
+

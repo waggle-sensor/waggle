@@ -1,0 +1,53 @@
+#!/bin/sh
+set -e
+
+if [ ! -d /etc/network ]; then
+  mkdir -p /etc/network
+fi
+
+if [ -f /etc/network/interfaces ] && ! grep -q '^[^#]' /etc/network/interfaces
+then
+  f=/etc/network/interfaces
+  if [ `md5sum < $f | cut -f1 -d ' '` = "4ed352919f69a77ad302ad1593204405" ]; then
+    if [ `wc -c < /etc/network/interfaces` -eq 2466 ]; then
+      echo -n "Removing old dummy /etc/network/interfaces: "
+      rm /etc/network/interfaces
+      echo "done."
+    fi
+  fi
+fi
+
+# Transition /etc/init.d/networking between netbase and ifupdown
+# NOTE: This can be dropped after 14.04 LTS
+if [ "$1" = install ] || [ "$1" = upgrade ]; then
+	if [ -e "/etc/init.d/networking" ] && [ -L "/etc/init.d/networking" ] \
+	   && [ $(readlink -f "/etc/init.d/networking") = /lib/init/upstart-job ] \
+	   && [ $(dpkg-query -W -f='${Conffiles}' ifupdown | awk '/\/etc\/init.d\/networking/ { print $2 }') = newconffile ]
+	then
+		rm -f "/etc/init.d/networking"
+	elif [ -e /etc/init.d/networking ] && [ $(md5sum /etc/init.d/networking | cut -f1 -d ' ') = ab67849a014a30c3f6c5566f3a15dbbb ]; then
+		sed -i -e '/^IFSTATE.*/a STATEDIR="$RUN_DIR/state"' \
+    -e '/user that they shouldn'"'"'t use this$/,+6d' \
+    -e '57a\
+	if ! chown root:netdev "$RUN_DIR" ; then\
+	    log_warning_msg "can'"'"'t chown $RUN_DIR"\
+	fi' \
+    -e '/reload)$/a \
+	if init_is_upstart; then\
+		exit 1\
+	fi' \
+    -e 's#cat /run/network/ifstate#ifquery --state#' \
+    /etc/init.d/networking
+	fi
+fi
+
+# Automatically added by dh_installdeb
+dpkg-maintscript-helper rm_conffile /etc/default/ifupdown 0.7~+ ifupdown -- "$@"
+# End automatically added section
+# Automatically added by dh_installdeb
+dpkg-maintscript-helper rm_conffile /etc/init.d/ifupdown 0.7~+ ifupdown -- "$@"
+# End automatically added section
+# Automatically added by dh_installdeb
+dpkg-maintscript-helper rm_conffile /etc/init.d/ifupdown-clean 0.7~beta1 ifupdown -- "$@"
+# End automatically added section
+

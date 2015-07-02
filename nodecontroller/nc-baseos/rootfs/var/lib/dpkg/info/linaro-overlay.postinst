@@ -1,0 +1,18 @@
+#!/bin/sh
+
+set -e
+
+if test "$1" = "configure"; then
+
+	if test -x /usr/bin/apt-key; then
+		apt-key add /usr/share/linaro-overlay/archive-key.asc
+	fi
+
+	if test -f /etc/update-motd.d/10-help-text; then
+		sed -i 's/Ubuntu/Linaro/g' /etc/update-motd.d/10-help-text
+		sed -i 's/https:\/\/help.ubuntu.com\//http:\/\/www.linaro.org/' /etc/update-motd.d/10-help-text
+	fi
+fi
+
+
+

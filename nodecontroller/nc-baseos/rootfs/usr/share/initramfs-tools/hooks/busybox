@@ -1,0 +1,44 @@
+#!/bin/sh
+
+PREREQ="klibc"
+
+prereqs()
+{
+	echo "$PREREQ"
+}
+
+case $1 in
+# get pre-requisites
+prereqs)
+	prereqs
+	exit 0
+	;;
+esac
+
+# busybox
+if [ "${BUSYBOX}" != "n" ] && [ -e ${BUSYBOXDIR}/busybox ]; then
+	. /usr/share/initramfs-tools/hook-functions
+	# Busybox is configured to prefer its own applets, so remove
+	# duplication from klibc.
+	for cmd in `${BUSYBOXDIR}/busybox | sed -n '/functions:$/,$p' \
+		| tail -n +2 \
+		| sed -e 's/[[:space:]]*//g; s/,$//; s/,/\n/g; /busybox/d'`; do
+		rm -f ${DESTDIR}/bin/${cmd}
+	done
+	rm -f ${DESTDIR}/bin/sh
+	rm -f ${DESTDIR}/bin/busybox
+	copy_exec ${BUSYBOXDIR}/busybox /bin/busybox
+	ln -s busybox ${DESTDIR}/bin/sh
+	# klibc's version is just wrong; patch sent upstream by maks
+	rm -f ${DESTDIR}/bin/chroot
+	# klibc's version can't display mounts, which casper needs; fuse
+	# needs /bin/mount to exist, so add a symlink
+	rm -f ${DESTDIR}/bin/mount
+	ln -s busybox ${DESTDIR}/bin/mount
+	# ... but some scripts expect /bin/sleep to exist. Boo.
+	ln -s busybox ${DESTDIR}/bin/sleep
+	# Useless
+	for cmd in minips nuke sh.shared; do
+		rm -f ${DESTDIR}/bin/${cmd}
+	done
+fi

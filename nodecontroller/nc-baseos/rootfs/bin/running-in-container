@@ -1,0 +1,10 @@
+#!/bin/sh
+# Return 0 if in a container, 1 if not
+# if in a container, also print the container type
+status container-detect 2>/dev/null | grep -q start
+
+if [ $? -eq 0 ]; then
+    [ -f /run/container_type ] && cat /run/container_type
+    exit 0
+fi
+exit 1

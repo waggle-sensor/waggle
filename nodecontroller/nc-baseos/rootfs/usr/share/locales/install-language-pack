@@ -1,0 +1,16 @@
+#!/bin/sh -e
+
+if [ -z "$1" ]; then
+    echo "Usage: $0 <language code> <class> [<version>]"
+    exit 0
+fi
+
+# install locales for base packages (not for gnome/kde)
+# (use "--no-purge" in case PURGE=yes is used in config, which would remove
+#  all other locale files)
+if [ -z "$2" ]; then
+    /usr/sbin/locale-gen --no-purge --lang "$1"
+fi
+
+# ensure that .desktop caches are up to date
+dpkg-trigger gmenucache || true
