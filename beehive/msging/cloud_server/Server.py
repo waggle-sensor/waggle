@@ -73,13 +73,14 @@ print("Data process online.")
 
 
 print("All processes online. Server is fully operational.")
+procs = [data,reg,util,router]
 while True:
-	cmd = raw_input("WaggleServer: ")
-	if cmd == "exit":
-		break;
-	if cmd == "help":
-		print ("Waggle Server Commands:")
-		print ("\t exit: Gracefully shuts down the server")
+	for process in procs:
+		if not process.is_alive():
+			print "Process {} has died. Bringing it back from the dead...".format(process.name)
+			process.__init__()
+			process.start()
+	
 
 data.join()
 reg.join()
