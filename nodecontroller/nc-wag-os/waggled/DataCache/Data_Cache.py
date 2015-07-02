@@ -144,13 +144,14 @@ def outgoing_pull(outgoing_fifo_available_queues, outgoing_lifo_available_queues
         #print ' No messages available.'
         #return 'False'
    
-def incoming_pull(device, incoming_available_queues):
+def incoming_pull(dev, incoming_available_queues, msg_counter):
     """ Pulls messages from the DC to send to guest nodes. Returns False if no messages are available.""" 
     if len(incoming_available_queues) > 0: # checks to see if there are any messages available
         for i in range(4,-1,-1): # loop to search for messages starting with highest priority
             if Data_Cache.incoming_bffr[device - 1][i].empty(): #checks for an empty queue 
                 pass
             else: 
+                msg_counter.value -= 1 
                 return Data_Cache.incoming_bffr[device- 1][i].get()
     else:
         return False

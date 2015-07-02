@@ -5,6 +5,8 @@ from multiprocessing import Process, Queue, Value
 import sys
 sys.path.append('../../../../devtools/protocol_common/')
 from protocol.PacketHandler import *
+sys.path.append('..')
+from device_dict import DEVICE_DICT
 
 """ This is the communication channel between the cloud and the DC. It consists of a pika client process for RabbitMQ to push and pull messages to and from the cloud and push and pull client processes connected to the DC. """
 #TODO add checks for any priorities outside of range - send back to cloud. -- probably need to unpack and repack the message or can just send an error with previous header as payload or something?
@@ -23,7 +25,7 @@ class external_communicator(object):
     def __init__(self):
         pass
     
-    incoming = Queue() #stores messages to push into DC
+    incoming = Queue() #stores messages to push into DC #TODO should have a queue for each GN
     outgoing = Queue() #stores messages going out to cloud
     cloud_connected = Value('i')
     
@@ -159,12 +161,11 @@ class client_push(Process):
                     msg = comm.incoming.get() #gets the incoming message from the queue
                     try:
                         header = get_header(msg)
-                        #TODO Need to make a device priority dictionary stored on the node itself.
                         #TODO Do a check to make sure the recipient is actually a part of this node, return error if not
                         flags = header['flags'] #extracts priorities
                         dev = header['r_uniqid'] #gets the recipient ID
                         #TODO write dictionary mapping device ID to priorities
-                        if dev == int(HOSTNAME): 
+                        if dev == int(HOSTNAME): #msg intended for NC
                             try:
                                 msg = unpack(msg)
                                 print 'Message recieved from cloud: ', msg[1] #just prints the message to the screen if the recipient is the NC #TODO handle messages being sent to NC 
@@ -172,16 +173,21 @@ class client_push(Process):
                                 print 'Unpack unsuccessful.'
                             client_sock.close() #closes the socket
                         else:
+                            try: 
+                                dev_loc = DEVICE_DICT[str(dev)] #TODO can change PacketHandler to keep the uniqueID as a string
+                            except: 
+                                print 'Error: Unknown recipient ID. Message will not be put in data cache.'
+                                break
                             msg_p = flags[1]
                             #add flags to msg in correct format
                             msg += (str(msg_p) + '|')
-                            msg += (str(dev) + ',') #TODO need to change to look up device priority in dictionary before sending message 
+                            msg += (str(dev_loc) + ',') #TODO need to change to look up device priority in dictionary before sending message 
                             msg += 'i,' #incoming push
                             print "Client push sending msg to DC. "
                             client_sock.send(msg) #sends msg
                             client_sock.close()
                     except:
-                        print "Not a valid message."
+                        print "Not a valid message. Will not be put into the DC"
                         client_sock.close() #closes the socket
                 else:
                     print "Unable to connect to Data Cache."
