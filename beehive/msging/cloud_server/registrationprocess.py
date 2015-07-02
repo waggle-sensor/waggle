@@ -25,7 +25,7 @@ class RegProcess(Process):
 		# Set up the Rabbit connection
 		self.connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
 		self.channel = self.connection.channel()
-
+		self.channel.confirm_delivery()
 		# Declare this process's queue
 		self.channel.queue_declare("registration")
 		self.channel.basic_consume(self.callback, queue='registration')

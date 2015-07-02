@@ -9,13 +9,15 @@ logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.CRITICAL)
 
 
 header_dict = {
-    "msg_mj_type"      : ord('r'),
+    "msg_mj_type"      : ord('t'),
     "msg_mi_type"      : ord('r'),
 }
 
-
-connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+creds = pika.PlainCredentials('guest1','guest1')
+params = pika.ConnectionParameters('10.10.10.139',5672,'/',creds)
+connection = pika.BlockingConnection(params)
 channel = connection.channel()
+channel.confirm_delivery()
 print("Channel to RabbitMQ opened.")
 
 queue = "jf93kod93j0fu3kd93hf9hy309gtu"
@@ -23,13 +25,13 @@ queue = "jf93kod93j0fu3kd93hf9hy309gtu"
 packet = pack(header_dict,queue)
 channel.exchange_declare("waggle_in")
 channel.queue_declare(queue)
-for i in range(1,1001):
-    channel.basic_publish(exchange="waggle_in",routing_key="in",body=packet)
+for i in range(1,11):
+	channel.basic_publish(exchange="waggle_in",routing_key="in",body=packet)
 
 
 def callback(ch,method,props,body):
     global connection
-    msg = unpack(body)[1]
+    msg = time.ctime(float(unpack(body)[1]))
     print msg
     ch.basic_ack(delivery_tag = method.delivery_tag)
 

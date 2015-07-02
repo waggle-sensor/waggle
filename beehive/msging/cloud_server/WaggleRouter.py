@@ -30,6 +30,7 @@ class WaggleRouter(Process):
 		#Create a connection to the RabbitMQ server.
 		self.rabbitConn = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
 		self.channel = self.rabbitConn.channel()
+		self.channel.confirm_delivery()
 		print "Connection to rabbitMQ broker succeeded."
 		#Load all of the existing registered node queues
 		with open('registrations/nodes.txt','r') as nodes:
