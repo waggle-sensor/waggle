@@ -1,0 +1,244 @@
+#!/bin/bash
+
+set -e
+
+SUPPORTED=/var/lib/locales/supported.d
+LOCALES=/usr/share/i18n/locales
+STATEDIR=/var/lib/belocs
+
+[ -n "$POSIXLY_CORRECT" ] && unset POSIXLY_CORRECT || true
+
+IS_LANG=no
+ARCHIVE=yes
+PURGE=no
+ALIASES=
+
+#  Handle command-line options
+prev=
+while true
+do
+	option="$1"
+	if [ -n "$prev" ]; then
+                eval "$prev=\$option"
+                prev=
+                continue
+	fi
+
+	case $option in
+	-h|--help)
+		cat <<EOT
+Usage: locale-gen [OPTIONS]
+Options:
+ -h, --help         display this message and exit
+     --purge        remove existing locales before processing
+     --archive      store compiled locale data inside a single archive
+     --no-archive   do not store compiled locale data inside a single archive
+                    (default)
+     --aliases=FILE read locale aliases from FILE. (Default: /etc/locale.alias)
+     --lang         treat argument as generic language code
+EOT
+		exit 0
+		;;
+	--purge)
+		PURGE=yes
+		;;
+	--no-purge)
+		PURGE=no
+		;;
+	--archive)
+		ARCHIVE=yes
+		;;
+	--no-archive)
+		ARCHIVE=no
+		;;
+	--keep-existing)
+		#  Cache in belocs-locales-bin makes this flag useless,
+		#  but it is provided so that belocs-locales-bin can be
+		#  installed on Ubuntu boxes.
+		;;
+	--aliases)
+		prev=ALIASES
+		;;
+	--aliases=*)
+		ALIASES=$(expr "x$option" : 'x[^=]*=\(.*\)')
+		;;
+	--lang)
+		IS_LANG=yes
+		;;
+	--*)
+		echo "locale-gen: invalid option -- $option"
+		echo "Try 'locale-gen --help' for more information."
+		exit 1
+		;;
+	*)
+		break
+		;;
+	esac
+
+	shift
+done
+
+mkdir -p "$SUPPORTED"
+
+# determine the locales to be generated in $GENERATE
+GENERATE=
+if [ -z "$1" ]; then
+    [ -n "`ls $SUPPORTED`" ] || exit 0
+    GENERATE=`cat $SUPPORTED/*`
+fi
+
+while [ -n "$1" ]; do
+    if [ -f "$SUPPORTED/$1" ]; then
+        GENERATE="$GENERATE\n`cat $SUPPORTED/$1`"
+    elif [ $IS_LANG = no ] && L=`grep "^${1/%.utf8/.UTF-8} " /usr/share/i18n/SUPPORTED`; then
+        GENERATE="$GENERATE\n$L"
+        # add to supported.d/local if necessary
+        if [ ! -f "$SUPPORTED/local" ] || ! grep -q "^$L" "$SUPPORTED/local"; then
+            echo "$L" >> "$SUPPORTED/local"
+        fi
+    else
+        # try to come up with a sensible default
+        GENERATE=`grep -E "^${1}( |[._@][^[:space:]]* )UTF-8" /usr/share/i18n/SUPPORTED`
+        if [ -z "$GENERATE" ]; then
+            echo "Error: '$1' is not a supported language or locale" >&2
+            exit 1
+        fi
+        NL='
+'
+        IFS_SAVE="$IFS"
+        IFS="$NL"
+        for L in $GENERATE; do
+            IFS="$IFS_SAVE"
+            # add to supported.d/local if necessary
+            if [ ! -f "$SUPPORTED/local" ] || ! grep -q "^$L" "$SUPPORTED/local"; then
+                echo "$L" >> "$SUPPORTED/local"
+            fi
+            IFS="$NL"
+        done
+        IFS="$IFS_SAVE"
+    fi
+    shift
+done
+
+[ -d "$STATEDIR" ] || mkdir -p "$STATEDIR" || PURGE=yes
+
+no_archive=
+[ "$ARCHIVE" = yes ] || no_archive="--no-archive"
+locale_alias=
+[ -n "$ALIASES" ] && [ -r "$ALIASES" ] && locale_alias="-A $ALIASES"
+
+umask 022
+
+is_entry_ok() {
+	if [ -n "$locale" ] && [ -n "$charset" ]
+	then
+		true
+	else
+		echo "Error: Bad entry '$locale $charset'" 1>&2
+		false
+	fi
+}
+
+normalize_locale() {
+	#  Insert a leading x in case $1 begins with a dash
+	this_locale=x$1
+	charset=
+	if echo $this_locale | LC_ALL=C grep '\.' > /dev/null 2>&1; then
+		charset=$(echo $this_locale | sed -e 's/^x//' -e 's/.*\(\.[^@]*\).*/\1/' | LC_ALL=C tr '[A-Z]' '[a-z]' | LC_ALL=C sed -e 's/[^a-z0-9.]//g')
+	fi
+	modifier=
+	if echo $this_locale | LC_ALL=C grep '@' > /dev/null 2>&1; then
+		modifier=$(echo $this_locale | sed -e 's/^x//' -e 's/.*\(@[^.]*\).*/\1/')
+	fi
+	main=$(echo $this_locale | sed -e 's/^x//' -e 's/[.@].*//')
+	echo $main$charset$modifier
+}
+
+gen_dep() {
+	[ -d "$STATEDIR" ] || return 1
+	#  Generate the dependency list.  It is needed by update_md5sum()
+	( LC_ALL=C grep '^\(include\|copy\)' "$LOCALES"/* |\
+	  sed -e "s,^$LOCALES/,," -e 's/\(include\|copy\)[ 	]*"/ /' -e 's/".*//'
+	) | LC_ALL=C sort -u > "$STATEDIR/locales.dep" 2>/dev/null
+}
+
+gen_md5sum() {
+	[ -d "$STATEDIR" ] || return 1
+	#  If old md5sums are not present, regenerate all locales.
+	[ -f "$STATEDIR/hashfile" ] || return 1
+	mv -f "$STATEDIR/hashfile" "$STATEDIR/hashfile.old" || return 1
+
+	md5sum "$LOCALES"/* > "$STATEDIR/hashfile.new" || return 1
+	locale -a > "$STATEDIR/list" 2>/dev/null || return 1
+}
+
+#  Check whether a locale was already generated and all its dependencies
+#  have not been modified.
+already_generated() {
+	[ -f "$STATEDIR/locales.dep" ] || return 1
+	[ -f "$STATEDIR/hashfile.old" ] || return 1
+	[ -f "$STATEDIR/hashfile.new" ] || return 1
+	[ -f "$STATEDIR/list" ] || return 1
+	this_locale=$(normalize_locale $1)
+	this_input=$2
+	#  Check whether the locale is already present.
+	LC_ALL=C grep "^$this_locale\$" "$STATEDIR/list" > /dev/null 2>&1 || return 1
+	#  If yes, check if this file and its dependencies have changed
+	for file in "$this_input" $(LC_ALL=C grep "^$this_input:" "$STATEDIR/locales.dep" | awk '{printf "%s ", $2}')
+	do
+		md5old=$(LC_ALL=C grep "/$file\$" "$STATEDIR/hashfile.old" | sed -e 1q)
+		md5new=$(LC_ALL=C grep "/$file\$" "$STATEDIR/hashfile.new" | sed -e 1q)
+		[ -n "$md5old" ] || return 1
+		[ -n "$md5new" ] || return 1
+		[ "$md5new" = "$md5old" ] || return 1
+	done
+	return 0
+}
+
+update_md5sum() {
+	[ -f "$STATEDIR/locales.dep" ] || return 0
+	this_locale=$1
+	for file in "$this_locale" $(LC_ALL=C grep "^$this_locale:" "$STATEDIR/locales.dep" | awk '{printf "%s ", $2}')
+	do
+		md5sum "$LOCALES/$file" >> "$STATEDIR/hashfile" || return 0
+	done
+}
+
+gen_dep 2>/dev/null || true
+[ "$PURGE" = yes ] || gen_md5sum 2>/dev/null || PURGE=yes
+if [ "$PURGE" = yes ]; then
+	rm -f "$STATEDIR/hashfile.old" "$STATEDIR/hashfile.new" "$STATEDIR/list" 2>/dev/null || true
+	for dir in /usr/lib/locale/*; do
+		[ -e "$dir" ] || continue
+		if [ "${dir#/usr/lib/locale/}" = C.UTF-8 ]; then
+			# owned by libc-bin
+			continue
+		fi
+		rm -rf "$dir" 2>/dev/null || true
+	done
+fi
+
+echo "Generating locales..."
+/bin/echo -e "$GENERATE" | sort -u | while read locale charset
+do
+	case $locale in
+		\#*) continue;;
+		"") continue;;
+	esac
+	is_entry_ok || continue
+	#  Remove charset if present
+	input=$(echo $locale | sed -e 's/\.[^@]*//')
+	#  Insert charset before modifier
+	printf "%s" $input | sed -e "s/^\\([^@]*\\)\\(.*\\)/  \\1.${charset}\\2... /"
+	if already_generated $locale $input; then
+		echo 'up-to-date'
+	else
+		if localedef $no_archive -i $input -c -f $charset $locale_alias $locale; then	
+		    echo 'done'
+		else
+		    echo 'failed'
+		fi
+	fi
+	update_md5sum $input 2>/dev/null
+done
+echo "Generation complete."

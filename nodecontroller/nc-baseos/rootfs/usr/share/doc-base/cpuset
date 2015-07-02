@@ -1,0 +1,14 @@
+Document: cpuset
+Title: Cpuset management utility tutorial
+Author: Alex Tsariounov <alext@novell.com> 
+Abstract: Documentation on the cpuset management utility
+Section: System/Administration
+
+Format: HTML
+Index: /usr/share/doc/cpuset/tutorial.html
+Files: /usr/share/doc/cpuset/*.html
+
+Format: Text
+Index: /usr/share/doc/cpuset/tutorial.txt.gz
+Files: /usr/share/doc/cpuset/*.txt.gz
+

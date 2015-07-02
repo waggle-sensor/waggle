@@ -1,0 +1,15 @@
+libnih-dbus.so.1 libnih-dbus1 #MINVER#
+ LIBNIH_DBUS_1_0@LIBNIH_DBUS_1_0 1.0.0
+ nih_dbus_bus@LIBNIH_DBUS_1_0 1.0.0
+ nih_dbus_connect@LIBNIH_DBUS_1_0 1.0.0
+ nih_dbus_error_raise@LIBNIH_DBUS_1_0 1.0.0
+ nih_dbus_error_raise_printf@LIBNIH_DBUS_1_0 1.0.0
+ nih_dbus_message_error@LIBNIH_DBUS_1_0 1.0.0
+ nih_dbus_message_new@LIBNIH_DBUS_1_0 1.0.0
+ nih_dbus_object_new@LIBNIH_DBUS_1_0 1.0.0
+ nih_dbus_path@LIBNIH_DBUS_1_0 1.0.0
+ nih_dbus_pending_data_new@LIBNIH_DBUS_1_0 1.0.0
+ nih_dbus_proxy_connect@LIBNIH_DBUS_1_0 1.0.0
+ nih_dbus_proxy_new@LIBNIH_DBUS_1_0 1.0.0
+ nih_dbus_server@LIBNIH_DBUS_1_0 1.0.0
+ nih_dbus_setup@LIBNIH_DBUS_1_0 1.0.0

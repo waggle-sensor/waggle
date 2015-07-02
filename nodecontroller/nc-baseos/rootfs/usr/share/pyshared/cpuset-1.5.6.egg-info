@@ -1,0 +1,13 @@
+Metadata-Version: 1.0
+Name: cpuset
+Version: 1.5.6
+Summary: Allows manipluation of cpusets and provides higher level functions.
+Home-page: http://code.google.com/p/cpuset
+Author: Alex Tsariounov
+Author-email: alext@novell.com
+License: GPLv2
+Description: Cpuset is a Python application to make using the cpusets facilities in the Linux
+        kernel easier. The actual included command is called cset and it allows
+        manipulation of cpusets on the system and provides higher level functions such as
+        implementation and control of a basic cpu shielding setup.
+Platform: UNKNOWN

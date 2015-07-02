@@ -1,0 +1,2645 @@
+Package: tcpd
+Priority: optional
+Section: net
+Installed-Size: 87
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: foreign
+Source: tcp-wrappers
+Version: 7.6.q-25
+Replaces: libwrap0 (<< 7.6-8)
+Depends: libc6 (>= 2.4), libwrap0 (>= 7.6-4~)
+Size: 21592
+Description: Wietse Venema's TCP wrapper utilities
+ Wietse Venema's network logger, also known as TCPD or LOG_TCP.
+ .
+ These programs log the client host name of incoming telnet,
+ ftp, rsh, rlogin, finger etc. requests.
+ .
+ Security options are:
+  - access control per host, domain and/or service;
+  - detection of host name spoofing or host address spoofing;
+  - booby traps to implement an early-warning system.
+Original-Maintainer: Marco d'Itri <md@linux.it>
+
+Package: python-urllib3
+Priority: optional
+Section: python
+Installed-Size: 195
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Version: 1.7.1-1build1
+Depends: python:any (>= 2.7.5-5~), python:any (<< 2.8), python-six
+Recommends: ca-certificates
+Size: 38858
+Description: HTTP library with thread-safe connection pooling for Python
+ urllib3 supports features left out of urllib and urllib2 libraries.
+ .
+   - Re-use the same socket connection for multiple requests (HTTPConnectionPool
+     and HTTPSConnectionPool) (with optional client-side certificate
+     verification).
+   - File posting (encode_multipart_formdata).
+   - Built-in redirection and retries (optional).
+   - Supports gzip and deflate decoding.
+   - Thread-safe and sanity-safe.
+   - Small and easy to understand codebase perfect for extending and
+     building upon.
+Original-Maintainer: Debian Python Modules Team <python-modules-team@lists.alioth.debian.org>
+Homepage: http://urllib3.readthedocs.org
+
+Package: python-six
+Priority: optional
+Section: python
+Installed-Size: 62
+Maintainer: Colin Watson <cjwatson@debian.org>
+Architecture: all
+Source: six
+Version: 1.5.2-1
+Depends: python (>= 2.7), python (<< 2.8), python:any (>= 2.7.1-0ubuntu2)
+Size: 8060
+Description: Python 2 and 3 compatibility library (Python 2 interface)
+ Six is a Python 2 and 3 compatibility library. It provides utility
+ functions for smoothing over the differences between the Python versions
+ with the goal of writing Python code that is compatible on both Python
+ versions.
+ .
+ This package provides Six on the Python 2 module path. It is complemented
+ by python3-six.
+Homepage: http://pythonhosted.org/six/
+
+Package: libpam-cap
+Priority: optional
+Section: libs
+Installed-Size: 63
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Source: libcap2
+Version: 1:2.24-0ubuntu2
+Replaces: libcap2-bin (<< 1:2.22-1.1)
+Depends: libc6 (>= 2.4), libcap2 (>= 2.10), libpam0g (>= 0.99.7.1), libpam-runtime (>= 1.1.3-2~)
+Breaks: libcap2-bin (<< 1:2.22-1.1)
+Size: 6524
+Description: PAM module for implementing capabilities
+ This package contains the PAM module for enforcing capabilities on users
+ and groups at PAM session start time.
+Homepage: http://sites.google.com/site/fullycapable/
+Original-Maintainer: Torsten Werner <twerner@debian.org>
+
+Package: libxdmcp6
+Priority: optional
+Section: libs
+Installed-Size: 62
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Source: libxdmcp
+Version: 1:1.1.1-1
+Depends: libc6 (>= 2.15-0ubuntu8)
+Pre-Depends: multiarch-support
+Size: 11192
+Description: X11 Display Manager Control Protocol library
+ This package provides the main interface to the X11 display manager control
+ protocol library, which allows for remote logins to display managers.
+ .
+ More information about X.Org can be found at:
+ <URL:http://www.X.org>
+ .
+ This module can be found at
+ git://anongit.freedesktop.org/git/xorg/lib/libXdmcp
+Original-Maintainer: Debian X Strike Force <debian-x@lists.debian.org>
+
+Package: sudo
+Priority: optional
+Section: admin
+Installed-Size: 1320
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Version: 1.8.9p5-1ubuntu1
+Replaces: sudo-ldap
+Depends: libc6 (>= 2.15), libpam0g (>= 0.99.7.1), libselinux1 (>= 1.32), libpam-modules
+Conflicts: sudo-ldap
+Size: 331762
+Description: Provide limited super user privileges to specific users
+ Sudo is a program designed to allow a sysadmin to give limited root
+ privileges to users and log root activity.  The basic philosophy is to give
+ as few privileges as possible but still allow people to get their work done.
+ .
+ This version is built with minimal shared library dependencies, use the
+ sudo-ldap package instead if you need LDAP support for sudoers.
+Original-Maintainer: Bdale Garbee <bdale@gag.com>
+
+Package: libxmuu1
+Priority: optional
+Section: libs
+Installed-Size: 60
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Source: libxmu
+Version: 2:1.1.1-1
+Depends: libc6 (>= 2.15-0ubuntu8), libx11-6
+Pre-Depends: multiarch-support
+Size: 10310
+Description: X11 miscellaneous micro-utility library
+ libXmuu provides a set of miscellaneous utility convenience functions for X
+ libraries to use.  It is a lighter version of libXmu that does not depend
+ on libXt or libXext; for more information on libXmu, see libxmu6.
+ .
+ More information about X.Org can be found at:
+ <URL:http://www.X.org>
+ .
+ This module can be found at
+ git://anongit.freedesktop.org/git/xorg/lib/libXmu
+Original-Maintainer: Debian X Strike Force <debian-x@lists.debian.org>
+
+Package: gpgv
+Priority: important
+Section: utils
+Installed-Size: 305
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: foreign
+Source: gnupg
+Version: 1.4.16-1ubuntu2
+Depends: libbz2-1.0, libc6 (>= 2.4), zlib1g (>= 1:1.1.4)
+Suggests: gnupg
+Size: 132872
+Description: GNU privacy guard - signature verification tool
+ GnuPG is GNU's tool for secure communication and data storage.
+ .
+ gpgv is a stripped-down version of gnupg which is only able to check
+ signatures.  It is smaller than the full-blown gnupg and uses a
+ different (and simpler) way to check that the public keys used to
+ make the signature are trustworthy.
+Homepage: http://www.gnupg.org
+Original-Maintainer: Debian GnuPG-Maintainers <pkg-gnupg-maint@lists.alioth.debian.org>
+
+Package: libssl1.0.0
+Priority: important
+Section: libs
+Installed-Size: 1832
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Source: openssl
+Version: 1.0.1h-0linaro1
+Depends: libc6 (>= 2.11), debconf (>= 0.5) | debconf-2.0
+Pre-Depends: multiarch-support
+Size: 835740
+Description: Secure Sockets Layer toolkit - shared libraries
+ This package is part of the OpenSSL project's implementation of the SSL
+ and TLS cryptographic protocols for secure communication over the
+ Internet.
+ .
+ It provides the libssl and libcrypto shared libraries.
+Original-Maintainer: Debian OpenSSL Team <pkg-openssl-devel@lists.alioth.debian.org>
+
+Package: libffi6
+Priority: optional
+Section: libs
+Installed-Size: 62
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Source: libffi
+Version: 3.1~rc1+r3.0.13-12
+Depends: libc6 (>= 2.4), libgcc1 (>= 1:4.4.0)
+Pre-Depends: multiarch-support
+Size: 15288
+Description: Foreign Function Interface library runtime
+ A foreign function interface is the popular name for the interface that
+ allows code written in one language to call code written in another
+ language.
+Original-Maintainer: Debian GCC Maintainers <debian-gcc@lists.debian.org>
+
+Package: libgdbm3
+Priority: important
+Section: libs
+Installed-Size: 102
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Source: gdbm
+Version: 1.8.3-12build1
+Depends: libc6 (>= 2.4), dpkg (>= 1.15.4) | install-info
+Pre-Depends: multiarch-support
+Size: 31142
+Description: GNU dbm database routines (runtime version)
+ GNU dbm ('gdbm') is a library of database functions that use extendible
+ hashing and works similarly to the standard UNIX 'dbm' functions.
+ .
+ The basic use of 'gdbm' is to store key/data pairs in a data file, thus
+ providing a persistent version of the 'dictionary' Abstract Data Type
+ ('hash' to perl programmers).
+Original-Maintainer: Anibal Monsalve Salazar <anibal@debian.org>
+Homepage: http://directory.fsf.org/project/gdbm/
+
+Package: libgcrypt11
+Priority: standard
+Section: libs
+Installed-Size: 442
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Version: 1.5.3-2ubuntu4
+Depends: libc6 (>= 2.15), libgpg-error0 (>= 1.10)
+Pre-Depends: multiarch-support
+Suggests: rng-tools
+Breaks: gnupg2 (<< 2.0.17-2ubuntu2), gpgsm (<< 2.0.17-2ubuntu2), libgnutls26 (<< 2.12.7-3)
+Size: 230232
+Description: LGPL Crypto library - runtime library
+ libgcrypt contains cryptographic functions.  Many important free
+ ciphers, hash algorithms and public key signing algorithms have been
+ implemented:
+ .
+ Arcfour, Blowfish, CAST5, DES, AES, Twofish, Serpent, rfc2268 (rc2), SEED,
+ Camellia, IDEA, CRC, MD4, MD5, RIPE-MD160, SHA-1, SHA-256, SHA-512, Tiger,
+ Whirlpool, DSA, DSA2, ElGamal, RSA, ECC.
+Homepage: http://directory.fsf.org/project/libgcrypt/
+Original-Maintainer: Debian GnuTLS Maintainers <pkg-gnutls-maint@lists.alioth.debian.org>
+
+Package: isc-dhcp-common
+Priority: important
+Section: net
+Installed-Size: 1207
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Source: isc-dhcp
+Version: 4.2.4-7ubuntu12
+Replaces: dhcp3-common
+Provides: dhcp3-common
+Depends: libc6 (>= 2.15), debianutils (>= 2.8.2)
+Size: 644314
+Description: common files used by all the isc-dhcp* packages
+ This package contains the files used by all the packages from ISC
+ DHCP.
+Original-Maintainer: Debian ISC DHCP maintainers <pkg-dhcp-devel@lists.alioth.debian.org>
+
+Package: libtasn1-6
+Priority: standard
+Section: libs
+Installed-Size: 97
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Version: 3.4-3
+Depends: libc6 (>= 2.4)
+Pre-Depends: multiarch-support
+Size: 37450
+Description: Manage ASN.1 structures (runtime)
+ Manage ASN1 (Abstract Syntax Notation One) structures.
+ The main features of this library are:
+   * on-line ASN1 structure management that doesn't require any C code
+     file generation.
+   * off-line ASN1 structure management with C code file generation
+     containing an array.
+   * DER (Distinguish Encoding Rules) encoding
+   * no limits for INTEGER and ENUMERATED values
+ .
+ This package contains runtime libraries.
+Original-Maintainer: Debian GnuTLS Maintainers <pkg-gnutls-maint@lists.alioth.debian.org>
+Homepage: http://www.gnu.org/software/libtasn1/
+
+Package: libgssapi-krb5-2
+Priority: standard
+Section: libs
+Installed-Size: 279
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Source: krb5
+Version: 1.12+dfsg-2ubuntu4
+Depends: libc6 (>= 2.4), libcomerr2 (>= 1.34), libk5crypto3 (>= 1.8+dfsg), libkrb5-3 (= 1.12+dfsg-2ubuntu4), libkrb5support0 (>= 1.12~alpha1+dfsg)
+Pre-Depends: multiarch-support
+Suggests: krb5-doc, krb5-user
+Breaks: libgssglue1 (<< 0.2-2)
+Size: 92636
+Description: MIT Kerberos runtime libraries - krb5 GSS-API Mechanism
+ Kerberos is a system for authenticating users and services on a network.
+ Kerberos is a trusted third-party service.  That means that there is a
+ third party (the Kerberos server) that is trusted by all the entities on
+ the network (users and services, usually called "principals").
+ .
+ This is the MIT reference implementation of Kerberos V5.
+ .
+ This package contains the runtime library for the MIT Kerberos
+ implementation of GSS-API used by applications and Kerberos clients.
+Homepage: http://web.mit.edu/kerberos/
+Original-Maintainer: Sam Hartman <hartmans@debian.org>
+
+Package: python-minimal
+Priority: standard
+Section: python
+Installed-Size: 167
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: allowed
+Source: python-defaults
+Version: 2.7.5-5ubuntu3
+Replaces: python (<= 2.7.3-1~)
+Depends: python2.7-minimal (>= 2.7.5-1~), dpkg (>= 1.13.20)
+Recommends: python
+Breaks: idle (<< 2.6), python (<= 2.7.3-1~), python-all (<< 2.6), python-all-dbg (<< 2.6), python-all-dev (<< 2.6), python-dbg (<< 2.6), python-dev (<< 2.6), python-examples (<< 2.6), python-support (<< 1.0.10ubuntu2), python2.5-minimal (<< 2.5.5-7), python2.6-minimal (<< 2.6.5~rc2-2), python3.1-minimal (<< 3.1.2~rc1-2)
+Conflicts: python-central (<< 0.5.5)
+Size: 27434
+Description: minimal subset of the Python language (default version)
+ This package contains the interpreter and some essential modules.  It's used
+ in the boot process for some basic tasks.
+ See /usr/share/doc/python2.7-minimal/README.Debian for a list of the modules
+ contained in this package.
+Homepage: http://www.python.org/
+Original-Maintainer: Matthias Klose <doko@debian.org>
+
+Package: libpopt0
+Priority: important
+Section: libs
+Installed-Size: 116
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Source: popt
+Version: 1.16-8ubuntu1
+Replaces: popt
+Depends: libc6 (>= 2.8)
+Pre-Depends: multiarch-support
+Conflicts: libpopt-dev (<= 1.4-1), popt, rpm (<= 4.0.2-3)
+Size: 23412
+Description: lib for parsing cmdline parameters
+ Popt was heavily influenced by the getopt() and getopt_long() functions,
+ but it allows more powerful argument expansion. It can parse arbitrary
+ argv[] style arrays and automatically set variables based on command
+ line arguments. It also allows command line arguments to be aliased via
+ configuration files and includes utility functions for parsing arbitrary
+ strings into argv[] arrays using shell-like rules.
+ .
+ This package contains the runtime library and locale data.
+Original-Maintainer: Paul Martin <pm@debian.org>
+Homepage: http://rpm5.org/
+
+Package: libusb-0.1-4
+Priority: important
+Section: libs
+Installed-Size: 65
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Source: libusb
+Version: 2:0.1.12-23.3ubuntu1
+Replaces: libusb0
+Depends: libc6 (>= 2.15)
+Pre-Depends: multiarch-support
+Conflicts: libccid (<< 0.9.2-3), libusb0
+Size: 14564
+Description: userspace USB programming library
+ Library for programming USB applications without the knowledge
+ of Linux kernel internals.
+Original-Maintainer: Aurelien Jarno <aurel32@debian.org>
+Homepage: http://www.linux-usb.org/
+
+Package: libgpg-error0
+Priority: standard
+Section: libs
+Installed-Size: 88
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Source: libgpg-error
+Version: 1.12-0.2ubuntu1
+Depends: libc6 (>= 2.4)
+Pre-Depends: multiarch-support
+Size: 10350
+Description: library for common error values and messages in GnuPG components
+ Library that defines common error values for all GnuPG
+ components.  Among these are GPG, GPGSM, GPGME, GPG-Agent, libgcrypt,
+ pinentry, SmartCard Daemon and possibly more in the future.
+Original-Maintainer: Jose Carlos Garcia Sogo <jsogo@debian.org>
+Homepage: http://www.gnupg.org/related_software/libgpg-error/
+
+Package: ucf
+Priority: standard
+Section: utils
+Installed-Size: 229
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Multi-Arch: foreign
+Version: 3.0027+nmu1
+Depends: debconf (>= 1.5.19), coreutils (>= 5.91)
+Size: 56328
+Description: Update Configuration File(s): preserve user changes to config files
+ Debian policy mandates that user changes to configuration files must be
+ preserved during package upgrades. The easy way to achieve this behavior
+ is to make the configuration file a 'conffile', in which case dpkg
+ handles the file specially during upgrades, prompting the user as
+ needed.
+ .
+ This is appropriate only if it is possible to distribute a default
+ version that will work for most installations, although some system
+ administrators may choose to modify it. This implies that the
+ default version will be part of the package distribution, and must
+ not be modified by the maintainer scripts during installation (or at
+ any other time).
+ .
+ This script attempts to provide conffile-like handling for files that
+ may not be labelled conffiles, and are not shipped in a Debian package,
+ but handled by the postinst instead. This script allows one to
+ maintain files in /etc, preserving user changes and in general
+ offering the same facilities while upgrading that dpkg normally
+ provides for 'conffiles'.
+ .
+ Additionally, this script provides facilities for transitioning a
+ file that had not been provided with conffile-like protection to come
+ under this schema, and attempts to minimize questions asked at
+ installation time. Indeed, the transitioning facility is better than the
+ one offered by dpkg while transitioning a file from a non-conffile to
+ conffile status.
+Original-Maintainer: Manoj Srivastava <srivasta@debian.org>
+
+Package: perl-modules
+Priority: standard
+Section: perl
+Installed-Size: 16133
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Source: perl
+Version: 5.18.2-2ubuntu1
+Replaces: libansicolor-perl, libarchive-extract-perl, libarchive-tar-perl, libattribute-handlers-perl, libautodie-perl, libb-lint-perl, libcgi-pm-perl, libcpan-meta-perl, libcpan-meta-requirements-perl, libcpan-meta-yaml-perl, libcpanplus-dist-build-perl, libcpanplus-perl, libdigest-perl, libextutils-cbuilder-perl, libextutils-command-perl, libextutils-install-perl, libextutils-parsexs-perl, libfile-checktree-perl, libfile-path-perl, libfile-spec-perl, libfile-temp-perl, libhttp-tiny-perl, libi18n-langtags-perl, libio-zlib-perl, libjson-pp-perl, liblocale-codes-perl, liblocale-maketext-perl, liblocale-maketext-simple-perl, liblog-message-perl, liblog-message-simple-perl, libmath-bigint-perl, libmath-complex-perl, libmodule-build-perl, libmodule-corelist-perl, libmodule-load-conditional-perl, libmodule-load-perl, libmodule-metadata-perl, libmodule-pluggable-perl, libnet-perl, libnet-ping-perl, libobject-accessor-perl, libparams-check-perl, libparent-perl, libparse-cpan-meta-perl, libperl-ostype-perl, libpod-escapes-perl, libpod-latex-perl, libpod-parser-perl, libpod-simple-perl, libterm-ui-perl, libtest-harness-perl, libtest-simple-perl, libtext-soundex-perl, libthread-queue-perl, libtime-local-perl, libunicode-collate-perl, libversion-perl, libversion-requirements-perl, podlators-perl
+Provides: libansicolor-perl, libarchive-tar-perl, libattribute-handlers-perl, libautodie-perl, libcgi-pm-perl, libcpan-meta-perl, libcpan-meta-requirements-perl, libcpan-meta-yaml-perl, libdigest-perl, libextutils-cbuilder-perl, libextutils-command-perl, libextutils-install-perl, libextutils-parsexs-perl, libfile-path-perl, libfile-spec-perl, libfile-temp-perl, libhttp-tiny-perl, libi18n-langtags-perl, libio-zlib-perl, libjson-pp-perl, liblocale-codes-perl, liblocale-maketext-perl, liblocale-maketext-simple-perl, libmath-bigint-perl, libmath-complex-perl, libmodule-build-perl, libmodule-corelist-perl, libmodule-load-conditional-perl, libmodule-load-perl, libmodule-metadata-perl, libnet-perl, libnet-ping-perl, libparams-check-perl, libparent-perl, libparse-cpan-meta-perl, libperl-ostype-perl, libpod-escapes-perl, libpod-parser-perl, libpod-simple-perl, libtest-harness-perl, libtest-simple-perl, libthread-queue-perl, libtime-local-perl, libunicode-collate-perl, libversion-perl, libversion-requirements-perl, podlators-perl
+Depends: perl (>= 5.18.2-1)
+Recommends: libarchive-extract-perl, libmodule-pluggable-perl, libpod-latex-perl, libterm-ui-perl, libtext-soundex-perl
+Suggests: libb-lint-perl, libcpanplus-dist-build-perl, libcpanplus-perl, libfile-checktree-perl, liblog-message-simple-perl, liblog-message-perl, libobject-accessor-perl
+Breaks: libansicolor-perl (<< 4.02), libarchive-extract-perl (<< 0.68), libarchive-tar-perl (<< 1.90), libattribute-handlers-perl (<< 0.94), libautodie-perl (<< 2.13), libb-lint-perl (<< 1.17), libcgi-pm-perl (<< 3.63), libcpan-meta-perl (<< 2.120921), libcpan-meta-requirements-perl (<< 2.122), libcpan-meta-yaml-perl (<< 0.008), libcpanplus-dist-build-perl (<< 0.70), libcpanplus-perl (<< 0.9135), libdigest-perl (<< 1.17), libextutils-cbuilder-perl (<< 0.280210), libextutils-command-perl (<< 1.17), libextutils-install-perl (<< 1.59), libextutils-parsexs-perl (<< 3.180000), libfile-checktree-perl (<< 4.42), libfile-path-perl (<< 2.09), libfile-spec-perl (<< 3.4000), libfile-temp-perl (<< 0.23), libhttp-tiny-perl (<< 0.025), libi18n-langtags-perl (<< 0.39), libio-zlib-perl (<< 1.10), libjson-pp-perl (<< 2.27202), liblocale-codes-perl (<< 3.25), liblocale-maketext-perl (<< 1.23), liblocale-maketext-simple-perl (<< 0.21), liblog-message-perl (<< 0.06), liblog-message-simple-perl (<< 0.10), libmath-bigint-perl (<< 1.9991), libmath-complex-perl (<< 1.59), libmodule-build-perl (<< 0.400300), libmodule-corelist-perl (<< 3.03), libmodule-load-conditional-perl (<< 0.54), libmodule-load-perl (<< 0.24), libmodule-metadata-perl (<< 1.000011), libmodule-pluggable-perl (<< 4.7), libnet-perl (<= 1:1.22), libnet-ping-perl (<< 2.41), libobject-accessor-perl (<< 0.46), libparams-check-perl (<< 0.36), libparent-perl (<< 0.225), libparse-cpan-meta-perl (<< 1.4404), libperl-ostype-perl (<< 1.003), libpod-escapes-perl (<< 1.04), libpod-latex-perl (<< 0.61), libpod-parser-perl (<< 1.60), libpod-simple-perl (<< 3.28), libterm-ui-perl (<< 0.34), libtest-harness-perl (<< 3.26), libtest-simple-perl (<< 0.98), libtext-soundex-perl (<< 3.04), libthread-queue-perl (<< 3.02), libtime-local-perl (<< 1.2300), libunicode-collate-perl (<< 0.97), libversion-perl (<< 1:0.9902), libversion-requirements-perl (<< 0.101022), podlators-perl (<< 2.3.1)
+Conflicts: defoma (<< 0.11.12), mono-gac (<< 2.10.8.1-3)
+Size: 2695888
+Description: Core Perl modules
+ Architecture independent Perl modules.  These modules are part of Perl and
+ required if the `perl' package is installed.
+ .
+ Note that this package only exists to save archive space and should be
+ considered an internal implementation detail of the `perl' package.
+ Other packages should not depend on `perl-modules' directly, they
+ should use `perl' (which depends on `perl-modules') instead.
+Original-Maintainer: Niko Tyni <ntyni@debian.org>
+Homepage: http://dev.perl.org/perl5/
+
+Package: init-system-helpers
+Priority: extra
+Section: admin
+Installed-Size: 76
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Multi-Arch: foreign
+Version: 1.14
+Depends: perl
+Breaks: systemd (<< 44-12)
+Size: 12064
+Description: helper tools for all init systems
+ This package contains helper tools that are necessary for switching between
+ the various init systems that Debian contains (e.g. sysvinit, upstart,
+ systemd). An example is deb-systemd-helper, a script that enables systemd unit
+ files without depending on a running systemd.
+ .
+ While this package is maintained by pkg-systemd-maintainers, it is NOT
+ specific to systemd at all. Maintainers of other init systems are welcome to
+ include their helpers in this package.
+Original-Maintainer: pkg-systemd-maintainers <pkg-systemd-maintainers@lists.alioth.debian.org>
+
+Package: dctrl-tools
+Priority: optional
+Section: utils
+Installed-Size: 300
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: foreign
+Version: 2.23ubuntu1
+Replaces: grep-dctrl
+Provides: grep-dctrl
+Depends: libc6 (>= 2.4)
+Suggests: apt, debtags
+Conflicts: grep-dctrl
+Size: 95220
+Description: Command-line tools to process Debian package information
+ Debian package information is generally stored in files having a
+ special file format, dubbed the Debian control file format (the dctrl
+ format), a special case of the record jar file format.  These tools
+ operate on any files conforming in a general sense to that format and
+ are therefore widely applicable whenever those formats are in play.
+ .
+ Included are:
+ .
+   grep-dctrl     - Grep dctrl-format files
+   grep-available - Grep the DPKG available database
+   grep-status    - Grep the DPKG status database
+   grep-aptavail  - Grep the APT available database
+   grep-debtags   - Grep the Debtags package database
+ .
+   sort-dctrl     - Sort dctrl-format files
+ .
+   tbl-dctrl      - Tabulate dctrl-format files
+ .
+   sync-available - Sync the dpkg available database with
+                    the apt database
+Original-Maintainer: dctrl-tools developers <dctrl-tools-devel@lists.alioth.debian.org>
+
+Package: python-requests
+Priority: optional
+Section: python
+Installed-Size: 207
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Source: requests
+Version: 2.2.1-1
+Depends: python:any (>= 2.7.5-5~), python:any (<< 2.8), ca-certificates, python-chardet, python-urllib3 (>= 1.7.1)
+Size: 42450
+Description: elegant and simple HTTP library for Python, built for human beings
+ Requests allow you to send HTTP/1.1 requests. You can add headers, form data,
+ multipart files, and parameters with simple Python dictionaries, and access the
+ response data in the same way. It's powered by httplib and urllib3, but it does
+ all the hard work and crazy hacks for you.
+ .
+ Features
+ .
+   - International Domains and URLs
+   - Keep-Alive & Connection Pooling
+   - Sessions with Cookie Persistence
+   - Browser-style SSL Verification
+   - Basic/Digest Authentication
+   - Elegant Key/Value Cookies
+   - Automatic Decompression
+   - Unicode Response Bodies
+   - Multipart File Uploads
+   - Connection Timeouts
+Original-Maintainer: Debian Python Modules Team <python-modules-team@lists.alioth.debian.org>
+Homepage: http://python-requests.org
+
+Package: openssl
+Priority: optional
+Section: utils
+Installed-Size: 778
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Version: 1.0.1h-0linaro1
+Depends: libc6 (>= 2.15), libssl1.0.0 (>= 1.0.1)
+Suggests: ca-certificates
+Size: 491226
+Description: Secure Sockets Layer toolkit - cryptographic utility
+ This package is part of the OpenSSL project's implementation of the SSL
+ and TLS cryptographic protocols for secure communication over the
+ Internet.
+ .
+ It contains the general-purpose command line binary /usr/bin/openssl,
+ useful for cryptographic operations such as:
+  * creating RSA, DH, and DSA key parameters;
+  * creating X.509 certificates, CSRs, and CRLs;
+  * calculating message digests;
+  * encrypting and decrypting with ciphers;
+  * testing SSL/TLS clients and servers;
+  * handling S/MIME signed or encrypted mail.
+Original-Maintainer: Debian OpenSSL Team <pkg-openssl-devel@lists.alioth.debian.org>
+
+Package: apt
+Priority: important
+Section: admin
+Installed-Size: 3281
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Version: 1.0.1ubuntu2
+Replaces: manpages-it (<< 2.80-4~), manpages-pl (<< 20060617-3~), openjdk-6-jdk (<< 6b24-1.11-0ubuntu1~), sun-java5-jdk (>> 0), sun-java6-jdk (>> 0)
+Depends: libapt-pkg4.12 (>= 0.9.16), libc6 (>= 2.15), libgcc1 (>= 1:4.4.0), libstdc++6 (>= 4.6), ubuntu-keyring, gnupg
+Suggests: aptitude | synaptic | wajig, dpkg-dev (>= 1.17.2), apt-doc, python-apt
+Breaks: manpages-it (<< 2.80-4~), manpages-pl (<< 20060617-3~), openjdk-6-jdk (<< 6b24-1.11-0ubuntu1~), sun-java5-jdk (>> 0), sun-java6-jdk (>> 0)
+Conflicts: python-apt (<< 0.7.93.2~)
+Size: 932172
+Description: commandline package manager
+ This package provides commandline tools for searching and
+ managing as well as querying information about packages
+ as a low-level access to all features of the libapt-pkg library.
+ .
+ These include:
+  * apt-get for retrieval of packages and information about them
+    from authenticated sources and for installation, upgrade and
+    removal of packages together with their dependencies
+  * apt-cache for querying available information about installed
+    as well as installable packages
+  * apt-cdrom to use removable media as a source for packages
+  * apt-config as an interface to the configuration settings
+  * apt-key as an interface to manage authentication keys
+Original-Maintainer: APT Development Team <deity@lists.debian.org>
+
+Package: libk5crypto3
+Priority: standard
+Section: libs
+Installed-Size: 257
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Source: krb5
+Version: 1.12+dfsg-2ubuntu4
+Depends: libc6 (>= 2.4), libkrb5support0 (>= 1.12~alpha1+dfsg)
+Pre-Depends: multiarch-support
+Suggests: krb5-doc, krb5-user
+Breaks: libgssapi-krb5-2 (<= 1.10+dfsg~alpha1), libkrb5-3 (<= 1.8~aa)
+Conflicts: libkrb53
+Size: 76018
+Description: MIT Kerberos runtime libraries - Crypto Library
+ Kerberos is a system for authenticating users and services on a network.
+ Kerberos is a trusted third-party service.  That means that there is a
+ third party (the Kerberos server) that is trusted by all the entities on
+ the network (users and services, usually called "principals").
+ .
+ This is the MIT reference implementation of Kerberos V5.
+ .
+ This package contains the runtime cryptography libraries used by
+ applications and Kerberos clients.
+Homepage: http://web.mit.edu/kerberos/
+Original-Maintainer: Sam Hartman <hartmans@debian.org>
+
+Package: libestr0
+Priority: extra
+Section: libs
+Installed-Size: 44
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Source: libestr
+Version: 0.1.9-0ubuntu2
+Depends: libc6 (>= 2.4)
+Pre-Depends: multiarch-support
+Size: 7838
+Description: Helper functions for handling strings (lib)
+ The 'libestr' library implements some helper functions to
+ handle strings and easily, escaping special characters etc.
+ .
+ This package contains the shared library.
+Homepage: http://libestr.sourceforge.net/
+Original-Maintainer: Pierre Chifflier <pollux@debian.org>
+
+Package: netbase
+Priority: important
+Section: admin
+Installed-Size: 66
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Multi-Arch: foreign
+Version: 5.2
+Depends: lsb-base (>= 3.0-6)
+Recommends: ifupdown
+Breaks: ifupdown (<< 0.7)
+Conflicts: inetutils-inetd (<< 2:1.4.3+20060719-3), openbsd-inetd (<< 0.20050402-3)
+Size: 12860
+Description: Basic TCP/IP networking system
+ This package provides the necessary infrastructure for basic TCP/IP based
+ networking.
+Original-Maintainer: Marco d'Itri <md@linux.it>
+
+Package: libmagic1
+Priority: standard
+Section: libs
+Installed-Size: 2728
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Source: file
+Version: 1:5.14-2ubuntu3
+Depends: libc6 (>= 2.15), zlib1g (>= 1:1.1.4)
+Pre-Depends: multiarch-support
+Suggests: file
+Size: 179856
+Description: File type determination library using "magic" numbers
+ This library can be used to classify files according to magic number tests. It
+ implements the core functionality of the file command.
+Homepage: http://www.darwinsys.com/file/
+Original-Maintainer: Luk Claes <luk@debian.org>
+
+Package: libdrm2
+Priority: optional
+Section: libs
+Installed-Size: 89
+Maintainer: Debian X Strike Force <debian-x@lists.debian.org>
+Architecture: armhf
+Multi-Arch: same
+Source: libdrm
+Version: 2.4.56-1~linaro1
+Depends: libc6 (>= 2.17)
+Pre-Depends: multiarch-support
+Size: 25982
+Description: Userspace interface to kernel DRM services -- runtime
+ This library implements the userspace interface to the kernel DRM
+ services.  DRM stands for "Direct Rendering Manager", which is the
+ kernelspace portion of the "Direct Rendering Infrastructure" (DRI).
+ The DRI is currently used on Linux to provide hardware-accelerated
+ OpenGL drivers.
+ .
+ This package provides the runtime environment for libdrm.
+
+Package: libpython-stdlib
+Priority: optional
+Section: python
+Installed-Size: 58
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Source: python-defaults
+Version: 2.7.5-5ubuntu3
+Depends: libpython2.7-stdlib (>= 2.7.5-1~)
+Size: 6984
+Description: interactive high-level object-oriented language (default python version)
+ Python, the high-level, interactive object oriented language,
+ includes an extensive class library with lots of goodies for
+ network programming, system administration, sounds and graphics.
+ .
+ This package is a dependency package, which depends on Debian's default
+ Python version (currently v2.7).
+Homepage: http://www.python.org/
+Original-Maintainer: Matthias Klose <doko@debian.org>
+
+Package: whiptail
+Priority: important
+Section: utils
+Installed-Size: 76
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Source: newt
+Version: 0.52.15-2ubuntu5
+Depends: libc6 (>= 2.4), libnewt0.52, libpopt0 (>= 1.14), libslang2 (>= 2.2.4)
+Size: 14368
+Description: Displays user-friendly dialog boxes from shell scripts
+ Whiptail is a "dialog" replacement using newt instead of ncurses. It
+ provides a method of displaying several different types of dialog boxes
+ from shell scripts. This allows a developer of a script to interact with
+ the user in a much friendlier manner.
+Homepage: https://fedorahosted.org/newt/
+Original-Maintainer: Alastair McKinstry <mckinstry@debian.org>
+
+Package: python
+Priority: standard
+Section: python
+Installed-Size: 671
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: allowed
+Source: python-defaults
+Version: 2.7.5-5ubuntu3
+Replaces: python-dev (<< 2.6.5-2)
+Provides: python-ctypes, python-email, python-importlib, python-profiler, python-wsgiref
+Depends: python2.7 (>= 2.7.5-1~), python-minimal (= 2.7.5-5ubuntu3), libpython-stdlib (= 2.7.5-5ubuntu3)
+Suggests: python-doc (= 2.7.5-5ubuntu3), python-tk (>= 2.7.5-1~)
+Breaks: python-bz2 (<< 1.1-8), python-csv (<< 1.0-4), python-email (<< 2.5.5-3), update-manager-core (<< 0.200.5-2)
+Conflicts: python-central (<< 0.5.5)
+Size: 133684
+Description: interactive high-level object-oriented language (default version)
+ Python, the high-level, interactive object oriented language,
+ includes an extensive class library with lots of goodies for
+ network programming, system administration, sounds and graphics.
+ .
+ This package is a dependency package, which depends on Debian's default
+ Python version (currently v2.7).
+Homepage: http://www.python.org/
+Original-Maintainer: Matthias Klose <doko@debian.org>
+
+Package: libxext6
+Priority: optional
+Section: libs
+Installed-Size: 92
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Source: libxext
+Version: 2:1.3.2-1
+Depends: libc6 (>= 2.4), libx11-6 (>= 2:1.4.99.1)
+Pre-Depends: multiarch-support
+Size: 27326
+Description: X11 miscellaneous extension library
+ libXext provides an X Window System client interface to several extensions to
+ the X protocol.
+ .
+ The supported protocol extensions are:
+  - DOUBLE-BUFFER (DBE), the Double Buffer extension;
+  - DPMS, the VESA Display Power Management System extension;
+  - Extended-Visual-Information (EVI), an extension for gathering extra
+    information about the X server's visuals;
+  - LBX, the Low Bandwidth X extension;
+  - MIT-SHM, the MIT X client/server shared memory extension;
+  - MIT-SUNDRY-NONSTANDARD, a miscellaneous extension by MIT;
+  - Multi-Buffering, the multi-buffering and stereo display extension;
+  - SECURITY, the X security extension;
+  - SHAPE, the non-rectangular shaped window extension;
+  - SYNC, the X synchronization extension;
+  - TOG-CUP, the Open Group's Colormap Utilization extension;
+  - XC-APPGROUP, the X Consortium's Application Group extension;
+  - XC-MISC, the X Consortium's resource ID querying extension;
+  - XTEST, the X test extension (this is one of two client-side
+    implementations; the other is in the libXtst library, provided by the
+    libxtst6 package);
+ .
+ libXext also provides a small set of utility functions to aid authors of
+ client APIs for X protocol extensions.
+ .
+ More information about X.Org can be found at:
+ <URL:http://www.X.org>
+ .
+ This module can be found at
+ git://anongit.freedesktop.org/git/xorg/lib/libXext
+Original-Maintainer: Debian X Strike Force <debian-x@lists.debian.org>
+
+Package: libapt-pkg4.12
+Priority: important
+Section: libs
+Installed-Size: 2462
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Source: apt
+Version: 1.0.1ubuntu2
+Depends: libbz2-1.0, libc6 (>= 2.15), libgcc1 (>= 1:4.4.0), liblzma5 (>= 5.1.1alpha+20120614), libstdc++6 (>= 4.6), zlib1g (>= 1:1.2.3.4)
+Pre-Depends: multiarch-support
+Breaks: apt (<< 0.9.4~), libapt-inst1.5 (<< 0.9.9~)
+Size: 591034
+Description: package management runtime library
+ This library provides the common functionality for searching and
+ managing packages as well as information about packages.
+ Higher-level package managers can depend upon this library.
+ .
+ This includes:
+  * retrieval of information about packages from multiple sources
+  * retrieval of packages and all dependent packages
+    needed to satisfy a request either through an internal
+    solver or by interfacing with an external one
+  * authenticating the sources and validating the retrieved data
+  * installation and removal of packages in the system
+  * providing different transports to retrieve data over cdrom, ftp,
+    http, rsh as well as an interface to add more transports like
+    https (apt-transport-https) and debtorrent (apt-transport-debtorrent).
+Original-Maintainer: APT Development Team <deity@lists.debian.org>
+
+Package: file
+Priority: standard
+Section: utils
+Installed-Size: 93
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: foreign
+Version: 1:5.14-2ubuntu3
+Depends: libc6 (>= 2.4), libmagic1 (= 1:5.14-2ubuntu3)
+Size: 18460
+Description: Determines file type using "magic" numbers
+ File tests each argument in an attempt to classify it. There are three sets of
+ tests, performed in this order: filesystem tests, magic number tests, and
+ language tests. The first test that succeeds causes the file type to be
+ printed.
+Homepage: http://www.darwinsys.com/file/
+Original-Maintainer: Luk Claes <luk@debian.org>
+
+Package: libcap2-bin
+Priority: optional
+Section: utils
+Installed-Size: 88
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Source: libcap2
+Version: 1:2.24-0ubuntu2
+Depends: libc6 (>= 2.4), libcap2 (>= 2.10)
+Recommends: libpam-cap
+Suggests: libcap-dev
+Conflicts: libcap-bin
+Size: 15590
+Description: basic utility programs for using capabilities
+ This package contains the programs getpcaps, capsh, getcap, and setcap for
+ manipulation of capabilities. The manpages of this package reference the
+ manpage cap_from_text(3) from the libcap-dev package. Please install the
+ libcap-dev package if you need its documentation.
+Homepage: http://sites.google.com/site/fullycapable/
+Original-Maintainer: Torsten Werner <twerner@debian.org>
+
+Package: netcat-openbsd
+Priority: important
+Section: net
+Installed-Size: 100
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Version: 1.105-7ubuntu1
+Replaces: netcat (<< 1.10-35)
+Provides: netcat
+Depends: libbsd0 (>= 0.2.0), libc6 (>= 2.13-28)
+Breaks: netcat (<< 1.10-35)
+Size: 38320
+Description: TCP/IP swiss army knife
+ A simple Unix utility which reads and writes data across network
+ connections using TCP or UDP protocol.  It is designed to be a reliable
+ "back-end" tool that can be used directly or easily driven by other
+ programs and scripts. At the same time it is a feature-rich network
+ debugging and exploration tool, since it can create almost any kind of
+ connection you would need and has several interesting built-in
+ capabilities.
+ .
+ This package contains the OpenBSD rewrite of netcat, including support
+ for IPv6, proxies, and Unix sockets.
+Original-Maintainer: Aron Xu <aron@debian.org>
+
+Package: libfribidi0
+Priority: optional
+Section: libs
+Installed-Size: 127
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Source: fribidi
+Version: 0.19.6-1
+Depends: libc6 (>= 2.4)
+Pre-Depends: multiarch-support
+Size: 23794
+Description: Free Implementation of the Unicode BiDi algorithm
+ FriBiDi is a BiDi algorithm implementation for Hebrew and/or Arabic
+ languages.
+ This package contains the shared libraries.
+Original-Maintainer: Debian Hebrew Packaging Team <debian-hebrew-package@lists.alioth.debian.org>
+Homepage: http://www.fribidi.org/
+
+Package: libapt-inst1.5
+Priority: important
+Section: libs
+Installed-Size: 718
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Source: apt
+Version: 1.0.1ubuntu2
+Depends: libapt-pkg4.12 (>= 0.8.16~exp9), libc6 (>= 2.4), libgcc1 (>= 1:4.4.0), libstdc++6 (>= 4.4.0)
+Pre-Depends: multiarch-support
+Size: 55638
+Description: deb package format runtime library
+ This library provides methods to query and extract information
+ from deb packages. This includes the control data and the package
+ file content.
+Original-Maintainer: APT Development Team <deity@lists.debian.org>
+
+Package: libxcb1
+Priority: optional
+Section: libs
+Installed-Size: 128
+Maintainer: Ubuntu X-SWAT <ubuntu-x@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Source: libxcb
+Version: 1.10-2ubuntu1
+Depends: libc6 (>= 2.4), libxau6, libxdmcp6
+Pre-Depends: multiarch-support
+Breaks: alsa-utils (<< 1.0.24.2-5), libxcb-xlib0
+Size: 33066
+Description: X C Binding
+ This package contains the library files needed to run software using libxcb,
+ the X C Binding.
+ .
+ The XCB library provides an interface to the X Window System protocol,
+ designed to replace the Xlib interface.  XCB provides several advantages over
+ Xlib:
+ .
+  * Size: small library and lower memory footprint
+  * Latency hiding: batch several requests and wait for the replies later
+  * Direct protocol access: one-to-one mapping between interface and protocol
+  * Thread support: access XCB from multiple threads, with no explicit locking
+  * Easy creation of new extensions: automatically generates interface from
+    machine-parsable protocol descriptions
+Homepage: http://xcb.freedesktop.org
+Original-Maintainer: XCB Developers <xcb@lists.freedesktop.org>
+
+Package: python-support
+Priority: optional
+Section: python
+Installed-Size: 155
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Version: 1.0.15
+Depends: python (>= 2.5), python-minimal, dpkg (>= 1.14.19)
+Conflicts: debhelper (<< 5.0.38)
+Size: 26672
+Description: automated rebuilding support for Python modules
+ This package contains the 'update-python-modules' script, which takes
+ care of byte-compilation of Python-only modules.
+ .
+ Private modules are automatically rebuilt upon major Python upgrades,
+ avoiding the need for strong dependencies.
+ .
+ Public modules are automatically made available for all installed
+ Python versions.
+Original-Maintainer: Josselin Mouette <joss@debian.org>
+
+Package: python2.7
+Priority: standard
+Section: python
+Installed-Size: 347
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: allowed
+Version: 2.7.6-8
+Replaces: python-profiler (<= 2.7.1-2), python2.7-minimal (<< 2.7.3-7~)
+Depends: python2.7-minimal (= 2.7.6-8), libpython2.7-stdlib (= 2.7.6-8), mime-support
+Suggests: python2.7-doc, binutils
+Breaks: python-virtualenv (<< 1.7.1.2-2~), vim-athena (<< 2:7.3.547-4), vim-gnome (<< 2:7.3.547-4), vim-gtk (<< 2:7.3.547-4), vim-nox (<< 2:7.3.547-4)
+Conflicts: python-profiler (<= 2.7.1-2)
+Size: 196748
+Description: Interactive high-level object-oriented language (version 2.7)
+ Python is a high-level, interactive, object-oriented language. Its 2.7 version
+ includes an extensive class library with lots of goodies for
+ network programming, system administration, sounds and graphics.
+Original-Maintainer: Matthias Klose <doko@debian.org>
+
+Package: liblog-message-simple-perl
+Priority: optional
+Section: perl
+Installed-Size: 56
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Version: 0.10-1
+Depends: perl
+Size: 7656
+Description: simplified interface to Log::Message
+ Log::Message::Simple provides standardized logging facilities using the
+ Log::Message module.
+Original-Maintainer: Debian Perl Group <pkg-perl-maintainers@lists.alioth.debian.org>
+Homepage: https://metacpan.org/release/Log-Message-Simple/
+
+Package: libck-connector0
+Priority: optional
+Section: libs
+Installed-Size: 51
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Source: consolekit
+Version: 0.4.5-3.1ubuntu2
+Depends: libc6 (>= 2.4), libdbus-1-3 (>= 1.0.2)
+Pre-Depends: multiarch-support
+Size: 9636
+Description: ConsoleKit libraries
+ ConsoleKit is a system daemon for tracking what users are logged
+ into the system and how they interact with the computer (e.g.
+ which keyboard and mouse they use).
+ .
+ This package provides a convenience library which simplifies the access to
+ ConsoleKit.
+Homepage: http://www.freedesktop.org/wiki/Software/ConsoleKit
+Original-Maintainer: Utopia Maintenance Team <pkg-utopia-maintainers@lists.alioth.debian.org>
+
+Package: base-files
+Essential: yes
+Priority: required
+Section: admin
+Installed-Size: 433
+Maintainer: Linaro Packagers <linaro-pkg@lists.launchpad.net>
+Architecture: armhf
+Multi-Arch: foreign
+Version: 7.2ubuntu5.1+linaro14.04
+Replaces: base, dpkg (<= 1.15.0), miscutils
+Provides: base
+Pre-Depends: awk
+Breaks: initscripts (<< 2.88dsf-13.3), sendfile (<< 2.1b.20080616-5.2~)
+Size: 88998
+Description: Debian base system miscellaneous files
+ This package contains the basic filesystem hierarchy of a Debian system, and
+ several important miscellaneous files, such as /etc/debian_version,
+ /etc/host.conf, /etc/issue, /etc/motd, /etc/profile, and others,
+ and the text of several common licenses in use on Debian systems.
+Original-Maintainer: Santiago Vila <sanvila@debian.org>
+
+Package: libsqlite3-0
+Priority: standard
+Section: libs
+Installed-Size: 538
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Source: sqlite3
+Version: 3.8.2-1ubuntu2
+Depends: libc6 (>= 2.4)
+Pre-Depends: multiarch-support
+Size: 291168
+Description: SQLite 3 shared library
+ SQLite is a C library that implements an SQL database engine.
+ Programs that link with the SQLite library can have SQL database
+ access without running a separate RDBMS process.
+Homepage: http://www.sqlite.org/
+Original-Maintainer: Laszlo Boszormenyi (GCS) <gcs@debian.org>
+
+Package: console-setup
+Priority: optional
+Section: utils
+Installed-Size: 1529
+Maintainer: Ubuntu Installer Team <ubuntu-installer@lists.ubuntu.com>
+Architecture: all
+Version: 1.70ubuntu8
+Replaces: console-terminus
+Provides: console-terminus
+Depends: debconf (>= 1.5.34), xkb-data (>= 0.9), keyboard-configuration, initramfs-tools (>= 0.85eubuntu12), kbd (>= 1.15-1ubuntu3)
+Suggests: lsb-base (>= 3.0-6), locales
+Conflicts: console-terminus, lsb (<< 2.0-6), lsb-base (<< 3.0-6), lsb-core (<< 2.0-6)
+Size: 1112668
+Description: console font and keymap setup program
+ This package provides the Linux console with the same
+ keyboard configuration scheme as the X Window System. As a result,
+ there is no need to duplicate or change the keyboard files just to
+ make simple customizations such as the use of dead keys, the key
+ functioning as AltGr or Compose key, the key(s) to switch between
+ Latin and non-Latin mode, etc.
+ .
+ The package also contains console fonts supporting many of the
+ world's languages.  It provides an unified set of font faces - the
+ classic VGA, the simplistic Fixed, and the cleaned Terminus,
+ TerminusBold and TerminusBoldVGA.
+Original-Maintainer: Debian Install System Team <debian-boot@lists.debian.org>
+
+Package: libreadline6
+Priority: important
+Section: libs
+Installed-Size: 277
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Source: readline6
+Version: 6.3-4ubuntu2
+Depends: readline-common, libc6 (>= 2.15), libtinfo5
+Pre-Depends: multiarch-support
+Size: 97290
+Description: GNU readline and history libraries, run-time libraries
+ The GNU readline library aids in the consistency of user interface
+ across discrete programs that need to provide a command line
+ interface.
+ .
+ The GNU history library provides a consistent user interface for
+ recalling lines of previously typed input.
+Original-Maintainer: Matthias Klose <doko@debian.org>
+
+Package: lockfile-progs
+Priority: optional
+Section: misc
+Installed-Size: 68
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Version: 0.1.17
+Depends: libc6 (>= 2.13-28), liblockfile1 (>= 1.0)
+Size: 9988
+Description: Programs for locking and unlocking files and mailboxes
+ This package includes several programs to safely lock and unlock
+ files and mailboxes from the command line.  These include:
+ .
+   lockfile-create
+   lockfile-remove
+   lockfile-touchlock
+   mail-lock
+   mail-unlock
+   mail-touchlock
+ .
+ These programs use liblockfile to perform the file locking and
+ unlocking, so they are guaranteed compatible with Debian's
+ file locking policies.
+Original-Maintainer: Rob Browning <rlb@defaultvalue.org>
+
+Package: libkeyutils1
+Priority: standard
+Section: libs
+Installed-Size: 47
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Source: keyutils
+Version: 1.5.6-1
+Depends: libc6 (>= 2.7)
+Pre-Depends: multiarch-support
+Size: 6580
+Description: Linux Key Management Utilities (library)
+ Keyutils is a set of utilities for managing the key retention facility in the
+ kernel, which can be used by filesystems, block devices and more to gain and
+ retain the authorization and encryption keys required to perform secure
+ operations.
+ .
+ This package provides a wrapper library for the key management facility system
+ calls.
+Original-Maintainer: Luk Claes <luk@debian.org>
+Homepage: http://people.redhat.com/~dhowells/keyutils/
+
+Package: logrotate
+Priority: important
+Section: admin
+Installed-Size: 142
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Version: 3.8.7-1ubuntu1
+Depends: libacl1 (>= 2.2.51-8), libc6 (>= 2.8), libpopt0 (>= 1.14), libselinux1 (>= 1.32), cron | anacron | cron-daemon, base-passwd (>= 2.0.3.4)
+Suggests: mailx
+Breaks: postgresql-common (<= 126)
+Size: 35058
+Description: Log rotation utility
+ The logrotate utility is designed to simplify the administration of
+ log files on a system which generates a lot of log files.  Logrotate
+ allows for the automatic rotation compression, removal and mailing of
+ log files.  Logrotate can be set to handle a log file daily, weekly,
+ monthly or when the log file gets to a certain size.  Normally, logrotate
+ runs as a daily cron job.
+Homepage: https://fedorahosted.org/logrotate/
+Original-Maintainer: Paul Martin <pm@debian.org>
+
+Package: libexpat1
+Priority: optional
+Section: libs
+Installed-Size: 245
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Source: expat
+Version: 2.1.0-4ubuntu1
+Depends: libc6 (>= 2.4), libgcc1 (>= 1:4.4.0)
+Pre-Depends: multiarch-support
+Conflicts: wink (<= 1.5.1060-4)
+Size: 52578
+Description: XML parsing C library - runtime library
+ This package contains the runtime, shared library of expat, the C
+ library for parsing XML. Expat is a stream-oriented parser in
+ which an application registers handlers for things the parser
+ might find in the XML document (like start tags).
+Original-Maintainer: Laszlo Boszormenyi (GCS) <gcs@debian.org>
+Homepage: http://expat.sourceforge.net
+
+Package: iproute
+Priority: optional
+Section: oldlibs
+Installed-Size: 40
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Source: iproute2 (3.12.0-2)
+Version: 1:3.12.0-2
+Depends: iproute2
+Size: 2384
+Description: transitional dummy package for iproute2
+ This is a transitional dummy package to get upgrading systems to install
+ the iproute2 package. It can safely be removed once no other package
+ depends on it.
+Original-Maintainer: Debian iproute2 Maintainers <ah-iproute@debian.org>
+Homepage: http://www.linux-foundation.org/en/Net:Iproute2
+
+Package: openssh-sftp-server
+Priority: optional
+Section: net
+Installed-Size: 89
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Source: openssh
+Version: 1:6.6p1-2ubuntu1
+Replaces: openssh-server (<< 1:6.5p1-5)
+Depends: libc6 (>= 2.17), openssh-client
+Recommends: openssh-server | ssh-server
+Breaks: openssh-server (<< 1:6.5p1-5)
+Enhances: openssh-server, ssh-server
+Size: 30690
+Description: secure shell (SSH) sftp server module, for SFTP access from remote machines
+ This is the portable version of OpenSSH, a free implementation of
+ the Secure Shell protocol as specified by the IETF secsh working
+ group.
+ .
+ Ssh (Secure Shell) is a program for logging into a remote machine
+ and for executing commands on a remote machine.
+ It provides secure encrypted communications between two untrusted
+ hosts over an insecure network. X11 connections and arbitrary TCP/IP
+ ports can also be forwarded over the secure channel.
+ It can be used to provide applications with a secure communication
+ channel.
+ .
+ This package provides the SFTP server module for the SSH server. It
+ is needed if you want to access your SSH server with SFTP. The SFTP
+ server module also works with other SSH daemons like dropbear.
+Original-Maintainer: Debian OpenSSH Maintainers <debian-ssh@lists.debian.org>
+Homepage: http://www.openssh.org/
+
+Package: krb5-locales
+Priority: standard
+Section: localization
+Installed-Size: 2660
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Multi-Arch: foreign
+Source: krb5
+Version: 1.12+dfsg-2ubuntu4
+Size: 12332
+Description: Internationalization support for MIT Kerberos
+ Kerberos is a system for authenticating users and services on a network.
+ Kerberos is a trusted third-party service.  That means that there is a
+ third party (the Kerberos server) that is trusted by all the entities on
+ the network (users and services, usually called "principals").
+ .
+ This is the MIT reference implementation of Kerberos V5.
+ .
+ This package contains internationalized messages for MIT Kerberos.
+Homepage: http://web.mit.edu/kerberos/
+Original-Maintainer: Sam Hartman <hartmans@debian.org>
+
+Package: libidn11
+Priority: standard
+Section: libs
+Installed-Size: 350
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Source: libidn
+Version: 1.28-1ubuntu2
+Replaces: libidn11-dev
+Depends: libc6 (>= 2.4)
+Pre-Depends: multiarch-support
+Conflicts: libidn9-dev
+Size: 89938
+Description: GNU Libidn library, implementation of IETF IDN specifications
+ GNU Libidn is a fully documented implementation of the Stringprep,
+ Punycode and IDNA specifications.  Libidn's purpose is to encode and
+ decode internationalized domain names.  The Nameprep, XMPP, SASLprep,
+ and iSCSI profiles are supported.
+ .
+ This package contains the shared library.
+Homepage: https://www.gnu.org/software/libidn/
+Original-Maintainer: Debian Libidn Team <help-libidn@gnu.org>
+
+Package: python2.7-minimal
+Priority: standard
+Section: python
+Installed-Size: 2588
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: allowed
+Source: python2.7
+Version: 2.7.6-8
+Replaces: python2.7 (<< 2.7.1~rc1-2~)
+Depends: libpython2.7-minimal (= 2.7.6-8), zlib1g (>= 1:1.2.0)
+Pre-Depends: libc6 (>= 2.15)
+Recommends: python2.7
+Suggests: binfmt-support
+Conflicts: binfmt-support (<< 1.1.2)
+Size: 1045746
+Description: Minimal subset of the Python language (version 2.7)
+ This package contains the interpreter and some essential modules.  It can
+ be used in the boot process for some basic tasks.
+ See /usr/share/doc/python2.7-minimal/README.Debian for a list of the modules
+ contained in this package.
+Original-Maintainer: Matthias Klose <doko@debian.org>
+
+Package: liblockfile-bin
+Priority: standard
+Section: utils
+Installed-Size: 66
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: foreign
+Source: liblockfile
+Version: 1.09-6ubuntu1
+Replaces: liblockfile1 (<< 1.09-1)
+Depends: libc6 (>= 2.4)
+Breaks: liblockfile1 (<< 1.09-1)
+Size: 10118
+Description: support binaries for and cli utilities based on liblockfile
+ This package contains support binaries for the liblockfile library,
+ and the command-line utility ``dotlockfile''.
+Original-Maintainer: Miquel van Smoorenburg <miquels@cistron.nl>
+
+Package: libtext-soundex-perl
+Priority: optional
+Section: perl
+Installed-Size: 75
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Version: 3.4-1build1
+Depends: perl (>= 5.18.1-4), perlapi-5.18.1, libc6 (>= 2.4)
+Size: 13060
+Description: implementation of the soundex algorithm
+ Text::Soundex implements the original soundex algorithm developed by Robert
+ Russell and Margaret Odell, patented in 1918 and 1922, as well as a variation
+ called "American Soundex" used for US census data, and current maintained by
+ the National Archives and Records Administration (NARA).
+Original-Maintainer: Debian Perl Group <pkg-perl-maintainers@lists.alioth.debian.org>
+Homepage: https://metacpan.org/release/Text-Soundex/
+
+Package: libgnutls-openssl27
+Priority: standard
+Section: libs
+Installed-Size: 259
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Source: gnutls26
+Version: 2.12.23-12ubuntu2
+Depends: libgnutls26 (= 2.12.23-12ubuntu2), libc6 (>= 2.4)
+Pre-Depends: multiarch-support
+Size: 15030
+Description: GNU TLS library - OpenSSL wrapper
+ GnuTLS is a portable library which implements the Transport Layer
+ Security (TLS 1.0, 1.1, 1.2) and Secure Sockets Layer (SSL) 3.0 protocols.
+ .
+ GnuTLS features support for:
+  - TLS extensions: server name indication, max record size, opaque PRF
+    input, etc.
+  - authentication using the SRP protocol.
+  - authentication using both X.509 certificates and OpenPGP keys.
+  - TLS Pre-Shared-Keys (PSK) extension.
+  - Inner Application (TLS/IA) extension.
+  - X.509 and OpenPGP certificate handling.
+  - X.509 Proxy Certificates (RFC 3820).
+  - all the strong encryption algorithms (including SHA-256/384/512 and
+    Camellia (RFC 4132)).
+ .
+ This package contains the runtime library of the GnuTLS OpenSSL wrapper.
+Homepage: http://www.gnutls.org/
+Original-Maintainer: Debian GnuTLS Maintainers <pkg-gnutls-maint@lists.alioth.debian.org>
+
+Package: libkrb5support0
+Priority: standard
+Section: libs
+Installed-Size: 145
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Source: krb5
+Version: 1.12+dfsg-2ubuntu4
+Depends: libc6 (>= 2.4)
+Pre-Depends: multiarch-support
+Conflicts: libkrb53
+Size: 25514
+Description: MIT Kerberos runtime libraries - Support library
+ Kerberos is a system for authenticating users and services on a network.
+ Kerberos is a trusted third-party service.  That means that there is a
+ third party (the Kerberos server) that is trusted by all the entities on
+ the network (users and services, usually called "principals").
+ .
+ This is the MIT reference implementation of Kerberos V5.
+ .
+ This package contains an internal runtime support library used by other
+ Kerberos libraries.
+Homepage: http://web.mit.edu/kerberos/
+Original-Maintainer: Sam Hartman <hartmans@debian.org>
+
+Package: wget
+Priority: important
+Section: web
+Installed-Size: 540
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: foreign
+Version: 1.15-1ubuntu1
+Depends: libc6 (>= 2.17), libidn11 (>= 1.13), libssl1.0.0 (>= 1.0.0), libuuid1 (>= 2.16), zlib1g (>= 1:1.1.4)
+Recommends: ca-certificates
+Conflicts: wget-ssl
+Size: 252686
+Description: retrieves files from the web
+ Wget is a network utility to retrieve files from the web
+ using HTTP(S) and FTP, the two most widely used internet
+ protocols. It works non-interactively, so it will work in
+ the background, after having logged off. The program supports
+ recursive retrieval of web-authoring pages as well as FTP
+ sites -- you can use Wget to make mirrors of archives and
+ home pages or to travel the web like a WWW robot.
+ .
+ Wget works particularly well with slow or unstable connections
+ by continuing to retrieve a document until the document is fully
+ downloaded. Re-getting files from where it left off works on
+ servers (both HTTP and FTP) that support it. Both HTTP and FTP
+ retrievals can be time stamped, so Wget can see if the remote
+ file has changed since the last retrieval and automatically
+ retrieve the new version if it has.
+ .
+ Wget supports proxy servers; this can lighten the network load,
+ speed up retrieval, and provide access behind firewalls.
+Homepage: http://www.gnu.org/software/wget/
+Original-Maintainer: Noël Köthe <noel@debian.org>
+
+Package: libarchive-extract-perl
+Priority: optional
+Section: perl
+Installed-Size: 100
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Version: 0.70-1
+Depends: perl (>= 5.13.6)
+Size: 20324
+Description: generic archive extracting module
+ Archive::Extract is a generic archive extraction mechanism.
+ .
+ It allows you to extract any archive file of the type .tar, .tar.gz, .gz, .Z,
+ tar.bz2, .tbz, .bz2, .zip, .xz,, .txz, .tar.xz or .lzma without having to
+ worry how it does so, or use different interfaces for each type by using
+ either perl modules, or commandline tools on your system.
+Original-Maintainer: Debian Perl Group <pkg-perl-maintainers@lists.alioth.debian.org>
+Homepage: https://metacpan.org/release/Archive-Extract/
+
+Package: linaro-overlay
+Priority: optional
+Section: utils
+Installed-Size: 70
+Maintainer: Linaro Developers <linaro-dev@lists.linaro.org>
+Architecture: all
+Version: 1112.3
+Depends: gnupg
+Size: 5716
+Description: Linaro Overlay Specific Changes
+ ships branding elements for Linaro:
+   + http://start.linaro.org as homepage in firefox
+   + lsb-release changes to DISTRIB_ID
+   + changed splash screen artworkPackage: linaro-overlay
+
+Package: libterm-ui-perl
+Priority: optional
+Section: perl
+Installed-Size: 78
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Version: 0.42-1
+Depends: perl, liblog-message-simple-perl | perl (<< 5.17)
+Size: 18272
+Description: Term::ReadLine UI made easy
+ Term::UI is a transparent way of eliminating the overhead of having to format
+ a question and then validate the reply, informing the user if the answer was
+ not proper and re-issuing the question.
+ .
+ Simply give it the question you want to ask, optionally with choices the user
+ can pick from and a default and Term::UI will DWYM.
+ .
+ For asking a yes or no question, there's even a shortcut.
+Original-Maintainer: Debian Perl Group <pkg-perl-maintainers@lists.alioth.debian.org>
+Homepage: https://metacpan.org/release/Term-UI/
+
+Package: gnupg
+Priority: important
+Section: utils
+Installed-Size: 1248
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: foreign
+Version: 1.4.16-1ubuntu2
+Depends: libbz2-1.0, libc6 (>= 2.15), libreadline6 (>= 6.0), libusb-0.1-4 (>= 2:0.1.12), zlib1g (>= 1:1.1.4), gpgv
+Suggests: gnupg-curl, gnupg-doc, xloadimage | imagemagick | eog, libpcsclite1
+Size: 551228
+Description: GNU privacy guard - a free PGP replacement
+ GnuPG is GNU's tool for secure communication and data storage.
+ It can be used to encrypt data and to create digital signatures.
+ It includes an advanced key management facility and is compliant
+ with the proposed OpenPGP Internet standard as described in RFC 4880.
+ .
+ GnuPG 1.4 is the standalone, non-modularized series. In contrast to
+ the version 2 series, shipped with the gnupg2 package, it comes
+ with no support for S/MIME and some other tools useful for desktop
+ environments, but also with less dependencies.
+ .
+ The gnupg package is built without libcurl. So it does not support
+ HKPS keyservers. Install the gnupg-curl package if you want to use
+ the keyserver helper tools built with libcurl and supporting HKPS.
+Homepage: http://www.gnupg.org
+Original-Maintainer: Debian GnuPG-Maintainers <pkg-gnupg-maint@lists.alioth.debian.org>
+
+Package: libnewt0.52
+Priority: important
+Section: libs
+Installed-Size: 152
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Source: newt
+Version: 0.52.15-2ubuntu5
+Depends: libc6 (>= 2.15), libslang2 (>= 2.2.4)
+Pre-Depends: multiarch-support
+Recommends: libfribidi0
+Size: 33918
+Description: Not Erik's Windowing Toolkit - text mode windowing with slang
+ Newt is a windowing toolkit for text mode built from the slang library.
+ It allows color text mode applications to easily use stackable windows,
+ push buttons, check boxes, radio buttons, lists, entry fields, labels,
+ and displayable text. Scrollbars are supported, and forms may be nested
+ to provide extra functionality. This package contains the shared library
+ for programs that have been built with newt.
+Homepage: https://fedorahosted.org/newt/
+Original-Maintainer: Alastair McKinstry <mckinstry@debian.org>
+
+Package: linaro-overlay-minimal
+Priority: optional
+Section: utils
+Installed-Size: 46
+Maintainer: Linaro Developers <linaro-dev@lists.linaro.org>
+Architecture: all
+Source: linaro-overlay
+Version: 1112.3
+Depends: linaro-overlay
+Size: 5068
+Description: Linaro Overlay for Linaro headless/minimal images
+ ships a autologinroot upstart conf
+
+Package: net-tools
+Priority: important
+Section: net
+Installed-Size: 560
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: foreign
+Version: 1.60-25ubuntu2
+Replaces: ja-trans (<= 0.8-2), netbase (<< 4.00)
+Depends: libc6 (>= 2.4)
+Conflicts: ja-trans (<= 0.8-2)
+Size: 163116
+Description: The NET-3 networking toolkit
+ This package includes the important tools for controlling the network
+ subsystem of the Linux kernel.  This includes arp, ifconfig, netstat,
+ rarp, nameif and route.  Additionally, this package contains utilities
+ relating to particular network hardware types (plipconfig, slattach,
+ mii-tool) and advanced aspects of IP configuration (iptunnel, ipmaddr).
+ .
+ In the upstream package 'hostname' and friends are included. Those are
+ not installed by this package, since there is a special "hostname*.deb".
+Homepage: http://net-tools.berlios.de/
+Original-Maintainer: net-tools Team <pkg-net-tools-maintainers@lists.alioth.debian.org>
+
+Package: gcc-4.8-base
+Priority: required
+Section: libs
+Installed-Size: 212
+Maintainer: Ubuntu Core developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Source: gcc-4.8
+Version: 4.8.2-19ubuntu1
+Breaks: dehydra (<= 0.9.hg20110609-2), gcc-4.4-base (<< 4.4.7), gcc-4.7-base (<< 4.7.3), gcj-4.4-base (<< 4.4.6-9~), gcj-4.6-base (<< 4.6.1-4~), gnat-4.4-base (<< 4.4.6-3~), gnat-4.6 (<< 4.6.1-5~)
+Size: 15754
+Description: GCC, the GNU Compiler Collection (base package)
+ This package contains files common to all languages and libraries
+ contained in the GNU Compiler Collection (GCC).
+Homepage: http://gcc.gnu.org/
+Original-Maintainer: Debian GCC Maintainers <debian-gcc@lists.debian.org>
+
+Package: kbd
+Priority: optional
+Section: utils
+Installed-Size: 880
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Version: 1.15.5-1ubuntu1
+Provides: console-utilities
+Depends: libc6 (>= 2.7), console-setup, lsb-base (>= 3.0-10), initramfs-tools
+Pre-Depends: dpkg (>= 1.15.7.2)
+Conflicts: console-utilities
+Size: 222664
+Description: Linux console font and keytable utilities
+ This package allows you to set up the Linux console, change the font,
+ resize text mode virtual consoles and remap the keyboard.
+ .
+ You will probably want to install a set of data files, such as the one
+ in the “console-setup” package.
+Original-Maintainer: Console utilities maintainers <pkg-kbd-devel@lists.alioth.debian.org>
+
+Package: keyboard-configuration
+Priority: optional
+Section: utils
+Installed-Size: 2304
+Maintainer: Ubuntu Installer Team <ubuntu-installer@lists.ubuntu.com>
+Architecture: all
+Source: console-setup
+Version: 1.70ubuntu8
+Replaces: console-setup (<< 1.47), console-setup-mini (<< 1.47)
+Depends: debconf (>= 1.5.34), liblocale-gettext-perl
+Conflicts: console-setup (<< 1.47), console-setup-mini (<< 1.47)
+Size: 555622
+Description: system-wide keyboard preferences
+ This package maintains the keyboard preferences in
+ /etc/default/keyboard.  Other packages can use the information
+ provided by this package in order to configure the keyboard on the
+ console or in X Window.
+Original-Maintainer: Debian Install System Team <debian-boot@lists.debian.org>
+
+Package: xkb-data
+Priority: extra
+Section: x11
+Installed-Size: 2836
+Maintainer: Ubuntu X-SWAT <ubuntu-x@lists.ubuntu.com>
+Architecture: all
+Multi-Arch: foreign
+Source: xkeyboard-config
+Version: 2.10.1-1ubuntu1
+Breaks: libx11-6 (<< 2:1.4.3)
+Size: 294472
+Description: X Keyboard Extension (XKB) configuration data
+ This package contains configuration data used by the X Keyboard
+ Extension (XKB), which allows selection of keyboard layouts when
+ using a graphical interface.
+ .
+ Every X11 vendor provides its own XKB data files, so keyboard layout
+ designers have to send their layouts to several places.  The
+ xkeyboard-config project has been launched at FreeDesktop in order
+ to provide a central repository that could be used by all vendors.
+Homepage: http://www.freedesktop.org/Software/XKeyboardConfig
+Original-Maintainer: Debian X Strike Force <debian-x@lists.debian.org>
+
+Package: xauth
+Priority: optional
+Section: x11
+Installed-Size: 73
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: foreign
+Version: 1:1.0.7-1ubuntu1
+Depends: libc6 (>= 2.13-28), libx11-6, libxau6, libxext6, libxmuu1
+Size: 22390
+Description: X authentication utility
+ xauth is a small utility to read and manipulate Xauthority files, which
+ are used by servers and clients alike to control authentication and access
+ to X sessions.
+Original-Maintainer: Debian X Strike Force <debian-x@lists.debian.org>
+
+Package: libbsd0
+Priority: optional
+Section: libs
+Installed-Size: 128
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Source: libbsd
+Version: 0.6.0-2ubuntu1
+Depends: libc6 (>= 2.8)
+Pre-Depends: multiarch-support
+Size: 29092
+Description: utility functions from BSD systems - shared library
+ This library provides some functions commonly available on BSD systems
+ but not on others like GNU systems.
+Homepage: http://libbsd.freedesktop.org/
+Original-Maintainer: Guillem Jover <guillem@debian.org>
+
+Package: libx11-6
+Priority: optional
+Section: libs
+Installed-Size: 1158
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Source: libx11
+Version: 2:1.6.2-1ubuntu2
+Depends: libc6 (>= 2.15), libxcb1 (>= 1.2), libx11-data
+Pre-Depends: multiarch-support
+Size: 506472
+Description: X11 client-side library
+ This package provides a client interface to the X Window System, otherwise
+ known as 'Xlib'.  It provides a complete API for the basic functions of the
+ window system.
+ .
+ More information about X.Org can be found at:
+ <URL:http://www.X.org>
+ .
+ This module can be found at
+ git://anongit.freedesktop.org/git/xorg/lib/libX11
+Original-Maintainer: Debian X Strike Force <debian-x@lists.debian.org>
+
+Package: ncurses-term
+Priority: standard
+Section: misc
+Installed-Size: 2154
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Multi-Arch: foreign
+Source: ncurses
+Version: 5.9+20140118-1ubuntu1
+Replaces: bogl-bterm (<< 0.1.18-7), mlterm-common (<< 3.0.2-1), ncurses-base (<< 5.7+20100313-1)
+Breaks: bogl-bterm (<< 0.1.18-7), mlterm-common (<< 3.0.2-1)
+Size: 242540
+Description: additional terminal type definitions
+ The ncurses library routines are a terminal-independent method of
+ updating character screens with reasonable optimization.
+ .
+ This package contains all of the numerous terminal definitions not found in
+ the ncurses-base package.
+Homepage: http://invisible-island.net/ncurses/
+Original-Maintainer: Craig Small <csmall@debian.org>
+
+Package: libmodule-pluggable-perl
+Priority: optional
+Section: perl
+Installed-Size: 87
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Version: 5.1-1
+Depends: perl
+Size: 21246
+Description: module for giving  modules the ability to have plugins
+ Module::Pluggable provides a simple but, hopefully, extensible way of having
+ 'plugins' for your module. Essentially all it does is export a method into
+ your namespace that looks through a search path for .pm files and turn those
+ into class names. Optionally it instantiates those classes for you.
+Original-Maintainer: Debian Perl Group <pkg-perl-maintainers@lists.alioth.debian.org>
+Homepage: https://metacpan.org/release/Module-Pluggable/
+
+Package: openssh-server
+Priority: optional
+Section: net
+Installed-Size: 752
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: foreign
+Source: openssh
+Version: 1:6.6p1-2ubuntu1
+Replaces: ssh, ssh-krb5
+Provides: ssh-server
+Depends: libc6 (>= 2.17), libck-connector0 (>= 0.2.1), libcomerr2 (>= 1.01), libdbus-1-3 (>= 1.0.2), libgssapi-krb5-2 (>= 1.10+dfsg~), libkrb5-3 (>= 1.6.dfsg.2), libpam0g (>= 0.99.7.1), libselinux1 (>= 1.32), libssl1.0.0 (>= 1.0.1), libwrap0 (>= 7.6-4~), zlib1g (>= 1:1.1.4), debconf (>= 0.5) | debconf-2.0, init-system-helpers (>= 1.13~), openssh-client (= 1:6.6p1-2ubuntu1), sysv-rc (>= 2.88dsf-24) | file-rc (>= 0.8.16), libpam-runtime (>= 0.76-14), libpam-modules (>= 0.72-9), adduser (>= 3.9), dpkg (>= 1.9.0), lsb-base (>= 4.1+Debian3), procps, openssh-sftp-server
+Recommends: xauth, ncurses-term, ssh-import-id
+Suggests: ssh-askpass, rssh, molly-guard, ufw, monkeysphere
+Conflicts: sftp, ssh-socks, ssh2
+Size: 315506
+Description: secure shell (SSH) server, for secure access from remote machines
+ This is the portable version of OpenSSH, a free implementation of
+ the Secure Shell protocol as specified by the IETF secsh working
+ group.
+ .
+ Ssh (Secure Shell) is a program for logging into a remote machine
+ and for executing commands on a remote machine.
+ It provides secure encrypted communications between two untrusted
+ hosts over an insecure network. X11 connections and arbitrary TCP/IP
+ ports can also be forwarded over the secure channel.
+ It can be used to provide applications with a secure communication
+ channel.
+ .
+ This package provides the sshd server.
+ .
+ In some countries it may be illegal to use any encryption at all
+ without a special permit.
+ .
+ sshd replaces the insecure rshd program, which is obsolete for most
+ purposes.
+Original-Maintainer: Debian OpenSSH Maintainers <debian-ssh@lists.debian.org>
+Homepage: http://www.openssh.org/
+
+Package: libgnutls26
+Priority: standard
+Section: libs
+Installed-Size: 804
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Source: gnutls26
+Version: 2.12.23-12ubuntu2
+Replaces: gnutls0, gnutls0.4, gnutls3
+Depends: libc6 (>= 2.8), libgcrypt11 (>= 1.5.1), libp11-kit0 (>= 0.11), libtasn1-6 (>= 3.4-0), zlib1g (>= 1:1.1.4)
+Pre-Depends: multiarch-support
+Suggests: gnutls-bin
+Breaks: ccbuild (<= 2.0.1-1), csync2 (<= 1.34-2.2), freewheeling (<= 0.6-1.1), gkrellm (<= 2.3.4-1), libsoup2.4-1 (= 2.31.2-1), libsoup2.4-1 (<= 2.30.1-1), macopix-gtk2 (<= 1.7.4-3), pokerth (<= 0.8.3-3+b1), pokerth-server (<= 0.8.3-3+b1), sipsak (<= 0.9.6-2.1), slrn (<= 1.0.0~pre18-1.1), slrnpull (<= 1.0.0~pre18-1.1), snowdrop (<= 0.02b-9), ssmtp (<= 2.64-4), tf5 (<= 5.0beta8-4), wput (<= 0.6.2-2), zoneminder (<= 1.24.4-1)
+Conflicts: gnutls0, gnutls0.4
+Size: 358910
+Description: GNU TLS library - runtime library
+ GnuTLS is a portable library which implements the Transport Layer
+ Security (TLS 1.0, 1.1, 1.2) and Secure Sockets Layer (SSL) 3.0 protocols.
+ .
+ GnuTLS features support for:
+  - TLS extensions: server name indication, max record size, opaque PRF
+    input, etc.
+  - authentication using the SRP protocol.
+  - authentication using both X.509 certificates and OpenPGP keys.
+  - TLS Pre-Shared-Keys (PSK) extension.
+  - Inner Application (TLS/IA) extension.
+  - X.509 and OpenPGP certificate handling.
+  - X.509 Proxy Certificates (RFC 3820).
+  - all the strong encryption algorithms (including SHA-256/384/512 and
+    Camellia (RFC 4132)).
+ .
+ This package contains the runtime libraries.
+Homepage: http://www.gnutls.org/
+Original-Maintainer: Debian GnuTLS Maintainers <pkg-gnutls-maint@lists.alioth.debian.org>
+
+Package: python-chardet
+Priority: optional
+Section: python
+Installed-Size: 569
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Source: chardet
+Version: 2.0.1-2build2
+Depends: python (>= 2.7), python (<< 2.8), python:any (>= 2.7.1-0ubuntu2)
+Size: 106256
+Description: universal character encoding detector
+ Chardet takes a sequence of bytes in an unknown character encoding, and
+ attempts to determine the encoding.
+ .
+ Supported encodings:
+  * ASCII, UTF-8, UTF-16 (2 variants), UTF-32 (4 variants)
+  * Big5, GB2312, EUC-TW, HZ-GB-2312, ISO-2022-CN (Traditional and Simplified
+    Chinese)
+  * EUC-JP, SHIFT_JIS, ISO-2022-JP (Japanese)
+  * EUC-KR, ISO-2022-KR (Korean)
+  * KOI8-R, MacCyrillic, IBM855, IBM866, ISO-8859-5, windows-1251 (Cyrillic)
+  * ISO-8859-2, windows-1250 (Hungarian)
+  * ISO-8859-5, windows-1251 (Bulgarian)
+  * windows-1252 (English)
+  * ISO-8859-7, windows-1253 (Greek)
+  * ISO-8859-8, windows-1255 (Visual and Logical Hebrew)
+  * TIS-620 (Thai)
+ .
+ This library is a port of the auto-detection code in Mozilla.
+Original-Maintainer: Piotr Ożarowski <piotr@debian.org>
+Homepage: http://chardet.feedparser.org/
+
+Package: liblocale-gettext-perl
+Priority: required
+Section: perl
+Installed-Size: 83
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Version: 1.05-7build3
+Depends: libc6 (>= 2.4)
+Pre-Depends: perl-base (>= 5.18.1-4), perlapi-5.18.1
+Size: 18368
+Description: module using libc functions for internationalization in Perl
+ The gettext module permits access from perl to the gettext() family of
+ functions for retrieving message strings from databases constructed
+ to internationalize software.
+ .
+ It provides gettext(), dgettext(), dcgettext(), textdomain(),
+ bindtextdomain(), bind_textdomain_codeset(), ngettext(), dcngettext()
+ and dngettext().
+Original-Maintainer: Debian Perl Group <pkg-perl-maintainers@lists.alioth.debian.org>
+Homepage: http://search.cpan.org/dist/gettext/gettext.pm
+
+Package: ubuntu-keyring
+Priority: important
+Section: misc
+Installed-Size: 46
+Maintainer: Michael Vogt <michael.vogt@canonical.com>
+Architecture: all
+Multi-Arch: foreign
+Version: 2012.05.19
+Recommends: gpgv
+Size: 16738
+Description: GnuPG keys of the Ubuntu archive
+ The Ubuntu project digitally signs its Release files. This package
+ contains the archive keys used for that.
+
+Package: iputils-ping
+Priority: important
+Section: net
+Installed-Size: 141
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Source: iputils
+Version: 3:20121221-4ubuntu1
+Provides: ping
+Depends: libc6 (>= 2.11), libcap2 (>= 2.10), libgnutls-openssl27
+Recommends: libcap2-bin
+Size: 50152
+Description: Tools to test the reachability of network hosts
+ The ping command sends ICMP ECHO_REQUEST packets to a host in order to
+ test if the host is reachable via the network.
+ .
+ This package includes a ping6 utility which supports IPv6 network
+ connections.
+Original-Maintainer: Noah Meyerhans <noahm@debian.org>
+
+Package: monit
+Priority: optional
+Section: admin
+Installed-Size: 646
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Version: 1:5.6-2
+Depends: libc6 (>= 2.11), libpam0g (>= 0.99.7.1), libssl1.0.0 (>= 1.0.0), lsb-base (>= 3.2-13)
+Suggests: exim4 | postfix | mail-transport-agent
+Size: 266836
+Description: utility for monitoring and managing daemons or similar programs
+ monit is a utility for monitoring and managing daemons or similar
+ programs running on a Unix system. It will start specified programs
+ if they are not running and restart programs not responding.
+ .
+ monit supports:
+  * Daemon mode - poll programs at a specified interval
+  * Monitoring modes - active, passive or manual
+  * Start, stop and restart of programs
+  * Group and manage groups of programs
+  * Process dependency definition
+  * Logging to syslog or own logfile
+  * Configuration - comprehensive controlfile
+  * Runtime and TCP/IP port checking (tcp and udp)
+  * SSL support for port checking
+  * Unix domain socket checking
+  * Process status and process timeout
+  * Process cpu usage
+  * Process memory usage
+  * Process zombie check
+  * Check the systems load average
+  * Check a file or directory timestamp
+  * Alert, stop or restart a process based on its characteristics
+  * MD5 checksum for programs started and stopped by monit
+  * Alert notification for program timeout, restart, checksum, stop
+    resource and timestamp error
+  * Flexible and customizable email alert messages
+  * Protocol verification. HTTP, FTP, SMTP, POP, IMAP, NNTP, SSH, DWP,
+    LDAPv2 and LDAPv3
+  * An http interface with optional SSL support to make monit
+    accessible from a webbrowser
+Original-Maintainer: Sergey B Kirpichev <skirpichev@gmail.com>
+Homepage: http://mmonit.com/monit/
+
+Package: perl
+Priority: standard
+Section: perl
+Installed-Size: 11006
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Version: 5.18.2-2ubuntu1
+Replaces: libarchive-tar-perl (<= 1.38-2), libcompress-raw-bzip2-perl, libcompress-raw-zlib-perl, libcompress-zlib-perl, libdigest-md5-perl, libdigest-sha-perl, libencode-perl, libio-compress-base-perl, libio-compress-bzip2-perl, libio-compress-perl, libio-compress-zlib-perl, libmime-base64-perl, libmodule-corelist-perl (<< 2.14-2), libstorable-perl, libsys-syslog-perl, libthreads-perl, libthreads-shared-perl, libtime-hires-perl, libtime-piece-perl, perl-base (<< 5.10.1-12), perl-doc (<< 5.8.0-1), perl-modules (<< 5.8.1-1)
+Provides: data-dumper, libcompress-raw-bzip2-perl, libcompress-raw-zlib-perl, libcompress-zlib-perl, libdigest-md5-perl, libdigest-sha-perl, libencode-perl, libio-compress-base-perl, libio-compress-bzip2-perl, libio-compress-perl, libio-compress-zlib-perl, libmime-base64-perl, libstorable-perl, libsys-syslog-perl, libthreads-perl, libthreads-shared-perl, libtime-hires-perl, libtime-piece-perl, perl5
+Depends: perl-base (= 5.18.2-2ubuntu1), perl-modules (>= 5.18.2-2ubuntu1), libbz2-1.0, libc6 (>= 2.11), libdb5.3, libgdbm3 (>= 1.8.3), zlib1g (>= 1:1.2.2.3)
+Recommends: netbase
+Suggests: perl-doc, libterm-readline-gnu-perl | libterm-readline-perl-perl, make
+Breaks: dh-make-perl (<< 0.73-1), ftpmirror (<< 1.96+dfsg-13), libcompress-raw-bzip2-perl (<< 2.060), libcompress-raw-zlib-perl (<< 2.060), libcompress-zlib-perl (<< 2.060), libdigest-md5-perl (<< 2.52), libdigest-sha-perl (<< 5.84.01), libencode-perl (<< 2.49), libhtml-template-compiled-perl (<< 0.95-1), libio-compress-base-perl (<< 2.060), libio-compress-bzip2-perl (<< 2.060), libio-compress-perl (<< 2.060), libio-compress-zlib-perl (<< 2.060), libload-perl (<< 0.20-1), libmime-base64-perl (<< 3.13), libnet-jifty-perl (<< 0.14-1), libperl-apireference-perl (<< 0.09-1), libregexp-optimizer-perl (<< 0.15-3), libsoap-lite-perl (<< 0.712-4), libstorable-perl (<< 2.41), libsys-syslog-perl (<< 0.32), libthreads-perl (<< 1.86), libthreads-shared-perl (<< 1.43), libtime-hires-perl (<< 1.9725), libtime-piece-perl (<< 1.20.01), libxml-parser-lite-tree-perl (<< 0.14-1), libyaml-perl (<< 0.73-1), mrtg (<< 2.16.3-3.1), perl-doc (<< 5.18.2-1)
+Conflicts: libjson-pp-perl (<< 2.27200-2)
+Size: 2090622
+Description: Larry Wall's Practical Extraction and Report Language
+ Perl is a highly capable, feature-rich programming language with over
+ 20 years of development. Perl 5 runs on over 100 platforms from
+ portables to mainframes. Perl is suitable for both rapid prototyping
+ and large scale development projects.
+ .
+ Perl 5 supports many programming styles, including procedural,
+ functional, and object-oriented. In addition to this, it is supported
+ by an ever-growing collection of reusable modules which accelerate
+ development. Some of these modules include Web frameworks, database
+ integration, networking protocols, and encryption. Perl provides
+ interfaces to C and C++ for custom extension development.
+Original-Maintainer: Niko Tyni <ntyni@debian.org>
+Homepage: http://dev.perl.org/perl5/
+
+Package: mime-support
+Priority: standard
+Section: net
+Installed-Size: 143
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Multi-Arch: foreign
+Version: 3.54ubuntu1
+Recommends: file
+Size: 31656
+Description: MIME files 'mime.types' & 'mailcap', and support programs
+ As these files can be used by all MIME compliant programs, they
+ have been moved into their own package that others can depend upon.
+ .
+ Other packages add themselves as viewers/editors/composers/etc by
+ using the provided "update-mime" program.
+ .
+ In addition, the commands "see", "edit", "compose", and "print"
+ will display, alter, create, and print (respectively) any file using
+ a program determined from the entries in the mime.types and mailcap
+ files.
+Original-Maintainer: Mime-Support Maintainers <mime-support@plessy.org>
+
+Package: cron
+Priority: important
+Section: admin
+Installed-Size: 278
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Version: 3.0pl1-124ubuntu2
+Provides: cron-daemon
+Depends: libc6 (>= 2.7), libpam0g (>= 0.99.7.1), libselinux1 (>= 1.32), upstart-job, debianutils (>= 1.7), adduser, lsb-base (>= 3.0-10), libpam-runtime (>= 1.0.1-11)
+Pre-Depends: dpkg (>= 1.15.7.2)
+Suggests: anacron (>= 2.0-1), logrotate, checksecurity, exim4 | postfix | mail-transport-agent
+Breaks: dpkg (<< 1.15.4)
+Size: 77244
+Description: process scheduling daemon
+ The cron daemon is a background process that runs particular programs at
+ particular times (for example, every minute, day, week, or month), as
+ specified in a crontab. By default, users may also create crontabs of
+ their own so that processes are run on their behalf.
+ .
+ Output from the commands is usually mailed to the system administrator
+ (or to the user in question); you should probably install a mail system
+ as well so that you can receive these messages.
+ .
+ This cron package does not provide any system maintenance tasks. Basic
+ periodic maintenance tasks are provided by other packages, such
+ as checksecurity.
+Homepage: http://ftp.isc.org/isc/cron/
+Original-Maintainer: Maintainer: Javier Fernández-Sanguino Peña <jfs@debian.org>
+
+Package: libedit2
+Priority: standard
+Section: libs
+Installed-Size: 163
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Source: libedit
+Version: 3.1-20130712-2
+Depends: libc6 (>= 2.17), libtinfo5
+Pre-Depends: multiarch-support
+Size: 68386
+Description: BSD editline and history libraries
+ Command line editor library provides generic line editing,
+ history, and tokenization functions.
+ .
+ It slightly resembles GNU readline
+Original-Maintainer: LLVM Packaging Team <pkg-llvm-team@lists.alioth.debian.org>
+Homepage: http://www.thrysoee.dk/editline/
+
+Package: nano
+Priority: important
+Section: editors
+Installed-Size: 532
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Version: 2.2.6-1ubuntu1
+Replaces: pico
+Provides: editor
+Depends: libc6 (>= 2.15-0ubuntu8), libncursesw5 (>= 5.6+20070908), libtinfo5, dpkg (>= 1.15.4) | install-info
+Suggests: spell
+Breaks: alpine-pico (<= 2.00+dfsg-5)
+Conflicts: pico
+Size: 172616
+Description: small, friendly text editor inspired by Pico
+ GNU nano is an easy-to-use text editor originally designed as a replacement
+ for Pico, the ncurses-based editor from the non-free mailer package Pine
+ (itself now available under the Apache License as Alpine).
+ .
+ However, nano also implements many features missing in pico, including:
+  - feature toggles;
+  - interactive search and replace (with regular expression support);
+  - go to line (and column) command;
+  - auto-indentation and color syntax-highlighting;
+  - filename tab-completion and support for multiple buffers;
+  - full internationalization support.
+Homepage: http://www.nano-editor.org/
+Original-Maintainer: Jordi Mallach <jordi@debian.org>
+
+Package: libp11-kit0
+Priority: standard
+Section: libs
+Installed-Size: 207
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Source: p11-kit
+Version: 0.20.2-2ubuntu2
+Depends: libc6 (>= 2.16), libffi6 (>= 3.0.4)
+Pre-Depends: multiarch-support
+Size: 63184
+Description: Library for loading and coordinating access to PKCS#11 modules - runtime
+ Provides a way to load and enumerate PKCS#11 modules. Provides a standard
+ configuration setup for installing PKCS#11 modules in such a way that
+ they're discoverable.
+ .
+ Also solves problems with coordinating the use of PKCS#11 by different
+ components or libraries living in the same process.
+ .
+ This package contains the shared library required for applications loading
+ and accessing PKCS#11 modules.
+Homepage: http://p11-glue.freedesktop.org/p11-kit.html
+Original-Maintainer: Debian GnuTLS Maintainers <pkg-gnutls-maint@lists.alioth.debian.org>
+
+Package: libx11-data
+Priority: optional
+Section: x11
+Installed-Size: 1581
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Multi-Arch: foreign
+Source: libx11
+Version: 2:1.6.2-1ubuntu2
+Breaks: libx11-6 (<< 2:1.4.1)
+Size: 111380
+Description: X11 client-side library
+ This package provides the locale data files for libx11.
+ .
+ More information about X.Org can be found at:
+ <URL:http://www.X.org>
+ .
+ This module can be found at
+ git://anongit.freedesktop.org/git/xorg/lib/libX11
+Original-Maintainer: Debian X Strike Force <debian-x@lists.debian.org>
+
+Package: libpython2.7-stdlib
+Priority: standard
+Section: python
+Installed-Size: 7929
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Source: python2.7
+Version: 2.7.6-8
+Replaces: python2.7 (<< 2.7.5-0~)
+Provides: python-argparse, python2.7-argparse, python2.7-celementtree, python2.7-cjkcodecs, python2.7-ctypes, python2.7-elementtree, python2.7-profiler, python2.7-wsgiref
+Depends: libpython2.7-minimal (= 2.7.6-8), mime-support, libbz2-1.0, libc6 (>= 2.15), libdb5.3, libexpat1 (>= 2.1~beta3), libffi6 (>= 3.0.4), libncursesw5 (>= 5.6+20070908), libreadline6 (>= 6.0), libsqlite3-0 (>= 3.5.9), libssl1.0.0 (>= 1.0.0), libtinfo5
+Size: 1823020
+Description: Interactive high-level object-oriented language (standard library, version 2.7)
+ Python is a high-level, interactive, object-oriented language. Its 2.7 version
+ includes an extensive class library with lots of goodies for
+ network programming, system administration, sounds and graphics.
+ .
+ This package contains Python 2.7's standard library. It is normally not
+ used on its own, but as a dependency of python2.7.
+Original-Maintainer: Matthias Klose <doko@debian.org>
+
+Package: openssh-client
+Priority: standard
+Section: net
+Installed-Size: 3009
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: foreign
+Source: openssh
+Version: 1:6.6p1-2ubuntu1
+Replaces: ssh, ssh-krb5
+Provides: rsh-client, ssh-client
+Depends: libc6 (>= 2.17), libedit2 (>= 2.11-20080614), libgssapi-krb5-2 (>= 1.10+dfsg~), libselinux1 (>= 1.32), libssl1.0.0 (>= 1.0.1), zlib1g (>= 1:1.1.4), adduser (>= 3.10), dpkg (>= 1.7.0), passwd
+Recommends: xauth
+Suggests: ssh-askpass, libpam-ssh, keychain, monkeysphere
+Conflicts: sftp
+Size: 524396
+Description: secure shell (SSH) client, for secure access to remote machines
+ This is the portable version of OpenSSH, a free implementation of
+ the Secure Shell protocol as specified by the IETF secsh working
+ group.
+ .
+ Ssh (Secure Shell) is a program for logging into a remote machine
+ and for executing commands on a remote machine.
+ It provides secure encrypted communications between two untrusted
+ hosts over an insecure network. X11 connections and arbitrary TCP/IP
+ ports can also be forwarded over the secure channel.
+ It can be used to provide applications with a secure communication
+ channel.
+ .
+ This package provides the ssh, scp and sftp clients, the ssh-agent
+ and ssh-add programs to make public key authentication more convenient,
+ and the ssh-keygen, ssh-keyscan, ssh-copy-id and ssh-argv0 utilities.
+ .
+ In some countries it may be illegal to use any encryption at all
+ without a special permit.
+ .
+ ssh replaces the insecure rsh, rcp and rlogin programs, which are
+ obsolete for most purposes.
+Original-Maintainer: Debian OpenSSH Maintainers <debian-ssh@lists.debian.org>
+Homepage: http://www.openssh.org/
+
+Package: ntpdate
+Priority: optional
+Section: net
+Installed-Size: 208
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Source: ntp
+Version: 1:4.2.6.p5+dfsg-3ubuntu2
+Depends: netbase, libc6 (>= 2.17), libssl1.0.0 (>= 1.0.0)
+Pre-Depends: dpkg (>= 1.15.7.2)
+Recommends: lockfile-progs
+Breaks: dhcp3-client (<< 4.1.0-1)
+Size: 60174
+Description: client for setting system time from NTP servers
+ NTP, the Network Time Protocol, is used to keep computer clocks
+ accurate by synchronizing them over the Internet or a local network,
+ or by following an accurate hardware receiver that interprets GPS,
+ DCF-77, NIST or similar time signals.
+ .
+ ntpdate is a simple NTP client that sets a system's clock to match
+ the time obtained by communicating with one or more NTP servers.  It
+ is not sufficient, however, for maintaining an accurate clock in the
+ long run.  ntpdate by itself is useful for occasionally setting the
+ time on machines that do not have full-time network access, such as
+ laptops.
+ .
+ If the full NTP daemon from the package "ntp" is installed, then
+ ntpdate is not necessary.
+Homepage: http://support.ntp.org/
+Original-Maintainer: Debian NTP Team <pkg-ntp-maintainers@lists.alioth.debian.org>
+
+Package: cpuset
+Priority: optional
+Section: python
+Installed-Size: 352
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Version: 1.5.6-3
+Depends: python (<< 2.8), python (>= 2.7), python-support (>= 0.90.0)
+Size: 103580
+Description: Allows manipluation of cpusets and provides higher level fun
+ Cpuset is a Python application to make using the cpusets facilities in the
+ Linux kernel easier. The actual included command is called cset and it allows
+ manipulation of cpusets on the system and provides higher level functions such
+ as implementation and control of a basic CPU shielding setup.
+Original-Maintainer: Roberto C. Sanchez <roberto@connexer.com>
+Homepage: http://code.google.com/p/cpuset/
+Python-Version: 2.7
+
+Package: linaro-nano
+Priority: optional
+Section: metapackages
+Installed-Size: 31
+Maintainer: Linaro Packagers <linaro-pkg@lists.launchpad.net>
+Architecture: armhf
+Source: linaro-meta
+Version: 039-trusty3
+Depends: apt, apt-utils, console-setup, debconf, gnupg, ifupdown, initramfs-tools, initscripts, iproute, iputils-ping, isc-dhcp-client, kbd, linaro-overlay-minimal, makedev, mawk, module-init-tools, mountall, net-tools, netbase, netcat-openbsd, ntpdate, procps, python-minimal, rsyslog, sudo, ubuntu-keyring, udev, upstart, whiptail
+Size: 8210
+Description: Linaro Nano profile
+ This package depends on all of the packages in the Linaro nano profile,
+ that is a functional command-line system with the following capabilities:
+ .
+  - Boot
+  - Detect hardware
+  - Connect to a network
+  - Install packages
+  - Perform basic diagnostics
+ .
+ It is also used to help ensure proper upgrades, so it is recommended that
+ it not be removed. This profile is a minimal and small system.
+
+Package: apt-utils
+Priority: important
+Section: admin
+Installed-Size: 580
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Source: apt
+Version: 1.0.1ubuntu2
+Depends: libapt-inst1.5 (>= 0.9.15.4), libapt-pkg4.12 (>= 0.9.16), libc6 (>= 2.4), libdb5.3, libgcc1 (>= 1:4.4.0), libstdc++6 (>= 4.4.0)
+Size: 163346
+Description: package management related utility programs
+ This package contains some less used commandline utilities related
+ to package management with APT.
+ .
+  * apt-extracttemplates is used by debconf to prompt for configuration
+    questions before installation.
+  * apt-ftparchive is used to create Packages and other index files
+    needed to publish an archive of debian packages
+  * apt-sortpkgs is a Packages/Sources file normalizer.
+Original-Maintainer: APT Development Team <deity@lists.debian.org>
+
+Package: libpod-latex-perl
+Priority: optional
+Section: perl
+Installed-Size: 127
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Version: 0.61-1
+Depends: perl
+Size: 32886
+Description: module to convert Pod data to formatted LaTeX
+ Pod::LaTeX is a module to convert documentation in the Pod format into LaTeX.
+ The pod2latex command uses this module for translation.
+ .
+ Pod::LaTeX is a derived class from Pod::Select.
+Original-Maintainer: Debian Perl Group <pkg-perl-maintainers@lists.alioth.debian.org>
+Homepage: https://metacpan.org/release/Pod-LaTeX/
+
+Package: rsyslog
+Priority: important
+Section: admin
+Installed-Size: 1121
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Version: 7.4.4-1ubuntu2
+Provides: linux-kernel-log-daemon, system-log-daemon
+Depends: libc6 (>= 2.17), libestr0 (>= 0.1.4), libjson-c2 (>= 0.10), libuuid1 (>= 2.16), zlib1g (>= 1:1.1.4), init-system-helpers (>= 1.13~), sysv-rc (>= 2.88dsf-24) | file-rc (>= 0.8.16), lsb-base (>= 4.1+Debian3), initscripts (>= 2.88dsf-13.3), adduser, ucf
+Recommends: logrotate
+Suggests: rsyslog-mysql | rsyslog-pgsql, rsyslog-doc, rsyslog-gnutls, rsyslog-gssapi, rsyslog-relp, apparmor (>= 2.3)
+Conflicts: linux-kernel-log-daemon, system-log-daemon
+Size: 317376
+Description: reliable system and kernel logging daemon
+ Rsyslog is a multi-threaded implementation of syslogd (a system utility
+ providing support for message logging), with features that include:
+  * reliable syslog over TCP, SSL/TLS and RELP
+  * on-demand disk buffering
+  * email alerting
+  * writing to MySQL or PostgreSQL databases (via separate output plugins)
+  * permitted sender lists
+  * filtering on any part of the syslog message
+  * on-the-wire message compression
+  * fine-grained output format control
+  * failover to backup destinations
+  * enterprise-class encrypted syslog relaying
+ .
+ It is the default syslogd on Debian systems.
+Homepage: http://www.rsyslog.com/
+Original-Maintainer: Michael Biebl <biebl@debian.org>
+
+Package: libstdc++6
+Priority: important
+Section: libs
+Installed-Size: 879
+Maintainer: Ubuntu Core developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Source: gcc-4.8
+Version: 4.8.2-19ubuntu1
+Provides: libstdc++6-armhf
+Depends: gcc-4.8-base (= 4.8.2-19ubuntu1), libc6 (>= 2.17), libgcc1 (>= 1:4.4.0)
+Pre-Depends: multiarch-support
+Breaks: gcc-4.1, gcc-4.3 (<< 4.3.6-1), gcc-4.4 (<< 4.4.6-4), gcc-4.5 (<< 4.5.3-2)
+Conflicts: scim (<< 1.4.2-1)
+Size: 221788
+Description: GNU Standard C++ Library v3
+ This package contains an additional runtime library for C++ programs
+ built with the GNU compiler.
+ .
+ libstdc++-v3 is a complete rewrite from the previous libstdc++-v2, which
+ was included up to g++-2.95. The first version of libstdc++-v3 appeared
+ in g++-3.0.
+Homepage: http://gcc.gnu.org/
+Original-Maintainer: Debian GCC Maintainers <debian-gcc@lists.debian.org>
+
+Package: isc-dhcp-client
+Priority: important
+Section: net
+Installed-Size: 1229
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Source: isc-dhcp
+Version: 4.2.4-7ubuntu12
+Replaces: dhcp3-client
+Provides: dhcp-client, dhcp3-client
+Depends: libc6 (>= 2.15), debianutils (>= 2.8.2), isc-dhcp-common (= 4.2.4-7ubuntu12), iproute2
+Suggests: resolvconf, avahi-autoipd, apparmor
+Conflicts: dhcp-client (<< 3.0), ifupdown (<< 0.6.8+nmu3), resolvconf (<= 1.45), samba-common (<< 3.0.0beta1-2)
+Size: 573698
+Description: ISC DHCP client
+ This is the client from the Internet Software Consortium's implementation of
+ DHCP. For more information visit http://www.isc.org.
+ .
+ Dynamic Host Configuration Protocol (DHCP) is a protocol like BOOTP
+ (actually dhcpd includes much of the functionality of bootpd). It
+ gives client machines "leases" for IP addresses and can
+ automatically set their network configuration. If your machine
+ depends on DHCP (especially likely if it's a workstation on a large
+ network, or a laptop, or attached to a cable modem), keep this or
+ another DHCP client installed.
+ .
+ Extra documentation can be found in the package isc-dhcp-common.
+Original-Maintainer: Debian ISC DHCP maintainers <pkg-dhcp-devel@lists.alioth.debian.org>
+
+Package: ca-certificates
+Priority: optional
+Section: misc
+Installed-Size: 432
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Multi-Arch: foreign
+Version: 20130906ubuntu2
+Depends: openssl (>= 1.0.0), debconf (>= 0.5) | debconf-2.0
+Breaks: ca-certificates-java (<< 20121112+nmu1)
+Enhances: openssl
+Size: 174738
+Description: Common CA certificates
+ This package includes PEM files of CA certificates to allow SSL-based
+ applications to check for the authenticity of SSL connections.
+ .
+ It includes, among others, certificate authorities used by the Debian
+ infrastructure and those shipped with Mozilla's browsers.
+ .
+ Please note that Debian can neither confirm nor deny whether the
+ certificate authorities whose certificates are included in this package
+ have in any way been audited for trustworthiness or RFC 3647 compliance.
+ Full responsibility to assess them belongs to the local system
+ administrator.
+Original-Maintainer: Michael Shuler <michael@pbandjelly.org>
+
+Package: ssh-import-id
+Priority: extra
+Section: misc
+Installed-Size: 83
+Maintainer: Dustin Kirkland <kirkland@ubuntu.com>
+Architecture: all
+Version: 3.21-0ubuntu1
+Depends: ca-certificates, openssh-client, python-requests (>= 1.1.0), wget, python (>= 2.7), python (<< 2.8)
+Recommends: openssh-server
+Size: 9624
+Description: securely retrieve an SSH public key and install it locally
+ This utility will securely contact a public keyserver (Launchpad.net by
+ default, but Github.com is also supported), retrieve one or more user's
+ public keys, and append these to the current user's ~/.ssh/authorized_keys
+ file.
+Homepage: http://launchpad.net/ssh-import-id
+
+Package: readline-common
+Priority: important
+Section: utils
+Installed-Size: 109
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Multi-Arch: foreign
+Source: readline6
+Version: 6.3-4ubuntu2
+Replaces: libreadline-common, libreadline4 (<< 4.3-16), libreadline5 (<< 5.0-11)
+Depends: dpkg (>= 1.15.4) | install-info
+Conflicts: libreadline-common, libreadline5 (<< 5.0-11)
+Size: 51236
+Description: GNU readline and history libraries, common files
+ The GNU readline library aids in the consistency of user interface
+ across discrete programs that need to provide a command line
+ interface.
+ .
+ The GNU history library provides a consistent user interface for
+ recalling lines of previously typed input.
+Original-Maintainer: Matthias Klose <doko@debian.org>
+
+Package: libwrap0
+Priority: standard
+Section: libs
+Installed-Size: 108
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Source: tcp-wrappers
+Version: 7.6.q-25
+Replaces: tcpd (<< 7.6.q-20)
+Depends: libc6 (>= 2.11)
+Pre-Depends: multiarch-support
+Recommends: tcpd
+Breaks: tcpd (<< 7.6.q-20)
+Size: 43648
+Description: Wietse Venema's TCP wrappers library
+ Wietse Venema's network logger, also known as TCPD or LOG_TCP.
+ .
+ These programs log the client host name of incoming telnet,
+ ftp, rsh, rlogin, finger etc. requests.
+ .
+ Security options are:
+  - access control per host, domain and/or service;
+  - detection of host name spoofing or host address spoofing;
+  - booby traps to implement an early-warning system.
+Original-Maintainer: Marco d'Itri <md@linux.it>
+
+Package: libkrb5-3
+Priority: standard
+Section: libs
+Installed-Size: 683
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Source: krb5
+Version: 1.12+dfsg-2ubuntu4
+Depends: libc6 (>= 2.16), libcomerr2 (>= 1.34), libk5crypto3 (>= 1.9+dfsg~beta1), libkeyutils1, libkrb5support0 (= 1.12+dfsg-2ubuntu4)
+Pre-Depends: multiarch-support
+Recommends: krb5-locales
+Suggests: krb5-doc, krb5-user
+Breaks: libsmbclient (<= 2:3.6.1-2), sssd (<= 1.2.1-4.3)
+Conflicts: libkrb53
+Size: 216730
+Description: MIT Kerberos runtime libraries
+ Kerberos is a system for authenticating users and services on a network.
+ Kerberos is a trusted third-party service.  That means that there is a
+ third party (the Kerberos server) that is trusted by all the entities on
+ the network (users and services, usually called "principals").
+ .
+ This is the MIT reference implementation of Kerberos V5.
+ .
+ This package contains the runtime library for the main Kerberos v5 API
+ used by applications and Kerberos clients.
+Homepage: http://web.mit.edu/kerberos/
+Original-Maintainer: Sam Hartman <hartmans@debian.org>
+
+Package: libpython2.7-minimal
+Priority: standard
+Section: python
+Installed-Size: 2497
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Source: python2.7
+Version: 2.7.6-8
+Replaces: libpython2.7-stdlib (<< 2.7.4-2), python2.7 (<< 2.7.4-2), python2.7-minimal (<< 2.7.3-10)
+Recommends: libpython2.7-stdlib
+Breaks: python2.7-minimal (<< 2.7.4~rc1-1~)
+Conflicts: binfmt-support (<< 1.1.2)
+Size: 307026
+Description: Minimal subset of the Python language (version 2.7)
+ This package contains some essential modules. It is normally not
+ used on it's own, but as a dependency of python2.7-minimal.
+Original-Maintainer: Matthias Klose <doko@debian.org>
+
+Package: liblockfile1
+Priority: standard
+Section: libs
+Installed-Size: 52
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Source: liblockfile
+Version: 1.09-6ubuntu1
+Depends: libc6 (>= 2.4), liblockfile-bin (>= 1.09-6ubuntu1)
+Pre-Depends: multiarch-support
+Size: 7090
+Description: NFS-safe locking library
+ Liblockfile is a shared library with NFS-safe locking functions.
+Original-Maintainer: Miquel van Smoorenburg <miquels@cistron.nl>
+
+Package: libxau6
+Priority: optional
+Section: libs
+Installed-Size: 46
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: armhf
+Multi-Arch: same
+Source: libxau
+Version: 1:1.0.8-1
+Depends: libc6 (>= 2.4)
+Pre-Depends: multiarch-support
+Size: 7324
+Description: X11 authorisation library
+ This package provides the main interface to the X11 authorisation handling,
+ which controls authorisation for X connections, both client-side and
+ server-side.
+ .
+ More information about X.Org can be found at:
+ <URL:http://www.X.org>
+ .
+ This module can be found at
+ git://anongit.freedesktop.org/git/xorg/lib/libXau
+Original-Maintainer: Debian X Strike Force <debian-x@lists.debian.org>
+

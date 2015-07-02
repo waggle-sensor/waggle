@@ -1,0 +1,40 @@
+#!/bin/sh
+
+set -e
+
+case "$1" in
+  configure)
+    # Setup logfile permissions:
+    touch /var/log/monit.log
+    chmod 640 /var/log/monit.log
+    chown root:adm /var/log/monit.log
+
+    # Add monit to /etc/aliases:
+    if [ -f /etc/aliases ] || [ -L /etc/aliases ]
+    then
+      if ! grep -qi '^monit[[:space:]]*:' /etc/aliases
+      then
+        echo "monit: root" >> /etc/aliases
+        test -x /usr/bin/newaliases && newaliases || :
+      fi
+    fi
+    ;;
+  abort-upgrade|abort-remove|abort-deconfigure)
+    ;;
+  *)
+    echo "postinst called with unknown argument \`$1'" >&2
+    exit 1
+    ;;
+esac
+
+# Automatically added by dh_installinit
+if [ -x "/etc/init.d/monit" ] || [ -e "/etc/init/monit.conf" ]; then
+	if [ ! -e "/etc/init/monit.conf" ]; then
+		update-rc.d monit start 99 2 3 4 5 . stop 01 0 1 6 . >/dev/null
+	fi
+	invoke-rc.d monit start || exit $?
+fi
+# End automatically added section
+
+
+exit 0

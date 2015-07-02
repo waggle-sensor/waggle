@@ -1,0 +1,3 @@
+bfdca87e75908d0aa664cc5e14a875e6  lib/arm-linux-gnueabihf/security/pam_cap.so
+4236f1a69a67963bbe19f9f80268d298  usr/share/doc/libpam-cap/copyright
+597992b1cd66ad28fa4ab9664239a43d  usr/share/pam-configs/capability

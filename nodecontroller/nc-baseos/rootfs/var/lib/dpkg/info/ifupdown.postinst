@@ -1,0 +1,153 @@
+#!/bin/sh
+set -e
+
+MYNAME="${0##*/}"
+
+report() { echo "${MYNAME}: $*" ; }
+report_warn() { report "Warning: $*" >&2 ; }
+report_err() { report "Error: $*" >&2 ; }
+
+# Hack for bug #1181856: dpkg can't be trusted to correctly handle the
+# conffile transition between netbase and ifupdown and changing from an
+# upstart-job symlink to a real conffile, so we have to hack around it in
+# the preinst and postinst.
+# NOTE: This can be dropped after 14.04 LTS
+if dpkg --compare-versions "$2" lt-nl 0.7.5ubuntu4; then
+	CONFFILE=/etc/init.d/networking
+	if ([ ! -e "$CONFFILE" ] && [ -e "$CONFFILE".dpkg-dist ]) \
+	   || [ $(readlink -f "$CONFFILE") = /lib/init/upstart-job ]
+	then
+		rm -f "$CONFFILE"
+		if [ -e "$CONFFILE".dpkg-new ]; then
+			mv "$CONFFILE".dpkg-new "$CONFFILE"
+		elif [ -e "$CONFFILE".dpkg-dist ]; then
+			mv "$CONFFILE".dpkg-dist "$CONFFILE"
+		fi
+	fi
+fi
+
+if [ "$1" = configure ]; then
+  addgroup --quiet --system netdev || true
+fi
+
+# Create /etc/network/run 
+if [ "$1" = configure -a ! -d /etc/network/run ]; then
+  if [ -e /etc/network/run -o -L /etc/network/run ]; then
+    echo "Removing non-directory /etc/network/run..."
+    rm -f /etc/network/run
+  fi
+
+  # The best choice is to use /run/network
+  # That must be supported everywhere
+
+  if [ ! -d /run/network ]; then
+    mkdir -p /run/network
+    chown root:netdev /run/network
+  fi
+  ln -s /run/network /etc/network/run
+fi
+
+[ -L /etc/network/run.dpkg-old ] && echo "Removing old symlink /etc/network/run.dpkg-old..." && rm -f /etc/network/run.dpkg-old
+
+# Move /etc/network/ifstate to /etc/network/run/ifstate
+if [ "$1" = configure -a "$2" != "" -a -e /etc/network/ifstate ] &&
+     dpkg --compare-versions "$2" lt "0.6.5"
+then
+  if [ ! -e /etc/network/run/ifstate ] || ! diff /etc/network/ifstate /etc/network/run/ifstate >/dev/null
+  then
+    echo "Moving /etc/network/ifstate to /etc/network/run/ifstate"
+    if [ ! -L /etc/network/ifstate ]; then
+      mv /etc/network/ifstate /etc/network/run/ifstate
+    else
+      cat /etc/network/ifstate >/etc/network/run/ifstate
+      mv /etc/network/ifstate /etc/network/ifstate.dpkg-old
+    fi
+  fi
+fi
+
+l=$(readlink /etc/network/run || echo /etc/network/run)
+
+# Migrate /etc/network/run to /run/network
+if [ "$1" = configure -a "$2" != "" -a -e /etc/network/run -a "$l" != "/run/network" ]
+then
+  echo "Migrating network state directory from $l to /run/network..."
+  [ -d /run/network ] || mkdir /run/network
+  if [ -e /etc/network/run/ifstate ]
+  then
+    echo "Moving /etc/network/run/ifstate to /run/network/ifstate"
+    if [ ! -L /etc/network/run/ifstate ]; then
+      mv -f /etc/network/run/ifstate /run/network/ifstate
+    else
+      # we do this thing with .dpkg-new just so we don't truncate the
+      # state file in the case of crazy symlinked or mount-bound setup
+      cat /etc/network/run/ifstate >/run/network/ifstate.dpkg-new
+      mv -f /etc/network/run/ifstate /run/network/ifstate.dpkg-old
+      mv -f /run/network/ifstate.dpkg-new /run/network/ifstate
+    fi
+  fi
+  mv -f /etc/network/run /etc/network/run.dpkg-old || true
+  ln -s /run/network /etc/network/run
+  [ -L /etc/network/run.dpkg-old ] && rm -f /etc/network/run.dpkg-old || true
+  [ -d /etc/network/run.dpkg-old ] && rmdir /etc/network/run.dpkg-old 2>/dev/null || report_warn "Not removing the old contents of /etc/network/run: directory not empty; renamed into /etc/network/run.dpkg-old."
+fi
+
+
+if [ "$1" = "configure" -a "$2" != "" ] &&
+     dpkg --compare-versions "$2" le "0.6.4-4.1" &&
+     [ -f /etc/network/run/ifstate -a -x /sbin/dhclient ]
+then
+  # for every active ifupdown-controlled dhclient interface, copy
+  # /var/run/dhclient.pid, so that the new ifdown is able to kill
+  # dhclient.
+  #
+  # the old version had a bug with more than one DHCP iface anyway,
+  # so we don't know which one the PID file actually belongs to.
+
+  sed -e 's/^.*=//' /etc/network/run/ifstate |
+    while read iface; do
+      # handle \<newline>-continued lines
+      if sed -e '/^[[:space:]]*#/b;:g /\\$/{N;s/\\\n//;bg;}' /etc/network/interfaces | grep -qe "^[[:space:]]*iface[[:space:]]*\\b${iface}\\b[[:space:]]*.*\\bdhcp\\b.*" &&
+          [ -f "/var/run/dhclient.pid" ] &&
+          [ ! -f "/var/run/dhclient.${iface}.pid" ]
+      then
+        # copy original file.  If dhclient was started
+        # manually, one can still use dhclient.pid, if started
+        # by ifupdown, the new ifupdown can take it down with 
+        # dhclient.${iface}.pid.  Obsolete files are removed during
+        # next boot (bootmisc.sh).
+        cp /var/run/dhclient.pid "/var/run/dhclient.${iface}.pid"
+      fi
+    done
+fi
+
+# Generic stuff done on all configurations
+if [ "$1" = "configure" ] ; then
+  # We don't need loopback interface definition anymore as
+  # ifupdown handles loopback interface on its own from now
+  if [ ! -f /etc/network/interfaces ] ; then
+    if [ -z "$2" ]; then
+      echo "Creating /etc/network/interfaces."
+      echo "# interfaces(5) file used by ifup(8) and ifdown(8)" > /etc/network/interfaces
+      echo "# Include files from /etc/network/interfaces.d:" >> /etc/network/interfaces
+      echo "source-directory /etc/network/interfaces.d" >> /etc/network/interfaces
+    else
+      report_warn "/etc/network/interfaces does not exist"
+    fi
+  fi
+fi
+
+if dpkg --compare-versions "$2" lt "0.7" ; then
+    update-rc.d -f ifupdown remove >/dev/null || true
+    update-rc.d -f ifupdown-clean remove >/dev/null || true
+fi
+
+# Automatically added by dh_installdeb
+dpkg-maintscript-helper rm_conffile /etc/default/ifupdown 0.7~+ ifupdown -- "$@"
+# End automatically added section
+# Automatically added by dh_installdeb
+dpkg-maintscript-helper rm_conffile /etc/init.d/ifupdown 0.7~+ ifupdown -- "$@"
+# End automatically added section
+# Automatically added by dh_installdeb
+dpkg-maintscript-helper rm_conffile /etc/init.d/ifupdown-clean 0.7~beta1 ifupdown -- "$@"
+# End automatically added section
+

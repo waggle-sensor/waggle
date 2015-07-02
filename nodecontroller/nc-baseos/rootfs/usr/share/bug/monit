@@ -1,0 +1,19 @@
+#!/bin/sh
+
+mconf=/etc/monit/monitrc
+
+if [ ! -r $mconf ]
+then
+  cat >&3 <<EOF
+
+Monit config file $mconf is *NOT* readable by reportbug.
+Please, consider to rerun reportbug as root and *carefully* examine
+reportbug's output (e.g., monitrc content), before sending it out.
+EOF
+fi
+
+printf "\nContents of /etc/monit/ directory:\n" >&3
+/bin/ls -lR /etc/monit >&3 2>&1
+printf "\n" >&3
+
+exit 0

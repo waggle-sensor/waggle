@@ -1,0 +1,5 @@
+Name: udev
+Description: udev
+Version: 204
+
+udevdir=/lib/udev

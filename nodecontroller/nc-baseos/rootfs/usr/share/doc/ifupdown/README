@@ -1,0 +1,11 @@
+Migrating /etc/network/run to a different place
+===============================================
+
+In the latest ifupdown, the ifupdown state is stored by default in 
+/run/network, and /etc/network/run is set up to be a symlink 
+to that location. That was made because the default location is 
+sometimes read-only, /dev/shm isn't really a right place for it too, 
+and /lib/init/rw is in the process of being deprecated.
+
+The migration is done by default.
+

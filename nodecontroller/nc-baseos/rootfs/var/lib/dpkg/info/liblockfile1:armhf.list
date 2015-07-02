@@ -1,0 +1,11 @@
+/.
+/usr
+/usr/lib
+/usr/lib/arm-linux-gnueabihf
+/usr/lib/arm-linux-gnueabihf/liblockfile.so.1.0
+/usr/share
+/usr/share/doc
+/usr/share/doc/liblockfile1
+/usr/share/doc/liblockfile1/changelog.Debian.gz
+/usr/share/doc/liblockfile1/copyright
+/usr/lib/arm-linux-gnueabihf/liblockfile.so.1

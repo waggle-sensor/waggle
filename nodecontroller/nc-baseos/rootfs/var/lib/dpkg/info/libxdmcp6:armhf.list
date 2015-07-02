@@ -1,0 +1,11 @@
+/.
+/usr
+/usr/share
+/usr/share/doc
+/usr/share/doc/libxdmcp6
+/usr/share/doc/libxdmcp6/copyright
+/usr/share/doc/libxdmcp6/changelog.Debian.gz
+/usr/lib
+/usr/lib/arm-linux-gnueabihf
+/usr/lib/arm-linux-gnueabihf/libXdmcp.so.6.0.0
+/usr/lib/arm-linux-gnueabihf/libXdmcp.so.6

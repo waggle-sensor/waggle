@@ -1,0 +1,16 @@
+/.
+/usr
+/usr/share
+/usr/share/doc
+/usr/share/doc/libgnutls-openssl27
+/usr/share/doc/libgnutls-openssl27/copyright
+/usr/lib
+/usr/lib/arm-linux-gnueabihf
+/usr/lib/arm-linux-gnueabihf/libgnutls-openssl.so.27.0.0
+/usr/share/doc/libgnutls-openssl27/THANKS.gz
+/usr/share/doc/libgnutls-openssl27/AUTHORS.gz
+/usr/share/doc/libgnutls-openssl27/changelog.Debian.gz
+/usr/share/doc/libgnutls-openssl27/README.gz
+/usr/share/doc/libgnutls-openssl27/NEWS.gz
+/usr/share/doc/libgnutls-openssl27/TODO
+/usr/lib/arm-linux-gnueabihf/libgnutls-openssl.so.27

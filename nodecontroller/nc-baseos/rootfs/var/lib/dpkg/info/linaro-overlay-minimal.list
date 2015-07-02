@@ -1,0 +1,16 @@
+/.
+/etc
+/etc/default
+/etc/default/autogetty
+/etc/init
+/etc/init/openvt.conf
+/etc/init/auto-serial-console.conf
+/bin
+/bin/auto-root-login
+/bin/auto-serial-console
+/usr
+/usr/share
+/usr/share/doc
+/usr/share/doc/linaro-overlay-minimal
+/usr/share/doc/linaro-overlay-minimal/changelog.gz
+/usr/share/doc/linaro-overlay-minimal/copyright

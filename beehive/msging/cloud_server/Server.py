@@ -7,6 +7,7 @@ from utilitiesprocess import UtilProcess
 from multiprocessing import Manager
 from registrationprocess import RegProcess
 from dataprocess import DataProcess
+import time
 # Queues and exchanges the server will always need.
 exchage_list = ["waggle_in","internal"]
 
@@ -43,8 +44,9 @@ for queueName in queue_bindings.keys():
 	rabbitChannel.queue_declare(queueName)
 
 for exchName in exchage_list:
+	print("declaring %s" % exchName)
 	rabbitChannel.exchange_declare(exchName)
-
+print queue_bindings
 for key in queue_bindings.keys():
 	bind = queue_bindings[key]
 	print "binding {} to {} under {}".format(key,bind[0],bind[1])
@@ -72,13 +74,38 @@ print("Data process online.")
 
 
 print("All processes online. Server is fully operational.")
+
+# Make sure all the processes stay alive.
 while True:
-	cmd = raw_input("WaggleServer: ")
-	if cmd == "exit":
-		break;
-	if cmd == "help":
-		print ("Waggle Server Commands:")
-		print ("\t exit: Gracefully shuts down the server")
+	if not router.is_alive():
+		print "The router has died. RIP In Peace."
+		print "Attempting to bring it back from the dead..."
+		router = WaggleRouter(routing_table)
+		router.start()
+		print "The router has risen from the grave!"
+
+	if not util.is_alive():
+		print "The utilProcess has died. RIP In Peace."
+		print "Attempting to bring it back from the dead..."
+		util = UtilProcess()
+		util.start()
+		print "The utilProcess has risen from the grave!"
+
+	if not reg.is_alive():
+		print "The registrar has died. RIP In Peace."
+		print "Attempting to bring it back from the dead..."
+		reg = RegProcess()
+		reg.start()
+		print "The registrar has risen from the grave!"
+
+	if not data.is_alive():
+		print "The data process has died. RIP In Peace."
+		print "Attempting to bring it back from the dead..."
+		data = DataProcess()
+		data.start()
+		print "The router has risen from the grave!"
+
+	time.sleep(3)
 
 data.join()
 reg.join()

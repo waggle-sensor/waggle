@@ -1,0 +1,10 @@
+0c83adcf447344e83223dcd3b524cb8d  sbin/capsh
+bae1a49f4ad123f61425b35061faed1c  sbin/getcap
+f02b55b437fa91d644147a1c3849de33  sbin/getpcaps
+84a997280908941d7c2b7c0299a7cdda  sbin/setcap
+b1bc9daef43189d695e29d7e44380dfd  usr/share/doc/libcap2-bin/README.Debian
+4236f1a69a67963bbe19f9f80268d298  usr/share/doc/libcap2-bin/copyright
+4f3c9ea08513489c63b3bc00a865cd53  usr/share/lintian/overrides/libcap2-bin
+559eef98fe8f3a77e3bd05bfb188143f  usr/share/man/man8/capsh.8.gz
+d68c47d751f96c1dc3d6a476174e067f  usr/share/man/man8/getcap.8.gz
+2a87dbf1bd9b776a09afc048492a2149  usr/share/man/man8/setcap.8.gz
