@@ -1,2 +1,2 @@
 TARGET=sysmonV1
-PORT=/dev/ttyACM0
+PORT=/dev/ttyACM2
