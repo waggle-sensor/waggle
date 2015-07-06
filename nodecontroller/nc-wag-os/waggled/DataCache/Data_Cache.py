@@ -58,7 +58,7 @@ class Data_Cache(Daemon):
             print 'Data Cache shutting down...'
            
    
-def outgoing_push(order, dev, msg_p, msg, outgoing_fifo_available_queues, outgoing_lifo_available_queues, msg_counter): 
+def outgoing_push(dev, msg_p, msg, outgoing_fifo_available_queues, outgoing_lifo_available_queues, msg_counter): 
     """ Stores outgoing messages to the cloud. Expects to get pull order (lifo or fifo),device ID, message priority, and the msg. """ 
     
     if msg_counter.value > Data_Cache.available_mem:
@@ -68,24 +68,24 @@ def outgoing_push(order, dev, msg_p, msg, outgoing_fifo_available_queues, outgoi
         pass #TODO need to write to file here
     msg_counter.value += 1 
     try:
-        if order == 'False': 
-            current_queue = Data_Cache.outgoing_lifo_bffr[dev - 1][msg_p - 1]
-            current_queue.put(msg)
-            try:
-                outgoing_lifo_available_queues.index((dev, msg_p)) #throws an error if this is not already in the list
-            except: 
-                outgoing_lifo_available_queues.append((dev, msg_p)) #prevents duplicates
-        elif order == 'True': 
-            Data_Cache.outgoing_fifo_bffr[(dev - 1)][(msg_p - 1)].put(msg)
-            try:
-                outgoing_fifo_available_queues.index((dev, msg_p))#throws an error if this is not already in the list
-            except: 
-                outgoing_fifo_available_queues.append((dev, msg_p)) #prevents duplicates
-                print 'out_going push fifo queue len: ', len(outgoing_fifo_available_queues)
-        else:
-            print 'Unrecognized priority flag...' #TODO This probably needs to send back an error message to the sender
+        #if order == 'False': 
+            #current_queue = Data_Cache.outgoing_lifo_bffr[dev - 1][msg_p - 1]
+            #current_queue.put(msg)
+            #try:
+                #outgoing_lifo_available_queues.index((dev, msg_p)) #throws an error if this is not already in the list
+            #except: 
+                #outgoing_lifo_available_queues.append((dev, msg_p)) #prevents duplicates
+        #elif order == 'True': 
+        Data_Cache.outgoing_fifo_bffr[(dev - 1)][(msg_p - 1)].put(msg)
+        try:
+            outgoing_fifo_available_queues.index((dev, msg_p))#throws an error if this is not already in the list
+        except: 
+            outgoing_fifo_available_queues.append((dev, msg_p)) #prevents duplicates
+            print 'out_going push fifo queue len: ', len(outgoing_fifo_available_queues)
+        #else:
+            #print 'Unrecognized priority flag...' #TODO This probably needs to send back an error message to the sender
     except:
-        print 'Unable to store in data cache...'#TODO this is a quick fix for Raj, but this actually needs to be addressed and handled. An error will occur if the flags always use the default value. Check packetmaker
+        print 'Outgoing push unable to store in data cache...'#TODO this is a quick fix for Raj, but this actually needs to be addressed and handled. An error will occur if the flags always use the default value. Check packetmaker
                 
        
 def incoming_push(device, msg_p, msg, incoming_available_queues, msg_counter):
@@ -116,6 +116,7 @@ def outgoing_pull(outgoing_fifo_available_queues, outgoing_lifo_available_queues
             queue_check = False
             return 'False' 
         else:
+            print 'outgoing_fifo available queues len: ', len(outgoing_fifo_available_queues)
             fifo_cache_index = get_priority(outgoing_fifo_available_queues) #returns the index of the highest priority queue in fifo buffer
             sender_p, msg_p = fifo_cache_index
             current_q = Data_Cache.outgoing_fifo_bffr[sender_p - 1][msg_p - 1]
@@ -154,7 +155,7 @@ def incoming_pull(dev, incoming_available_queues, msg_counter):
                 msg_counter.value -= 1 
                 return Data_Cache.incoming_bffr[device- 1][i].get()
     else:
-        return False
+        return 'False'
         
          
 def sys_flush():
@@ -243,10 +244,9 @@ def push_server(incoming_available_queues, outgoing_fifo_available_queues, outgo
                 else:
                     data, msg = data.split('|', 1) #TODO probably a better way to do this
                     dest, data = data.split(',',1) #incoming or outgoing
-                    dev, data = data.split(',',1) # device
-                    msg_p, order = data.split(',',1) #message priority and order
+                    dev_loc, msg_p = data.split(',',1) # device queue location and msg_p
                     if dest == 'o': #outgoing push 
-                        outgoing_push(order,int(dev),int(msg_p), msg, outgoing_fifo_available_queues, outgoing_lifo_available_queues, msg_counter)
+                        outgoing_push(int(dev_loc),int(msg_p), msg, outgoing_fifo_available_queues, outgoing_lifo_available_queues, msg_counter)
                     else: 
                         incoming_push(int(dev),int(msg_p),msg, incoming_available_queues, msg_counter)
                     print "-" * 20 
@@ -278,6 +278,7 @@ def pull_server(incoming_available_queues, outgoing_fifo_available_queues, outgo
         #TODO Is there a better way to do this?
         try:
             data = client_sock.recv(40) #TODO 40 bites is the expected size of pull requests
+            print 'pull_server received: ', data
             if not data:
                 break
             else:
@@ -285,11 +286,10 @@ def pull_server(incoming_available_queues, outgoing_fifo_available_queues, outgo
                 if data.find(',') != -1: #splits the incoming data into individual messages just in case many messages are sent at once
                     line, dev = data.split(',', 1) #TODO need to change to reflect message protocol
                     msg = incoming_pull(dev, incoming_available_queues, msg_counter) #pulls a message from that device's queue
-                    print 'Pull server sending msg.'
+                    print 'Pull server sending incoming msg: ', msg
                 else:
                     msg = outgoing_pull(outgoing_fifo_available_queues, outgoing_lifo_available_queues,msg_counter)
-                    print 'Pull server sending msg.'
-                
+                    print 'Pull server sending outgoing msg: ', msg
                 client_sock.sendall(msg) #sends the message
                 
         except KeyboardInterrupt, k:
