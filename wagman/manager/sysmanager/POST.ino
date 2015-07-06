@@ -7,6 +7,7 @@ const int SRAM_END_ADDR = SRAM_START_ADDR + SRAM_SIZE - 1;
 const int STACK_SAVE = 0x0250;
 const int STACK_ADDR = 0x0099;
 
+// Do not change this.  The bootloader saves data to this address.
 const byte EEPROM_RESET_REASON_ADDR = 0x00;
 const byte EEPROM_POST_RESULT_ADDR = 0x01;
 
@@ -69,8 +70,7 @@ volatile boolean _timer3_overflow = false;
 */
 void POST() 
 {
-  // Debug
-  delay(8000);
+  delay(5000);
 
   // Find reason for reset
   byte reason = find_reset_reason();
@@ -634,20 +634,19 @@ __attribute__((optimize(0))) boolean timer3_test()
     return false;
   TIMSK3 = 0;
 
-  // We return you to your normally scheduled programming (enable interrupts)
+  // Enable interrupts (needed to test timer and interrupt controller)
   interrupts();
 
   // By default, timer is set for normal, overflow, non-PWM mode.
   // Enable overflow interrupt
   TIMSK3 |= (1 << TOIE3);
 
-  Serial.println(_timer3_overflow);
-
-  // Set prescaler to clk/1024 (this starts the timer).
-  // Timer overflows in a little over 4 seconds
+  // Set prescaler to clk/256 (this starts the timer).
+  // Timer overflows in a little over 1 second
   TCCR3B |= (1 << CS30) | (1 << CS32);
 
-  Serial.println(_timer3_overflow);
+  // Ensure that the flag is false before polling it
+  _timer3_overflow = false;
 
   // Wait for timer interrupt
   while(!_timer3_overflow);
@@ -674,19 +673,8 @@ __attribute__((optimize(0))) boolean timer3_test()
 
    :rtype: none
 */
-/*
-
-
-NOTE: program appears to be entering ISR before it runs the rest of the code, 
-but inconsistently.  why?  is the ISR pointed to by the bootloader before the
-jump to main()?  memory corruption/overwrite?
-
-
-*/
 ISR(TIMER3_OVF_vect)
 {
-  Serial.println("ISR");
-
   // Set flag to indicate that the interrupt fired
   _timer3_overflow = true;
 }
@@ -698,13 +686,6 @@ ISR(TIMER3_OVF_vect)
    Reads the MCU status register (MCUSR) for the reset flag.
 
    :rtype: byte
-*/
-/*
-
-
-NOTE: bootloader clears MCUSR.  hmm...what to do?
-
-
 */
 byte find_reset_reason()
 {
