@@ -8,7 +8,7 @@ import sys
 sys.path.append("..")
 from protocol.PacketHandler import *
 
-QUEUENAME = "fnherigfbvrefuesr"  #Insert your own fun random string here!
+QUEUENAME = "fnherigfbvrefuesr"  #Insert your own fun random string here! 
 
 def make_ping_packet():
 	"""
@@ -44,8 +44,7 @@ def make_data_packet(data):
     msg = gPickle(data)
     header_dict = {
         "msg_mj_type" : ord('s'),
-        "msg_mi_type" : ord('d'),
-        "flags"       : (1,5,True) #TODO this should not be specified here. Maybe put in a config file or have a method to change these values.
+        "msg_mi_type" : ord('d')
         }
     return pack(header_dict, message_data = msg)
 
@@ -58,8 +57,7 @@ def registration_packet():
    
     header_dict = {
         "msg_mj_type" : ord('r'),
-        "msg_mi_type" : ord('r'),
-        "flags"       : (1,5,True)
+        "msg_mi_type" : ord('r')
         }
     msg = str(QUEUENAME)
         
