@@ -68,14 +68,15 @@ class client_pull(Process):
                     print "client_pull connected to data cache... "
                     client_sock.connect('/tmp/Data_Cache_pull_server')#opens socket when there is an incoming pull request
                     dev = comm.incoming_request.get() #gets the dev ID that is initiating the pull request
-                    request = 'i, ' #TODO + dev #puts the request in the correct format for the DC
+                    dev = DEVICE_DICT[dev]
+                    request = 'i, ' + str(dev) #puts the request in the correct format for the DC
                     print "Client pull sending: " , request
-                    client_sock.send(dev)
+                    client_sock.send(request)
                     msg = client_sock.recv(4028) #arbitrary, can go in config file
                     if not msg:
                         break
                     else:
-                        print 'Client pull recieved msg.'
+                        print 'Client pull recieved msg: ', msg
                         if msg != 'False':
                             comm.incoming.put(msg) #puts the message in the outgoing queue
                             client_sock.close() #closes socket after each message is sent #TODO is there a better way to do this?
