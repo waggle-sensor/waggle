@@ -214,6 +214,7 @@ def _unpack_header(packed_header):
         "snd_seq"      : _bin_unpack(header_IO.read(HEADER_BYTELENGTHS["snd_seq"])),             # Load send sequence number
         "resp_seq"     : _bin_unpack(header_IO.read(HEADER_BYTELENGTHS["resp_seq"]))             # Load recieve sequence number
     }
+
     header_IO.close()
     return header
 
