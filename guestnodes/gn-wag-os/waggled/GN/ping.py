@@ -2,7 +2,7 @@
 
 
 import sys
-sys.path.append("..")
+sys.path.append('../../../../devtools/protocol_common/')
 from utilities import packetmaker
 from send import send
 

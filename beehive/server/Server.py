@@ -75,7 +75,9 @@ print("Data process online.")
 
 print("All processes online. Server is fully operational.")
 
-# Make sure all the processes stay alive.
+# Make sure all the processes stay alive. This will be
+# cleaned up once all the processes are complete, including
+# having Cassandra running.
 while True:
 	if not router.is_alive():
 		print "The router has died. RIP In Peace."

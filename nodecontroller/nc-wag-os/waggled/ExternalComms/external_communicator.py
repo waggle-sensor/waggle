@@ -34,8 +34,9 @@ class pika_push(Process):
     def run(self):
         comm = external_communicator()
         creds = pika.PlainCredentials('guest1', 'guest1')
-        params = pika.ConnectionParameters('beehive.wa8.gl',5672, '/', creds) 
+        #params = pika.ConnectionParameters('beehive.wa8.gl',5672, '/', creds) 
         #params = pika.ConnectionParameters('10.10.10.108',5672, '/', creds) 
+        params = pika.ConnectionParameters('10.10.10.139',5672, '/', creds) 
         print 'Pika push started...'
         while True:
             try:
@@ -70,8 +71,9 @@ class pika_pull(Process):
         print 'Pika pull started...'
         comm = external_communicator()
         creds = pika.PlainCredentials('guest1', 'guest1')
-        params = pika.ConnectionParameters('beehive.wa8.gl',5672, '/', creds) #beehive.wa8.gl
+        #params = pika.ConnectionParameters('beehive.wa8.gl',5672, '/', creds) #beehive.wa8.gl
         #params = pika.ConnectionParameters('10.10.10.108',5672, '/', creds) #beehive.wa8.gl
+        params = pika.ConnectionParameters('10.10.10.139',5672, '/', creds)
         while True: 
             try:
                 try:
@@ -99,6 +101,7 @@ class pika_pull(Process):
 #pulls the message from the cloud and puts it into incoming queue 
 def callback(ch, method, properties, body):
     comm = external_communicator()
+    print 'Callback received message from cloud: ', body
     comm.incoming.put(body) #TODO does this work?
     ch.basic_ack(delivery_tag=method.delivery_tag) #RabbitMQ will not delete message until ack received
                 
@@ -130,6 +133,7 @@ class client_pull(Process):
                                 comm.outgoing.put(msg) #puts the message in the outgoing queue
                                 client_sock.close() #closes socket after each message is sent #TODO is there a better way to do this?
                             else: 
+                                client_sock.close()
                                 time.sleep(5)
                     else:
                         print 'Client pull unable to connect to the cloud...'
@@ -180,10 +184,10 @@ class client_push(Process):
                                 break
                             msg_p = flags[1]
                             #add flags to msg in correct format
-                            msg += (str(msg_p) + '|')
-                            msg += (str(dev_loc) + ',') #TODO need to change to look up device priority in dictionary before sending message 
-                            msg += 'i,' #incoming push
-                            print "Client push sending msg to DC. "
+                            msg = (str(msg_p) + '|') + msg
+                            msg = (str(dev_loc) + ',') + msg #TODO need to change to look up device priority in dictionary before sending message 
+                            msg = 'i,' + msg #incoming push
+                            print "Client push sending msg to DC: ", msg
                             client_sock.send(msg) #sends msg
                             client_sock.close()
                     except:
