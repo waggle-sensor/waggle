@@ -34,8 +34,9 @@ class pika_push(Process):
     def run(self):
         comm = external_communicator()
         creds = pika.PlainCredentials('guest1', 'guest1')
-        params = pika.ConnectionParameters('beehive.wa8.gl',5672, '/', creds) 
+        #params = pika.ConnectionParameters('beehive.wa8.gl',5672, '/', creds) 
         #params = pika.ConnectionParameters('10.10.10.108',5672, '/', creds) 
+        params = pika.ConnectionParameters('10.10.10.139',5672, '/', creds) 
         print 'Pika push started...'
         while True:
             try:
@@ -70,8 +71,9 @@ class pika_pull(Process):
         print 'Pika pull started...'
         comm = external_communicator()
         creds = pika.PlainCredentials('guest1', 'guest1')
-        params = pika.ConnectionParameters('beehive.wa8.gl',5672, '/', creds) #beehive.wa8.gl
+        #params = pika.ConnectionParameters('beehive.wa8.gl',5672, '/', creds) #beehive.wa8.gl
         #params = pika.ConnectionParameters('10.10.10.108',5672, '/', creds) #beehive.wa8.gl
+        params = pika.ConnectionParameters('10.10.10.139',5672, '/', creds)
         while True: 
             try:
                 try:
@@ -99,6 +101,7 @@ class pika_pull(Process):
 #pulls the message from the cloud and puts it into incoming queue 
 def callback(ch, method, properties, body):
     comm = external_communicator()
+    print 'Callback received message from cloud: ', body
     comm.incoming.put(body) #TODO does this work?
     ch.basic_ack(delivery_tag=method.delivery_tag) #RabbitMQ will not delete message until ack received
                 

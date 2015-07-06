@@ -19,12 +19,14 @@ def receive():
             try: 
                 s.connect((HOST,PORT))
                 print 'Connected...'
-                msg = HOSTNAME #device unique ID
-                s.send(msg)
-                print 'Message sent: ', msg
+                request = HOSTNAME #device unique ID
+                s.send(request)
+                print 'Message sent: ', request
                 msg = s.recv(4028) #arbitrary. Can put in a config file
+                if not msg:
+                        break #breaks the loop when the client socket closes
                 #TODO do something with the message. Currently, just prints msg to screen
-                 try:
+                    try:
                     msg = unpack(msg)
                     print 'Message recieved for GN: ', msg[1] 
                 except:
@@ -33,10 +35,15 @@ def receive():
                 print 'Connection closed...'
             except: 
                 print 'Unable to connect...'
+                time.sleep(5)
         except KeyboardInterrupt, k: 
-            print 'Connection disrupted...'
-            break
+        print 'Connection disrupted...'
+        print 'Socket shutting down.'
+        s.close()
+        break
     s.close()
     
 if __name__ == "__main__":
-    receive()
+        receive()
+    
+        
