@@ -7,19 +7,17 @@ const int SRAM_END_ADDR = SRAM_START_ADDR + SRAM_SIZE - 1;
 const int STACK_SAVE = 0x0250;
 const int STACK_ADDR = 0x0099;
 
-// Do not change this.  The bootloader saves data to this address.
 const byte EEPROM_RESET_REASON_ADDR = 0x00;
 const byte EEPROM_POST_RESULT_ADDR = 0x01;
 
-const byte FAIL_GPRF = 1;
-const byte FAIL_STACK = 2;
-const byte FAIL_SREG = 3;
-const byte FAIL_SRAM = 4;
-const byte FAIL_FLASH = 5;
-const byte FAIL_WATCHDOG = 6;
-const byte FAIL_INTERRUPT = 7;
-const byte FAIL_ADC = 8;
-const byte FAIL_TIMER3 = 9;
+const byte FAIL_GPRF = 0;
+const byte FAIL_STACK = 1;
+const byte FAIL_SREG = 2;
+const byte FAIL_SRAM = 3;
+const byte FAIL_FLASH = 4;
+const byte FAIL_WATCHDOG = 5;
+const byte FAIL_ADC = 6;
+const byte FAIL_TIMER3 = 7;
 
 const boolean FATAL_GPRF = true;
 const boolean FATAL_STACK = true;
@@ -27,7 +25,6 @@ const boolean FATAL_SREG = true;
 const boolean FATAL_SRAM = true;
 const boolean FATAL_FLASH = true;
 const boolean FATAL_WATCHDOG = true;
-const boolean FATAL_INTERRUPT = false;
 const boolean FATAL_ADC = false;
 const boolean FATAL_TIMER3 = false;
 
@@ -70,8 +67,6 @@ volatile boolean _timer3_overflow = false;
 */
 void POST() 
 {
-  delay(5000);
-
   // Find reason for reset
   byte reason = find_reset_reason();
 
@@ -106,6 +101,24 @@ void POST()
   // Timer3 test failed?
   if(!timer3_test())
     test_failure(FAIL_TIMER3, FATAL_TIMER3);
+
+  // Non-fatal failure?
+  if(_SOS_BOOT_MODE)
+    // Go to partial boot-up sequence
+    boot_SOS();
+
+  // Flash LED to indicate that POST was successful
+  digitalWrite(LED, HIGH);
+  delay(100);
+  digitalWrite(LED, LOW);
+  delay(100);
+  digitalWrite(LED, HIGH);
+  delay(100);
+  digitalWrite(LED, LOW);
+  delay(100);
+  digitalWrite(LED, HIGH);
+  delay(100);
+  digitalWrite(LED, LOW);
 }
 
 
@@ -564,7 +577,7 @@ __attribute__((optimize(0))) boolean ADC_test()
 
 
 
-//---------- T I M E R 1 _ T E S T --------------------------------------------
+//---------- T I M E R 3 _ T E S T --------------------------------------------
 /*
    Checks all registers for stuck bits and lets the timer overflow, which
    tests the timer and the interrupt (thus, the interrupt controller, too).
@@ -723,10 +736,10 @@ byte find_reset_reason()
 void test_failure(byte reason, boolean fatal)
 {
 	// Save POST failure to EEPROM
-	EEPROM.update(EEPROM_POST_RESULT_ADDR, reason);
+	EEPROM.update(EEPROM_POST_RESULT_ADDR, (1 << reason));
 
 	// Allow time for EEPROM to finish writing
-	delay(10);
+	delay(5);
 
 	// Is POST failure fatal?
 	if(fatal)
@@ -737,8 +750,8 @@ void test_failure(byte reason, boolean fatal)
 			sleep();
 	}
 	else
-		// Set "SOS boot mode" flag
-		_SOS_BOOT_MODE = true;
+		// Set flag for SOS boot mode
+    _SOS_BOOT_MODE = true;
 }
 
 

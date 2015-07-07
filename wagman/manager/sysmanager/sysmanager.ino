@@ -6,6 +6,7 @@
 #include <avr/pgmspace.h>
 #include <avr/wdt.h>
 #include <EEPROM.h>
+#include <Wire.h>
 
 
 
@@ -29,8 +30,8 @@ void setup()
   // Make sure everything is working correctly
   POST();
 
-  // Debug
-  Serial.println("POST done");
+  // Boot self, node controller, and ethernet switch
+  boot_primary();
 }
 
 
