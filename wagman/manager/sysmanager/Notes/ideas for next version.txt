@@ -1,0 +1,2 @@
+- second MCU to assist in POST and monitoring
+- bring out JTAG header on SysMon board (for development)
