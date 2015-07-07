@@ -8,6 +8,7 @@ import sys
 sys.path.append("..")
 from protocol.PacketHandler import *
 from cStringIO import StringIO
+from collections import deque
 
 class PacketAssembler(object):
 	"""
@@ -20,11 +21,11 @@ class PacketAssembler(object):
 	def __init__(self):
 
 		# Prepare to receive on all 255 channels
-		self.incoming = [None] * MAX_TRANSFERS
-		self.completed = []
+		self.incoming = [None] * PacketAssembler.MAX_TRANSFERS
+		self.completed = deque()
 
 
-	def reserve_channel(self, numPackets):
+	def reserve_channel(self, num_packets):
 		"""
 			Tells the PacketAssembler that a new transfer is starting, and
 			asks it to get ready to recieve packets on a channel
@@ -35,7 +36,7 @@ class PacketAssembler(object):
 		"""
 
 		channel = -1
-		for reserved in range[0,MAX_TRANSFERS]:
+		for reserved in range(0,PacketAssembler.MAX_TRANSFERS):
 			if self.incoming[reserved] == None:
 				channel = reserved
 
@@ -65,6 +66,12 @@ class PacketAssembler(object):
 			self.completed.append(self.incoming[transfer_num].getData())
 			self.incoming[transfer_num] = None
 
+	def get_complete(self):
+		if not self.completed:
+			return None
+		else:
+		 return self.completed.popleft()
+
 
 
 class _UnfinishedPacket(object):
@@ -76,6 +83,9 @@ class _UnfinishedPacket(object):
 	# FUTURE IMPROVEMENT: Make it possible to start one of these in a way
 	# where the info is written to a file, allowing for large file transfers
 	# to not explode everything by eating all the RAM.
+
+	MAX_PACKET_SIZE = 1024
+
 	def __init__(self,numPackets):
 		self.info_buffer = StringIO()
 		self.num_packets = numPackets
@@ -83,31 +93,31 @@ class _UnfinishedPacket(object):
 		self.last_received = -1
 		self.done = False
 
-	def add_packet(self, newPacket):
+	def add_packet(self, new_packet):
 		"""
 			Adds the packet to the unfinished object. Updates all things appropriately
 
 			:param string newPacket: The incoming packet
 		"""
-		packet = unpack(newPacket)
+		packet = unpack(new_packet)
 		reader = StringIO(packet[1]) # Get the actual packet data as a StringIO
-		packetNumber = _bin_unpack(reader.read(4)) # Read the 4-byte number of the packet
+		packet_number = _bin_unpack(reader.read(4)) # Read the 4-byte number of the packet
 
 		# Try to write the info to the correct place
-		self.info_buffer[packetNumber].seek(MAX_PACKET_SIZE * packetNumber)
-		self.info_buffer[packetNumber].write(reader.read())
+		self.info_buffer.seek(_UnfinishedPacket.MAX_PACKET_SIZE * packet_number)
+		self.info_buffer.write(reader.read())
 		reader.close()
-
+		self.info_buffer.seek(0)
 		# Update incoming packet tracking data
-		if(packetNumber > self.last_received):
-			self.last_received = packetNumber
-			for num in range(self.last_received,packetNumber):
+		if(packet_number > self.last_received):
+			self.last_received = packet_number
+			for num in range(self.last_received,packet_number):
 				self.missing_packets.append(num)
 		else:
-			self.missing_packets.remove(packetNumber)
+			self.missing_packets.remove(packet_number)
 
 		# See if all packets are received.
-		if(self.last_received == self.numPackets and not self.missing_packets):
+		if(self.last_received == self.num_packets-1 and not self.missing_packets):
 			self.done = True
 
 
