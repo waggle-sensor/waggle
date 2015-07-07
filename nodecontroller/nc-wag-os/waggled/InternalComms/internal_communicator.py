@@ -164,12 +164,9 @@ class pull_server(Process):
                     data = client_sock.recv(4028) #Guest Nodes connect and send their uniq_ID
                     print 'Pull server received: ', data
                     if not data:
-                        print 'pull_server if not data.' #breaks the loop when the client socket closes
                         break
                     else:
-                        print 'Putting data in request queue...'
                         comm.incoming_request.put(data) #Unique ID goes into incoming requests queue. These get pulled out by the pull_client as pull requests
-                        print 'Incoming_request queue length: ', comm.incoming_request.qsize()
                         while comm.incoming_msg.empty():#TODO each GN should have a queue
                             time.sleep(1) #sleeps for a second then tries again
                         msg = comm.incoming_msg.get() #returns incoming messages. Will return 'False' if no messages are available.

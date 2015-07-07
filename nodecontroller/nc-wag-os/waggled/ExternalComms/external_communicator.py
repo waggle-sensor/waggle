@@ -109,8 +109,6 @@ def callback(ch, method, properties, body):
         
 class client_pull(Process):
     """ A client process that connects to the data cache and pulls outgoing messages. Sends a pull request in the format 'o '"""
-    #TODO pika needs a flag to signal that the cloud is connected
-    #TODO find out what happens if the server disconnects
     
     def run(self):
         print 'Client pull started...'
@@ -118,25 +116,30 @@ class client_pull(Process):
         while True:
             try:
                 if comm.cloud_connected.value == 1: #checks if the cloud is connected
-                    if os.path.exists('/tmp/Data_Cache_pull_server'):
-                        client_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-                        client_sock.connect('/tmp/Data_Cache_pull_server') #connects to server
-                        print "Client_pull connected to data cache... "
-                        data = 'o  ' #sends the pull request in the correct format
-                        client_sock.send(data)
-                        msg = client_sock.recv(4028) #can be changed #TODO find out what happens if the server closes the client's connection...
-                        if not msg:
-                            break
+                    try:
+                        if os.path.exists('/tmp/Data_Cache_pull_server'):
+                            client_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+                            client_sock.connect('/tmp/Data_Cache_pull_server') #connects to server
+                            print "Client_pull connected to data cache... "
+                            data = 'o  ' #sends the pull request in the correct format
+                            client_sock.send(data)
+                            msg = client_sock.recv(4028) #can be changed #TODO find out what happens if the server closes the client's connection...
+                            if not msg:
+                                break
+                            else:
+                                print 'Client pull recieved msg.'
+                                if msg != 'False':
+                                    comm.outgoing.put(msg) #puts the message in the outgoing queue
+                                    client_sock.close() #closes socket after each message is sent #TODO is there a better way to do this?
+                                else: 
+                                    client_sock.close()
+                                    time.sleep(5)
                         else:
-                            print 'Client pull recieved msg.'
-                            if msg != 'False':
-                                comm.outgoing.put(msg) #puts the message in the outgoing queue
-                                client_sock.close() #closes socket after each message is sent #TODO is there a better way to do this?
-                            else: 
-                                client_sock.close()
-                                time.sleep(5)
-                    else:
-                        print 'Client pull unable to connect to the cloud...'
+                            print 'Client pull unable to connect to the data cache... path does not exist'
+                    except:
+                        print 'Client pull disconnected from data cache. Waiting 10 seconds and trying again.'
+                        client_sock.close()
+                        time.sleep(10)
                 else:
                     print 'Client pull...cloud is not connected. Waiting 5 seconds and trying again.'
                     time.sleep(5)

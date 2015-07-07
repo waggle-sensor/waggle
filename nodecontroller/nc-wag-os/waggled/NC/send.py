@@ -12,7 +12,7 @@ def send(msg):
     try:
         try: 
             s.connect((HOST,PORT))
-            print 'Connected...'
+            print 'Connected... Sending msg: ', msg
             s.send(msg)
             time.sleep(1) 
             print 'Message sent: ', msg
