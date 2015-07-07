@@ -98,9 +98,10 @@ def incoming_push(device, msg_p, msg, incoming_available_queues, msg_counter):
     msg_counter.value += 1
     Data_Cache.incoming_bffr[device - 1][msg_p - 1].put(msg)
     try:
-        incoming_available_queues.index((device, msg_p))
+        incoming_available_queues.index(device) #checks if the device is already in the list #TODO improve this
     except:
-        incoming_available_queues.append((device, msg_p))
+        incoming_available_queues.append(device) #adds it to the list if it is not already there
+    print 'Incoming push... incoming available queues len: ', len(incoming_available_queues)
 
 
 def outgoing_pull(outgoing_fifo_available_queues, outgoing_lifo_available_queues, msg_counter):
@@ -147,14 +148,15 @@ def outgoing_pull(outgoing_fifo_available_queues, outgoing_lifo_available_queues
    
 def incoming_pull(dev, incoming_available_queues, msg_counter):
     """ Pulls messages from the DC to send to guest nodes. Returns False if no messages are available.""" 
-    if len(incoming_available_queues) > 0: # checks to see if there are any messages available
+    try: 
+        incoming_available_queues.index(dev) #checks to see if there are messages for the device #TODO actually really need a better way to do this
         for i in range(4,-1,-1): # loop to search for messages starting with highest priority
-            if Data_Cache.incoming_bffr[device - 1][i].empty(): #checks for an empty queue 
+            if Data_Cache.incoming_bffr[dev - 1][i].empty(): #checks for an empty queue 
                 pass
             else: 
                 msg_counter.value -= 1 
-                return Data_Cache.incoming_bffr[device- 1][i].get()
-    else:
+                return Data_Cache.incoming_bffr[dev - 1][i].get()
+    except:
         return 'False'
         
          
@@ -239,6 +241,7 @@ def push_server(incoming_available_queues, outgoing_fifo_available_queues, outgo
         while True:
             try:
                 data = client_sock.recv(4028) #arbitrary 
+                print 'Push server received: ', data
                 if not data:
                     break #breaks the loop so the server can accept other connections #TODO or does it?
                 else:
@@ -248,7 +251,7 @@ def push_server(incoming_available_queues, outgoing_fifo_available_queues, outgo
                     if dest == 'o': #outgoing push 
                         outgoing_push(int(dev_loc),int(msg_p), msg, outgoing_fifo_available_queues, outgoing_lifo_available_queues, msg_counter)
                     else: 
-                        incoming_push(int(dev),int(msg_p),msg, incoming_available_queues, msg_counter)
+                        incoming_push(int(dev_loc),int(msg_p),msg, incoming_available_queues, msg_counter)
                     print "-" * 20 
             except KeyboardInterrupt, k:
                 print "Data Cache shutting down..."
@@ -284,12 +287,15 @@ def pull_server(incoming_available_queues, outgoing_fifo_available_queues, outgo
             else:
                #TODO write logic in case the NC breaks before msg is sent
                 if data.find(',') != -1: #splits the incoming data into individual messages just in case many messages are sent at once
-                    line, dev = data.split(',', 1) #TODO need to change to reflect message protocol
-                    msg = incoming_pull(dev, incoming_available_queues, msg_counter) #pulls a message from that device's queue
+                    dest, dev = data.split(',', 1) #splits into destination (incoming or outgoing) and device ID if applicable
+                    msg = incoming_pull(int(dev), incoming_available_queues, msg_counter) #pulls a message from that device's queue
                     print 'Pull server sending incoming msg: ', msg
                 else:
                     msg = outgoing_pull(outgoing_fifo_available_queues, outgoing_lifo_available_queues,msg_counter)
                     print 'Pull server sending outgoing msg: ', msg
+                if msg == None:
+                    msg = 'False'
+                
                 client_sock.sendall(msg) #sends the message
                 
         except KeyboardInterrupt, k:

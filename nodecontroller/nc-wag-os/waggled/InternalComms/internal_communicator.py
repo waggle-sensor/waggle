@@ -59,12 +59,13 @@ class client_pull(Process):
     def run(self):
         comm = internal_communicator()
         print 'Client pull started...'
-        if os.path.exists('/tmp/Data_Cache_pull_server'):
-            client_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-            while True:
-                while comm.incoming_request.empty(): #sleeps until a GN initiates a pull request
-                    time.sleep(1)
-                try: 
+        
+        while True:
+            while comm.incoming_request.empty(): #sleeps until a GN initiates a pull request
+                time.sleep(1)
+            try: 
+                if os.path.exists('/tmp/Data_Cache_pull_server'):
+                    client_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
                     print "client_pull connected to data cache... "
                     client_sock.connect('/tmp/Data_Cache_pull_server')#opens socket when there is an incoming pull request
                     dev = comm.incoming_request.get() #gets the dev ID that is initiating the pull request
@@ -77,19 +78,17 @@ class client_pull(Process):
                         break
                     else:
                         print 'Client pull recieved msg: ', msg
-                        if msg != 'False':
-                            comm.incoming.put(msg) #puts the message in the outgoing queue
-                            client_sock.close() #closes socket after each message is sent #TODO is there a better way to do this?
-                        else: 
-                            time.sleep(5)
-                        
-                except KeyboardInterrupt, k:
-                    print "Shutting down."
-                    break
-            client_sock.close()
-        else:
-            print "Couldn't Connect!"
-        print "Done."
+                        #if msg != 'False':
+                        comm.incoming_msg.put(msg) #puts the message in the outgoing queue
+                        client_sock.close() #closes socket after each message is sent #TODO is there a better way to do this?
+                        #else: 
+                            #time.sleep(1)
+                else:
+                    print "Client pull unable to connect to DC."
+            except KeyboardInterrupt, k:
+                print "Shutting down."
+                break
+        client_sock.close()
         
 class push_server(Process):
     """ Server process that listens for connections from GNs. Gets messages from the guest nodes, parses header to get device ID (can also use device IP), and msg_p, 
@@ -149,30 +148,35 @@ class pull_server(Process):
     """ Server process that listens for connections from GNs. Gets messages from the Data Cache and sends them to connected GNs. """
     
     def run(self):
-        print 'Pull server process started...'
         comm = internal_communicator()
         HOST = '0.0.0.0'
         PORT = 9091
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.bind((HOST,PORT))
         server.listen(5) #supports up to 5 threads, one for each GN
+        print 'Pull server process started...'
         
         while True:
             client_sock, addr = server.accept()
             print "Connected to ", addr
-            try:
-                data = client_sock.recv(50) #Guest Nodes connect and send their uniq_ID
-                if not data:
-                    break
-                else:
-                    comm.incoming_request.put(data) #Unique ID goes into incoming requests queue. These get pulled out by the pull_client as pull requests
-                    while comm.incoming_msg.empty():#TODO each GN should have a queue
+            while True:
+                try:
+                    data = client_sock.recv(4028) #Guest Nodes connect and send their uniq_ID
+                    print 'Pull server received: ', data
+                    if not data:
+                        print 'pull_server if not data.' #breaks the loop when the client socket closes
+                        break
+                    else:
+                        print 'Putting data in request queue...'
+                        comm.incoming_request.put(data) #Unique ID goes into incoming requests queue. These get pulled out by the pull_client as pull requests
+                        print 'Incoming_request queue length: ', comm.incoming_request.qsize()
+                        while comm.incoming_msg.empty():#TODO each GN should have a queue
                             time.sleep(1) #sleeps for a second then tries again
-                    msg = comm.incoming_msg.get()#if there are no messages for this GN, this returns False
-                    client_sock.sendall(msg) #sends the msg to the GN #TODO this may break
-            except KeyboardInterrupt, k:
-                print "Shutting down."
-                break
+                        msg = comm.incoming_msg.get() #returns incoming messages. Will return 'False' if no messages are available.
+                        client_sock.sendall(msg) #sends the msg to the GN #TODO this may break
+                except KeyboardInterrupt, k:
+                    print "Shutting down."
+                    break
         server.close()
     
 
