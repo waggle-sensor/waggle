@@ -4,12 +4,6 @@ const int SRAM_START_PAGE2 = 0x0100;
 const int SRAM_SIZE = 2560;
 const int SRAM_END_ADDR = SRAM_START_ADDR + SRAM_SIZE - 1;
 
-const int STACK_SAVE = 0x0250;
-const int STACK_ADDR = 0x0099;
-
-const byte EEPROM_RESET_REASON_ADDR = 0x00;
-const byte EEPROM_POST_RESULT_ADDR = 0x01;
-
 const byte FAIL_GPRF = 0;
 const byte FAIL_STACK = 1;
 const byte FAIL_SREG = 2;
@@ -17,16 +11,18 @@ const byte FAIL_SRAM = 3;
 const byte FAIL_FLASH = 4;
 const byte FAIL_WATCHDOG = 5;
 const byte FAIL_ADC = 6;
-const byte FAIL_TIMER3 = 7;
+const byte FAIL_TIMER1 = 7;
+const byte FAIL_INTERRUPT = 8;
 
 const boolean FATAL_GPRF = true;
 const boolean FATAL_STACK = true;
 const boolean FATAL_SREG = true;
 const boolean FATAL_SRAM = true;
 const boolean FATAL_FLASH = true;
-const boolean FATAL_WATCHDOG = true;
+const boolean FATAL_WATCHDOG = false;
 const boolean FATAL_ADC = false;
-const boolean FATAL_TIMER3 = false;
+const boolean FATAL_TIMER1 = false;
+const boolean FATAL_INTERRUPT = false;
 
 const byte RESET_POWER_ON = 0;
 const byte RESET_EXTERNAL = 1;
@@ -38,11 +34,9 @@ const byte RESET_USB = 5;
 const int ADC_TEST_THRESHOLD = 512;
 
 
-
 //---------- G L O B A L S ----------------------------------------------------
-boolean _SOS_BOOT_MODE = false;
-
-volatile boolean _timer3_overflow = false;
+boolean _SOS_boot_mode = false;
+boolean _watchdog_good = false;
 
 
 
@@ -67,6 +61,12 @@ volatile boolean _timer3_overflow = false;
 */
 void POST() 
 {
+  // Disable watchdog so it doesn't reset the chip before we're ready
+  wdt_disable();
+
+  // Disable interrupts so nothing unexpected happens
+  noInterrupts();
+
   // Find reason for reset
   byte reason = find_reset_reason();
 
@@ -91,34 +91,28 @@ void POST()
 		//test_failure(FAIL_FLASH, FATAL_FLASH);
 
 	// Watchdog test failed?
-	// if(!watchdog_test(reason));
-	// 	test_failure(FAIL_WATCHDOG, FATAL_WATCHDOG);
+	if(!watchdog_test(reason));
+		test_failure(FAIL_WATCHDOG, FATAL_WATCHDOG);
+  else
+    // Mark watchdog as functional (used to test the timer)
+    _watchdog_good = true;
 
   // ADC test failed?
   if(!ADC_test())
     test_failure(FAIL_ADC, FATAL_ADC);
 
-  // Timer3 test failed?
-  if(!timer3_test())
-    test_failure(FAIL_TIMER3, FATAL_TIMER3);
+  // Timer1 test failed?
+  if(!timer1_test())
+    test_failure(FAIL_TIMER1, FATAL_TIMER1);
+
+  // Interrupt controller test failed?
+  if(!interrupt_test())
+    test_failure(FAIL_INTERRUPT, FATAL_INTERRUPT);
 
   // Non-fatal failure?
-  if(_SOS_BOOT_MODE)
+  if(_SOS_boot_mode)
     // Go to partial boot-up sequence
     boot_SOS();
-
-  // Flash LED to indicate that POST was successful
-  digitalWrite(LED, HIGH);
-  delay(100);
-  digitalWrite(LED, LOW);
-  delay(100);
-  digitalWrite(LED, HIGH);
-  delay(100);
-  digitalWrite(LED, LOW);
-  delay(100);
-  digitalWrite(LED, HIGH);
-  delay(100);
-  digitalWrite(LED, LOW);
 }
 
 
@@ -556,7 +550,8 @@ __attribute__((optimize(0))) boolean ADC_test()
   // Set AREF to the ATmega's internal reference
   analogReference(INTERNAL);
 
-  // Wait, then read ADC a few times to let things settle down
+  // Wait, then read ADC a few times to let things settle down.
+  // ATmega32U4 datasheet recommends this.
   delay(50);
   analogRead(INTERNAL);
   analogRead(INTERNAL);
@@ -577,7 +572,7 @@ __attribute__((optimize(0))) boolean ADC_test()
 
 
 
-//---------- T I M E R 3 _ T E S T --------------------------------------------
+//---------- T I M E R 1 _ T E S T --------------------------------------------
 /*
    Checks all registers for stuck bits and lets the timer overflow, which
    tests the timer and the interrupt (thus, the interrupt controller, too).
@@ -592,87 +587,95 @@ __attribute__((optimize(0))) boolean ADC_test()
 
    :rtype: boolean
 */
-__attribute__((optimize(0))) boolean timer3_test()
+__attribute__((optimize(0))) boolean timer1_test()
 {
   /* These comments apply to all register tests in this function */
   // Load first test value
-  TCCR3A = 0x55;
+  TCCR1A = 0x55;
   // Is the register not storing the test value?
   // See datasheet for unused bits
-  if((TCCR3A & 0x55) != 0x55)
+  if((TCCR1A & 0x55) != 0x55)
     // Exit test with failure
     return false;
   // Load second test value
-  TCCR3A = 0xAA;
+  TCCR1A = 0xAA;
   // Is the register not storing the test value?
   // See datasheet for unused bits
-  if((TCCR3A & 0xAA) != 0xAA)
+  if((TCCR1A & 0xAA) != 0xAA)
     // Exit test with failure
     return false;
   // Reset the register
-  TCCR3A = 0;
+  TCCR1A = 0;
 
-  TCCR3B = 0x55;
-  if((TCCR3B & 0x55) != 0x55)
+  TCCR1B = 0x55;
+  if((TCCR1B & 0x55) != 0x55)
     return false;
-  TCCR3B = 0xAA;
-  if((TCCR3B & 0xAA) != 0x8A)
+  TCCR1B = 0xAA;
+  if((TCCR1B & 0xAA) != 0x8A)
     return false;
-  TCCR3B = 0;
+  TCCR1B = 0;
 
-  TCNT3 = 0x5555;
-  if((TCNT3 & 0x5555) != 0x5555)
+  TCNT1 = 0x5555;
+  if((TCNT1 & 0x5555) != 0x5555)
     return false;
-  TCNT3 = 0xAAAA;
-  if((TCNT3 & 0xAAAA) != 0xAAAA)
+  TCNT1 = 0xAAAA;
+  if((TCNT1 & 0xAAAA) != 0xAAAA)
     return false;
-  TCNT3 = 0;
+  TCNT1 = 0;
 
-  OCR3A = 0x5555;
-  if((OCR3A & 0x5555) != 0x5555)
+  OCR1A = 0x5555;
+  if((OCR1A & 0x5555) != 0x5555)
     return false;
-  OCR3A = 0xAAAA;
-  if((OCR3A & 0xAAAA) != 0xAAAA)
+  OCR1A = 0xAAAA;
+  if((OCR1A & 0xAAAA) != 0xAAAA)
     return false;
-  OCR3A = 0;
+  OCR1A = 0;
 
-  // Disable interrupts so we can fiddle with the interrupt controls
-  noInterrupts();
-
-  TIMSK3 = 0x55;
-  if((TIMSK3 & 0x55) != 0x05)
+  TIMSK1 = 0x55;
+  if((TIMSK1 & 0x55) != 0x05)
     return false;
-  TIMSK3 = 0xAA;
-  if((TIMSK3 & 0xAA) != 0x2A)
+  TIMSK1 = 0xAA;
+  if((TIMSK1 & 0xAA) != 0x2A)
     return false;
-  TIMSK3 = 0;
+  TIMSK1 = 0;
 
-  // Enable interrupts (needed to test timer and interrupt controller)
-  interrupts();
+  // Did we arrive here after a watchdog reset due to a bad timer?
+  if(EEPROM.read(EEPROM_TIMER_TEST_INCOMPLETE) == 1)
+    // Exit test with failure
+    return false;
 
-  // By default, timer is set for normal, overflow, non-PWM mode.
-  // Enable overflow interrupt
-  TIMSK3 |= (1 << TOIE3);
+  // Did watchdog pass its test?
+  // If it did not, we have no reliable way to test the timer without failure
+  // resulting in an infinite loop.  An infinite loop prevents us from
+  // getting to the partial boot sequence, so if the watchdog is bad, we'll
+  // have to trust that the timer works, without this explicit test.
+  if(_watchdog_good)
+  {
+    // Mark timer test as incomplete
+    EEPROM.update(EEPROM_TIMER_TEST_INCOMPLETE, 1);
 
-  // Set prescaler to clk/256 (this starts the timer).
-  // Timer overflows in a little over 1 second
-  TCCR3B |= (1 << CS30) | (1 << CS32);
+    // Enable watchdog
+    wdt_enable(WDTO_60MS);
 
-  // Ensure that the flag is false before polling it
-  _timer3_overflow = false;
+    // Start timer (with prescaler of clk/8)
+    TCCR1B |= (1 << CS11);
 
-  // Wait for timer interrupt
-  while(!_timer3_overflow);
+    // Wait for counter to overflow
+    while(! (TIFR1 & _BV(TOV1));
 
-  // Reset the flag for the enjoyment of future generations
-  _timer3_overflow = false;
+    // Disable watchdog
+    wdt_disable();
 
-  // Disable overflow interrupt
-  TIMSK3 = 0;
-  // Clear the clock prescaling (this turns off the timer)
-  TCCR3B = 0;
-  // Clear the timer's counter
-  TCNT3 = 0;
+    // Clear the clock prescaling (this turns off the timer)
+    TCCR1B = 0;
+    // Clear the timer's counter
+    TCNT1 = 0;
+    // Clear the overflow flag
+    TIFR1 = _BV(TOV1);
+
+    // Mark timer test as complete
+    EEPROM.update(EEPROM_TIMER_TEST_INCOMPLETE, 0);
+  }
 
   // Exit test with success
   return true;
@@ -680,16 +683,23 @@ __attribute__((optimize(0))) boolean timer3_test()
 
 
 
-//---------- T I M E R 3 _ O V E R F L O W _ I N T E R R U P T ----------------
+//---------- I N T E R R U P T _ T E S T --------------------------------------
 /*
-   Interrupt for Timer3 overflow.
+   Checks that the interrupt controller executes interrupt service routines.
+   Return of TRUE means it passed the test.
+   Return of FALSE means it failed the test.
 
-   :rtype: none
+   This code is designed to work in the default Arduino environment, so 
+   setting compiler flags is not an option.  The "optimize(0)" attribute is 
+   used to prevent the compiler from optimizing this function.  All of the
+   tests in the POST routine disable optimization, to be safe, because much
+   of what is happening has no effect outside the function.
+
+   :rtype: boolean
 */
-ISR(TIMER3_OVF_vect)
+__attribute__((optimize(0))) boolean interrupt_test()
 {
-  // Set flag to indicate that the interrupt fired
-  _timer3_overflow = true;
+
 }
 
 
@@ -736,22 +746,18 @@ byte find_reset_reason()
 void test_failure(byte reason, boolean fatal)
 {
 	// Save POST failure to EEPROM
-	EEPROM.update(EEPROM_POST_RESULT_ADDR, (1 << reason));
+	EEPROM.update(EEPROM_POST_RESULT, (1 << reason));
 
 	// Allow time for EEPROM to finish writing
 	delay(5);
 
 	// Is POST failure fatal?
 	if(fatal)
-	{
 		// Go to sleep
-		// Infinite loop is insurance, in case the chip wakes up
-		while(1)
-			sleep();
-	}
+		sleep();
 	else
 		// Set flag for SOS boot mode
-    _SOS_BOOT_MODE = true;
+    _SOS_boot_mode = true;
 }
 
 
@@ -774,6 +780,6 @@ void sleep()
 	// Go to sleep
 	sleep_mode();
 
-	// Give the SLEEP instruction time to execute
-	delay(10);
+	// Chew on this until the chip falls asleep
+	while(1);
 }
