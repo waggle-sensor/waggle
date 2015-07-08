@@ -96,7 +96,7 @@ while True:
 	if not reg.is_alive():
 		print "The registrar has died. RIP In Peace."
 		print "Attempting to bring it back from the dead..."
-		reg = RegProcess()
+		reg = RegProcess(routing_table)
 		reg.start()
 		print "The registrar has risen from the grave!"
 
