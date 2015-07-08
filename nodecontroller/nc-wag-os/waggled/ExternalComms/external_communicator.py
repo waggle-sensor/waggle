@@ -9,11 +9,9 @@ sys.path.append('..')
 from device_dict import DEVICE_DICT
 
 """ This is the communication channel between the cloud and the DC. It consists of a pika client process for RabbitMQ to push and pull messages to and from the cloud and push and pull client processes connected to the DC. """
-#TODO add checks for any priorities outside of range - send back to cloud. -- probably need to unpack and repack the message or can just send an error with previous header as payload or something?
-#TODO dictionary needs to be made to map device with their 'priority' 
 
 #sets the queue name to the hostname of the node for now
-#TODO Queue name and host name need to be different
+
 with open('/etc/waggle/hostname','r') as file_:
     HOSTNAME = file_.read().strip()
 
@@ -36,7 +34,8 @@ class pika_push(Process):
         creds = pika.PlainCredentials('guest1', 'guest1')
         #params = pika.ConnectionParameters('beehive.wa8.gl',5672, '/', creds) 
         #params = pika.ConnectionParameters('10.10.10.108',5672, '/', creds) 
-        params = pika.ConnectionParameters('10.10.10.139',5672, '/', creds) 
+        #params = pika.ConnectionParameters('10.10.10.143',5672, '/', creds) 
+        params = pika.ConnectionParameters('10.10.10.139',5672, '/', creds)
         print 'Pika push started...'
         while True:
             try:
@@ -47,19 +46,22 @@ class pika_push(Process):
                     comm.cloud_connected.value = 1 #set the flag to true when connected to cloud
                     #Creating a queue
                     channel.queue_declare(queue=QUEUENAME)
-                    print 'Pika push connection successful'
+                    #print 'Pika push connection successful'
                     while comm.outgoing.empty(): #sleeps until there are messages to send
                         time.sleep(1)
+                        #print 'pika push going to sleep'
+                        #time.sleep(100) 
+                        #print 'Pika push awake.'
                     
                     msg = comm.outgoing.get() # gets the first item in the outgoing queue
-                    print 'Pika_push... sending msg to cloud.'
+                    #print 'Pika_push... sending msg to cloud.'
                     channel.basic_publish(exchange='waggle_in', routing_key= 'in', body= msg) #sends to cloud 
                 except: 
                     print 'Pika_push currently unable to connect to cloud...' 
                     comm.cloud_connected.value = 0 #set the flag to 0 when not connected to the cloud
                     time.sleep(5)
             except pika.exceptions.ConnectionClosed:
-                        print "Pika push connection closed. Waiting 5 seconds and trying again."
+                        print "Pika push connection closed. Waiting and trying again."
                         comm.cloud_connected.value = 0
                         time.sleep(5)
         connection.close()
@@ -73,13 +75,15 @@ class pika_pull(Process):
         creds = pika.PlainCredentials('guest1', 'guest1')
         #params = pika.ConnectionParameters('beehive.wa8.gl',5672, '/', creds) #beehive.wa8.gl
         #params = pika.ConnectionParameters('10.10.10.108',5672, '/', creds) #beehive.wa8.gl
+        #params = pika.ConnectionParameters('10.10.10.143',5672, '/', creds)
         params = pika.ConnectionParameters('10.10.10.139',5672, '/', creds)
         while True: 
+            
             try:
                 try:
                     connection = pika.BlockingConnection(params) 
                     channel = connection.channel()
-                    print 'Pika pull connection successful.'
+                    #print 'Pika pull connection successful.'
                     comm.cloud_connected.value = 1
                      #Creating a queue
                     channel.queue_declare(queue=QUEUENAME)
@@ -87,12 +91,12 @@ class pika_pull(Process):
                     #loop that waits for data 
                     channel.start_consuming()
                 except:
-                    print 'Pika_pull currently unable to connect to cloud. Waiting 5 seconds before trying again.' 
+                    print 'Pika_pull currently unable to connect to cloud. Waiting before trying again.' 
                     comm.cloud_connected.value = 0 #set the flag to 0 when not connected to the cloud
                     time.sleep(5)
                
             except pika.exceptions.ConnectionClosed:
-                        print "Pika pull connection closed. Waiting 5 seconds before trying again."
+                        print "Pika pull connection closed. Waiting before trying again."
                         comm.cloud_connected.value = 0 #set the flag to false when not connected to the cloud
                         time.sleep(5)
         connection.close()
@@ -101,8 +105,8 @@ class pika_pull(Process):
 #pulls the message from the cloud and puts it into incoming queue 
 def callback(ch, method, properties, body):
     comm = external_communicator()
-    print 'Callback received message from cloud: ', body
-    comm.incoming.put(body) #TODO does this work?
+    #print 'Callback received message from cloud: ', body
+    comm.incoming.put(body) 
     ch.basic_ack(delivery_tag=method.delivery_tag) #RabbitMQ will not delete message until ack received
                 
             
@@ -120,28 +124,32 @@ class client_pull(Process):
                         if os.path.exists('/tmp/Data_Cache_pull_server'):
                             client_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
                             client_sock.connect('/tmp/Data_Cache_pull_server') #connects to server
-                            print "Client_pull connected to data cache... "
+                            #print "Client_pull connected to data cache... "
                             data = 'o  ' #sends the pull request in the correct format
                             client_sock.send(data)
-                            msg = client_sock.recv(4028) #can be changed #TODO find out what happens if the server closes the client's connection...
+                            msg = client_sock.recv(4028) #can be changed 
                             if not msg:
                                 break
                             else:
-                                print 'Client pull recieved msg.'
                                 if msg != 'False':
                                     comm.outgoing.put(msg) #puts the message in the outgoing queue
                                     client_sock.close() #closes socket after each message is sent #TODO is there a better way to do this?
+                                    #print 'Client pull going to sleep.'
+                                    #time.sleep(100)
+                                    #print 'Client pull awake.'
                                 else: 
                                     client_sock.close()
-                                    time.sleep(5)
+                                    #print 'Client pull going to sleep.'
+                                    #time.sleep(100)
+                                    #print 'Client pull awake.'
                         else:
-                            print 'Client pull unable to connect to the data cache... path does not exist'
+                            print 'Client pull unable to connect to the data cache... path does not exist!'
                     except:
-                        print 'Client pull disconnected from data cache. Waiting 10 seconds and trying again.'
+                        print 'Client pull disconnected from data cache. Waiting and trying again.'
                         client_sock.close()
-                        time.sleep(10)
+                        time.sleep(5)
                 else:
-                    print 'Client pull...cloud is not connected. Waiting 5 seconds and trying again.'
+                    print 'Client pull...cloud is not connected. Waiting and trying again.'
                     time.sleep(5)
             except KeyboardInterrupt, k:
                     print "Shutting down."
@@ -156,46 +164,49 @@ class client_push(Process):
         print 'Client push started...'
         comm = external_communicator()
         
-            #TODO rearrange this to make more sense?
+            #TODO clean up if possible
         while True:
             while comm.incoming.empty(): #sleeps until a message arrives in the incoming queue 
                 time.sleep(1)
+                #print 'Client push going to sleep.'
+                #time.sleep(100)
+                #print 'Client push awake.'
             try: 
                 if os.path.exists('/tmp/Data_Cache_push_server'):
                     client_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
                     client_sock.connect('/tmp/Data_Cache_push_server') #opens socket when a message is in the queue
-                    print "Client_push connected to data cache... "
+                    #print "Client_push connected to data cache... "
                     msg = comm.incoming.get() #gets the incoming message from the queue
                     try:
                         header = get_header(msg)
-                        #TODO Do a check to make sure the recipient is actually a part of this node, return error if not
+                        
                         flags = header['flags'] #extracts priorities
                         dev = header['r_uniqid'] #gets the recipient ID
-                        #TODO write dictionary mapping device ID to priorities
-                        if dev == int(HOSTNAME): #msg intended for NC
-                            try:
-                                msg = unpack(msg)
-                                print 'Message recieved from cloud: ', msg[1] #just prints the message to the screen if the recipient is the NC #TODO handle messages being sent to NC 
-                            except:
-                                print 'Unpack unsuccessful.'
-                            client_sock.close() #closes the socket
-                        else:
-                            try: 
-                                dev_loc = DEVICE_DICT[str(dev)] #TODO can change PacketHandler to keep the uniqueID as a string
-                            except: 
-                                print 'Error: Unknown recipient ID. Message will not be put in data cache.'
-                                break
-                            msg_p = flags[1]
-                            #add flags to msg in correct format
-                            msg = (str(msg_p) + '|') + msg
-                            msg = (str(dev_loc) + ',') + msg #TODO need to change to look up device priority in dictionary before sending message 
-                            msg = 'i,' + msg #incoming push
-                            print "Client push sending msg to DC: ", msg
-                            client_sock.send(msg) #sends msg
-                            client_sock.close()
+                        
+                        #if dev == int(HOSTNAME): #msg intended for NC
+                            #try:
+                                #msg = unpack(msg)
+                                #client_sock.close() 
+                                #print 'Message recieved from cloud for NC: ', msg[1] #just prints the message to the screen if the recipient is the NC #TODO handle messages being sent to NC 
+                            #except:
+                                #print 'Unpack unsuccessful.'
+                            #client_sock.close() 
+                        #else:
+                        try: 
+                            dev_loc = DEVICE_DICT[str(dev)] 
+                        except: 
+                            print 'Error: Unknown recipient ID. Message will not be put in data cache.'
+                            break
+                        msg_p = flags[1]
+                        #adding flags to msg in correct format
+                        msg = (str(msg_p) + '|') + msg #message priority
+                        msg = (str(dev_loc) + ',') + msg #device location in buffer
+                        msg = 'i,' + msg #indicates incoming push
+                        client_sock.send(msg) #sends msg
+                        client_sock.close()
                     except:
                         print "Not a valid message. Will not be put into the DC"
-                        client_sock.close() #closes the socket
+                        client_sock.close() 
                 else:
                     print "Unable to connect to Data Cache."
             except KeyboardInterrupt, k:
