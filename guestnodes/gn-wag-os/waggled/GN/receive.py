@@ -24,7 +24,7 @@ def receive():
                 request = HOSTNAME #device unique ID
                 s.send(request)
                 time.sleep(1) #waits for pull request to go through #TODO might be unneccessary 
-                print 'Message sent: ', request
+                print 'Request sent: ', request
                 msg = s.recv(4028) #arbitrary. Can put in a config file
                 if msg != 'False':
                     try:
@@ -37,11 +37,11 @@ def receive():
                 else:
                     print 'Message received for GN: ', msg
                     s.close() #closes each time a message is received.
-                    time.sleep(1)
-                    
+                    time.sleep(5)
                     
             except: 
                 print 'Unable to connect...'
+                s.close()
                 time.sleep(5)
         except KeyboardInterrupt, k: 
             print 'Connection disrupted...'

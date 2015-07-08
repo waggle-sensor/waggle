@@ -1,21 +1,19 @@
 #!/usr/bin/env python
 
 from multiprocessing import Process, Queue, Manager
-import random 
-from operator import itemgetter
 from daemon import Daemon
-import sys, os, os.path, time, atexit, socket
+import sys, os, os.path, time, atexit, socket, datetime
 
-""" The Data Cache stores messages in buffers that are named and ordered by device priority and message priority. It also removes messages from storage when they are sent. 
-    This version is a service/process that is started by the system admin. """
+""" The Data Cache stores messages in buffers that are named and ordered by device priority and message priority. """
     
 #TODO clean up
-#TODO write the function that writes all current stored messages to files
+#TODO Figure out what to do once DC has messages stored in files
 
 class Data_Cache(Daemon):
     #The priority list is now a list containing the number corresponding to a unique device. The highest priority no longer corresponds to the highest number, but rather the order in which the elements are in the list
     priority_list = [5,4,3,2,1] 
     available_mem = 255999 #default
+    #available_mem = 3 #testing
     #dummy variables 
     incoming_bffr = []
     outgoing_fifo_bffr = []
@@ -26,10 +24,10 @@ class Data_Cache(Daemon):
         
         #create a manager for shared information between server processes
         mgr = Manager()
-        outgoing_lifo_available_queues = mgr.list()
-        outgoing_fifo_available_queues = mgr.list()
+        outgoing_available_queues = mgr.list()
         incoming_available_queues = mgr.list()
         msg_counter = mgr.Value('i',0)  #keeps track of how many messages are in the dc. It is incremented when messages are stored and decremented when messages are removed
+        flush = mgr.Value('i',0) #indicator value. Default is 0, indicating that the data cache is running as normal. It will be changed to 1 if the data cache is flushing stored messages into files.
 
         
         #Each buffer is a matrix of queues for organization and indexing purposes.
@@ -44,54 +42,45 @@ class Data_Cache(Daemon):
         print 'Data Cache started.'
         
         try:
-            pull = Process(target=pull_server, args =(incoming_available_queues, outgoing_fifo_available_queues, outgoing_lifo_available_queues, msg_counter))
+            pull = Process(target=pull_server, args =(incoming_available_queues, outgoing_available_queues,  msg_counter, flush))
             pull.start()
         
-            push = Process(target=push_server, args =(incoming_available_queues, outgoing_fifo_available_queues, outgoing_lifo_available_queues, msg_counter))
+            push = Process(target=push_server, args =(incoming_available_queues, outgoing_available_queues,  msg_counter,flush))
             push.start()
             while True:
                 pass
             
         except KeyboardInterrupt, k:
+            #DC_flush(flush, incoming_available_queues, outgoing_available_queues, msg_counter) #flushes all messages to a file before shutting down.
             pull.terminate()
             push.terminate()
             print 'Data Cache shutting down...'
            
    
-def outgoing_push(dev, msg_p, msg, outgoing_fifo_available_queues, outgoing_lifo_available_queues, msg_counter): 
+def outgoing_push(dev, msg_p, msg, outgoing_available_queues, msg_counter, flush, incoming_available_queues): 
     """ Stores outgoing messages to the cloud. Expects to get pull order (lifo or fifo),device ID, message priority, and the msg. """ 
     
-    if msg_counter.value > Data_Cache.available_mem:
-        
+    if msg_counter.value >= Data_Cache.available_mem:
+        DC_flush(flush, incoming_available_queues, outgoing_available_queues, msg_counter)
         msg_counter.value = 0 #resets the message counter after all buffers have been saved to a file
-    else:
-        pass #TODO need to write to file here
+    
     msg_counter.value += 1 
+    print 'msg_counter: ', msg_counter.value
     try:
-        #if order == 'False': 
-            #current_queue = Data_Cache.outgoing_lifo_bffr[dev - 1][msg_p - 1]
-            #current_queue.put(msg)
-            #try:
-                #outgoing_lifo_available_queues.index((dev, msg_p)) #throws an error if this is not already in the list
-            #except: 
-                #outgoing_lifo_available_queues.append((dev, msg_p)) #prevents duplicates
-        #elif order == 'True': 
         Data_Cache.outgoing_fifo_bffr[(dev - 1)][(msg_p - 1)].put(msg)
         try:
-            outgoing_fifo_available_queues.index((dev, msg_p))#throws an error if this is not already in the list
+            outgoing_available_queues.index((dev, msg_p)) #throws an error if this is not already in the list
         except: 
-            outgoing_fifo_available_queues.append((dev, msg_p)) #prevents duplicates
-            print 'out_going push fifo queue len: ', len(outgoing_fifo_available_queues)
-        #else:
-            #print 'Unrecognized priority flag...' #TODO This probably needs to send back an error message to the sender
+            outgoing_available_queues.append((dev, msg_p)) #prevents duplicates
+            print 'out_going push queue len: ', len(outgoing_available_queues)
     except:
-        print 'Outgoing push unable to store in data cache...'#TODO this is a quick fix for Raj, but this actually needs to be addressed and handled. An error will occur if the flags always use the default value. Check packetmaker
-                
+        print 'Outgoing push unable to store in data cache...'#TODO this is a quick fix for Raj, but this actually needs to be addressed and handled. 
        
-def incoming_push(device, msg_p, msg, incoming_available_queues, msg_counter):
+def incoming_push(device, msg_p, msg, incoming_available_queues, msg_counter, flush, outgoing_available_queues):
     """ Stores messages going to guest nodes. Needs, device priority, message priority, msg, and the shared incoming list""" 
-    if msg_counter > Data_Cache.available_mem: #TODO probably needs to set as an attribute or something
-        #TODO write the function that writes all current stored messages to files
+    
+    if msg_counter >= Data_Cache.available_mem: 
+        DC_flush(flush, incoming_available_queues, outgoing_available_queues, msg_counter)
         msg_counter.value = 0 #resets the message counter after all buffers have been saved to a file
     else:
         pass 
@@ -104,7 +93,7 @@ def incoming_push(device, msg_p, msg, incoming_available_queues, msg_counter):
     print 'Incoming push... incoming available queues len: ', len(incoming_available_queues)
 
 
-def outgoing_pull(outgoing_fifo_available_queues, outgoing_lifo_available_queues, msg_counter):
+def outgoing_pull(outgoing_available_queues, msg_counter):
     """ Retrieves and removes outgoing messages from the DC. Gets the first (highest priority) buffer from the priority list and returns the first message stored there. 
         For fairness, it removes one msg from fifo then lifo each time it is called.""" 
     #TODO implement fairness, avoid starvation
@@ -112,40 +101,22 @@ def outgoing_pull(outgoing_fifo_available_queues, outgoing_lifo_available_queues
     #TODO might want to find a better way to remove empty queues from list 
     queue_check = True #continues until a message is sent. Neccessary to check for empty queues whose index has not yet been removed from the list
     while queue_check:
-        if len(outgoing_fifo_available_queues) == 0: #no messages available
+        if len(outgoing_available_queues) == 0: #no messages available
             print ' No messages available.'
             queue_check = False
             return 'False' 
         else:
-            print 'outgoing_fifo available queues len: ', len(outgoing_fifo_available_queues)
-            fifo_cache_index = get_priority(outgoing_fifo_available_queues) #returns the index of the highest priority queue in fifo buffer
-            sender_p, msg_p = fifo_cache_index
+            print 'outgoing_fifo available queues len: ', len(outgoing_available_queues)
+            cache_index = get_priority(outgoing_available_queues) #returns the index of the highest priority queue in fifo buffer
+            sender_p, msg_p = cache_index
             current_q = Data_Cache.outgoing_fifo_bffr[sender_p - 1][msg_p - 1]
             if current_q.empty():
-                outgoing_fifo_available_queues.remove(fifo_cache_index) # removes it from the list of available queues 
+                outgoing_available_queues.remove(cache_index) # removes it from the list of available queues 
             else: 
                 msg_counter.value -= 1 #decrements the list by 1
                 queue_check = False
                 return current_q.get()       
         
-    #if len(outgoing_lifo_available_queues) == 0: #no messages available
-        #print 'outgoing PULL queue len: ', len(outgoing_lifo_available_queues)
-        #print ' No messages available.'
-        #return 'False'
-    #else:
-        #lifo_cache_index = Data_Cache.get_priority(outgoing_lifo_available_queues) #returns the index of the highest priority queue in lifo buffer
-        #if lifo_cache_index is not None: #Checks for an empty list
-            #sender_p, msg_p = lifo_cache_index
-            #Data_Cache.msg_counter -= 1 #decrements the list by 1
-            #current_q = Data_Cache.outgoing_lifo_bffr[sender_p - 1][msg_p - 1]
-            #return current_q.get()
-        #else:
-            #outgoing_lifo_available_queues.remove(lifo_cache_index) # removes it from the list of available queues
-            #return 'False' #outgoing messages can be pulled in a loop until there are no messages left
-    #print 'outgoing PULL fifo queue len: ', len(outgoing_fifo_available_queues)
-        #print ' No messages available.'
-        #return 'False'
-   
 def incoming_pull(dev, incoming_available_queues, msg_counter):
     """ Pulls messages from the DC to send to guest nodes. Returns False if no messages are available.""" 
     try: 
@@ -158,22 +129,38 @@ def incoming_pull(dev, incoming_available_queues, msg_counter):
                 return Data_Cache.incoming_bffr[dev - 1][i].get()
     except:
         return 'False'
-        
-         
-def sys_flush():
-    """ TODO Called by the system monitor before a reboot. Flushes all messages into a file.""" 
-    pass
-    
 
-def self_flush():
-    """ TODO Flushes all messages to a file when the max number of messages has been reached. """ 
-    pass
-    
+
+def DC_flush(flush, incoming_available_queues, outgoing_available_queues, msg_counter):
+    """ Flushes all stored messages to files. Temporarily shuts down the push and pull server while the queues are being written to files.""" 
+    flush.value = 1
+    print 'Flushing!' #for testing
+    date = datetime.datetime.now().strftime('%Y %m %d %H:%M:%S')
+    filename = 'outgoing' + date #file name has buffer being flushed and date
+    f = open(filename, 'w')
+    while True: #write all outgoing messages to outgoing file
+        msg = outgoing_pull(outgoing_available_queues, msg_counter) #returns false when all queues are empty
+        if msg=='False':
+            break
+        else:
+            f.write(msg + '/n') 
+    f.close()
+    filename = 'incoming' + date
+    f = open(filename, 'w')
+    for i in Data_Cache.priority_list: #write all incoming messages to file
+        while True:
+            msg = incoming_pull(i, incoming_available_queues, msg_counter)
+            if msg=='False':
+                break
+            else:
+                f.write(msg + '/n')
+    f.close()
+    flush.value = 0 #restart servers 
 
 def get_status():
     """ Returns the number of messages currently stored. """
     
-    return Data_Cache.msg_counter #TODO This will probably not work
+    return Data_Cache.msg_counter.value #TODO This will probably not work
     
 
 def update_device_priority(new_list):
@@ -219,26 +206,28 @@ def get_priority(a_list):
                 pass
         return (highest_de_p, highest_msg_p)           
                 
-def push_server(incoming_available_queues, outgoing_fifo_available_queues, outgoing_lifo_available_queues, msg_counter):
+def push_server(incoming_available_queues, outgoing_available_queues, msg_counter, flush):
     """ The Data Cache server that handles push requests. """
-    
-    if os.path.exists('/tmp/Data_Cache_push_server'): #checking for the file
-        os.remove('/tmp/Data_Cache_push_server')
-    print "Opening push socket..."
-    
-    #creates a UNIX, STREAMing socket
-    server_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-    server_sock.bind('/tmp/Data_Cache_push_server') #binds to this file path
-    #become a server socket
-    server_sock.listen(5)
-
     while True:
-    #accept connections from outside
+        while flush.value ==1: #shuts down the server until the all queues have been written to a file
+            time.sleep(1)
+        if os.path.exists('/tmp/Data_Cache_push_server'): #checking for the file
+            os.remove('/tmp/Data_Cache_push_server')
+        print "Opening push socket..."
         
-        client_sock, address = server_sock.accept()
-        print "Push server connected."
+        #creates a UNIX, STREAMing socket
+        server_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        server_sock.bind('/tmp/Data_Cache_push_server') #binds to this file path
+        #become a server socket
+        server_sock.listen(5)
+
         #TODO Is there a better way to do this?
         while True:
+            if flush.value==1: #shuts down the server until the all queues have been written to a file
+                print 'Push Server flush!'
+                break
+            client_sock, address = server_sock.accept()
+            print "Push server connected."
             try:
                 data = client_sock.recv(4028) #arbitrary 
                 print 'Push server received: ', data
@@ -249,63 +238,74 @@ def push_server(incoming_available_queues, outgoing_fifo_available_queues, outgo
                     dest, data = data.split(',',1) #incoming or outgoing
                     dev_loc, msg_p = data.split(',',1) # device queue location and msg_p
                     if dest == 'o': #outgoing push 
-                        outgoing_push(int(dev_loc),int(msg_p), msg, outgoing_fifo_available_queues, outgoing_lifo_available_queues, msg_counter)
+                        outgoing_push(int(dev_loc),int(msg_p), msg, outgoing_available_queues, msg_counter, flush, incoming_available_queues)
                     else: 
-                        incoming_push(int(dev_loc),int(msg_p),msg, incoming_available_queues, msg_counter)
+                        incoming_push(int(dev_loc),int(msg_p),msg, incoming_available_queues, msg_counter, flush, outgoing_available_queues)
                     print "-" * 20 
             except KeyboardInterrupt, k:
-                print "Data Cache shutting down..."
+                print "Data Cache push server shutting down..."
                 break
-    print "-" * 20
+        print "-" * 20
+        print "Data Cache push server socket shutting down for flush..."
+        serversocket.close()
+        os.remove('/tmp/Data_Cache_push_server')
+        
     print "Data Cache push server socket shutting down..."
     serversocket.close()
     os.remove('/tmp/Data_Cache_push_server')
+    
+
+def pull_server(incoming_available_queues, outgoing_available_queues, msg_counter, flush):
+    """ The Data Cache server that handles pull requests. An incoming pull request will be a string in the format 'i,deviceP'. An outgoing pull request will be a string in the format 'o '. """
+    while True:
+        while flush.value ==1: #shuts down the server until the all queues have been written to a file
+            time.sleep(1)
+        if os.path.exists('/tmp/Data_Cache_pull_server'): #checking for the file
+            os.remove('/tmp/Data_Cache_pull_server')
+        print "Opening pull socket..."
+        
+        #creates a UNIX, STREAMing socket
+        server_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        server_sock.bind('/tmp/Data_Cache_pull_server') #binds to this file path
+        #become a server socket
+        server_sock.listen(5)
         
 
-def pull_server(incoming_available_queues, outgoing_fifo_available_queues, outgoing_lifo_available_queues, msg_counter):
-    """ The Data Cache server that handles pull requests. An incoming pull request will be a string in the format 'i,deviceP'. An outgoing pull request will be a string in the format 'o '. """
-    if os.path.exists('/tmp/Data_Cache_pull_server'): #checking for the file
-        os.remove('/tmp/Data_Cache_pull_server')
-    print "Opening pull socket..."
-    
-    #creates a UNIX, STREAMing socket
-    server_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-    server_sock.bind('/tmp/Data_Cache_pull_server') #binds to this file path
-    #become a server socket
-    server_sock.listen(5)
-    
-
-    while True:
-    #accept connections from outside
-        client_sock, address = server_sock.accept()
-        #TODO Is there a better way to do this?
-        try:
-            data = client_sock.recv(40) #TODO 40 bites is the expected size of pull requests
-            print 'pull_server received: ', data
-            if not data:
+        while True:
+        #accept connections from outside
+            if flush.value==1: #shuts down the server until the all queues have been written to a file
+                print 'Pull Server flush!'
                 break
-            else:
-               #TODO write logic in case the NC breaks before msg is sent
-                if data.find(',') != -1: #splits the incoming data into individual messages just in case many messages are sent at once
-                    dest, dev = data.split(',', 1) #splits into destination (incoming or outgoing) and device ID if applicable
-                    msg = incoming_pull(int(dev), incoming_available_queues, msg_counter) #pulls a message from that device's queue
-                    print 'Pull server sending incoming msg: ', msg
+            client_sock, address = server_sock.accept()
+            #TODO Is there a better way to do this?
+            try:
+                data = client_sock.recv(40) #TODO 40 bites is the expected size of pull requests
+                print 'pull_server received: ', data
+                if not data:
+                    break
                 else:
-                    msg = outgoing_pull(outgoing_fifo_available_queues, outgoing_lifo_available_queues,msg_counter)
-                    print 'Pull server sending outgoing msg: ', msg
-                if msg == None:
-                    msg = 'False'
-                
-                client_sock.sendall(msg) #sends the message
-                
-        except KeyboardInterrupt, k:
-            print "Data Cache shutting down..."
-            serversocket.close()
-            os.remove('/tmp/Data_Cache_pull_server')
-    print "-" * 20
-    print "Data Cache pull server socket shutting down..."
+                #TODO write logic in case the NC breaks before msg is sent
+                    if data.find(',') != -1: #splits the incoming data into individual messages just in case many messages are sent at once
+                        dest, dev = data.split(',', 1) #splits into destination (incoming or outgoing) and device ID if applicable
+                        msg = incoming_pull(int(dev), incoming_available_queues, msg_counter) #pulls a message from that device's queue
+                    else:
+                        msg = outgoing_pull(outgoing_available_queues, msg_counter)
+                    if msg == None:
+                        msg = 'False'
+                    
+                    client_sock.sendall(msg) #sends the message
+                    
+            except KeyboardInterrupt, k:
+                print "Data Cache pull server shutting down..."
+                serversocket.close()
+                os.remove('/tmp/Data_Cache_pull_server')
+        print "-" * 20
+        print "Data Cache pull server socket shutting down for flush..."
+        server_sock.close()
+        os.remove('/tmp/Data_Cache_pull_server')
     server_sock.close()
     os.remove('/tmp/Data_Cache_pull_server')
+    
     
         
 if __name__ == "__main__":
@@ -320,7 +320,7 @@ if __name__ == "__main__":
         elif 'restart' == sys.argv[1]:
             dc.restart()
             print 'restart'
-        elif 'foreground' == sys.argv[1]:
+        elif 'foreground' == sys.argv[1]: #called for debugging purposes. 
             dc.run()
         else:
             print "Unknown command"
