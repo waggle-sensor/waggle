@@ -21,6 +21,9 @@ boolean boot_primary()
 	// Initialize/start internal components
 	init_primary();
 
+	// Check that SysMon is drawing an expected amount of power
+	check_power_self();
+
 	// Check that the SysMon's environment is suitable
 	check_environ_self();
 
@@ -40,13 +43,13 @@ boolean boot_primary()
 	// Check that the node controller is alive (sending a "heartbeat")
 	check_heartbeat_nc();
 
+	// Request time from node controller
+	get_time_nc();
+
 	// Request guest node info from node controller.  No info received?
 	if(!get_gn_info())
 		// Skip the rest of the boot sequence
 		return false;
-
-	// Request time from node controller
-	get_time_nc();
 
 	// Is the ethernet switch disabled?
 	if(EEPROM.read(EEPROM_ES_DISABLED))
@@ -78,14 +81,39 @@ boolean boot_primary()
 */
 void init_primary()
 {
+	// Enable interrupts
+	interrupts();
+
+	// Start watchdog with 2 second timeout
+	wdt_enable(WDTO_2S);
+
+	// Enable Timer1 overflow interrupt
+	TIMSK1 |= _BV(TOIE1);
+	// Start Timer1 with prescaler of clk/256 (timeout of approx. 1 second)
+	TCCR1B |= _BV(CS12);
+
 	// Set LED pin to output so we can turn on the LED
   pinMode(PIN_LED, OUTPUT);
 
 	// Join I2C bus as master
 	Wire.begin();
 
-	// Enable serial comms @ 57600 bps, 8N1
-  Serial.begin(57600);
+	// Enable serial comms
+  Serial.begin(UART_BAUD);
+}
+
+
+
+//---------- C H E C K _ P O W E R _ S E L F ----------------------------------
+/*
+   Reads its own current sensor.  If too much power is being drawn, we shut
+   ourselves down.
+
+   :rtype: none
+*/
+void check_power_self()
+{
+
 }
 
 
