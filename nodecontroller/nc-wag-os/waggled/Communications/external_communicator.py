@@ -5,7 +5,7 @@ from multiprocessing import Process, Queue, Value
 import sys
 sys.path.append('../../../../devtools/protocol_common/')
 from protocol.PacketHandler import *
-sys.path.append('..')
+#sys.path.append('..')
 from device_dict import DEVICE_DICT
 
 """ This is the communication channel between the cloud and the DC. It consists of a pika client process for RabbitMQ to push and pull messages to and from the cloud and push and pull client processes connected to the DC. """
@@ -111,11 +111,11 @@ def callback(ch, method, properties, body):
                 
             
         
-class client_pull(Process):
+class external_client_pull(Process):
     """ A client process that connects to the data cache and pulls outgoing messages. Sends a pull request in the format 'o '"""
     
     def run(self):
-        print 'Client pull started...'
+        print 'External client pull started...'
         comm = external_communicator()
         while True:
             try:
@@ -143,25 +143,25 @@ class client_pull(Process):
                                     #time.sleep(100)
                                     #print 'Client pull awake.'
                         else:
-                            print 'Client pull unable to connect to the data cache... path does not exist!'
+                            print 'External client pull unable to connect to the data cache... path does not exist!'
                     except:
-                        print 'Client pull disconnected from data cache. Waiting and trying again.'
+                        print 'External client pull disconnected from data cache. Waiting and trying again.'
                         client_sock.close()
                         time.sleep(5)
                 else:
-                    print 'Client pull...cloud is not connected. Waiting and trying again.'
+                    print 'External client pull...cloud is not connected. Waiting and trying again.'
                     time.sleep(5)
             except KeyboardInterrupt, k:
-                    print "Shutting down."
+                    print "External client pull shutting down."
                     break
         client_sock.close()
         
         
-class client_push(Process):
+class external_client_push(Process):
     """ A client process that connects to the data cache and pushes incoming messages. """
     
     def run(self):
-        print 'Client push started...'
+        print 'External client push started...'
         comm = external_communicator()
         
             #TODO clean up if possible
@@ -195,7 +195,7 @@ class client_push(Process):
                         try: 
                             dev_loc = DEVICE_DICT[str(dev)] 
                         except: 
-                            print 'Error: Unknown recipient ID. Message will not be put in data cache.'
+                            print 'Error: External client push- unknown recipient ID. Message will not be put in data cache.'
                             break
                         msg_p = flags[1]
                         #adding flags to msg in correct format
@@ -205,42 +205,43 @@ class client_push(Process):
                         client_sock.send(msg) #sends msg
                         client_sock.close()
                     except:
-                        print "Not a valid message. Will not be put into the DC"
+                        print "External client push-Not a valid message. Will not be put into the DC"
                         client_sock.close() 
                 else:
-                    print "Unable to connect to Data Cache."
+                    print "External client push-Unable to connect to Data Cache."
             except KeyboardInterrupt, k:
-                print "Shutting down."
+                print "External client push shutting down."
                 break
         client_sock.close()
         
         print "Done."
         
+       
+#uncomment for testing
+#if __name__ == "__main__":
+    #try:
+        ##starts the pull server
+        #pika_pull = pika_pull()
+        #pika_pull.start()
         
-if __name__ == "__main__":
-    try:
-        #starts the pull server
-        pika_pull = pika_pull()
-        pika_pull.start()
+        ##starts the push server 
+        #pika_push = pika_push()
+        #pika_push.start()
         
-        #starts the push server 
-        pika_push = pika_push()
-        pika_push.start()
+        ##starts the push client
+        #push_client = external_client_push()
+        #push_client.start()
         
-        #starts the push client
-        push_client = client_push()
-        push_client.start()
+        ##starts the pull client
+        #pull_client = external_client_pull()
+        #pull_client.start()
+        #while True:
+            #pass
         
-        #starts the pull client
-        pull_client = client_pull()
-        pull_client.start()
-        while True:
-            pass
-        
-    except KeyboardInterrupt, k:
-        pika_pull.terminate()
-        pika_push.terminate()
-        push_client.terminate()
-        pull_client.terminate()
-        print 'Done.'
+    #except KeyboardInterrupt, k:
+        #pika_pull.terminate()
+        #pika_push.terminate()
+        #push_client.terminate()
+        #pull_client.terminate()
+        #print 'Done.'
         

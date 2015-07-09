@@ -35,7 +35,7 @@ def receive():
                     except:
                         print 'Unpack unsuccessful.'
                 else:
-                    print 'Message received for GN: ', msg
+                    #print 'Message received for NC: ', msg
                     s.close() #closes each time a message is received.
                     #time.sleep(5)
                     

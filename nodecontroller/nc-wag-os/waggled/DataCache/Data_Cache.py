@@ -318,13 +318,14 @@ def pull_server(incoming_available_queues, outgoing_available_queues, msg_counte
     server_sock.close()
     os.remove('/tmp/Data_Cache_pull_server')
     
-    
+#uncomment for testing    
         
 if __name__ == "__main__":
     dc = Data_Cache('/tmp/waggle.d/Data_Cache.pid')
     if len(sys.argv) == 2:
         if 'start' == sys.argv[1]:
-            dc.start()
+            #dc.start()
+            dc.run()
             print 'starting.'
         elif 'stop' == sys.argv[1]:
             dc.stop()

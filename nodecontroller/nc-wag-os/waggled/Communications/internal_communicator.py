@@ -5,7 +5,7 @@ from multiprocessing import Process, Queue
 import sys
 sys.path.append('../../../../devtools/protocol_common/')
 from protocol.PacketHandler import *
-sys.path.append('..')
+#sys.path.append('..')
 from device_dict import DEVICE_DICT
     
 with open('/etc/waggle/hostname','r') as file_:
@@ -24,9 +24,9 @@ class internal_communicator(object):
     incoming_request = Queue() #stores the unique ID of GNs currently connected
     incoming_msg = [Queue(), Queue(), Queue(), Queue(), Queue()] #stores incoming msgs #TODO will likely need to make a separate queue for each GN
     
-class client_push(Process):
+class internal_client_push(Process):
     """ A client process that connects to the data cache and pushes outgoing messages. """
-    print 'Client push started...'
+    print 'Internal client push started...'
     
     def run(self):
         comm = internal_communicator()
@@ -47,13 +47,13 @@ class client_push(Process):
                             #time.sleep(100)
                             #print 'Client push awake.'
                         except:
-                            print 'Unable to connect to DC... connection likely refused.'
+                            print 'Internal client push nable to connect to DC... connection likely refused.'
                             time.sleep(5)
                             client_sock.close()
                         
                     else: 
                         time.sleep(5)
-                        print 'Unable to connect to DC...'
+                        print 'Internal client push unable to connect to DC...'
                 else: 
                     time.sleep(1) #else, wait until messages are in queue
             except KeyboardInterrupt, k:
@@ -61,12 +61,12 @@ class client_push(Process):
                     break
         client_sock.close()
 
-class client_pull(Process):
+class internal_client_pull(Process):
     """ A client process that connects to the data cache and pulls incoming messages out. Sends a request in the format 'i,dev' and recieves the message"""
     
     def run(self):
         comm = internal_communicator()
-        print 'Client pull started...'
+        print 'Internal client pull started...'
         
         while True:
             while comm.incoming_request.empty(): #sleeps until a GN initiates a pull request
@@ -99,14 +99,14 @@ class client_pull(Process):
                             
                                     
                     except:
-                        print 'Client pull unable to connect to DC... connection likely refused.'
+                        print 'Internal client pull unable to connect to DC... connection likely refused.'
                         client_sock.close()
                         time.sleep(5)
                 else:
-                    print "Client pull unable to connect to DC."
+                    print "Internal client pull unable to connect to DC."
                     time.sleep(1)
             except KeyboardInterrupt, k:
-                print "Shutting down."
+                print "Internal client pull shutting down."
                 break
         client_sock.close()
         
@@ -121,7 +121,7 @@ class push_server(Process):
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.bind((HOST,PORT))
         server.listen(5) #supports up to 5 threads, one for each GN
-        print 'Push server process started...'
+        print 'Internal push server process started...'
         
         while True:
             conn, addr = server.accept()
@@ -143,7 +143,7 @@ class push_server(Process):
                                 try: 
                                     dev_loc = DEVICE_DICT[str(dev)] 
                                 except: 
-                                    print 'Error: Unknown sender ID. Message will not be put in data cache.'
+                                    print 'Error: Internal push server unknown sender ID. Message will not be put in data cache.'
                                     break
                                 #adds buffer location indicators
                                 data = (str(msg_p) + '|') + data
@@ -151,10 +151,10 @@ class push_server(Process):
                                 data = 'o,' + data #indicates that it is an outgoing message
                                 #print 'Push server pushing msg into DC: ', data
                                 comm.DC_push.put(data)
-                            elif dev == int(HOSTNAME): #msg intended for NC
+                            elif dev == int(HOSTNAME): #msg intended for NC sent by GN
                                 try:
                                     msg = unpack(msg)
-                                    print 'Message recieved for NC: ', msg[1] #just prints the message to the screen if the recipient is the NC #TODO handle messages being sent to NC 
+                                    print 'Message recieved for NC: ', msg[1] #just prints the message to the screen if the recipient is the NC #TODO handle messages being sent to NC from GN
                                 except:
                                     print 'Unpack unsuccessful.'
                             else: 
@@ -162,7 +162,7 @@ class push_server(Process):
                         except:
                             print "Not a valid message."
                 except KeyboardInterrupt, k:
-                    print "Shutting down."
+                    print "Internal push server shutting down."
                     break
         server.close()
             
@@ -176,7 +176,7 @@ class pull_server(Process):
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.bind((HOST,PORT))
         server.listen(5) #supports up to 5 threads, one for each GN
-        print 'Pull server process started...'
+        print 'Internal pull server process started...'
         
         while True:
             client_sock, addr = server.accept()
@@ -191,44 +191,44 @@ class pull_server(Process):
                         try:
                             data = DEVICE_DICT[data] #gets the device queue location from dictionary
                         except:
-                            print 'Error...device not in dictionary.'
+                            print 'Error...Internal pull server device not in dictionary.'
                         comm.incoming_request.put(str(data)) #Unique ID goes into incoming requests queue. These get pulled out by the pull_client as pull requests
                         while comm.incoming_msg[data-1].empty():#TODO each GN should have a queue
                             time.sleep(1) #sleeps then tries again
                         msg = comm.incoming_msg[data-1].get() #returns incoming messages. Will return 'False' if no messages are available.
                         client_sock.sendall(msg) #sends the msg to the GN #TODO can probably to a try here with an except that puts the message back into the DC
                 except KeyboardInterrupt, k:
-                    print "Shutting down."
+                    print "Internal pull server shutting down."
                     server.close()
                     break
         server.close()
     
-
-if __name__ == "__main__":
-    try:
-        #starts the pull server
-        pull_serv = pull_server()
-        pull_serv.start()
+#uncomment for testing
+#if __name__ == "__main__":
+    #try:
+        ##starts the pull server
+        #pull_serv = pull_server()
+        #pull_serv.start()
         
-        #starts the push server 
-        push_serv = push_server()
-        push_serv.start()
+        ##starts the push server 
+        #push_serv = push_server()
+        #push_serv.start()
         
-        #starts the push client
-        push_client = client_push()
-        push_client.start()
+        ##starts the push client
+        #push_client = internal_client_push()
+        #push_client.start()
         
-        #starts the pull client
-        pull_client = client_pull()
-        pull_client.start()
-        while True:
-            pass
+        ##starts the pull client
+        #pull_client = internal_client_pull()
+        #pull_client.start()
+        #while True:
+            #pass
         
-    except KeyboardInterrupt, k:
-        pull_serv.terminate()
-        push_serv.terminate()
-        push_client.terminate()
-        pull_client.terminate()
-        print 'Done.'
+    #except KeyboardInterrupt, k:
+        #pull_serv.terminate()
+        #push_serv.terminate()
+        #push_client.terminate()
+        #pull_client.terminate()
+        #print 'Done.'
     
                 
