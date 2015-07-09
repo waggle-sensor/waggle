@@ -29,13 +29,13 @@ def receive():
                 if msg != 'False':
                     try:
                         msg = unpack(msg)
-                        print 'Message packet received for GN: ', msg[1] 
+                        print 'Message packet received for NC: ', msg[1] 
                         s.close() #closes each time a message is received. #TODO might not need to close the socket each time
                         #print 'Connection closed...'
                     except:
                         print 'Unpack unsuccessful.'
                 else:
-                    print 'Message received for GN: ', msg
+                    #print 'Message received for NC: ', msg
                     s.close() #closes each time a message is received.
                     #time.sleep(5)
                     

@@ -1,4 +1,5 @@
 #!/bin/bash
+export $WAGGLE=.
 dpkg -i server/packages_o/*.deb
 
 mkdir /etc/waggle/
