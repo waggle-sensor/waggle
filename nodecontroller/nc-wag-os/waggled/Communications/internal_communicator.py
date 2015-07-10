@@ -33,11 +33,13 @@ class internal_client_push(Process):
         while True:
             try:
                 if not comm.DC_push.empty(): #if the queue is not empty, connect to DC and send msg
-                    if os.path.exists('/tmp/Data_Cache_push_server'):
+                    #if os.path.exists('/tmp/Data_Cache_push_server'):
+                    if os.path.exists('/tmp/Data_Cache_server'):
                         client_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
                         try:
-                            client_sock.connect('/tmp/Data_Cache_push_server')
-                            #print "client_push connected to data cache... "
+                            #client_sock.connect('/tmp/Data_Cache_push_server')
+                            client_sock.connect('/tmp/Data_Cache_server')
+                            print "client_push connected to data cache... "
                             data = comm.DC_push.get() #theoretically pushes messages from the GN into a queue
                             #print "sending: " , data
                             client_sock.sendall(data)
@@ -47,7 +49,7 @@ class internal_client_push(Process):
                             #time.sleep(100)
                             #print 'Client push awake.'
                         except:
-                            print 'Internal client push nable to connect to DC... connection likely refused.'
+                            print 'Internal client push unable to connect to DC... connection likely refused.'
                             time.sleep(5)
                             client_sock.close()
                         
@@ -75,13 +77,16 @@ class internal_client_pull(Process):
                 #time.sleep(100)
                 #print 'Client pull awake.'
             try: 
-                if os.path.exists('/tmp/Data_Cache_pull_server'):
+                #if os.path.exists('/tmp/Data_Cache_pull_server'):
+                if os.path.exists('/tmp/Data_Cache_server'):
                     client_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-                    #print "client_pull connected to data cache... "
+                    print "client_pull connected to data cache... "
                     try:
-                        client_sock.connect('/tmp/Data_Cache_pull_server')#opens socket when there is an incoming pull request
+                        #client_sock.connect('/tmp/Data_Cache_pull_server')#opens socket when there is an incoming pull request
+                        client_sock.connect('/tmp/Data_Cache_server')#opens socket when there is an incoming pull request
                         dev = comm.incoming_request.get() #gets the dev ID that is initiating the pull request
-                        request = 'i, ' + dev #puts the request in the correct format for the DC
+                        request = dev + '|' #puts the request in the correct format for the DC
+                        print 'Internal client pull sending request: ', request
                         client_sock.send(request)
                         try:
                             msg = client_sock.recv(4028) #arbitrary, can go in config file
@@ -132,35 +137,37 @@ class push_server(Process):
                     if not data:
                         break #breaks the loop when the client socket closes
                     else:
-                        try:
-                            header = get_header(data)
-                            if header['r_uniqid'] == 0: #TODO assuming the cloud ID is 0. May need to change later
-                                dev, msg_p, order = header['flags'] #unpacks the tuple containing the flags #TODO these flags do not make sense anymore and probably need to change
-                                if order == False: #lifo is set to False
-                                    msg_p = 5 #sets msg_p to highest priority, which is the lifo queue
-                                #data = (str(order) + '|') + data #TODO keeping in here just in case the highest priority doesn't suffice as a lifo queue
-                                dev = header['s_uniqid']
-                                try: 
-                                    dev_loc = DEVICE_DICT[str(dev)] 
-                                except: 
-                                    print 'Error: Internal push server unknown sender ID. Message will not be put in data cache.'
-                                    break
-                                #adds buffer location indicators
-                                data = (str(msg_p) + '|') + data
-                                data = (str(dev_loc) +',') + data
-                                data = 'o,' + data #indicates that it is an outgoing message
-                                #print 'Push server pushing msg into DC: ', data
-                                comm.DC_push.put(data)
-                            elif dev == int(HOSTNAME): #msg intended for NC sent by GN
-                                try:
-                                    msg = unpack(msg)
-                                    print 'Message recieved for NC: ', msg[1] #just prints the message to the screen if the recipient is the NC #TODO handle messages being sent to NC from GN
-                                except:
-                                    print 'Unpack unsuccessful.'
-                            else: 
-                                    print "Unknown recipient"
-                        except:
-                            print "Not a valid message."
+                        print 'Push server pushing msg into DC: ', data
+                        comm.DC_push.put(data)
+                        #try:
+                            #header = get_header(data)
+                            #if header['r_uniqid'] == 0: #TODO assuming the cloud ID is 0. May need to change later
+                                #dev, msg_p, order = header['flags'] #unpacks the tuple containing the flags #TODO these flags do not make sense anymore and probably need to change
+                                #if order == False: #lifo is set to False
+                                    #msg_p = 5 #sets msg_p to highest priority, which is the lifo queue
+                                ##data = (str(order) + '|') + data #TODO keeping in here just in case the highest priority doesn't suffice as a lifo queue
+                                #dev = header['s_uniqid']
+                                #try: 
+                                    #dev_loc = DEVICE_DICT[str(dev)] 
+                                #except: 
+                                    #print 'Error: Internal push server unknown sender ID. Message will not be put in data cache.'
+                                    #break
+                                ##adds buffer location indicators
+                                #data = (str(msg_p) + '|') + data
+                                #data = (str(dev_loc) +',') + data
+                                #data = 'o,' + data #indicates that it is an outgoing message
+                                ##print 'Push server pushing msg into DC: ', data
+                                #comm.DC_push.put(data)
+                            #elif dev == int(HOSTNAME): #msg intended for NC sent by GN
+                                #try:
+                                    #msg = unpack(msg)
+                                    #print 'Message recieved for NC: ', msg[1] #just prints the message to the screen if the recipient is the NC #TODO handle messages being sent to NC from GN
+                                #except:
+                                    #print 'Unpack unsuccessful.'
+                            #else: 
+                                    #print "Unknown recipient"
+                        #except:
+                            #print "Not a valid message."
                 except KeyboardInterrupt, k:
                     print "Internal push server shutting down."
                     break
@@ -204,31 +211,31 @@ class pull_server(Process):
         server.close()
     
 #uncomment for testing
-#if __name__ == "__main__":
-    #try:
-        ##starts the pull server
-        #pull_serv = pull_server()
-        #pull_serv.start()
+if __name__ == "__main__":
+    try:
+        #starts the pull server
+        pull_serv = pull_server()
+        pull_serv.start()
         
-        ##starts the push server 
-        #push_serv = push_server()
-        #push_serv.start()
+        #starts the push server 
+        push_serv = push_server()
+        push_serv.start()
         
-        ##starts the push client
-        #push_client = internal_client_push()
-        #push_client.start()
+        #starts the push client
+        push_client = internal_client_push()
+        push_client.start()
         
-        ##starts the pull client
-        #pull_client = internal_client_pull()
-        #pull_client.start()
-        #while True:
-            #pass
+        #starts the pull client
+        pull_client = internal_client_pull()
+        pull_client.start()
+        while True:
+            pass
         
-    #except KeyboardInterrupt, k:
-        #pull_serv.terminate()
-        #push_serv.terminate()
-        #push_client.terminate()
-        #pull_client.terminate()
-        #print 'Done.'
+    except KeyboardInterrupt, k:
+        pull_serv.terminate()
+        push_serv.terminate()
+        push_client.terminate()
+        pull_client.terminate()
+        print 'Done.'
     
                 

@@ -32,6 +32,7 @@ class pika_push(Process):
     def run(self):
         comm = external_communicator()
         creds = pika.PlainCredentials('guest1', 'guest1')
+        #params = pika.connection.URLParameters("amqps://guest1:guest1@10.10.10.104:5671/%2F") #SSL
         #params = pika.ConnectionParameters('beehive.wa8.gl',5672, '/', creds) 
         #params = pika.ConnectionParameters('10.10.10.108',5672, '/', creds) 
         #params = pika.ConnectionParameters('10.10.10.143',5672, '/', creds) 
@@ -73,6 +74,7 @@ class pika_pull(Process):
         print 'Pika pull started...'
         comm = external_communicator()
         creds = pika.PlainCredentials('guest1', 'guest1')
+        #params = pika.connection.URLParameters("amqps://guest1:guest1@10.10.10.104:5671/%2F") #SSL
         #params = pika.ConnectionParameters('beehive.wa8.gl',5672, '/', creds) #beehive.wa8.gl
         #params = pika.ConnectionParameters('10.10.10.108',5672, '/', creds) #beehive.wa8.gl
         #params = pika.ConnectionParameters('10.10.10.143',5672, '/', creds)
@@ -121,11 +123,13 @@ class external_client_pull(Process):
             try:
                 if comm.cloud_connected.value == 1: #checks if the cloud is connected
                     try:
-                        if os.path.exists('/tmp/Data_Cache_pull_server'):
+                        #if os.path.exists('/tmp/Data_Cache_pull_server'):
+                        if os.path.exists('/tmp/Data_Cache_server'):
                             client_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-                            client_sock.connect('/tmp/Data_Cache_pull_server') #connects to server
+                            #client_sock.connect('/tmp/Data_Cache_pull_server') #connects to server
+                            client_sock.connect('/tmp/Data_Cache_server') #connects to server
                             #print "Client_pull connected to data cache... "
-                            data = 'o  ' #sends the pull request in the correct format
+                            data = 'o|' #sends the pull request in the correct format
                             client_sock.send(data)
                             msg = client_sock.recv(4028) #can be changed 
                             if not msg:
@@ -172,41 +176,45 @@ class external_client_push(Process):
                 #time.sleep(100)
                 #print 'Client push awake.'
             try: 
-                if os.path.exists('/tmp/Data_Cache_push_server'):
+                #if os.path.exists('/tmp/Data_Cache_push_server'):
+                if os.path.exists('/tmp/Data_Cache_server'):
                     client_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-                    client_sock.connect('/tmp/Data_Cache_push_server') #opens socket when a message is in the queue
+                    #client_sock.connect('/tmp/Data_Cache_push_server') #opens socket when a message is in the queue
+                    client_sock.connect('/tmp/Data_Cache_server') #opens socket when a message is in the queue
                     #print "Client_push connected to data cache... "
                     msg = comm.incoming.get() #gets the incoming message from the queue
-                    try:
-                        header = get_header(msg)
-                        
-                        flags = header['flags'] #extracts priorities
-                        dev = header['r_uniqid'] #gets the recipient ID
-                        
-                        #if dev == int(HOSTNAME): #msg intended for NC
-                            #try:
-                                #msg = unpack(msg)
-                                #client_sock.close() 
-                                #print 'Message recieved from cloud for NC: ', msg[1] #just prints the message to the screen if the recipient is the NC #TODO handle messages being sent to NC 
-                            #except:
-                                #print 'Unpack unsuccessful.'
+                    client_sock.send(msg) #sends msg
+                    client_sock.close()
+                        #try:
+                            #header = get_header(msg)
+                            
+                            #flags = header['flags'] #extracts priorities
+                            #dev = header['r_uniqid'] #gets the recipient ID
+                            
+                            ##if dev == int(HOSTNAME): #msg intended for NC
+                                ##try:
+                                    ##msg = unpack(msg)
+                                    ##client_sock.close() 
+                                    ##print 'Message recieved from cloud for NC: ', msg[1] #just prints the message to the screen if the recipient is the NC #TODO handle messages being sent to NC 
+                                ##except:
+                                    ##print 'Unpack unsuccessful.'
+                                ##client_sock.close() 
+                            ##else:
+                            #try: 
+                                #dev_loc = DEVICE_DICT[str(dev)] 
+                            #except: 
+                                #print 'Error: External client push- unknown recipient ID. Message will not be put in data cache.'
+                                #break
+                            #msg_p = flags[1]
+                            ##adding flags to msg in correct format
+                            #msg = (str(msg_p) + '|') + msg #message priority
+                            #msg = (str(dev_loc) + ',') + msg #device location in buffer
+                            #msg = 'i,' + msg #indicates incoming push
+                            #client_sock.send(msg) #sends msg
+                            #client_sock.close()
+                        #except:
+                            #print "External client push-Not a valid message. Will not be put into the DC"
                             #client_sock.close() 
-                        #else:
-                        try: 
-                            dev_loc = DEVICE_DICT[str(dev)] 
-                        except: 
-                            print 'Error: External client push- unknown recipient ID. Message will not be put in data cache.'
-                            break
-                        msg_p = flags[1]
-                        #adding flags to msg in correct format
-                        msg = (str(msg_p) + '|') + msg #message priority
-                        msg = (str(dev_loc) + ',') + msg #device location in buffer
-                        msg = 'i,' + msg #indicates incoming push
-                        client_sock.send(msg) #sends msg
-                        client_sock.close()
-                    except:
-                        print "External client push-Not a valid message. Will not be put into the DC"
-                        client_sock.close() 
                 else:
                     print "External client push-Unable to connect to Data Cache."
             except KeyboardInterrupt, k:
@@ -218,30 +226,30 @@ class external_client_push(Process):
         
        
 #uncomment for testing
-#if __name__ == "__main__":
-    #try:
-        ##starts the pull server
-        #pika_pull = pika_pull()
-        #pika_pull.start()
+if __name__ == "__main__":
+    try:
+        #starts the pull server
+        pika_pull = pika_pull()
+        pika_pull.start()
         
-        ##starts the push server 
-        #pika_push = pika_push()
-        #pika_push.start()
+        #starts the push server 
+        pika_push = pika_push()
+        pika_push.start()
         
-        ##starts the push client
-        #push_client = external_client_push()
-        #push_client.start()
+        #starts the push client
+        push_client = external_client_push()
+        push_client.start()
         
-        ##starts the pull client
-        #pull_client = external_client_pull()
-        #pull_client.start()
-        #while True:
-            #pass
+        #starts the pull client
+        pull_client = external_client_pull()
+        pull_client.start()
+        while True:
+            pass
         
-    #except KeyboardInterrupt, k:
-        #pika_pull.terminate()
-        #pika_push.terminate()
-        #push_client.terminate()
-        #pull_client.terminate()
-        #print 'Done.'
+    except KeyboardInterrupt, k:
+        pika_pull.terminate()
+        pika_push.terminate()
+        push_client.terminate()
+        pull_client.terminate()
+        print 'Done.'
         
