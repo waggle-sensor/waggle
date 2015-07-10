@@ -34,21 +34,34 @@ const byte EEPROM_NC_ENVIRON_TEMP_HIGH = 0x0009;
 // Address of flag for incomplete timer test
 const byte EEPROM_TIMER_TEST_INCOMPLETE = 0x000A;
 
-
 const byte PIN_LED = 13;
+const long UART_BAUD = 57600L;
+const byte CHECK_ENVIRON_COUNT = 60;
+
+
+
+//---------- G L O B A L S ----------------------------------------------------
+volatile byte timer1_interrupt_fired = 0;
 
 
 
 //---------- S E T U P --------------------------------------------------------
 void setup() 
 {  
-  // Make sure everything (internal) is working correctly
-  POST();
+  delay(7000);
 
-  // Boot self, node controller, and ethernet switch.  Boot successful?
-  if(boot_primary())
-    // Boot the guest nodes
-    boot_gn();
+  // Is everything (internal) working correctly?
+  if(POST())
+  {
+    // Boot self, node controller, and ethernet switch.  Boot successful?
+    if(boot_primary())
+      // Boot the guest nodes
+      boot_gn();
+  }
+  // Something non-fatal failed the POST
+  else
+    // Go to partial boot sequence
+    boot_SOS();
 }
 
 
@@ -63,7 +76,8 @@ void loop()
 
 //---------- T I M E R 1 _ O V E R F L O W _ I N T E R R U P T ----------------
 /*
-   Interrupt for Timer1 overflow (used for resetting watchdog).
+   Interrupt for Timer1 overflow.  Resets the watchdog and increments the
+   counter used to tell the MCU when to check the environment.
 
    :rtype: none
 */
@@ -71,4 +85,7 @@ ISR(TIMER1_OVF_vect)
 {
   // Reset watchdog
   wdt_reset();
+
+  // Tell the world that the interrupt fired
+  timer1_interrupt_fired++;
 }
