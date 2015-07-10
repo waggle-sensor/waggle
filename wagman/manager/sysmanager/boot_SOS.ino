@@ -3,6 +3,7 @@ const byte THRESHOLD_NUM_TRIES = 5;
 const byte NO_WATCHDOG = 1;
 const byte NO_TIMER = 2;
 const byte NO_ADC = 3;
+const byte NO_INTERRUPT = 4;
 
 
 
@@ -24,34 +25,23 @@ void boot_SOS()
 	// Initialize/start internal components
 	init_SOS();
 
+	// Check that SysMon is drawing an expected amount of power
+	check_power_self();
+
 	// Check that the SysMon's environment is suitable.
 	// If the check fails, it could be the environment or the I2C
 	check_environ_self();
 
+	// Get datum about number of times SOS boot mode has been tried
+	byte num_tries = EEPROM.read(EEPROM_NUM_SOS_BOOT_TRIES);
+
 	// Has SOS boot been tried too many times?
-	if(EEPROM.read(EEPROM_NUM_SOS_BOOT_TRIES) >= THRESHOLD_NUM_TRIES)
+	if(num_tries >= THRESHOLD_NUM_TRIES)
 		// Something isn't working, so go to sleep
 		sleep();
 
 	// Record that SOS boot mode was attempted
 	EEPROM.update(EEPROM_NUM_SOS_BOOT_TRIES, ++num_tries);
-
-	// What is the cause of the POST failure?
-	switch (EEPROM.read(EEPROM_POST_RESULT)) {
-	    case FAIL_WATCHDOG:
-	      SOS_mode = NO_WATCHDOG;
-	      break;
-      // This may mean that interrupts aren't working (see POST)
-	    case FAIL_TIMER3:
-	      SOS_mode = NO_TIMER;
-	      break;
-	    case FAIL_ADC:
-	    	SOS_mode = NO_ADC;
-	    	break;
-	    // This shouldn't happen, but just in case...
-	    default:
-	      sleep();
-	}
 
 	// ADC ok?
 	if(SOS_mode != NO_ADC)
@@ -90,6 +80,47 @@ void boot_SOS()
 */
 void init_SOS()
 {
+  // What is the cause of the POST failure?
+	switch (EEPROM.read(EEPROM_POST_RESULT)) {
+	    case FAIL_WATCHDOG:
+	      SOS_mode = NO_WATCHDOG;
+	      break;
+	    case FAIL_TIMER1:
+	      SOS_mode = NO_TIMER;
+	      break;
+	    case FAIL_ADC:
+	    	SOS_mode = NO_ADC;
+	    	break;
+	    case FAIL_INTERRUPT:
+	    	SOS_mode = NO_INTERRUPT;
+	    	break;
+	    // This shouldn't happen, but just in case...
+	    default:
+	      sleep();
+	}
+
+	// Watchdog, timer, and interrupts ok?
+	if((SOS_mode != NO_WATCHDOG) && (SOS_mode != NO_TIMER) && (SOS_mode != NO_INTERRUPT))
+		// Enable watchdog with 2 second timeout
+		wdt_enable(WDTO_2S);
+	// Watchdog, timer, or interrupts not ok?
+	else
+		// This is here as notice that proceeding without the watchdog introduces
+		// the risk of SysMon hanging forever.
+		asm("nop");
+
+	// Timer ok?
+	if(SOS_mode != NO_TIMER)
+	{
+		// Interrupts ok?
+		if(SOS_mode != NO_INTERRUPT)
+			// Enable Timer1 overflow interrupt
+			TIMSK1 |= _BV(TOIE1);
+
+		// Start Timer1 with prescaler of clk/256 (timeout of approx. 1 second)
+		TCCR1B |= _BV(CS12);
+	}
+
 	// Set LED pin to output so we can turn on the LED
   pinMode(PIN_LED, OUTPUT);
 
@@ -97,15 +128,9 @@ void init_SOS()
 	// We're hoping I2C works, because we don't currently have a way to test it
 	Wire.begin();
 
-	// Enable serial comms @ 57600 bps, 8N1
+	// Enable serial comms.
 	// We're hoping UART works, because we don't currently have a way to test it
-  Serial.begin(57600);
-
-  /*
-  
-  NOTE: check status of watchdog and initialize accordingly
-
-  */
+  Serial.begin(UART_BAUD);
 }
 
 

@@ -37,7 +37,6 @@ const int ADC_TEST_THRESHOLD = 512;
 //---------- G L O B A L S ----------------------------------------------------
 boolean _SOS_boot_mode = false;
 boolean _watchdog_good = false;
-volatile boolean _external_interrupt = false;
 
 
 
@@ -64,6 +63,9 @@ boolean POST()
   // Disable watchdog so it doesn't reset the chip before we're ready
   wdt_disable();
 
+  // Disable interrupts so nothing unexpected happens
+  noInterrupts();
+
   // Find reason for reset
   byte reason = find_reset_reason();
 
@@ -88,11 +90,11 @@ boolean POST()
 		//test_failure(FAIL_FLASH, FATAL_FLASH);
 
 	// Watchdog test failed?
-	// if(!watchdog_test(reason))
-	// 	test_failure(FAIL_WATCHDOG, FATAL_WATCHDOG);
- //  else
- //    // Mark watchdog as functional (used to test the timer)
- //    _watchdog_good = true;
+	if(!watchdog_test(reason));
+		test_failure(FAIL_WATCHDOG, FATAL_WATCHDOG);
+  else
+    // Mark watchdog as functional (used to test the timer)
+    _watchdog_good = true;
 
   // ADC test failed?
   if(!ADC_test())
@@ -106,17 +108,7 @@ boolean POST()
   if(!interrupt_test())
     test_failure(FAIL_INTERRUPT, FATAL_INTERRUPT);
 
-  // Did anything non-fatal fail?
-  if(_SOS_boot_mode)
-  {
-    Serial.println("SOS");
-    delay(10);
-    // Exit test with failure
-    return false;
-  }
-
-  // Exit test with success
-  return true;
+  
 }
 
 
@@ -593,9 +585,6 @@ __attribute__((optimize(0))) boolean ADC_test()
 */
 __attribute__((optimize(0))) boolean timer1_test()
 {
-  // Disable interrupts (since we're fiddling with interrupt controls)
-  noInterrupts();
-
   /* These comments apply to all register tests in this function */
   // Load first test value
   TCCR1A = 0x55;
@@ -665,10 +654,10 @@ __attribute__((optimize(0))) boolean timer1_test()
     wdt_enable(WDTO_60MS);
 
     // Start timer (with prescaler of clk/8)
-    TCCR1B = (1 << CS11);
+    TCCR1B |= (1 << CS11);
 
     // Wait for counter to overflow
-    while(! (TIFR1 & _BV(TOV1)));
+    while(! (TIFR1 & _BV(TOV1));
 
     // Disable watchdog
     wdt_disable();
@@ -683,9 +672,6 @@ __attribute__((optimize(0))) boolean timer1_test()
     // Mark timer test as complete
     EEPROM.update(EEPROM_TIMER_TEST_INCOMPLETE, 0);
   }
-
-  // Enable interrupts
-  interrupts();
 
   // Exit test with success
   return true;
@@ -709,43 +695,7 @@ __attribute__((optimize(0))) boolean timer1_test()
 */
 __attribute__((optimize(0))) boolean interrupt_test()
 {
-  // Set pin INT0 to output (to enable software control of interrupt)
-  pinMode(INT0, OUTPUT);
 
-  // Enable INT0 interrupt.  Without setting any bits in EICRA, the default
-  // is for an interrupt to trigger when the pin is low.
-  EIMSK |= _BV(INT0);
-
-  // Trigger the interrupt
-  digitalWrite(INT0, LOW);
-
-  // Give the pin time to change state (if necessary)
-  delay(1);
-
-  // Did the interrupt fire?
-  if(_external_interrupt)
-    // Exit with success
-    return true;
-  else
-    // Exit with failure
-    return false;
-}
-
-
-
-//---------- E X T E R N A L _ I N T 0 _ I N T E R R U P T --------------------
-/*
-   Interrupt for external interrupt INT0.
-
-   :rtype: none
-*/
-ISR(INT0_vect)
-{
-  // Disable INT0 interrupt
-  EIMSK = 0;
-
-  // Set flag to indicate that the ISR executed
-  _external_interrupt = true;
 }
 
 
@@ -792,7 +742,7 @@ byte find_reset_reason()
 void test_failure(byte reason, boolean fatal)
 {
 	// Save POST failure to EEPROM
-	EEPROM.update(EEPROM_POST_RESULT, reason);
+	EEPROM.update(EEPROM_POST_RESULT, (1 << reason));
 
 	// Allow time for EEPROM to finish writing
 	delay(5);
