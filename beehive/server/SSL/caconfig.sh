@@ -1,10 +1,10 @@
 #!/bin/bash
 oldDir=.
 
-cd $WAGGLE
+cd DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd ) # Now in /SSL/
 
 # Begin constructing the Certificate Authority
-cd /beehive/server/SSL/waggleca
+cd waggleca
 
 # Make appropriate folders
 mkdir certs private
@@ -24,9 +24,10 @@ openssl x509 -in cacert.pem -out cacert.cer -outform DER
 cd .. # in SSL/
 
 mkdir server
+chmod 744 server
 cd server
 
-openssl -genrsa -out key.pem 2048
+openssl genrsa -out key.pem 2048
 
 openssl req -new -key key.pem -out req.pem -outform PEM \
 	-subj /CN=$(hostname)/O=server/ -nodes
@@ -43,9 +44,10 @@ cd ..
 # Move files to correct places
 mv rabbit.config /etc/rabbitmq/
 
-mkdir /usr/lib/waggle
+mkdir /usr/lib/waggle/
 
 # in SSL/
-mv . /user/lib/waggle
+cd ..
+mv SSL /usr/lib/waggle/
 
 cd $oldDir
