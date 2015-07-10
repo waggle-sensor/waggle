@@ -2,9 +2,9 @@
 
 oldDir=.
 
-cd $WAGGLE/beehive/server/SSL
+cd DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 rm -r server
 cd waggleca
 rm -r certs private
-rm
+rm serial* index.* cacert*

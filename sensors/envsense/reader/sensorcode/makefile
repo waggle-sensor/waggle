@@ -1,4 +1,4 @@
-ARD_HOME = /home/max/repos/github/waggle//devtools/arduino/compilers/arduino-1.6.5-linux/arduino_64
+ARD_HOME = /devtools/arduino/compilers/arduino-1.6.5-linux/arduino_64
 TARGET = sensorcode
 PACKAGE = arduino
 ARCH = avr
