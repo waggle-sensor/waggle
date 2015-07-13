@@ -1,0 +1,12 @@
+/.
+/usr
+/usr/lib
+/usr/lib/python2.7
+/usr/lib/python2.7/dist-packages
+/usr/lib/python2.7/dist-packages/six-1.5.2.egg-info
+/usr/lib/python2.7/dist-packages/six.py
+/usr/share
+/usr/share/doc
+/usr/share/doc/python-six
+/usr/share/doc/python-six/copyright
+/usr/share/doc/python-six/changelog.Debian.gz

@@ -1,0 +1,12 @@
+/.
+/lib
+/lib/arm-linux-gnueabihf
+/lib/arm-linux-gnueabihf/libprocps.so.3.0.0
+/usr
+/usr/share
+/usr/share/doc
+/usr/share/doc/libprocps3
+/usr/share/doc/libprocps3/changelog.Debian.gz
+/usr/share/doc/libprocps3/copyright
+/usr/share/doc/libprocps3/NEWS.Debian.gz
+/lib/arm-linux-gnueabihf/libprocps.so.3

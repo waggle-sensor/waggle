@@ -1,0 +1,6 @@
+# can contain sensitive information (eq. passwords):
+monit: non-standard-file-perm etc/monit/monitrc 0600 != 0644
+# permissions on eventqueue dir:
+monit: non-standard-dir-perm var/lib/monit/events/ 0700 != 0755
+# XXX, check this:
+monit: spelling-error-in-binary usr/bin/monit dependant dependent

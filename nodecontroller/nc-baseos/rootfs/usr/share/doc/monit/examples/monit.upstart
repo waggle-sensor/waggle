@@ -1,0 +1,33 @@
+# This is an upstart script to keep monit running.
+# To install, disable the old way of doing things:
+#
+#   /etc/init.d/monit stop && update-rc.d -f monit remove
+#
+# then put this script here:
+#
+#   /etc/init/monit.conf
+#
+# and reload upstart configuration:
+#
+#   initctl reload-configuration
+#
+# You can manually start and stop monit like this:
+# 
+# start monit
+# stop monit
+#
+
+description "Monit service manager"
+
+limit core unlimited unlimited
+
+start on runlevel [2345]
+stop on runlevel [!2345]
+
+expect daemon
+respawn
+
+exec /usr/bin/monit -c /etc/monitrc
+
+pre-stop exec /usr/bin/monit -c /etc/monitrc quit
+

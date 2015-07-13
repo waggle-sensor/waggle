@@ -58,11 +58,11 @@ with open('/etc/waggle/hostname','r') as file_:
 
 def pack(header_data, message_data=""):
     """
-        Takes header and message information and returns packets representing that data.
+        Takes header and message information and yields packets representing that data.
 
         :param dictionary header_data: A dictionary containing the header data
         :param string/FileObject message_data: The data to be packed into a Packet
-        :rtype: string
+        :yields: string
         :raises KeyError: A KeyError will be raised if the header_data dictionary is not properly formatted
     """
     global SEQUENCE
@@ -111,11 +111,35 @@ def pack(header_data, message_data=""):
         SEQUENCE = (SEQUENCE + 1) % 16777216
         msg_crc32 = _bin_pack(crc32fun(msg),FOOTER_LENGTH)
 
-        return header + msg + msg_crc32
+        yield header + msg + msg_crc32
 
     #Multi-packet
     else:
-        raise Exception("Packet breaking not yet implemented")
+        length = message_data.tell()
+        message_data.seek(0)
+        packetNum = 0
+
+        # Create smaller packets 1024 bytes at a time, also attach packet number
+        while length > 1024:
+            try:
+                header = pack_header(auto_header)
+            except KeyError as e: 
+                raise
+            msg = _bin_pack(packetNum,4) + message_data.read(1024)
+            SEQUENCE = (SEQUENCE + 1) % 16777216
+            packetNum += 1
+            msg_crc32 = _bin_pack(crc32fun(msg),FOOTER_LENGTH)
+
+            yield header + msg + msg_crc32
+            length -= 1024
+
+        # Finish sending the message
+        if length > 0:
+            header = pack_header(auto_header)
+            msg = _bin_pack(packetNum,4) + message_data.read(1024)
+            SEQUENCE = (SEQUENCE + 1) % 16777216
+            msg_crc32 = _bin_pack(crc32fun(msg),FOOTER_LENGTH)
+            yield header + msg + msg_crc32
 
 def unpack(packet):
     """
@@ -214,6 +238,7 @@ def _unpack_header(packed_header):
         "snd_seq"      : _bin_unpack(header_IO.read(HEADER_BYTELENGTHS["snd_seq"])),             # Load send sequence number
         "resp_seq"     : _bin_unpack(header_IO.read(HEADER_BYTELENGTHS["resp_seq"]))             # Load recieve sequence number
     }
+
     header_IO.close()
     return header
 

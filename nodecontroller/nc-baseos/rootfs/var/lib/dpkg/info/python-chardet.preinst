@@ -1,0 +1,8 @@
+#!/bin/sh
+# TODO: remove this file after releasing Squeeze
+set -e
+if [ "$1" = upgrade ] && dpkg --compare-versions "$2" lt 1.2-3
+then
+        pycentral pkgremove python-chardet
+fi
+

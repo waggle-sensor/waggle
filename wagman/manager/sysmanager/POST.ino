@@ -1,16 +1,8 @@
-// Adapted from Atmel Application Note AVR998 (c) 2006 Atmel
-
 //---------- C O N S T A N T S ------------------------------------------------
 const int SRAM_START_ADDR = 0x0060;
 const int SRAM_START_PAGE2 = 0x0100;
 const int SRAM_SIZE = 2560;
 const int SRAM_END_ADDR = SRAM_START_ADDR + SRAM_SIZE - 1;
-
-const int STACK_SAVE = 0x0250;
-const int STACK_ADDR = 0x0099;
-
-const byte EEPROM_RESET_REASON_ADDR = 0x00;
-const byte EEPROM_POST_RESULT_ADDR = 0x01;
 
 const byte FAIL_GPRF = 1;
 const byte FAIL_STACK = 2;
@@ -18,19 +10,19 @@ const byte FAIL_SREG = 3;
 const byte FAIL_SRAM = 4;
 const byte FAIL_FLASH = 5;
 const byte FAIL_WATCHDOG = 6;
-const byte FAIL_INTERRUPT = 7;
-const byte FAIL_ADC = 8;
-const byte FAIL_TIMER1 = 9;
+const byte FAIL_ADC = 7;
+const byte FAIL_TIMER1 = 8;
+const byte FAIL_INTERRUPT = 9;
 
 const boolean FATAL_GPRF = true;
 const boolean FATAL_STACK = true;
 const boolean FATAL_SREG = true;
 const boolean FATAL_SRAM = true;
 const boolean FATAL_FLASH = true;
-const boolean FATAL_WATCHDOG = true;
-const boolean FATAL_INTERRUPT = false;
+const boolean FATAL_WATCHDOG = false;
 const boolean FATAL_ADC = false;
 const boolean FATAL_TIMER1 = false;
+const boolean FATAL_INTERRUPT = false;
 
 const byte RESET_POWER_ON = 0;
 const byte RESET_EXTERNAL = 1;
@@ -42,74 +34,89 @@ const byte RESET_USB = 5;
 const int ADC_TEST_THRESHOLD = 512;
 
 
-
 //---------- G L O B A L S ----------------------------------------------------
-boolean _SOS_BOOT_MODE = false;
-// Flag to use while waiting for interrupt
-volatile boolean _isr_timer1_overflow = false;
+boolean _SOS_boot_mode = false;
+boolean _watchdog_good = false;
+volatile boolean _external_interrupt = false;
 
 
 
 //---------- P O S T ----------------------------------------------------------
 /*
-   
+   Power on self test.  This subroutine calls the tests to verify correct
+   operation of the MCU.  Nothing external to the MCU is tested here.
 
-   :rtype: none
+   If everything is working correctly, this function will return true.
+   If a fatal failure occurs, the MCU will sleep, thus preventing the rest of
+   the MCU's program from running. If a non-fatal failure occurs, the function
+   will return false.  Failures will (attempt to) be recorded into EEPROM.
+
+   Note: This POST is not perfect.  There is some redundancy and a few
+   assumptions are made, so do not rely solely on this for mission-critical
+   applications.
+
+   Adapted from Atmel Application Note AVR998 (c) 2006 Atmel.
+
+   :rtype: boolean
 */
-void POST() 
+boolean POST() 
 {
-  // Find reason for reset
-  byte reason = find_reset_reason();
-
   // Disable watchdog so it doesn't reset the chip before we're ready
   wdt_disable();
 
-  // Debug
-  delay(8000);
+  // Find reason for reset
+  byte reason = find_reset_reason();
 
   // General Purpose Register File failed?
 	if(!gprf_test())
 		test_failure(FAIL_GPRF, FATAL_GPRF);
 
-  Serial.println("GPRF");
-
 	// Stack pointer failed?
 	if(!stack_pointer_test())
 		test_failure(FAIL_STACK, FATAL_STACK);
-
-  Serial.println("SP");
 
 	// Status register (SREG) test failed?
 	if(!status_register_test())
 		test_failure(FAIL_SREG, FATAL_SREG);
 
-  Serial.println("SREG");
-
 	// SRAM test failed?
 	if(!sram_test())
 		test_failure(FAIL_SRAM, FATAL_SRAM);
-
-  Serial.println("SRAM");
 
 	// Flash test failed?
 	//if(!flash_test())
 		//test_failure(FAIL_FLASH, FATAL_FLASH);
 
 	// Watchdog test failed?
-	// if(!watchdog_test(reason));
+	// if(!watchdog_test(reason))
 	// 	test_failure(FAIL_WATCHDOG, FATAL_WATCHDOG);
+ //  else
+ //    // Mark watchdog as functional (used to test the timer)
+ //    _watchdog_good = true;
 
   // ADC test failed?
   if(!ADC_test())
     test_failure(FAIL_ADC, FATAL_ADC);
 
-  Serial.println("ADC");
-
-  // Timer1 (watchdog reset timer) test failed?
+  // Timer1 test failed?
   if(!timer1_test())
     test_failure(FAIL_TIMER1, FATAL_TIMER1);
 
-  Serial.println("TIMER1");
+  // Interrupt controller test failed?
+  if(!interrupt_test())
+    test_failure(FAIL_INTERRUPT, FATAL_INTERRUPT);
+
+  // Did anything non-fatal fail?
+  if(_SOS_boot_mode)
+  {
+    Serial.println("SOS");
+    delay(10);
+    // Exit test with failure
+    return false;
+  }
+
+  // Exit test with success
+  return true;
 }
 
 
@@ -250,7 +257,13 @@ __attribute__((optimize(0))) boolean gprf_test()
 	);
 	result = true;
 
-	return result;
+  // Is the result TRUE?
+	if(result)
+    // Exit test with success
+    return true;
+  else
+    // Exit test with failure
+    return false;
 }
 
 
@@ -334,7 +347,13 @@ __attribute__((optimize(0))) boolean stack_pointer_test()
 	);
 	result = true;
 
-	return result;
+	// Is the result TRUE?
+  if(result)
+    // Exit test with success
+    return true;
+  else
+    // Exit test with failure
+    return false;
 }
 
 
@@ -415,45 +434,66 @@ __attribute__((optimize(0))) boolean status_register_test()
 */
 __attribute__((optimize(0))) boolean sram_test()
 {
-  // Tell the compiler to put these into registers, since putting them
-  // into memory means they're trying to verify themselves.
-  // register byte *p_val asm("Z");
-  // register byte i asm("GPIOR1");
-  // register byte save asm("GPIOR2");
- 
-  // // Each location has 0x55 and 0xAA written to and read from it,
-  // // to verify that there aren't any stuck bits.
-  // for(p_val = (byte *) SRAM_START_ADDR;
-  // 		p_val < ((byte *) (SRAM_END_ADDR + 1));
-  // 		p_val++)
-  //   {
-  //   	// Save the value being stored at the current memory address
-  //     save = *p_val;
-
-  //     // Write 0x55
-  //     *p_val = 0x55;
-  //     // Read the stored value
-  //     i = *p_val;
-  //     // Is stored value not 0x55?
-  //     if(i != 0x55)
-  //     	// Exit test with failure
-  //     	return false;
-
-  //     // Write 0xAA
-  //     *p_val = 0xAA;
-  //     // Read the stored value
-  //     i = *p_val;
-  //     // Is stored value not 0xAA?
-  //     if(i != 0xAA)
-  //     	// Exit test with failure
-  //     	return false;
-
-  //     // Restore the original value to the current memory address
-  //     *p_val = save;
-  //   }
+  boolean result;
   
-  // Exit test with success
-  return true;
+  // This is done in assembly because we're pretty close to metal here.
+  // Each RAM address (0x0100 - 0x0AFF) has 0x55 and 0xAA written to and read from it, 
+  // to verify that there aren't any stuck bits.
+  asm volatile(
+    "LD_INITS:                                 \n\t"
+    "             ldi   R31, 0x01              \n\t"
+    "             ldi   R30, 0x00              \n\t"
+    "             ldi   R28, 0x55              \n\t"
+    "             ldi   R29, 0xAA              \n\t"
+    "CHECK_DONE:                               \n\t"
+                  // Compare ZH to 0x0A
+    "             cpi   R31, 0x0A              \n\t"
+    "             brne  LOOP                   \n\t"
+                  // Compare ZL to 0xFF
+    "             cpi   R30, 0xFF              \n\t"
+                  // If both match, test complete
+    "             breq  Pass_RAM               \n\t"
+    "LOOP:                                     \n\t"
+                  // Temp store contents in R26
+    "             ld    R26, Z                 \n\t"
+                  // Store 0x55 at RAM location
+    "             st    Z, R28                 \n\t"
+                  // Read to confirm 0x55
+    "             ld    R27, Z                 \n\t"
+    "             cpi   R27, 0x55              \n\t" 
+                  // If equal, continue to 0xAA Test
+    "             brne  Fail_RAM               \n\t"
+                  // Store 0xAA at RAM location
+    "             st    Z, R29                 \n\t"
+                  // Read to confirm 0xAA
+    "             ld    R27, Z                 \n\t"
+                  // Place old contents back in, increment addr
+    "             st    Z+, R26                \n\t"
+    "             cpi   R27, 0xAA              \n\t" 
+    "             brne  Fail_RAM               \n\t"
+                  // If equal, continue to next iteration
+    "             jmp   CHECK_DONE             \n\t"
+  );
+
+  // Test failure
+  asm volatile(
+    "Fail_RAM:                                 \n\t"
+  );
+  result = false;
+
+  // Test success
+  asm volatile(
+    "Pass_RAM:                                 \n\t"
+  );
+  result = true;
+
+  // Is the result TRUE?
+  if(result)
+    // Exit test with success
+    return true;
+  else
+    // Exit test with failure
+    return false;
 }
 
 
@@ -475,18 +515,22 @@ __attribute__((optimize(0))) boolean sram_test()
 */
 __attribute__((optimize(0))) boolean watchdog_test(byte reason)
 {
-	// Was reset not due to watchdog?
-	if((reason & RESET_WATCHDOG) != RESET_WATCHDOG)
-	{
-		Serial.println("not watchdog reset");
+  Serial.println(reason);
 
-		wdt_enable(WDTO_1S);
-		Serial.println("enabled");
-	}
-	if((reason & RESET_WATCHDOG) == RESET_WATCHDOG)
+  // Was reset not due to watchdog?
+  if((reason & RESET_WATCHDOG) != RESET_WATCHDOG)
+  {
+    Serial.println("not watchdog reset");
+    wdt_enable(WDTO_1S);
+    Serial.println("enabled");
+    delay(2000);
+    Serial.print("watchdog did not reset");
+    return false;
+  }
+
+  if((reason & RESET_WATCHDOG) == RESET_WATCHDOG)
     Serial.println("watchdog reset");
-
-	return true;
+  return true;
 }
 
 
@@ -510,7 +554,8 @@ __attribute__((optimize(0))) boolean ADC_test()
   // Set AREF to the ATmega's internal reference
   analogReference(INTERNAL);
 
-  // Wait, then read ADC a few times to let things settle down
+  // Wait, then read ADC a few times to let things settle down.
+  // ATmega32U4 datasheet recommends this.
   delay(50);
   analogRead(INTERNAL);
   analogRead(INTERNAL);
@@ -548,6 +593,9 @@ __attribute__((optimize(0))) boolean ADC_test()
 */
 __attribute__((optimize(0))) boolean timer1_test()
 {
+  // Disable interrupts (since we're fiddling with interrupt controls)
+  noInterrupts();
+
   /* These comments apply to all register tests in this function */
   // Load first test value
   TCCR1A = 0x55;
@@ -590,40 +638,54 @@ __attribute__((optimize(0))) boolean timer1_test()
     return false;
   OCR1A = 0;
 
-  // TIMSK1 = 0x55;
-  // if((TIMSK1 & 0x55) != 0x05)
-  //   return false;
-  // TIMSK1 = 0xAA;
-  // if((TIMSK1 & 0xAA) != 0x2A)
-  //   return false;
-  // TIMSK1 = 0;
+  TIMSK1 = 0x55;
+  if((TIMSK1 & 0x55) != 0x05)
+    return false;
+  TIMSK1 = 0xAA;
+  if((TIMSK1 & 0xAA) != 0x2A)
+    return false;
+  TIMSK1 = 0;
 
-  // TIFR1 = 0x55;
-  // if((TIFR1 & 0x55) != 0x05)
-  //   return false;
-  // TIFR1 = 0xAA;
-  // if((TIFR1 & 0xAA) != 0x2A)
-  //   return false;
-  // TIFR1 = 0xFF;
+  // Did we arrive here after a watchdog reset due to a bad timer?
+  if(EEPROM.read(EEPROM_TIMER_TEST_INCOMPLETE) == 1)
+    // Exit test with failure
+    return false;
 
-  // By default, timer is set for normal, overflow, non-PWM mode.
-  // Enable overflow interrupt
-  TIMSK1 |= (1 << TOIE1);
-  // Set timer for no clock prescaling (this starts the timer)
-  TCCR1B |= (1 << CS10) | (1 << CS12);
+  // Did watchdog pass its test?
+  // If it did not, we have no reliable way to test the timer without failure
+  // resulting in an infinite loop.  An infinite loop prevents us from
+  // getting to the partial boot sequence, so if the watchdog is bad, we'll
+  // have to trust that the timer works, without this explicit test.
+  if(_watchdog_good)
+  {
+    // Mark timer test as incomplete
+    EEPROM.update(EEPROM_TIMER_TEST_INCOMPLETE, 1);
 
-  // Wait for timer interrupt
-  while(!_isr_timer1_overflow);
+    // Enable watchdog
+    wdt_enable(WDTO_60MS);
 
-  // Reset the flag for the enjoyment of future generations
-  _isr_timer1_overflow = false;
+    // Start timer (with prescaler of clk/8)
+    TCCR1B = (1 << CS11);
 
-  // Disable overflow interrupt
-  TIMSK1 &= (0 << TOIE1);
-  // Clear the clock prescaling (this turns off the timer)
-  TCCR1B &= (0 << CS10) & (0 << CS12);
-  // Clear the timer's counter
-  TCNT1 = 0;
+    // Wait for counter to overflow
+    while(! (TIFR1 & _BV(TOV1)));
+
+    // Disable watchdog
+    wdt_disable();
+
+    // Clear the clock prescaling (this turns off the timer)
+    TCCR1B = 0;
+    // Clear the timer's counter
+    TCNT1 = 0;
+    // Clear the overflow flag
+    TIFR1 = _BV(TOV1);
+
+    // Mark timer test as complete
+    EEPROM.update(EEPROM_TIMER_TEST_INCOMPLETE, 0);
+  }
+
+  // Enable interrupts
+  interrupts();
 
   // Exit test with success
   return true;
@@ -631,16 +693,59 @@ __attribute__((optimize(0))) boolean timer1_test()
 
 
 
-//---------- T I M E R 1 _ O V E R F L O W _ I N T E R R U P T ----------------
+//---------- I N T E R R U P T _ T E S T --------------------------------------
 /*
-   Interrupt for Timer1 overflow.
+   Checks that the interrupt controller executes interrupt service routines.
+   Return of TRUE means it passed the test.
+   Return of FALSE means it failed the test.
+
+   This code is designed to work in the default Arduino environment, so 
+   setting compiler flags is not an option.  The "optimize(0)" attribute is 
+   used to prevent the compiler from optimizing this function.  All of the
+   tests in the POST routine disable optimization, to be safe, because much
+   of what is happening has no effect outside the function.
+
+   :rtype: boolean
+*/
+__attribute__((optimize(0))) boolean interrupt_test()
+{
+  // Set pin INT0 to output (to enable software control of interrupt)
+  pinMode(INT0, OUTPUT);
+
+  // Enable INT0 interrupt.  Without setting any bits in EICRA, the default
+  // is for an interrupt to trigger when the pin is low.
+  EIMSK |= _BV(INT0);
+
+  // Trigger the interrupt
+  digitalWrite(INT0, LOW);
+
+  // Give the pin time to change state (if necessary)
+  delay(1);
+
+  // Did the interrupt fire?
+  if(_external_interrupt)
+    // Exit with success
+    return true;
+  else
+    // Exit with failure
+    return false;
+}
+
+
+
+//---------- E X T E R N A L _ I N T 0 _ I N T E R R U P T --------------------
+/*
+   Interrupt for external interrupt INT0.
 
    :rtype: none
 */
-ISR(TIMER1_OVF_vect)
+ISR(INT0_vect)
 {
-  // Set flag to indicate that the interrupt fired
-  _isr_timer1_overflow = true;
+  // Disable INT0 interrupt
+  EIMSK = 0;
+
+  // Set flag to indicate that the ISR executed
+  _external_interrupt = true;
 }
 
 
@@ -659,7 +764,7 @@ byte find_reset_reason()
 	// Check bits 0-5 in MCUSR
 	for(i = 0; i < 6; i++)
 	{
-		// Is the current bit set?
+    // Is the current bit set?
 		if(MCUSR & mask)
 			// Found the reset flag, so exit the loop
 			break;
@@ -687,22 +792,18 @@ byte find_reset_reason()
 void test_failure(byte reason, boolean fatal)
 {
 	// Save POST failure to EEPROM
-	EEPROM.update(EEPROM_POST_RESULT_ADDR, reason);
+	EEPROM.update(EEPROM_POST_RESULT, reason);
 
 	// Allow time for EEPROM to finish writing
-	delay(10);
+	delay(5);
 
 	// Is POST failure fatal?
 	if(fatal)
-	{
 		// Go to sleep
-		// Infinite loop is insurance, in case the chip wakes up
-		while(1)
-			sleep();
-	}
+		sleep();
 	else
-		// Set "SOS boot mode" flag
-		_SOS_BOOT_MODE = true;
+		// Set flag for SOS boot mode
+    _SOS_boot_mode = true;
 }
 
 
@@ -725,6 +826,6 @@ void sleep()
 	// Go to sleep
 	sleep_mode();
 
-	// Give the SLEEP instruction time to execute
-	delay(10);
+	// Chew on this until the chip falls asleep
+	while(1);
 }

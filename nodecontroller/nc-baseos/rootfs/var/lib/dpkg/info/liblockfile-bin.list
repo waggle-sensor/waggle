@@ -1,0 +1,14 @@
+/.
+/usr
+/usr/bin
+/usr/bin/dotlockfile
+/usr/share
+/usr/share/lintian
+/usr/share/lintian/overrides
+/usr/share/lintian/overrides/liblockfile-bin
+/usr/share/doc
+/usr/share/doc/liblockfile-bin
+/usr/share/doc/liblockfile-bin/changelog.Debian.gz
+/usr/share/doc/liblockfile-bin/copyright
+/usr/share/man
+/usr/share/man/man1/dotlockfile.1.gz

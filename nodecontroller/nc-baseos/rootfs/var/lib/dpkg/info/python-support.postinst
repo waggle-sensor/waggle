@@ -1,0 +1,20 @@
+#! /bin/sh
+set -e
+
+if [ "$1" = "triggered" ]; then
+    update-python-modules --post-install
+    exit 0
+fi
+
+# Remove the old directory.
+if [ "$1" = configure ] && dpkg --compare-versions "$2" lt-nl 0.90; then
+    rm -rf /var/lib/python-support
+fi
+
+if ! [ -e /var/lib/python-support ]; then
+    ln -sf /usr/lib/pymodules /var/lib/python-support
+fi
+
+
+
+update-python-modules --post-install python-support.private

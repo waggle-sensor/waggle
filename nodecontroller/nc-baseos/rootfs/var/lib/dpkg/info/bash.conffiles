@@ -1,0 +1,4 @@
+/etc/skel/.profile
+/etc/skel/.bash_logout
+/etc/skel/.bashrc
+/etc/bash.bashrc

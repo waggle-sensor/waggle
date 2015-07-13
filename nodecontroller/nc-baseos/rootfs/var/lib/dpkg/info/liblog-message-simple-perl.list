@@ -1,0 +1,14 @@
+/.
+/usr
+/usr/share
+/usr/share/man
+/usr/share/man/man3
+/usr/share/man/man3/Log::Message::Simple.3pm.gz
+/usr/share/perl5
+/usr/share/perl5/Log
+/usr/share/perl5/Log/Message
+/usr/share/perl5/Log/Message/Simple.pm
+/usr/share/doc
+/usr/share/doc/liblog-message-simple-perl
+/usr/share/doc/liblog-message-simple-perl/copyright
+/usr/share/doc/liblog-message-simple-perl/changelog.Debian.gz

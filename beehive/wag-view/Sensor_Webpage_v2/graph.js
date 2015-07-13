@@ -193,7 +193,7 @@ window.onload = function() {
 				  .attr("width", w)
 				  .attr("height", h);
 
-	var svg030 = d3.select("div#graph03")
+	var svg030 = d3.select("div#graph030")
 				  .append("svg")
 				  .attr("width", w)
 				  .attr("height", h);
@@ -208,7 +208,7 @@ window.onload = function() {
 				  .attr("width", w)
 				  .attr("height", h);
 
-	var svg040 = d3.select("div#graph04")
+	var svg040 = d3.select("div#graph040")
 				  .append("svg")
 				  .attr("width", w)
 				  .attr("height", h);
@@ -233,7 +233,7 @@ window.onload = function() {
 				   .attr("width", w)
 				   .attr("height", h);
 
-	var svg053 = d3.select("div#graph051")
+	var svg053 = d3.select("div#graph053")
 				   .append("svg")
 				   .attr("width", w)
 				   .attr("height", h);
@@ -459,7 +459,7 @@ window.onload = function() {
 					  .attr("stroke-width", 1)
 					  .attr("fill", "none");
 
-	var _svg032_c = svg031.append("circle")
+	var _svg032_c = svg032.append("circle")
 						.attr("cx", 190)
 						.attr("cy", canvas032[10].y)
 						.attr("r", 2)
@@ -839,11 +839,11 @@ window.onload = function() {
 		
 		_svg000.transition()
 			  .attr("d", lineFunction(canvas000))
-			  .duration(2000);
+			  .duration(0);
 
 		_svg000_c.transition()
 				.attr("cy", canvas000[10].y)
-				.duration(2000);
+				.duration(0);
 
 		document.getElementById('RHT03_temp').innerHTML = get_graph_data(14).concat(" &degC");
 
@@ -861,11 +861,11 @@ window.onload = function() {
 	
 		_svg001.transition()
 			  .attr("d", lineFunction(canvas001))
-			  .duration(2000);
+			  .duration(0);
 
 		_svg001_c.transition()
 				.attr("cy", canvas001[10].y)
-				.duration(2000);
+				.duration(0);
 
 		document.getElementById('RHT03_hum').innerHTML = get_graph_data(15).concat(" %RH");
 	
@@ -884,11 +884,11 @@ window.onload = function() {
 	
 		_svg010.transition()
 			  .attr("d", lineFunction(canvas010))
-			  .duration(2000);
+			  .duration(0);
 
 		_svg010_c.transition()
 				.attr("cy", canvas010[10].y)
-				.duration(2000);
+				.duration(0);
 
 		document.getElementById('SHT15_temp').innerHTML = get_graph_data(26).concat(" &degC");
 	
@@ -906,11 +906,11 @@ window.onload = function() {
 	
 		_svg011.transition()
 			  .attr("d", lineFunction(canvas011))
-			  .duration(2000);
+			  .duration(0);
 
 		_svg011_c.transition()
 				.attr("cy", canvas011[10].y)
-				.duration(2000);
+				.duration(0);
 
 		document.getElementById('SHT15_hum').innerHTML = get_graph_data(27).concat(" %RH");
 	
@@ -929,11 +929,11 @@ window.onload = function() {
 	
 		_svg020.transition()
 			  .attr("d", lineFunction(canvas020))
-			  .duration(2000);
+			  .duration(0);
 
 		_svg020_c.transition()
 				.attr("cy", canvas020[10].y)
-				.duration(2000);
+				.duration(0);
 
 		document.getElementById('SHT75_temp').innerHTML = get_graph_data(21).concat(" &degC");
 
@@ -951,11 +951,11 @@ window.onload = function() {
 	
 		_svg021.transition()
 			  .attr("d", lineFunction(canvas021))
-			  .duration(2000);
+			  .duration(0);
 
 		_svg021_c.transition()
 				.attr("cy", canvas021[10].y)
-				.duration(2000);
+				.duration(0);
 
 		document.getElementById('SHT75_hum').innerHTML = get_graph_data(22).concat(" %RH");
 	
@@ -974,11 +974,11 @@ window.onload = function() {
 	
 		_svg030.transition()
 			  .attr("d", lineFunction(canvas030))
-			  .duration(2000);
+			  .duration(0);
 
 		_svg030_c.transition()
 				.attr("cy", canvas030[10].y)
-				.duration(2000);
+				.duration(0);
 
 		document.getElementById('HMC5883_x').innerHTML = get_graph_data(16).concat(" &microT");
 	
@@ -996,11 +996,11 @@ window.onload = function() {
 	
 		_svg031.transition()
 			  .attr("d", lineFunction(canvas031))
-			  .duration(2000);
+			  .duration(0);
 
 		_svg031_c.transition()
 				.attr("cy", canvas031[10].y)
-				.duration(2000);
+				.duration(0);
 
 		document.getElementById('HMC5883_y').innerHTML = get_graph_data(17).concat(" &microT");
 	
@@ -1018,11 +1018,11 @@ window.onload = function() {
 	
 		_svg032.transition()
 			  .attr("d", lineFunction(canvas032))
-			  .duration(2000);
+			  .duration(0);
 
 		_svg032_c.transition()
 				.attr("cy", canvas032[10].y)
-				.duration(2000);
+				.duration(0);
 
 		document.getElementById('HMC5883_z').innerHTML = get_graph_data(18).concat(" &microT");
 	
@@ -1041,11 +1041,11 @@ window.onload = function() {
 	
 		_svg040.transition()
 			  .attr("d", lineFunction(canvas040))
-			  .duration(2000);
+			  .duration(0);
 
 		_svg040_c.transition()
 				.attr("cy", canvas040[10].y)
-				.duration(2000);
+				.duration(0);
 
 		document.getElementById('BMP180_temp').innerHTML = get_graph_data(11).concat(" &degC");
 	
@@ -1063,11 +1063,11 @@ window.onload = function() {
 	
 		_svg041.transition()
 			  .attr("d", lineFunction(canvas041))
-			  .duration(2000);
+			  .duration(0);
 
 		_svg041_c.transition()
 				.attr("cy", canvas041[10].y)
-				.duration(2000);
+				.duration(0);
 
 		document.getElementById('BMP180_pres').innerHTML = get_graph_data(12).concat(" hPa");
 
@@ -1086,11 +1086,11 @@ window.onload = function() {
 	
 		_svg050.transition()
 			  .attr("d", lineFunction(canvas050))
-			  .duration(2000);
+			  .duration(0);
 
 		_svg050_c.transition()
 				.attr("cy", canvas050[10].y)
-				.duration(2000);
+				.duration(0);
 
 		document.getElementById('MMA8452Q_x').innerHTML = get_graph_data(2).concat(" g");
 	
@@ -1108,11 +1108,11 @@ window.onload = function() {
 	
 		_svg051.transition()
 			  .attr("d", lineFunction(canvas051))
-			  .duration(2000);
+			  .duration(0);
 
 		_svg051_c.transition()
 				.attr("cy", canvas051[10].y)
-				.duration(2000);
+				.duration(0);
 
 		document.getElementById('MMA8452Q_y').innerHTML = get_graph_data(3).concat(" g");
 	
@@ -1130,11 +1130,11 @@ window.onload = function() {
 	
 		_svg052.transition()
 			  .attr("d", lineFunction(canvas052))
-			  .duration(2000);
+			  .duration(0);
 
 		_svg052_c.transition()
 				.attr("cy", canvas052[10].y)
-				.duration(2000);
+				.duration(0);
 
 		document.getElementById('MMA8452Q_z').innerHTML = get_graph_data(4).concat(" g");
 	
@@ -1152,11 +1152,11 @@ window.onload = function() {
 	
 		_svg053.transition()
 			  .attr("d", lineFunction(canvas053))
-			  .duration(2000);
+			  .duration(0);
 
 		_svg053_c.transition()
 				.attr("cy", canvas053[10].y)
-				.duration(2000);
+				.duration(0);
 
 		document.getElementById('MMA8452Q_rms').innerHTML = get_graph_data(5).concat(" g");
 
@@ -1176,11 +1176,11 @@ window.onload = function() {
 	
 		_svg10.transition()
 			  .attr("d", lineFunction(canvas10))
-			  .duration(2000);
+			  .duration(0);
 
 		_svg10_c.transition()
 				.attr("cy", canvas10[10].y)
-				.duration(2000);
+				.duration(0);
 
 		document.getElementById('DS18B20').innerHTML = get_graph_data(6).concat(" &degC");
 
@@ -1199,11 +1199,11 @@ window.onload = function() {
 	
 		_svg11.transition()
 			  .attr("d", lineFunction(canvas11))
-			  .duration(2000);
+			  .duration(0);
 
 		_svg11_c.transition()
 				.attr("cy", canvas11[10].y)
-				.duration(2000);
+				.duration(0);
 
 		document.getElementById('GA1A1S201WP').innerHTML = get_graph_data(25).concat(" raw A/D");
 
@@ -1222,11 +1222,11 @@ window.onload = function() {
 	
 		_svg12.transition()
 			  .attr("d", lineFunction(canvas12))
-			  .duration(2000);
+			  .duration(0);
 
 		_svg12_c.transition()
 				.attr("cy", canvas12[10].y)
-				.duration(2000);
+				.duration(0);
 
 		document.getElementById('PDVP8104').innerHTML = get_graph_data(13).concat(" raw A/D");
 
@@ -1245,11 +1245,11 @@ window.onload = function() {
 
 		_svg13.transition()
 			  .attr("d", lineFunction(canvas13))
-			  .duration(2000);
+			  .duration(0);
 
 		_svg13_c.transition()
 				.attr("cy", canvas13[10].y)
-				.duration(2000);
+				.duration(0);
 
 		document.getElementById('MAX4466').innerHTML = get_graph_data(23).concat(" raw A/D");
 
@@ -1268,11 +1268,11 @@ window.onload = function() {
 	
 		_svg14.transition()
 			  .attr("d", lineFunction(canvas14))
-			  .duration(2000);
+			  .duration(0);
 
 		_svg14_c.transition()
 				.attr("cy", canvas14[10].y)
-				.duration(2000);
+				.duration(0);
 
 		document.getElementById('MLX90614ESF').innerHTML = get_graph_data(7).concat(" &degC");
 
@@ -1287,17 +1287,17 @@ window.onload = function() {
 		canvas15[7].y = canvas15[8].y;
 		canvas15[8].y = canvas15[9].y;
 		canvas15[9].y = canvas15[10].y;
-		canvas15[10].y = 58 - (parseFloat(get_graph_data(29))+40)*0.448;
+		canvas15[10].y = 58 - (parseFloat(get_graph_data(29)))*0.057;
 	
 		_svg15.transition()
 			  .attr("d", lineFunction(canvas15))
-			  .duration(2000);
+			  .duration(0);
 
 		_svg15_c.transition()
 				.attr("cy", canvas15[10].y)
-				.duration(2000);
+				.duration(0);
 
-		document.getElementById('PR103J2').innerHTML = get_graph_data(29).concat(" &degC");
+		document.getElementById('PR103J2').innerHTML = get_graph_data(29).concat(" raw A/D");
 
 		//TMP102
 		canvas16[0].y = canvas16[1].y;
@@ -1314,11 +1314,11 @@ window.onload = function() {
 	
 		_svg16.transition()
 			  .attr("d", lineFunction(canvas16))
-			  .duration(2000);
+			  .duration(0);
 
 		_svg16_c.transition()
 				.attr("cy", canvas16[10].y)
-				.duration(2000);
+				.duration(0);
 
 		document.getElementById('TMP102').innerHTML = get_graph_data(8).concat(" &degC");
 
@@ -1337,11 +1337,11 @@ window.onload = function() {
 	
 		_svg17.transition()
 			  .attr("d", lineFunction(canvas17))
-			  .duration(2000);
+			  .duration(0);
 
 		_svg17_c.transition()
 				.attr("cy", canvas17[10].y)
-				.duration(2000);
+				.duration(0);
 
 		document.getElementById('TMP421').innerHTML = get_graph_data(24).concat(" &degC");
 
@@ -1356,17 +1356,17 @@ window.onload = function() {
 		canvas18[7].y = canvas18[8].y;
 		canvas18[8].y = canvas18[9].y;
 		canvas18[9].y = canvas18[10].y;
-		canvas18[10].y = 58 - (parseFloat(get_graph_data(28)))*0.58;
+		canvas18[10].y = 58 - (parseFloat(get_graph_data(28)))*0.057;
 	
 		_svg18.transition()
 			  .attr("d", lineFunction(canvas18))
-			  .duration(2000);
+			  .duration(0);
 
 		_svg18_c.transition()
 				.attr("cy", canvas18[10].y)
-				.duration(2000);
+				.duration(0);
 
-		document.getElementById('HIH4030').innerHTML = get_graph_data(28).concat(" %RH");
+		document.getElementById('HIH4030').innerHTML = get_graph_data(28).concat(" raw A/D");
 	
 		//HIH6130
 		canvas190[0].y = canvas190[1].y;
@@ -1383,11 +1383,11 @@ window.onload = function() {
 	
 		_svg190.transition()
 			  .attr("d", lineFunction(canvas190))
-			  .duration(2000);
+			  .duration(0);
 
 		_svg190_c.transition()
 				.attr("cy", canvas190[10].y)
-				.duration(2000);
+				.duration(0);
 
 		document.getElementById('HIH6130_temp').innerHTML = get_graph_data(9).concat(" &degC");
 	
@@ -1405,11 +1405,11 @@ window.onload = function() {
 	
 		_svg191.transition()
 			  .attr("d", lineFunction(canvas191))
-			  .duration(2000);
+			  .duration(0);
 
 		_svg191_c.transition()
 				.attr("cy", canvas191[10].y)
-				.duration(2000);
+				.duration(0);
 
 		document.getElementById('HIH6130_hum').innerHTML = get_graph_data(10).concat(" %RH");
 
@@ -1428,11 +1428,11 @@ window.onload = function() {
 	
 		_svg1100.transition()
 			  .attr("d", lineFunction(canvas1100))
-			  .duration(2000);
+			  .duration(0);
 
 		_svg1100_c.transition()
 				.attr("cy", canvas1100[10].y)
-				.duration(2000);
+				.duration(0);
 
 		document.getElementById('HTU21D_temp').innerHTML = get_graph_data(19).concat(" &degC");
 	
@@ -1450,11 +1450,11 @@ window.onload = function() {
 	
 		_svg1101.transition()
 			  .attr("d", lineFunction(canvas1101))
-			  .duration(2000);
+			  .duration(0);
 
 		_svg1101_c.transition()
 				.attr("cy", canvas1101[10].y)
-				.duration(2000);
+				.duration(0);
 
 		document.getElementById('HTU21D_hum').innerHTML = get_graph_data(20).concat(" %RH");
 	
@@ -1473,11 +1473,11 @@ window.onload = function() {
 	
 		_svg1110.transition()
 			  .attr("d", lineFunction(canvas1110))
-			  .duration(2000);
+			  .duration(0);
 
 		_svg1110_c.transition()
 				.attr("cy", canvas1110[10].y)
-				.duration(2000);
+				.duration(0);
 
 		document.getElementById('D6T44L06_avg_temp').innerHTML = get_graph_data(1).concat(" &degC");
 		//sensor060.addData([get_graph_data(1)], "");
@@ -1496,11 +1496,11 @@ window.onload = function() {
 	
 		_svg1111.transition()
 			  .attr("d", lineFunction(canvas1111))
-			  .duration(2000);
+			  .duration(0);
 
 		_svg1111_c.transition()
 				.attr("cy", canvas1111[10].y)
-				.duration(2000);
+				.duration(0);
 
 		document.getElementById('D6T44L06_case_temp').innerHTML = get_graph_data(0).concat(" &degC");
 	}

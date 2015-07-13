@@ -2,14 +2,14 @@
 
 
 import sys
-sys.path.append("..")
+sys.path.append('../../../../devtools/protocol_common/')
 from utilities import packetmaker
 from send import send
 
 
 """ A python script that creates and sends a ping. """ 
 
-ping = packetmaker.make_ping_packet()
+packet = packetmaker.make_ping_packet()
 print 'Ping packet made...' 
-
-send(ping)
+for pack in packet:
+        send(pack)

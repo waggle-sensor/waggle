@@ -1,3 +1,0 @@
-- Currently, if a fatal failure occurs during POST, we write the specific failure to EEPROM.  Is that specific failure relevant?  You're just gonna replace the chip anyway.
-- Non-fatal failures are relevant to the "SOS boot mode" routine, but again, you're just going to replace the chip.
-- C-based POST is not perfect.  Some redundancy and assumptions.  To make it as perfect as possible without having an external helper chip, we'd have to write the POST in pure assembly, and that would have to execute before any C initialization/code.  That's probably not worth the effort, in this case.  We're not going to Mars.
