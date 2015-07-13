@@ -26,13 +26,11 @@ class WaggleRouter(Process):
 			'p' : 'util',
 			's' : 'data'
 		}
-		print "Establishing connection"
 		#Create a connection to the RabbitMQ server.
 		self.rabbitConn = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
 		self.channel = self.rabbitConn.channel()
 		self.channel.basic_qos(prefetch_count=1)
 
-		print "Connection to rabbitMQ broker succeeded."
 		#Load all of the existing registered node queues
 		with open('registrations/nodes.txt','r') as nodes:
 			for line in nodes:
@@ -56,10 +54,10 @@ class WaggleRouter(Process):
 			ch.basic_ack(delivery_tag = method.delivery_tag)
 			return
 		if(header['r_uniqid'] == 0): # If the message is intended for the cloud...
+
 			msg_type = chr(header["msg_mj_type"]),chr(header["msg_mi_type"])
 			#Figure out which queue this message belongs in.
 			msg_dest = self.routeQueues.get(msg_type[0],'invalid')
-
 			if(msg_dest == 'invalid'):
 				ch.basic_ack(delivery_tag = method.delivery_tag)
 				return

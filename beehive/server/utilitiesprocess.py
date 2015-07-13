@@ -41,7 +41,9 @@ class UtilProcess(Process):
 				"r_uniqid"    : header["s_uniqid"],
 				"resp_session": header["snd_session"]
 			}
-			response = pack(resp_header,"Pong!")
+			packer = pack(resp_header,"Pong!")
+			for packet in packer:
+				response = packet
 			self.channel.basic_publish(exchange='waggle_in', routing_key = "in", body=response)
 		if(header['msg_mj_type'] == ord('t') and header["msg_mi_type"] == ord('r')): # It's a time request
 			# Make a response header
@@ -51,7 +53,9 @@ class UtilProcess(Process):
 				"r_uniqid"    : header["s_uniqid"],
 				"resp_session": header["snd_session"]
 			}
-			response = pack(resp_header,str(time.time())) # Stuff the time in a packet and send it to the router
+			packer = pack(resp_header,str(time.time())) # Stuff the time in a packet and send it to the router
+			for packet in packer:
+				response = packet
 			self.channel.basic_publish(exchange='waggle_in',routing_key="in",body=response)
 		ch.basic_ack(delivery_tag = method.delivery_tag)
 
