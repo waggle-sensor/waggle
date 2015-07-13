@@ -55,8 +55,10 @@ class RegProcess(Process):
 				"r_uniqid"    : header["s_uniqid"],
 				"resp_session": header["snd_session"]
 		}
-		response = "Congratulations node {}! You are registered under the queue {}!".format(header["s_uniqid"],msg)
-		self.channel.basic_publish(exchange='waggle_in',routing_key="in",body=pack(resp_header,response))
+		msg = "Congratulations node {}! You are registered under the queue {}!".format(header["s_uniqid"],msg)
+		for packet in pack(resp_header,msg):
+			response = packet
+		self.channel.basic_publish(exchange='waggle_in',routing_key="in",body=response)
 		ch.basic_ack(delivery_tag = method.delivery_tag)
 
 	def run(self):
