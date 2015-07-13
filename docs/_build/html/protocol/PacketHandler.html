@@ -1,0 +1,430 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Packet Handler &mdash; Waggle 0.3 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../_static/table_styling.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="Waggle 0.3 documentation" href="../index.html"/>
+        <link rel="up" title="Waggle Communication Protocol" href="protocol.html"/>
+        <link rel="next" title="Waggle Packet Format" href="PacketFormat.html"/>
+        <link rel="prev" title="Waggle Communication Protocol" href="protocol.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+
+        
+          <a href="../index.html" class="icon icon-home"> Waggle
+        
+
+        
+        </a>
+
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../server/server.html">Waggle Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../nodeController/nodeController.html">Node Controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guestNode/guestNode.html">Guest Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../wagMan/wagMan.html">Waggle System Manager</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="protocol.html">Waggle Communication Protocol</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="">Packet Handler</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-PacketHandler">PacketHandler Module Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="PacketFormat.html">Waggle Packet Format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LargeFile.html">Large File Transfer Protocol</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MessageTypes.html">Waggle Message Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utilities.html">Waggle Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="gpickler.html">gpickler Module Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="packetmaker.html">Packetmaker Module Functions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">Waggle</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="protocol.html">Waggle Communication Protocol</a> &raquo;</li>
+      
+    <li>Packet Handler</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/protocol/PacketHandler.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="packet-handler">
+<h1>Packet Handler<a class="headerlink" href="#packet-handler" title="Permalink to this headline">¶</a></h1>
+<dl class="docutils">
+<dt><strong>About Packet Headers:</strong></dt>
+<dd><p class="first">For working with packet headers, a dictionary containing the packet information is used.
+Note that while order does not matter when putting information into the dictionary,
+spelling <strong>does</strong> matter! Also note that when you unpack a packet, a dictionary of this
+form will be returned to you.</p>
+<p class="last">The dictionary is constructed as shown below:</p>
+</dd>
+</dl>
+<table border="1" class="docutils">
+<colgroup>
+<col width="17%" />
+<col width="49%" />
+<col width="34%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Key</th>
+<th class="head">Meaning</th>
+<th class="head">Data Type</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>prot_ver</td>
+<td>Protocol Version</td>
+<td>String of form X.Y (&#8220;0.3&#8221;)</td>
+</tr>
+<tr class="row-odd"><td>flags</td>
+<td>Message flags (see below for more)</td>
+<td>Tuple(Integer, Integer, Bool)</td>
+</tr>
+<tr class="row-even"><td>len_body</td>
+<td>Length of message body</td>
+<td>Integer</td>
+</tr>
+<tr class="row-odd"><td>time</td>
+<td>Message timestamp in Unix time</td>
+<td>Integer</td>
+</tr>
+<tr class="row-even"><td>msg_mj_type</td>
+<td>Message Major Type</td>
+<td>Integer</td>
+</tr>
+<tr class="row-odd"><td>msg_mi_type</td>
+<td>Message Minor Type</td>
+<td>Integer</td>
+</tr>
+<tr class="row-even"><td>resp_session</td>
+<td>Responder Session Number</td>
+<td>Integer</td>
+</tr>
+<tr class="row-odd"><td>ext_header</td>
+<td>Extended Header</td>
+<td>Integer</td>
+</tr>
+<tr class="row-even"><td>s_uniqid</td>
+<td>Sender Unique ID</td>
+<td>Integer</td>
+</tr>
+<tr class="row-odd"><td>r_uniqid</td>
+<td>Recipient Unique ID</td>
+<td>Integer</td>
+</tr>
+<tr class="row-even"><td>snd_session</td>
+<td>Sender Session Number</td>
+<td>Integer</td>
+</tr>
+<tr class="row-odd"><td>snd_seq</td>
+<td>Sender sequence number</td>
+<td>Integer</td>
+</tr>
+<tr class="row-even"><td>resp_seq</td>
+<td>Responder sequence number</td>
+<td>Integer</td>
+</tr>
+</tbody>
+</table>
+<p>The PacketHandler is capable of handling many of these for you automatically.
+The minimum required dictionary required by PacketHandler is the following:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="17%" />
+<col width="49%" />
+<col width="34%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Key</th>
+<th class="head">Meaning</th>
+<th class="head">Data Type</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>msg_mj_type</td>
+<td>Message Major Type</td>
+<td>Integer</td>
+</tr>
+<tr class="row-odd"><td>msg_mi_type</td>
+<td>Message Minor Type</td>
+<td>Integer</td>
+</tr>
+</tbody>
+</table>
+<p>Any additional information in the header dictionary you supply to the packet handler will
+override the default values.</p>
+<dl class="docutils">
+<dt><strong>Header Flags:</strong></dt>
+<dd><p class="first">The header flags are a tuple of the form (Device priority, Message Priority, FIFO/LIFO)</p>
+<dl class="docutils">
+<dt>Device Priority</dt>
+<dd>The priority of the device, as an integer in the range [0,15]</dd>
+<dt>Message Priority</dt>
+<dd>The priority of the message, as an integer in the range [0,15]</dd>
+<dt>FIFO/LIFO</dt>
+<dd><dl class="first last docutils">
+<dt>Whether the message should be treated as FIFO or LIFO by the data cache.</dt>
+<dd><ul class="first last simple">
+<li>True means it should be FIFO</li>
+<li>False means it should be LIFO</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="last">Additional flags, such as whether or not the message is a multi-packet message, are used internally.</p>
+</dd>
+</dl>
+<hr class="docutils" />
+<div class="section" id="module-PacketHandler">
+<span id="packethandler-module-functions"></span><h2>PacketHandler Module Functions<a class="headerlink" href="#module-PacketHandler" title="Permalink to this headline">¶</a></h2>
+<p>This module contains methods relating to the construction and interpretation of waggle packets. 
+The main functions to examine in this class are pack and unpack. This module handles 
+all CRC checking for the packets, so any sucessfully unpacked packet is known to be correct.</p>
+<dl class="function">
+<dt id="PacketHandler.pack">
+<code class="descclassname">PacketHandler.</code><code class="descname">pack</code><span class="sig-paren">(</span><em>header_data</em>, <em>message_data=''</em><span class="sig-paren">)</span><a class="headerlink" href="#PacketHandler.pack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes header and message information and yields packets representing that data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>header_data</strong> (<em>dictionary</em>) &#8211; A dictionary containing the header data</li>
+<li><strong>message_data</strong> (<em>string/FileObject</em>) &#8211; The data to be packed into a Packet</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Yields:</th><td class="field-body"><p class="first">string</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Raises KeyError:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><p class="first last">A KeyError will be raised if the header_data dictionary is not properly formatted</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="PacketHandler.unpack">
+<code class="descclassname">PacketHandler.</code><code class="descname">unpack</code><span class="sig-paren">(</span><em>packet</em><span class="sig-paren">)</span><a class="headerlink" href="#PacketHandler.unpack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turns a packet object into a tuple containing the header data and message body</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>packet</strong> (<em>string</em>) &#8211; The packet data to be unpacked</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">tuple(dictionary, string)</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><strong>IOError</strong> &#8211; An IOError will be raised if a CRC fails in the packet</li>
+<li><strong>KeyError</strong> &#8211; An IndexError will be raised if a packet header is the wrong length</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="PacketHandler.pack_header">
+<code class="descclassname">PacketHandler.</code><code class="descname">pack_header</code><span class="sig-paren">(</span><em>header_data</em><span class="sig-paren">)</span><a class="headerlink" href="#PacketHandler.pack_header" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attempt to pack the data from the header_data dictionary into binary format according to Waggle protocol.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>header_data</strong> (<em>dictionary</em>) &#8211; The header data to be serialized</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Raises KeyError:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">An exception will be raised if the provided dictionary does not contain required information</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="PacketHandler.get_header">
+<code class="descclassname">PacketHandler.</code><code class="descname">get_header</code><span class="sig-paren">(</span><em>packet</em><span class="sig-paren">)</span><a class="headerlink" href="#PacketHandler.get_header" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a complete packet, this method will return the header as a dictionary.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>packet</strong> (<em>string</em>) &#8211; A complete packet.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">dictionary</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><strong>IndexError</strong> &#8211; An IndexError will be raised if the packed header is not 40 bytes long</li>
+<li><strong>IOError</strong> &#8211; An IOError will be raised if the packet header fails its CRC-16 check</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="PacketFormat.html" class="btn btn-neutral float-right" title="Waggle Packet Format" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="protocol.html" class="btn btn-neutral" title="Waggle Communication Protocol" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Argonne National Laboratory.
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.3',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
