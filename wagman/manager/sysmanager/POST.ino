@@ -88,11 +88,11 @@ boolean POST()
 		//test_failure(FAIL_FLASH, FATAL_FLASH);
 
 	// Watchdog test failed?
-	// if(!watchdog_test(reason))
-	// 	test_failure(FAIL_WATCHDOG, FATAL_WATCHDOG);
- //  else
- //    // Mark watchdog as functional (used to test the timer)
- //    _watchdog_good = true;
+	if(!watchdog_test(reason))
+		test_failure(FAIL_WATCHDOG, FATAL_WATCHDOG);
+  else
+    // Mark watchdog as functional (used to test the timer)
+    _watchdog_good = true;
 
   // ADC test failed?
   if(!ADC_test())
@@ -646,6 +646,9 @@ __attribute__((optimize(0))) boolean timer1_test()
     return false;
   TIMSK1 = 0;
 
+  // Enable interrupts
+  interrupts();
+
   // Did we arrive here after a watchdog reset due to a bad timer?
   if(EEPROM.read(EEPROM_TIMER_TEST_INCOMPLETE) == 1)
     // Exit test with failure
@@ -683,9 +686,6 @@ __attribute__((optimize(0))) boolean timer1_test()
     // Mark timer test as complete
     EEPROM.update(EEPROM_TIMER_TEST_INCOMPLETE, 0);
   }
-
-  // Enable interrupts
-  interrupts();
 
   // Exit test with success
   return true;
