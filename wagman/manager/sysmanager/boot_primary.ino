@@ -1,5 +1,5 @@
 //---------- C O N S T A N T S ------------------------------------------------
-
+const char NC_TERMINATOR = '!';
 
 
 
@@ -46,6 +46,9 @@ boolean boot_primary()
 	// Request time from node controller
 	get_time_nc();
 
+   // Request operating parameters from node controller
+   get_params_nc();
+
 	// Request guest node info from node controller.  No info received?
 	if(!get_gn_info())
 		// Skip the rest of the boot sequence
@@ -87,19 +90,31 @@ void init_primary()
 	// Start watchdog with 2 second timeout
 	wdt_enable(WDTO_2S);
 
-	// Enable Timer1 overflow interrupt
-	TIMSK1 |= _BV(TOIE1);
+   // Make sure all the Timer1 registers are cleared
+   TCCR1A = 0;
+   TCCR1B = 0;
+   TCCR1C = 0;
+   TCNT1 = 0;
+   OCR1A = 0;
+   OCR1B = 0;
+   OCR1C = 0;
+   ICR1 = 0;
+   TIMSK1 = 0;
+
+   // Enable Timer1 overflow interrupt
+   TIMSK1 = _BV(TOIE1);
+
 	// Start Timer1 with prescaler of clk/256 (timeout of approx. 1 second)
-	TCCR1B |= _BV(CS12);
+	TCCR1B = _BV(CS12);
 
 	// Set LED pin to output so we can turn on the LED
-  pinMode(PIN_LED, OUTPUT);
+   pinMode(LED, OUTPUT);
 
 	// Join I2C bus as master
 	Wire.begin();
 
 	// Enable serial comms
-  Serial.begin(UART_BAUD);
+   Serial.begin(UART_BAUD);
 }
 
 
@@ -205,6 +220,32 @@ boolean get_gn_info()
 void get_time_nc()
 {
 
+}
+
+
+
+//---------- G E T _ P A R A M S _ N C ----------------------------------------
+/*
+   Request operating parameters from the node controller.  If parameters are
+   different than what is already stored, the parameter is updated.  If the
+   parameters are the same or not received, the previously stored values will
+   be used.
+
+   :rtype: none
+*/
+void get_params_nc()
+{
+   // Send request
+   Serial.println("$");
+
+   // Save the node controller's response into a string.
+   // Default timeout value is 1 second
+   String received_params = Serial.readStringUntil(NC_TERMINATOR);
+
+   Serial.println(received_params);
+
+   if(received_params == "523")
+      digitalWrite(LED, HIGH);
 }
 
 

@@ -122,7 +122,7 @@ void init_SOS()
 	}
 
 	// Set LED pin to output so we can turn on the LED
-  pinMode(PIN_LED, OUTPUT);
+  pinMode(LED, OUTPUT);
 
 	// Join I2C bus as master.
 	// We're hoping I2C works, because we don't currently have a way to test it

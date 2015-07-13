@@ -34,34 +34,39 @@ const byte EEPROM_NC_ENVIRON_TEMP_HIGH = 0x0009;
 // Address of flag for incomplete timer test
 const byte EEPROM_TIMER_TEST_INCOMPLETE = 0x000A;
 
-const byte PIN_LED = 13;
+const byte LED = 13;
 const long UART_BAUD = 57600L;
-const byte CHECK_ENVIRON_COUNT = 60;
+const byte CHECK_ENVIRON_COUNT = 5;
+const char USART_RX_BUFFER_SIZE = 100;
 
 
 
 //---------- G L O B A L S ----------------------------------------------------
 volatile byte timer1_interrupt_fired = 0;
+volatile char USART_RX_char;
+volatile boolean _USART_new_char = false;
 
 
 
 //---------- S E T U P --------------------------------------------------------
 void setup() 
-{  
-  delay(7000);
+{
+  delay(5000);
 
-  // Is everything (internal) working correctly?
-  if(POST())
-  {
-    // Boot self, node controller, and ethernet switch.  Boot successful?
-    if(boot_primary())
-      // Boot the guest nodes
-      boot_gn();
-  }
-  // Something non-fatal failed the POST
-  else
-    // Go to partial boot sequence
-    boot_SOS();
+  // // Is everything (internal) working correctly?
+  // if(POST())
+  // {
+  //   // Boot self, node controller, and ethernet switch.  Boot successful?
+  //   if(boot_primary())
+  //     // Boot the guest nodes
+  //     boot_gn();
+  // }
+  // // Something non-fatal failed the POST
+  // else
+  //   // Go to partial boot sequence
+  //   boot_SOS();
+
+  init_primary();
 }
 
 
@@ -69,7 +74,40 @@ void setup()
 //---------- L O O P ----------------------------------------------------------
 void loop() 
 {
+  
+  // Has the timer overflowed enough times?
+  if(timer1_interrupt_fired >= CHECK_ENVIRON_COUNT)
+  {
+    // Clear the Timer1 overflow counter
+    timer1_interrupt_fired = 0;
 
+    // Environ. checks go here
+
+    // Send status report to node controller
+    //send_status();
+  }
+
+  get_params_nc();
+
+  // Received new serial data?
+  // if(_USART_new_char)
+  // {
+  //   // Node controller requesting status report?
+  //   if(USART_RX_char == "$")
+  // }
+}
+
+
+
+//---------- S E N D _ S T A T U S --------------------------------------------
+/*
+   Sends a status report of all important info to the node controller.
+
+   :rtype: none
+*/
+void send_status()
+{
+  Serial.println("$");
 }
 
 
@@ -88,4 +126,21 @@ ISR(TIMER1_OVF_vect)
 
   // Tell the world that the interrupt fired
   timer1_interrupt_fired++;
+}
+
+
+
+//---------- U S A R T 1 _ R X _ I N T E R R U P T ----------------------------
+/*
+   Interrupt for USART1 receive.
+
+   :rtype: none
+*/
+ISR(USART1_RX_vect)
+{
+  // Read and store new character
+  USART_RX_char = Serial.read();
+
+  // Set flag to tell main program that new serial data is available
+  _USART_new_char = true;
 }
