@@ -14,7 +14,7 @@ header_dict = {
 }
 
 
-params = pika.connection.URLParameters("amqps://guest1:guest1@localhost:5671/%2F")
+params = pika.connection.URLParameters("amqp://guest1:guest1@10.10.10.108:5672/%2F")
 connection = pika.BlockingConnection(params)
 channel = connection.channel()
 print("Channel to RabbitMQ opened.")
@@ -22,7 +22,7 @@ print("Channel to RabbitMQ opened.")
 queue = "ppppjf93kod93j0fu3kd93hf9hy309gtu" 
 packer = pack(header_dict,queue)
 for thing in packer:
-	packet = thing
+    packet = thing
 channel.exchange_declare("waggle_in")
 channel.queue_declare(queue)
 channel.basic_publish(exchange="waggle_in",routing_key="in",body=packet)
@@ -31,9 +31,13 @@ print "All time requests received!"
 
 def callback(ch,method,props,body):
     global connection
-    msg = time.ctime(float(unpack(body)[1]))
-    print msg
-    ch.basic_ack(delivery_tag = method.delivery_tag)
+    try:
+        msg = time.ctime(float(unpack(body)[1]))
+        print msg
+    except Exception as e:
+        print str(e)
+    finally:
+        ch.basic_ack(delivery_tag = method.delivery_tag)
 
 
 channel.basic_consume(callback,queue = queue)
