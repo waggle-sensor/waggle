@@ -3,6 +3,8 @@
 from multiprocessing import Process, Queue, Manager
 from daemon import Daemon
 import sys, os, os.path, time, atexit, socket, datetime
+sys.path.append('../../../../devtools/protocol_common/')
+from protocol.PacketHandler import *
 sys.path.append('../Communications/')
 from device_dict import DEVICE_DICT
 
@@ -44,7 +46,7 @@ class Data_Cache(Daemon):
                 time.sleep(1)
             if os.path.exists('/tmp/Data_Cache_server'): #checking for the file
                 os.remove('/tmp/Data_Cache_server')
-            print "Opening pull socket..."
+            print "Opening server socket..."
             
             #creates a UNIX, STREAMing socket
             server_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
@@ -55,7 +57,7 @@ class Data_Cache(Daemon):
             while True:
             #accept connections from outside
                 if flush.value==1: #shuts down the server until the all queues have been written to a file
-                    print 'Pull Server flush!'
+                    print 'Server flush!'
                     server_sock.close()
                     os.remove('/tmp/Data_Cache_server')
                     break
@@ -63,12 +65,13 @@ class Data_Cache(Daemon):
                 #TODO Is there a better way to do this?
                 try:
                     data = client_sock.recv(2048) #arbitrary
-                    print 'server received: ', data
+                    #print 'Server received: ', data
                     if not data:
                         break
                     else:
                     #TODO write logic in case the NC breaks before msg is sent. Currently, messages are stored in a queue so the node will get the message once it reconnects.
                         if data.find('|') != -1: #Indicates that it is a pull request 
+                            #print 'if data.find'
                             dest, data = data.split('|', 1) #splits to get either 'o' for outgoing request or the device location for incoming request
                             if dest != 'o':
                                 msg = incoming_pull(int(dest), incoming_available_queues, msg_counter) #pulls a message from that device's queue
@@ -93,12 +96,18 @@ class Data_Cache(Daemon):
                             
                         else:
                             try:
+                                print 'before get_header'
                                 header = get_header(data)
                                 flags = header['flags'] #extracts priorities
+                                print 'flags: ',flags
                                 order = flags[2]
+                                print 'order: ',order 
                                 msg_p = flags[1]
+                                print 'msg_p: ',msg_p
                                 recipient = header['r_uniqid'] #gets the recipient ID
+                                print 'recipient: ',recipient 
                                 sender = header['s_uniqid']
+                                print 'sender: ', sender
                                 if recipient == 0: #0 is the default ID for the cloud. Indicates an outgoing push.
                                     try: 
                                         dev_loc = DEVICE_DICT[str(sender)] #looks up the location of the sender device
@@ -109,7 +118,7 @@ class Data_Cache(Daemon):
                                         print 'Unknown sender ID. Message will not be stored in data cache.'
                                 else: #indicates an incoming push
                                     try:
-                                        dev_loc = DEVICE_DICT[str(sender)] #looks up the location of the sender device
+                                        dev_loc = DEVICE_DICT[str(recipient)] #looks up the location of the recipient device
                                         incoming_push(dev_loc,msg_p,data, incoming_available_queues, msg_counter, flush, outgoing_available_queues)
                                     except: 
                                         print 'Unknown recipient ID. Message will not be stored in data cache.'
@@ -414,8 +423,8 @@ if __name__ == "__main__":
     dc = Data_Cache('/tmp/waggle.d/Data_Cache.pid')
     if len(sys.argv) == 2:
         if 'start' == sys.argv[1]:
-            dc.start()
             print 'starting.'
+            dc.start()
             #dc.run()
             
         elif 'stop' == sys.argv[1]:
