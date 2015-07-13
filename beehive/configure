@@ -1,11 +1,13 @@
 #!/bin/bash
 export $WAGGLE=.
 dpkg -i server/packages_o/*.deb
-
+dir = .
+cd server/packages_o/
+pip install -e pika-0.9.14
+cd $dir
 mkdir /etc/waggle/
 rm /etc/smsc95xx_mac_addr
-hostName=$RANDOM
-echo $hostName > /etc/waggle/hostname
+echo 0 > /etc/waggle/hostname # The cloud's hostname is defined as 0
 
 rabbitmqctl add_user guest1 guest1
 rabbitmqctl set_permissions guest1 ".*" ".*" ".*"

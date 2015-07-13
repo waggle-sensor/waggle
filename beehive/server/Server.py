@@ -40,16 +40,12 @@ rabbitChannel = rabbitConn.channel()
 #Declare all of the appropriate exchanges, queues, and bindings
 
 for queueName in queue_bindings.keys():
-	print("declaring %s" % queueName)
 	rabbitChannel.queue_declare(queueName)
 
 for exchName in exchage_list:
-	print("declaring %s" % exchName)
 	rabbitChannel.exchange_declare(exchName)
-print queue_bindings
 for key in queue_bindings.keys():
 	bind = queue_bindings[key]
-	print "binding {} to {} under {}".format(key,bind[0],bind[1])
 	rabbitChannel.queue_bind(exchange=bind[0], queue=key, routing_key=bind[1])
 
 
