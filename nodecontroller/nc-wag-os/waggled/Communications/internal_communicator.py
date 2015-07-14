@@ -8,46 +8,50 @@ from protocol.PacketHandler import *
 #sys.path.append('..')
 from device_dict import DEVICE_DICT
     
+#gets the NC hostname 
 with open('/etc/waggle/hostname','r') as file_:
     HOSTNAME = file_.read().strip()
     
 class internal_communicator(object):
-    """ This class acts as the channel of communication to and from the GN and the NC. The internal_msg_handler pulls messages from the data cache, parses the header, and sends the message to the appropriate location. 
-    It also recieves messages from the GNs and pushes them into the data cache.""" 
+    """
+        The internal communicator is the channel of communication between the GNs and the data cache. It consists of four processes: Push and pull client processes to communicate with the data cache
+        and push and pull server processes for communicating with the GNs. 
+    
+    """ 
     #TODO write logic for putting messages back in DC if GN disconnects before message is sent
     #TODO write the thing that handles messages going to the NC
+    #TODO Could combine processes: one server and one client instead of two.
     
     def __init__(self):
         pass
     
     DC_push = Queue() #stores messages to be pushed to the DC
     incoming_request = Queue() #stores the unique ID of GNs currently connected
-    incoming_msg = [Queue(), Queue(), Queue(), Queue(), Queue()] #stores incoming msgs #TODO will likely need to make a separate queue for each GN
+    
+    #stores incoming msgs. Each guest node has a unique queue that corresponds to the location in the device dictionary.
+    incoming_msg = [Queue(), Queue(), Queue(), Queue(), Queue()] 
     
 class internal_client_push(Process):
-    """ A client process that connects to the data cache and pushes outgoing messages. """
+    """ 
+        A client process that connects to the data cache and pushes outgoing messages. 
+    """
     print 'Internal client push started...'
     
     def run(self):
         comm = internal_communicator()
         while True:
             try:
-                if not comm.DC_push.empty(): #if the queue is not empty, connect to DC and send msg
-                    #if os.path.exists('/tmp/Data_Cache_push_server'):
+                #if the queue is not empty, connect to DC and send msg
+                if not comm.DC_push.empty(): 
                     if os.path.exists('/tmp/Data_Cache_server'):
                         client_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
                         try:
-                            #client_sock.connect('/tmp/Data_Cache_push_server')
                             client_sock.connect('/tmp/Data_Cache_server')
-                            print "client_push connected to data cache... "
-                            data = comm.DC_push.get() #theoretically pushes messages from the GN into a queue
+                            #print "client_push connected to data cache... "
+                            data = comm.DC_push.get() #Gets message out of the queue and sends to data cache
                             #print "sending: " , data
                             client_sock.sendall(data)
                             client_sock.close() #closes socket after each message is sent #TODO is there a better way to do this?
-                            #print 'client_push closed'
-                            #print 'Client push going to sleep.'
-                            #time.sleep(100)
-                            #print 'Client push awake.'
                         except:
                             print 'Internal client push unable to connect to DC... connection likely refused.'
                             time.sleep(5)
@@ -64,7 +68,11 @@ class internal_client_push(Process):
         client_sock.close()
 
 class internal_client_pull(Process):
-    """ A client process that connects to the data cache and pulls incoming messages out. Sends a request in the format 'i,dev' and recieves the message"""
+    """ 
+        A client process that connects to the data cache, sends a pull request, and retrieves the message from the data cache. 
+        When a GN connects to the pull server, the device ID is put into a queue. When the queue is not empty, this process
+        pulls the device location and sends it as the pull request.
+    """
     
     def run(self):
         comm = internal_communicator()
@@ -73,16 +81,11 @@ class internal_client_pull(Process):
         while True:
             while comm.incoming_request.empty(): #sleeps until a GN initiates a pull request
                 time.sleep(1)
-                #print 'Client pull going to sleep.'
-                #time.sleep(100)
-                #print 'Client pull awake.'
             try: 
-                #if os.path.exists('/tmp/Data_Cache_pull_server'):
                 if os.path.exists('/tmp/Data_Cache_server'):
                     client_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
                     print "client_pull connected to data cache... "
                     try:
-                        #client_sock.connect('/tmp/Data_Cache_pull_server')#opens socket when there is an incoming pull request
                         client_sock.connect('/tmp/Data_Cache_server')#opens socket when there is an incoming pull request
                         dev = comm.incoming_request.get() #gets the dev ID that is initiating the pull request
                         request = dev + '|' #puts the request in the correct format for the DC
@@ -93,13 +96,13 @@ class internal_client_pull(Process):
                         except: 
                             #print 'Client pull connection lost.'
                             client_sock.close()
-                            #time.sleep(10)
+                            time.sleep(1)
                             break
                         if not msg:
                             break
                         else:
                             #print 'Client pull recieved msg: ', msg
-                            comm.incoming_msg[int(dev) - 1].put(msg) #puts the message in the device's incoming queue #TODO check if this will ever fail
+                            comm.incoming_msg[int(dev) - 1].put(msg) #puts the message in the device's incoming queue 
                             client_sock.close() #closes socket after each message is sent #TODO is there a better way to do this?
                             
                                     
@@ -116,12 +119,13 @@ class internal_client_pull(Process):
         client_sock.close()
         
 class push_server(Process):
-    """ Server process that listens for connections from GNs. Gets messages from the guest nodes, parses header to get device ID (can also use device IP), and msg_p, 
-    adds it to the message, along with indicator flag specifying that it is an outgoing message, stores it in DC_push queue... for now."""
+    """ 
+        Server process that listens for connections from GNs. Once a GN connects and sends the message, the push server puts the message into the DC_Push queue, where it will be pulled out and sent by the push client. 
+    """
     
     def run(self):
         comm = internal_communicator()
-        HOST = '0.0.0.0'
+        HOST = '10.10.10.10'
         PORT = 9090
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.bind((HOST,PORT))
@@ -139,42 +143,19 @@ class push_server(Process):
                     else:
                         print 'Push server pushing msg into DC: ', data
                         comm.DC_push.put(data)
-                        #try:
-                            #header = get_header(data)
-                            #if header['r_uniqid'] == 0: #TODO assuming the cloud ID is 0. May need to change later
-                                #dev, msg_p, order = header['flags'] #unpacks the tuple containing the flags #TODO these flags do not make sense anymore and probably need to change
-                                #if order == False: #lifo is set to False
-                                    #msg_p = 5 #sets msg_p to highest priority, which is the lifo queue
-                                ##data = (str(order) + '|') + data #TODO keeping in here just in case the highest priority doesn't suffice as a lifo queue
-                                #dev = header['s_uniqid']
-                                #try: 
-                                    #dev_loc = DEVICE_DICT[str(dev)] 
-                                #except: 
-                                    #print 'Error: Internal push server unknown sender ID. Message will not be put in data cache.'
-                                    #break
-                                ##adds buffer location indicators
-                                #data = (str(msg_p) + '|') + data
-                                #data = (str(dev_loc) +',') + data
-                                #data = 'o,' + data #indicates that it is an outgoing message
-                                ##print 'Push server pushing msg into DC: ', data
-                                #comm.DC_push.put(data)
-                            #elif dev == int(HOSTNAME): #msg intended for NC sent by GN
-                                #try:
-                                    #msg = unpack(msg)
-                                    #print 'Message recieved for NC: ', msg[1] #just prints the message to the screen if the recipient is the NC #TODO handle messages being sent to NC from GN
-                                #except:
-                                    #print 'Unpack unsuccessful.'
-                            #else: 
-                                    #print "Unknown recipient"
-                        #except:
-                            #print "Not a valid message."
+                       
                 except KeyboardInterrupt, k:
                     print "Internal push server shutting down."
                     break
         server.close()
             
 class pull_server(Process):
-    """ Server process that listens for connections from GNs. Gets messages from the Data Cache and sends them to connected GNs. """
+    """ 
+        Server process that listens for connections from GNs. When a guest node connects, it sends its unique ID. The pull server puts that ID into a queue. The ID gets pulled out by the pull client and sent
+        to the data cache. The client pull recieves a message from the data cache, puts it into the corresponding GN's queue. When the queue is not empty, the pull server pulls the message out and sends it to
+        GN. If the GN disconnects before this process is complete, the pull server puts the message back into the DC_push queue to be put back into the data cache.
+        
+    """
     
     def run(self):
         comm = internal_communicator()
@@ -200,10 +181,15 @@ class pull_server(Process):
                         except:
                             print 'Error...Internal pull server device not in dictionary.'
                         comm.incoming_request.put(str(data)) #Unique ID goes into incoming requests queue. These get pulled out by the pull_client as pull requests
-                        while comm.incoming_msg[data-1].empty():#TODO each GN should have a queue
+                        while comm.incoming_msg[data-1].empty():
                             time.sleep(1) #sleeps then tries again
-                        msg = comm.incoming_msg[data-1].get() #returns incoming messages. Will return 'False' if no messages are available.
-                        client_sock.sendall(msg) #sends the msg to the GN #TODO can probably to a try here with an except that puts the message back into the DC
+                        msg = comm.incoming_msg[data-1].get() #returns incoming messages. 
+                        try: 
+                            client_sock.sendall(msg) #sends the msg to the GN 
+                        except: 
+                            #puts the message back into the DC_push queue if the GN disconnects before the message is sent.
+                            print 'Putting message back into DC_push queue...'
+                            comm.DC_push.put(data)
                 except KeyboardInterrupt, k:
                     print "Internal pull server shutting down."
                     server.close()

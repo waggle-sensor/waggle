@@ -8,7 +8,13 @@ from protocol.PacketHandler import *
 #sys.path.append('..')
 from device_dict import DEVICE_DICT
 
-""" This is the communication channel between the cloud and the DC. It consists of a pika client process for RabbitMQ to push and pull messages to and from the cloud and push and pull client processes connected to the DC. """
+""" 
+    The external communicator is the communication channel between the cloud and the DC. It consists of four processes: two pika clients for pushing and pulling to the cloud and two clients for pushing 
+    and pulling to the data cache.
+"""
+
+#TODO initial queue declaration
+#TODO node SSL certificates
 
 #sets the queue name to the hostname of the node for now
 
@@ -23,20 +29,23 @@ class external_communicator(object):
     def __init__(self):
         pass
     
-    incoming = Queue() #stores messages to push into DC #TODO should have a queue for each GN
+    incoming = Queue() #stores messages to push into DC 
     outgoing = Queue() #stores messages going out to cloud
-    cloud_connected = Value('i')
+    cloud_connected = Value('i') #indicates if the cloud is or is not connected
     
 class pika_push(Process):
-    """ A pika client for rabbitMQ to push messages to the cloud. """ 
+    """ 
+        A pika client for rabbitMQ to push messages to the cloud. When the cloud is connected, the pull client sends pull requests and puts messages into the outgoing queue. 
+        When the outgoing queue is not empty, this pika client will connect and push those messages to the cloud.
+    """ 
     def run(self):
         comm = external_communicator()
-        creds = pika.PlainCredentials('guest1', 'guest1')
-        #params = pika.connection.URLParameters("amqps://guest1:guest1@10.10.10.104:5671/%2F") #SSL
+        #creds = pika.PlainCredentials('guest1', 'guest1')
+        params = pika.connection.URLParameters("amqps://guest1:guest1@10.10.10.104:5671/%2F") #SSL
         #params = pika.ConnectionParameters('beehive.wa8.gl',5672, '/', creds) 
         #params = pika.ConnectionParameters('10.10.10.108',5672, '/', creds) 
         #params = pika.ConnectionParameters('10.10.10.143',5672, '/', creds) 
-        params = pika.ConnectionParameters('10.10.10.139',5672, '/', creds)
+        #params = pika.ConnectionParameters('10.10.10.139',5672, '/', creds)
         print 'Pika push started...'
         while True:
             try:
@@ -50,9 +59,6 @@ class pika_push(Process):
                     #print 'Pika push connection successful'
                     while comm.outgoing.empty(): #sleeps until there are messages to send
                         time.sleep(1)
-                        #print 'pika push going to sleep'
-                        #time.sleep(100) 
-                        #print 'Pika push awake.'
                     
                     msg = comm.outgoing.get() # gets the first item in the outgoing queue
                     #print 'Pika_push... sending msg to cloud.'
@@ -68,17 +74,19 @@ class pika_push(Process):
         connection.close()
         
 class pika_pull(Process):
-    """ A pika client for pulling messages from the cloud. """ 
+    """ 
+        A pika client for pulling messages from the cloud. If messages are sent from the cloud, this client will put them into the incoming queue.
+    """ 
     
     def run(self):
         print 'Pika pull started...'
         comm = external_communicator()
-        creds = pika.PlainCredentials('guest1', 'guest1')
-        #params = pika.connection.URLParameters("amqps://guest1:guest1@10.10.10.104:5671/%2F") #SSL
+        #creds = pika.PlainCredentials('guest1', 'guest1')
+        params = pika.connection.URLParameters("amqps://guest1:guest1@10.10.10.104:5671/%2F") #SSL
         #params = pika.ConnectionParameters('beehive.wa8.gl',5672, '/', creds) #beehive.wa8.gl
         #params = pika.ConnectionParameters('10.10.10.108',5672, '/', creds) #beehive.wa8.gl
         #params = pika.ConnectionParameters('10.10.10.143',5672, '/', creds)
-        params = pika.ConnectionParameters('10.10.10.139',5672, '/', creds)
+        #params = pika.ConnectionParameters('10.10.10.139',5672, '/', creds)
         while True: 
             
             try:
@@ -114,7 +122,10 @@ def callback(ch, method, properties, body):
             
         
 class external_client_pull(Process):
-    """ A client process that connects to the data cache and pulls outgoing messages. Sends a pull request in the format 'o '"""
+    """ 
+        A client process that connects to the data cache if the cloud is currently connected.  Once a message is recieved, it is put into the outgoing queue. 
+        
+    """
     
     def run(self):
         print 'External client pull started...'
@@ -123,10 +134,8 @@ class external_client_pull(Process):
             try:
                 if comm.cloud_connected.value == 1: #checks if the cloud is connected
                     try:
-                        #if os.path.exists('/tmp/Data_Cache_pull_server'):
                         if os.path.exists('/tmp/Data_Cache_server'):
                             client_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-                            #client_sock.connect('/tmp/Data_Cache_pull_server') #connects to server
                             client_sock.connect('/tmp/Data_Cache_server') #connects to server
                             #print "Client_pull connected to data cache... "
                             data = 'o|' #sends the pull request in the correct format
@@ -138,14 +147,8 @@ class external_client_pull(Process):
                                 if msg != 'False':
                                     comm.outgoing.put(msg) #puts the message in the outgoing queue
                                     client_sock.close() #closes socket after each message is sent #TODO is there a better way to do this?
-                                    #print 'Client pull going to sleep.'
-                                    #time.sleep(100)
-                                    #print 'Client pull awake.'
                                 else: 
                                     client_sock.close()
-                                    #print 'Client pull going to sleep.'
-                                    #time.sleep(100)
-                                    #print 'Client pull awake.'
                         else:
                             print 'External client pull unable to connect to the data cache... path does not exist!'
                             time.sleep(5)
@@ -163,7 +166,9 @@ class external_client_pull(Process):
         
         
 class external_client_push(Process):
-    """ A client process that connects to the data cache and pushes incoming messages. """
+    """ 
+        A client process that connects to the data cache and pushes incoming messages.
+    """
     
     def run(self):
         print 'External client push started...'
@@ -173,49 +178,14 @@ class external_client_push(Process):
         while True:
             while comm.incoming.empty(): #sleeps until a message arrives in the incoming queue 
                 time.sleep(1)
-                #print 'Client push going to sleep.'
-                #time.sleep(100)
-                #print 'Client push awake.'
             try: 
-                #if os.path.exists('/tmp/Data_Cache_push_server'):
                 if os.path.exists('/tmp/Data_Cache_server'):
                     client_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-                    #client_sock.connect('/tmp/Data_Cache_push_server') #opens socket when a message is in the queue
                     client_sock.connect('/tmp/Data_Cache_server') #opens socket when a message is in the queue
                     #print "Client_push connected to data cache... "
                     msg = comm.incoming.get() #gets the incoming message from the queue
                     client_sock.send(msg) #sends msg
                     client_sock.close()
-                        #try:
-                            #header = get_header(msg)
-                            
-                            #flags = header['flags'] #extracts priorities
-                            #dev = header['r_uniqid'] #gets the recipient ID
-                            
-                            ##if dev == int(HOSTNAME): #msg intended for NC
-                                ##try:
-                                    ##msg = unpack(msg)
-                                    ##client_sock.close() 
-                                    ##print 'Message recieved from cloud for NC: ', msg[1] #just prints the message to the screen if the recipient is the NC #TODO handle messages being sent to NC 
-                                ##except:
-                                    ##print 'Unpack unsuccessful.'
-                                ##client_sock.close() 
-                            ##else:
-                            #try: 
-                                #dev_loc = DEVICE_DICT[str(dev)] 
-                            #except: 
-                                #print 'Error: External client push- unknown recipient ID. Message will not be put in data cache.'
-                                #break
-                            #msg_p = flags[1]
-                            ##adding flags to msg in correct format
-                            #msg = (str(msg_p) + '|') + msg #message priority
-                            #msg = (str(dev_loc) + ',') + msg #device location in buffer
-                            #msg = 'i,' + msg #indicates incoming push
-                            #client_sock.send(msg) #sends msg
-                            #client_sock.close()
-                        #except:
-                            #print "External client push-Not a valid message. Will not be put into the DC"
-                            #client_sock.close() 
                 else:
                     print "External client push-Unable to connect to Data Cache."
                     time.sleep(5)
