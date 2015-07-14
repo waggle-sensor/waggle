@@ -31,10 +31,13 @@ class Function(object):
 
 		# Chop up the name
 		methodName = name.lstrip().split(" ")
-		if methodName[0][:2] == "__":
-			methodName = methodName[2].split("(")[0]
-		else:
-			methodName = methodName[1].split("(")[0]
+		try:
+			if methodName[0][:2] == "__":
+				methodName = methodName[2].split("(")[0]
+			else:
+				methodName = methodName[1].split("(")[0]
+		except Exception:
+			print methodName
 		self.data["name"] = methodName
 
 	def toRST(self):
