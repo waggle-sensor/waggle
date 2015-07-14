@@ -11,33 +11,11 @@
 
 
 //---------- C O N S T A N T S ------------------------------------------------
-// Address of POST result
-const byte EEPROM_POST_RESULT = 0x0000;
-// Address of number of times SOS boot mode has been tried
-const byte EEPROM_NUM_SOS_BOOT_TRIES = 0x0001;
-// Address of enabled/disabled status of node controller
-const byte EEPROM_NC_DISABLED = 0x0002;
-// Address of enabled/disabled status of ethernet switch
-const byte EEPROM_ES_DISABLED = 0x0003;
-// Address of lower temperature limit for system monitor
-const byte EEPROM_SYSMON_ENVIRON_TEMP_LOW = 0x0004;
-// Address of upper temperature limit for system monitor
-const byte EEPROM_SYSMON_ENVIRON_TEMP_HIGH = 0x0005;
-// Address of lower relative humidity limit for system monitor
-const byte EEPROM_SYSMON_ENVIRON_RH_LOW = 0x0006;
-// Address of upper relative humidity limit for system monitor
-const byte EEPROM_SYSMON_ENVIRON_RH_HIGH = 0x0007;
-// Address of lower temperature limit for node controller
-const byte EEPROM_NC_ENVIRON_TEMP_LOW = 0x0008;
-// Address of upper temperature limit for node controller
-const byte EEPROM_NC_ENVIRON_TEMP_HIGH = 0x0009;
-// Address of flag for incomplete timer test
-const byte EEPROM_TIMER_TEST_INCOMPLETE = 0x000A;
-
 const byte LED = 13;
-const long UART_BAUD = 57600L;
-const byte CHECK_ENVIRON_COUNT = 5;
-const char USART_RX_BUFFER_SIZE = 100;
+const char NC_NOTIFIER_STATUS = '@';
+const char NC_NOTIFIER_PROBLEM = '#';
+const char NC_NOTIFIER_PARAMS = '$';
+const char NC_TERMINATOR = '!';
 
 
 
@@ -45,6 +23,49 @@ const char USART_RX_BUFFER_SIZE = 100;
 volatile byte timer1_interrupt_fired = 0;
 volatile char USART_RX_char;
 volatile boolean _USART_new_char = false;
+
+// EEPROM addresses whose values are set by node controller:
+// Initial values act as default
+unsigned long EEMEM E_UART_BAUD = 57600UL;
+unsigned int EEMEM E_USART_RX_BUFFER_SIZE = 150;
+byte EEMEM E_ENVIRON_CHECK_PERIOD = 5;
+byte EEMEM E_MAX_NUM_SOS_BOOT_TRIES = 3;
+byte EEMEM E_HEARTBEAT_TIMEOUT_NC = 5;
+byte EEMEM E_HEARTBEAT_TIMEOUT_SWITCH = 5;
+byte EEMEM E_HEARTBEAT_TIMEOUT_GN1 = 5;
+byte EEMEM E_HEARTBEAT_TIMEOUT_GN2 = 5;
+byte EEMEM E_HEARTBEAT_TIMEOUT_GN3 = 5;
+byte EEMEM E_HEARTBEAT_TIMEOUT_GN4 = 5;
+byte EEMEM E_BAD_TEMP_TIMEOUT_SYSMON = 5;
+byte EEMEM E_BAD_TEMP_TIMEOUT_NC = 5;
+byte EEMEM E_BAD_TEMP_TIMEOUT_SWITCH = 5;
+byte EEMEM E_BAD_TEMP_TIMEOUT_GN1 = 5;
+byte EEMEM E_BAD_TEMP_TIMEOUT_GN2 = 5;
+byte EEMEM E_BAD_TEMP_TIMEOUT_GN3 = 5;
+byte EEMEM E_BAD_TEMP_TIMEOUT_GN4 = 5;
+int EEMEM E_TEMP_MIN_SYSMON = 0;
+int EEMEM E_TEMP_MAX_SYSMON = 100;
+int EEMEM E_TEMP_MIN_NC = 0;
+int EEMEM E_TEMP_MAX_NC = 100;
+int EEMEM E_TEMP_MIN_SWITCH = 0;
+int EEMEM E_TEMP_MAX_SWITCH = 100;
+int EEMEM E_TEMP_MIN_GN1 = 0;
+int EEMEM E_TEMP_MAX_GN1 = 100;
+int EEMEM E_TEMP_MIN_GN2 = 0;
+int EEMEM E_TEMP_MAX_GN2 = 100;
+int EEMEM E_TEMP_MIN_GN3 = 0;
+int EEMEM E_TEMP_MAX_GN3 = 100;
+int EEMEM E_TEMP_MIN_GN4 = 0;
+int EEMEM E_TEMP_MAX_GN4 = 100;
+byte EEMEM E_HUMIDITY_MIN_SYSMON = 0;
+byte EEMEM E_HUMIDITY_MAX_SYSMON = 100;
+
+// EEPROM addresses whose values are not set by node controller:
+byte EEMEM E_NC_DISABLED = 0;
+byte EEMEM E_ES_DISABLED = 0;
+byte EEMEM E_POST_RESULT = 0;
+byte EEMEM E_TIMER_TEST_INCOMPLETE = 0;
+byte EEMEM E_NUM_SOS_BOOT_TRIES = 0;
 
 
 
@@ -67,6 +88,7 @@ void setup()
   //   boot_SOS();
 
   init_primary();
+  get_params_nc();
 }
 
 
@@ -76,7 +98,7 @@ void loop()
 {
   
   // Has the timer overflowed enough times?
-  if(timer1_interrupt_fired >= CHECK_ENVIRON_COUNT)
+  if(timer1_interrupt_fired >= )
   {
     // Clear the Timer1 overflow counter
     timer1_interrupt_fired = 0;
@@ -84,10 +106,13 @@ void loop()
     // Environ. checks go here
 
     // Send status report to node controller
-    //send_status();
+    send_status();
+
+    // Send problem report to node controller
+    send_problem();
   }
 
-  get_params_nc();
+  //get_params_nc();
 
   // Received new serial data?
   // if(_USART_new_char)
@@ -107,7 +132,34 @@ void loop()
 */
 void send_status()
 {
-  Serial.println("$");
+  // Tell the node controller that a status report is coming
+  Serial.println(NC_NOTIFIER_STATUS);
+
+  // Give it time to get ready
+  delay(10);
+
+  // Send status report
+  Serial.println("status report");
+}
+
+
+
+//---------- S E N D _ P R O B L E M ------------------------------------------
+/*
+   Sends a problem report to the node controller.
+
+   :rtype: none
+*/
+void send_problem()
+{
+  // Tell the node controller that a problem report is coming
+  Serial.println(NC_NOTIFIER_PROBLEM);
+
+  // Give it time to get ready
+  delay(10);
+
+  // Send problem report
+  Serial.println("problem report");
 }
 
 

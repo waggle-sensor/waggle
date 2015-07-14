@@ -1,5 +1,4 @@
 //---------- C O N S T A N T S ------------------------------------------------
-const byte THRESHOLD_NUM_TRIES = 5;
 const byte NO_WATCHDOG = 1;
 const byte NO_TIMER = 2;
 const byte NO_ADC = 3;
@@ -9,6 +8,9 @@ const byte NO_INTERRUPT = 4;
 
 //---------- G L O B A L S ----------------------------------------------------
 byte SOS_mode;
+
+// These are set (updated) by the node controller:
+byte THRESHOLD_NUM_TRIES = 5;
 
 
 
