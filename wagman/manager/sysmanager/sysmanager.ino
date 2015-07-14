@@ -81,7 +81,7 @@ void loop()
 
    :rtype: none
 */
-ISR(TIMER1_OVF_vect)
+ ISR(TIMER1_OVF_vect)
 {
   // Reset watchdog
   wdt_reset();

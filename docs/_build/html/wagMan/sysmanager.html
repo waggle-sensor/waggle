@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Waggle Server Installation and Configuration &mdash; Waggle 0.3 documentation</title>
+  <title>sysmanager.ino &mdash; Waggle 0.3 documentation</title>
   
 
   
@@ -33,9 +33,9 @@
 
   
     <link rel="top" title="Waggle 0.3 documentation" href="../index.html"/>
-        <link rel="up" title="Waggle Server" href="server.html"/>
-        <link rel="next" title="Node Controller" href="../nodeController/nodeController.html"/>
-        <link rel="prev" title="Waggle Server" href="server.html"/> 
+        <link rel="up" title="Waggle System Manager" href="wagMan.html"/>
+        <link rel="next" title="Waggle Communication Protocol" href="../protocol/protocol.html"/>
+        <link rel="prev" title="boot_primary.ino" href="boot_primary.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -75,19 +75,19 @@
           
           
               <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="server.html">Waggle Server</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="">Waggle Server Installation and Configuration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#quick-install">Quick install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../server/server.html">Waggle Server</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../server/installation.html">Waggle Server Installation and Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../server/installation.html#quick-install">Quick install</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../nodeController/nodeController.html">Node Controller</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guestNode/guestNode.html">Guest Node</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../wagMan/wagMan.html">Waggle System Manager</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../wagMan/POST.html">POST.ino</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../wagMan/boot_SOS.html">boot_SOS.ino</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../wagMan/boot_gn.html">boot_gn.ino</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../wagMan/boot_primary.html">boot_primary.ino</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../wagMan/sysmanager.html">sysmanager.ino</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="wagMan.html">Waggle System Manager</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="POST.html">POST.ino</a></li>
+<li class="toctree-l2"><a class="reference internal" href="boot_SOS.html">boot_SOS.ino</a></li>
+<li class="toctree-l2"><a class="reference internal" href="boot_gn.html">boot_gn.ino</a></li>
+<li class="toctree-l2"><a class="reference internal" href="boot_primary.html">boot_primary.ino</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">sysmanager.ino</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../protocol/protocol.html">Waggle Communication Protocol</a><ul>
@@ -129,13 +129,13 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../index.html">Docs</a> &raquo;</li>
       
-          <li><a href="server.html">Waggle Server</a> &raquo;</li>
+          <li><a href="wagMan.html">Waggle System Manager</a> &raquo;</li>
       
-    <li>Waggle Server Installation and Configuration</li>
+    <li>sysmanager.ino</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../_sources/server/installation.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/wagMan/sysmanager.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -144,37 +144,24 @@
 </div>
           <div role="main" class="document">
             
-  <div class="section" id="waggle-server-installation-and-configuration">
-<h1>Waggle Server Installation and Configuration<a class="headerlink" href="#waggle-server-installation-and-configuration" title="Permalink to this headline">¶</a></h1>
-<p>When running a waggle server, it is assumed that you are running
-a version of ubuntu on your machine, and that it is set up to clone
-via ssh from git.</p>
-<p>For assistance setting up git in this way on your machine, follow
-these instructions:
-<a class="reference external" href="https://help.github.com/articles/generating-ssh-keys/">Git SSH Setup</a></p>
-<p>If you are SSHing into a remote machine to set up a server,
-you should set up SSH forwarding according to these instructions:
-<a class="reference external" href="https://developer.github.com/guides/using-ssh-agent-forwarding/">SSH Forwarding</a></p>
-<p>To set up a machine to run as a waggle server, do the following:</p>
-<ol class="arabic simple">
-<li>Clone the git repo from <cite>git&#64;github.com:waggle-sensor/waggle.git</cite></li>
-<li>In the cloned repo, go to the waggle/beehive directory</li>
-<li>Run the <code class="docutils literal"><span class="pre">configure.sh</span></code> script in the beehive directory</li>
-<li>Once this setup is complete, move to the beehive/server directory</li>
-<li>To start the server, run the command <code class="docutils literal"><span class="pre">python</span> <span class="pre">Server.py</span></code>.</li>
-</ol>
+  <div class="section" id="sysmanager-ino">
+<h1>sysmanager.ino<a class="headerlink" href="#sysmanager-ino" title="Permalink to this headline">¶</a></h1>
+<p><strong>ISR</strong></p>
+<div class="line-block">
+<div class="line">Interrupt for Timer1 overflow.  Resets the watchdog and increments the</div>
+<div class="line">counter used to tell the MCU when to check the environment.</div>
+<div class="line"><br /></div>
 </div>
-<div class="section" id="quick-install">
-<h1>Quick install<a class="headerlink" href="#quick-install" title="Permalink to this headline">¶</a></h1>
-<p>To do a quick install, move to the directory where you want the files
-and simply run these commands. (Assumes git ssh is set up.)</p>
-<div class="highlight-python"><div class="highlight"><pre>git clone git@github.com:waggle-sensor/waggle.git
-cd waggle/beehive
-./configure
-cd server
-</pre></div>
-</div>
-<p>Once this has been run, you can just type <code class="docutils literal"><span class="pre">python</span> <span class="pre">Server.py</span></code> and the server will start.</p>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body">none</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
 </div>
 
 
@@ -183,10 +170,10 @@ cd server
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../nodeController/nodeController.html" class="btn btn-neutral float-right" title="Node Controller" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="../protocol/protocol.html" class="btn btn-neutral float-right" title="Waggle Communication Protocol" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="server.html" class="btn btn-neutral" title="Waggle Server" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="boot_primary.html" class="btn btn-neutral" title="boot_primary.ino" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
