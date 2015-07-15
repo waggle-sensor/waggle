@@ -42,10 +42,6 @@ openssl pkcs12 -export -out keycert.p12 -in cert.pem -inkey key.pem -passout pas
 cd ..
 # Move files to correct places
 mv rabbitmq.config /etc/rabbitmq/
-
-mkdir /usr/lib/waggle/
-
-# in SSL/
 cd ..
 mv SSL /usr/lib/waggle/
 
