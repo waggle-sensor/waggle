@@ -125,7 +125,7 @@ class push_server(Process):
     
     def run(self):
         comm = internal_communicator()
-        HOST = '10.10.10.10'
+        HOST = 'localhost'
         PORT = 9090
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.bind((HOST,PORT))
@@ -159,7 +159,7 @@ class pull_server(Process):
     
     def run(self):
         comm = internal_communicator()
-        HOST = '0.0.0.0'
+        HOST = 'localhost'
         PORT = 9091
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.bind((HOST,PORT))
