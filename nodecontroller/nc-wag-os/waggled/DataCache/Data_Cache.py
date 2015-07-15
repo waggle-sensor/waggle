@@ -73,12 +73,11 @@ class Data_Cache(Daemon):
                 #TODO Is there a better way to do this?
                 try:
                     data = client_sock.recv(2048) #arbitrary
-                    #print 'Server received: ', data
+                    print 'Server received: ', data
                     if not data:
                         break
                     else:
                         if data.find('|') != -1: #Indicates that it is a pull request 
-                            #print 'if data.find'
                             dest, data = data.split('|', 1) #splits to get either 'o' for outgoing request or the device location for incoming request
                             if dest != 'o':
                                 msg = incoming_pull(int(dest), incoming_available_queues, msg_counter) #pulls a message from that device's queue
@@ -132,13 +131,15 @@ class Data_Cache(Daemon):
 
                         
                 except KeyboardInterrupt, k:
-                    print "Data Cache pull server shutting down..."
+                    print "Data Cache server shutting down..."
                     break
             server_sock.close()
-            os.remove('/tmp/Data_Cache_pull_server')
-        server_sock.close()
-        os.remove('/tmp/Data_Cache_server')
-        
+            os.remove('/tmp/Data_Cache_server')
+            break
+        if os.path.exists('/tmp/Data_Cache_server'): #checking for the file for smooth shutdown
+            server_sock.close()
+            os.remove('/tmp/Data_Cache_server')
+            
    
 def outgoing_push(dev, msg_p, msg, outgoing_available_queues, msg_counter, flush, incoming_available_queues): 
     """
@@ -373,7 +374,7 @@ def get_priority(outgoing_available_queues):
 #uncomment for testing    
         
 if __name__ == "__main__":
-    dc = Data_Cache('/tmp/waggle.d/Data_Cache.pid')
+    dc = Data_Cache('/tmp/Data_Cache.pid') #TODO may need to change this
     if len(sys.argv) == 2:
         if 'start' == sys.argv[1]:
             print 'starting.'
