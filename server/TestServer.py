@@ -14,7 +14,7 @@ header_dict = {
 }
 
 
-params = pika.connection.URLParameters("amqp://guest1:guest1@10.10.10.148:5672/%2F")
+params = pika.connection.URLParameters("amqps://guest1:guest1@10.10.10.148:5671/%2F")
 connection = pika.BlockingConnection(params)
 channel = connection.channel()
 print("Channel to RabbitMQ opened.")
