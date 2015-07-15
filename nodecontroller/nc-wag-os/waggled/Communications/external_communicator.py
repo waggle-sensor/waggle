@@ -41,7 +41,7 @@ class pika_push(Process):
     def run(self):
         comm = external_communicator()
         #creds = pika.PlainCredentials('guest1', 'guest1')
-        params = pika.connection.URLParameters("amqps://guest1:guest1@10.10.10.104:5671/%2F") #SSL
+        params = pika.connection.URLParameters("amqps://waggle:waggle@10.10.10.108:5671/%2F") #SSL
         #params = pika.ConnectionParameters('beehive.wa8.gl',5672, '/', creds) 
         #params = pika.ConnectionParameters('10.10.10.108',5672, '/', creds) 
         #params = pika.ConnectionParameters('10.10.10.143',5672, '/', creds) 
@@ -61,7 +61,7 @@ class pika_push(Process):
                         time.sleep(1)
                     
                     msg = comm.outgoing.get() # gets the first item in the outgoing queue
-                    #print 'Pika_push... sending msg to cloud.'
+                    print 'Pika_push... sending msg to cloud.'
                     channel.basic_publish(exchange='waggle_in', routing_key= 'in', body= msg) #sends to cloud 
                 except: 
                     print 'Pika_push currently unable to connect to cloud...' 
@@ -82,7 +82,7 @@ class pika_pull(Process):
         print 'Pika pull started...'
         comm = external_communicator()
         #creds = pika.PlainCredentials('guest1', 'guest1')
-        params = pika.connection.URLParameters("amqps://guest1:guest1@10.10.10.104:5671/%2F") #SSL
+        params = pika.connection.URLParameters("amqps://waggle:waggle@10.10.10.108:5671/%2F") #SSL
         #params = pika.ConnectionParameters('beehive.wa8.gl',5672, '/', creds) #beehive.wa8.gl
         #params = pika.ConnectionParameters('10.10.10.108',5672, '/', creds) #beehive.wa8.gl
         #params = pika.ConnectionParameters('10.10.10.143',5672, '/', creds)
@@ -115,7 +115,7 @@ class pika_pull(Process):
 #pulls the message from the cloud and puts it into incoming queue 
 def callback(ch, method, properties, body):
     comm = external_communicator()
-    #print 'Callback received message from cloud: ', body
+    print 'Callback received message from cloud: ', body
     comm.incoming.put(body) 
     ch.basic_ack(delivery_tag=method.delivery_tag) #RabbitMQ will not delete message until ack received
                 
@@ -198,30 +198,30 @@ class external_client_push(Process):
         
        
 #uncomment for testing
-if __name__ == "__main__":
-    try:
-        #starts the pull server
-        pika_pull = pika_pull()
-        pika_pull.start()
+#if __name__ == "__main__":
+    #try:
+        ##starts the pull server
+        #pika_pull = pika_pull()
+        #pika_pull.start()
         
-        #starts the push server 
-        pika_push = pika_push()
-        pika_push.start()
+        ##starts the push server 
+        #pika_push = pika_push()
+        #pika_push.start()
         
-        #starts the push client
-        push_client = external_client_push()
-        push_client.start()
+        ##starts the push client
+        #push_client = external_client_push()
+        #push_client.start()
         
-        #starts the pull client
-        pull_client = external_client_pull()
-        pull_client.start()
-        while True:
-            pass
+        ##starts the pull client
+        #pull_client = external_client_pull()
+        #pull_client.start()
+        #while True:
+            #pass
         
-    except KeyboardInterrupt, k:
-        pika_pull.terminate()
-        pika_push.terminate()
-        push_client.terminate()
-        pull_client.terminate()
-        print 'Done.'
+    #except KeyboardInterrupt, k:
+        #pika_pull.terminate()
+        #pika_push.terminate()
+        #push_client.terminate()
+        #pull_client.terminate()
+        #print 'Done.'
         

@@ -197,31 +197,31 @@ class pull_server(Process):
         server.close()
     
 #uncomment for testing
-if __name__ == "__main__":
-    try:
-        #starts the pull server
-        pull_serv = pull_server()
-        pull_serv.start()
+#if __name__ == "__main__":
+    #try:
+        ##starts the pull server
+        #pull_serv = pull_server()
+        #pull_serv.start()
         
-        #starts the push server 
-        push_serv = push_server()
-        push_serv.start()
+        ##starts the push server 
+        #push_serv = push_server()
+        #push_serv.start()
         
-        #starts the push client
-        push_client = internal_client_push()
-        push_client.start()
+        ##starts the push client
+        #push_client = internal_client_push()
+        #push_client.start()
         
-        #starts the pull client
-        pull_client = internal_client_pull()
-        pull_client.start()
-        while True:
-            pass
+        ##starts the pull client
+        #pull_client = internal_client_pull()
+        #pull_client.start()
+        #while True:
+            #pass
         
-    except KeyboardInterrupt, k:
-        pull_serv.terminate()
-        push_serv.terminate()
-        push_client.terminate()
-        pull_client.terminate()
-        print 'Done.'
+    #except KeyboardInterrupt, k:
+        #pull_serv.terminate()
+        #push_serv.terminate()
+        #push_client.terminate()
+        #pull_client.terminate()
+        #print 'Done.'
     
                 
