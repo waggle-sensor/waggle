@@ -1,6 +1,7 @@
 # registrationprocess.py
 import sys
 sys.path.append("..")
+sys.path.append("/usr/lib/waggle/")
 from multiprocessing import Process, Manager
 import pika
 from protocol.PacketHandler import *
