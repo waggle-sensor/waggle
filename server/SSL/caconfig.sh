@@ -1,7 +1,6 @@
 #!/bin/bash
-oldDir=.
 
-cd DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd ) # Now in /SSL/
+cd /usr/lib/waggle/SSL/
 
 # Begin constructing the Certificate Authority
 cd waggleca
@@ -42,12 +41,8 @@ openssl pkcs12 -export -out keycert.p12 -in cert.pem -inkey key.pem -passout pas
 
 cd ..
 # Move files to correct places
-mv rabbit.config /etc/rabbitmq/
-
-mkdir /usr/lib/waggle/
-
-# in SSL/
+mv rabbitmq.config /etc/rabbitmq/
 cd ..
 mv SSL /usr/lib/waggle/
 
-cd $oldDir
+service rabbitmq-server restart

@@ -1,6 +1,7 @@
 # registrationprocess.py
 import sys
-sys.path.append("../../../devtools/protocol_common")
+sys.path.append("..")
+sys.path.append("/usr/lib/waggle/")
 from multiprocessing import Process, Manager
 import pika
 from protocol.PacketHandler import *
@@ -38,15 +39,13 @@ class RegProcess(Process):
 		if header["s_uniqid"] in self.routing_table:
 			pass
 		else:
-			print "This is a new node."
+			print "Registering new node."
 			# Add the node to the registration file and make and bind its queue
 			with open('registrations/nodes.txt','a+') as nodeList:
 				nodeList.write("{}:{}\n".format(str(header["s_uniqid"]),msg))
 			self.channel.queue_declare(msg)
-			print "I made it a queue."
 			self.channel.queue_bind(exchange='internal',queue=msg,routing_key=msg)
 			self.routing_table[header["s_uniqid"]] = msg
-			print "Its all registered."
 
 		# Send the node a registration confirmation.
 		resp_header = {

@@ -1,7 +1,8 @@
 # dataprocess.py
 
 import sys
-sys.path.append("../../../devtools/protocol_common")
+sys.path.append("..")
+sys.path.append("/usr/lib/waggle/")
 from multiprocessing import Process, Manager
 import pika
 from protocol.PacketHandler import *

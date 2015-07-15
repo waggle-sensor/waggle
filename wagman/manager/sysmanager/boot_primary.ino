@@ -1,5 +1,5 @@
 //---------- C O N S T A N T S ------------------------------------------------
-const char NC_TERMINATOR = '!';
+
 
 
 
@@ -236,16 +236,18 @@ void get_time_nc()
 void get_params_nc()
 {
    // Send request
-   Serial.println("$");
+   Serial.println(NC_NOTIFIER_PARAMS);
 
    // Save the node controller's response into a string.
    // Default timeout value is 1 second
-   String received_params = Serial.readStringUntil(NC_TERMINATOR);
+   String received_params = "";
+   received_params = Serial.readStringUntil(NC_TERMINATOR);
 
-   Serial.println(received_params);
-
-   if(received_params == "523")
-      digitalWrite(LED, HIGH);
+   // Were parameters received?
+   if(received_params.length() > 0)
+   {
+      
+   }
 }
 
 

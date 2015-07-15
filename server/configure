@@ -1,0 +1,23 @@
+#!/bin/bash
+[ `whoami` = root ] || { sudo "$0" "$@"; exit $?; }
+dpkg -i packages_o/*.deb
+cd packages_o/
+pip install -e pika-0.9.14
+cd ..
+mkdir /etc/waggle/
+echo 0 > /etc/waggle/hostname # The cloud's hostname is defined as 0
+mkdir /usr/lib/waggle
+echo Moving waggle server folder to proper place.
+cd ..
+mv server/ /usr/lib/waggle/
+cp -R devtools/protocol_common/* /usr/lib/waggle/
+rabbitmqctl add_user waggle waggle
+rabbitmqctl set_permissions waggle ".*" ".*" ".*"
+
+echo Setting up SSL
+mkdir /usr/lib/waggle/SSL
+mv /usr/lib/waggle/server/SSL/* /usr/lib/waggle/SSL
+cd /usr/lib/waggle/SSL/
+source caconfig.sh
+
+exit 0
