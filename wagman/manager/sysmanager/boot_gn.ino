@@ -16,5 +16,9 @@
 */
 void boot_gn()
 {
-	
+	// // Is guest node 1 enabled?
+	// if(eeprom_read_byte(&E_GN1_ENABLED))
+	// {
+		
+	// }
 }
