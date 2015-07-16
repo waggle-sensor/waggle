@@ -85,12 +85,11 @@ while True:
     wxconnection = False
     while wxconnection == False:
         try:
-            wxsensor = serial.Serial('/dev/ttyUSB0',115200,timeout=4)
+            wxsensor = serial.Serial('/dev/ttyACM0',57600,timeout=300)
             wxconnection = True
         except:
-            print "Waiting for Connection..."
+            print "Still Waiting for Connection..."
             time.sleep(1)
-            pass
     try:
         wxsensor.flushInput()
         wxsensor.flushOutput()

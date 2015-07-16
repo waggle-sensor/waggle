@@ -1,0 +1,11 @@
+#!/bin/bash
+export $WAGGLE=.
+dpkg -i gn-wag-os/packages_o/*.deb
+dir = .
+cd gn-wag-os/packages_o/
+pip install -e pika-0.9.14
+cd $dir
+mkdir /etc/waggle/
+rm /etc/smsc95xx_mac_addr
+echo $RANDOM > /etc/waggle/hostname # The node's hostname
+

@@ -198,30 +198,30 @@ class external_client_push(Process):
         
        
 #uncomment for testing
-#if __name__ == "__main__":
-    #try:
-        ##starts the pull server
-        #pika_pull = pika_pull()
-        #pika_pull.start()
+if __name__ == "__main__":
+    try:
+        #starts the pull server
+        pika_pull = pika_pull()
+        pika_pull.start()
         
-        ##starts the push server 
-        #pika_push = pika_push()
-        #pika_push.start()
+        #starts the push server 
+        pika_push = pika_push()
+        pika_push.start()
         
-        ##starts the push client
-        #push_client = external_client_push()
-        #push_client.start()
+        #starts the push client
+        push_client = external_client_push()
+        push_client.start()
         
-        ##starts the pull client
-        #pull_client = external_client_pull()
-        #pull_client.start()
-        #while True:
-            #pass
+        #starts the pull client
+        pull_client = external_client_pull()
+        pull_client.start()
+        while True:
+            pass
         
-    #except KeyboardInterrupt, k:
-        #pika_pull.terminate()
-        #pika_push.terminate()
-        #push_client.terminate()
-        #pull_client.terminate()
-        #print 'Done.'
+    except KeyboardInterrupt, k:
+        pika_pull.terminate()
+        pika_push.terminate()
+        push_client.terminate()
+        pull_client.terminate()
+        print 'Done.'
         

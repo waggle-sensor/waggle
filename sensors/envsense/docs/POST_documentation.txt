@@ -1,0 +1,29 @@
+﻿Process
+The original file, envsenseCluster_v1.0 had helper functions to take measurements for each sensor, and setup and loop. The problem was, some sensors were occasionally hanging up and preventing the board from taking any measurements because it kept checking for results from a single broken sensor. The only way to get the node back up and running was by manually commenting out the broken sensors in features.ino, which had to be found by trial and error.
+
+To resolve this problem, we first found that we can send a compiled Arduino hex file over ssh to remote nodes. Once we found the directory in which Arduino was placing the compiled file on my machine(/tmp/build824003146491376691.tmp), we were able to flash it to a remote node using the following command: 
+
+scp envsenseCluster.cpp.hex depaul01:/root/ship/ ; ssh depaul01 /root/ship/flash.sh
+
+Where depaul01 is stored as a host in my .ssh config folder, and where envsenseCluster.cpp.hex is the compiled Arduino code hex file, which can be located by enabling verbose output during compilation in the Arduino IDE.
+
+flash.sh contains the script to upload the newly copied hex file onto the Arduino in the field. Its code is the following (after bash, it should be one line):
+
+#!/bin/bash
+avrdude -C/root/ship/avrdude.conf -v -patmega2560 -cwiring -P/dev/ttyACM0 -b115200 -D -Uflash:w:/root/ship/envsenseCluster.cpp.hex:i 
+
+Using the above scp command, combined with the call to execute flash, we were able to remotely modify the code executed by the nodes. At first, we used this to debug and comment out any sensors that were malfunctioning and hanging up the node. Then, we sought out to design a Power On Self Test (POST) function which would be able to eliminate any sensors which were not responding in a timely manner. To do this, we implemented a watchdog timer, combined with storing data as bytes on the EEPROM.
+
+Algorithm
+The problem was that the EEPROM only has a lifetime of 100,000 writes to that memory. In order to minimize the number of writes, yet still account for some erratic sensors, our algorithm was the following:
+
+Every time the board powers on or the watchdog timer is not reset in time, the POST function is called. 
+
+Inside the function, we first clear an array in the EEPROM to all 0's. The values in the first array are used to maintain which sensors have been attempted and which have not. Then, we iterate through every sensor, setting the value in the first array to 1, indicating that a test has been started, and take a corresponding reading. If it responds in time, we set a bit in the second array to 1. If not, the bit in the second array remains a 0 for that sensor and the function begins testing the next sensor. 
+
+Implementation
+With each beginning of a POST, we bit shift the second array, and thus maintain a history for each sensor of how well it is functioning. In order for it to be used and measured, it must pass at least n successive self tests. Since currently the Consistency_Mask constant is 0x03, n is equal to 2 successful passes. This implies that for an initial run, all of the histories must be at least 0x03. In order to accomplish this, we wrote an additional program called initial_boot.ino which write 0xFF in the place of the second array, thus giving every sensor a history of all successes. This program should be flashed to the Arduino before the envsenseCluster program so that all of the sensors are allowed to be active.
+
+If a self test is interrupted due to a bad sensor timing out while being tested, the entire board resets. As a result, we added a single bit in memory address 0 of the EEPROM which determines whether the Arduino should start the POST from the beginning, or carry on where it left off before being interrupted.
+
+Then, inside of the setup and loop functions, whenever a sensor is about to be read, its history in the EEPROM is first read and compared to the Consistency_Mask to determine whether it has passed two successive power-on self tests and should be read. This prevents hangups from ruining the functionality of a node in the field.

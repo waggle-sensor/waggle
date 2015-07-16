@@ -1,8 +1,8 @@
 [ ca ]
-default_ca = testca
+default_ca = waggleca
 
-[ testca ]
-dir = .
+[ waggleca ]
+dir = /usr/lib/waggle/SSL/waggleca
 certificate = $dir/cacert.pem
 database = $dir/index.txt
 new_certs_dir = $dir/certs
@@ -13,10 +13,10 @@ default_crl_days = 7
 default_days = 365
 default_md = sha1
 
-policy = testca_policy
+policy = waggleca_policy
 x509_extensions = certificate_extensions
 
-[ testca_policy ]
+[ waggleca_policy ]
 commonName = supplied
 stateOrProvinceName = optional
 countryName = optional

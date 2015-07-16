@@ -62,6 +62,10 @@ float HMC5883_data_x, HMC5883_data_y, HMC5883_data_z;
 static float _hmc5883_Gauss_LSB_XY = 1100.0F;  // Varies with gain
 static float _hmc5883_Gauss_LSB_Z  = 980.0F;   // Varies with gain
 #ifndef WindVel_ADD
+/*
+ * Enables the magnetometer, and sets gain to the proper level
+ * :rtype:boolean
+ */
 bool HMC5883_begin()
 {
     // Enable I2C
@@ -76,7 +80,10 @@ bool HMC5883_begin()
 }
 #endif  // WindVel
 
-// Read data and process it
+/*
+ * Read magnetic field data and process it
+ * :rtype:void
+ */
 void HMC5883_getEvent() {
     /* Clear the event */
     HMC5883_data_x = 0;
@@ -92,7 +99,10 @@ void HMC5883_getEvent() {
     HMC5883_data_z = HMC5883_data_z / _hmc5883_Gauss_LSB_Z * SENSORS_GAUSS_TO_MICROTESLA;
 }
 
-// Obtain raw data from sensor
+/*
+ * Obtain raw data from the sensor
+ * :rtype:void
+ */
 void HMC5883_read()
 {
     // Read 6 bytes from the magnetometer
@@ -132,7 +142,11 @@ float t_PTAT;
 float tPEC;
 bool data_check;
 
-/* Get data from the D6T Sensor */
+/* 
+ * Get data from the D6T Sensor through I2C bus
+ * Data is stored in array tdata
+ * :rtype:boolean
+ */
 bool D6T_get_data(void) {
     int k, start_err = 0, write_err = 0;
     start_err = i2c_start(0x14);
@@ -169,6 +183,10 @@ bool D6T_get_data(void) {
     }
 }
 
+/*
+ * Prints the data of the sensor neatly
+ * :rtype:void
+ */
 void output_csv() {
     Serial.print(t_PTAT);
     Serial.print(",");
@@ -180,6 +198,12 @@ void output_csv() {
     }
 }
 
+/*
+ * Check the PEC of the reading. PEC check is
+ * performed using CSC-8. You can detect communication
+ * failures using the PEC, improving reliability of the data.
+ * :rtype:int
+ */
 int D6T_checkPEC(int* buf, int pPEC) {
     byte crc;
     
@@ -192,6 +216,10 @@ int D6T_checkPEC(int* buf, int pPEC) {
     return (crc == buf[pPEC]);
 }
 
+/*
+ * Check validity of data with CRC
+ * :rtype:byte
+ */
 byte calc_crc(byte data) {
     for (int index=0; index<8; index++) {
         byte temp = data;
@@ -225,6 +253,12 @@ float zvals[MMA_Buff_size];
 float xvar = 0, yvar = 0, zvar = 0, mean_square_var = 0;
 unsigned int q = 0;
 
+/*
+ * This function finds the means to better interpret the
+ * accelerometer data. It returns true if the data is good
+ * and the process completes successfully
+ * :rtype:void
+ */
 void MMA8452_get_means()
 {
     int accelCount[3]; // Stores the 12-bit signed value
@@ -263,6 +297,10 @@ void MMA8452_get_means()
     // return true;
 }
 
+/*
+ * Calculate the root mean square of the data across all 3 axes
+ * :rtype:void
+ */
 void calc_MMA_RMS() {
     for (unsigned int j = 0; j < q; j++)
     {
@@ -279,14 +317,16 @@ bool readAccelData(int *destination)
 {
     byte rawData[6]; // x/y/z accel register data stored here
     
-    bool read_success = readRegisters(OUT_X_MSB, 6, rawData); // Read the six raw data registers into data array
+    bool read_success = readRegisters(OUT_X_MSB, 6, rawData); 
+    // Read the six raw data registers into data array
     
     if (read_success == false) return false;
     
     // Loop to calculate 12-bit ADC and g value for each axis
     for(int i = 0; i < 3 ; i++)
     {
-        int gCount = (rawData[i*2] << 8) | rawData[(i*2)+1]; //Combine the two 8 bit registers into one 12-bit number
+        int gCount = (rawData[i*2] << 8) | rawData[(i*2)+1]; 
+        //Combine the two 8 bit registers into one 12-bit number
         gCount >>= 4; //The registers are left align, here we right align the 12-bit integer
         
         // If the number is negative, we have to make it so manually (no 12-bit data type)
@@ -301,6 +341,10 @@ bool readAccelData(int *destination)
     return true;
 }
 
+/*
+ * Initializes the MMA8452
+ * :rtype:void
+ */ 
 bool initMMA8452()
 {
     byte c = readRegister(WHO_AM_I); // Read WHO_AM_I register
@@ -320,18 +364,31 @@ bool initMMA8452()
     return true;
 }
 
+/*
+ * Clears the MMA's active bit to go into standby mode
+ * :rtype:void
+ */
 void MMA8452Standby()
 {
     byte c = readRegister(CTRL_REG1);
-    writeRegister(CTRL_REG1, c & ~(0x01)); //Clear the active bit to go into standby
+    writeRegister(CTRL_REG1, c & ~(0x01)); 
 }
 
+/*
+ * Set the active bit to begin detection
+ * :rtype:void
+ */
 void MMA8452Active()
 {
     byte c = readRegister(CTRL_REG1);
-    writeRegister(CTRL_REG1, c | 0x01); //Set the active bit to begin detection
+    writeRegister(CTRL_REG1, c | 0x01); 
 }
 
+/*
+ * Performs command to read raw values from multiple registers
+ * via I2C bus.
+ * :rtype:boolean
+ */
 bool readRegisters(byte addressToRead, int bytesToRead, byte * dest)
 {
     i2c_start(MMA8452_ADDRESS_WRITE);
@@ -355,6 +412,11 @@ bool readRegisters(byte addressToRead, int bytesToRead, byte * dest)
     return true;
 }
 
+/*
+ * Performs command to read a raw value from a register
+ * via I2C bus.
+ * :rtype:byte
+ */
 byte readRegister(byte addressToRead)
 {
     i2c_start(MMA8452_ADDRESS_WRITE); // Write address
@@ -365,6 +427,11 @@ byte readRegister(byte addressToRead)
     return i2c_readNak();
 }
 
+/*
+ * Performs command to write a raw value to a register
+ * via I2C bus.
+ * :rtype:byte
+ */
 void writeRegister(byte addressToWrite, byte dataToWrite)
 {
     i2c_start(MMA8452_ADDRESS_WRITE);
@@ -436,6 +503,11 @@ int AMBI_1_Value;
 // int MAX4466_Val[MAX4466_Buff_Len];   // variable to store the value coming from the sensor
 int MAX4466_Value = 0;
 
+/*
+ * Calcultes a new value by determining the max of a previous reading
+ * and a new reading of the MAX sensor/*
+ * :rtype:void
+ */
 void MAX4466_get_max()
 {
     MAX4466_Value= max(MAX4466_Value,abs(512-analogRead(MAX4466_PIN)));
@@ -452,7 +524,10 @@ int THERMIS_1_Value;
 OneWire DS18B20_1_ds(DS18B20_1_Pin);  // Temperature chip i/o on digital pin 2
 float DS18B20_1_temperature;
 
-//returns the temperature from one DS18B20 in DEG Celsius
+/*
+ * Returns the temperature from one DS18B20 in DEG Celsius
+ * :rtype:float
+ */
 float DS18B20_1_getTemp()
 {
     byte data[12];
@@ -531,11 +606,19 @@ uint8_t RunningFlag = 128;
 uint8_t CommandModeFlag = 64;
 uint8_t FlagsMask = ~ErrorMask;
 
+/*
+ * Sets the error for the HIH6130 chip
+ * :rtype:uint8_t
+ */
 uint8_t setError(uint8_t error) { 
     f = (f & ~ErrorMask) | error; 
     return error; 
 }
 
+/*
+ * Initializes the HIH6130 chip
+ * :rtype:uint8_t
+ */
 uint8_t HIH61XX_start()
 {
     if(hih6130_powerPin < 255) {
@@ -545,6 +628,10 @@ uint8_t HIH61XX_start()
     return setError(0);
 }
 
+/*
+ * Obtains a new reading for HIH6130 measurement value
+ * :rtype:uint8_t
+ */
 uint8_t HIH61XX_update()
 {
     if(!(f & RunningFlag)) {
@@ -595,6 +682,11 @@ uint8_t HIH61XX_update()
         return setError(ConnectionError);
     }
 }
+
+/*
+ * Function to end the use of a HIH6130 chip
+ * :rtype:uint8_t
+ */
 uint8_t HIH61XX_stop()
 {
     if(hih6130_powerPin < 255) {
@@ -609,12 +701,12 @@ uint8_t HIH61XX_stop()
 #include <inttypes.h>
 float TMP421_1_temperature;
 
-/**********************************************************
+/*
  * getRegisterValue
  *  Get the TMP421 register value via I2C
  *
- * @return uint8_t - The register value
- **********************************************************/
+ * :rtype:uint8_t
+ */
 uint8_t TMP421_getRegisterValue(void) {
     
     int TMP_err = Wire.requestFrom(0x2A, 1);
@@ -629,12 +721,12 @@ uint8_t TMP421_getRegisterValue(void) {
     }
 }
 
-/**********************************************************
+/*
  * setPtrLoc
  *  Sets the TMP421 pointer register location via I2C
  *
- * @param ptrLoc - The pointer register address
- **********************************************************/
+ * :rtype:void
+ */
 void TMP421_setPtrLoc(uint8_t ptrLoc) {
     
     //Set the pointer location
@@ -644,12 +736,12 @@ void TMP421_setPtrLoc(uint8_t ptrLoc) {
     delay(8);
 }
 
-/**********************************************************
+/*
  * GetTemperature
  *  Gets the current temperature from the sensor.
  *
- * @return float - The local temperature in degrees C
- **********************************************************/
+ * :rtype:float
+ */
 float TMP421_GetTemperature(void) {
     uint8_t in[2];
     float frac = 0.0;
@@ -739,11 +831,10 @@ int16_t bmp085_coeffs_mc;
 int16_t bmp085_coeffs_md;
 
 
-/**************************************************************************/
-/*!
- *   @brief  Setups the HW
+/*
+ * Initialize the BMP sensor
+ * :rtype:bool
  */
-/**************************************************************************/
 bool BMP_begin()
 {
     // Enable I2C
@@ -779,11 +870,10 @@ bool BMP_begin()
     return true;
 }
 
-/**************************************************************************/
-/*!
- *   @brief  Gets the compensated pressure level in kPa
+/*
+ * This function gets the compensated pressure level in kPa
+ * :rtype:void
  */
-/**************************************************************************/
 void BMP180_getPressure(float *pressure)
 {
     int32_t  ut = 0, up = 0, compp = 0;
@@ -871,11 +961,11 @@ void BMP180_getPressure(float *pressure)
     *pressure = compp;
 }
 
-/**************************************************************************/
-/*!
- *   @brief  Reads the temperatures in degrees Celsius
+/*
+ * This function reads the temperatures in degrees Celsius,
+ * and stores it at the address of the argument temp
+ * :rtype:void
  */
-/**************************************************************************/
 void BMP180_getTemperature(float *temp)
 {
     int32_t UT, X1, X2, B5;     // following ds convention
@@ -950,6 +1040,10 @@ float freq = 0.0;
 int sample_time = 3;    // Seconds to sample
 float speed_mps = 0;
 
+/*
+ * Initializes the HMC5883 Sensor
+ * :rtype:bool
+ */
 bool HMC5883_begin()
 {
     // Enable I2C
@@ -963,7 +1057,12 @@ bool HMC5883_begin()
     return true;
 }
 
-
+/*
+ * Sets the data ready bit to the argument data so that the first measurement can be taken
+ * The argument data should be 0 so that the first measurement can be taken. If DRDY bit is
+ * set to 1, the new measurement may not occur
+ * :rtype:void
+ */
 void HMC5883_setDataReady(uint8_t data) {
     /* Sets the DRDY bit for first single measurement to occur */
     data = data & 0x01;     // Make sure to only set one bit
@@ -974,8 +1073,13 @@ void HMC5883_setDataReady(uint8_t data) {
     i2c_write8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_SR_REG_Mg, drdy);    
 }
 
+
+/* 
+ * Put the sensor into single measurement mode, and a new measurement
+ * is taken immediately after.
+ * :rtype:void
+ */
 void HMC5883_setSingleMeasurementMode() {
-    /* Put the sensor into single measurement mode */
     uint8_t value;
     
     i2c_read8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_MR_REG_M, &value);
@@ -985,8 +1089,11 @@ void HMC5883_setSingleMeasurementMode() {
     i2c_write8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_MR_REG_M, value);
 }
 
+/* 
+ * Collects samples and find frequency of rotation of wind cup device
+ * :rtype:void
+ */
 void take_wind_samples()
-// Collects samples and generates FHT array
 {
     // Initially, data NOT ready
     HMC5883_setDataReady(0);
@@ -1039,8 +1146,11 @@ void take_wind_samples()
     #endif
 }
 
+/*
+ * This function calculates wind velocity from rotational frequency
+ * :rtype:void
+ */
 void calc_windspeed()
-// Calculate frequency from dominant index
 {
     speed_mps = freq * 1.0876; // constant obtained experimentally
     #ifdef POST
@@ -1061,7 +1171,13 @@ int testing_addr = 0;   // address in EEPROM where testing bit is kept
 int numSensors = 19;    // must be >= 1
 
 
-
+/*
+ * This function is called to take readings of MMA8452 and MAX4466
+ * in the loop function, with delay between each measurement. In order
+ * to provide data for these sensors, they must have many samples, and
+ * this function controls them
+ * :rtype:void
+ */
 void quick_sensors()
 {
     #ifdef MMA8452
@@ -1085,11 +1201,10 @@ void quick_sensors()
     #endif //MAX4466_ADD
 }
 
-/**************************************************************************/
-/*!
- *   @brief  Writes an 8 bit value over I2C
+/*
+ * This function writes an 8 bit value over I2C
+ * :rtype:static void
  */
-/**************************************************************************/
 static void i2c_write8(uint8_t address, byte reg, uint8_t value)
 {
     Wire.beginTransmission((uint8_t)address);
@@ -1098,11 +1213,9 @@ static void i2c_write8(uint8_t address, byte reg, uint8_t value)
     Wire.endTransmission();
 }
 
-/**************************************************************************/
-/*!
- *   @brief  Reads an 8 bit value over I2C
+/*
+ * This function reads an 8 bit value over I2C
  */
-/**************************************************************************/
 static void i2c_read8(byte address, byte reg, uint8_t *value)
 {
     Wire.beginTransmission((uint8_t)address);
@@ -1118,11 +1231,10 @@ static void i2c_read8(byte address, byte reg, uint8_t *value)
     Wire.endTransmission();
 }
 
-/**************************************************************************/
-/*!
- *   @brief  Reads a 16 bit value over I2C
+/*
+ * This function reads a 16 bit value over I2C
+ * :rtype:static void
  */
-/**************************************************************************/
 static void i2c_read16(byte address, byte reg, uint16_t *value)
 {
     Wire.beginTransmission((uint8_t) address);
@@ -1138,11 +1250,11 @@ static void i2c_read16(byte address, byte reg, uint16_t *value)
     Wire.endTransmission();
 }
 
-/**************************************************************************/
-/*!
- *   @brief  Reads the factory-set coefficients
+/*
+ * This function writes a 16 bit value over I2C
+ * For the use of BMP180, it determines the factory-written coefficients
+ * :rtype:static void
  */
-/**************************************************************************/
 static void i2c_readS16(byte address, byte reg, int16_t *value)
 {
     uint16_t i;
@@ -1150,12 +1262,23 @@ static void i2c_readS16(byte address, byte reg, int16_t *value)
     *value = (int16_t)i;
 }
 
+/*
+ * This function controls the quick_sensors() function and counts
+ * the number of cycles of measurements for the MAX and MMA sensors
+ * :rtype:void
+ */ 
 void increment_time() {
     current_time++; // Increases every 7 seconds
     quick_sensors();
 }
 
-
+/*
+ * This function is executed right on startup. If POST is defined, it testsand
+ * all the sensors for their response times. After that, it initializes all
+ * the sensors and libraries, and determines the Board's ID via the DS18B20's
+ * serial number
+ * :rtype:void
+ */
 void setup()
 {
     delay(10000);

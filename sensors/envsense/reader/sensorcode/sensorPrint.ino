@@ -1,3 +1,7 @@
+/*
+ * This monster of a function loops through every sensor and prints its values
+ * :rtype:void
+ */
 void sensor_print()
 {
     #ifdef debug_serial
