@@ -11,11 +11,8 @@ params = collections.OrderedDict()
 # Max: 65535
 params['baud rate'] = 57600
 
-# Be courteous to the SysMon...it only has 2560 bytes of RAM
+# Be courteous to the SysMon...it only has about 1 KB of available RAM
 params['SysMon RX buffer size (characters)'] = 150
-
-# Max: 255
-params['environmental check period (seconds)'] = 5
 
 # Max: 255
 params['max num of SOS boot tries'] = 3

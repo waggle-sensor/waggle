@@ -9,9 +9,6 @@ const byte NO_INTERRUPT = 4;
 //---------- G L O B A L S ----------------------------------------------------
 byte SOS_mode;
 
-// These are set (updated) by the node controller:
-byte THRESHOLD_NUM_TRIES = 5;
-
 
 
 //---------- B O O T _ S O S --------------------------------------------------
@@ -35,15 +32,15 @@ void boot_SOS()
 	check_environ_self();
 
 	// Get datum about number of times SOS boot mode has been tried
-	byte num_tries = EEPROM.read(EEPROM_NUM_SOS_BOOT_TRIES);
+	byte num_tries = eeprom_read_byte(&E_NUM_SOS_BOOT_TRIES);
 
 	// Has SOS boot been tried too many times?
-	if(num_tries >= THRESHOLD_NUM_TRIES)
+	if(num_tries >= eeprom_read_byte(&E_MAX_NUM_SOS_BOOT_TRIES))
 		// Something isn't working, so go to sleep
 		sleep();
 
 	// Record that SOS boot mode was attempted
-	EEPROM.update(EEPROM_NUM_SOS_BOOT_TRIES, ++num_tries);
+	eeprom_update_byte(&E_NUM_SOS_BOOT_TRIES, ++num_tries);
 
 	// ADC ok?
 	if(SOS_mode != NO_ADC)
@@ -55,8 +52,8 @@ void boot_SOS()
 		// risk to the node controller, since its environ. can't be measured.
 		asm("nop");
 
-	// Is the node controller disabled?
-	if(EEPROM.read(EEPROM_NC_DISABLED))
+	// Is the node controller not enabled?
+	if(!eeprom_read_byte(&E_NC_ENABLED))
 		// Nothing for us to do, so go to sleep
 		sleep();
 
@@ -83,7 +80,7 @@ void boot_SOS()
 void init_SOS()
 {
   // What is the cause of the POST failure?
-	switch (EEPROM.read(EEPROM_POST_RESULT)) {
+	switch (eeprom_read_byte(&E_POST_RESULT)) {
 	    case FAIL_WATCHDOG:
 	      SOS_mode = NO_WATCHDOG;
 	      break;
@@ -102,7 +99,8 @@ void init_SOS()
 	}
 
 	// Watchdog, timer, and interrupts ok?
-	if((SOS_mode != NO_WATCHDOG) && (SOS_mode != NO_TIMER) && (SOS_mode != NO_INTERRUPT))
+	if((SOS_mode != NO_WATCHDOG) && (SOS_mode != NO_TIMER) && 
+		(SOS_mode != NO_INTERRUPT))
 		// Enable watchdog with 2 second timeout
 		wdt_enable(WDTO_2S);
 	// Watchdog, timer, or interrupts not ok?
@@ -132,7 +130,7 @@ void init_SOS()
 
 	// Enable serial comms.
 	// We're hoping UART works, because we don't currently have a way to test it
-  Serial.begin(UART_BAUD);
+  Serial.begin(eeprom_read_dword(&E_USART_BAUD));
 }
 
 

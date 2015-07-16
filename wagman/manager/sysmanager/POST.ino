@@ -650,7 +650,7 @@ __attribute__((optimize(0))) boolean timer1_test()
   interrupts();
 
   // Did we arrive here after a watchdog reset due to a bad timer?
-  if(EEPROM.read(EEPROM_TIMER_TEST_INCOMPLETE) == 1)
+  if(eeprom_read_byte(&E_TIMER_TEST_INCOMPLETE))
     // Exit test with failure
     return false;
 
@@ -662,7 +662,7 @@ __attribute__((optimize(0))) boolean timer1_test()
   if(_watchdog_good)
   {
     // Mark timer test as incomplete
-    EEPROM.update(EEPROM_TIMER_TEST_INCOMPLETE, 1);
+    eeprom_update_byte(&E_TIMER_TEST_INCOMPLETE, 1);
 
     // Enable watchdog
     wdt_enable(WDTO_60MS);
@@ -684,7 +684,7 @@ __attribute__((optimize(0))) boolean timer1_test()
     TIFR1 = _BV(TOV1);
 
     // Mark timer test as complete
-    EEPROM.update(EEPROM_TIMER_TEST_INCOMPLETE, 0);
+    eeprom_update_byte(&E_TIMER_TEST_INCOMPLETE, 0);
   }
 
   // Exit test with success
@@ -792,7 +792,7 @@ byte find_reset_reason()
 void test_failure(byte reason, boolean fatal)
 {
 	// Save POST failure to EEPROM
-	EEPROM.update(EEPROM_POST_RESULT, reason);
+	eeprom_update_byte(&E_POST_RESULT, reason);
 
 	// Allow time for EEPROM to finish writing
 	delay(5);

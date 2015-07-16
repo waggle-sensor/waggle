@@ -3,9 +3,8 @@
 #include <avr/interrupt.h>
 #include <avr/sleep.h>
 #include <avr/power.h>
-#include <avr/pgmspace.h>
 #include <avr/wdt.h>
-#include <EEPROM.h>
+#include <avr/eeprom.h>
 #include <Wire.h>
 
 
@@ -15,57 +14,60 @@ const byte LED = 13;
 const char NC_NOTIFIER_STATUS = '@';
 const char NC_NOTIFIER_PROBLEM = '#';
 const char NC_NOTIFIER_PARAMS = '$';
+const char NC_DELIMITER = ',';
 const char NC_TERMINATOR = '!';
 
 
 
 //---------- G L O B A L S ----------------------------------------------------
 volatile byte timer1_interrupt_fired = 0;
+volatile byte _timer1_cycle = false;
 volatile char USART_RX_char;
 volatile boolean _USART_new_char = false;
 
 // EEPROM addresses whose values are set by node controller:
 // Initial values act as default
-unsigned long EEMEM E_UART_BAUD = 57600UL;
-unsigned int EEMEM E_USART_RX_BUFFER_SIZE = 150;
-byte EEMEM E_ENVIRON_CHECK_PERIOD = 5;
-byte EEMEM E_MAX_NUM_SOS_BOOT_TRIES = 3;
-byte EEMEM E_HEARTBEAT_TIMEOUT_NC = 5;
-byte EEMEM E_HEARTBEAT_TIMEOUT_SWITCH = 5;
-byte EEMEM E_HEARTBEAT_TIMEOUT_GN1 = 5;
-byte EEMEM E_HEARTBEAT_TIMEOUT_GN2 = 5;
-byte EEMEM E_HEARTBEAT_TIMEOUT_GN3 = 5;
-byte EEMEM E_HEARTBEAT_TIMEOUT_GN4 = 5;
-byte EEMEM E_BAD_TEMP_TIMEOUT_SYSMON = 5;
-byte EEMEM E_BAD_TEMP_TIMEOUT_NC = 5;
-byte EEMEM E_BAD_TEMP_TIMEOUT_SWITCH = 5;
-byte EEMEM E_BAD_TEMP_TIMEOUT_GN1 = 5;
-byte EEMEM E_BAD_TEMP_TIMEOUT_GN2 = 5;
-byte EEMEM E_BAD_TEMP_TIMEOUT_GN3 = 5;
-byte EEMEM E_BAD_TEMP_TIMEOUT_GN4 = 5;
-int EEMEM E_TEMP_MIN_SYSMON = 0;
-int EEMEM E_TEMP_MAX_SYSMON = 100;
-int EEMEM E_TEMP_MIN_NC = 0;
-int EEMEM E_TEMP_MAX_NC = 100;
-int EEMEM E_TEMP_MIN_SWITCH = 0;
-int EEMEM E_TEMP_MAX_SWITCH = 100;
-int EEMEM E_TEMP_MIN_GN1 = 0;
-int EEMEM E_TEMP_MAX_GN1 = 100;
-int EEMEM E_TEMP_MIN_GN2 = 0;
-int EEMEM E_TEMP_MAX_GN2 = 100;
-int EEMEM E_TEMP_MIN_GN3 = 0;
-int EEMEM E_TEMP_MAX_GN3 = 100;
-int EEMEM E_TEMP_MIN_GN4 = 0;
-int EEMEM E_TEMP_MAX_GN4 = 100;
-byte EEMEM E_HUMIDITY_MIN_SYSMON = 0;
-byte EEMEM E_HUMIDITY_MAX_SYSMON = 100;
+uint32_t EEMEM E_USART_BAUD;
+uint16_t EEMEM E_USART_RX_BUFFER_SIZE;
+uint8_t EEMEM E_MAX_NUM_SOS_BOOT_TRIES;
+uint8_t EEMEM E_HEARTBEAT_TIMEOUT_NC;
+uint8_t EEMEM E_HEARTBEAT_TIMEOUT_SWITCH;
+uint8_t EEMEM E_HEARTBEAT_TIMEOUT_GN1;
+uint8_t EEMEM E_HEARTBEAT_TIMEOUT_GN2;
+uint8_t EEMEM E_HEARTBEAT_TIMEOUT_GN3;
+uint8_t EEMEM E_HEARTBEAT_TIMEOUT_GN4;
+uint8_t EEMEM E_BAD_TEMP_TIMEOUT_SYSMON;
+uint8_t EEMEM E_BAD_TEMP_TIMEOUT_NC;
+uint8_t EEMEM E_BAD_TEMP_TIMEOUT_SWITCH;
+uint8_t EEMEM E_BAD_TEMP_TIMEOUT_GN1;
+uint8_t EEMEM E_BAD_TEMP_TIMEOUT_GN2;
+uint8_t EEMEM E_BAD_TEMP_TIMEOUT_GN3;
+uint8_t EEMEM E_BAD_TEMP_TIMEOUT_GN4;
+// EEPROM only stores unsigned values.  Must cast to signed when reading.
+uint16_t EEMEM E_TEMP_MIN_SYSMON_SIGNED;
+uint16_t EEMEM E_TEMP_MAX_SYSMON_SIGNED;
+uint16_t EEMEM E_TEMP_MIN_NC_SIGNED;
+uint16_t EEMEM E_TEMP_MAX_NC_SIGNED;
+uint16_t EEMEM E_TEMP_MIN_SWITCH_SIGNED;
+uint16_t EEMEM E_TEMP_MAX_SWITCH_SIGNED;
+uint16_t EEMEM E_TEMP_MIN_GN1_SIGNED;
+uint16_t EEMEM E_TEMP_MAX_GN1_SIGNED;
+uint16_t EEMEM E_TEMP_MIN_GN2_SIGNED;
+uint16_t EEMEM E_TEMP_MAX_GN2_SIGNED;
+uint16_t EEMEM E_TEMP_MIN_GN3_SIGNED;
+uint16_t EEMEM E_TEMP_MAX_GN3_SIGNED;
+uint16_t EEMEM E_TEMP_MIN_GN4_SIGNED;
+uint16_t EEMEM E_TEMP_MAX_GN4_SIGNED;
+uint8_t EEMEM E_HUMIDITY_MIN_SYSMON;
+uint8_t EEMEM E_HUMIDITY_MAX_SYSMON;
 
 // EEPROM addresses whose values are not set by node controller:
-byte EEMEM E_NC_DISABLED = 0;
-byte EEMEM E_ES_DISABLED = 0;
-byte EEMEM E_POST_RESULT = 0;
-byte EEMEM E_TIMER_TEST_INCOMPLETE = 0;
-byte EEMEM E_NUM_SOS_BOOT_TRIES = 0;
+uint8_t EEMEM E_NC_ENABLED;
+uint8_t EEMEM E_SWITCH_ENABLED;
+uint8_t EEMEM E_POST_RESULT;
+uint8_t EEMEM E_TIMER_TEST_INCOMPLETE;
+uint8_t EEMEM E_NUM_SOS_BOOT_TRIES;
+uint8_t EEMEM E_FIRST_BOOT;
 
 
 
@@ -87,8 +89,9 @@ void setup()
   //   // Go to partial boot sequence
   //   boot_SOS();
 
-  init_primary();
-  get_params_nc();
+  boot_primary();
+
+  boot_gn();
 }
 
 
@@ -97,11 +100,11 @@ void setup()
 void loop() 
 {
   
-  // Has the timer overflowed enough times?
-  if(timer1_interrupt_fired >= )
+  // Has the timer finished a cycle?
+  if(_timer1_cycle)
   {
-    // Clear the Timer1 overflow counter
-    timer1_interrupt_fired = 0;
+    // Clear the flag
+    _timer1_cycle = false;
 
     // Environ. checks go here
 
@@ -176,8 +179,11 @@ void send_problem()
   // Reset watchdog
   wdt_reset();
 
-  // Tell the world that the interrupt fired
+  // Increment the counter for how many timer overflows have occurred
   timer1_interrupt_fired++;
+
+  // Set the flag to indicate a complete timer cycle
+  _timer1_cycle = true;
 }
 
 

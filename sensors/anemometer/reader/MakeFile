@@ -1,14 +1,3 @@
-ARD_HOME = /home/danny/repos/git/waggle/devtools/arduino/compilers/arduino-1.6.5-linux/arduino_64
-TARGET = sysmanager
-PACKAGE = arduino
-ARCH = avr
-BOARD = micro
-TYPE = m32u4
-FLASHER_BAUD_RATE = 57600
-PORT = /dev/ttyACM0
-BOARD_FLASH = $(PACKAGE):$(ARCH):$(BOARD)
-BOOT_LOADER_TYPE = avr109
-PRE_FLASH_COMMAND = stty -F $(PORT) 1200 hupcl; sleep 2
 CC = $(ARD_HOME)/arduino
 BUILD_DIR = ./build
 BIN_DIR = ./bin
