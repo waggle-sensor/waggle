@@ -1,0 +1,276 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Packetmaker Module Functions &mdash; Waggle 0.3 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../_static/table_styling.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="Waggle 0.3 documentation" href="../index.html"/>
+        <link rel="up" title="Waggle Utilities" href="utilities.html"/>
+        <link rel="prev" title="gpickler Module Functions" href="gpickler.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+
+        
+          <a href="../index.html" class="icon icon-home"> Waggle
+        
+
+        
+        </a>
+
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../server/server.html">Waggle Server</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../server/installation.html">Waggle Server Installation and Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../server/installation.html#quick-install">Quick install</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../nodeController/nodeController.html">Node Controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guestNode/guestNode.html">Guest Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../wagMan/wagMan.html">Waggle System Manager</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../wagMan/POST.html">POST.ino</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../wagMan/boot_SOS.html">boot_SOS.ino</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../wagMan/boot_gn.html">boot_gn.ino</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../wagMan/boot_primary.html">boot_primary.ino</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../wagMan/sysmanager.html">sysmanager.ino</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="protocol.html">Waggle Communication Protocol</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="PacketHandler.html">Packet Handler</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="PacketHandler.html#module-PacketHandler">PacketHandler Module Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="PacketFormat.html">Waggle Packet Format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LargeFile.html">Large File Transfer Protocol</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MessageTypes.html">Waggle Message Types</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="utilities.html">Waggle Utilities</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="gpickler.html">gpickler Module Functions</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="">Packetmaker Module Functions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">Waggle</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="protocol.html">Waggle Communication Protocol</a> &raquo;</li>
+      
+          <li><a href="utilities.html">Waggle Utilities</a> &raquo;</li>
+      
+    <li>Packetmaker Module Functions</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/protocol/packetmaker.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="module-packetmaker">
+<span id="packetmaker-module-functions"></span><h1>Packetmaker Module Functions<a class="headerlink" href="#module-packetmaker" title="Permalink to this headline">¶</a></h1>
+<p>This module contains a few utilities that autogenerate complete simple packets,
+such as ping and time request packets.</p>
+<dl class="function">
+<dt id="packetmaker.make_ping_packet">
+<code class="descclassname">packetmaker.</code><code class="descname">make_ping_packet</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#packetmaker.make_ping_packet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a simple ping request packet.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="packetmaker.make_time_packet">
+<code class="descclassname">packetmaker.</code><code class="descname">make_time_packet</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#packetmaker.make_time_packet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a simple time request packet.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="packetmaker.make_data_packet">
+<code class="descclassname">packetmaker.</code><code class="descname">make_data_packet</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#packetmaker.make_data_packet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compresses sensor data and returns a sensor data packet.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> &#8211; sensor data</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="packetmaker.registration_packet">
+<code class="descclassname">packetmaker.</code><code class="descname">registration_packet</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#packetmaker.registration_packet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a registration request packet.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="gpickler.html" class="btn btn-neutral" title="gpickler Module Functions" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Argonne National Laboratory.
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.3',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -12,6 +12,11 @@ Welcome to Waggle's Documentation!
 Contents:
 
 .. toctree::
-   protocol
-   utilities
+   :maxdepth: 1
+
+   server/server
+   nodeController/nodeController
+   guestNode/guestNode
+   wagMan/wagMan
+   protocol/protocol
 

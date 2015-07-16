@@ -1,0 +1,432 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>boot_primary.ino &mdash; Waggle 0.3 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../_static/table_styling.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="Waggle 0.3 documentation" href="../index.html"/>
+        <link rel="up" title="Waggle System Manager" href="wagMan.html"/>
+        <link rel="next" title="sysmanager.ino" href="sysmanager.html"/>
+        <link rel="prev" title="boot_gn.ino" href="boot_gn.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+
+        
+          <a href="../index.html" class="icon icon-home"> Waggle
+        
+
+        
+        </a>
+
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../server/server.html">Waggle Server</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../server/installation.html">Waggle Server Installation and Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../server/installation.html#quick-install">Quick install</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../nodeController/nodeController.html">Node Controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guestNode/guestNode.html">Guest Node</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="wagMan.html">Waggle System Manager</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="POST.html">POST.ino</a></li>
+<li class="toctree-l2"><a class="reference internal" href="boot_SOS.html">boot_SOS.ino</a></li>
+<li class="toctree-l2"><a class="reference internal" href="boot_gn.html">boot_gn.ino</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">boot_primary.ino</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sysmanager.html">sysmanager.ino</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../protocol/protocol.html">Waggle Communication Protocol</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../protocol/PacketHandler.html">Packet Handler</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../protocol/PacketHandler.html#module-PacketHandler">PacketHandler Module Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../protocol/PacketFormat.html">Waggle Packet Format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../protocol/LargeFile.html">Large File Transfer Protocol</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../protocol/MessageTypes.html">Waggle Message Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../protocol/utilities.html">Waggle Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../protocol/gpickler.html">gpickler Module Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../protocol/packetmaker.html">Packetmaker Module Functions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">Waggle</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="wagMan.html">Waggle System Manager</a> &raquo;</li>
+      
+    <li>boot_primary.ino</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/wagMan/boot_primary.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="boot-primary-ino">
+<h1>boot_primary.ino<a class="headerlink" href="#boot-primary-ino" title="Permalink to this headline">¶</a></h1>
+<p><strong>boot_primary</strong></p>
+<div class="line-block">
+<div class="line">Starts/initializes/boots self, node controller, and ethernet switch.</div>
+<div class="line">Conditions for and operation of the node controller and ethernet switch are</div>
+<div class="line">verified before completing boot sequence.</div>
+<div class="line"><br /></div>
+</div>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body">boolean</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<hr class="docutils" />
+<p><strong>init_primary</strong></p>
+<div class="line-block">
+<div class="line">Initializes/starts all necessary ports, peripherals, interrupts, etc.</div>
+<div class="line"><br /></div>
+</div>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body">none</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<hr class="docutils" />
+<p><strong>check_power_self</strong></p>
+<div class="line-block">
+<div class="line">Reads its own current sensor.  If too much power is being drawn, we shut</div>
+<div class="line">ourselves down.</div>
+<div class="line"><br /></div>
+</div>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body">none</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<hr class="docutils" />
+<p><strong>check_environ_self</strong></p>
+<div class="line-block">
+<div class="line">Gets temperature and humidity info from the sensor, then checks if the</div>
+<div class="line">environment is suitable for safe operation of the system monitor.  If it is</div>
+<div class="line">not safe, then we go to sleep.</div>
+<div class="line"><br /></div>
+</div>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body">none</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<hr class="docutils" />
+<p><strong>check_environ_nc</strong></p>
+<div class="line-block">
+<div class="line">Gets temperature and humidity info from the sensor, then checks if the</div>
+<div class="line">environment is suitable for safe operation of the node controller.  If it</div>
+<div class="line">is not safe, then we monitor it until it is safe.</div>
+<div class="line"><br /></div>
+</div>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body">none</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<hr class="docutils" />
+<p><strong>check_power_nc</strong></p>
+<div class="line-block">
+<div class="line">Reads the node controller&#8217;s current sensor.  If the node controller is not</div>
+<div class="line">drawing any power or is drawing too much power, we&#8217;ll shut it down and go</div>
+<div class="line">to sleep.</div>
+<div class="line"><br /></div>
+</div>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body">none</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<hr class="docutils" />
+<p><strong>check_heartbeat_nc</strong></p>
+<div class="line-block">
+<div class="line">Checks that the node controller is alive and sending a heartbeat.  If it is</div>
+<div class="line">not, then power cycle it and try again.  If a reboot is tried too many</div>
+<div class="line">times, the node controller is assumed to be dead, so we go to sleep.</div>
+<div class="line"><br /></div>
+</div>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body">none</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<hr class="docutils" />
+<p><strong>get_gn_info</strong></p>
+<div class="line-block">
+<div class="line">Requests information about the guest nodes from the node controller.</div>
+<div class="line">Expected data for each guest nodes contains: present/not present, acceptable</div>
+<div class="line">environmental conditions, and expected power draw.  If the node controller</div>
+<div class="line">takes too long to send the info, we skip booting the guest nodes.</div>
+<div class="line"><br /></div>
+</div>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body">boolean</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<hr class="docutils" />
+<p><strong>get_time_nc</strong></p>
+<div class="line-block">
+<div class="line">Requests a time update from the node controller.  If a time update is</div>
+<div class="line">received, the RTC is initialized with that time.  If a time update is not</div>
+<div class="line">recieved, the RTC is started without a time correction.</div>
+<div class="line"><br /></div>
+</div>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body">none</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<hr class="docutils" />
+<p><strong>check_environ_es</strong></p>
+<div class="line-block">
+<div class="line">Gets temperature info from the thermistor, then checks if the</div>
+<div class="line">environment is suitable for safe operation of the ethernet switch.  If it</div>
+<div class="line">is not safe, then we monitor it until it is safe.</div>
+<div class="line"><br /></div>
+</div>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body">none</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<hr class="docutils" />
+<p><strong>check_power_es</strong></p>
+<div class="line-block">
+<div class="line">Reads the ethernet switch&#8217;s current sensor.  If the ethernet switch is not</div>
+<div class="line">drawing any power or is drawing too much power, we&#8217;ll shut it down and</div>
+<div class="line">inform the node controller (and wait for it to inform the cloud), then go</div>
+<div class="line">to sleep.</div>
+<div class="line"><br /></div>
+</div>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body">none</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<hr class="docutils" />
+<p><strong>check_heartbeat_es</strong></p>
+<div class="line-block">
+<div class="line">Checks that the ethernet switch is alive and sending a heartbeat.  If it is</div>
+<div class="line">not, then power cycle it and try again.  If a reboot is tried too many</div>
+<div class="line">times, the ethernet switch is assumed to be dead, so we inform the node</div>
+<div class="line">controller (and wait for it to inform the cloud), then go to sleep.</div>
+<div class="line"><br /></div>
+</div>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body">none</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="sysmanager.html" class="btn btn-neutral float-right" title="sysmanager.ino" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="boot_gn.html" class="btn btn-neutral" title="boot_gn.ino" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Argonne National Laboratory.
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.3',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

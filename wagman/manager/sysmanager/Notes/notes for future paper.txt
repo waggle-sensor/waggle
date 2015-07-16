@@ -6,6 +6,6 @@
 
 - Arduino Micro bootloader (Caterina) clears MCUSR, making me unable to detect the reset reason in my sketch.
 
-- Investigate: ISR being jumped to before main()?  Timer3 overflow ISR is (inconsistently) being fired before timer3 clock sources are enabled.
-
 - http://dangerousprototypes.com/docs/Self-test_guide
+
+- Boot up takes a long time, but that doesn't matter for us.  We can take several seconds to boot SysMon, because nothing happens until SysMon makes it so.

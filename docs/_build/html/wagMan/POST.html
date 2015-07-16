@@ -1,0 +1,486 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>POST.ino &mdash; Waggle 0.3 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../_static/table_styling.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="Waggle 0.3 documentation" href="../index.html"/>
+        <link rel="up" title="Waggle System Manager" href="wagMan.html"/>
+        <link rel="next" title="boot_SOS.ino" href="boot_SOS.html"/>
+        <link rel="prev" title="Waggle System Manager" href="wagMan.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+
+        
+          <a href="../index.html" class="icon icon-home"> Waggle
+        
+
+        
+        </a>
+
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../server/server.html">Waggle Server</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../server/installation.html">Waggle Server Installation and Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../server/installation.html#quick-install">Quick install</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../nodeController/nodeController.html">Node Controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guestNode/guestNode.html">Guest Node</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="wagMan.html">Waggle System Manager</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="">POST.ino</a></li>
+<li class="toctree-l2"><a class="reference internal" href="boot_SOS.html">boot_SOS.ino</a></li>
+<li class="toctree-l2"><a class="reference internal" href="boot_gn.html">boot_gn.ino</a></li>
+<li class="toctree-l2"><a class="reference internal" href="boot_primary.html">boot_primary.ino</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sysmanager.html">sysmanager.ino</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../protocol/protocol.html">Waggle Communication Protocol</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../protocol/PacketHandler.html">Packet Handler</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../protocol/PacketHandler.html#module-PacketHandler">PacketHandler Module Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../protocol/PacketFormat.html">Waggle Packet Format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../protocol/LargeFile.html">Large File Transfer Protocol</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../protocol/MessageTypes.html">Waggle Message Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../protocol/utilities.html">Waggle Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../protocol/gpickler.html">gpickler Module Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../protocol/packetmaker.html">Packetmaker Module Functions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">Waggle</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="wagMan.html">Waggle System Manager</a> &raquo;</li>
+      
+    <li>POST.ino</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/wagMan/POST.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="post-ino">
+<h1>POST.ino<a class="headerlink" href="#post-ino" title="Permalink to this headline">¶</a></h1>
+<p><strong>POST</strong></p>
+<div class="line-block">
+<div class="line">Power on self test.  This subroutine calls the tests to verify correct</div>
+<div class="line">operation of the MCU.  Nothing external to the MCU is tested here.</div>
+<div class="line"><br /></div>
+<div class="line">If everything is working correctly, this function will return true.</div>
+<div class="line">If a fatal failure occurs, the MCU will sleep, thus preventing the rest of</div>
+<div class="line">the MCU&#8217;s program from running. If a non-fatal failure occurs, the function</div>
+<div class="line">will return false.  Failures will (attempt to) be recorded into EEPROM.</div>
+<div class="line"><br /></div>
+<div class="line">Note: This POST is not perfect.  There is some redundancy and a few</div>
+<div class="line">assumptions are made, so do not rely solely on this for mission-critical</div>
+<div class="line">applications.</div>
+<div class="line"><br /></div>
+<div class="line">Adapted from Atmel Application Note AVR998 (c) 2006 Atmel.</div>
+<div class="line"><br /></div>
+</div>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body">boolean</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<hr class="docutils" />
+<p><strong>gprf_test</strong></p>
+<div class="line-block">
+<div class="line-block">
+<div class="line">Checks the General Purpose Register File (R31 - R0) for stuck bits.</div>
+<div class="line">Return of TRUE means it passed the test.</div>
+<div class="line">Return of FALSE means it failed the test.</div>
+<div class="line"><br /></div>
+<div class="line">This code is designed to work in the default Arduino environment, so</div>
+<div class="line">setting compiler flags is not an option.  The &#8220;optimize(0)&#8221; attribute is</div>
+<div class="line">used to prevent the compiler from optimizing this function.  All of the</div>
+</div>
+<div class="line">tests in the POST routine disable optimization, to be safe, because much</div>
+<div class="line">of what is happening has no effect outside the function.</div>
+<div class="line"><br /></div>
+</div>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body">boolean</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<hr class="docutils" />
+<p><strong>stack_pointer_test</strong></p>
+<div class="line-block">
+<div class="line-block">
+<div class="line">Checks the stack pointer for stuck bits.</div>
+<div class="line">Return of TRUE means it passed the test.</div>
+<div class="line">Return of FALSE means it failed the test.</div>
+<div class="line"><br /></div>
+<div class="line">This code is designed to work in the default Arduino environment, so</div>
+</div>
+<div class="line">setting compiler flags is not an option.  The &#8220;optimize(0)&#8221; attribute is</div>
+<div class="line">used to prevent the compiler from optimizing this function.  All of the</div>
+<div class="line">tests in the POST routine disable optimization, to be safe, because much</div>
+<div class="line">of what is happening has no effect outside the function.</div>
+<div class="line"><br /></div>
+</div>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body">boolean</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<hr class="docutils" />
+<p><strong>status_register_test</strong></p>
+<div class="line-block">
+<div class="line">Checks the status register (SREG) for stuck bits.</div>
+<div class="line">Return of TRUE means it passed the test.</div>
+<div class="line-block">
+<div class="line">Return of FALSE means it failed the test.</div>
+<div class="line"><br /></div>
+<div class="line">This code is designed to work in the default Arduino environment, so</div>
+</div>
+<div class="line">setting compiler flags is not an option.  The &#8220;optimize(0)&#8221; attribute is</div>
+<div class="line">used to prevent the compiler from optimizing this function.  All of the</div>
+<div class="line">tests in the POST routine disable optimization, to be safe, because much</div>
+<div class="line">of what is happening has no effect outside the function.</div>
+<div class="line"><br /></div>
+</div>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body">boolean</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<hr class="docutils" />
+<p><strong>sram_test</strong></p>
+<div class="line-block">
+<div class="line">Checks the SRAM for stuck bits.</div>
+<div class="line">Return of TRUE means it passed the test.</div>
+<div class="line-block">
+<div class="line">Return of FALSE means it failed the test.</div>
+<div class="line"><br /></div>
+<div class="line">This code is designed to work in the default Arduino environment, so</div>
+</div>
+<div class="line">setting compiler flags is not an option.  The &#8220;optimize(0)&#8221; attribute is</div>
+<div class="line">used to prevent the compiler from optimizing this function.  All of the</div>
+<div class="line">tests in the POST routine disable optimization, to be safe, because much</div>
+<div class="line">of what is happening has no effect outside the function.</div>
+<div class="line"><br /></div>
+</div>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body">boolean</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<hr class="docutils" />
+<p><strong>watchdog_test</strong></p>
+<div class="line-block">
+<div class="line-block">
+<div class="line">Checks the reason for reset.  If it was a watchdog reset, we move on.</div>
+<div class="line">If it wasn&#8217;t, enable the watchdog and wait.</div>
+<div class="line">Return of TRUE means it passed the test.</div>
+<div class="line">Return of FALSE means it failed the test.</div>
+<div class="line"><br /></div>
+<div class="line">This code is designed to work in the default Arduino environment, so</div>
+</div>
+<div class="line">setting compiler flags is not an option.  The &#8220;optimize(0)&#8221; attribute is</div>
+<div class="line">used to prevent the compiler from optimizing this function.  All of the</div>
+<div class="line">tests in the POST routine disable optimization, to be safe, because much</div>
+<div class="line">of what is happening has no effect outside the function.</div>
+<div class="line"><br /></div>
+</div>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body">boolean</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<hr class="docutils" />
+<p><strong>ADC_test</strong></p>
+<div class="line-block">
+<div class="line">Checks that the ADC is functioning correctly.</div>
+<div class="line">Return of TRUE means it passed the test.</div>
+<div class="line">Return of FALSE means it failed the test.</div>
+<div class="line"><br /></div>
+<div class="line">This code is designed to work in the default Arduino environment, so</div>
+<div class="line">setting compiler flags is not an option.  The &#8220;optimize(0)&#8221; attribute is</div>
+<div class="line">used to prevent the compiler from optimizing this function.  All of the</div>
+<div class="line">tests in the POST routine disable optimization, to be safe, because much</div>
+<div class="line">of what is happening has no effect outside the function.</div>
+<div class="line"><br /></div>
+</div>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body">boolean</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<hr class="docutils" />
+<p><strong>timer1_test</strong></p>
+<div class="line-block">
+<div class="line">Checks all registers for stuck bits and lets the timer overflow, which</div>
+<div class="line">tests the timer and the interrupt (thus, the interrupt controller, too).</div>
+<div class="line">Return of TRUE means it passed the test.</div>
+<div class="line">Return of FALSE means it failed the test.</div>
+<div class="line"><br /></div>
+<div class="line">This code is designed to work in the default Arduino environment, so</div>
+<div class="line">setting compiler flags is not an option.  The &#8220;optimize(0)&#8221; attribute is</div>
+<div class="line">used to prevent the compiler from optimizing this function.  All of the</div>
+<div class="line">tests in the POST routine disable optimization, to be safe, because much</div>
+<div class="line">of what is happening has no effect outside the function.</div>
+<div class="line"><br /></div>
+</div>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body">boolean</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<hr class="docutils" />
+<p><strong>interrupt_test</strong></p>
+<div class="line-block">
+<div class="line">Checks that the interrupt controller executes interrupt service routines.</div>
+<div class="line">Return of TRUE means it passed the test.</div>
+<div class="line">Return of FALSE means it failed the test.</div>
+<div class="line"><br /></div>
+<div class="line">This code is designed to work in the default Arduino environment, so</div>
+<div class="line">setting compiler flags is not an option.  The &#8220;optimize(0)&#8221; attribute is</div>
+<div class="line">used to prevent the compiler from optimizing this function.  All of the</div>
+<div class="line">tests in the POST routine disable optimization, to be safe, because much</div>
+<div class="line">of what is happening has no effect outside the function.</div>
+<div class="line"><br /></div>
+</div>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body">boolean</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<hr class="docutils" />
+<p><strong>find_reset_reason</strong></p>
+<div class="line-block">
+<div class="line">Reads the MCU status register (MCUSR) for the reset flag.</div>
+<div class="line"><br /></div>
+</div>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body">byte</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<hr class="docutils" />
+<p><strong>test_failure</strong></p>
+<div class="line-block">
+<div class="line">Saves the reason for POST failure into EEPROM and aborts/modifies boot-up.</div>
+<div class="line"><br /></div>
+</div>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body">reason (byte): reason for POST failure
+fatal (boolean): POST failure is/not fatal</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<hr class="docutils" />
+<p><strong>sleep</strong></p>
+<div class="line-block">
+<div class="line">Puts Atmel chip to sleep (power-down mode)</div>
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="boot_SOS.html" class="btn btn-neutral float-right" title="boot_SOS.ino" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="wagMan.html" class="btn btn-neutral" title="Waggle System Manager" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Argonne National Laboratory.
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.3',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
