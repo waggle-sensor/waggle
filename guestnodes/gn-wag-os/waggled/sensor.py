@@ -1,6 +1,12 @@
-#from add_sensor_info import *        
 import time
 import serial
+from data_packet import data_packet
+
+"""
+   This connects to a sensor board via a serial connection. It reads and parses the sensor data into meaningful information, packs, and sends the data packet to the cloud. 
+   
+   
+"""
 
 Sensor_Index=["D6T_44L_06_1_T_C","MMA8452_1_A_X_Units","MMA8452_1_A_Y_Units",
               "MMA8452_1_A_Z_Units","MMA8452_1_A_RMS_Units","SHT15_1_T_C","SHT15_1_H_%","SHT75_1_T_C",
@@ -148,5 +154,7 @@ while True:
                     for all in range(len(sensorReading_bucket)):
                         if (sensorReading_bucket[all] <> [[],[],[],[],[]]):
                             sendData=[sensor_names[all],int(time.time()),sensorReading_bucket[all][0],sensorReading_bucket[all][1],sensorReading_bucket[all][2],sensorReading_bucket[all][3],sensorReading_bucket[all][4]]
-                            print sendData
+                            #print sendData
+                            #packs and sends the data
+                            data_packet(sendData)
                     time.sleep(10)
