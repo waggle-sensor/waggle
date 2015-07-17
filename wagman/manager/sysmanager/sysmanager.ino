@@ -6,10 +6,20 @@
 #include <avr/wdt.h>
 #include <avr/eeprom.h>
 #include <Wire.h>
+#include <SparkFunHTU21D.h>
+#include <Time.h>
+#include <MCP79412RTC.h>
 
 
 
 //---------- C O N S T A N T S ------------------------------------------------
+#define PIN_RELAY2 PB6
+
+#define PIN_HEARTBEAT2 PB5
+
+#define PIN_PHOTOCELL PF5
+#define PIN_JP10_10 PF4
+
 const byte LED = 13;
 const char NC_NOTIFIER_STATUS = '@';
 const char NC_NOTIFIER_PROBLEM = '#';
@@ -25,6 +35,8 @@ volatile byte timer1_interrupt_fired = 0;
 volatile byte _timer1_cycle = false;
 volatile char USART_RX_char;
 volatile boolean _USART_new_char = false;
+
+HTU21D SysMon_HTU21D;
 
 // EEPROM addresses whose values are set by node controller:
 // Initial values act as default
@@ -101,36 +113,22 @@ void setup()
   boot_primary();
   boot_gn();
 
-  // pinMode(PD4, OUTPUT);
-  // digitalWrite(PD4, HIGH);
+  Serial.println(SysMon_HTU21D.readTemperature());
+  Serial.println(SysMon_HTU21D.readHumidity());  
 
-  // delay(500);
-
-  // good
-  // pinMode(PD7, OUTPUT);
-  // digitalWrite(PD7, HIGH);
-  // pinMode(PE6, INPUT);
-
-  // good
-  // pinMode(PB4, OUTPUT);
-  // digitalWrite(PB4, HIGH);
-
-  // pinMode(PB6, OUTPUT);
-  // digitalWrite(PB6, HIGH);
-
-  pinMode(PD6, OUTPUT);
-  digitalWrite(PD6, HIGH);
+  RTC.set(0);
 }
 
 
-
+byte x = 0;
 //---------- L O O P ----------------------------------------------------------
 void loop() 
 {
-  
   // Has the timer finished a cycle?
   if(_timer1_cycle)
   {
+    Serial.println(RTC.get());
+
     // Clear the flag
     _timer1_cycle = false;
 
@@ -142,18 +140,21 @@ void loop()
     // Send problem report to node controller
     send_problem();
 
-    if(digitalRead(PD7) == LOW)
-      digitalWrite(PD6, LOW);
+    if(digitalRead(PIN_HEARTBEAT2) == LOW)
+    {
+      x++;
+      if(x == eeprom_read_byte(&E_HEARTBEAT_TIMEOUT_NC))
+      {
+        digitalWrite(PIN_RELAY2, LOW);
+
+        delay(200);
+
+        digitalWrite(PIN_RELAY2, HIGH);
+
+        x = 0;
+      }
+    }
   }
-
-  //get_params_nc();
-
-  // Received new serial data?
-  // if(_USART_new_char)
-  // {
-  //   // Node controller requesting status report?
-  //   if(USART_RX_char == "$")
-  // }
 }
 
 
@@ -173,7 +174,12 @@ void send_status()
   delay(10);
 
   // Send status report
-  Serial.println("status report");
+  String report = "P:" +
+                  String(analogRead(PIN_PHOTOCELL)) +
+                  ",T:" +
+                  String(analogRead(PIN_JP10_10));
+
+  Serial.println(report);
 }
 
 
