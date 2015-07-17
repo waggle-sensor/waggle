@@ -10,6 +10,13 @@
 
 
 //---------- C O N S T A N T S ------------------------------------------------
+#define PIN_RELAY2 PB6
+
+#define PIN_HEARTBEAT2 PB5
+
+#define PIN_PHOTOCELL PF5
+#define PIN_JP10_10 PF4
+
 const byte LED = 13;
 const char NC_NOTIFIER_STATUS = '@';
 const char NC_NOTIFIER_PROBLEM = '#';
@@ -100,30 +107,10 @@ void setup()
 
   boot_primary();
   boot_gn();
-
-  // pinMode(PD4, OUTPUT);
-  // digitalWrite(PD4, HIGH);
-
-  // delay(500);
-
-  // good
-  // pinMode(PD7, OUTPUT);
-  // digitalWrite(PD7, HIGH);
-  // pinMode(PE6, INPUT);
-
-  // good
-  // pinMode(PB4, OUTPUT);
-  // digitalWrite(PB4, HIGH);
-
-  // pinMode(PB6, OUTPUT);
-  // digitalWrite(PB6, HIGH);
-
-  pinMode(PD6, OUTPUT);
-  digitalWrite(PD6, HIGH);
 }
 
 
-
+byte x = 0;
 //---------- L O O P ----------------------------------------------------------
 void loop() 
 {
@@ -142,18 +129,21 @@ void loop()
     // Send problem report to node controller
     send_problem();
 
-    if(digitalRead(PD7) == LOW)
-      digitalWrite(PD6, LOW);
+    if(digitalRead(PIN_HEARTBEAT2) == LOW)
+    {
+      x++;
+      if(x == eeprom_read_byte(&E_HEARTBEAT_TIMEOUT_NC))
+      {
+        digitalWrite(PIN_RELAY2, LOW);
+
+        delay(200);
+
+        digitalWrite(PIN_RELAY2, HIGH);
+
+        x = 0;
+      }
+    }
   }
-
-  //get_params_nc();
-
-  // Received new serial data?
-  // if(_USART_new_char)
-  // {
-  //   // Node controller requesting status report?
-  //   if(USART_RX_char == "$")
-  // }
 }
 
 
@@ -173,7 +163,12 @@ void send_status()
   delay(10);
 
   // Send status report
-  Serial.println("status report");
+  String report = "P:" +
+                  String(analogRead(PIN_PHOTOCELL)) +
+                  ",T:" +
+                  String(analogRead(PIN_JP10_10));
+
+  Serial.println(report);
 }
 
 

@@ -129,6 +129,16 @@ void init_primary()
    // Clear the flag for the timer test being incomplete, otherwise the next
    // POST may incorrectly mark the timer as malfunctioning
    eeprom_update_byte(&E_TIMER_TEST_INCOMPLETE, 0);
+
+   // Set ADC reference voltage to 5V
+   analogReference(DEFAULT);
+   // Read ADC channels a few times to settle them down
+   analogRead(PIN_PHOTOCELL);
+   analogRead(PIN_PHOTOCELL);
+   analogRead(PIN_PHOTOCELL);
+   analogRead(PIN_JP10_10);
+   analogRead(PIN_JP10_10);
+   analogRead(PIN_JP10_10);
 }
 
 
