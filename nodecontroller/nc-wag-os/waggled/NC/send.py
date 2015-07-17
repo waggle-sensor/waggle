@@ -2,7 +2,9 @@
 
 import socket, os, os.path, time
 
-""" This is a client socket that connects to the push_server of the node controller to send messages. It is called as a function with the packed message as an argument. """
+""" 
+    This is a client socket that connects to the push_server of the node controller to send messages. It is called as a function with the packed message as an argument.
+"""
 
 def send(msg):
     HOST = '10.10.10.10'

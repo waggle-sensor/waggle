@@ -4,11 +4,12 @@
 	such as ping and time request packets.
 """
 from gPickler import gPickle
-import sys
+import sys, os, os.path
 sys.path.append("..")
 from protocol.PacketHandler import *
 
-QUEUENAME = "fnherigfbvrefuesr"  #Insert your own fun random string here! 
+with open('/etc/waggle/queuename','r') as file_:
+    QUEUENAME = file_.read().strip() 
 
 def make_ping_packet():
 	"""

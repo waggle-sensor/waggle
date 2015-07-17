@@ -7,7 +7,9 @@ from utilities import packetmaker
 from send import send
 
 
-""" A python script that creates and sends a time request. """ 
+"""
+    A python script that creates and sends a time request.
+""" 
 
 packet = packetmaker.make_time_packet()
 print 'Time request packet made...' 

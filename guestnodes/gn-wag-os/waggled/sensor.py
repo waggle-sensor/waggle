@@ -86,75 +86,80 @@ sensor_names = ["PDV_P8104.API.2006", "MLX90614ESF-DAA.Melexis.008-2013", "D6T-4
         "HIH6130.Honeywell.2011", "SHT15.Sensirion.4_3-2010", "BMP180.Bosch.2_5-2013", "MMA8452Q.Freescale.8_1-2013", 
         "DS18B20.Maxim.2008", "TMP421.Texas_Instruments.2012", "RHT03.Maxdetect.2011", "TMP102.Texas_Instruments.2008", 
         "SHT75.Sensirion.5_2011", "HIH4030.Honeywell.2008", "GA1A1S201WP.Sharp.2007", "MAX4466.Maxim.1_2001"]
-
-while True:
-    wxconnection = False
-    while wxconnection == False:
-        try:
-            wxsensor = serial.Serial('/dev/ttyACM0',57600,timeout=300)
-            wxconnection = True
-        except:
-            print "Still Waiting for Connection..."
-            time.sleep(1)
-    try:
-        wxsensor.flushInput()
-        wxsensor.flushOutput()
-    except:
-        wxsensor.close()
+try:
+    while True:
         wxconnection = False
-    while wxconnection == True:
+        while wxconnection == False:
+            try:
+                wxsensor = serial.Serial('/dev/ttyACM0',57600,timeout=300)
+                wxconnection = True
+            except:
+                print "Still Waiting for Connection..."
+                time.sleep(1)
         try:
-            readData = ' '
-            readData=wxsensor.readline()
+            wxsensor.flushInput()
+            wxsensor.flushOutput()
         except:
             wxsensor.close()
             wxconnection = False
-        if len(readData) > 0 and wxconnection == True:
+        while wxconnection == True:
             try:
-                sensorsData = readData.split(';')
-                if len(sensorsData) > 2:
-                    sensorDataAvail = True
-                else:
-                    sensorDataAvail = False
+                readData = ' '
+                readData=wxsensor.readline()
             except:
-                sensorDataAvail = False
+                wxsensor.close()
+                wxconnection = False
+            if len(readData) > 0 and wxconnection == True:
+                try:
+                    sensorsData = readData.split(';')
+                    if len(sensorsData) > 2:
+                        sensorDataAvail = True
+                    else:
+                        sensorDataAvail = False
+                except:
+                    sensorDataAvail = False
 
-            if sensorDataAvail == True:
-                if sensorsData[0] == 'WXSensor' and sensorsData[-1]=='WXSensor\r\n':
-                    #print sensorsData[1:-1]
-                    sensorReading_bucket = [[[] for col in range(5)] for row in range(16)]
-                    for i in range(len(sensorsData)-2):
-                        #print sensorsData[i+1]
-                        currentSensor = sensorsData[i+1].split(':')
-                        if currentSensor[0] <> 'D6T_44L_06_1_T_C':
-                            try:
-                                temp_values = float(currentSensor[1])
-                                which_row = sensor_array_index[Sensor_Index.index(currentSensor[0])]
-                                sensorReading_bucket[which_row][0].append(reading_names[Sensor_Index.index(currentSensor[0])])
-                                sensorReading_bucket[which_row][1].append(reading_type[Sensor_Index.index(currentSensor[0])])
-                                sensorReading_bucket[which_row][2].append(temp_values)
-                                sensorReading_bucket[which_row][3].append(reading_unit[Sensor_Index.index(currentSensor[0])])
-                                sensorReading_bucket[which_row][4].append(reading_note[Sensor_Index.index(currentSensor[0])])
-                            except:
+                if sensorDataAvail == True:
+                    if sensorsData[0] == 'WXSensor' and sensorsData[-1]=='WXSensor\r\n':
+                        print sensorsData[1:-1]
+                        sensorReading_bucket = [[[] for col in range(5)] for row in range(16)]
+                        for i in range(len(sensorsData)-2):
+                            print sensorsData[i+1]
+                            currentSensor = sensorsData[i+1].split(':')
+                            if currentSensor[0] <> 'D6T_44L_06_1_T_C':
+                                try:
+                                    temp_values = float(currentSensor[1])
+                                    which_row = sensor_array_index[Sensor_Index.index(currentSensor[0])]
+                                    sensorReading_bucket[which_row][0].append(reading_names[Sensor_Index.index(currentSensor[0])])
+                                    sensorReading_bucket[which_row][1].append(reading_type[Sensor_Index.index(currentSensor[0])])
+                                    sensorReading_bucket[which_row][2].append(temp_values)
+                                    sensorReading_bucket[which_row][3].append(reading_unit[Sensor_Index.index(currentSensor[0])])
+                                    sensorReading_bucket[which_row][4].append(reading_note[Sensor_Index.index(currentSensor[0])])
+                                except:
+                                    pass
+                            else:
                                 pass
-                        else:
-                            pass
-                            try:
-                                temp_values=currentSensor[1].split(',')
-                                for k in range(len(temp_values)):
-                                    temp_values[k] = float(temp_values[k])
-                                which_row = sensor_array_index[Sensor_Index.index(currentSensor[0])]
-                                sensorReading_bucket[which_row][0]=list(reading_names[Sensor_Index.index(currentSensor[0])])
-                                sensorReading_bucket[which_row][1]=list(reading_type[Sensor_Index.index(currentSensor[0])])
-                                sensorReading_bucket[which_row][2]=list(temp_values)
-                                sensorReading_bucket[which_row][3]=list(reading_unit[Sensor_Index.index(currentSensor[0])])
-                                sensorReading_bucket[which_row][4]=list(reading_note[Sensor_Index.index(currentSensor[0])])
-                            except:
-                                pass
-                    for all in range(len(sensorReading_bucket)):
-                        if (sensorReading_bucket[all] <> [[],[],[],[],[]]):
-                            sendData=[sensor_names[all],int(time.time()),sensorReading_bucket[all][0],sensorReading_bucket[all][1],sensorReading_bucket[all][2],sensorReading_bucket[all][3],sensorReading_bucket[all][4]]
-                            #print sendData
-                            #packs and sends the data
-                            data_packet(sendData)
-                    time.sleep(10)
+                                try:
+                                    temp_values=currentSensor[1].split(',')
+                                    for k in range(len(temp_values)):
+                                        temp_values[k] = float(temp_values[k])
+                                    which_row = sensor_array_index[Sensor_Index.index(currentSensor[0])]
+                                    sensorReading_bucket[which_row][0]=list(reading_names[Sensor_Index.index(currentSensor[0])])
+                                    sensorReading_bucket[which_row][1]=list(reading_type[Sensor_Index.index(currentSensor[0])])
+                                    sensorReading_bucket[which_row][2]=list(temp_values)
+                                    sensorReading_bucket[which_row][3]=list(reading_unit[Sensor_Index.index(currentSensor[0])])
+                                    sensorReading_bucket[which_row][4]=list(reading_note[Sensor_Index.index(currentSensor[0])])
+                                except:
+                                    pass
+                        for all in range(len(sensorReading_bucket)):
+                            if (sensorReading_bucket[all] <> [[],[],[],[],[]]):
+                                sendData=[sensor_names[all],int(time.time()),sensorReading_bucket[all][0],sensorReading_bucket[all][1],sensorReading_bucket[all][2],sensorReading_bucket[all][3],sensorReading_bucket[all][4]]
+                                print sendData
+                                #packs and sends the data
+                                data_packet(sendData)
+                        time.sleep(1)
+    except KeyboardInterrupt, k:
+        try:
+            wxsensor.close()
+        except: 
+            pass

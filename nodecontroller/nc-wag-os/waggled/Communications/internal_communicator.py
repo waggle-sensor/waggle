@@ -88,7 +88,7 @@ class internal_client_pull(Process):
                     try:
                         client_sock.connect('/tmp/Data_Cache_server')#opens socket when there is an incoming pull request
                         dev = comm.incoming_request.get() #gets the dev ID that is initiating the pull request
-                        request = dev + '|' #puts the request in the correct format for the DC
+                        request = '|' + dev #puts the request in the correct format for the DC
                         print 'Internal client pull sending request: ', request
                         client_sock.send(request)
                         try:
@@ -125,7 +125,7 @@ class push_server(Process):
     
     def run(self):
         comm = internal_communicator()
-        HOST = '127.0.0.1'
+        HOST = '10.10.10.10'
         PORT = 9090
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.bind((HOST,PORT))
@@ -159,7 +159,7 @@ class pull_server(Process):
     
     def run(self):
         comm = internal_communicator()
-        HOST = '127.0.0.1'
+        HOST = '10.10.10.10'
         PORT = 9091
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.bind((HOST,PORT))
@@ -196,32 +196,32 @@ class pull_server(Process):
                     break
         server.close()
     
-#uncomment for testing
-if __name__ == "__main__":
-    try:
-        #starts the pull server
-        pull_serv = pull_server()
-        pull_serv.start()
+##uncomment for testing
+#if __name__ == "__main__":
+    #try:
+        ##starts the pull server
+        #pull_serv = pull_server()
+        #pull_serv.start()
         
-        #starts the push server 
-        push_serv = push_server()
-        push_serv.start()
+        ##starts the push server 
+        #push_serv = push_server()
+        #push_serv.start()
         
-        #starts the push client
-        push_client = internal_client_push()
-        push_client.start()
+        ##starts the push client
+        #push_client = internal_client_push()
+        #push_client.start()
         
-        #starts the pull client
-        pull_client = internal_client_pull()
-        pull_client.start()
-        while True:
-            pass
+        ##starts the pull client
+        #pull_client = internal_client_pull()
+        #pull_client.start()
+        #while True:
+            #pass
         
-    except KeyboardInterrupt, k:
-        pull_serv.terminate()
-        push_serv.terminate()
-        push_client.terminate()
-        pull_client.terminate()
-        print 'Done.'
+    #except KeyboardInterrupt, k:
+        #pull_serv.terminate()
+        #push_serv.terminate()
+        #push_client.terminate()
+        #pull_client.terminate()
+        #print 'Done.'
     
                 

@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
 import sys
-sys.path.append('../../../../devtools/protocol_common/')
+sys.path.append('../../../devtools/protocol_common/')
 from utilities import packetmaker
 from send import send
 
-def data_packet(data)
+def data_packet(data):
     """
     This function packs and sends sensor data. 
     
