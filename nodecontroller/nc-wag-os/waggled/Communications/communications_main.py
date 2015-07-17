@@ -1,12 +1,42 @@
 #!/usr/bin/env python
 
+import os, os.path, pika
+#from external_communicator import *
+#from internal_communicator import *
 
-from external_communicator import *
-from internal_communicator import *
+"""
+
+    Communications main starts the internal and external communication processes.
+"""
 
 if __name__ == "__main__":
     try:
+        #TODO if the pika_push and pika_pull clients can be combined into one process, add an if statement to that process that checks for initial contact with the cloud
+        if not os.path.isfile('/etc/waggle/queuename'):
+            #get the connection parameters
+            params = pika.connection.URLParameters("amqps://waggle:waggle@10.10.10.108:5671/%2F") #This will need to change according to where the server is
+            #make the connection
+            connection = pika.BlockingConnection(params)
+            #create the channel
+            channel = connection.channel()
+            #queue_declare is left empty so RabbitMQ assigns a unique queue name
+            result = channel.queue_declare()
+            #get the name of the randomly assigned queue
+            queuename = result.method.queue
+            #close the connection
+            connection.close()
             
+            #strip 'amq.gen-' from queuename
+            junk, queuename = queuename.split('-', 1)
+            
+            #write the queuename to a file
+            file_ = open('/etc/waggle/queuename', 'w') 
+            file_.write(str(queuename))
+            file_.close()
+        
+        from external_communicator import *
+        from internal_communicator import *
+        
         #start the external communication processes
         #start the pika pull client
         pika_pull = pika_pull()

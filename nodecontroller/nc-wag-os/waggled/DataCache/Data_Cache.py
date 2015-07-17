@@ -77,8 +77,8 @@ class Data_Cache(Daemon):
                     if not data:
                         break
                     else:
-                        if data.find('|') != -1: #Indicates that it is a pull request 
-                            dest, data = data.split('|', 1) #splits to get either 'o' for outgoing request or the device location for incoming request
+                        if data[0] == '|': #Indicates that it is a pull request 
+                            data, dest = data.split('|', 1) #splits to get either 'o' for outgoing request or the device location for incoming request
                             if dest != 'o':
                                 msg = incoming_pull(int(dest), incoming_available_queues, msg_counter) #pulls a message from that device's queue
                                 if msg == None:
@@ -87,8 +87,11 @@ class Data_Cache(Daemon):
                                     client_sock.sendall(msg) #sends the message
                                 except:
                                     #pushes it back into the incoming queue, if the client disconnects before the message is sent
-                                    #TODO default msg_p is 5 for messages pushed back into queue. Improvement recommended.
-                                    incoming_push(int(dest),5, msg, incoming_available_queues, msg_counter, flush, outgoing_available_queues) 
+                                    try: #Will pass if data is a pull request instead of a full message 
+                                        #TODO default msg_p is 5 for messages pushed back into queue. Improvement recommended.
+                                        incoming_push(int(dest),5, msg, incoming_available_queues, msg_counter, flush, outgoing_available_queues) 
+                                    except: 
+                                        pass
                             else:
                                 msg = outgoing_pull(outgoing_available_queues, msg_counter) #pulls the highest priority message
                                 if msg == None:
@@ -97,8 +100,11 @@ class Data_Cache(Daemon):
                                     client_sock.sendall(msg) #sends the message
                                 except:
                                     #pushes it back into the outgoing queue, if the client disconnects before the message is sent
-                                    #TODO default msg_p is 5 for messages pushed back into queue. Improvement recommended.
-                                    outgoing_push(int(dest),5,msg, outgoing_available_queues, msg_counter, flush, incoming_available_queues)
+                                    try:#Will pass if data is a pull request instead of a full message
+                                        #TODO default msg_p is 5 for messages pushed back into queue. Improvement recommended.
+                                        outgoing_push(int(dest),5,msg, outgoing_available_queues, msg_counter, flush, incoming_available_queues)
+                                    except: 
+                                        pass
                         
                             time.sleep(1)
                             

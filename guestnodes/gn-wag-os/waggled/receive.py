@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import socket, os, os.path, sys
-sys.path.append('../../../../devtools/protocol_common/')
+sys.path.append('../../../devtools/protocol_common/')
 from protocol.PacketHandler import *
 from msg_handler import msg_handler
 
@@ -13,7 +13,7 @@ with open('/etc/waggle/hostname','r') as file_:
     HOSTNAME = file_.read().strip()
 
 def receive():
-    HOST = '127.0.0.1' #TODO will need to change to localhost
+    HOST = '10.10.10.10' #TODO will need to change to localhost
     PORT = 9091 #port for pull_server
     
     

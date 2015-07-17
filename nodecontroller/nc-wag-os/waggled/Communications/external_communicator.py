@@ -22,9 +22,12 @@ with open('/etc/waggle/hostname','r') as file_:
     HOSTNAME = file_.read().strip()
 
 with open('/etc/waggle/queuename','r') as file_:
-    QUEUENAME = file_.read().strip()    
+    QUEUENAME = file_.read().strip() 
     
 class external_communicator(object):
+    """
+        This class is a convenience class that stores shared variables amongst all instances. 
+    """
     
     def __init__(self):
         pass
@@ -32,7 +35,8 @@ class external_communicator(object):
     incoming = Queue() #stores messages to push into DC 
     outgoing = Queue() #stores messages going out to cloud
     cloud_connected = Value('i') #indicates if the cloud is or is not connected
-    
+    params = pika.connection.URLParameters("amqps://waggle:waggle@10.10.10.108:5671/%2F") #the parameters used to connect to the cloud 
+
 class pika_push(Process):
     """ 
         A pika client for rabbitMQ to push messages to the cloud. When the cloud is connected, the pull client sends pull requests and puts messages into the outgoing queue. 
@@ -40,12 +44,8 @@ class pika_push(Process):
     """ 
     def run(self):
         comm = external_communicator()
-        #creds = pika.PlainCredentials('guest1', 'guest1')
-        params = pika.connection.URLParameters("amqps://waggle:waggle@10.10.10.108:5671/%2F") #SSL
-        #params = pika.ConnectionParameters('beehive.wa8.gl',5672, '/', creds) 
-        #params = pika.ConnectionParameters('10.10.10.108',5672, '/', creds) 
-        #params = pika.ConnectionParameters('10.10.10.143',5672, '/', creds) 
-        #params = pika.ConnectionParameters('10.10.10.139',5672, '/', creds)
+        params = comm.params
+        #params = pika.connection.URLParameters("amqps://waggle:waggle@10.10.10.108:5671/%2F") #SSL
         print 'Pika push started...'
         while True:
             try:
@@ -54,7 +54,7 @@ class pika_push(Process):
                     connection = pika.BlockingConnection(params)
                     channel = connection.channel()
                     comm.cloud_connected.value = 1 #set the flag to true when connected to cloud
-                    #Creating a queue
+                    #Declaring the queue
                     channel.queue_declare(queue=QUEUENAME)
                     #print 'Pika push connection successful'
                     while comm.outgoing.empty(): #sleeps until there are messages to send
@@ -81,12 +81,8 @@ class pika_pull(Process):
     def run(self):
         print 'Pika pull started...'
         comm = external_communicator()
-        #creds = pika.PlainCredentials('guest1', 'guest1')
-        params = pika.connection.URLParameters("amqps://waggle:waggle@10.10.10.108:5671/%2F") #SSL
-        #params = pika.ConnectionParameters('beehive.wa8.gl',5672, '/', creds) #beehive.wa8.gl
-        #params = pika.ConnectionParameters('10.10.10.108',5672, '/', creds) #beehive.wa8.gl
-        #params = pika.ConnectionParameters('10.10.10.143',5672, '/', creds)
-        #params = pika.ConnectionParameters('10.10.10.139',5672, '/', creds)
+        params = comm.params
+        #params = pika.connection.URLParameters("amqps://waggle:waggle@10.10.10.108:5671/%2F") #SSL
         while True: 
             
             try:
@@ -96,10 +92,13 @@ class pika_pull(Process):
                     #print 'Pika pull connection successful.'
                     comm.cloud_connected.value = 1
                      #Creating a queue
-                    channel.queue_declare(queue=QUEUENAME)
+                    try:
+                        channel.queue_declare(queue=QUEUENAME)
+                    except:
+                        print 'Cannot declare queuename.'
                     channel.basic_consume(callback, queue=QUEUENAME)
                     #loop that waits for data 
-                    channel.start_consuming()
+                    channel.start_consuming() #TODO Can this process still publish to RabbitMQ while this is continuously looping? If so, The pika_pull and pika_push processes can and should be combined. 
                 except:
                     print 'Pika_pull currently unable to connect to cloud. Waiting before trying again.' 
                     comm.cloud_connected.value = 0 #set the flag to 0 when not connected to the cloud
@@ -138,7 +137,7 @@ class external_client_pull(Process):
                             client_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
                             client_sock.connect('/tmp/Data_Cache_server') #connects to server
                             #print "Client_pull connected to data cache... "
-                            data = 'o|' #sends the pull request in the correct format
+                            data = '|o' #sends the pull request in the correct format
                             client_sock.send(data)
                             msg = client_sock.recv(4028) #can be changed 
                             if not msg:
@@ -198,30 +197,32 @@ class external_client_push(Process):
         
        
 #uncomment for testing
-if __name__ == "__main__":
-    try:
-        #starts the pull server
-        pika_pull = pika_pull()
-        pika_pull.start()
+#if __name__ == "__main__":
+    #try:
+        ##starts the pull server
+        #if pika_init.is_alive():
+            #print 'Pika init is still alive.'
+        #pika_pull = pika_pull()
+        #pika_pull.start()
         
-        #starts the push server 
-        pika_push = pika_push()
-        pika_push.start()
+        ##starts the push server 
+        #pika_push = pika_push()
+        #pika_push.start()
         
-        #starts the push client
-        push_client = external_client_push()
-        push_client.start()
+        ##starts the push client
+        #push_client = external_client_push()
+        #push_client.start()
         
-        #starts the pull client
-        pull_client = external_client_pull()
-        pull_client.start()
-        while True:
-            pass
+        ##starts the pull client
+        #pull_client = external_client_pull()
+        #pull_client.start()
+        #while True:
+            #pass
         
-    except KeyboardInterrupt, k:
-        pika_pull.terminate()
-        pika_push.terminate()
-        push_client.terminate()
-        pull_client.terminate()
-        print 'Done.'
+    #except KeyboardInterrupt, k:
+        #pika_pull.terminate()
+        #pika_push.terminate()
+        #push_client.terminate()
+        #pull_client.terminate()
+        #print 'Done.'
         

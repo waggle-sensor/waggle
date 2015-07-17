@@ -8,7 +8,6 @@ cd $dir
 mkdir /etc/waggle/
 rm /etc/smsc95xx_mac_addr
 echo $RANDOM > /etc/waggle/hostname # The node's hostname
-echo $RANDOM > /etc/waggle/queuename # The node's queuename
 cd waggle/nodecontroller/nc-wag-os/waggled/DataCache
 python Data_Cache.py start #start the Data Data_Cache
 cd ..
