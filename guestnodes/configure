@@ -7,5 +7,11 @@ pip install -e pika-0.9.14
 cd $dir
 mkdir /etc/waggle/
 rm /etc/smsc95xx_mac_addr
-echo $RANDOM > /etc/waggle/hostname # The node's hostname
+echo 1244 > /etc/waggle/hostname # Set to 1244 for the demo. Needs to be changed to $RANDOM
+cd 
+cd /waggle/guestnodes/gn-wag-os/waggled
+python handshake.py #send handshake to NC
+python GN_registration #send registration to cloud
+#want to start receive.py here probably
+python sensor.py
 

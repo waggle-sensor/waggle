@@ -31,7 +31,7 @@ if __name__ == "__main__":
             
             #write the queuename to a file
             file_ = open('/etc/waggle/queuename', 'w') 
-            file_.write(str(queuename))
+            file_.write(queuename)
             file_.close()
         
         from external_communicator import *
