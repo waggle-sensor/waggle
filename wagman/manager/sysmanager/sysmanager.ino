@@ -6,6 +6,9 @@
 #include <avr/wdt.h>
 #include <avr/eeprom.h>
 #include <Wire.h>
+#include <SparkFunHTU21D.h>
+#include <Time.h>
+#include <MCP79412RTC.h>
 
 
 
@@ -32,6 +35,8 @@ volatile byte timer1_interrupt_fired = 0;
 volatile byte _timer1_cycle = false;
 volatile char USART_RX_char;
 volatile boolean _USART_new_char = false;
+
+HTU21D SysMon_HTU21D;
 
 // EEPROM addresses whose values are set by node controller:
 // Initial values act as default
@@ -107,6 +112,11 @@ void setup()
 
   boot_primary();
   boot_gn();
+
+  Serial.println(SysMon_HTU21D.readTemperature());
+  Serial.println(SysMon_HTU21D.readHumidity());  
+
+  RTC.set(0);
 }
 
 
@@ -114,10 +124,11 @@ byte x = 0;
 //---------- L O O P ----------------------------------------------------------
 void loop() 
 {
-  
   // Has the timer finished a cycle?
   if(_timer1_cycle)
   {
+    Serial.println(RTC.get());
+
     // Clear the flag
     _timer1_cycle = false;
 
