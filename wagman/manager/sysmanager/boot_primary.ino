@@ -52,10 +52,10 @@ boolean boot_primary()
 	get_time_nc();
 
    // Request operating parameters from node controller
-   get_params_nc();
+   get_params_core();
 
 	// Request guest node info from node controller.  No info received?
-	if(!get_gn_info())
+	if(!get_params_GNs())
 		// Skip the rest of the boot sequence
 		return false;
 
@@ -257,7 +257,7 @@ void check_heartbeat_nc()
 
 
 
-//---------- G E T _ G N _ I N F O --------------------------------------------
+//---------- G E T _ P A R A M S _ G N S --------------------------------------
 /*
    Requests information about the guest nodes from the node controller.
    Expected data for each guest nodes contains: present/not present, acceptable
@@ -266,41 +266,10 @@ void check_heartbeat_nc()
 
    :rtype: boolean
 */
-boolean get_gn_info()
+boolean get_params_GNs()
 {
-	return true;
-}
-
-
-
-//---------- G E T _ T I M E _ N C --------------------------------------------
-/*
-   Requests a time update from the node controller.  If a time update is
-   received, the RTC is initialized with that time.  If a time update is not
-   recieved, the RTC is started without a time correction.
-
-   :rtype: none
-*/
-void get_time_nc()
-{
-
-}
-
-
-
-//---------- G E T _ P A R A M S _ N C ----------------------------------------
-/*
-   Request operating parameters from the node controller.  If parameters are
-   different than what is already stored, the parameter is updated.  If the
-   parameters are the same or not received, the previously stored values will
-   be used.
-
-   :rtype: none
-*/
-void get_params_nc()
-{
-   // Send request
-   Serial.println(NC_NOTIFIER_PARAMS);
+	// Send request
+   Serial.println(NC_NOTIFIER_PARAMS_GN);
 
    // Save the node controller's response into a string.
    // Default timeout value is 1 second
@@ -312,28 +281,18 @@ void get_params_nc()
    {
       /* Order of parameters (coming from node controller):
 
-         USART baud rate
-         USART RX buffer size
-         Max number of SOS boot attempts
-         Heartbeat timeout (node controller)
-         Heartbeat timeout (switch)
+         Present/not present (guest node 1)
+         Present/not present (guest node 2)
+         Present/not present (guest node 3)
+         Present/not present (guest node 4)
          Heartbeat timeout (guest node 1)
          Heartbeat timeout (guest node 2)
          Heartbeat timeout (guest node 3)
          Heartbeat timeout (guest node 4)
-         Bad temperature timeout (system monitor)
-         Bad temperature timeout (node controller)
-         Bad temperature timeout (switch)
          Bad temperature timeout (guest node 1)
          Bad temperature timeout (guest node 2)
          Bad temperature timeout (guest node 3)
          Bad temperature timeout (guest node 4)
-         Minimum temperature (Celsius) (signed) (system monitor)
-         Maximum temperature (Celsius) (signed) (system monitor)
-         Minimum temperature (Celsius) (signed) (node controller)
-         Maximum temperature (Celsius) (signed) (node controller)
-         Minimum temperature (Celsius) (signed) (switch)
-         Maximum temperature (Celsius) (signed) (switch)
          Minimum temperature (Celsius) (signed) (guest node 1)
          Maximum temperature (Celsius) (signed) (guest node 1)
          Minimum temperature (Celsius) (signed) (guest node 2)
@@ -342,33 +301,21 @@ void get_params_nc()
          Maximum temperature (Celsius) (signed) (guest node 3)
          Minimum temperature (Celsius) (signed) (guest node 4)
          Maximum temperature (Celsius) (signed) (guest node 4)
-         Minimum relative humidity (%) (system monitor)
-         Maximum relative humidity (%) (system monitor)
       */
 
       // Temporary strings for holding each parameter
-      String USART_baud;
-      String USART_RX_buffer_size = "";
-      String max_num_SOS_boot_tries = "";
-      String heartbeat_timeout_NC = "";
-      String heartbeat_timeout_switch = "";
+      String present_GN1 = "";
+      String present_GN2 = "";
+      String present_GN3 = "";
+      String present_GN4 = "";
       String heartbeat_timeout_GN1 = "";
       String heartbeat_timeout_GN2 = "";
       String heartbeat_timeout_GN3 = "";
       String heartbeat_timeout_GN4 = "";
-      String bad_temp_timeout_sysmon = "";
-      String bad_temp_timeout_NC = "";
-      String bad_temp_timeout_switch = "";
       String bad_temp_timeout_GN1 = "";
       String bad_temp_timeout_GN2 = "";
       String bad_temp_timeout_GN3 = "";
       String bad_temp_timeout_GN4 = "";
-      String min_temp_sysmon = "";
-      String max_temp_sysmon = "";
-      String min_temp_NC = "";
-      String max_temp_NC = "";
-      String min_temp_switch = "";
-      String max_temp_switch = "";
       String min_temp_GN1 = "";
       String max_temp_GN1 = "";
       String min_temp_GN2 = "";
@@ -377,32 +324,26 @@ void get_params_nc()
       String max_temp_GN3 = "";
       String min_temp_GN4 = "";
       String max_temp_GN4 = "";
-      String min_humidity_sysmon = "";
-      String max_humidity_sysmon = "";
 
       // Index for iterating thru the received string
       int i = 0;
 
       // Parse the received list of parameters:
       while(received_params[i] != NC_DELIMITER)
-         USART_baud += received_params[i++];
+         present_GN1 += received_params[i++];
       // Skip delimiter
       i++;
 
       while(received_params[i] != NC_DELIMITER)
-         USART_RX_buffer_size += received_params[i++];
+         present_GN2 += received_params[i++];
       i++;
 
       while(received_params[i] != NC_DELIMITER)
-         max_num_SOS_boot_tries += received_params[i++];
+         present_GN3 += received_params[i++];
       i++;
 
       while(received_params[i] != NC_DELIMITER)
-         heartbeat_timeout_NC += received_params[i++];
-      i++;
-
-      while(received_params[i] != NC_DELIMITER)
-         heartbeat_timeout_switch += received_params[i++];
+         present_GN4 += received_params[i++];
       i++;
 
       while(received_params[i] != NC_DELIMITER)
@@ -422,18 +363,6 @@ void get_params_nc()
       i++;
 
       while(received_params[i] != NC_DELIMITER)
-         bad_temp_timeout_sysmon += received_params[i++];
-      i++;
-
-      while(received_params[i] != NC_DELIMITER)
-         bad_temp_timeout_NC += received_params[i++];
-      i++;
-
-      while(received_params[i] != NC_DELIMITER)
-         bad_temp_timeout_switch += received_params[i++];
-      i++;
-
-      while(received_params[i] != NC_DELIMITER)
          bad_temp_timeout_GN1 += received_params[i++];
       i++;
 
@@ -447,30 +376,6 @@ void get_params_nc()
 
       while(received_params[i] != NC_DELIMITER)
          bad_temp_timeout_GN4 += received_params[i++];
-      i++;
-
-      while(received_params[i] != NC_DELIMITER)
-         min_temp_sysmon += received_params[i++];
-      i++;
-
-      while(received_params[i] != NC_DELIMITER)
-         max_temp_sysmon += received_params[i++];
-      i++;
-
-      while(received_params[i] != NC_DELIMITER)
-         min_temp_NC += received_params[i++];
-      i++;
-
-      while(received_params[i] != NC_DELIMITER)
-         max_temp_NC += received_params[i++];
-      i++;
-
-      while(received_params[i] != NC_DELIMITER)
-         min_temp_switch += received_params[i++];
-      i++;
-
-      while(received_params[i] != NC_DELIMITER)
-         max_temp_switch += received_params[i++];
       i++;
 
       while(received_params[i] != NC_DELIMITER)
@@ -505,38 +410,20 @@ void get_params_nc()
          max_temp_GN4 += received_params[i++];
       i++;
 
-      while(received_params[i] != NC_DELIMITER)
-         min_humidity_sysmon += received_params[i++];
-      i++;
-
-      while(received_params[i] != NC_DELIMITER)
-         max_humidity_sysmon += received_params[i++];
-      i++;
-
       // Store new parameters in EEPROM
-      eeprom_update_dword(&E_USART_BAUD, USART_baud.toInt());
-      eeprom_update_word(&E_USART_RX_BUFFER_SIZE, (uint16_t)USART_RX_buffer_size.toInt());
-      eeprom_update_byte(&E_MAX_NUM_SOS_BOOT_TRIES, (uint8_t)max_num_SOS_boot_tries.toInt());
-      eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_NC, (uint8_t)heartbeat_timeout_NC.toInt());
-      eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_SWITCH, (uint8_t)heartbeat_timeout_switch.toInt());
+      eeprom_update_byte(&E_PRESENT_GN1, (uint8_t)present_GN1.toInt());
+      eeprom_update_byte(&E_PRESENT_GN2, (uint8_t)present_GN2.toInt());
+      eeprom_update_byte(&E_PRESENT_GN3, (uint8_t)present_GN3.toInt());
+      eeprom_update_byte(&E_PRESENT_GN4, (uint8_t)present_GN4.toInt());
       eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_GN1, (uint8_t)heartbeat_timeout_GN1.toInt());
       eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_GN2, (uint8_t)heartbeat_timeout_GN2.toInt());
       eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_GN3, (uint8_t)heartbeat_timeout_GN3.toInt());
       eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_GN4, (uint8_t)heartbeat_timeout_GN4.toInt());
-      eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_SYSMON, (uint8_t)bad_temp_timeout_sysmon.toInt());
-      eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_NC, (uint8_t)bad_temp_timeout_NC.toInt());
-      eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_SWITCH, (uint8_t)bad_temp_timeout_switch.toInt());
       eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_GN1, (uint8_t)bad_temp_timeout_GN1.toInt());
       eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_GN2, (uint8_t)bad_temp_timeout_GN2.toInt());
       eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_GN3, (uint8_t)bad_temp_timeout_GN3.toInt());
       eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_GN4, (uint8_t)bad_temp_timeout_GN4.toInt());
       // EEPROM only stores unsigned values.  Must cast to signed when reading.
-      eeprom_update_word(&E_TEMP_MIN_SYSMON_SIGNED, (uint16_t)min_temp_sysmon.toInt());
-      eeprom_update_word(&E_TEMP_MAX_SYSMON_SIGNED, (uint16_t)max_temp_sysmon.toInt());
-      eeprom_update_word(&E_TEMP_MIN_NC_SIGNED, (uint16_t)min_temp_NC.toInt());
-      eeprom_update_word(&E_TEMP_MAX_NC_SIGNED, (uint16_t)max_temp_NC.toInt());
-      eeprom_update_word(&E_TEMP_MIN_SWITCH_SIGNED, (uint16_t)min_temp_switch.toInt());
-      eeprom_update_word(&E_TEMP_MAX_SWITCH_SIGNED, (uint16_t)max_temp_switch.toInt());
       eeprom_update_word(&E_TEMP_MIN_GN1_SIGNED, (uint16_t)min_temp_GN1.toInt());
       eeprom_update_word(&E_TEMP_MAX_GN1_SIGNED, (uint16_t)max_temp_GN1.toInt());
       eeprom_update_word(&E_TEMP_MIN_GN2_SIGNED, (uint16_t)min_temp_GN2.toInt());
@@ -545,6 +432,175 @@ void get_params_nc()
       eeprom_update_word(&E_TEMP_MAX_GN3_SIGNED, (uint16_t)max_temp_GN3.toInt());
       eeprom_update_word(&E_TEMP_MIN_GN4_SIGNED, (uint16_t)min_temp_GN4.toInt());
       eeprom_update_word(&E_TEMP_MAX_GN4_SIGNED, (uint16_t)max_temp_GN4.toInt());
+
+      return true;
+   }
+   // No parameters received?
+   else
+      return false;
+}
+
+
+
+//---------- G E T _ T I M E _ N C --------------------------------------------
+/*
+   Requests a time update from the node controller.  If a time update is
+   received, the RTC is initialized with that time.  If a time update is not
+   recieved, the RTC is started without a time correction.
+
+   :rtype: none
+*/
+void get_time_nc()
+{
+
+}
+
+
+
+//---------- G E T _ P A R A M S _ C O R E ------------------------------------
+/*
+   Request operating parameters from the node controller.  If parameters are
+   different than what is already stored, the parameter is updated.  If the
+   parameters are the same or not received, the previously stored values will
+   be used.
+
+   :rtype: none
+*/
+void get_params_core()
+{
+   // Send request
+   Serial.println(NC_NOTIFIER_PARAMS_CORE);
+
+   // Save the node controller's response into a string.
+   // Default timeout value is 1 second
+   String received_params = "";
+   received_params = Serial.readStringUntil(NC_TERMINATOR);
+
+   // Were parameters received?
+   if(received_params.length() > 0)
+   {
+      /* Order of parameters (coming from node controller):
+
+         USART baud rate
+         USART RX buffer size
+         Max number of SOS boot attempts
+         Heartbeat timeout (node controller)
+         Heartbeat timeout (switch)
+         Bad temperature timeout (system monitor)
+         Bad temperature timeout (node controller)
+         Bad temperature timeout (switch)
+         Minimum temperature (Celsius) (signed) (system monitor)
+         Maximum temperature (Celsius) (signed) (system monitor)
+         Minimum temperature (Celsius) (signed) (node controller)
+         Maximum temperature (Celsius) (signed) (node controller)
+         Minimum temperature (Celsius) (signed) (switch)
+         Maximum temperature (Celsius) (signed) (switch)
+         Minimum relative humidity (%) (system monitor)
+         Maximum relative humidity (%) (system monitor)
+      */
+
+      // Temporary strings for holding each parameter
+      String USART_baud;
+      String USART_RX_buffer_size = "";
+      String max_num_SOS_boot_tries = "";
+      String heartbeat_timeout_NC = "";
+      String heartbeat_timeout_switch = "";
+      String bad_temp_timeout_sysmon = "";
+      String bad_temp_timeout_NC = "";
+      String bad_temp_timeout_switch = "";
+      String min_temp_sysmon = "";
+      String max_temp_sysmon = "";
+      String min_temp_NC = "";
+      String max_temp_NC = "";
+      String min_temp_switch = "";
+      String max_temp_switch = "";
+      String min_humidity_sysmon = "";
+      String max_humidity_sysmon = "";
+
+      // Index for iterating thru the received string
+      int i = 0;
+
+      // Parse the received list of parameters:
+      while(received_params[i] != NC_DELIMITER)
+         USART_baud += received_params[i++];
+      // Skip delimiter
+      i++;
+
+      while(received_params[i] != NC_DELIMITER)
+         USART_RX_buffer_size += received_params[i++];
+      i++;
+
+      while(received_params[i] != NC_DELIMITER)
+         max_num_SOS_boot_tries += received_params[i++];
+      i++;
+
+      while(received_params[i] != NC_DELIMITER)
+         heartbeat_timeout_NC += received_params[i++];
+      i++;
+
+      while(received_params[i] != NC_DELIMITER)
+         heartbeat_timeout_switch += received_params[i++];
+      i++;
+
+      while(received_params[i] != NC_DELIMITER)
+         bad_temp_timeout_sysmon += received_params[i++];
+      i++;
+
+      while(received_params[i] != NC_DELIMITER)
+         bad_temp_timeout_NC += received_params[i++];
+      i++;
+
+      while(received_params[i] != NC_DELIMITER)
+         bad_temp_timeout_switch += received_params[i++];
+      i++;
+
+      while(received_params[i] != NC_DELIMITER)
+         min_temp_sysmon += received_params[i++];
+      i++;
+
+      while(received_params[i] != NC_DELIMITER)
+         max_temp_sysmon += received_params[i++];
+      i++;
+
+      while(received_params[i] != NC_DELIMITER)
+         min_temp_NC += received_params[i++];
+      i++;
+
+      while(received_params[i] != NC_DELIMITER)
+         max_temp_NC += received_params[i++];
+      i++;
+
+      while(received_params[i] != NC_DELIMITER)
+         min_temp_switch += received_params[i++];
+      i++;
+
+      while(received_params[i] != NC_DELIMITER)
+         max_temp_switch += received_params[i++];
+      i++;
+
+      while(received_params[i] != NC_DELIMITER)
+         min_humidity_sysmon += received_params[i++];
+      i++;
+
+      while(received_params[i] != NC_DELIMITER)
+         max_humidity_sysmon += received_params[i++];
+
+      // Store new parameters in EEPROM
+      eeprom_update_dword(&E_USART_BAUD, USART_baud.toInt());
+      eeprom_update_word(&E_USART_RX_BUFFER_SIZE, (uint16_t)USART_RX_buffer_size.toInt());
+      eeprom_update_byte(&E_MAX_NUM_SOS_BOOT_TRIES, (uint8_t)max_num_SOS_boot_tries.toInt());
+      eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_NC, (uint8_t)heartbeat_timeout_NC.toInt());
+      eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_SWITCH, (uint8_t)heartbeat_timeout_switch.toInt());
+      eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_SYSMON, (uint8_t)bad_temp_timeout_sysmon.toInt());
+      eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_NC, (uint8_t)bad_temp_timeout_NC.toInt());
+      eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_SWITCH, (uint8_t)bad_temp_timeout_switch.toInt());
+      // EEPROM only stores unsigned values.  Must cast to signed when reading.
+      eeprom_update_word(&E_TEMP_MIN_SYSMON_SIGNED, (uint16_t)min_temp_sysmon.toInt());
+      eeprom_update_word(&E_TEMP_MAX_SYSMON_SIGNED, (uint16_t)max_temp_sysmon.toInt());
+      eeprom_update_word(&E_TEMP_MIN_NC_SIGNED, (uint16_t)min_temp_NC.toInt());
+      eeprom_update_word(&E_TEMP_MAX_NC_SIGNED, (uint16_t)max_temp_NC.toInt());
+      eeprom_update_word(&E_TEMP_MIN_SWITCH_SIGNED, (uint16_t)min_temp_switch.toInt());
+      eeprom_update_word(&E_TEMP_MAX_SWITCH_SIGNED, (uint16_t)max_temp_switch.toInt());
       eeprom_update_byte(&E_HUMIDITY_MIN_SYSMON, (uint8_t)min_humidity_sysmon.toInt());
       eeprom_update_byte(&E_HUMIDITY_MAX_SYSMON, (uint8_t)max_humidity_sysmon.toInt());
    }

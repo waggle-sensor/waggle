@@ -13,7 +13,8 @@
 const byte LED = 13;
 const char NC_NOTIFIER_STATUS = '@';
 const char NC_NOTIFIER_PROBLEM = '#';
-const char NC_NOTIFIER_PARAMS = '$';
+const char NC_NOTIFIER_PARAMS_CORE = '$';
+const char NC_NOTIFIER_PARAMS_GN = '^';
 const char NC_DELIMITER = ',';
 const char NC_TERMINATOR = '!';
 
@@ -30,6 +31,10 @@ volatile boolean _USART_new_char = false;
 uint32_t EEMEM E_USART_BAUD;
 uint16_t EEMEM E_USART_RX_BUFFER_SIZE;
 uint8_t EEMEM E_MAX_NUM_SOS_BOOT_TRIES;
+uint8_t EEMEM E_PRESENT_GN1;
+uint8_t EEMEM E_PRESENT_GN2;
+uint8_t EEMEM E_PRESENT_GN3;
+uint8_t EEMEM E_PRESENT_GN4;
 uint8_t EEMEM E_HEARTBEAT_TIMEOUT_NC;
 uint8_t EEMEM E_HEARTBEAT_TIMEOUT_SWITCH;
 uint8_t EEMEM E_HEARTBEAT_TIMEOUT_GN1;
@@ -64,6 +69,10 @@ uint8_t EEMEM E_HUMIDITY_MAX_SYSMON;
 // EEPROM addresses whose values are not set by node controller:
 uint8_t EEMEM E_NC_ENABLED;
 uint8_t EEMEM E_SWITCH_ENABLED;
+uint8_t EEMEM E_GN1_ENABLED;
+uint8_t EEMEM E_GN2_ENABLED;
+uint8_t EEMEM E_GN3_ENABLED;
+uint8_t EEMEM E_GN4_ENABLED;
 uint8_t EEMEM E_POST_RESULT;
 uint8_t EEMEM E_TIMER_TEST_INCOMPLETE;
 uint8_t EEMEM E_NUM_SOS_BOOT_TRIES;
@@ -90,8 +99,27 @@ void setup()
   //   boot_SOS();
 
   boot_primary();
-
   boot_gn();
+
+  // pinMode(PD4, OUTPUT);
+  // digitalWrite(PD4, HIGH);
+
+  // delay(500);
+
+  // good
+  // pinMode(PD7, OUTPUT);
+  // digitalWrite(PD7, HIGH);
+  // pinMode(PE6, INPUT);
+
+  // good
+  // pinMode(PB4, OUTPUT);
+  // digitalWrite(PB4, HIGH);
+
+  // pinMode(PB6, OUTPUT);
+  // digitalWrite(PB6, HIGH);
+
+  pinMode(PD6, OUTPUT);
+  digitalWrite(PD6, HIGH);
 }
 
 
@@ -113,6 +141,9 @@ void loop()
 
     // Send problem report to node controller
     send_problem();
+
+    if(digitalRead(PD7) == LOW)
+      digitalWrite(PD6, LOW);
   }
 
   //get_params_nc();
