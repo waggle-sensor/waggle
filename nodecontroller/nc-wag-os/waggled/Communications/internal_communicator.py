@@ -12,6 +12,14 @@ from device_dict import DEVICE_DICT
 with open('/etc/waggle/hostname','r') as file_:
     HOSTNAME = file_.read().strip()
     
+#gets the queuename
+with open('/etc/waggle/queuename','r') as file_:
+    QUEUENAME = file_.read().strip() 
+    
+#gets the IP address for the nodecontroller
+with open('/etc/waggle/NCIP','r') as file_:
+    IP = file_.read().strip() 
+    
 class internal_communicator(object):
     """
         The internal communicator is the channel of communication between the GNs and the data cache. It consists of four processes: Push and pull client processes to communicate with the data cache
@@ -125,7 +133,7 @@ class push_server(Process):
     
     def run(self):
         comm = internal_communicator()
-        HOST = '10.10.10.10'
+        HOST = IP #This should set the IP address as itself
         PORT = 9090
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.bind((HOST,PORT))
@@ -133,13 +141,16 @@ class push_server(Process):
         print 'Internal push server process started...'
         
         while True:
-            conn, addr = server.accept()
+            client_sock, addr = server.accept()
             #print "Push server connected to ", addr
             while True:
                 try:
-                    data = conn.recv(4028) 
+                    data = client_sock.recv(4028) 
+                    #print 'Push server received: ', data
                     if not data:
                         break #breaks the loop when the client socket closes
+                    elif data == 'Hello': #a handshake from a new guest node #TODO This will change in the futures
+                        client_sock.sendall(QUEUENAME)
                     else:
                         print 'Push server pushing msg into DC: ', data
                         comm.DC_push.put(data)
@@ -159,7 +170,7 @@ class pull_server(Process):
     
     def run(self):
         comm = internal_communicator()
-        HOST = '10.10.10.10'
+        HOST = IP #This should set the IP address as itself
         PORT = 9091
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.bind((HOST,PORT))
