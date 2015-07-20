@@ -7,7 +7,7 @@ import socket, os, os.path, time
 """
 
 def send(msg):
-    HOST = '10.10.10.10'
+    HOST = 'NodeController' #sets it to itself
     PORT = 9090 #port for push_server
     
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

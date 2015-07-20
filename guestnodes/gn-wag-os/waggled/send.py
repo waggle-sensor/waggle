@@ -8,7 +8,7 @@ import socket, os, os.path, time
 
 def send(msg):
     #HOST = '10.10.10.108' #node controller Odroid IP
-    HOST = '10.10.10.10' #biship IP
+    HOST = 'NodeController' #should set it to NodeController IP
     PORT = 9090 #port for push_server
     
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

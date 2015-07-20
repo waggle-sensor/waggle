@@ -13,7 +13,7 @@ with open('/etc/waggle/hostname','r') as file_:
     HOSTNAME = file_.read().strip()
 
 def receive():
-    HOST = '10.10.10.10' #TODO will need to change to localhost
+    HOST = 'NodeController' #Should change the IP to itself
     PORT = 9091 #port for pull_server
     
     

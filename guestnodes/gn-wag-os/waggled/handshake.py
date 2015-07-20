@@ -10,7 +10,7 @@ import socket, os, os.path, time
 
 
 #HOST = '10.10.10.108' #node controller Odroid IP
-HOST = '10.10.10.10' #biship IP
+HOST = 'NodeController' #Should connect to NodeController
 PORT = 9090 #port for push_server
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

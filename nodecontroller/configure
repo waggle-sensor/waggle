@@ -1,15 +1,18 @@
 #!/bin/bash
+#This is a configures an odroid to be a node controller
 export $WAGGLE=.
 dpkg -i nc-wag-os/packages_o/*.deb
 dir = .
 cd nc-wag-os/packages_o/
 pip install -e pika-0.9.14
 cd $dir
+echo NodeController > /etc/hostname #Sets the odroid's hostname to NodeController so GuestNodes can easily find it
 mkdir /etc/waggle/
 rm /etc/smsc95xx_mac_addr
-echo $RANDOM > /etc/waggle/hostname # The node's hostname
-cd waggle/nodecontroller/nc-wag-os/waggled/DataCache
-python Data_Cache.py start #start the Data Data_Cache
-cd ..
-cd Communications
-./background_comms.sh #start the background_comms
+echo $RANDOM > /etc/waggle/hostname # The node's waggle hostname
+reboot
+# cd waggle/nodecontroller/nc-wag-os/waggled/DataCache
+# python Data_Cache.py start #start the Data Data_Cache
+# cd ..
+# cd Communications
+# ./background_comms.sh #start the background_comms

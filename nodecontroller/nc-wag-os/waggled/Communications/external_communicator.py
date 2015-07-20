@@ -35,7 +35,9 @@ class external_communicator(object):
     incoming = Queue() #stores messages to push into DC 
     outgoing = Queue() #stores messages going out to cloud
     cloud_connected = Value('i') #indicates if the cloud is or is not connected
-    params = pika.connection.URLParameters("amqps://waggle:waggle@10.10.10.108:5671/%2F") #the parameters used to connect to the cloud 
+    #params = pika.connection.URLParameters("amqps://waggle:waggle@10.10.10.108:5671/%2F") #the parameters used to connect to the cloud 
+    params = pika.connection.URLParameters("amqp://waggle:waggle@10.10.10.104:5672/%2F") #the parameters used to connect to the cloud 
+
 
 class pika_push(Process):
     """ 
