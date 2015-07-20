@@ -11,7 +11,7 @@ import logging
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.CRITICAL)
 from cassandra.cluster import Cluster
 
-CASSANDRA_IP = '10.10.10.143'
+CASSANDRA_IP = 'localhost'
 
 class DataProcess(Process):
 	"""
