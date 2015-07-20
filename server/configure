@@ -3,6 +3,7 @@
 dpkg -i packages_o/*.deb
 cd packages_o/
 pip install -e pika-0.9.14
+pip install -e cassandra-driver/cassandra-driver-2.5.1
 cd ..
 mkdir /etc/waggle/
 echo 0 > /etc/waggle/hostname # The cloud's hostname is defined as 0
