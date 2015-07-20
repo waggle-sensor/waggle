@@ -13,12 +13,12 @@
 
 
 //---------- C O N S T A N T S ------------------------------------------------
-#define PIN_RELAY2 PB6
+#define PIN_RELAY2 7
 
-#define PIN_HEARTBEAT2 PB5
+#define PIN_HEARTBEAT2 6
 
-#define PIN_PHOTOCELL PF5
-#define PIN_JP10_10 PF4
+#define PIN_PHOTOCELL A5
+#define PIN_THERMISTOR1 A4
 
 const byte LED = 13;
 const char NC_NOTIFIER_STATUS = '@';
@@ -39,7 +39,6 @@ volatile boolean _USART_new_char = false;
 HTU21D SysMon_HTU21D;
 
 // EEPROM addresses whose values are set by node controller:
-// Initial values act as default
 uint32_t EEMEM E_USART_BAUD;
 uint16_t EEMEM E_USART_RX_BUFFER_SIZE;
 uint8_t EEMEM E_MAX_NUM_SOS_BOOT_TRIES;
@@ -95,6 +94,7 @@ uint8_t EEMEM E_FIRST_BOOT;
 //---------- S E T U P --------------------------------------------------------
 void setup() 
 {
+  // Debug
   delay(5000);
 
   // // Is everything (internal) working correctly?
@@ -111,12 +111,9 @@ void setup()
   //   boot_SOS();
 
   boot_primary();
-  boot_gn();
+  boot_gn(); 
 
-  Serial.println(SysMon_HTU21D.readTemperature());
-  Serial.println(SysMon_HTU21D.readHumidity());  
-
-  RTC.set(0);
+  //RTC.set(300);
 }
 
 
@@ -127,7 +124,12 @@ void loop()
   // Has the timer finished a cycle?
   if(_timer1_cycle)
   {
+    Serial.print("RTC: ");
     Serial.println(RTC.get());
+    Serial.print("HTU21D: ");
+    Serial.print(SysMon_HTU21D.readTemperature());
+    Serial.print(", ");
+    Serial.println(SysMon_HTU21D.readHumidity()); 
 
     // Clear the flag
     _timer1_cycle = false;
@@ -138,22 +140,10 @@ void loop()
     send_status();
 
     // Send problem report to node controller
-    send_problem();
+    //send_problem();
 
-    if(digitalRead(PIN_HEARTBEAT2) == LOW)
-    {
-      x++;
-      if(x == eeprom_read_byte(&E_HEARTBEAT_TIMEOUT_NC))
-      {
-        digitalWrite(PIN_RELAY2, LOW);
-
-        delay(200);
-
-        digitalWrite(PIN_RELAY2, HIGH);
-
-        x = 0;
-      }
-    }
+    // Check heartbeat of guest node 2
+    check_heartbeat(2);
   }
 }
 
@@ -177,7 +167,7 @@ void send_status()
   String report = "P:" +
                   String(analogRead(PIN_PHOTOCELL)) +
                   ",T:" +
-                  String(analogRead(PIN_JP10_10));
+                  String(analogRead(PIN_THERMISTOR1));
 
   Serial.println(report);
 }
@@ -200,6 +190,61 @@ void send_problem()
 
   // Send problem report
   Serial.println("problem report");
+}
+
+
+
+//---------- C H E C K _ H E A R T B E A T ------------------------------------
+/*
+   Checks that the device specified by the argument is alive.
+
+   :rtype: boolean
+*/
+boolean check_heartbeat(byte device)
+{
+  static byte count2 = 0;
+
+  // Which device is being checked?
+  switch (device) {
+      case 1:
+        break;
+
+      case 2:
+        // Is heartbeat detected?
+        if(digitalRead(PIN_HEARTBEAT2) == LOW)
+        {
+          Serial.println("Heartbeat 2 not detected");
+
+          // Increment counter
+          count2++;
+
+          // Is the counter equal to the heartbeat timeout for GN2?
+          if(count2 == eeprom_read_byte(&E_HEARTBEAT_TIMEOUT_GN2))
+          {
+            // Power cycle the device
+            digitalWrite(PIN_RELAY2, LOW);
+            delay(50);
+            digitalWrite(PIN_RELAY2, HIGH);
+
+            // Reset the counter
+            count2 = 0;
+          }
+        }
+        break;
+
+      case 3:
+        break;
+
+      case 4:
+        break;
+
+      case 5:
+        break;
+
+      // Invalid device
+      default:
+        break;
+  }
 }
 
 

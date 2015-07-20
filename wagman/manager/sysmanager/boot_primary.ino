@@ -136,9 +136,9 @@ void init_primary()
    analogRead(PIN_PHOTOCELL);
    analogRead(PIN_PHOTOCELL);
    analogRead(PIN_PHOTOCELL);
-   analogRead(PIN_JP10_10);
-   analogRead(PIN_JP10_10);
-   analogRead(PIN_JP10_10);
+   analogRead(PIN_THERMISTOR1);
+   analogRead(PIN_THERMISTOR1);
+   analogRead(PIN_THERMISTOR1);
 
    // Start HTU21D
    SysMon_HTU21D.begin();
