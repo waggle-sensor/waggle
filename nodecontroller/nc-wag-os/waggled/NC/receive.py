@@ -12,8 +12,12 @@ from msg_handler import msg_handler
 with open('/etc/waggle/hostname','r') as file_:
     HOSTNAME = file_.read().strip()
 
+#gets the IP address for the nodecontroller
+with open('/etc/waggle/NCIP','r') as file_:
+    IP = file_.read().strip() 
+
 def receive():
-    HOST = 'NodeController' #Should change the IP to itself
+    HOST = IP #Should change the IP to itself
     PORT = 9091 #port for pull_server
     
     

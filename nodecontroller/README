@@ -9,3 +9,8 @@ are three basic pieces:
 * the in-situ processing components for processing audio, images,
   hyperspectral data, etc.
 
+How to configure your odroid as a node controller: 
+1) Type ./configure in the command line and hit enter. Wait for odroid to reboot.
+2) SSH into root@NodeController
+3) cd waggle/nodecontroller
+4) ./startup.sh

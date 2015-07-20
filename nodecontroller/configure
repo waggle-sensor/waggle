@@ -7,6 +7,7 @@ cd nc-wag-os/packages_o/
 pip install -e pika-0.9.14
 cd $dir
 echo NodeController > /etc/hostname #Sets the odroid's hostname to NodeController so GuestNodes can easily find it
+echo NodeController > /etc/waggle/NCIP #Sets the IP address to NodeController
 mkdir /etc/waggle/
 rm /etc/smsc95xx_mac_addr
 echo $RANDOM > /etc/waggle/hostname # The node's waggle hostname
