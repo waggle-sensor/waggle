@@ -45,14 +45,14 @@ class DataProcess(Process):
 			print data
 			# Send the data off to Cassandra
 
-			print "Preparing statement"
-			prepared_statement = cassandra.prepare("INSERT INTO sensor_data (node_id, timestamp, data) VALUES (?, ?, ?)")
-			print "Binding statement"
-			bound_statement = prepared_statement.bind([header["s_uniqid"],header["time"],str(data)])
-			print bound_statement
-			print "Inserting into cassandra..."
+			prepared_statement = cassandra.prepare("INSERT INTO sensor_data" + \
+				" (node_id, sensor_name, timestamp, data_types, data, units, extra_info)" + \
+				" VALUES (?, ?, ?, ?, ?, ?, ?)")
+			print "Binding insert statement"
+			bound_statement = prepared_statement.bind([header["s_uniqid"],data[0],data[1],data[2],data[4],data[5],data[6]])
+			print "Statement bound."
 			cassandra.execute(bound_statement)
-			print "Inserted into Cassandra."
+			print "Inserted data into Cassandra."
 			cluster.shutdown()
 		except Exception as e:
 			print str(e)

@@ -1,1 +1,0 @@
-../../nodecontroller/nc-wag-os/waggled/NC/NC_registration.py

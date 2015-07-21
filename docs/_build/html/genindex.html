@@ -78,8 +78,38 @@
 <li class="toctree-l2"><a class="reference internal" href="server/installation.html#quick-install">Quick install</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="nodeController/nodeController.html">Node Controller</a></li>
-<li class="toctree-l1"><a class="reference internal" href="guestNode/guestNode.html">Guest Node</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="nodeController/nodeController.html">Node Controller</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="nodeController/Communications.html">Communications</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="nodeController/communications_main.html">Communications Main Script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nodeController/external_communicator.html">External Communicator Module Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nodeController/internal_communicator.html">Internal Communicator Module Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="nodeController/DataCache.html">Data Cache</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="nodeController/Data_Cache.html">Data Cache Module Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="nodeController/NC.html">NC</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="nodeController/NC_registration.html">NC Registration Script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nodeController/msg_handler.html">Message Handler Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nodeController/ping.html">Ping Script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nodeController/receive.html">Receive Script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nodeController/send.html">Send Script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nodeController/time.html">Time Script</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guestNode/guestNode.html">Guest Node</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guestNode/data_packet.html">Data Packet Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guestNode/GN_registration.html">GN Registration Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guestNode/handshake.html">Handshake Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guestNode/msg_handler.html">Message Handler Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guestNode/ping.html">Ping Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guestNode/receive.html">Receive Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guestNode/send.html">Send Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guestNode/sensor.html">Sensor Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guestNode/time.html">Time Script</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="wagMan/wagMan.html">Waggle System Manager</a><ul>
@@ -144,13 +174,84 @@
 <h1 id="index">Index</h1>
 
 <div class="genindex-jumpbox">
- <a href="#G"><strong>G</strong></a>
+ <a href="#_"><strong>_</strong></a>
+ | <a href="#D"><strong>D</strong></a>
+ | <a href="#E"><strong>E</strong></a>
+ | <a href="#G"><strong>G</strong></a>
+ | <a href="#I"><strong>I</strong></a>
  | <a href="#M"><strong>M</strong></a>
+ | <a href="#O"><strong>O</strong></a>
  | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#U"><strong>U</strong></a>
  
 </div>
+<h2 id="_">_</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="nodeController/external_communicator.html#external_communicator.external_communicator.__init__">__init__() (external_communicator.external_communicator method)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="nodeController/internal_communicator.html#internal_communicator.internal_communicator.__init__">(internal_communicator.internal_communicator method)</a>
+  </dt>
+
+      </dl></dd>
+  </dl></td>
+</tr></table>
+
+<h2 id="D">D</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="nodeController/Data_Cache.html#module-Data_Cache">Data_Cache (module)</a>
+  </dt>
+
+      
+  <dt><a href="guestNode/data_packet.html#module-data_packet">data_packet (module)</a>
+  </dt>
+
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="guestNode/data_packet.html#data_packet.data_packet">data_packet() (in module data_packet)</a>
+  </dt>
+
+      
+  <dt><a href="nodeController/Data_Cache.html#Data_Cache.DC_flush">DC_flush() (in module Data_Cache)</a>
+  </dt>
+
+  </dl></td>
+</tr></table>
+
+<h2 id="E">E</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="nodeController/external_communicator.html#external_communicator.external_client_pull">external_client_pull (class in external_communicator)</a>
+  </dt>
+
+      
+  <dt><a href="nodeController/external_communicator.html#external_communicator.external_client_push">external_client_push (class in external_communicator)</a>
+  </dt>
+
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="nodeController/external_communicator.html#external_communicator.external_communicator">external_communicator (class in external_communicator)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="nodeController/external_communicator.html#module-external_communicator">(module)</a>
+  </dt>
+
+      </dl></dd>
+  </dl></td>
+</tr></table>
+
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
@@ -159,11 +260,19 @@
   </dt>
 
       
-  <dt><a href="protocol/gpickler.html#gPickler.gPickle">gPickle() (in module gPickler)</a>
+  <dt><a href="nodeController/Data_Cache.html#Data_Cache.get_priority">get_priority() (in module Data_Cache)</a>
+  </dt>
+
+      
+  <dt><a href="nodeController/Data_Cache.html#Data_Cache.get_status">get_status() (in module Data_Cache)</a>
   </dt>
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="protocol/gpickler.html#gPickler.gPickle">gPickle() (in module gPickler)</a>
+  </dt>
+
       
   <dt><a href="protocol/gpickler.html#module-gPickler">gPickler (module)</a>
   </dt>
@@ -171,9 +280,47 @@
   </dl></td>
 </tr></table>
 
+<h2 id="I">I</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="nodeController/Data_Cache.html#Data_Cache.incoming_pull">incoming_pull() (in module Data_Cache)</a>
+  </dt>
+
+      
+  <dt><a href="nodeController/Data_Cache.html#Data_Cache.incoming_push">incoming_push() (in module Data_Cache)</a>
+  </dt>
+
+      
+  <dt><a href="nodeController/internal_communicator.html#internal_communicator.internal_client_pull">internal_client_pull (class in internal_communicator)</a>
+  </dt>
+
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="nodeController/internal_communicator.html#internal_communicator.internal_client_push">internal_client_push (class in internal_communicator)</a>
+  </dt>
+
+      
+  <dt><a href="nodeController/internal_communicator.html#internal_communicator.internal_communicator">internal_communicator (class in internal_communicator)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="nodeController/internal_communicator.html#module-internal_communicator">(module)</a>
+  </dt>
+
+      </dl></dd>
+  </dl></td>
+</tr></table>
+
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="nodeController/Data_Cache.html#Data_Cache.make_bffr">make_bffr() (in module Data_Cache)</a>
+  </dt>
+
       
   <dt><a href="protocol/packetmaker.html#packetmaker.make_data_packet">make_data_packet() (in module packetmaker)</a>
   </dt>
@@ -186,6 +333,30 @@
   <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="protocol/packetmaker.html#packetmaker.make_time_packet">make_time_packet() (in module packetmaker)</a>
+  </dt>
+
+      
+  <dt><a href="nodeController/msg_handler.html#module-msg_handler">msg_handler (module)</a>
+  </dt>
+
+      
+  <dt><a href="nodeController/msg_handler.html#msg_handler.msg_handler">msg_handler() (in module msg_handler)</a>
+  </dt>
+
+  </dl></td>
+</tr></table>
+
+<h2 id="O">O</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="nodeController/Data_Cache.html#Data_Cache.outgoing_pull">outgoing_pull() (in module Data_Cache)</a>
+  </dt>
+
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="nodeController/Data_Cache.html#Data_Cache.outgoing_push">outgoing_push() (in module Data_Cache)</a>
   </dt>
 
   </dl></td>
@@ -202,14 +373,30 @@
   <dt><a href="protocol/PacketHandler.html#PacketHandler.pack_header">pack_header() (in module PacketHandler)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="protocol/PacketHandler.html#module-PacketHandler">PacketHandler (module)</a>
   </dt>
 
       
   <dt><a href="protocol/packetmaker.html#module-packetmaker">packetmaker (module)</a>
+  </dt>
+
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="nodeController/external_communicator.html#external_communicator.pika_pull">pika_pull (class in external_communicator)</a>
+  </dt>
+
+      
+  <dt><a href="nodeController/external_communicator.html#external_communicator.pika_push">pika_push (class in external_communicator)</a>
+  </dt>
+
+      
+  <dt><a href="nodeController/internal_communicator.html#internal_communicator.pull_server">pull_server (class in internal_communicator)</a>
+  </dt>
+
+      
+  <dt><a href="nodeController/internal_communicator.html#internal_communicator.push_server">push_server (class in internal_communicator)</a>
   </dt>
 
   </dl></td>
@@ -232,10 +419,18 @@
   <dt><a href="protocol/gpickler.html#gPickler.un_gPickle">un_gPickle() (in module gPickler)</a>
   </dt>
 
+      
+  <dt><a href="protocol/PacketHandler.html#PacketHandler.unpack">unpack() (in module PacketHandler)</a>
+  </dt>
+
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="protocol/PacketHandler.html#PacketHandler.unpack">unpack() (in module PacketHandler)</a>
+  <dt><a href="nodeController/Data_Cache.html#Data_Cache.update_device_priority">update_device_priority() (in module Data_Cache)</a>
+  </dt>
+
+      
+  <dt><a href="nodeController/Data_Cache.html#Data_Cache.update_mem">update_mem() (in module Data_Cache)</a>
   </dt>
 
   </dl></td>

@@ -1,1 +1,0 @@
-../../guestnodes/gn-wag-os/waggled/ping.py
