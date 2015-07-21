@@ -13,10 +13,9 @@ from device_dict import DEVICE_DICT
     and pulling to the data cache.
 """
 
-#TODO initial queue declaration
 #TODO node SSL certificates
 
-#sets the queue name to the hostname of the node for now
+
 
 with open('/etc/waggle/hostname','r') as file_:
     HOSTNAME = file_.read().strip()
@@ -142,7 +141,9 @@ class external_client_pull(Process):
                             client_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
                             client_sock.connect('/tmp/Data_Cache_server') #connects to server
                             #print "Client_pull connected to data cache... "
-                            data = '|o' #sends the pull request in the correct format
+                            #sends the pull request indicating that it is an outgoing pull request. 
+                            #TODO This can be improved if there is a better way to distinguish incoming vs outgoing pull and pull vs push requests.
+                            data = '|o' 
                             client_sock.send(data)
                             msg = client_sock.recv(4028) #can be changed 
                             if not msg:
