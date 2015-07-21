@@ -6,8 +6,12 @@ import socket, os, os.path, time
     This is a client socket that connects to the push_server of the node controller to send messages. It is called as a function with the packed message as an argument.
 """
 
+#gets the IP address for the nodecontroller
+with open('/etc/waggle/NCIP','r') as file_:
+    IP = file_.read().strip() 
+    
 def send(msg):
-    HOST = 'NodeController' #sets it to itself
+    HOST = IP #sets it to itself
     PORT = 9090 #port for push_server
     
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

@@ -23,8 +23,6 @@ def msg_handler(msg):
     #get the major header type
     major = chr(header['msg_mj_type'])
     minor = chr(header['msg_mi_type'])
-    print 'major message: ', major
-    print 'minor message: ', minor
     
     #large file transfer
     if major == 'F':

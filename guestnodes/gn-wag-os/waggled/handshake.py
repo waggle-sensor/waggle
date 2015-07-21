@@ -6,11 +6,12 @@ import socket, os, os.path, time
     Handshake.py makes an initial connection to the NC push server. 
     The NC sends the queuename for registration with the cloud and saves it to a file.
 """
-
-
+#gets the IP address for the nodecontroller
+with open('/etc/waggle/NCIP','r') as file_:
+    IP = file_.read().strip() 
 
 #HOST = '10.10.10.108' #node controller Odroid IP
-HOST = 'NodeController' #Should connect to NodeController
+HOST = IP #Should connect to NodeController
 PORT = 9090 #port for push_server
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

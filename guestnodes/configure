@@ -9,8 +9,10 @@ cd $dir
 mkdir /etc/waggle/
 rm /etc/smsc95xx_mac_addr
 echo 1244 > /etc/waggle/hostname # Set to 1244 for the demo. Needs to be changed to $RANDOM
+echo NodeController > /etc/waggle/NCIP #sets the Nodecontroller IP
 cd 
 cd waggle/guestnodes/gn-wag-os/waggled
+pip install pyserial
 python handshake.py #send handshake to NC
 python GN_registration.py #send registration to cloud
 #want to start receive.py here probably

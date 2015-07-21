@@ -12,8 +12,13 @@ from device_dict import DEVICE_DICT
 with open('/etc/waggle/hostname','r') as file_:
     HOSTNAME = file_.read().strip()
     
+#gets the queuename
 with open('/etc/waggle/queuename','r') as file_:
     QUEUENAME = file_.read().strip() 
+    
+#gets the IP address for the nodecontroller
+with open('/etc/waggle/NCIP','r') as file_:
+    IP = file_.read().strip() 
     
 class internal_communicator(object):
     """
@@ -128,7 +133,7 @@ class push_server(Process):
     
     def run(self):
         comm = internal_communicator()
-        HOST = 'NodeController' #This should set the IP address as itself
+        HOST = IP #This should set the IP address as itself
         PORT = 9090
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.bind((HOST,PORT))
@@ -165,7 +170,7 @@ class pull_server(Process):
     
     def run(self):
         comm = internal_communicator()
-        HOST = 'NodeController' #This should set the IP address as itself
+        HOST = IP #This should set the IP address as itself
         PORT = 9091
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.bind((HOST,PORT))

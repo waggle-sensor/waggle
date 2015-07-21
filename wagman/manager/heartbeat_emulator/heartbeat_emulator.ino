@@ -1,10 +1,10 @@
 void setup() {
-  pinMode(PB7, OUTPUT);
-  digitalWrite(PB7, HIGH);
-  delay(7000);
-  digitalWrite(PB7, LOW);
+  pinMode(12, OUTPUT);
+  digitalWrite(12, HIGH);
+  delay(10000);
+  digitalWrite(12, LOW);
 }
 
-void loop() {
 
+void loop() {
 }
