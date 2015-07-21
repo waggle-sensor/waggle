@@ -20,6 +20,7 @@ echo Setting up SSL
 mkdir /usr/lib/waggle/SSL
 mv /usr/lib/waggle/server/SSL/* /usr/lib/waggle/SSL
 cd /usr/lib/waggle/SSL/
+chmod 777 -R /usr/lib/waggle
 source caconfig.sh
 
 exit 0
