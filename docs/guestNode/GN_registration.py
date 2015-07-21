@@ -1,0 +1,1 @@
+../../guestnodes/gn-wag-os/waggled/GN_registration.py

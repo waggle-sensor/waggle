@@ -8,7 +8,7 @@ from send import send
 
 
 """ 
-    A python script that creates a registration message from the NC and sends it to the internal communication to put in the DC. 
+    A python script that creates a registration message packet and sends it to the NC. 
 """ 
 
 packet = packetmaker.registration_packet()

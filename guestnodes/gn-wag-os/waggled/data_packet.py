@@ -4,10 +4,11 @@ import sys
 sys.path.append('../../../devtools/protocol_common/')
 from utilities import packetmaker
 from send import send
+#TODO All message maker classes can likely be combined into one class
 
 def data_packet(data):
     """
-    This function packs and sends sensor data. 
+    This script makes a sensor packet and sends it to the NC. 
     
     :param string data: The sensor data.
     

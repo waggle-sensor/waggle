@@ -6,7 +6,7 @@ import os, os.path, pika
 
 """
 
-    Communications main starts the internal and external communication processes.
+    Communications main starts the internal and external communication processes. It then continuously monitors each of the processes. It restarts the processes of it ever crashes.
 """
 
 if __name__ == "__main__":

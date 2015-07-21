@@ -35,7 +35,7 @@ class external_communicator(object):
     incoming = Queue() #stores messages to push into DC 
     outgoing = Queue() #stores messages going out to cloud
     cloud_connected = Value('i') #indicates if the cloud is or is not connected
-    params = pika.connection.URLParameters("amqps://waggle:waggle@10.10.10.104:5671/%2F") #the parameters used to connect to the cloud 
+    params = pika.connection.URLParameters("amqps://waggle:waggle@10.10.10.110:5671/%2F") #SSL 
     #params = pika.connection.URLParameters("amqp://waggle:waggle@10.10.10.104:5672/%2F") #the parameters used to connect to the cloud 
 
 
@@ -50,30 +50,33 @@ class pika_push(Process):
         #params = pika.connection.URLParameters("amqps://waggle:waggle@10.10.10.108:5671/%2F") #SSL
         print 'Pika push started...'
         while True:
-            try:
-                try: 
-                    #connecting to cloud
-                    connection = pika.BlockingConnection(params)
-                    channel = connection.channel()
-                    comm.cloud_connected.value = 1 #set the flag to true when connected to cloud
-                    #Declaring the queue
-                    channel.queue_declare(queue=QUEUENAME)
-                    #print 'Pika push connection successful'
+            try: 
+                #connecting to cloud
+                connection = pika.BlockingConnection(params)
+                channel = connection.channel()
+                comm.cloud_connected.value = 1 #set the flag to true when connected to cloud
+                #Declaring the queue
+                channel.queue_declare(queue=QUEUENAME)
+            except: 
+                print 'Pika_push currently unable to connect to cloud...' 
+                comm.cloud_connected.value = 0 #set the flag to 0 when not connected to the cloud
+                time.sleep(5)
+                
+            while True:
+                try:
                     while comm.outgoing.empty(): #sleeps until there are messages to send
                         time.sleep(1)
                     
                     msg = comm.outgoing.get() # gets the first item in the outgoing queue
                     print 'Pika_push... sending msg to cloud.'
                     channel.basic_publish(exchange='waggle_in', routing_key= 'in', body= msg) #sends to cloud 
-                except: 
-                    print 'Pika_push currently unable to connect to cloud...' 
-                    comm.cloud_connected.value = 0 #set the flag to 0 when not connected to the cloud
-                    time.sleep(5)
-            except pika.exceptions.ConnectionClosed:
-                        print "Pika push connection closed. Waiting and trying again."
-                        comm.cloud_connected.value = 0
-                        time.sleep(5)
-        connection.close()
+                    #connection.close()
+                    
+                except pika.exceptions.ConnectionClosed:
+                            print "Pika push connection closed. Waiting and trying again."
+                            comm.cloud_connected.value = 0
+                            time.sleep(5)
+        connection.close(0)
         
 class pika_pull(Process):
     """ 

@@ -4,7 +4,7 @@ import socket, os, os.path, time
 
 """ 
     Handshake.py makes an initial connection to the NC push server. 
-    The NC sends the queuename for registration with the cloud and saves it to a file.
+    The NC sends the queuename for registration with the cloud, which is written to a file.
 """
 #gets the IP address for the nodecontroller
 with open('/etc/waggle/NCIP','r') as file_:
