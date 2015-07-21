@@ -1,0 +1,422 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Data Cache Module Functions &mdash; Waggle 0.3 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../_static/table_styling.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="Waggle 0.3 documentation" href="../index.html"/>
+        <link rel="up" title="Data Cache" href="DataCache.html"/>
+        <link rel="next" title="NC" href="NC.html"/>
+        <link rel="prev" title="Data Cache" href="DataCache.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+
+        
+          <a href="../index.html" class="icon icon-home"> Waggle
+        
+
+        
+        </a>
+
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../server/server.html">Waggle Server</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../server/installation.html">Waggle Server Installation and Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../server/installation.html#quick-install">Quick install</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="nodeController.html">Node Controller</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Communications.html">Communications</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="communications_main.html">Communications Main Script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="external_communicator.html">External Communicator Module Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="internal_communicator.html">Internal Communicator Module Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="reference internal" href="DataCache.html">Data Cache</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="">Data Cache Module Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="NC.html">NC</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="NC_registration.html">NC Registration Script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="msg_handler.html">Message Handler Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ping.html">Ping Script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="receive.html">Receive Script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="send.html">Send Script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="time.html">Time Script</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../guestNode/guestNode.html">Guest Node</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../guestNode/data_packet.html">Data Packet Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guestNode/GN_registration.html">GN Registration Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guestNode/handshake.html">Handshake Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guestNode/msg_handler.html">Message Handler Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guestNode/ping.html">Ping Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guestNode/receive.html">Receive Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guestNode/send.html">Send Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guestNode/sensor.html">Sensor Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guestNode/time.html">Time Script</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../wagMan/wagMan.html">Waggle System Manager</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../wagMan/POST.html">POST.ino</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../wagMan/boot_SOS.html">boot_SOS.ino</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../wagMan/boot_gn.html">boot_gn.ino</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../wagMan/boot_primary.html">boot_primary.ino</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../wagMan/sysmanager.html">sysmanager.ino</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../protocol/protocol.html">Waggle Communication Protocol</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../protocol/PacketHandler.html">Packet Handler</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../protocol/PacketHandler.html#module-PacketHandler">PacketHandler Module Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../protocol/PacketFormat.html">Waggle Packet Format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../protocol/LargeFile.html">Large File Transfer Protocol</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../protocol/MessageTypes.html">Waggle Message Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../protocol/utilities.html">Waggle Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../protocol/gpickler.html">gpickler Module Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../protocol/packetmaker.html">Packetmaker Module Functions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">Waggle</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="nodeController.html">Node Controller</a> &raquo;</li>
+      
+          <li><a href="DataCache.html">Data Cache</a> &raquo;</li>
+      
+    <li>Data Cache Module Functions</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/nodeController/Data_Cache.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="module-Data_Cache">
+<span id="data-cache-module-functions"></span><h1>Data Cache Module Functions<a class="headerlink" href="#module-Data_Cache" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="Data_Cache.outgoing_push">
+<code class="descclassname">Data_Cache.</code><code class="descname">outgoing_push</code><span class="sig-paren">(</span><em>dev</em>, <em>msg_p</em>, <em>msg</em>, <em>outgoing_available_queues</em>, <em>msg_counter</em>, <em>flush</em>, <em>incoming_available_queues</em><span class="sig-paren">)</span><a class="headerlink" href="#Data_Cache.outgoing_push" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function that pushes outgoing messages into the outgoing buffer.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>dev</strong> (<em>int</em>) &#8211; Specifies the device location in the matrix.</li>
+<li><strong>msg_p</strong> (<em>int</em>) &#8211; Specifies the message priority location in the matrix</li>
+<li><strong>outgoing_available_queues</strong> (<em>list</em>) &#8211; A list of tuples that specify the location of outgoing queues that currently have stored messages</li>
+<li><strong>msg_counter</strong> (<em>int</em>) &#8211; Keeps track of the number of total messags currently being stored in the buffers.</li>
+<li><strong>flush</strong> (<em>int</em>) &#8211; Value indicating if the data cache needs to flush the buffers into files.</li>
+<li><strong>incoming_available_queues</strong> (<em>list</em>) &#8211; A list of tuples that specify the location of incoming queues that currently have stored messages</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="Data_Cache.incoming_push">
+<code class="descclassname">Data_Cache.</code><code class="descname">incoming_push</code><span class="sig-paren">(</span><em>device</em>, <em>msg_p</em>, <em>msg</em>, <em>incoming_available_queues</em>, <em>msg_counter</em>, <em>flush</em>, <em>outgoing_available_queues</em><span class="sig-paren">)</span><a class="headerlink" href="#Data_Cache.incoming_push" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function that pushes incoming messages to the incoming buffer.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>dev</strong> (<em>int</em>) &#8211; Specifies the device location in the matrix.</li>
+<li><strong>msg_p</strong> (<em>int</em>) &#8211; Specifies the message priority location in the matrix</li>
+<li><strong>outgoing_available_queues</strong> (<em>list</em>) &#8211; A list of tuples that specify the location of outgoing queues that currently have stored messages</li>
+<li><strong>msg_counter</strong> (<em>int</em>) &#8211; Keeps track of total messages in the data cache.</li>
+<li><strong>flush</strong> (<em>int</em>) &#8211; Value indicating if the data cache needs to flush the buffers into files.</li>
+<li><strong>incoming_available_queues</strong> (<em>list</em>) &#8211; A list of tuples that specify the location of incoming queues that currently have stored messages</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="Data_Cache.outgoing_pull">
+<code class="descclassname">Data_Cache.</code><code class="descname">outgoing_pull</code><span class="sig-paren">(</span><em>outgoing_available_queues</em>, <em>msg_counter</em><span class="sig-paren">)</span><a class="headerlink" href="#Data_Cache.outgoing_pull" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function that retrieves and removes outgoing messages from the outgoing buffer. Retrieves the highest priority messages first. Highest priority messages are determined based on message priority and device priority.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>outgoing_available_queues</strong> (<em>list</em>) &#8211; The list of outgoing queues that currently have messages stored in them.</li>
+<li><strong>msg_counter</strong> (<em>int</em>) &#8211; Keeps track of total messages in the data cache.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Rtype string:</th><td class="field-body"><p class="first last">Returns a packed message or &#8216;False&#8217; if no messages are available.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="Data_Cache.incoming_pull">
+<code class="descclassname">Data_Cache.</code><code class="descname">incoming_pull</code><span class="sig-paren">(</span><em>dev</em>, <em>incoming_available_queues</em>, <em>msg_counter</em><span class="sig-paren">)</span><a class="headerlink" href="#Data_Cache.incoming_pull" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function that retrieves and removes incoming messages from the incoming buffer. Searches through all of the message priority queues for the specified device to return the highest priority message first.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>dev</strong> (<em>int</em>) &#8211; Specifies the device location in the matrix.</li>
+<li><strong>incoming_available_queues</strong> (<em>list</em>) &#8211; The list of incoming queues that currently have messages stored in them.</li>
+<li><strong>msg_counter</strong> (<em>int</em>) &#8211; Keeps track of total messages in the data cache.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="Data_Cache.DC_flush">
+<code class="descclassname">Data_Cache.</code><code class="descname">DC_flush</code><span class="sig-paren">(</span><em>flush</em>, <em>incoming_available_queues</em>, <em>outgoing_available_queues</em>, <em>msg_counter</em><span class="sig-paren">)</span><a class="headerlink" href="#Data_Cache.DC_flush" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function that flushes all stored messages from the buffers to files. Temporarily shuts down the push and pull server while the queues are being written to files.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>flush</strong> (<em>int</em>) &#8211; Shared indicator that the data cache is being flushed.</li>
+<li><strong>incoming_available_queues</strong> (<em>list</em>) &#8211; The list of incoming queues that currently have messages stored in them.</li>
+<li><strong>outgoing_available_queues</strong> (<em>list</em>) &#8211; The list of outgoing queues that currently have messages stored in them.</li>
+<li><strong>msg_counter</strong> (<em>int</em>) &#8211; Keeps track of total messages in the data cache.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="Data_Cache.get_status">
+<code class="descclassname">Data_Cache.</code><code class="descname">get_status</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Data_Cache.get_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function that returns the number of messages currently stored in the data cache.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Data_Cache.update_device_priority">
+<code class="descclassname">Data_Cache.</code><code class="descname">update_device_priority</code><span class="sig-paren">(</span><em>updated_priority</em><span class="sig-paren">)</span><a class="headerlink" href="#Data_Cache.update_device_priority" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the order of devices in the priority list.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>updated_priority</strong> (<em>list</em>) &#8211; A list containing the new priority order of the devices.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="Data_Cache.update_mem">
+<code class="descclassname">Data_Cache.</code><code class="descname">update_mem</code><span class="sig-paren">(</span><em>memory</em><span class="sig-paren">)</span><a class="headerlink" href="#Data_Cache.update_mem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the amount of memory allocated to the data cache.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>memory</strong> (<em>int</em>) &#8211; The amount of memory to be allocated to the data cache.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="Data_Cache.make_bffr">
+<code class="descclassname">Data_Cache.</code><code class="descname">make_bffr</code><span class="sig-paren">(</span><em>length</em><span class="sig-paren">)</span><a class="headerlink" href="#Data_Cache.make_bffr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a buffer, which is a matrix containing queues.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>length</strong> (<em>int</em>) &#8211; Specifies the number of rows in the matrix</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Rtype list buff:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">The matrix containing queues</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="Data_Cache.get_priority">
+<code class="descclassname">Data_Cache.</code><code class="descname">get_priority</code><span class="sig-paren">(</span><em>outgoing_available_queues</em><span class="sig-paren">)</span><a class="headerlink" href="#Data_Cache.get_priority" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function that finds the highest priority queue in the list. Highest priority is determined by comparing message priority and device priority.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>outgoing_available_queues</strong> (<em>list</em>) &#8211; The list of outgoing queues that currently have messages stored in them.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(device_priority, message_priority) or string &#8216;False&#8217;</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="NC.html" class="btn btn-neutral float-right" title="NC" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="DataCache.html" class="btn btn-neutral" title="Data Cache" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Argonne National Laboratory.
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.3',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
