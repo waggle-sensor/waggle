@@ -1,8 +1,8 @@
 //---------- C O N S T A N T S ------------------------------------------------
-const int SRAM_START_ADDR = 0x0060;
-const int SRAM_START_PAGE2 = 0x0100;
-const int SRAM_SIZE = 2560;
-const int SRAM_END_ADDR = SRAM_START_ADDR + SRAM_SIZE - 1;
+// const int SRAM_START_ADDR = 0x0060;
+// const int SRAM_START_PAGE2 = 0x0100;
+// const int SRAM_SIZE = 2560;
+// const int SRAM_END_ADDR = SRAM_START_ADDR + SRAM_SIZE - 1;
 
 const byte FAIL_GPRF = 1;
 const byte FAIL_STACK = 2;

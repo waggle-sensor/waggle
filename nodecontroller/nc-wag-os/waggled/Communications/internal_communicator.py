@@ -12,14 +12,25 @@ from device_dict import DEVICE_DICT
 with open('/etc/waggle/hostname','r') as file_:
     HOSTNAME = file_.read().strip()
     
+#gets the queuename
+with open('/etc/waggle/queuename','r') as file_:
+    QUEUENAME = file_.read().strip() 
+    
+#gets the IP address for the nodecontroller
+with open('/etc/waggle/NCIP','r') as file_:
+    IP = file_.read().strip() 
+    
+"""
+    The internal communicator is the channel of communication between the GNs and the data cache. It consists of four processes: Push and pull client processes to communicate with the data cache
+    and push and pull server processes for communicating with the GNs. 
+    
+""" 
+    
 class internal_communicator(object):
     """
-        The internal communicator is the channel of communication between the GNs and the data cache. It consists of four processes: Push and pull client processes to communicate with the data cache
-        and push and pull server processes for communicating with the GNs. 
+        This class stores shared variables among the processes.
     
     """ 
-    #TODO write logic for putting messages back in DC if GN disconnects before message is sent
-    #TODO write the thing that handles messages going to the NC
     #TODO Could combine processes: one server and one client instead of two.
     
     def __init__(self):
@@ -88,7 +99,7 @@ class internal_client_pull(Process):
                     try:
                         client_sock.connect('/tmp/Data_Cache_server')#opens socket when there is an incoming pull request
                         dev = comm.incoming_request.get() #gets the dev ID that is initiating the pull request
-                        request = dev + '|' #puts the request in the correct format for the DC
+                        request = '|' + dev #puts the request in the correct format for the DC #TODO this could probably be done a different way, but there has to be some distinction between a pull request and message push
                         print 'Internal client pull sending request: ', request
                         client_sock.send(request)
                         try:
@@ -125,25 +136,28 @@ class push_server(Process):
     
     def run(self):
         comm = internal_communicator()
-        HOST = 'localhost'
+        HOST = '10.10.10.10' #This should set the IP address as itself
         PORT = 9090
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.bind((HOST,PORT))
         server.listen(5) #supports up to 5 threads, one for each GN
         print 'Internal push server process started...'
-        
+
         while True:
-            conn, addr = server.accept()
+            client_sock, addr = server.accept()
             #print "Push server connected to ", addr
             while True:
                 try:
-                    data = conn.recv(4028) 
+                    data = client_sock.recv(4028) 
+                    #print 'Push server received: ', data
                     if not data:
                         break #breaks the loop when the client socket closes
+                    elif data == 'Hello': #a handshake from a new guest node. #TODO This will change in the future
+                        client_sock.sendall(QUEUENAME) #NC sends the queuename so the GN can register with the cloud
                     else:
                         print 'Push server pushing msg into DC: ', data
                         comm.DC_push.put(data)
-                       
+                    
                 except KeyboardInterrupt, k:
                     print "Internal push server shutting down."
                     break
@@ -159,7 +173,7 @@ class pull_server(Process):
     
     def run(self):
         comm = internal_communicator()
-        HOST = 'localhost'
+        HOST = IP #This should set the IP address as itself
         PORT = 9091
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.bind((HOST,PORT))
@@ -196,7 +210,7 @@ class pull_server(Process):
                     break
         server.close()
     
-#uncomment for testing
+##uncomment for testing
 #if __name__ == "__main__":
     #try:
         ##starts the pull server
