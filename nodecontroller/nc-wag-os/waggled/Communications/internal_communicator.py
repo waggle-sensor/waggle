@@ -20,7 +20,7 @@ with open('/etc/waggle/queuename','r') as file_:
 with open('/etc/waggle/NCIP','r') as file_:
     IP = file_.read().strip() 
     
-logging.basicConfig(filename='internal_communicator.log')
+
     
 """
     The internal communicator is the channel of communication between the GNs and the data cache. It consists of four processes: Push and pull client processes to communicate with the data cache
@@ -101,7 +101,7 @@ class internal_client_pull(Process):
             try: 
                 if os.path.exists('/tmp/Data_Cache_server'):
                     client_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-                    print "client_pull connected to data cache... "
+                    #print "client_pull connected to data cache... "
                     try:
                         client_sock.connect('/tmp/Data_Cache_server')#opens socket when there is an incoming pull request
                         dev = comm.incoming_request.get() #gets the dev ID that is initiating the pull request
@@ -144,7 +144,7 @@ class push_server(Process):
     
     def run(self):
         comm = internal_communicator()
-        HOST = '10.10.10.10' #This should set the IP address as itself
+        HOST = IP #This should set the IP address as itself
         PORT = 9090
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.bind((HOST,PORT))

@@ -1,10 +1,14 @@
 #!/usr/bin/env python
 
-import os, os.path, pika, logging
+import os, os.path, pika, logging, datetime
 #from external_communicator import *
 #from internal_communicator import *
 
-logging.basicConfig(filename='communications_main.log')
+time = str(datetime.datetime.now())
+LOG_FILE = 'comms_' + time + '.log'
+#f = open(LOG_FILE, 'w') #make the new log file
+#f.close()
+logging.basicConfig(filename=LOG_FILE)
 
 """
 
@@ -76,7 +80,7 @@ if __name__ == "__main__":
         while True:
             if not pika_pull.is_alive():
                 #print 'Pika pull has crashed. Restarting...'
-                logging.warning('Pika pull has crashed. Restarting...')
+                logging.warning('Pika pull has crashed. Restarting...' + str(datetime.datetime.now()))
                 pika_pull = pika_pull()
                 pika_pull.start()
                 logging.info('Pika pull restarted.')
@@ -84,7 +88,7 @@ if __name__ == "__main__":
             
             if not pika_push.is_alive():
                 #print 'Pika push has crashed. Restarting...'
-                logging.warning('Pika push has crashed. Restarting...')
+                logging.warning('Pika push has crashed. Restarting...' + str(datetime.datetime.now()))
                 pika_push = pika_push()
                 pika_push.start()
                 logging.info('Pika push restarted.')
@@ -92,7 +96,7 @@ if __name__ == "__main__":
                 
             if not external_push_client.is_alive():
                 #print 'External push client has crashed. Restarting...'
-                logging.warning('External push client has crashed. Restarting...')
+                logging.warning('External push client has crashed. Restarting...' + str(datetime.datetime.now()))
                 external_push_client = external_client_push()
                 external_push_client.start()
                 logging.info('External_push_client restarted.')
@@ -100,7 +104,7 @@ if __name__ == "__main__":
                 
             if not external_pull_client.is_alive():
                 #print 'external_pull_client has crashed. Restarting...'
-                logging.warning('external_pull_client has crashed. Restarting...')
+                logging.warning('external_pull_client has crashed. Restarting...' + str(datetime.datetime.now()))
                 external_pull_client = external_client_pull()
                 external_pull_client.start()
                 logging.info('external_pull_client restarted.')
@@ -108,7 +112,7 @@ if __name__ == "__main__":
                 
             if not pull_serv.is_alive():
                 #print 'pull_serv has crashed. Restarting...'
-                logging.warning('pull_serv has crashed. Restarting...')
+                logging.warning('pull_serv has crashed. Restarting...' + str(datetime.datetime.now()))
                 pull_serv = pull_server()
                 pull_serv.start()
                 logging.info('pull_serv restarted.')
@@ -116,7 +120,7 @@ if __name__ == "__main__":
                 
             if not push_serv.is_alive():
                 #print 'push_serv has crashed. Restarting...'
-                logging.warning('push_serv has crashed. Restarting...')
+                logging.warning('push_serv has crashed. Restarting...' + str(datetime.datetime.now()))
                 push_serv = push_server()
                 push_serv.start()
                 logging.info('push_servrestarted.')
@@ -124,7 +128,7 @@ if __name__ == "__main__":
                 
             if not internal_push_client.is_alive():
                 #print 'internal_push_client has crashed. Restarting...'
-                logging.warning('internal_push_client has crashed. Restarting...')
+                logging.warning('internal_push_client has crashed. Restarting...' + str(datetime.datetime.now()))
                 internal_push_client = internal_client_push()
                 internal_push_client.start()
                 logging.info('internal_push_client restarted.')
@@ -132,7 +136,7 @@ if __name__ == "__main__":
                 
             if not internal_pull_client.is_alive():
                 #print 'internal_pull_client has crashed. Restarting...'
-                logging.warning('internal_pull_client has crashed. Restarting...')
+                logging.warning('internal_pull_client has crashed. Restarting...' + str(datetime.datetime.now()))
                 internal_pull_client = internal_client_pull()
                 internal_pull_client.start()
                 logging.info('internal_pull_client restarted.')

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import socket, os, os.path, time, pika, logging
+import socket, os, os.path, time, pika, logging, datetime
 from multiprocessing import Process, Queue, Value
 import sys
 sys.path.append('../../../../devtools/protocol_common/')
@@ -23,7 +23,6 @@ with open('/etc/waggle/hostname','r') as file_:
 with open('/etc/waggle/queuename','r') as file_:
     QUEUENAME = file_.read().strip() 
     
-logging.basicConfig(filename='external_communicator.log')
 
 class external_communicator(object):
     """
@@ -35,9 +34,9 @@ class external_communicator(object):
     
     incoming = Queue() #stores messages to push into DC 
     outgoing = Queue() #stores messages going out to cloud
-    cloud_connected = Value('i') #indicates if the cloud is or is not connected
-    params = pika.connection.URLParameters("amqps://waggle:waggle@10.10.10.110:5671/%2F") #SSL 
-    #params = pika.connection.URLParameters("amqp://waggle:waggle@10.10.10.104:5672/%2F") #the parameters used to connect to the cloud 
+    cloud_connected = Value('i') #indicates if the cloud is or is not connected. Clients only connect to DC when cloud is connected. 
+    #params = pika.connection.URLParameters("amqps://waggle:waggle@10.10.10.110:5671/%2F") #SSL 
+    params = pika.connection.URLParameters("amqp://waggle:waggle@10.10.10.110:5672/%2F") #the parameters used to connect to the cloud 
 
 
 class pika_push(Process):
@@ -59,13 +58,17 @@ class pika_push(Process):
                 comm.cloud_connected.value = 1 #set the flag to true when connected to cloud
                 #Declaring the queue
                 channel.queue_declare(queue=QUEUENAME)
+                print 'Pika push connected to cloud.'
+                logging.info('Pika push connected to cloud.')
+                connected = True
             except: 
-                logging.warning('Pika_push currently unable to connect to cloud...')
-                print 'Pika_push currently unable to connect to cloud...' 
-                comm.cloud_connected.value = 0 #set the flag to 0 when not connected to the cloud
+                #logging.warning('Pika_push currently unable to connect to cloud...')
+                #print 'Pika_push currently unable to connect to cloud...' 
+                comm.cloud_connected.value = 0 #set the flag to 0 when not connected to the cloud. I
                 time.sleep(5)
+                connected = False
                 
-            while True:
+            while connected:
                 try:
                     while comm.outgoing.empty(): #sleeps until there are messages to send
                         time.sleep(1)
@@ -77,7 +80,7 @@ class pika_push(Process):
                     
                 except pika.exceptions.ConnectionClosed:
                             print "Pika push connection closed. Waiting and trying again."
-                            logging.warning("Pika push connection closed. Waiting and trying again.")
+                            logging.warning("Pika push connection closed. Waiting and trying again. " + str(datetime.datetime.now()))
                             comm.cloud_connected.value = 0
                             time.sleep(5)
                             break #need to break this loop to reconnect
@@ -101,7 +104,8 @@ class pika_pull(Process):
                     connection = pika.BlockingConnection(params) 
                     channel = connection.channel()
                     #print 'Pika pull connection successful.'
-                    comm.cloud_connected.value = 1
+                    comm.cloud_connected.value = 1 #sets indicator flag to 1 so clients will connect to data cache
+                    logging.info('Pika pull connected to cloud')
                      #Creating a queue
                     try:
                         channel.queue_declare(queue=QUEUENAME)
@@ -112,14 +116,14 @@ class pika_pull(Process):
                     #loop that waits for data 
                     channel.start_consuming() #TODO Can this process still publish to RabbitMQ while this is continuously looping? If so, The pika_pull and pika_push processes can and should be combined. 
                 except:
-                    print 'Pika_pull currently unable to connect to cloud. Waiting before trying again.'
-                    logging.warning('Pika_pull currently unable to connect to cloud. Waiting before trying again.')
+                    #print 'Pika_pull currently unable to connect to cloud. Waiting before trying again.'
+                    #logging.warning('Pika_pull currently unable to connect to cloud. Waiting before trying again.')
                     comm.cloud_connected.value = 0 #set the flag to 0 when not connected to the cloud
                     time.sleep(5)
                
             except pika.exceptions.ConnectionClosed:
                         print "Pika pull connection closed. Waiting before trying again."
-                        logging.warning("Pika pull connection closed. Waiting before trying again.")
+                        logging.warning("Pika pull connection closed. Waiting before trying again. " + str(datetime.datetime.now()))
                         comm.cloud_connected.value = 0 #set the flag to false when not connected to the cloud
                         time.sleep(5)
         connection.close()
@@ -175,8 +179,8 @@ class external_client_pull(Process):
                         client_sock.close()
                         time.sleep(5)
                 else:
-                    print 'External client pull...cloud is not connected. Waiting and trying again.'
-                    logging.warning('External client pull...cloud is not connected. Waiting and trying again.')
+                    #print 'External client pull...cloud is not connected. Waiting and trying again.'
+                    #logging.warning('External client pull...cloud is not connected. Waiting and trying again.')
                     time.sleep(5)
             except KeyboardInterrupt, k:
                     print "External client pull shutting down."

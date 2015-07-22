@@ -1,0 +1,18 @@
+ERROR:pika.adapters.base_connection:Connection to 10.10.10.104:5672 failed: timeout
+ERROR:pika.adapters.base_connection:Connection to 10.10.10.104:5672 failed: timeout
+ERROR:pika.adapters.base_connection:Connection to 10.10.10.104:5672 failed: timeout
+ERROR:pika.adapters.base_connection:Connection to 10.10.10.104:5672 failed: timeout
+ERROR:pika.adapters.base_connection:Connection to 10.10.10.104:5672 failed: timeout
+ERROR:pika.adapters.base_connection:Connection to 10.10.10.104:5672 failed: timeout
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.104:5672 failed: [Errno 113] No route to host
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.104:5672 failed: [Errno 113] No route to host
+ERROR:pika.adapters.base_connection:Connection to 10.10.10.104:5672 failed: timeout
+ERROR:pika.adapters.base_connection:Connection to 10.10.10.104:5672 failed: timeout
+ERROR:pika.adapters.base_connection:Connection to 10.10.10.104:5672 failed: timeout
+ERROR:pika.adapters.base_connection:Connection to 10.10.10.104:5672 failed: timeout
+ERROR:pika.adapters.base_connection:Connection to 10.10.10.104:5672 failed: timeout
+ERROR:pika.adapters.base_connection:Connection to 10.10.10.104:5672 failed: timeout
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.104:5672 failed: [Errno 113] No route to host
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.104:5672 failed: [Errno 113] No route to host
+ERROR:pika.adapters.base_connection:Connection to 10.10.10.104:5672 failed: timeout
+ERROR:pika.adapters.base_connection:Connection to 10.10.10.104:5672 failed: timeout
