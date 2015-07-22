@@ -269,16 +269,14 @@ void post() {
             Serial.flush();
             #endif
 
-//                 #ifndef I2C_INIT_ADD
-//                 i2c_init();
-//                 #endif //I2C_INIT_ADD
-//                 
-//                 MMA_found = initMMA8452();
+            #ifndef I2C_INIT_ADD
+            i2c_init();
+            #endif //I2C_INIT_ADD       
+            MMA_found = initMMA8452();
             for(int a = 0; a<numTests; a++)
             {
 //                 bool good_data = readAccelData(accelCount); // Read the x/y/z adc values
             
-                MMA_found = initMMA8452();
                 MMA8452_get_means();
                 wdt_reset();
                 delay(500);
@@ -535,16 +533,17 @@ void post() {
             Serial.flush();
             #endif
 
-            int rbuf[35];
-            float tdata[16];
-            float t_PTAT;
-            float tPEC;
-            bool data_check;
+//             int rbuf[35];
+//             float tdata[16];
+//             float t_PTAT;
+//             float tPEC;
+//             bool data_check;
             
             #ifndef I2C_INIT_ADD
             i2c_init();
             #define I2C_INIT_ADD 1
             #endif //I2C_INIT_ADD
+            wdt_reset();
             pinMode(17,OUTPUT);    // Power (VCC) for setting D17 (A3) pin
             digitalWrite(17,HIGH);
             pinMode(16,OUTPUT);    // Power supply (GND) for setting D16 (A2) pin
@@ -554,16 +553,20 @@ void post() {
             pinMode(A5,INPUT);
             digitalWrite(A5,HIGH); // Pull-up resistor for SCL
             
+            delay(100);
+            wdt_reset();
+            
             for(int a = 0; a<numTests; a++)
             // Perform test 10x
             {
-                bool temp = D6T_get_data(); // Read sensor
-                
+                bool data_check = D6T_get_data(); // Read sensor
                 wdt_reset();
-                delay(500);
+                if(!data_check)
+                    delay(10000);    // Bad data, test failed
+                else    
+                    delay(500);
                 wdt_reset();
             }
-            i2c_stop();
             
             byte history = EEPROM.read(IR_D6T_44L_06_ADD+128);
             history = history | 0x01;           // Demonstrate successful test pass

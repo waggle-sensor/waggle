@@ -22,6 +22,7 @@
  	var sec = date.getSeconds();
  	var month_str = "";
  	var am_pm = "";
+ 	//var updated = "Updated: ";
 
  	switch(month) {
  		case 0:
@@ -77,8 +78,8 @@
  	else {
  		am_pm = "am";
  	}
- 	document.getElementById("date").innerHTML = month_str.concat(" "+day.toString()+", "+year.toString());
- 	document.getElementById("time").innerHTML = hr.toString().concat(":"+((min < 10) ? "0"+min.toString() : min.toString())+":"+((sec < 10) ? "0"+sec.toString() : sec.toString())+" "+am_pm);
+ 	document.getElementById("date").innerHTML = month_str.concat(" "+day.toString()+", "+year.toString()+" "+hr.toString()+":"+((min < 10) ? "0"+min.toString() : min.toString())+":"+((sec < 10) ? "0"+sec.toString() : sec.toString())+" "+am_pm);
+ 	//document.getElementById("time").innerHTML = hr.toString().concat(":"+((min < 10) ? "0"+min.toString() : min.toString())+":"+((sec < 10) ? "0"+sec.toString() : sec.toString())+" "+am_pm);
  }
 
  function test_parse() {

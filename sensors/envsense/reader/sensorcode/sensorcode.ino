@@ -153,7 +153,9 @@ bool D6T_get_data(void) {
     if (start_err == 1) return false;
     write_err = i2c_write(0x4C);
     if (write_err == 1) return false;
-    
+    #ifdef POST
+    wdt_reset();
+    #endif
     start_err = i2c_rep_start(0x15);
     if (start_err == 1) return false;
     for (k = 0; k < 35; k++) {
@@ -163,12 +165,18 @@ bool D6T_get_data(void) {
         else {
             rbuf[k] = i2c_readAck();
         }
+        #ifdef POST
+        wdt_reset();
+        #endif
     }
     for (int j = 0; j<35; j++) {
         if (rbuf[j] == -999)
             return false;
     }
     i2c_stop();
+    #ifdef POST
+    wdt_reset();
+    #endif
     
     if (!D6T_checkPEC(rbuf, 34)) {
         return false;
@@ -177,6 +185,9 @@ bool D6T_get_data(void) {
         t_PTAT = (rbuf[0]+(rbuf[1]<<8))*0.1;
         for (k = 0; k < 16; k++) {
             tdata[k]=(rbuf[(k*2+2)]+(rbuf[(k*2+3)]<<8))*0.1;
+            #ifdef POST
+            wdt_reset();
+            #endif
         }
         tPEC = rbuf[34];
         return true;
@@ -212,6 +223,9 @@ int D6T_checkPEC(int* buf, int pPEC) {
     crc = calc_crc(0x15 ^ crc);
     for (int i=0; i<pPEC; i++) {
         crc = calc_crc(buf[i] ^ crc);
+        #ifdef POST
+        wdt_reset();
+        #endif
     }
     return (crc == buf[pPEC]);
 }
@@ -352,9 +366,7 @@ bool initMMA8452()
     else {
         return false;
     }
-    
     MMA8452Standby(); // Must be in standby to change registers
-    
     byte fsr = GSCALE;
     if(fsr > 8) fsr = 8; //Easy error check
     fsr >>= 2;
@@ -408,7 +420,7 @@ bool readRegisters(byte addressToRead, int bytesToRead, byte * dest)
             return false;
         }
     }
-    i2c_stop();
+    //i2c_stop();
     return true;
 }
 
@@ -422,7 +434,7 @@ byte readRegister(byte addressToRead)
     i2c_start(MMA8452_ADDRESS_WRITE); // Write address
     i2c_write(addressToRead);
     i2c_rep_start(MMA8452_ADDRESS_READ); // Read address
-    i2c_stop();
+    //i2c_stop();
     
     return i2c_readNak();
 }
@@ -437,7 +449,7 @@ void writeRegister(byte addressToWrite, byte dataToWrite)
     i2c_start(MMA8452_ADDRESS_WRITE);
     i2c_write(addressToWrite);
     i2c_write(dataToWrite);
-    i2c_stop();
+    //i2c_stop();
 }
 #endif //MMA8452
 
