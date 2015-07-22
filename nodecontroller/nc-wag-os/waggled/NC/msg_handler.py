@@ -3,6 +3,8 @@
 import os, os.path, sys
 sys.path.append('../../../../devtools/protocol_common/')
 from protocol.PacketHandler import *
+sys.path.append('../../../../devtools/protocol_common/')
+from utilities import packetmaker
 from send import send
 
 def msg_handler(msg):
@@ -38,12 +40,8 @@ def msg_handler(msg):
     elif major == 'p':
         #ping request. 
         if minor == 'r':
-            resp_header = {
-                'msg_mj_type' : ord('p'),
-                'msg_mi_type' : ord('a')
-                }
             #send a ping response
-            packet = pack(resp_header, 'Pong!')
+            packet = packetmaker.make_ping_packet()
             for pack in packet:
                 send(pack)
          #ping answer
@@ -57,12 +55,7 @@ def msg_handler(msg):
         #time request
         if minor == 'r':
             #send time
-            resp_header = {
-                'msg_mj_type' : ord('t'),
-                'msg_mi_type' : ord('a')
-                }
-            time = str(time.time())
-            packet = pack(resp_header, time)
+            packet = packetmaker.make_time_packet()
             for pack in packet:
                 send(pack)
         #time answer

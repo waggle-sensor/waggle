@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 
-import os, os.path, pika
+import os, os.path, pika, logging
 #from external_communicator import *
 #from internal_communicator import *
+
+logging.basicConfig(filename='communications_main.log')
 
 """
 
@@ -14,7 +16,7 @@ if __name__ == "__main__":
         #TODO if the pika_push and pika_pull clients can be combined into one process, add an if statement to that process that checks for initial contact with the cloud
         if not os.path.isfile('/etc/waggle/queuename'):
             #get the connection parameters
-            params = pika.connection.URLParameters("amqps://waggle:waggle@10.10.10.104:5671/%2F") #This will need to change according to where the server is
+            params = pika.connection.URLParameters("amqps://waggle:waggle@10.10.10.110:5671/%2F") #This will need to change according to where the server is
             #make the connection
             connection = pika.BlockingConnection(params)
             #create the channel
@@ -73,68 +75,84 @@ if __name__ == "__main__":
         
         while True:
             if not pika_pull.is_alive():
-                print 'Pika pull has crashed. Restarting...'
+                #print 'Pika pull has crashed. Restarting...'
+                logging.warning('Pika pull has crashed. Restarting...')
                 pika_pull = pika_pull()
                 pika_pull.start()
-                print 'Pika pull restarted.'
+                logging.info('Pika pull restarted.')
+                #print 'Pika pull restarted.'
             
             if not pika_push.is_alive():
-                print 'Pika push has crashed. Restarting...'
+                #print 'Pika push has crashed. Restarting...'
+                logging.warning('Pika push has crashed. Restarting...')
                 pika_push = pika_push()
                 pika_push.start()
-                print 'Pika push restarted.'
+                logging.info('Pika push restarted.')
+                #print 'Pika push restarted.'
                 
             if not external_push_client.is_alive():
-                print 'External push client has crashed. Restarting...'
+                #print 'External push client has crashed. Restarting...'
+                logging.warning('External push client has crashed. Restarting...')
                 external_push_client = external_client_push()
                 external_push_client.start()
-                print 'External_push_client restarted.'
+                logging.info('External_push_client restarted.')
+                #print 'External_push_client restarted.'
                 
             if not external_pull_client.is_alive():
-                print 'external_pull_client has crashed. Restarting...'
+                #print 'external_pull_client has crashed. Restarting...'
+                logging.warning('external_pull_client has crashed. Restarting...')
                 external_pull_client = external_client_pull()
                 external_pull_client.start()
-                print 'external_pull_client restarted.'
+                logging.info('external_pull_client restarted.')
+                #print 'external_pull_client restarted.'
                 
             if not pull_serv.is_alive():
-                print 'pull_serv has crashed. Restarting...'
+                #print 'pull_serv has crashed. Restarting...'
+                logging.warning('pull_serv has crashed. Restarting...')
                 pull_serv = pull_server()
                 pull_serv.start()
-                print 'pull_serv restarted.'
+                logging.info('pull_serv restarted.')
+                #print 'pull_serv restarted.'
                 
             if not push_serv.is_alive():
-                print 'push_serv has crashed. Restarting...'
+                #print 'push_serv has crashed. Restarting...'
+                logging.warning('push_serv has crashed. Restarting...')
                 push_serv = push_server()
                 push_serv.start()
-                print 'push_servrestarted.'
+                logging.info('push_servrestarted.')
+                #print 'push_servrestarted.'
                 
             if not internal_push_client.is_alive():
-                print 'internal_push_client has crashed. Restarting...'
+                #print 'internal_push_client has crashed. Restarting...'
+                logging.warning('internal_push_client has crashed. Restarting...')
                 internal_push_client = internal_client_push()
                 internal_push_client.start()
-                print 'internal_push_client restarted.'
+                logging.info('internal_push_client restarted.')
+                #print 'internal_push_client restarted.'
                 
             if not internal_pull_client.is_alive():
-                print 'internal_pull_client has crashed. Restarting...'
+                #print 'internal_pull_client has crashed. Restarting...'
+                logging.warning('internal_pull_client has crashed. Restarting...')
                 internal_pull_client = internal_client_pull()
                 internal_pull_client.start()
-                print 'internal_pull_client restarted.'
+                logging.info('internal_pull_client restarted.')
+                #print 'internal_pull_client restarted.'
                 
             time.sleep(3)
 
-        #terminate the external communication processes
-        pika_pull.terminate()
-        pika_push.terminate()
-        external_push_client.terminate()
-        external_pull_client.terminate()
-        print 'External communications shut down.'
+        ##terminate the external communication processes
+        #pika_pull.terminate()
+        #pika_push.terminate()
+        #external_push_client.terminate()
+        #external_pull_client.terminate()
+        #print 'External communications shut down.'
 
-        #terminate the internal communication processes
-        pull_serv.terminate()
-        push_serv.terminate()
-        internal_push_client.terminate()
-        internal_pull_client.terminate()
-        print 'Internal communications shut down.'                
+        ##terminate the internal communication processes
+        #pull_serv.terminate()
+        #push_serv.terminate()
+        #internal_push_client.terminate()
+        #internal_pull_client.terminate()
+        #print 'Internal communications shut down.'                
                 
                 
         

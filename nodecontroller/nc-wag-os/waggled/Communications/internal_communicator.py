@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import socket, os, os.path, time
+import socket, os, os.path, time, logging
 from multiprocessing import Process, Queue
 import sys
 sys.path.append('../../../../devtools/protocol_common/')
@@ -19,6 +19,8 @@ with open('/etc/waggle/queuename','r') as file_:
 #gets the IP address for the nodecontroller
 with open('/etc/waggle/NCIP','r') as file_:
     IP = file_.read().strip() 
+    
+logging.basicConfig(filename='internal_communicator.log')
     
 """
     The internal communicator is the channel of communication between the GNs and the data cache. It consists of four processes: Push and pull client processes to communicate with the data cache
@@ -47,6 +49,7 @@ class internal_client_push(Process):
         A client process that connects to the data cache and pushes outgoing messages. 
     """
     print 'Internal client push started...'
+    logging.info('Internal client push started...')
     
     def run(self):
         comm = internal_communicator()
@@ -64,12 +67,14 @@ class internal_client_push(Process):
                             client_sock.sendall(data)
                             client_sock.close() #closes socket after each message is sent #TODO is there a better way to do this?
                         except:
+                            logging.warning('Internal client push unable to connect to DC... connection likely refused.')
                             print 'Internal client push unable to connect to DC... connection likely refused.'
                             time.sleep(5)
                             client_sock.close()
                         
                     else: 
                         time.sleep(5)
+                        logging.warning('Internal client push unable to connect to DC...')
                         print 'Internal client push unable to connect to DC...'
                 else: 
                     time.sleep(1) #else, wait until messages are in queue
@@ -87,7 +92,8 @@ class internal_client_pull(Process):
     
     def run(self):
         comm = internal_communicator()
-        print 'Internal client pull started...'
+        #print 'Internal client pull started...'
+        logging.info('Internal client pull started...')
         
         while True:
             while comm.incoming_request.empty(): #sleeps until a GN initiates a pull request
@@ -100,7 +106,7 @@ class internal_client_pull(Process):
                         client_sock.connect('/tmp/Data_Cache_server')#opens socket when there is an incoming pull request
                         dev = comm.incoming_request.get() #gets the dev ID that is initiating the pull request
                         request = '|' + dev #puts the request in the correct format for the DC #TODO this could probably be done a different way, but there has to be some distinction between a pull request and message push
-                        print 'Internal client pull sending request: ', request
+                        #print 'Internal client pull sending request: ', request
                         client_sock.send(request)
                         try:
                             msg = client_sock.recv(4028) #arbitrary, can go in config file
@@ -118,11 +124,13 @@ class internal_client_pull(Process):
                             
                                     
                     except:
+                        logging.warning('Internal client pull unable to connect to DC... connection likely refused.')
                         print 'Internal client pull unable to connect to DC... connection likely refused.'
                         client_sock.close()
                         time.sleep(5)
                 else:
                     print "Internal client pull unable to connect to DC."
+                    logging.warning('Internal client pull unable to connect to DC.')
                     time.sleep(1)
             except KeyboardInterrupt, k:
                 print "Internal client pull shutting down."
@@ -142,6 +150,7 @@ class push_server(Process):
         server.bind((HOST,PORT))
         server.listen(5) #supports up to 5 threads, one for each GN
         print 'Internal push server process started...'
+        logging.info('Internal push server process started...')
 
         while True:
             client_sock, addr = server.accept()
@@ -155,7 +164,7 @@ class push_server(Process):
                     elif data == 'Hello': #a handshake from a new guest node. #TODO This will change in the future
                         client_sock.sendall(QUEUENAME) #NC sends the queuename so the GN can register with the cloud
                     else:
-                        print 'Push server pushing msg into DC: ', data
+                        #print 'Push server pushing msg into DC: ', data
                         comm.DC_push.put(data)
                     
                 except KeyboardInterrupt, k:
@@ -179,6 +188,7 @@ class pull_server(Process):
         server.bind((HOST,PORT))
         server.listen(5) #supports up to 5 threads, one for each GN
         print 'Internal pull server process started...'
+        logging.info('Internal pull server process started...')
         
         while True:
             client_sock, addr = server.accept()
@@ -193,7 +203,8 @@ class pull_server(Process):
                         try:
                             data = DEVICE_DICT[data] #gets the device queue location from dictionary
                         except:
-                            print 'Error...Internal pull server device not in dictionary.'
+                            logging.warning('Error...Internal pull server device not in dictionary.')
+                            #print 'Error...Internal pull server device not in dictionary.'
                         comm.incoming_request.put(str(data)) #Unique ID goes into incoming requests queue. These get pulled out by the pull_client as pull requests
                         while comm.incoming_msg[data-1].empty():
                             time.sleep(1) #sleeps then tries again
@@ -202,7 +213,7 @@ class pull_server(Process):
                             client_sock.sendall(msg) #sends the msg to the GN 
                         except: 
                             #puts the message back into the DC_push queue if the GN disconnects before the message is sent.
-                            print 'Putting message back into DC_push queue...'
+                            #print 'Putting message back into DC_push queue...'
                             comm.DC_push.put(data)
                 except KeyboardInterrupt, k:
                     print "Internal pull server shutting down."
