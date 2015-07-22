@@ -33,7 +33,7 @@
 
   
     <link rel="top" title="Waggle 0.3 documentation" href="../index.html"/>
-        <link rel="next" title="Guest Node" href="../guestNode/guestNode.html"/>
+        <link rel="next" title="Communications" href="Communications.html"/>
         <link rel="prev" title="Waggle Server Installation and Configuration" href="../server/installation.html"/> 
 
   
@@ -79,8 +79,40 @@
 <li class="toctree-l2"><a class="reference internal" href="../server/installation.html#quick-install">Quick install</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Node Controller</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../guestNode/guestNode.html">Guest Node</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Node Controller</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Communications.html">Communications</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="communications_main.html">Communications Main Script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="external_communicator.html">External Communicator Module Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="internal_communicator.html">Internal Communicator Module Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="DataCache.html">Data Cache</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Data_Cache.html">Data Cache Module Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="NC.html">NC</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="NC_registration.html">NC Registration Script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="msg_handler.html">Message Handler Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ping.html">Ping Script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="receive.html">Receive Script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="send.html">Send Script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="time.html">Time Script</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../guestNode/guestNode.html">Guest Node</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../guestNode/data_packet.html">Data Packet Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guestNode/GN_registration.html">GN Registration Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guestNode/handshake.html">Handshake Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guestNode/msg_handler.html">Message Handler Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guestNode/ping.html">Ping Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guestNode/receive.html">Receive Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guestNode/send.html">Send Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guestNode/sensor.html">Sensor Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guestNode/time.html">Time Script</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../wagMan/wagMan.html">Waggle System Manager</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../wagMan/POST.html">POST.ino</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../wagMan/boot_SOS.html">boot_SOS.ino</a></li>
@@ -143,7 +175,30 @@
             
   <div class="section" id="node-controller">
 <h1>Node Controller<a class="headerlink" href="#node-controller" title="Permalink to this headline">¶</a></h1>
-<p>This page will contain information about the node controller</p>
+<p>This page contains information about the node controller</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Communications.html">Communications</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="communications_main.html">Communications Main Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="external_communicator.html">External Communicator Module Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="internal_communicator.html">Internal Communicator Module Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="DataCache.html">Data Cache</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Data_Cache.html">Data Cache Module Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="NC.html">NC</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="NC_registration.html">NC Registration Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="msg_handler.html">Message Handler Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ping.html">Ping Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="receive.html">Receive Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="send.html">Send Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="time.html">Time Script</a></li>
+</ul>
+</li>
+</ul>
+</div>
 </div>
 
 
@@ -152,7 +207,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../guestNode/guestNode.html" class="btn btn-neutral float-right" title="Guest Node" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="Communications.html" class="btn btn-neutral float-right" title="Communications" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="../server/installation.html" class="btn btn-neutral" title="Waggle Server Installation and Configuration" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
