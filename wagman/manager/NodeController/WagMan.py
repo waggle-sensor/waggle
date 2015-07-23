@@ -11,12 +11,18 @@ params_SysMon = collections.OrderedDict()
 # Min: 1, max: 65535
 params_SysMon['baud rate'] = 57600
 
-# Be courteous to the SysMon...it only has about 1 KB of available RAM
+# Be courteous to the SysMon...it has very little RAM
 # Min: total num of chars in each field + 1 for each field
 params_SysMon['SysMon RX buffer size (characters)'] = 150
 
 # Min: 1, max: 255
-params_SysMon['max num of SOS boot tries'] = 3
+params_SysMon['max num of SOS boot attempts'] = 3
+
+# Min: 1, max: 255
+params_SysMon['max num of NC boot attempts'] = 4
+
+# Min: 1, max: 65535
+params_SysMon['boot time for NC (seconds)'] = 20
 
 # Min: 1, max: 255
 params_SysMon['heartbeat timeout (NC) (seconds)'] = 5
@@ -48,7 +54,7 @@ params_SysMon['relative humidity min (SysMon) (%)'] = 0
 params_SysMon['relative humidity max (SysMon) (%)'] = 100
 
 # Min: 1, max: 8000
-params_SysMon['maximum current draw (SysMon) (mA)'] = 200
+params_SysMon['maximum current draw (SysMon) (mA)'] = 500
 params_SysMon['maximum current draw (NC) (mA)'] = 4000
 params_SysMon['maximum current draw (switch) (mA)'] = 1500
 ########################################################################

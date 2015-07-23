@@ -13,20 +13,49 @@
 
 
 //---------- C O N S T A N T S ------------------------------------------------
-#define PIN_RELAY2 7
+//#define BOOT_POST
 
-#define PIN_HEARTBEAT2 6
-
+// Node controller (JP1)
+#define PIN_RELAY_NC 4
+#define PIN_HEARTBEAT_NC 5
+// Network switch (JP2)
+#define PIN_RELAY_SWITCH 6
+#define PIN_HEARTBEAT_SWITCH 7
+// Guest node 1 (JP3)
+#define PIN_RELAY_GN1 8
+#define PIN_HEARTBEAT_GN1 9
+// Guest node 2 (JP4)
+#define PIN_RELAY_GN2 10
+#define PIN_HEARTBEAT_GN2 11
+// Guest node 3 (JP5)
+#define PIN_RELAY_GN3 12
+#define PIN_HEARTBEAT_GN3 13
+// Thermistors (JP10)
+#define PIN_THERMISTOR_NC A0
+#define PIN_THERMISTOR_SWITCH A1
+#define PIN_THERMISTOR_GN1 A2
+#define PIN_THERMISTOR_GN2 A3
+#define PIN_THERMISTOR_GN3 A4
+// Light detector
 #define PIN_PHOTOCELL A5
-#define PIN_THERMISTOR1 A4
 
-const byte LED = 13;
-const char NC_NOTIFIER_STATUS = '@';
-const char NC_NOTIFIER_PROBLEM = '#';
-const char NC_NOTIFIER_PARAMS_CORE = '$';
-const char NC_NOTIFIER_PARAMS_GN = '^';
-const char NC_DELIMITER = ',';
-const char NC_TERMINATOR = '!';
+// I2C addresses for current sensors
+#define ADDR_CURRENT_SENSOR_SYSMON 0x60
+#define ADDR_CURRENT_SENSOR_NC 0x62
+#define ADDR_CURRENT_SENSOR_SWITCH 0x63
+#define ADDR_CURRENT_SENSOR_GN1 0x68
+#define ADDR_CURRENT_SENSOR_GN2 0x6A
+#define ADDR_CURRENT_SENSOR_GN3 0x6B
+
+// Resolution of current sensors (with 8A range) (mA)
+#define MILLIAMPS_PER_STEP 16
+
+#define NC_NOTIFIER_STATUS '@'
+#define NC_NOTIFIER_PROBLEM '#'
+#define NC_NOTIFIER_PARAMS_CORE '$'
+#define NC_NOTIFIER_PARAMS_GN '^'
+#define NC_DELIMITER ','
+#define NC_TERMINATOR '!'
 
 
 
@@ -41,7 +70,9 @@ HTU21D SysMon_HTU21D;
 // EEPROM addresses whose values are set by node controller:
 uint32_t EEMEM E_USART_BAUD;
 uint16_t EEMEM E_USART_RX_BUFFER_SIZE;
-uint8_t EEMEM E_MAX_NUM_SOS_BOOT_TRIES;
+uint8_t EEMEM E_MAX_NUM_SOS_BOOT_ATTEMPTS;
+uint8_t EEMEM E_MAX_NUM_NC_BOOT_ATTEMPTS;
+uint16_t EEMEM E_NC_BOOT_TIME;
 uint8_t EEMEM E_PRESENT_GN1;
 uint8_t EEMEM E_PRESENT_GN2;
 uint8_t EEMEM E_PRESENT_GN3;
@@ -63,7 +94,7 @@ uint8_t EEMEM E_BAD_CURRENT_TIMEOUT_SWITCH;
 uint8_t EEMEM E_BAD_CURRENT_TIMEOUT_GN1;
 uint8_t EEMEM E_BAD_CURRENT_TIMEOUT_GN2;
 uint8_t EEMEM E_BAD_CURRENT_TIMEOUT_GN3;
-// EEPROM only stores unsigned values.  Must cast to signed when reading.
+// EEPROM does not store data types.  Must cast to signed when reading.
 uint16_t EEMEM E_TEMP_MIN_SYSMON_SIGNED;
 uint16_t EEMEM E_TEMP_MAX_SYSMON_SIGNED;
 uint16_t EEMEM E_TEMP_MIN_NC_SIGNED;
@@ -93,7 +124,7 @@ uint8_t EEMEM E_GN2_ENABLED;
 uint8_t EEMEM E_GN3_ENABLED;
 uint8_t EEMEM E_POST_RESULT;
 uint8_t EEMEM E_TIMER_TEST_INCOMPLETE;
-uint8_t EEMEM E_NUM_SOS_BOOT_TRIES;
+uint8_t EEMEM E_NUM_SOS_BOOT_ATTEMPTS;
 uint8_t EEMEM E_FIRST_BOOT;
 
 
@@ -104,55 +135,53 @@ void setup()
   // Debug
   delay(5000);
 
-  // // Is everything (internal) working correctly?
-  // if(POST())
-  // {
-  //   // Boot self, node controller, and ethernet switch.  Boot successful?
-  //   if(boot_primary())
-  //     // Boot the guest nodes
-  //     boot_gn();
-  // }
-  // // Something non-fatal failed the POST
-  // else
-  //   // Go to partial boot sequence
-  //   boot_SOS();
+  // Is POST enabled?
+  #ifdef BOOT_POST
+    // Is everything (internal) working correctly?
+    if(POST())
+    {
+      // Boot self, node controller, and ethernet switch.  Boot successful?
+      if(boot_primary())
+        // Boot the guest nodes
+        boot_gn();
+    }
+    // Something non-fatal failed the POST
+    else
+      // Go to partial boot sequence
+      boot_SOS();
+  #else
+    // Boot self, node controller, and ethernet switch.  Boot successful?
+    if(boot_primary())
+      // Boot the guest nodes
+      boot_gn();
+  #endif
 
-  if(boot_primary())
-    Serial.println("booted");
-
-  setTime(23, 31, 30, 13, 2, 2009);
-  RTC.set(now());
-  Serial.println(RTC.get());
+  // setTime(23, 31, 30, 13, 2, 2009);
+  // RTC.set(now());
+  // Serial.println(RTC.get());
 }
 
 
-byte x = 0;
+
 //---------- L O O P ----------------------------------------------------------
 void loop() 
 {
   // Has the timer finished a cycle?
   if(_timer1_cycle)
   {
-    Serial.print("RTC: ");
-    Serial.println(RTC.get());
-    // Serial.print("HTU21D: ");
-    // Serial.print(SysMon_HTU21D.readTemperature());
-    // Serial.print(", ");
-    // Serial.println(SysMon_HTU21D.readHumidity()); 
-
     // Clear the flag
     _timer1_cycle = false;
 
     // Environ. checks go here
 
     // Send status report to node controller
-    send_status();
+    //send_status();
 
     // Send problem report to node controller
     //send_problem();
 
     // Check heartbeat of guest node 2
-    check_heartbeat(2);
+    //check_heartbeat(2);
   }
 }
 
@@ -172,13 +201,8 @@ void send_status()
   // Give it time to get ready
   delay(10);
 
-  // Send status report
-  String report = "P:" +
-                  String(analogRead(PIN_PHOTOCELL)) +
-                  ",T:" +
-                  String(analogRead(PIN_THERMISTOR1));
-
-  Serial.println(report);
+  Serial.print("Light: ");
+  Serial.println(analogRead(PIN_PHOTOCELL));
 }
 
 
@@ -219,26 +243,26 @@ boolean check_heartbeat(byte device)
         break;
 
       case 2:
-        // Is heartbeat detected?
-        if(digitalRead(PIN_HEARTBEAT2) == LOW)
-        {
-          Serial.println("Heartbeat 2 not detected");
+        // // Is heartbeat detected?
+        // if(digitalRead(PIN_HEARTBEAT2) == LOW)
+        // {
+        //   Serial.println("Heartbeat 2 not detected");
 
-          // Increment counter
-          count2++;
+        //   // Increment counter
+        //   count2++;
 
-          // Is the counter equal to the heartbeat timeout for GN2?
-          if(count2 == eeprom_read_byte(&E_HEARTBEAT_TIMEOUT_GN2))
-          {
-            // Power cycle the device
-            digitalWrite(PIN_RELAY2, LOW);
-            delay(50);
-            digitalWrite(PIN_RELAY2, HIGH);
+        //   // Is the counter equal to the heartbeat timeout for GN2?
+        //   if(count2 == eeprom_read_byte(&E_HEARTBEAT_TIMEOUT_GN2))
+        //   {
+        //     // Power cycle the device
+        //     digitalWrite(PIN_RELAY2, LOW);
+        //     delay(50);
+        //     digitalWrite(PIN_RELAY2, HIGH);
 
-            // Reset the counter
-            count2 = 0;
-          }
-        }
+        //     // Reset the counter
+        //     count2 = 0;
+        //   }
+        // }
         break;
 
       case 3:

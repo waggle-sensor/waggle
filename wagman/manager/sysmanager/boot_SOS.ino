@@ -32,15 +32,15 @@ void boot_SOS()
 	check_environ_self();
 
 	// Get datum about number of times SOS boot mode has been tried
-	byte num_tries = eeprom_read_byte(&E_NUM_SOS_BOOT_TRIES);
+	byte num_tries = eeprom_read_byte(&E_NUM_SOS_BOOT_ATTEMPTS);
 
 	// Has SOS boot been tried too many times?
-	if(num_tries >= eeprom_read_byte(&E_MAX_NUM_SOS_BOOT_TRIES))
+	if(num_tries >= eeprom_read_byte(&E_MAX_NUM_SOS_BOOT_ATTEMPTS))
 		// Something isn't working, so go to sleep
 		sleep();
 
 	// Record that SOS boot mode was attempted
-	eeprom_update_byte(&E_NUM_SOS_BOOT_TRIES, ++num_tries);
+	eeprom_update_byte(&E_NUM_SOS_BOOT_ATTEMPTS, ++num_tries);
 
 	// ADC ok?
 	if(SOS_mode != NO_ADC)
@@ -120,9 +120,6 @@ void init_SOS()
 		// Start Timer1 with prescaler of clk/256 (timeout of approx. 1 second)
 		TCCR1B |= _BV(CS12);
 	}
-
-	// Set LED pin to output so we can turn on the LED
-  pinMode(LED, OUTPUT);
 
 	// Join I2C bus as master.
 	// We're hoping I2C works, because we don't currently have a way to test it
