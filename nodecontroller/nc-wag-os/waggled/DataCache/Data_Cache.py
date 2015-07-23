@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 
-from multiprocessing import Process, Queue, Manager
+from multiprocessing import Queue
 from daemon import Daemon
 import sys, os, os.path, time, atexit, socket, datetime, logging
 sys.path.append('../../../../devtools/protocol_common/')
 from protocol.PacketHandler import *
 sys.path.append('../Communications/')
 from device_dict import DEVICE_DICT
+from glob import glob
 
 """ 
     The Data Cache stores messages between the nodes and the cloud. The main function is a unix socket server. The internal and external facing communication classes connect to
@@ -17,15 +18,23 @@ from device_dict import DEVICE_DICT
 #TODO clean up
 #TODO Figure out what to do once DC has messages stored in files
 
+date = str(datetime.datetime.now().strftime('%Y %m %d %H:%M:%S'))
+LOG_FILE = 'Data_Cache' + date + '.log'
+logging.basicConfig(filename=LOG_FILE)
 
 class Data_Cache(Daemon):
     #The priority list is now a list containing the number corresponding to a unique device. The highest priority no longer corresponds to the highest number, but rather the order in which the elements are in the list
-    priority_list = [5,4,3,2,1] 
-    available_mem = 255999 #default
+    priority_list = [5,4,3,2,1] #TODO will be stored in config file
+    available_mem = 3 #default #TODO will be stored in config file
    
    #dummy variables 
     incoming_bffr = []
     outgoing_bffr = []
+    
+    #TODO Can these be stored in the file itself instead of the class?
+    flush = 0
+    msg_counter = 0 
+    outgoing_cur_file = '' #If the data cache flushed messages to files, this stores the generator object for the current file
     
     
     def run(self):
@@ -33,8 +42,8 @@ class Data_Cache(Daemon):
         #lists keeping track of which queues currently have messages stored in them
         outgoing_available_queues = list() 
         incoming_available_queues = list() 
-        msg_counter = 0  #keeps track of how many messages are in the dc. It is incremented when messages are stored and decremented when messages are removed
-        flush = 0 #indicator value. Default is 0, indicating that the data cache is running as normal. It will be changed to 1 if the data cache is flushing stored messages into files.
+        #msg_counter = 0  #keeps track of how many messages are in the dc. It is incremented when messages are stored and decremented when messages are removed
+        #flush = 0 #indicator value. Default is 0, indicating that the data cache is running as normal. It will be changed to 1 if the data cache is flushing stored messages into files.
 
         
         #Each buffer is a matrix of queues for organization and indexing purposes.
@@ -47,7 +56,8 @@ class Data_Cache(Daemon):
         while True:
             
             #indicates that the server is flushing the buffers. Shuts down the server until the all queues have been written to a file
-            while flush ==1: 
+            while Data_Cache.flush ==1: 
+                print 'Data_cache.flush while loop'
                 time.sleep(1)
             if os.path.exists('/tmp/Data_Cache_server'): #checking for the file
                 os.remove('/tmp/Data_Cache_server')
@@ -62,10 +72,11 @@ class Data_Cache(Daemon):
     
             while True:
             
-                if flush==1: #shuts down the server until the all queues have been written to a file
+                if Data_Cache.flush==1: #shuts down the server until the all queues have been written to a file
                     print 'Server flush!'
                     server_sock.close()
                     os.remove('/tmp/Data_Cache_server')
+                    print 'Server flush closed socket'
                     break
                 
                 #accept connections from outside
@@ -77,10 +88,11 @@ class Data_Cache(Daemon):
                     if not data:
                         break
                     else:
-                        if data[0] == '|': #Indicates that it is a pull request 
+                        #Indicates that it is a pull request 
+                        if data[0] == '|': #TODO This could be improved if there is a better way to distinguish between push and pull requests and from incoming and outgoing requests
                             data, dest = data.split('|', 1) #splits to get either 'o' for outgoing request or the device location for incoming request
                             if dest != 'o':
-                                msg = incoming_pull(int(dest), incoming_available_queues, msg_counter) #pulls a message from that device's queue
+                                msg = incoming_pull(int(dest), incoming_available_queues) #pulls a message from that device's queue
                                 if msg == None:
                                     msg = 'False'
                                 try:
@@ -89,11 +101,11 @@ class Data_Cache(Daemon):
                                     #pushes it back into the incoming queue, if the client disconnects before the message is sent
                                     try: #Will pass if data is a pull request instead of a full message 
                                         #TODO default msg_p is 5 for messages pushed back into queue. Improvement recommended.
-                                        incoming_push(int(dest),5, msg, incoming_available_queues, msg_counter, flush, outgoing_available_queues) 
+                                        incoming_push(int(dest),5, msg, incoming_available_queues, outgoing_available_queues) 
                                     except: 
                                         pass
                             else:
-                                msg = outgoing_pull(outgoing_available_queues, msg_counter) #pulls the highest priority message
+                                msg = outgoing_pull(outgoing_available_queues) #pulls the highest priority message
                                 if msg == None:
                                     msg = 'False'
                                 try:
@@ -102,7 +114,7 @@ class Data_Cache(Daemon):
                                     #pushes it back into the outgoing queue, if the client disconnects before the message is sent
                                     try:#Will pass if data is a pull request instead of a full message
                                         #TODO default msg_p is 5 for messages pushed back into queue. Improvement recommended.
-                                        outgoing_push(int(dest),5,msg, outgoing_available_queues, msg_counter, flush, incoming_available_queues)
+                                        outgoing_push(int(dest),5,msg, outgoing_available_queues, incoming_available_queues)
                                     except: 
                                         pass
                         
@@ -122,13 +134,13 @@ class Data_Cache(Daemon):
                                         if order==False: #indicates lifo. lifo has highest message priority
                                             msg_p=5
                                         #pushes the message into the outgoing buffer to the queue corresponding to the device location and message priority
-                                        outgoing_push(dev_loc, msg_p, data, outgoing_available_queues, msg_counter, flush, incoming_available_queues)
+                                        outgoing_push(dev_loc, msg_p, data, outgoing_available_queues, incoming_available_queues)
                                     except: 
                                         print 'Unknown sender ID. Message will not be stored in data cache.'
                                 else: #indicates an incoming push
                                     try:
                                         dev_loc = DEVICE_DICT[str(recipient)] #looks up the location of the recipient device
-                                        incoming_push(dev_loc,msg_p,data, incoming_available_queues, msg_counter, flush, outgoing_available_queues)
+                                        incoming_push(dev_loc,msg_p,data, incoming_available_queues, outgoing_available_queues)
                                     except: 
                                         print 'Unknown recipient ID. Message will not be stored in data cache.'
                             except:
@@ -139,15 +151,15 @@ class Data_Cache(Daemon):
                 except KeyboardInterrupt, k:
                     print "Data Cache server shutting down..."
                     break
-            server_sock.close()
-            os.remove('/tmp/Data_Cache_server')
-            break
+            #server_sock.close()
+            #os.remove('/tmp/Data_Cache_server')
+            #break
         if os.path.exists('/tmp/Data_Cache_server'): #checking for the file for smooth shutdown
             server_sock.close()
             os.remove('/tmp/Data_Cache_server')
             
    
-def outgoing_push(dev, msg_p, msg, outgoing_available_queues, msg_counter, flush, incoming_available_queues): 
+def outgoing_push(dev, msg_p, msg, outgoing_available_queues, incoming_available_queues): 
     """
         Function that pushes outgoing messages into the outgoing buffer.
         
@@ -159,14 +171,16 @@ def outgoing_push(dev, msg_p, msg, outgoing_available_queues, msg_counter, flush
         :param list incoming_available_queues: A list of tuples that specify the location of incoming queues that currently have stored messages
     """ 
     
-    #if the msg counter is greater than or equal to the available memory, flush the buffers into files
-    if msg_counter>= Data_Cache.available_mem:
+    #if the msg counter is greater than or equal to the available memory, flush the outgoing queues into a file
+    if Data_Cache.msg_counter>= Data_Cache.available_mem:
+        print 'msg counter: ',Data_Cache. msg_counter
+        print 'available mem: ', Data_Cache.available_mem
         #Calls the data cache flush method and passes in the neccessary params
-        DC_flush(flush, incoming_available_queues, outgoing_available_queues, msg_counter) #Flushes all messages into a file
-        msg_counter = 0 #resets the message counter after all buffers have been saved to a file
+        DC_flush(incoming_available_queues, outgoing_available_queues) #Flushes all messages into a file
+        Data_Cache.msg_counter = 0 #resets the message counter after all buffers have been saved to a file
     
     #increments the msg_counter by 1 each time a message is pushed into the data cache
-    msg_counter += 1 
+    Data_Cache.msg_counter += 1 
     try:
         #pushes the message into the queue at the specified location in the matrix
         Data_Cache.outgoing_bffr[(dev - 1)][(msg_p - 1)].put(msg)
@@ -179,7 +193,7 @@ def outgoing_push(dev, msg_p, msg, outgoing_available_queues, msg_counter, flush
     except:
         print 'Outgoing push unable to store in data cache...'#TODO Should an error message be sent back to the recipient?
        
-def incoming_push(device, msg_p, msg, incoming_available_queues, msg_counter, flush, outgoing_available_queues):
+def incoming_push(device, msg_p, msg, incoming_available_queues, outgoing_available_queues):
     """ 
         Function that pushes incoming messages to the incoming buffer.
         
@@ -192,14 +206,14 @@ def incoming_push(device, msg_p, msg, incoming_available_queues, msg_counter, fl
     """ 
     
     #if the msg counter is greater than or equal to the available memory, flush the buffers into files
-    if msg_counter >= Data_Cache.available_mem: 
+    if Data_Cache.msg_counter >= Data_Cache.available_mem: 
         #Calls the data cache flush method
-        DC_flush(flush, incoming_available_queues, outgoing_available_queues, msg_counter)
-        msg_counter = 0 #resets the message counter after all buffers have been saved to a file
+        DC_flush(incoming_available_queues, outgoing_available_queues)
+        Data_Cache.msg_counter = 0 #resets the message counter after all buffers have been saved to a file
     else:
         pass 
     #increments the counter by 1 each time a message is put into the buffer
-    msg_counter += 1
+    Data_Cache.msg_counter += 1
     
     #pushes the message into the queue at the specified location in the matrix
     Data_Cache.incoming_bffr[device - 1][msg_p - 1].put(msg)
@@ -210,7 +224,7 @@ def incoming_push(device, msg_p, msg, incoming_available_queues, msg_counter, fl
     except:
         incoming_available_queues.append(device) #adds it to the list if it is not already there
 
-def outgoing_pull(outgoing_available_queues, msg_counter):
+def outgoing_pull(outgoing_available_queues):
     """ 
         Function that retrieves and removes outgoing messages from the outgoing buffer. Retrieves the highest priority messages first. Highest priority messages are determined based on message priority and device priority.
         
@@ -222,6 +236,24 @@ def outgoing_pull(outgoing_available_queues, msg_counter):
     #TODO implement fairness, avoid starvation
     #TODO this probably needs to be reworked 
     #TODO might want to find a better way to remove empty queues from list 
+    
+    #are there outgoing messages stored as files?
+    #if so, those need to be sent to the cloud first without needing to load all messages from the file and taking up too much RAM
+    #so, send the messages one by one using a file generator object.
+    #when all messages have been read from file and sent to cloud, close and delete that file from the directory.
+    if len(glob('outgoing_stored/*')) > 0:
+        #is there a file generator object already stored as the current file?
+        if Data_Cache.outgoing_cur_file == '':
+            #set the first file in the outgoing_stored directory as the current file generator object
+            Data_Cache.outgoing_cur_file = open(glob('outgoing_stored/*')[0]) 
+            try: 
+                msg = Data_Cache.outgoing_cur_file.next().strip() #reads the next message in file without the \n
+                return msg
+            except:
+                Data_Cache.outgoing_cur_file.close() #close the file if stop iterator error occurs
+        else:
+            
+            
     
     queue_check = True #continues until a message is sent. Neccessary to check for empty queues whose index has not yet been removed from the list
     while queue_check:
@@ -240,11 +272,11 @@ def outgoing_pull(outgoing_available_queues, msg_counter):
                 #removes it from the list of available queues 
                 outgoing_available_queues.remove(cache_index) 
             else: 
-                msg_counter -= 1 #decrements the list by 1
+                Data_Cache.msg_counter -= 1 #decrements the list by 1
                 queue_check = False
                 return current_q.get()       
         
-def incoming_pull(dev, incoming_available_queues, msg_counter):
+def incoming_pull(dev, incoming_available_queues):
     """ 
         Function that retrieves and removes incoming messages from the incoming buffer. Searches through all of the message priority queues for the specified device to return the highest priority message first. 
         
@@ -260,48 +292,61 @@ def incoming_pull(dev, incoming_available_queues, msg_counter):
                 pass
             else: 
                 #decrements the counter by 1 each time a message is removed
-                msg_counter -= 1 
+                Data_Cache.msg_counter -= 1 
                 return Data_Cache.incoming_bffr[dev - 1][i].get()
     except:
         #returns false if no messages are available
         return 'False'
 
 
-def DC_flush(flush, incoming_available_queues, outgoing_available_queues, msg_counter):
+def DC_flush(incoming_available_queues, outgoing_available_queues):
     """ 
-        Function that flushes all stored messages from the buffers to files. Temporarily shuts down the push and pull server while the queues are being written to files.
+        Function that temporary closes the Data Cache server to write the outgoing and incoming queues into files.
+        This function is called when the data cache reaches its maximum number of messages it can store in RAM or (hopefully) before the data cache is shut down.
         
         :param int flush: Shared indicator that the data cache is being flushed. 
         :param list incoming_available_queues: The list of incoming queues that currently have messages stored in them.
         :param list outgoing_available_queues: The list of outgoing queues that currently have messages stored in them.
         :param int msg_counter: Keeps track of total messages in the data cache.
     """ 
-    flush = 1
+    Data_Cache.flush = 1
     print 'Flushing!' #for testing
-    print 'Msg_counter: ' , msg_counter
+    print 'Msg_counter: ' , Data_Cache.msg_counter
     print 'Available mem: ', Data_Cache.available_mem
+    logging.info('Flushing data cache')
+    logging.info('Msg_counter: ' + str(Data_Cache.msg_counter))
+    logging.info('Available mem: ' + str(Data_Cache.available_mem))
     
-    date = datetime.datetime.now().strftime('%Y %m %d %H:%M:%S')
-    filename = 'outgoing' + date #file name has buffer being flushed and date
+    date = str(datetime.datetime.now().strftime('%Y%m%d%H:%M:%S'))
+    filename = 'outgoing_stored/' + date #file name is date of flush
     f = open(filename, 'w')
+    print 'Flushing outgoing'
+    logging.info('Flushing outgoing......')
     while True: #write all outgoing messages to outgoing file
-        msg = outgoing_pull(outgoing_available_queues, msg_counter) #returns false when all queues are empty
+        #messages are written to file with highest priority at the top
+        msg = outgoing_pull(outgoing_available_queues) #returns false when all queues are empty
         if msg=='False':
             break
         else:
-            f.write(msg + '/n') 
+            #write the message to the file
+            f.write(msg + '\n') 
     f.close()
-    filename = 'incoming' + date
-    f = open(filename, 'w')
+    print 'Flushing incoming'
+    logging.info('Flushing incoming......')
     for i in Data_Cache.priority_list: #write all incoming messages to file
+        #All messages for each device are stored in a file so it is easy to pull only the messages for the connected devices
+        filename = 'incoming_stored/' + str(i) + date
+        f = open(filename, 'w')
         while True:
-            msg = incoming_pull(i, incoming_available_queues, msg_counter)
+            #for each device, messages are stored with highest priority on the top of the file
+            msg = incoming_pull(i, incoming_available_queues)
             if msg=='False':
+                f.close()
                 break
             else:
-                f.write(msg + '/n')
-    f.close()
-    flush= 0 #restart servers 
+                #write the message to the file
+                f.write(msg + '\n')
+    Data_Cache.flush = 0 #restart server
 
 def get_status():
     """
@@ -310,7 +355,7 @@ def get_status():
     
     """
     
-    return Data_Cache.msg_counter.value #TODO This will not work
+    return Data_Cache.msg_counter
     
 
 def update_device_priority(updated_priority):
@@ -320,7 +365,7 @@ def update_device_priority(updated_priority):
     
         :param list updated_priority: A list containing the new priority order of the devices.
     """
-    
+    #TODO this will be stored in the config file
     Data_Cache.priority = updated_priority
      
 def update_mem(memory):
@@ -330,7 +375,7 @@ def update_mem(memory):
         :param int memory: The amount of memory to be allocated to the data cache.
     """
     
-    #can put it in a config file 
+    #TODO this will be stored in the config file
     Data_Cache.available_mem = memory 
         
 
@@ -376,9 +421,7 @@ def get_priority(outgoing_available_queues):
             else:
                 pass
         return (highest_de_p, highest_msg_p)           
-                
-#uncomment for testing    
-        
+
 if __name__ == "__main__":
     dc = Data_Cache('/tmp/Data_Cache.pid') #TODO may need to change this
     if len(sys.argv) == 2:

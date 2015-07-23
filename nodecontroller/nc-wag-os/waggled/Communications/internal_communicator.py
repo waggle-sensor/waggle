@@ -158,7 +158,7 @@ class push_server(Process):
             while True:
                 try:
                     data = client_sock.recv(4028) 
-                    #print 'Push server received: ', data
+                    print 'Push server received: ', data
                     if not data:
                         break #breaks the loop when the client socket closes
                     elif data == 'Hello': #a handshake from a new guest node. #TODO This will change in the future
@@ -222,31 +222,31 @@ class pull_server(Process):
         server.close()
     
 ##uncomment for testing
-#if __name__ == "__main__":
-    #try:
-        ##starts the pull server
-        #pull_serv = pull_server()
-        #pull_serv.start()
+if __name__ == "__main__":
+    try:
+        #starts the pull server
+        pull_serv = pull_server()
+        pull_serv.start()
         
-        ##starts the push server 
-        #push_serv = push_server()
-        #push_serv.start()
+        #starts the push server 
+        push_serv = push_server()
+        push_serv.start()
         
-        ##starts the push client
-        #push_client = internal_client_push()
-        #push_client.start()
+        #starts the push client
+        push_client = internal_client_push()
+        push_client.start()
         
-        ##starts the pull client
-        #pull_client = internal_client_pull()
-        #pull_client.start()
-        #while True:
-            #pass
+        #starts the pull client
+        pull_client = internal_client_pull()
+        pull_client.start()
+        while True:
+            pass
         
-    #except KeyboardInterrupt, k:
-        #pull_serv.terminate()
-        #push_serv.terminate()
-        #push_client.terminate()
-        #pull_client.terminate()
-        #print 'Done.'
+    except KeyboardInterrupt, k:
+        pull_serv.terminate()
+        push_serv.terminate()
+        push_client.terminate()
+        pull_client.terminate()
+        print 'Done.'
     
                 
