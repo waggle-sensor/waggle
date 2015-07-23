@@ -27,6 +27,14 @@ params_SysMon['bad temperature timeout (SysMon) (seconds)'] = 10
 params_SysMon['bad temperature timeout (NC) (seconds)'] = 15
 params_SysMon['bad temperature timeout (switch) (seconds)'] = 15
 
+# Min: 1, max: 255
+params_SysMon['bad current timeout (SysMon) (seconds)'] = 6
+params_SysMon['bad current timeout (NC) (seconds)'] = 6
+params_SysMon['bad current timeout (switch) (seconds)'] = 6
+
+# Min: 15, max: 8000
+params_SysMon['noise ceiling for current sensors (mA)'] = 15
+
 # Min: -32768, max: 32767
 params_SysMon['temperature min (SysMon) (Celsius)'] = -20
 params_SysMon['temperature max (SysMon) (Celsius)'] = 140
@@ -38,6 +46,11 @@ params_SysMon['temperature max (switch) (Celsius)'] = 140
 # Min: 0, max: 100
 params_SysMon['relative humidity min (SysMon) (%)'] = 0
 params_SysMon['relative humidity max (SysMon) (%)'] = 100
+
+# Min: 1, max: 8000
+params_SysMon['maximum current draw (SysMon) (mA)'] = 200
+params_SysMon['maximum current draw (NC) (mA)'] = 4000
+params_SysMon['maximum current draw (switch) (mA)'] = 1500
 ########################################################################
 
 ########################################################################
@@ -52,21 +65,24 @@ params_GuestNodes = collections.OrderedDict()
 params_GuestNodes['present (GN 1)'] = 1
 params_GuestNodes['present (GN 2)'] = 0
 params_GuestNodes['present (GN 3)'] = 0
-params_GuestNodes['present (GN 4)'] = 0
 
 # Min: 1, max: 255
 # If a guest node is not present, its value will be ignored
 params_GuestNodes['heartbeat timeout (GN 1) (seconds)'] = 10
 params_GuestNodes['heartbeat timeout (GN 2) (seconds)'] = 10
 params_GuestNodes['heartbeat timeout (GN 3) (seconds)'] = 10
-params_GuestNodes['heartbeat timeout (GN 4) (seconds)'] = 10
 
 # Min: 1, max: 255
 # If a guest node is not present, its value will be ignored
 params_GuestNodes['bad temperature timeout (GN 1) (seconds)'] = 15
 params_GuestNodes['bad temperature timeout (GN 2) (seconds)'] = 15
 params_GuestNodes['bad temperature timeout (GN 3) (seconds)'] = 15
-params_GuestNodes['bad temperature timeout (GN 4) (seconds)'] = 15
+
+# Min: 1, max: 255
+# If a guest node is not present, its value will be ignored
+params_GuestNodes['bad current timeout (GN 1) (seconds)'] = 5
+params_GuestNodes['bad current timeout (GN 2) (seconds)'] = 5
+params_GuestNodes['bad current timeout (GN 3) (seconds)'] = 5
 
 # Min: -32768, max: 32767
 # If a guest node is not present, its value will be ignored
@@ -76,8 +92,12 @@ params_GuestNodes['temperature min (GN 2) (Celsius)'] = -20
 params_GuestNodes['temperature max (GN 2) (Celsius)'] = 140
 params_GuestNodes['temperature min (GN 3) (Celsius)'] = -20
 params_GuestNodes['temperature max (GN 3) (Celsius)'] = 140
-params_GuestNodes['temperature min (GN 4) (Celsius)'] = -20
-params_GuestNodes['temperature max (GN 4) (Celsius)'] = 140
+
+# Min: 1, max: 8000
+# If a guest node is not present, its value will be ignored
+params_GuestNodes['maximum current draw (GN 1) (mA)'] = 4000
+params_GuestNodes['maximum current draw (GN 2) (mA)'] = 4000
+params_GuestNodes['maximum current draw (GN 3) (mA)'] = 4000
 ########################################################################
 
 
@@ -92,7 +112,7 @@ params_GuestNodes['temperature max (GN 4) (Celsius)'] = 140
 import serial
 
 # Establish serial connection to SysMon
-ser_SysMon = serial.Serial('/dev/ttyACM7', params_SysMon['baud rate'], timeout = 10)
+ser_SysMon = serial.Serial('/dev/arduinoMicro', params_SysMon['baud rate'], timeout = 10)
 ########################################################################
 #           DO NOT TOUCH ANYTHING BELOW HERE
 ########################################################################
@@ -103,7 +123,7 @@ while True:
     # Strip extra shmutz
     incomingNotifier = incomingNotifier.strip()
 
-    print "From SysMon: ", incomingNotifier
+    print incomingNotifier
 
     # Did SysMon request parameters?
     if incomingNotifier == "$":
@@ -115,8 +135,6 @@ while True:
         # Send terminator
         ser_SysMon.write("!")
 
-        print "Sent parameters"
-
     # Is SysMon about to send a status report?
     elif incomingNotifier == "@":
         # Wait for status report
@@ -125,8 +143,6 @@ while True:
         # Strip extra shmutz
         incomingStatus = incomingStatus.strip()
 
-        print incomingStatus
-
     # Is SysMon about to inform me of a problem?
     elif incomingNotifier == "#":
         # Wait for problem report
@@ -134,8 +150,6 @@ while True:
 
         # Strip extra shmutz
         incomingProblem = incomingProblem.strip()
-
-        print incomingProblem
 
     # Did SysMon request guest node info?
     elif incomingNotifier == "^":

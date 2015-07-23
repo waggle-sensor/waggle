@@ -45,20 +45,24 @@ uint8_t EEMEM E_MAX_NUM_SOS_BOOT_TRIES;
 uint8_t EEMEM E_PRESENT_GN1;
 uint8_t EEMEM E_PRESENT_GN2;
 uint8_t EEMEM E_PRESENT_GN3;
-uint8_t EEMEM E_PRESENT_GN4;
 uint8_t EEMEM E_HEARTBEAT_TIMEOUT_NC;
 uint8_t EEMEM E_HEARTBEAT_TIMEOUT_SWITCH;
 uint8_t EEMEM E_HEARTBEAT_TIMEOUT_GN1;
 uint8_t EEMEM E_HEARTBEAT_TIMEOUT_GN2;
 uint8_t EEMEM E_HEARTBEAT_TIMEOUT_GN3;
-uint8_t EEMEM E_HEARTBEAT_TIMEOUT_GN4;
 uint8_t EEMEM E_BAD_TEMP_TIMEOUT_SYSMON;
 uint8_t EEMEM E_BAD_TEMP_TIMEOUT_NC;
 uint8_t EEMEM E_BAD_TEMP_TIMEOUT_SWITCH;
 uint8_t EEMEM E_BAD_TEMP_TIMEOUT_GN1;
 uint8_t EEMEM E_BAD_TEMP_TIMEOUT_GN2;
 uint8_t EEMEM E_BAD_TEMP_TIMEOUT_GN3;
-uint8_t EEMEM E_BAD_TEMP_TIMEOUT_GN4;
+uint16_t EEMEM E_AMP_NOISE_CEILING;
+uint8_t EEMEM E_BAD_CURRENT_TIMEOUT_SYSMON;
+uint8_t EEMEM E_BAD_CURRENT_TIMEOUT_NC;
+uint8_t EEMEM E_BAD_CURRENT_TIMEOUT_SWITCH;
+uint8_t EEMEM E_BAD_CURRENT_TIMEOUT_GN1;
+uint8_t EEMEM E_BAD_CURRENT_TIMEOUT_GN2;
+uint8_t EEMEM E_BAD_CURRENT_TIMEOUT_GN3;
 // EEPROM only stores unsigned values.  Must cast to signed when reading.
 uint16_t EEMEM E_TEMP_MIN_SYSMON_SIGNED;
 uint16_t EEMEM E_TEMP_MAX_SYSMON_SIGNED;
@@ -72,10 +76,14 @@ uint16_t EEMEM E_TEMP_MIN_GN2_SIGNED;
 uint16_t EEMEM E_TEMP_MAX_GN2_SIGNED;
 uint16_t EEMEM E_TEMP_MIN_GN3_SIGNED;
 uint16_t EEMEM E_TEMP_MAX_GN3_SIGNED;
-uint16_t EEMEM E_TEMP_MIN_GN4_SIGNED;
-uint16_t EEMEM E_TEMP_MAX_GN4_SIGNED;
 uint8_t EEMEM E_HUMIDITY_MIN_SYSMON;
 uint8_t EEMEM E_HUMIDITY_MAX_SYSMON;
+uint16_t EEMEM E_AMP_MAX_SYSMON;
+uint16_t EEMEM E_AMP_MAX_NC;
+uint16_t EEMEM E_AMP_MAX_SWITCH;
+uint16_t EEMEM E_AMP_MAX_GN1;
+uint16_t EEMEM E_AMP_MAX_GN2;
+uint16_t EEMEM E_AMP_MAX_GN3;
 
 // EEPROM addresses whose values are not set by node controller:
 uint8_t EEMEM E_NC_ENABLED;
@@ -83,7 +91,6 @@ uint8_t EEMEM E_SWITCH_ENABLED;
 uint8_t EEMEM E_GN1_ENABLED;
 uint8_t EEMEM E_GN2_ENABLED;
 uint8_t EEMEM E_GN3_ENABLED;
-uint8_t EEMEM E_GN4_ENABLED;
 uint8_t EEMEM E_POST_RESULT;
 uint8_t EEMEM E_TIMER_TEST_INCOMPLETE;
 uint8_t EEMEM E_NUM_SOS_BOOT_TRIES;
@@ -110,10 +117,12 @@ void setup()
   //   // Go to partial boot sequence
   //   boot_SOS();
 
-  boot_primary();
-  boot_gn(); 
+  if(boot_primary())
+    Serial.println("booted");
 
-  //RTC.set(300);
+  setTime(23, 31, 30, 13, 2, 2009);
+  RTC.set(now());
+  Serial.println(RTC.get());
 }
 
 
@@ -126,10 +135,10 @@ void loop()
   {
     Serial.print("RTC: ");
     Serial.println(RTC.get());
-    Serial.print("HTU21D: ");
-    Serial.print(SysMon_HTU21D.readTemperature());
-    Serial.print(", ");
-    Serial.println(SysMon_HTU21D.readHumidity()); 
+    // Serial.print("HTU21D: ");
+    // Serial.print(SysMon_HTU21D.readTemperature());
+    // Serial.print(", ");
+    // Serial.println(SysMon_HTU21D.readHumidity()); 
 
     // Clear the flag
     _timer1_cycle = false;
