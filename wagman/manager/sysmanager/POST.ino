@@ -1,8 +1,10 @@
 //---------- C O N S T A N T S ------------------------------------------------
-// const int SRAM_START_ADDR = 0x0060;
-// const int SRAM_START_PAGE2 = 0x0100;
-// const int SRAM_SIZE = 2560;
-// const int SRAM_END_ADDR = SRAM_START_ADDR + SRAM_SIZE - 1;
+const byte RESET_POWER_ON = 0;
+const byte RESET_EXTERNAL = 1;
+const byte RESET_BROWN_OUT = 2;
+const byte RESET_WATCHDOG = 3;
+const byte RESET_JTAG = 4;
+const byte RESET_USB = 5;
 
 const byte FAIL_GPRF = 1;
 const byte FAIL_STACK = 2;
@@ -24,14 +26,8 @@ const boolean FATAL_ADC = false;
 const boolean FATAL_TIMER1 = false;
 const boolean FATAL_INTERRUPT = false;
 
-const byte RESET_POWER_ON = 0;
-const byte RESET_EXTERNAL = 1;
-const byte RESET_BROWN_OUT = 2;
-const byte RESET_WATCHDOG = 3;
-const byte RESET_JTAG = 4;
-const byte RESET_USB = 5;
-
 const int ADC_TEST_THRESHOLD = 512;
+
 
 
 //---------- G L O B A L S ----------------------------------------------------
@@ -61,27 +57,43 @@ volatile boolean _external_interrupt = false;
 */
 boolean POST() 
 {
+  // Find reason for reset
+  byte reason = find_reset_reason();
+
   // Disable watchdog so it doesn't reset the chip before we're ready
   wdt_disable();
 
-  // Find reason for reset
-  byte reason = find_reset_reason();
+  Serial.begin(57600);
+
+  delay(1000);
 
   // General Purpose Register File failed?
 	if(!gprf_test())
 		test_failure(FAIL_GPRF, FATAL_GPRF);
 
+  Serial.println("GPRF");
+  delay(5);
+
 	// Stack pointer failed?
 	if(!stack_pointer_test())
 		test_failure(FAIL_STACK, FATAL_STACK);
+
+  Serial.println("stack");
+  delay(5);
 
 	// Status register (SREG) test failed?
 	if(!status_register_test())
 		test_failure(FAIL_SREG, FATAL_SREG);
 
+  Serial.println("SREG");
+  delay(5);
+
 	// SRAM test failed?
 	if(!sram_test())
 		test_failure(FAIL_SRAM, FATAL_SRAM);
+
+  Serial.println("SRAM");
+  delay(5);
 
 	// Flash test failed?
 	//if(!flash_test())
@@ -94,17 +106,29 @@ boolean POST()
     // Mark watchdog as functional (used to test the timer)
     _watchdog_good = true;
 
+  Serial.println("watchdog");
+  delay(5);
+
   // ADC test failed?
   if(!ADC_test())
     test_failure(FAIL_ADC, FATAL_ADC);
+
+  Serial.println("ADC");
+  delay(5);
 
   // Timer1 test failed?
   if(!timer1_test())
     test_failure(FAIL_TIMER1, FATAL_TIMER1);
 
+  Serial.println("Timer");
+  delay(5);
+
   // Interrupt controller test failed?
   if(!interrupt_test())
     test_failure(FAIL_INTERRUPT, FATAL_INTERRUPT);
+
+  Serial.println("interrupt");
+  delay(5);
 
   // Did anything non-fatal fail?
   if(_SOS_boot_mode)
@@ -516,20 +540,26 @@ __attribute__((optimize(0))) boolean sram_test()
 __attribute__((optimize(0))) boolean watchdog_test(byte reason)
 {
   Serial.println(reason);
+  delay(100);
 
   // Was reset not due to watchdog?
-  if((reason & RESET_WATCHDOG) != RESET_WATCHDOG)
+  //if((reason & RESET_WATCHDOG) != RESET_WATCHDOG)
+  if(reason != RESET_WATCHDOG)
   {
     Serial.println("not watchdog reset");
-    wdt_enable(WDTO_1S);
+    wdt_enable(WDTO_8S);
     Serial.println("enabled");
-    delay(2000);
-    Serial.print("watchdog did not reset");
+    delay(9000);
+    Serial.println("watchdog did not reset");
     return false;
   }
 
-  if((reason & RESET_WATCHDOG) == RESET_WATCHDOG)
-    Serial.println("watchdog reset");
+  //if((reason & RESET_WATCHDOG) == RESET_WATCHDOG)
+  if(reason == RESET_WATCHDOG)
+  {
+    pinMode(4, OUTPUT);
+    digitalWrite(4, HIGH);
+  }
   return true;
 }
 
