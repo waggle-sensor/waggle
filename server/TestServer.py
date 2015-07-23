@@ -14,7 +14,7 @@ header_dict = {
     "msg_mi_type"      : ord('d'),
 }
 
-data = [3,1,4,5,9,2,6,5,3,5]
+data =  ["test", 1, ['f'],'', [3.14], [''], ['TEST']]
 params = pika.connection.URLParameters("amqp://waggle:waggle@localhost:5672/%2F")
 connection = pika.BlockingConnection(params)
 channel = connection.channel()

@@ -1,5 +1,10 @@
 //---------- C O N S T A N T S ------------------------------------------------
-
+#define CURRENT_SENSOR_SYSMON_ADDR 0x60
+#define CURRENT_SENSOR_NC_ADDR 0x62
+#define CURRENT_SENSOR_SWITCH_ADDR 0x63
+#define CURRENT_SENSOR_GN1_ADDR 0x68
+#define CURRENT_SENSOR_GN2_ADDR 0x6A
+#define CURRENT_SENSOR_GN3_ADDR 0x6B
 
 
 
@@ -142,6 +147,17 @@ void init_primary()
 
    // Start HTU21D
    SysMon_HTU21D.begin();
+
+   // Start I2C transaction with current sensor
+   Wire.beginTransmission(CURRENT_SENSOR_SYSMON_ADDR);
+   // Tell sensor we're writing to "gain" register
+   Wire.write(0x04);
+   // Write 3 expected bytes to "gain" register (select 8 amp range)
+   Wire.write(0x00);
+   Wire.write(0x00);
+   Wire.write(0x02);
+   // End I2C transaction (with stop bit)
+   Wire.endTransmission(1);
 }
 
 
@@ -165,14 +181,19 @@ void set_default_eeprom()
    eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_GN1, 5);
    eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_GN2, 5);
    eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_GN3, 5);
-   eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_GN4, 5);
    eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_SYSMON, 5);
    eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_NC, 5);
    eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_SWITCH, 5);
    eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_GN1, 5);
    eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_GN2, 5);
    eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_GN3, 5);
-   eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_GN4, 5);
+   eeprom_update_word(&E_AMP_NOISE_CEILING, 31);
+   eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_SYSMON, 5);
+   eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_NC, 5);
+   eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_SWITCH, 5);
+   eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_GN1, 5);
+   eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_GN2, 5);
+   eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_GN3, 5);
    eeprom_update_word(&E_TEMP_MIN_SYSMON_SIGNED, 0);
    eeprom_update_word(&E_TEMP_MAX_SYSMON_SIGNED, 100);
    eeprom_update_word(&E_TEMP_MIN_NC_SIGNED, 0);
@@ -185,10 +206,14 @@ void set_default_eeprom()
    eeprom_update_word(&E_TEMP_MAX_GN2_SIGNED, 100);
    eeprom_update_word(&E_TEMP_MIN_GN3_SIGNED, 0);
    eeprom_update_word(&E_TEMP_MAX_GN3_SIGNED, 100);
-   eeprom_update_word(&E_TEMP_MIN_GN4_SIGNED, 0);
-   eeprom_update_word(&E_TEMP_MAX_GN4_SIGNED, 100);
    eeprom_update_byte(&E_HUMIDITY_MIN_SYSMON, 30);
    eeprom_update_byte(&E_HUMIDITY_MAX_SYSMON, 100);
+   eeprom_update_word(&E_AMP_MAX_SYSMON, 200);
+   eeprom_update_word(&E_AMP_MAX_NC, 4000);
+   eeprom_update_word(&E_AMP_MAX_SWITCH, 1500);
+   eeprom_update_word(&E_AMP_MAX_GN1, 4000);
+   eeprom_update_word(&E_AMP_MAX_GN2, 4000);
+   eeprom_update_word(&E_AMP_MAX_GN3, 4000);
 
    // Save the indicator that this SysMon has booted before
    eeprom_update_byte(&E_FIRST_BOOT, 0);
@@ -198,14 +223,38 @@ void set_default_eeprom()
 
 //---------- C H E C K _ P O W E R _ S E L F ----------------------------------
 /*
-   Reads its own current sensor.  If too much power is being drawn, we shut
-   ourselves down.
+   Reads its own current sensor.  If too much power is being drawn, the
+   function returns FALSE.  If the power draw is acceptable, the function
+   returns TRUE.
 
-   :rtype: none
+   :rtype: boolean
 */
-void check_power_self()
+boolean check_power_self()
 {
+   byte msb, csb, lsb;
 
+   // Start I2C transaction with current sensor
+   Wire.beginTransmission(CURRENT_SENSOR_SYSMON_ADDR);
+   // Tell sensor we want to read "data" register
+   Wire.write(0);
+   // Sensor expects restart condition, so end I2C transaction (no stop bit)
+   Wire.endTransmission(0);
+   // Ask sensor for data
+   Wire.requestFrom(CURRENT_SENSOR_SYSMON_ADDR, 3);
+
+   // Read the 3 bytes that the sensor returns
+   if(Wire.available())
+   {
+      msb = Wire.read();
+      csb = Wire.read();
+      lsb = Wire.read();
+   }
+   else
+      // Exit with failure
+      return false;
+
+   // End I2C transaction (with stop bit)
+   Wire.endTransmission(1);
 }
 
 
@@ -273,9 +322,8 @@ void check_heartbeat_nc()
 //---------- G E T _ P A R A M S _ G N S --------------------------------------
 /*
    Requests information about the guest nodes from the node controller.
-   Expected data for each guest nodes contains: present/not present, acceptable
-   environmental conditions, and expected power draw.  If the node controller
-   takes too long to send the info, we skip booting the guest nodes.
+   If the node controller takes too long to send the info, we skip booting the 
+   guest nodes.
 
    :rtype: boolean
 */
@@ -297,46 +345,49 @@ boolean get_params_GNs()
          Present/not present (guest node 1)
          Present/not present (guest node 2)
          Present/not present (guest node 3)
-         Present/not present (guest node 4)
          Heartbeat timeout (guest node 1)
          Heartbeat timeout (guest node 2)
          Heartbeat timeout (guest node 3)
-         Heartbeat timeout (guest node 4)
          Bad temperature timeout (guest node 1)
          Bad temperature timeout (guest node 2)
          Bad temperature timeout (guest node 3)
-         Bad temperature timeout (guest node 4)
+         Bad current timeout (guest node 1)
+         Bad current timeout (guest node 2)
+         Bad current timeout (guest node 3)
          Minimum temperature (Celsius) (signed) (guest node 1)
          Maximum temperature (Celsius) (signed) (guest node 1)
          Minimum temperature (Celsius) (signed) (guest node 2)
          Maximum temperature (Celsius) (signed) (guest node 2)
          Minimum temperature (Celsius) (signed) (guest node 3)
          Maximum temperature (Celsius) (signed) (guest node 3)
-         Minimum temperature (Celsius) (signed) (guest node 4)
-         Maximum temperature (Celsius) (signed) (guest node 4)
+         Maximum amp draw (mA) (guest node 1)
+         Maximum amp draw (mA) (guest node 2)
+         Maximum amp draw (mA) (guest node 3)
+
       */
 
       // Temporary strings for holding each parameter
       String present_GN1 = "";
       String present_GN2 = "";
       String present_GN3 = "";
-      String present_GN4 = "";
       String heartbeat_timeout_GN1 = "";
       String heartbeat_timeout_GN2 = "";
       String heartbeat_timeout_GN3 = "";
-      String heartbeat_timeout_GN4 = "";
       String bad_temp_timeout_GN1 = "";
       String bad_temp_timeout_GN2 = "";
       String bad_temp_timeout_GN3 = "";
-      String bad_temp_timeout_GN4 = "";
+      String bad_current_timeout_GN1 = "";
+      String bad_current_timeout_GN2 = "";
+      String bad_current_timeout_GN3 = "";
       String min_temp_GN1 = "";
       String max_temp_GN1 = "";
       String min_temp_GN2 = "";
       String max_temp_GN2 = "";
       String min_temp_GN3 = "";
       String max_temp_GN3 = "";
-      String min_temp_GN4 = "";
-      String max_temp_GN4 = "";
+      String max_amp_GN1 = "";
+      String max_amp_GN2 = "";
+      String max_amp_GN3 = "";
 
       // Index for iterating thru the received string
       int i = 0;
@@ -356,10 +407,6 @@ boolean get_params_GNs()
       i++;
 
       while(received_params[i] != NC_DELIMITER)
-         present_GN4 += received_params[i++];
-      i++;
-
-      while(received_params[i] != NC_DELIMITER)
          heartbeat_timeout_GN1 += received_params[i++];
       i++;
 
@@ -369,10 +416,6 @@ boolean get_params_GNs()
 
       while(received_params[i] != NC_DELIMITER)
          heartbeat_timeout_GN3 += received_params[i++];
-      i++;
-
-      while(received_params[i] != NC_DELIMITER)
-         heartbeat_timeout_GN4 += received_params[i++];
       i++;
 
       while(received_params[i] != NC_DELIMITER)
@@ -388,7 +431,15 @@ boolean get_params_GNs()
       i++;
 
       while(received_params[i] != NC_DELIMITER)
-         bad_temp_timeout_GN4 += received_params[i++];
+         bad_current_timeout_GN1 += received_params[i++];
+      i++;
+
+      while(received_params[i] != NC_DELIMITER)
+         bad_current_timeout_GN2 += received_params[i++];
+      i++;
+
+      while(received_params[i] != NC_DELIMITER)
+         bad_current_timeout_GN3 += received_params[i++];
       i++;
 
       while(received_params[i] != NC_DELIMITER)
@@ -416,26 +467,29 @@ boolean get_params_GNs()
       i++;
 
       while(received_params[i] != NC_DELIMITER)
-         min_temp_GN4 += received_params[i++];
+         max_amp_GN1 += received_params[i++];
       i++;
 
       while(received_params[i] != NC_DELIMITER)
-         max_temp_GN4 += received_params[i++];
+         max_amp_GN2 += received_params[i++];
       i++;
+
+      while(received_params[i] != NC_DELIMITER)
+         max_amp_GN3 += received_params[i++];
 
       // Store new parameters in EEPROM
       eeprom_update_byte(&E_PRESENT_GN1, (uint8_t)present_GN1.toInt());
       eeprom_update_byte(&E_PRESENT_GN2, (uint8_t)present_GN2.toInt());
       eeprom_update_byte(&E_PRESENT_GN3, (uint8_t)present_GN3.toInt());
-      eeprom_update_byte(&E_PRESENT_GN4, (uint8_t)present_GN4.toInt());
       eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_GN1, (uint8_t)heartbeat_timeout_GN1.toInt());
       eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_GN2, (uint8_t)heartbeat_timeout_GN2.toInt());
       eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_GN3, (uint8_t)heartbeat_timeout_GN3.toInt());
-      eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_GN4, (uint8_t)heartbeat_timeout_GN4.toInt());
       eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_GN1, (uint8_t)bad_temp_timeout_GN1.toInt());
       eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_GN2, (uint8_t)bad_temp_timeout_GN2.toInt());
       eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_GN3, (uint8_t)bad_temp_timeout_GN3.toInt());
-      eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_GN4, (uint8_t)bad_temp_timeout_GN4.toInt());
+      eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_GN1, (uint8_t)bad_current_timeout_GN1.toInt());
+      eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_GN2, (uint8_t)bad_current_timeout_GN2.toInt());
+      eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_GN3, (uint8_t)bad_current_timeout_GN3.toInt());
       // EEPROM only stores unsigned values.  Must cast to signed when reading.
       eeprom_update_word(&E_TEMP_MIN_GN1_SIGNED, (uint16_t)min_temp_GN1.toInt());
       eeprom_update_word(&E_TEMP_MAX_GN1_SIGNED, (uint16_t)max_temp_GN1.toInt());
@@ -443,8 +497,9 @@ boolean get_params_GNs()
       eeprom_update_word(&E_TEMP_MAX_GN2_SIGNED, (uint16_t)max_temp_GN2.toInt());
       eeprom_update_word(&E_TEMP_MIN_GN3_SIGNED, (uint16_t)min_temp_GN3.toInt());
       eeprom_update_word(&E_TEMP_MAX_GN3_SIGNED, (uint16_t)max_temp_GN3.toInt());
-      eeprom_update_word(&E_TEMP_MIN_GN4_SIGNED, (uint16_t)min_temp_GN4.toInt());
-      eeprom_update_word(&E_TEMP_MAX_GN4_SIGNED, (uint16_t)max_temp_GN4.toInt());
+      eeprom_update_word(&E_AMP_MAX_GN1, (uint16_t)max_amp_GN1.toInt());
+      eeprom_update_word(&E_AMP_MAX_GN2, (uint16_t)max_amp_GN2.toInt());
+      eeprom_update_word(&E_AMP_MAX_GN3, (uint16_t)max_amp_GN3.toInt());
 
       return true;
    }
@@ -502,6 +557,10 @@ void get_params_core()
          Bad temperature timeout (system monitor)
          Bad temperature timeout (node controller)
          Bad temperature timeout (switch)
+         Bad current timeout (system monitor)
+         Bad current timeout (node controller)
+         Bad current timeout (switch)
+         Current noise ceiling (mA)
          Minimum temperature (Celsius) (signed) (system monitor)
          Maximum temperature (Celsius) (signed) (system monitor)
          Minimum temperature (Celsius) (signed) (node controller)
@@ -510,6 +569,9 @@ void get_params_core()
          Maximum temperature (Celsius) (signed) (switch)
          Minimum relative humidity (%) (system monitor)
          Maximum relative humidity (%) (system monitor)
+         Maximum amp draw (mA) (system monitor)
+         Maximum amp draw (mA) (node controller)
+         Maximum amp draw (mA) (switch)
       */
 
       // Temporary strings for holding each parameter
@@ -521,6 +583,10 @@ void get_params_core()
       String bad_temp_timeout_sysmon = "";
       String bad_temp_timeout_NC = "";
       String bad_temp_timeout_switch = "";
+      String bad_current_timeout_sysmon = "";
+      String bad_current_timeout_NC = "";
+      String bad_current_timeout_switch = "";
+      String current_noise_ceiling = "";
       String min_temp_sysmon = "";
       String max_temp_sysmon = "";
       String min_temp_NC = "";
@@ -529,6 +595,9 @@ void get_params_core()
       String max_temp_switch = "";
       String min_humidity_sysmon = "";
       String max_humidity_sysmon = "";
+      String max_amp_sysmon = "";
+      String max_amp_NC = "";
+      String max_amp_switch = "";
 
       // Index for iterating thru the received string
       int i = 0;
@@ -568,6 +637,22 @@ void get_params_core()
       i++;
 
       while(received_params[i] != NC_DELIMITER)
+         bad_current_timeout_sysmon += received_params[i++];
+      i++;
+
+      while(received_params[i] != NC_DELIMITER)
+         bad_current_timeout_NC += received_params[i++];
+      i++;
+
+      while(received_params[i] != NC_DELIMITER)
+         bad_current_timeout_switch += received_params[i++];
+      i++;
+
+      while(received_params[i] != NC_DELIMITER)
+         current_noise_ceiling += received_params[i++];
+      i++;
+
+      while(received_params[i] != NC_DELIMITER)
          min_temp_sysmon += received_params[i++];
       i++;
 
@@ -597,6 +682,18 @@ void get_params_core()
 
       while(received_params[i] != NC_DELIMITER)
          max_humidity_sysmon += received_params[i++];
+      i++;
+
+      while(received_params[i] != NC_DELIMITER)
+         max_amp_sysmon += received_params[i++];
+      i++;
+
+      while(received_params[i] != NC_DELIMITER)
+         max_amp_NC += received_params[i++];
+      i++;
+
+      while(received_params[i] != NC_DELIMITER)
+         max_amp_switch += received_params[i++];
 
       // Store new parameters in EEPROM
       eeprom_update_dword(&E_USART_BAUD, USART_baud.toInt());
@@ -607,6 +704,10 @@ void get_params_core()
       eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_SYSMON, (uint8_t)bad_temp_timeout_sysmon.toInt());
       eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_NC, (uint8_t)bad_temp_timeout_NC.toInt());
       eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_SWITCH, (uint8_t)bad_temp_timeout_switch.toInt());
+      eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_SYSMON, (uint8_t)bad_current_timeout_sysmon.toInt());
+      eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_NC, (uint8_t)bad_current_timeout_NC.toInt());
+      eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_SWITCH, (uint8_t)bad_current_timeout_switch.toInt());
+      eeprom_update_word(&E_AMP_NOISE_CEILING, (uint16_t)current_noise_ceiling.toInt());
       // EEPROM only stores unsigned values.  Must cast to signed when reading.
       eeprom_update_word(&E_TEMP_MIN_SYSMON_SIGNED, (uint16_t)min_temp_sysmon.toInt());
       eeprom_update_word(&E_TEMP_MAX_SYSMON_SIGNED, (uint16_t)max_temp_sysmon.toInt());
@@ -616,6 +717,9 @@ void get_params_core()
       eeprom_update_word(&E_TEMP_MAX_SWITCH_SIGNED, (uint16_t)max_temp_switch.toInt());
       eeprom_update_byte(&E_HUMIDITY_MIN_SYSMON, (uint8_t)min_humidity_sysmon.toInt());
       eeprom_update_byte(&E_HUMIDITY_MAX_SYSMON, (uint8_t)max_humidity_sysmon.toInt());
+      eeprom_update_word(&E_AMP_MAX_SYSMON, (uint16_t)max_amp_sysmon.toInt());
+      eeprom_update_word(&E_AMP_MAX_NC, (uint16_t)max_amp_NC.toInt());
+      eeprom_update_word(&E_AMP_MAX_SWITCH, (uint16_t)max_amp_switch.toInt());
    }
 }
 

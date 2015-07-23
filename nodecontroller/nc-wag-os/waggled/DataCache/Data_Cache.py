@@ -2,7 +2,7 @@
 
 from multiprocessing import Process, Queue, Manager
 from daemon import Daemon
-import sys, os, os.path, time, atexit, socket, datetime
+import sys, os, os.path, time, atexit, socket, datetime, logging
 sys.path.append('../../../../devtools/protocol_common/')
 from protocol.PacketHandler import *
 sys.path.append('../Communications/')
@@ -73,7 +73,7 @@ class Data_Cache(Daemon):
                 #TODO Is there a better way to do this?
                 try:
                     data = client_sock.recv(2048) #arbitrary
-                    print 'Server received: ', data
+                    #print 'Server received: ', data
                     if not data:
                         break
                     else:
