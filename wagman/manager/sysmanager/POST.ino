@@ -1,8 +1,10 @@
 //---------- C O N S T A N T S ------------------------------------------------
-// const int SRAM_START_ADDR = 0x0060;
-// const int SRAM_START_PAGE2 = 0x0100;
-// const int SRAM_SIZE = 2560;
-// const int SRAM_END_ADDR = SRAM_START_ADDR + SRAM_SIZE - 1;
+const byte RESET_POWER_ON = 0;
+const byte RESET_EXTERNAL = 1;
+const byte RESET_BROWN_OUT = 2;
+const byte RESET_WATCHDOG = 3;
+const byte RESET_JTAG = 4;
+const byte RESET_USB = 5;
 
 const byte FAIL_GPRF = 1;
 const byte FAIL_STACK = 2;
@@ -24,14 +26,8 @@ const boolean FATAL_ADC = false;
 const boolean FATAL_TIMER1 = false;
 const boolean FATAL_INTERRUPT = false;
 
-const byte RESET_POWER_ON = 0;
-const byte RESET_EXTERNAL = 1;
-const byte RESET_BROWN_OUT = 2;
-const byte RESET_WATCHDOG = 3;
-const byte RESET_JTAG = 4;
-const byte RESET_USB = 5;
-
 const int ADC_TEST_THRESHOLD = 512;
+
 
 
 //---------- G L O B A L S ----------------------------------------------------
