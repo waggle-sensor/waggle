@@ -2,7 +2,7 @@
 
 from multiprocessing import Queue
 from daemon import Daemon
-import sys, os, os.path, time, atexit, socket, datetime, logging
+import sys, os, os.path, time, atexit, socket, datetime
 sys.path.append('../../../../devtools/protocol_common/')
 from protocol.PacketHandler import *
 sys.path.append('../Communications/')
@@ -18,23 +18,23 @@ from glob import glob
 #TODO clean up
 #TODO Figure out what to do once DC has messages stored in files
 
-date = str(datetime.datetime.now().strftime('%Y %m %d %H:%M:%S'))
-LOG_FILE = 'Data_Cache' + date + '.log'
-logging.basicConfig(filename=LOG_FILE)
 
 class Data_Cache(Daemon):
     #The priority list is now a list containing the number corresponding to a unique device. The highest priority no longer corresponds to the highest number, but rather the order in which the elements are in the list
     priority_list = [5,4,3,2,1] #TODO will be stored in config file
-    available_mem = 3 #default #TODO will be stored in config file
+    available_mem = 299,999 #default #TODO will be stored in config file
    
    #dummy variables 
     incoming_bffr = []
     outgoing_bffr = []
     
     #TODO Can these be stored in the file itself instead of the class?
-    flush = 0
-    msg_counter = 0 
-    outgoing_cur_file = '' #If the data cache flushed messages to files, this stores the generator object for the current file
+    flush = 0 #value that indicates if the DC is flushing or not
+    msg_counter = 0 #keeps track of total messages in queues
+    #If the data cache flushed messages to files, this stores the the current outgoing file that messages are being read from
+    outgoing_cur_file = '' #empty string if there are no files
+    #If the data cache flushed messages to files, this stores a list of current files for each device 
+    incoming_cur_file =  ['', '', '', '', ''] #empty string if there are no files
     
     
     def run(self):
@@ -93,7 +93,7 @@ class Data_Cache(Daemon):
                             data, dest = data.split('|', 1) #splits to get either 'o' for outgoing request or the device location for incoming request
                             if dest != 'o':
                                 msg = incoming_pull(int(dest), incoming_available_queues) #pulls a message from that device's queue
-                                if msg == None:
+                                if msg == 'None':
                                     msg = 'False'
                                 try:
                                     client_sock.sendall(msg) #sends the message
@@ -173,8 +173,8 @@ def outgoing_push(dev, msg_p, msg, outgoing_available_queues, incoming_available
     
     #if the msg counter is greater than or equal to the available memory, flush the outgoing queues into a file
     if Data_Cache.msg_counter>= Data_Cache.available_mem:
-        print 'msg counter: ',Data_Cache. msg_counter
-        print 'available mem: ', Data_Cache.available_mem
+        #print 'msg counter: ',Data_Cache. msg_counter
+        #print 'available mem: ', Data_Cache.available_mem
         #Calls the data cache flush method and passes in the neccessary params
         DC_flush(incoming_available_queues, outgoing_available_queues) #Flushes all messages into a file
         Data_Cache.msg_counter = 0 #resets the message counter after all buffers have been saved to a file
@@ -237,44 +237,66 @@ def outgoing_pull(outgoing_available_queues):
     #TODO this probably needs to be reworked 
     #TODO might want to find a better way to remove empty queues from list 
     
-    #are there outgoing messages stored as files?
-    #if so, those need to be sent to the cloud first without needing to load all messages from the file and taking up too much RAM
-    #so, send the messages one by one using a file generator object.
-    #when all messages have been read from file and sent to cloud, close and delete that file from the directory.
-    if len(glob('outgoing_stored/*')) > 0:
-        #is there a file generator object already stored as the current file?
-        if Data_Cache.outgoing_cur_file == '':
-            #set the first file in the outgoing_stored directory as the current file generator object
-            Data_Cache.outgoing_cur_file = open(glob('outgoing_stored/*')[0]) 
-            try: 
-                msg = Data_Cache.outgoing_cur_file.next().strip() #reads the next message in file without the \n
-                return msg
-            except:
-                Data_Cache.outgoing_cur_file.close() #close the file if stop iterator error occurs
-        else:
-            
-            
     
-    queue_check = True #continues until a message is sent. Neccessary to check for empty queues whose index has not yet been removed from the list
-    while queue_check:
-        if len(outgoing_available_queues) == 0: #no messages available
-            #print ' No messages available.'
-            queue_check = False
-            return 'False' 
+    #continues until a message is sent. 
+    #Neccessary to check for empty queues whose index has not yet been removed from the list or files whose messages have all been read and sent
+    while True:
+    
+        #are there outgoing messages stored as files?
+        #if so, those need to be sent to the cloud first without needing to load all messages from the file and taking up too much RAM
+        #so, send the messages one by one using a file generator object.
+        #when all messages have been read from file and sent to cloud, close and delete that file from the directory.
+        if len(glob('outgoing_stored/*')) > 0 and Data_Cache.flush == 0: #prevents the flush from pulling messages from files
+            #print 'Len(glob) outgoing_stored/* is greater than 0'
+            #is there a file generator object already stored as the current file?
+            if Data_Cache.outgoing_cur_file == '':
+                #print 'cur_file is empty string.'
+                #set the first file in the outgoing_stored directory as the current file generator object
+                Data_Cache.outgoing_cur_file = open(glob('outgoing_stored/*')[0]) 
+                #print 'opened file'
+                try: 
+                    #print 'trying to read from file'
+                    msg = Data_Cache.outgoing_cur_file.next().strip() #reads the next message in file, strips the \n
+                    #print 'returning msg'
+                    return msg
+                    break
+                except:
+                    Data_Cache.outgoing_cur_file.close() #close the file if stop iterator error occurs
+                    if os.path.isfile(Data_Cache.outgoing_cur_file.name): #make sure the file exists
+                        os.remove(Data_Cache.outgoing_cur_file.name)#delete the file
+                    Data_Cache.outgoing_cur_file = '' #reset to empty string
+            else:
+                try: 
+                    msg = Data_Cache.outgoing_cur_file.next().strip() #reads the next message in file, strips the \n
+                    return msg
+                    break
+                except:
+                    Data_Cache.outgoing_cur_file.close() #close the file if stop iterator error occurs
+                    if os.path.isfile(Data_Cache.outgoing_cur_file.name): #make sure the file exists
+                        os.remove(Data_Cache.outgoing_cur_file.name) #delete the file
+                    Data_Cache.outgoing_cur_file = '' #reset to empty string
+                    
+        #If there are no messages stored as files, pull messages from the queues
         else:
-            #Calls the function that returns the highest priority tuple in the list
-            cache_index = get_priority(outgoing_available_queues) #returns the index of the highest priority queue in fifo buffer
-            sender_p, msg_p = cache_index
-            current_q = Data_Cache.outgoing_bffr[sender_p - 1][msg_p - 1]
-            
-            #checks if the queue is empty
-            if current_q.empty():
-                #removes it from the list of available queues 
-                outgoing_available_queues.remove(cache_index) 
-            else: 
-                Data_Cache.msg_counter -= 1 #decrements the list by 1
-                queue_check = False
-                return current_q.get()       
+            #Are there any messages available?
+            if len(outgoing_available_queues) == 0: #no messages available
+                #print ' No messages available.'
+                return 'False' 
+                break
+            else:
+                #Calls the function that returns the highest priority tuple in the list
+                cache_index = get_priority(outgoing_available_queues) #returns the index of the highest priority queue in fifo buffer
+                sender_p, msg_p = cache_index
+                current_q = Data_Cache.outgoing_bffr[sender_p - 1][msg_p - 1]
+                
+                #checks if the queue is empty
+                if current_q.empty():
+                    #removes it from the list of available queues 
+                    outgoing_available_queues.remove(cache_index) 
+                else: 
+                    Data_Cache.msg_counter -= 1 #decrements the list by 1
+                    return current_q.get()    
+                    break
         
 def incoming_pull(dev, incoming_available_queues):
     """ 
@@ -284,19 +306,65 @@ def incoming_pull(dev, incoming_available_queues):
         :param list incoming_available_queues: The list of incoming queues that currently have messages stored in them.
         :param int msg_counter: Keeps track of total messages in the data cache.
     """ 
-    try: 
-        #checks to see if there are messages for the device
-        incoming_available_queues.index(dev) #TODO Probably need a better way to do this
-        for i in range(4,-1,-1): # loop to search for messages starting with highest priority
-            if Data_Cache.incoming_bffr[dev - 1][i].empty(): #checks for an empty queue 
-                pass
-            else: 
-                #decrements the counter by 1 each time a message is removed
-                Data_Cache.msg_counter -= 1 
-                return Data_Cache.incoming_bffr[dev - 1][i].get()
-    except:
-        #returns false if no messages are available
-        return 'False'
+    
+    #continues until something is returned. 
+    #Neccessary to check for files whose messages have all been read and sent but have not yet been deleted
+    while True:
+        #are there incoming messages stored as files for the specified dev?
+        #if so, those need to be sent first without needing to load all messages from the file and taking up too much RAM
+        #so, send the messages one by one using a file generator object.
+        #when all messages have been read from file and sent to device, close and delete that file from the directory.
+        if len(glob('incoming_stored/' + str(dev) + '/*')) > 0 and Data_Cache.flush == 0: #only pulls messages from file if DC is not flushing
+            #print 'Len(glob) incoming_stored/' + str(dev) + '/* is greater than 0'
+            #is there a file generator object already stored as the current file?
+            if Data_Cache.incoming_cur_file[dev - 1] == '':
+                #set the first file in the incoming_stored/dev directory as the current file generator object
+                Data_Cache.incoming_cur_file[dev -1] = open(glob('incoming_stored/' + str(dev) + '/*')[0]) 
+                try: 
+                    msg = Data_Cache.incoming_cur_file[dev -1].next().strip() #reads the next message in file, strips the \n
+                    return msg
+                    break
+                except:
+                    Data_Cache.incoming_cur_file[dev -1].close() #close the file if stop iterator error occurs
+                    if os.path.isfile(Data_Cache.incoming_cur_file[dev -1].name): #make sure the file exists
+                        os.remove(Data_Cache.incoming_cur_file[dev -1].name)#delete the file
+                    Data_Cache.incoming_cur_file[dev -1] = '' #reset to empty string
+            else:
+                try: 
+                    msg = Data_Cache.incoming_cur_file[dev -1].next().strip() #reads the next message in file, strips the \n
+                    return msg
+                    break
+                except:
+                    Data_Cache.incoming_cur_file[dev -1].close() #close the file if stop iterator error occurs
+                    if os.path.isfile(Data_Cache.incoming_cur_file[dev -1].name): #make sure the file exists
+                        os.remove(Data_Cache.incoming_cur_file[dev -1].name)#delete the file
+                    Data_Cache.incoming_cur_file[dev -1] = '' #reset to empty string
+        
+        #if no messages are stored in files, check for messages in queues
+        else:
+            try: 
+                #checks to see if there are messages for the device
+                #results in an error if that dev isn't in the list
+                incoming_available_queues.index(dev) #TODO Probably need a better way to do this
+                msg = 'False' #default 
+                for i in range(4,-1,-1): # loop to search for messages starting with highest priority
+                    if Data_Cache.incoming_bffr[dev - 1][i].empty(): #checks for an empty queue 
+                        pass #do nothing
+                    else: 
+                        #decrements the counter by 1 each time a message is removed
+                        Data_Cache.msg_counter -= 1 
+                        msg = Data_Cache.incoming_bffr[dev - 1][i].get() #sets to message and breaks the loop
+                        break
+                #if the message is still false (i.e. no messages are actually available for that device), remove dev from list
+                if msg == 'False':
+                    incoming_available_queues.remove(dev)
+                return msg
+                break
+            except:
+                #returns false if no messages are available
+                return 'None'
+                break
+           
 
 
 def DC_flush(incoming_available_queues, outgoing_available_queues):
@@ -311,42 +379,50 @@ def DC_flush(incoming_available_queues, outgoing_available_queues):
     """ 
     Data_Cache.flush = 1
     print 'Flushing!' #for testing
-    print 'Msg_counter: ' , Data_Cache.msg_counter
-    print 'Available mem: ', Data_Cache.available_mem
-    logging.info('Flushing data cache')
-    logging.info('Msg_counter: ' + str(Data_Cache.msg_counter))
-    logging.info('Available mem: ' + str(Data_Cache.available_mem))
+    #print 'Msg_counter: ' , Data_Cache.msg_counter
+    ##print 'Available mem: ', Data_Cache.available_mem
+    
     
     date = str(datetime.datetime.now().strftime('%Y%m%d%H:%M:%S'))
     filename = 'outgoing_stored/' + date #file name is date of flush
     f = open(filename, 'w')
     print 'Flushing outgoing'
-    logging.info('Flushing outgoing......')
     while True: #write all outgoing messages to outgoing file
         #messages are written to file with highest priority at the top
         msg = outgoing_pull(outgoing_available_queues) #returns false when all queues are empty
-        if msg=='False':
+        if msg=='False': #no more messages available. break and close file
             break
         else:
             #write the message to the file
             f.write(msg + '\n') 
     f.close()
     print 'Flushing incoming'
-    logging.info('Flushing incoming......')
     for i in Data_Cache.priority_list: #write all incoming messages to file
-        #All messages for each device are stored in a file so it is easy to pull only the messages for the connected devices
-        filename = 'incoming_stored/' + str(i) + date
+        #each device has a separate folder. This prevents needing to loop through all messages or all files to find messages for only the connected devices.
+        pathname = 'incoming_stored/' + str(i) + '/' #set the path
+        #print 'pathname: ', pathname
+        if not os.path.exists(pathname): #make sure the directory exists
+            os.makedirs(pathname)
+        filename = pathname + date #set the file name to the date and time of flush
+        #print 'filename is: ', filename
         f = open(filename, 'w')
         while True:
             #for each device, messages are stored with highest priority on the top of the file
             msg = incoming_pull(i, incoming_available_queues)
-            if msg=='False':
+            if msg=='False':  #No more messages available. break and close file.
                 f.close()
+                break
+            elif msg =='None': #No messages currently available for device. Close and remove file
+                f.close()
+                if os.path.isfile(f.name):
+                    os.remove(f.name)
                 break
             else:
                 #write the message to the file
                 f.write(msg + '\n')
+                
     Data_Cache.flush = 0 #restart server
+    print 'Data cache restarted'
 
 def get_status():
     """
