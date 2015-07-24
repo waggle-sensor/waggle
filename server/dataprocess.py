@@ -19,8 +19,6 @@ class DataProcess(Process):
 		This process handles all data submissions
 	"""
 
-
-
 	def __init__(self):
 		"""
 			Starts up the Data handling Process
@@ -38,22 +36,17 @@ class DataProcess(Process):
 
 	def callback(self,ch,method,props,body):
 		print "In Data Process now."
-		print self.session
 		try:
 
 			header,data = unpack(body)
 			data = un_gPickle(data)
-			print data
 			# Send the data off to Cassandra
 
 			prepared_statement = self.session.prepare("INSERT INTO sensor_data" + \
 				" (node_id, sensor_name, timestamp, data_types, data, units, extra_info)" + \
 				" VALUES (?, ?, ?, ?, ?, ?, ?)")
-			print "Binding insert statement"
 			bound_statement = prepared_statement.bind([header["s_uniqid"],data[0],data[1],data[2],data[4],data[5],data[6]])
-			print "Statement bound."
 			self.session.execute(bound_statement)
-			print "Inserted data into Cassandra."
 		except Exception as e:
 			print str(e)
 		ch.basic_ack(delivery_tag = method.delivery_tag)
@@ -61,7 +54,6 @@ class DataProcess(Process):
 	def run(self):
 		self.cluster = Cluster(contact_points=[CASSANDRA_IP])
 		self.session = self.cluster.connect('waggle')
-		print "Connected to Cassandra"
 		self.channel.start_consuming()
 
 	def join(self):

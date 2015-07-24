@@ -17,7 +17,6 @@ class WaggleRouter(Process):
 	def __init__(self,routing_table):
 		print "Initializing Routing Process"
 		super(WaggleRouter,self).__init__()
-		print "Superclass initialization complete."
 		
 		self.routing_table = routing_table
 
