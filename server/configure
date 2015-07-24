@@ -9,7 +9,6 @@ echo $c_ip > /etc/waggle/cassandra_ip
 
 dpkg -i packages_o/*.deb
 cd packages_o/
-pip install -e pika-0.9.14
 pip install blist
 pip install cassandra-driver
 pip install pika
