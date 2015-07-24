@@ -28,10 +28,11 @@ routing_table = manager.dict()
 # Add node queue bindings that are already registered
 with open('registrations/nodes.txt') as file_:
 	for line in file_:
-		line = line[:-1] #Cut off the newline character
-		info = line.split(":")
-		queue_bindings[info[1]] = ("internal",info[1])
-		routing_table[int(info[0])] = info[1]
+		if line and line != '\n':
+			line = line[:-1] #Cut off the newline character
+			info = line.split(":")
+			queue_bindings[info[1]] = ("internal",info[1])
+			routing_table[int(info[0])] = info[1]
 
 #Connect to rabbitMQ
 rabbitConn = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))

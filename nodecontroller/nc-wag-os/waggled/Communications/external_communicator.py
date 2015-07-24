@@ -7,7 +7,8 @@ sys.path.append('../../../../devtools/protocol_common/')
 from protocol.PacketHandler import *
 #sys.path.append('..')
 from device_dict import DEVICE_DICT
-
+sys.path.append('../NC')
+from NC_registration import NC_registration
 """ 
     The external communicator is the communication channel between the cloud and the DC. It consists of four processes: two pika clients for pushing and pulling to the cloud and two clients for pushing 
     and pulling to the data cache.
@@ -35,8 +36,8 @@ class external_communicator(object):
     incoming = Queue() #stores messages to push into DC 
     outgoing = Queue() #stores messages going out to cloud
     cloud_connected = Value('i') #indicates if the cloud is or is not connected. Clients only connect to DC when cloud is connected. 
-    #params = pika.connection.URLParameters("amqps://waggle:waggle@10.10.10.110:5671/%2F") #SSL 
-    params = pika.connection.URLParameters("amqp://waggle:waggle@10.10.10.110:5672/%2F") #the parameters used to connect to the cloud 
+    params = pika.connection.URLParameters("amqps://waggle:waggle@10.10.10.110:5671/%2F") #SSL 
+    #params = pika.connection.URLParameters("amqp://waggle:waggle@10.10.10.110:5672/%2F") #the parameters used to connect to the cloud 
 
 
 class pika_push(Process):
@@ -60,6 +61,10 @@ class pika_push(Process):
                 channel.queue_declare(queue=QUEUENAME)
                 print 'Pika push connected to cloud.'
                 logging.info('Pika push connected to cloud.')
+                msg = NC_registration() #first sends the registration each time it connects to cloud
+                channel.basic_publish(exchange='waggle_in', routing_key= 'in', body= msg) #sends to cloud 
+                #msg = GN_registration() #sends registration for each GN
+                #channel.basic_publish(exchange='waggle_in', routing_key= 'in', body= msg) #sends to cloud
                 connected = True
             except: 
                 #logging.warning('Pika_push currently unable to connect to cloud...')
@@ -79,7 +84,7 @@ class pika_push(Process):
                     #connection.close()
                     
                 except pika.exceptions.ConnectionClosed:
-                            print "Pika push connection closed. Waiting and trying again."
+                            #print "Pika push connection closed. Waiting and trying again."
                             logging.warning("Pika push connection closed. Waiting and trying again. " + str(datetime.datetime.now()))
                             comm.cloud_connected.value = 0
                             time.sleep(5)
@@ -103,7 +108,7 @@ class pika_pull(Process):
                 try:
                     connection = pika.BlockingConnection(params) 
                     channel = connection.channel()
-                    #print 'Pika pull connection successful.'
+                    print 'Pika pull connection successful.'
                     comm.cloud_connected.value = 1 #sets indicator flag to 1 so clients will connect to data cache
                     logging.info('Pika pull connected to cloud')
                      #Creating a queue
@@ -222,16 +227,14 @@ class external_client_push(Process):
         print "Done."
         
        
-#uncomment for testing
+##uncomment for testing
 #if __name__ == "__main__":
     #try:
-        ##starts the pull server
-        #if pika_init.is_alive():
-            #print 'Pika init is still alive.'
+        ##starts the pika pull client
         #pika_pull = pika_pull()
         #pika_pull.start()
         
-        ##starts the push server 
+        ##starts the pika push client
         #pika_push = pika_push()
         #pika_push.start()
         

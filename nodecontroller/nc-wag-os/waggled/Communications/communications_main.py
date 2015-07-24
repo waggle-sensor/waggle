@@ -6,8 +6,6 @@ import os, os.path, pika, logging, datetime
 
 time = str(datetime.datetime.now())
 LOG_FILE = 'comms_' + time + '.log'
-#f = open(LOG_FILE, 'w') #make the new log file
-#f.close()
 logging.basicConfig(filename=LOG_FILE)
 
 """

@@ -17,7 +17,6 @@ class WaggleRouter(Process):
 	def __init__(self,routing_table):
 		print "Initializing Routing Process"
 		super(WaggleRouter,self).__init__()
-		print "Superclass initialization complete."
 		
 		self.routing_table = routing_table
 
@@ -35,8 +34,9 @@ class WaggleRouter(Process):
 		#Load all of the existing registered node queues
 		with open('registrations/nodes.txt','r') as nodes:
 			for line in nodes:
-				info = line.strip().split(":")
-				self.channel.queue_declare(info[1])
+				if line and line != '\n':
+					info = line.strip().split(":")
+					self.channel.queue_declare(info[1])
 
 		#declare the default queues
 		queue_list = ["incoming","registration","util"]
