@@ -39,6 +39,10 @@
 // Light detector
 #define PIN_PHOTOCELL A5
 
+// Period of heartbeat for ODroids (ms)
+// This needs to be small and an even number
+#define HEARTBEAT_PERIOD_ODROID 40
+
 // I2C addresses for current sensors
 #define ADDR_CURRENT_SENSOR_SYSMON 0x60
 #define ADDR_CURRENT_SENSOR_NC 0x62
@@ -54,6 +58,7 @@
 #define NC_NOTIFIER_PROBLEM '#'
 #define NC_NOTIFIER_PARAMS_CORE '$'
 #define NC_NOTIFIER_PARAMS_GN '^'
+#define NC_NOTIFIER_TIME '*'
 #define NC_DELIMITER ','
 #define NC_TERMINATOR '!'
 
@@ -71,8 +76,9 @@ HTU21D SysMon_HTU21D;
 uint32_t EEMEM E_USART_BAUD;
 uint16_t EEMEM E_USART_RX_BUFFER_SIZE;
 uint8_t EEMEM E_MAX_NUM_SOS_BOOT_ATTEMPTS;
-uint8_t EEMEM E_MAX_NUM_NC_BOOT_ATTEMPTS;
-uint16_t EEMEM E_NC_BOOT_TIME;
+uint8_t EEMEM E_MAX_NUM_SUBSYSTEM_BOOT_ATTEMPTS;
+uint16_t EEMEM E_BOOT_TIME_NC;
+uint8_t EEMEM E_BOOT_TIME_SWITCH;
 uint8_t EEMEM E_PRESENT_GN1;
 uint8_t EEMEM E_PRESENT_GN2;
 uint8_t EEMEM E_PRESENT_GN3;
@@ -152,13 +158,13 @@ void setup()
   #else
     // Boot self, node controller, and ethernet switch.  Boot successful?
     if(boot_primary())
+    {
+      Serial.println("Booted");
+
       // Boot the guest nodes
       boot_gn();
+    }
   #endif
-
-  // setTime(23, 31, 30, 13, 2, 2009);
-  // RTC.set(now());
-  // Serial.println(RTC.get());
 }
 
 

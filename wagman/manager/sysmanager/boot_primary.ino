@@ -41,43 +41,71 @@ boolean boot_primary()
 		// Skip the rest of the boot sequence
       return false;
 
-	// Check that the node controller's environment is suitable
-	check_environ_nc();
+	// Is the node controller's environment suitable?
+	if(!check_environ_nc())
+      // Skip the rest of the boot sequence
+      return false;
 
 	// Enable power to node controller
    digitalWrite(PIN_RELAY_NC, HIGH);
 
    // Give the node controller time to boot
-   delay(eeprom_read_word(&E_NC_BOOT_TIME) * 1000);
+   delay(eeprom_read_word(&E_BOOT_TIME_NC) * 1000);
 
-	// Is the node controller not drawing expected amount of power?
+	// Is the node controller not drawing an expected amount of power?
 	if(!check_power_nc())
-      // Skip the rest of the boot sequence
-      return false;
+   {
+      // Giving the node controller one more chance...
+
+      // Power cycle the node controller
+      power_cycle(PIN_RELAY_NC);
+
+      // Give the node controller time to boot
+      delay(eeprom_read_word(&E_BOOT_TIME_NC) * 1000);
+
+      // Is the node controller not drawing an expected amount of power?
+      if(!check_power_nc())
+         // Skip the rest of the boot sequence
+         return false;
+   }
 
 	// Is the node controller alive (sending a "heartbeat")?
-	if(!check_heartbeat_nc())
+	if(!check_heartbeat_odroid(PIN_HEARTBEAT_NC))
    {
-      for(byte boot_attempts = 0; 
-         boot_attempts < eeprom_read_byte(&E_MAX_NUM_NC_BOOT_ATTEMPTS);
-         boot_attemps++)
+      byte boot_attempts = 0;
+      boolean _heartbeat_detected = false;
+      
+      // Try to get a heartbeat from the NC as many times as allowed
+      while(boot_attempts < eeprom_read_byte(&E_MAX_NUM_SUBSYSTEM_BOOT_ATTEMPTS))
       {
          // Is "heartbeat" not detected?
-         if(!check_heartbeat_nc())
+         if(!check_heartbeat_odroid(PIN_HEARTBEAT_NC))
          {
             // Power cycle the node controller
-            digitalWrite(PIN_RELAY_NC, LOW);
-            delay(100);
-            digitalWrite(PIN_RELAY_NC, HIGH);
+            power_cycle(PIN_RELAY_NC);
 
             // Give the node controller time to boot
-            delay(eeprom_read_word(&E_NC_BOOT_TIME) * 1000);
-
-            // Is the node controller not drawing an expected amount of power?
-            if(!check_power_nc())
-               // Skip the rest of the boot sequence
-               return false;
+            delay(eeprom_read_word(&E_BOOT_TIME_NC) * 1000);
          }
+         else
+            // Indicate that a heartbeat was detected
+            _heartbeat_detected = true;
+
+         // Increment counter for number of attempts
+         boot_attempts++;
+      }
+
+      // Still no heartbeat detected?
+      if(!_heartbeat_detected)
+      {
+         // Turn off the node controller
+         digitalWrite(PIN_RELAY_NC, LOW);
+
+         // Mark NC as dead
+         eeprom_update_byte(&E_NC_ENABLED, 0);
+
+         // Skip the rest of the boot sequence
+         return false;
       }
    }
 
@@ -97,16 +125,33 @@ boolean boot_primary()
 		// Skip the rest of the boot sequence
 		return false;
 
-	// Check that the ethernet switch's environment is suitable
-	check_environ_switch();
+	// Is the ethernet switch's temperature outside of safe parameters?
+	if(!check_temp_switch())
+      // Skip the rest of the boot sequence
+      return false;
 
 	// Enable power to ethernet switch
+   digitalWrite(PIN_RELAY_SWITCH, HIGH);
 
-	// Check that the ethernet switch is drawing an expected amount of power
-	check_power_switch();
+   // Give the ethernet switch time to boot
+   delay(eeprom_read_word(&E_BOOT_TIME_NC) * 1000);
 
-	// Check that the ethernet switch is alive (sending a "heartbeat")
-	check_heartbeat_switch();
+	// Is the ethernet switch not drawing an expected amount of power?
+	if(!check_power_switch())
+   {
+      // Giving the ethernet switch one more chance...
+
+      // Power cycle the switch
+      power_cycle(PIN_RELAY_SWITCH);
+
+      // Give the switch time to boot
+      delay(eeprom_read_byte(&E_BOOT_TIME_SWITCH) * 1000);
+
+      // Is the ethernet switch not drawing an expected amount of power?
+      if(!check_power_switch())
+         // Skip the rest of the boot sequence
+         return false;
+   }
 
 	// Everything is good, so exit sequence with success
 	return true;
@@ -251,12 +296,17 @@ void init_primary()
    // End I2C transaction (with stop bit)
    Wire.endTransmission(1);
 
-   // Set relay pins to output mode
+   // Set relay pins to output mode and make sure they're off
    pinMode(PIN_RELAY_NC, OUTPUT);
+   digitalWrite(PIN_RELAY_NC, LOW);
    pinMode(PIN_RELAY_SWITCH, OUTPUT);
+   digitalWrite(PIN_RELAY_SWITCH, LOW);
    pinMode(PIN_RELAY_GN1, OUTPUT);
+   digitalWrite(PIN_RELAY_GN1, LOW);
    pinMode(PIN_RELAY_GN2, OUTPUT);
+   digitalWrite(PIN_RELAY_GN2, LOW);
    pinMode(PIN_RELAY_GN3, OUTPUT);
+   digitalWrite(PIN_RELAY_GN3, LOW);
 
    // Set heartbeat pins to input mode (just for clarity)
    pinMode(PIN_HEARTBEAT_NC, INPUT);
@@ -282,8 +332,9 @@ void set_default_eeprom()
    eeprom_update_dword(&E_USART_BAUD, 57600);
    eeprom_update_word(&E_USART_RX_BUFFER_SIZE, 200);
    eeprom_update_byte(&E_MAX_NUM_SOS_BOOT_ATTEMPTS, 3);
-   eeprom_update_byte(&E_MAX_NUM_NC_BOOT_ATTEMPTS, 3);
-   eeprom_update_word(&E_NC_BOOT_TIME, 30);
+   eeprom_update_byte(&E_MAX_NUM_SUBSYSTEM_BOOT_ATTEMPTS, 3);
+   eeprom_update_word(&E_BOOT_TIME_NC, 10);
+   eeprom_update_byte(&E_BOOT_TIME_SWITCH, 5);
    eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_NC, 5);
    eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_SWITCH, 5);
    eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_GN1, 5);
@@ -413,23 +464,33 @@ boolean check_environ_self()
 
 //---------- C H E C K _ E N V I R O N _ N C ----------------------------------
 /*
-   Reads thermistor to check if the environment is suitable for safe operation
-   of the node controller.  If it is not safe, then we monitor it until it 
-   is safe.
+   Reads the HTU21D sensor.  If the environment is unsafe, the function 
+   returns FALSE.  If the environment is acceptable, the function returns TRUE.
 
-   :rtype: none
+   :rtype: boolean
 */
-void check_environ_nc()
+boolean check_environ_nc()
 {
+   // Read temperature and truncate it (so we don't deal with floats)
+   int temp = SysMon_HTU21D.readTemperature();
 
+   // Is measured temperature acceptable?
+   if(((int)eeprom_read_word(&E_TEMP_MIN_NC_SIGNED) < temp)
+      && (temp < (int)eeprom_read_word(&E_TEMP_MAX_NC_SIGNED)))
+   {
+      // Exit with success
+      return true;
+   }
+
+   // Exit with failure
+   return false;
 }
 
 
 
 //---------- C H E C K _ P O W E R _ N C --------------------------------------
 /*
-   Reads the node controller's current sensor.  If the node controller is not
-   drawing any power or is drawing too much power, we'll shut it down.
+   Reads the node controller's current sensor.
 
    Return TRUE: node controller is drawing expected current.
    Return FALSE: node controller is drawing no/too much current.
@@ -478,39 +539,155 @@ boolean check_power_nc()
 
 
 
-//---------- C H E C K _ H E A R T B E A T _ N C ------------------------------
+//---------- C H E C K _ H E A R T B E A T _ O D R O I D ----------------------
 /*
-   Checks that the node controller is alive and sending a heartbeat.
+   Checks that the ODroid is alive and sending a heartbeat.
 
-   Return TRUE: node controller's heartbeat is good.
-   Return FALSE: node controller's heartbeat is not good.
+   Return TRUE: heartbeat is good.
+   Return FALSE: heartbeat is not good.
+
+   :param byte device: the pin number of the device being checked
 
    :rtype: boolean
 */
-boolean check_heartbeat_nc()
+boolean check_heartbeat_odroid(byte device)
 {
-   // Is "heartbeat" detected?
-   if(digitalRead(PIN_HEARTBEAT_NC))
-      // Exit with success
-      return true;
+   boolean result = false;
 
-   // Exit with failure
-   return false;
+   // Get first heartbeat sample
+   byte sample1 = digitalRead(device);
+
+   // Wait for half the heartbeat period
+   delay(HEARTBEAT_PERIOD_ODROID / 2);
+
+   // Get second heartbeat sample
+   byte sample2 = digitalRead(device);
+
+   // Are the samples different? (which indicates a changing heartbeat)
+   if(sample1 != sample2)
+      // Success!
+      result = true;
+   else
+   {
+      // Trying one more time, in case we encountered edges...
+
+      // Get first heartbeat sample
+      sample1 = digitalRead(device);
+
+      // Wait for half the heartbeat period
+      delay(HEARTBEAT_PERIOD_ODROID / 2);
+
+      // Get second heartbeat sample
+      sample2 = digitalRead(device);
+
+      // Are the samples different? (which indicates a changing heartbeat)
+      if(sample1 != sample2)
+         // Success!
+         result = true;
+   }
+
+   return result;
 }
 
 
 
 //---------- G E T _ T I M E _ N C --------------------------------------------
 /*
-   Requests a time update from the node controller.  If a time update is
-   received, the RTC is initialized with that time.  If a time update is not
-   recieved, the RTC is started without a time correction.
+   Requests a time update from the node controller.  If an update is received,
+   the RTC is set to the new time.
 
    :rtype: none
 */
 void get_time_nc()
 {
+   // Send request
+   Serial.println(NC_NOTIFIER_TIME);
 
+   // Save the node controller's response into a string.
+   // Default timeout value is 1 second
+   String received_time = "";
+   received_time = Serial.readStringUntil(NC_TERMINATOR);
+
+   // Was time received?
+   if(received_time.length() > 0)
+   {
+      /* Order of values (coming from node controller):
+      
+      Year
+      Month
+      Day
+      Hour
+      Minute
+      Second
+      */
+
+      // Temporary strings for holding each value
+      String received_year = "";
+      String received_month = "";
+      String received_day = "";
+      String received_hour = "";
+      String received_minute = "";
+      String received_second = "";
+
+      // Index for iterating thru the received string
+      int i = 0;
+
+      // Parse the received list of values:
+      while(received_time[i] != NC_DELIMITER)
+         received_year += received_time[i++];
+      // Skip delimiter
+      i++;
+
+      while(received_time[i] != NC_DELIMITER)
+         received_month += received_time[i++];
+      i++;
+
+      while(received_time[i] != NC_DELIMITER)
+         received_day += received_time[i++];
+      i++;
+
+      while(received_time[i] != NC_DELIMITER)
+         received_hour += received_time[i++];
+      i++;
+
+      while(received_time[i] != NC_DELIMITER)
+         received_minute += received_time[i++];
+      i++;
+
+      while(received_time[i] != NC_DELIMITER)
+         received_second += received_time[i++];
+      i++;
+
+      // Set SysMon's time to received time
+      setTime(received_hour.toInt(),
+         received_minute.toInt(),
+         received_second.toInt(),
+         received_day.toInt(),
+         received_month.toInt(),
+         received_year.toInt());
+      // Set RTC time to SysMon's time
+      RTC.set(now());
+   }
+}
+
+
+
+//---------- P O W E R _ C Y C L E  -------------------------------------------
+/*
+   Power cycle the device specified by the argument.
+
+   :param byte device: pin number of the relay to power cycle
+
+   :rtype: none
+*/
+void power_cycle(byte device)
+{
+   // Turn off the device
+   digitalWrite(device, LOW);
+   // Give the relay time to move
+   delay(100);
+   // Turn on the device
+   digitalWrite(device, HIGH);
 }
 
 
@@ -542,8 +719,9 @@ void get_params_core()
          USART baud rate
          USART RX buffer size
          Max number of SOS boot attempts
-         Max number of node controller boot attempts
+         Max number of subsystem boot attempts
          Node controller boot time
+         Ethernet switch boot time
          Heartbeat timeout (node controller)
          Heartbeat timeout (switch)
          Bad temperature timeout (system monitor)
@@ -567,11 +745,12 @@ void get_params_core()
       */
 
       // Temporary strings for holding each parameter
-      String USART_baud;
+      String USART_baud = "";
       String USART_RX_buffer_size = "";
       String max_num_SOS_boot_attempts = "";
-      String max_num_NC_boot_attempts = "";
+      String max_num_subsystem_boot_attempts = "";
       String NC_boot_time = "";
+      String switch_boot_time = "";
       String heartbeat_timeout_NC = "";
       String heartbeat_timeout_switch = "";
       String bad_temp_timeout_sysmon = "";
@@ -611,11 +790,15 @@ void get_params_core()
       i++;
 
       while(received_params[i] != NC_DELIMITER)
-         max_num_NC_boot_attempts += received_params[i++];
+         max_num_subsystem_boot_attempts += received_params[i++];
       i++;
 
       while(received_params[i] != NC_DELIMITER)
          NC_boot_time += received_params[i++];
+      i++;
+
+      while(received_params[i] != NC_DELIMITER)
+         switch_boot_time += received_params[i++];
       i++;
 
       while(received_params[i] != NC_DELIMITER)
@@ -701,8 +884,9 @@ void get_params_core()
       eeprom_update_dword(&E_USART_BAUD, USART_baud.toInt());
       eeprom_update_word(&E_USART_RX_BUFFER_SIZE, (uint16_t)USART_RX_buffer_size.toInt());
       eeprom_update_byte(&E_MAX_NUM_SOS_BOOT_ATTEMPTS, (uint8_t)max_num_SOS_boot_attempts.toInt());
-      eeprom_update_byte(&E_MAX_NUM_NC_BOOT_ATTEMPTS, (uint8_t)max_num_NC_boot_attempts.toInt());
-      eeprom_update_word(&E_NC_BOOT_TIME, (uint16_t)NC_boot_time.toInt());
+      eeprom_update_byte(&E_MAX_NUM_SUBSYSTEM_BOOT_ATTEMPTS, (uint8_t)max_num_subsystem_boot_attempts.toInt());
+      eeprom_update_word(&E_BOOT_TIME_NC, (uint16_t)NC_boot_time.toInt());
+      eeprom_update_byte(&E_BOOT_TIME_SWITCH, (uint8_t)switch_boot_time.toInt());
       eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_NC, (uint8_t)heartbeat_timeout_NC.toInt());
       eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_SWITCH, (uint8_t)heartbeat_timeout_switch.toInt());
       eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_SYSMON, (uint8_t)bad_temp_timeout_sysmon.toInt());
@@ -773,7 +957,6 @@ boolean get_params_GNs()
          Maximum amp draw (mA) (guest node 1)
          Maximum amp draw (mA) (guest node 2)
          Maximum amp draw (mA) (guest node 3)
-
       */
 
       // Temporary strings for holding each parameter
@@ -920,47 +1103,74 @@ boolean get_params_GNs()
 
 
 
-//---------- C H E C K _ E N V I R O N _ S W I T C H --------------------------
+//---------- C H E C K _ T E M P _ S W I T C H --------------------------------
 /*
-   Gets temperature info from the thermistor, then checks if the 
-   environment is suitable for safe operation of the ethernet switch.  If it
-   is not safe, then we monitor it until it is safe.
+   Reads the switch's thermistor to determine if the temperature is within
+   the safe operating parameters.
 
-   :rtype: none
+   Return TRUE: temperature is safe.
+   Return FALSE: temperature is unsafe.
+
+   :rtype: boolean
 */
-void check_environ_switch()
+boolean check_temp_switch()
 {
+   // Read thermistor
+   unsigned int temp_ADC = analogRead(PIN_THERMISTOR_SWITCH);
 
+   // Convert ADC result to actual temperature
+   //int temp_actual = temp_ADC / 27;
+
+   return true;
 }
 
 
 
 //---------- C H E C K _ P O W E R _ S W I T C H ------------------------------
 /*
-   Reads the ethernet switch's current sensor.  If the ethernet switch is not
-   drawing any power or is drawing too much power, we'll shut it down and
-   inform the node controller (and wait for it to inform the cloud), then go
-   to sleep.
+   Reads the network switch's current sensor.
 
-   :rtype: none
+   Return TRUE: switch is drawing expected current.
+   Return FALSE: switch is drawing no/too much current.
+
+   :rtype: boolean
 */
-void check_power_switch()
+boolean check_power_switch()
 {
+   byte msb, csb, lsb;
+   
+   // Start I2C transaction with current sensor
+   Wire.beginTransmission(ADDR_CURRENT_SENSOR_SWITCH);
+   // Tell sensor we want to read "data" register
+   Wire.write(0);
+   // Sensor expects restart condition, so end I2C transaction (no stop bit)
+   Wire.endTransmission(0);
+   // Ask sensor for data
+   Wire.requestFrom(ADDR_CURRENT_SENSOR_SWITCH, 3);
 
-}
+   // Read the 3 bytes that the sensor returns
+   if(Wire.available())
+   {
+      msb = Wire.read();
+      // We only care about the data, so the mask hides the SYNC flag
+      csb = Wire.read() & 0x01;
+      lsb = Wire.read();
+   }
+   else
+      // Exit with failure
+      return false;
 
+   // End I2C transaction (with stop bit)
+   Wire.endTransmission(1);
 
+   // Calculate milliamps from raw sensor data
+   unsigned int milliamps = ((csb << 8) | lsb) * MILLIAMPS_PER_STEP;
 
-//---------- C H E C K _ H E A R T B E A T _ S W I T C H ----------------------
-/*
-   Checks that the ethernet switch is alive and sending a heartbeat.  If it is
-   not, then power cycle it and try again.  If a reboot is tried too many
-   times, the ethernet switch is assumed to be dead, so we inform the node 
-   controller (and wait for it to inform the cloud), then go to sleep.
+   // Is measured current below allowed maximum?
+   if(milliamps < eeprom_read_word(&E_AMP_MAX_SWITCH))
+      // Exit with success
+      return true;
 
-   :rtype: none
-*/
-void check_heartbeat_switch()
-{
-
+   // Exit with failure
+   return false;
 }
