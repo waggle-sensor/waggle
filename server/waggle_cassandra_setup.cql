@@ -10,3 +10,11 @@ CREATE TABLE waggle.sensor_data (
     units list<ascii>,
     PRIMARY KEY (node_id, sensor_name, timestamp)
 );
+
+CREATE TABLE waggle.node_data (
+	node_id int,
+	sensors list<ascii>,
+	notes list<ascii>,
+	PRIMARY KEY node_id
+);
+
