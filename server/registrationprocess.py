@@ -38,9 +38,10 @@ class RegProcess(Process):
 
         # Unpack the header and see if it is already registered
         header,msg = unpack(body)
+        minor_type = None
         if header["msg_mi_type"] == ord('r'):
             if header["s_uniqid"] in self.routing_table:
-                pass
+                minor_type = ord('a');
             else:
                 print "Registering new node."
                 # Add the node to the registration file and make and bind its queue
@@ -49,11 +50,12 @@ class RegProcess(Process):
                 self.channel.queue_declare(msg)
                 self.channel.queue_bind(exchange='internal',queue=msg,routing_key=msg)
                 self.routing_table[header["s_uniqid"]] = msg
+                minor_type = ord('n')
 
             # Send the node a registration confirmation.
             resp_header = {
                     "msg_mj_type" : ord('r'),
-                    "msg_mi_type" : ord('c'),
+                    "msg_mi_type" : minor_type,
                     "r_uniqid"    : header["s_uniqid"],
                     "resp_session": header["snd_session"]
             }
