@@ -50,7 +50,7 @@ class DataProcess(Process):
 			print "Cassandra connection failed. Attempting to reconnect..."
 			# Wait a few seconds before trying to connect (to prevent this from taking up a ton of power)
 			time.sleep(1)
-			self.session = self.cluster.connect('waggle')
+			self.cassandra_connect()
 
 	def cassandra_insert(self,data):
 		try:
@@ -62,13 +62,21 @@ class DataProcess(Process):
 		except Exception as e:
 			raise
 
-	def run(self):
+	def cassandra_connect(self):
+		try:
+			self.cluster.shutdown()
+		except:
+			pass
 		self.cluster = Cluster(contact_points=[CASSANDRA_IP])
+
 		try: # Might not immediately connect. That's fine. It'll try again if/when it needs to.
 			self.session = self.cluster.connect('waggle')
 		except:
 			print "WARNING: Cassandra connection to " + CASSANDRA_IP + " failed."
-			print "The process will attempt to re-connect when data is received."
+			print "The process will attempt to re-connect at a later time."
+
+	def run(self):
+		self.cassandra_connect()
 		self.channel.start_consuming()
 
 	def join(self):
