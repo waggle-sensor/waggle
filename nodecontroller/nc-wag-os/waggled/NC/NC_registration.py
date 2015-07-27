@@ -27,7 +27,7 @@ with open('/etc/waggle/queuename','r') as file_:
 def NC_registration():
     try:
         packet = packetmaker.registration_packet()
-        print 'Registration packet made...' 
+        print 'NC registration packet made...' 
         for pack in packet:
             return pack
     except: 
@@ -41,13 +41,16 @@ def GN_registration():
     header_dict = {
         "msg_mj_type" : ord('r'),
         "msg_mi_type" : ord('r'),
-        "s_uniqid"    : '1244'
+        "s_uniqid"    : 1244
         }
     msg = str(QUEUENAME)
     try: 
+        
         packet = pack(header_dict, message_data = msg)
-        for pack in packet:
-            return packet
-    except: 
-        print 'unable to pack stupid reg msesjklafjd'
+        print 'GN registration made...'
+        for pack_ in packet:
+            return pack_
+        
+    except Exception as e: 
+        print e
     

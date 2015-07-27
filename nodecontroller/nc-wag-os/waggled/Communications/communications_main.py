@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
-import os, os.path, pika, logging, datetime
+import os, os.path, pika, logging, datetime, sys
+sys.path.append('..')
+import NC_configuration
 #from external_communicator import *
 #from internal_communicator import *
 
@@ -13,12 +15,15 @@ logging.basicConfig(filename=LOG_FILE)
     Communications main starts the internal and external communication processes. It then continuously monitors each of the processes. It restarts the processes of it ever crashes.
 """
 
+cloud_addr = NC_configuration.CLOUD_ADDR
+
 if __name__ == "__main__":
     try:
         #TODO if the pika_push and pika_pull clients can be combined into one process, add an if statement to that process that checks for initial contact with the cloud
         if not os.path.isfile('/etc/waggle/queuename'):
             #get the connection parameters
-            params = pika.connection.URLParameters("amqps://waggle:waggle@10.10.10.110:5671/%2F") #This will need to change according to where the server is
+            #params = pika.connection.URLParameters("amqps://waggle:waggle@10.10.10.110:5671/%2F") #This will need to change according to where the server is
+            params = pika.connection.URLParameters(cloud_addr)
             #make the connection
             connection = pika.BlockingConnection(params)
             #create the channel
@@ -32,6 +37,9 @@ if __name__ == "__main__":
             
             #strip 'amq.gen-' from queuename
             junk, queuename = queuename.split('-', 1)
+            
+            #write the queuename into the configuration file
+            NC_configuration.QUEUENAME = queuename
             
             #write the queuename to a file
             file_ = open('/etc/waggle/queuename', 'w') 

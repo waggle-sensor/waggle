@@ -8,7 +8,7 @@ from protocol.PacketHandler import *
 #sys.path.append('..')
 from device_dict import DEVICE_DICT
 sys.path.append('../NC')
-from NC_registration import NC_registration
+from NC_registration import NC_registration, GN_registration
 """ 
     The external communicator is the communication channel between the cloud and the DC. It consists of four processes: two pika clients for pushing and pulling to the cloud and two clients for pushing 
     and pulling to the data cache.
@@ -63,8 +63,8 @@ class pika_push(Process):
                 logging.info('Pika push connected to cloud.')
                 msg = NC_registration() #first sends the registration each time it connects to cloud
                 channel.basic_publish(exchange='waggle_in', routing_key= 'in', body= msg) #sends to cloud 
-                #msg = GN_registration() #sends registration for each GN
-                #channel.basic_publish(exchange='waggle_in', routing_key= 'in', body= msg) #sends to cloud
+                msg = GN_registration() #sends registration for each GN
+                channel.basic_publish(exchange='waggle_in', routing_key= 'in', body= msg) #sends to cloud
                 connected = True
             except: 
                 #logging.warning('Pika_push currently unable to connect to cloud...')
@@ -230,19 +230,19 @@ class external_client_push(Process):
 ##uncomment for testing
 #if __name__ == "__main__":
     #try:
-        ##starts the pika pull client
+        #starts the pika pull client
         #pika_pull = pika_pull()
         #pika_pull.start()
         
-        ##starts the pika push client
+        #starts the pika push client
         #pika_push = pika_push()
         #pika_push.start()
         
-        ##starts the push client
+        #starts the push client
         #push_client = external_client_push()
         #push_client.start()
         
-        ##starts the pull client
+        #starts the pull client
         #pull_client = external_client_pull()
         #pull_client.start()
         #while True:
