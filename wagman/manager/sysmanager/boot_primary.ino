@@ -14,6 +14,9 @@
    Conditions for and operation of the node controller and ethernet switch are
    verified before completing boot sequence.
 
+   Return TRUE: boot procedure executed successfully.
+   Return FALSE: boot procedure failed.
+
    :rtype: boolean
 */
 boolean boot_primary()
@@ -28,23 +31,50 @@ boolean boot_primary()
 
 	// Is SysMon drawing too much power?
 	if(!check_power_self())
-      // Skip the rest of the boot sequence
-      return false;
+   {
+      // Giving SysMon one more chance...
+
+      // Wait for things to settle down, perhaps
+      delay(BOOT_BAD_POWER_WAIT_TIME * 1000);
+
+      // Is SysMon drawing too much power?
+      if(!check_power_self())
+         // Skip the rest of the boot sequence
+         return false;
+   }
 
 	// Is SysMon's environment outside of safe bounds?
 	if(!check_environ_self())
-      // Skip the rest of the boot sequence
-      return false;
+   {
+      // Giving SysMon one more chance...
+
+      // Wait for things to settle down, perhaps
+      delay(BOOT_BAD_ENVIRON_WAIT_TIME * 1000);
+
+      // Is SysMon's environment outside of safe bounds?
+      if(!check_environ_self())
+         // Skip the rest of the boot sequence
+         return false;
+   }
 
 	// Is the node controller not enabled?
 	if(!eeprom_read_byte(&E_NC_ENABLED))
 		// Skip the rest of the boot sequence
       return false;
 
-	// Is the node controller's environment suitable?
+	// Is the node controller's environment not suitable?
 	if(!check_environ_nc())
-      // Skip the rest of the boot sequence
-      return false;
+   {
+      // Giving the node controller one more chance...
+
+      // Wait for things to settle down, perhaps
+      delay(BOOT_BAD_ENVIRON_WAIT_TIME * 1000);
+
+      // Is the node controller's environment not suitable?
+      if(!check_environ_nc())
+         // Skip the rest of the boot sequence
+         return false;
+   }
 
 	// Enable power to node controller
    digitalWrite(PIN_RELAY_NC, HIGH);
@@ -127,8 +157,17 @@ boolean boot_primary()
 
 	// Is the ethernet switch's temperature outside of safe parameters?
 	if(!check_temp_switch())
-      // Skip the rest of the boot sequence
-      return false;
+   {
+      // Giving the switch one more chance...
+
+      // Wait for things to settle down, perhaps
+      delay(BOOT_BAD_ENVIRON_WAIT_TIME * 1000);
+
+      // Is the ethernet switch's temperature outside of safe parameters?
+      if(!check_temp_switch())
+         // Skip the rest of the boot sequence
+         return false;
+   }
 
 	// Enable power to ethernet switch
    digitalWrite(PIN_RELAY_SWITCH, HIGH);
@@ -331,10 +370,17 @@ void set_default_eeprom()
    // EEPROM addresses whose values are set by node controller:
    eeprom_update_dword(&E_USART_BAUD, 57600);
    eeprom_update_word(&E_USART_RX_BUFFER_SIZE, 200);
+   eeprom_update_byte(&E_STATUS_REPORT_PERIOD, 30);
    eeprom_update_byte(&E_MAX_NUM_SOS_BOOT_ATTEMPTS, 3);
    eeprom_update_byte(&E_MAX_NUM_SUBSYSTEM_BOOT_ATTEMPTS, 3);
    eeprom_update_word(&E_BOOT_TIME_NC, 10);
    eeprom_update_byte(&E_BOOT_TIME_SWITCH, 5);
+   eeprom_update_word(&E_BOOT_TIME_GN1, 10);
+   eeprom_update_word(&E_BOOT_TIME_GN2, 10);
+   eeprom_update_word(&E_BOOT_TIME_GN2, 10);
+   eeprom_update_byte(&E_PRESENT_GN1, 1);
+   eeprom_update_byte(&E_PRESENT_GN2, 1);
+   eeprom_update_byte(&E_PRESENT_GN3, 1);
    eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_NC, 5);
    eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_SWITCH, 5);
    eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_GN1, 5);
@@ -353,18 +399,18 @@ void set_default_eeprom()
    eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_GN1, 5);
    eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_GN2, 5);
    eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_GN3, 5);
-   eeprom_update_word(&E_TEMP_MIN_SYSMON_SIGNED, 0);
-   eeprom_update_word(&E_TEMP_MAX_SYSMON_SIGNED, 100);
-   eeprom_update_word(&E_TEMP_MIN_NC_SIGNED, 0);
-   eeprom_update_word(&E_TEMP_MAX_NC_SIGNED, 100);
-   eeprom_update_word(&E_TEMP_MIN_SWITCH_SIGNED, 0);
-   eeprom_update_word(&E_TEMP_MAX_SWITCH_SIGNED, 100);
-   eeprom_update_word(&E_TEMP_MIN_GN1_SIGNED, 0);
-   eeprom_update_word(&E_TEMP_MAX_GN1_SIGNED, 100);
-   eeprom_update_word(&E_TEMP_MIN_GN2_SIGNED, 0);
-   eeprom_update_word(&E_TEMP_MAX_GN2_SIGNED, 100);
-   eeprom_update_word(&E_TEMP_MIN_GN3_SIGNED, 0);
-   eeprom_update_word(&E_TEMP_MAX_GN3_SIGNED, 100);
+   eeprom_update_word(&E_TEMP_MIN_SYSMON, 0);
+   eeprom_update_word(&E_TEMP_MAX_SYSMON, 100);
+   eeprom_update_word(&E_TEMP_MIN_NC, 0);
+   eeprom_update_word(&E_TEMP_MAX_NC, 100);
+   eeprom_update_word(&E_TEMP_MIN_SWITCH, 0);
+   eeprom_update_word(&E_TEMP_MAX_SWITCH, 100);
+   eeprom_update_word(&E_TEMP_MIN_GN1, 0);
+   eeprom_update_word(&E_TEMP_MAX_GN1, 100);
+   eeprom_update_word(&E_TEMP_MIN_GN2, 0);
+   eeprom_update_word(&E_TEMP_MAX_GN2, 100);
+   eeprom_update_word(&E_TEMP_MIN_GN3, 0);
+   eeprom_update_word(&E_TEMP_MAX_GN3, 100);
    eeprom_update_byte(&E_HUMIDITY_MIN_SYSMON, 30);
    eeprom_update_byte(&E_HUMIDITY_MAX_SYSMON, 100);
    eeprom_update_word(&E_AMP_MAX_SYSMON, 400);
@@ -433,8 +479,10 @@ boolean check_power_self()
 
 //---------- C H E C K _ E N V I R O N _ S E L F ------------------------------
 /*
-   Reads the HTU21D sensor.  If the environment is unsafe, the function 
-   returns FALSE.  If the environment is acceptable, the function returns TRUE.
+   Reads the HTU21D sensor.
+
+   Return TRUE: environment is acceptable.
+   Return FALSE: environment is unacceptable.
 
    :rtype: boolean
 */
@@ -447,8 +495,8 @@ boolean check_environ_self()
    byte humidity = SysMon_HTU21D.readHumidity();
 
    // Is measured temperature acceptable?
-   if(((int)eeprom_read_word(&E_TEMP_MIN_SYSMON_SIGNED) < temp)
-      && (temp < (int)eeprom_read_word(&E_TEMP_MAX_SYSMON_SIGNED))
+   if((eeprom_read_word(&E_TEMP_MIN_SYSMON) < temp)
+      && (temp < eeprom_read_word(&E_TEMP_MAX_SYSMON))
       && (eeprom_read_byte(&E_HUMIDITY_MIN_SYSMON) < humidity)
       && (humidity < eeprom_read_byte(&E_HUMIDITY_MAX_SYSMON)))
    {
@@ -464,8 +512,10 @@ boolean check_environ_self()
 
 //---------- C H E C K _ E N V I R O N _ N C ----------------------------------
 /*
-   Reads the HTU21D sensor.  If the environment is unsafe, the function 
-   returns FALSE.  If the environment is acceptable, the function returns TRUE.
+   Reads the HTU21D sensor.
+
+   Return TRUE: environment is acceptable.
+   Return FALSE: environment is unacceptable.
 
    :rtype: boolean
 */
@@ -475,8 +525,8 @@ boolean check_environ_nc()
    int temp = SysMon_HTU21D.readTemperature();
 
    // Is measured temperature acceptable?
-   if(((int)eeprom_read_word(&E_TEMP_MIN_NC_SIGNED) < temp)
-      && (temp < (int)eeprom_read_word(&E_TEMP_MAX_NC_SIGNED)))
+   if((eeprom_read_word(&E_TEMP_MIN_NC) < temp)
+      && (temp < eeprom_read_word(&E_TEMP_MAX_NC)))
    {
       // Exit with success
       return true;
@@ -718,6 +768,7 @@ void get_params_core()
 
          USART baud rate
          USART RX buffer size
+         Period at which status reports are sent to node controller
          Max number of SOS boot attempts
          Max number of subsystem boot attempts
          Node controller boot time
@@ -731,12 +782,12 @@ void get_params_core()
          Bad current timeout (node controller)
          Bad current timeout (switch)
          Current noise ceiling (mA)
-         Minimum temperature (Celsius) (signed) (system monitor)
-         Maximum temperature (Celsius) (signed) (system monitor)
-         Minimum temperature (Celsius) (signed) (node controller)
-         Maximum temperature (Celsius) (signed) (node controller)
-         Minimum temperature (Celsius) (signed) (switch)
-         Maximum temperature (Celsius) (signed) (switch)
+         Minimum temperature (Celsius) (system monitor)
+         Maximum temperature (Celsius) (system monitor)
+         Minimum temperature (Celsius) (node controller)
+         Maximum temperature (Celsius) (node controller)
+         Minimum temperature (Celsius) (switch)
+         Maximum temperature (Celsius) (switch)
          Minimum relative humidity (%) (system monitor)
          Maximum relative humidity (%) (system monitor)
          Maximum amp draw (mA) (system monitor)
@@ -747,6 +798,7 @@ void get_params_core()
       // Temporary strings for holding each parameter
       String USART_baud = "";
       String USART_RX_buffer_size = "";
+      String status_report_period = "";
       String max_num_SOS_boot_attempts = "";
       String max_num_subsystem_boot_attempts = "";
       String NC_boot_time = "";
@@ -783,6 +835,10 @@ void get_params_core()
 
       while(received_params[i] != NC_DELIMITER)
          USART_RX_buffer_size += received_params[i++];
+      i++;
+
+      while(received_params[i] != NC_DELIMITER)
+         status_report_period += received_params[i++];
       i++;
 
       while(received_params[i] != NC_DELIMITER)
@@ -883,6 +939,7 @@ void get_params_core()
       // Store new parameters in EEPROM
       eeprom_update_dword(&E_USART_BAUD, USART_baud.toInt());
       eeprom_update_word(&E_USART_RX_BUFFER_SIZE, (uint16_t)USART_RX_buffer_size.toInt());
+      eeprom_update_byte(&E_STATUS_REPORT_PERIOD, (uint8_t)status_report_period.toInt());
       eeprom_update_byte(&E_MAX_NUM_SOS_BOOT_ATTEMPTS, (uint8_t)max_num_SOS_boot_attempts.toInt());
       eeprom_update_byte(&E_MAX_NUM_SUBSYSTEM_BOOT_ATTEMPTS, (uint8_t)max_num_subsystem_boot_attempts.toInt());
       eeprom_update_word(&E_BOOT_TIME_NC, (uint16_t)NC_boot_time.toInt());
@@ -896,13 +953,12 @@ void get_params_core()
       eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_NC, (uint8_t)bad_current_timeout_NC.toInt());
       eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_SWITCH, (uint8_t)bad_current_timeout_switch.toInt());
       eeprom_update_word(&E_AMP_NOISE_CEILING, (uint16_t)current_noise_ceiling.toInt());
-      // EEPROM does not store data types.  Must cast to signed when reading.
-      eeprom_update_word(&E_TEMP_MIN_SYSMON_SIGNED, (uint16_t)min_temp_sysmon.toInt());
-      eeprom_update_word(&E_TEMP_MAX_SYSMON_SIGNED, (uint16_t)max_temp_sysmon.toInt());
-      eeprom_update_word(&E_TEMP_MIN_NC_SIGNED, (uint16_t)min_temp_NC.toInt());
-      eeprom_update_word(&E_TEMP_MAX_NC_SIGNED, (uint16_t)max_temp_NC.toInt());
-      eeprom_update_word(&E_TEMP_MIN_SWITCH_SIGNED, (uint16_t)min_temp_switch.toInt());
-      eeprom_update_word(&E_TEMP_MAX_SWITCH_SIGNED, (uint16_t)max_temp_switch.toInt());
+      eeprom_update_word(&E_TEMP_MIN_SYSMON, (uint16_t)min_temp_sysmon.toInt());
+      eeprom_update_word(&E_TEMP_MAX_SYSMON, (uint16_t)max_temp_sysmon.toInt());
+      eeprom_update_word(&E_TEMP_MIN_NC, (uint16_t)min_temp_NC.toInt());
+      eeprom_update_word(&E_TEMP_MAX_NC, (uint16_t)max_temp_NC.toInt());
+      eeprom_update_word(&E_TEMP_MIN_SWITCH, (uint16_t)min_temp_switch.toInt());
+      eeprom_update_word(&E_TEMP_MAX_SWITCH, (uint16_t)max_temp_switch.toInt());
       eeprom_update_byte(&E_HUMIDITY_MIN_SYSMON, (uint8_t)min_humidity_sysmon.toInt());
       eeprom_update_byte(&E_HUMIDITY_MAX_SYSMON, (uint8_t)max_humidity_sysmon.toInt());
       eeprom_update_word(&E_AMP_MAX_SYSMON, (uint16_t)max_amp_sysmon.toInt());
@@ -916,8 +972,9 @@ void get_params_core()
 //---------- G E T _ P A R A M S _ G N S --------------------------------------
 /*
    Requests information about the guest nodes from the node controller.
-   If the node controller takes too long to send the info, we skip booting the 
-   guest nodes.
+   
+   Return TRUE: guest node information received.
+   Return FALSE: guest node information not received.
 
    :rtype: boolean
 */
@@ -939,6 +996,9 @@ boolean get_params_GNs()
          Present/not present (guest node 1)
          Present/not present (guest node 2)
          Present/not present (guest node 3)
+         Boot time (guest node 1) (seconds)
+         Boot time (guest node 2) (seconds)
+         Boot time (guest node 3) (seconds)
          Heartbeat timeout (guest node 1)
          Heartbeat timeout (guest node 2)
          Heartbeat timeout (guest node 3)
@@ -948,12 +1008,12 @@ boolean get_params_GNs()
          Bad current timeout (guest node 1)
          Bad current timeout (guest node 2)
          Bad current timeout (guest node 3)
-         Minimum temperature (Celsius) (signed) (guest node 1)
-         Maximum temperature (Celsius) (signed) (guest node 1)
-         Minimum temperature (Celsius) (signed) (guest node 2)
-         Maximum temperature (Celsius) (signed) (guest node 2)
-         Minimum temperature (Celsius) (signed) (guest node 3)
-         Maximum temperature (Celsius) (signed) (guest node 3)
+         Minimum temperature (Celsius) (guest node 1)
+         Maximum temperature (Celsius) (guest node 1)
+         Minimum temperature (Celsius) (guest node 2)
+         Maximum temperature (Celsius) (guest node 2)
+         Minimum temperature (Celsius) (guest node 3)
+         Maximum temperature (Celsius) (guest node 3)
          Maximum amp draw (mA) (guest node 1)
          Maximum amp draw (mA) (guest node 2)
          Maximum amp draw (mA) (guest node 3)
@@ -963,6 +1023,9 @@ boolean get_params_GNs()
       String present_GN1 = "";
       String present_GN2 = "";
       String present_GN3 = "";
+      String boot_time_GN1 = "";
+      String boot_time_GN2 = "";
+      String boot_time_GN3 = "";
       String heartbeat_timeout_GN1 = "";
       String heartbeat_timeout_GN2 = "";
       String heartbeat_timeout_GN3 = "";
@@ -997,6 +1060,18 @@ boolean get_params_GNs()
 
       while(received_params[i] != NC_DELIMITER)
          present_GN3 += received_params[i++];
+      i++;
+
+      while(received_params[i] != NC_DELIMITER)
+         boot_time_GN1 += received_params[i++];
+      i++;
+
+      while(received_params[i] != NC_DELIMITER)
+         boot_time_GN2 += received_params[i++];
+      i++;
+
+      while(received_params[i] != NC_DELIMITER)
+         boot_time_GN3 += received_params[i++];
       i++;
 
       while(received_params[i] != NC_DELIMITER)
@@ -1074,6 +1149,9 @@ boolean get_params_GNs()
       eeprom_update_byte(&E_PRESENT_GN1, (uint8_t)present_GN1.toInt());
       eeprom_update_byte(&E_PRESENT_GN2, (uint8_t)present_GN2.toInt());
       eeprom_update_byte(&E_PRESENT_GN3, (uint8_t)present_GN3.toInt());
+      eeprom_update_word(&E_BOOT_TIME_GN1, (uint16_t)boot_time_GN1.toInt());
+      eeprom_update_word(&E_BOOT_TIME_GN2, (uint16_t)boot_time_GN2.toInt());
+      eeprom_update_word(&E_BOOT_TIME_GN3, (uint16_t)boot_time_GN3.toInt());
       eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_GN1, (uint8_t)heartbeat_timeout_GN1.toInt());
       eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_GN2, (uint8_t)heartbeat_timeout_GN2.toInt());
       eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_GN3, (uint8_t)heartbeat_timeout_GN3.toInt());
@@ -1083,13 +1161,12 @@ boolean get_params_GNs()
       eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_GN1, (uint8_t)bad_current_timeout_GN1.toInt());
       eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_GN2, (uint8_t)bad_current_timeout_GN2.toInt());
       eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_GN3, (uint8_t)bad_current_timeout_GN3.toInt());
-      // EEPROM does not store data types.  Must cast to signed when reading.
-      eeprom_update_word(&E_TEMP_MIN_GN1_SIGNED, (uint16_t)min_temp_GN1.toInt());
-      eeprom_update_word(&E_TEMP_MAX_GN1_SIGNED, (uint16_t)max_temp_GN1.toInt());
-      eeprom_update_word(&E_TEMP_MIN_GN2_SIGNED, (uint16_t)min_temp_GN2.toInt());
-      eeprom_update_word(&E_TEMP_MAX_GN2_SIGNED, (uint16_t)max_temp_GN2.toInt());
-      eeprom_update_word(&E_TEMP_MIN_GN3_SIGNED, (uint16_t)min_temp_GN3.toInt());
-      eeprom_update_word(&E_TEMP_MAX_GN3_SIGNED, (uint16_t)max_temp_GN3.toInt());
+      eeprom_update_word(&E_TEMP_MIN_GN1, (uint16_t)min_temp_GN1.toInt());
+      eeprom_update_word(&E_TEMP_MAX_GN1, (uint16_t)max_temp_GN1.toInt());
+      eeprom_update_word(&E_TEMP_MIN_GN2, (uint16_t)min_temp_GN2.toInt());
+      eeprom_update_word(&E_TEMP_MAX_GN2, (uint16_t)max_temp_GN2.toInt());
+      eeprom_update_word(&E_TEMP_MIN_GN3, (uint16_t)min_temp_GN3.toInt());
+      eeprom_update_word(&E_TEMP_MAX_GN3, (uint16_t)max_temp_GN3.toInt());
       eeprom_update_word(&E_AMP_MAX_GN1, (uint16_t)max_amp_GN1.toInt());
       eeprom_update_word(&E_AMP_MAX_GN2, (uint16_t)max_amp_GN2.toInt());
       eeprom_update_word(&E_AMP_MAX_GN3, (uint16_t)max_amp_GN3.toInt());
