@@ -39,6 +39,15 @@
 // Light detector
 #define PIN_PHOTOCELL A5
 
+// Period of heartbeat for ODroids (ms)
+// This needs to be small and an even number
+#define HEARTBEAT_PERIOD_ODROID 40
+
+// Delay after bad environment reading during boot (seconds)
+#define BOOT_BAD_ENVIRON_WAIT_TIME 5
+// Delay after bad power reading during boot (seconds)
+#define BOOT_BAD_POWER_WAIT_TIME 1
+
 // I2C addresses for current sensors
 #define ADDR_CURRENT_SENSOR_SYSMON 0x60
 #define ADDR_CURRENT_SENSOR_NC 0x62
@@ -50,12 +59,25 @@
 // Resolution of current sensors (with 8A range) (mA)
 #define MILLIAMPS_PER_STEP 16
 
+// Special characters for interacting with the node controller
 #define NC_NOTIFIER_STATUS '@'
 #define NC_NOTIFIER_PROBLEM '#'
 #define NC_NOTIFIER_PARAMS_CORE '$'
 #define NC_NOTIFIER_PARAMS_GN '^'
+#define NC_NOTIFIER_TIME '*'
 #define NC_DELIMITER ','
 #define NC_TERMINATOR '!'
+
+// Messages to send to node controller
+#define PROBLEM_BOOT_GN1_TEMP "GN1:bf_t"
+#define PROBLEM_BOOT_GN1_POWER "GN1:bf_p"
+#define PROBLEM_BOOT_GN1_HEARTBEAT "GN1:bf_h"
+#define PROBLEM_BOOT_GN2_TEMP "GN2:bf_t"
+#define PROBLEM_BOOT_GN2_POWER "GN2:bf_p"
+#define PROBLEM_BOOT_GN2_HEARTBEAT "GN2:bf_h"
+#define PROBLEM_BOOT_GN3_TEMP "GN3:bf_t"
+#define PROBLEM_BOOT_GN3_POWER "GN3:bf_p"
+#define PROBLEM_BOOT_GN3_HEARTBEAT "GN3:bf_h"
 
 
 
@@ -67,12 +89,21 @@ volatile boolean _USART_new_char = false;
 
 HTU21D SysMon_HTU21D;
 
+boolean GN1_booted = false;
+boolean GN2_booted = false;
+boolean GN3_booted = false;
+
 // EEPROM addresses whose values are set by node controller:
 uint32_t EEMEM E_USART_BAUD;
 uint16_t EEMEM E_USART_RX_BUFFER_SIZE;
+uint8_t EEMEM E_STATUS_REPORT_PERIOD;
 uint8_t EEMEM E_MAX_NUM_SOS_BOOT_ATTEMPTS;
-uint8_t EEMEM E_MAX_NUM_NC_BOOT_ATTEMPTS;
-uint16_t EEMEM E_NC_BOOT_TIME;
+uint8_t EEMEM E_MAX_NUM_SUBSYSTEM_BOOT_ATTEMPTS;
+uint16_t EEMEM E_BOOT_TIME_NC;
+uint8_t EEMEM E_BOOT_TIME_SWITCH;
+uint16_t EEMEM E_BOOT_TIME_GN1;
+uint16_t EEMEM E_BOOT_TIME_GN2;
+uint16_t EEMEM E_BOOT_TIME_GN3;
 uint8_t EEMEM E_PRESENT_GN1;
 uint8_t EEMEM E_PRESENT_GN2;
 uint8_t EEMEM E_PRESENT_GN3;
@@ -94,19 +125,18 @@ uint8_t EEMEM E_BAD_CURRENT_TIMEOUT_SWITCH;
 uint8_t EEMEM E_BAD_CURRENT_TIMEOUT_GN1;
 uint8_t EEMEM E_BAD_CURRENT_TIMEOUT_GN2;
 uint8_t EEMEM E_BAD_CURRENT_TIMEOUT_GN3;
-// EEPROM does not store data types.  Must cast to signed when reading.
-uint16_t EEMEM E_TEMP_MIN_SYSMON_SIGNED;
-uint16_t EEMEM E_TEMP_MAX_SYSMON_SIGNED;
-uint16_t EEMEM E_TEMP_MIN_NC_SIGNED;
-uint16_t EEMEM E_TEMP_MAX_NC_SIGNED;
-uint16_t EEMEM E_TEMP_MIN_SWITCH_SIGNED;
-uint16_t EEMEM E_TEMP_MAX_SWITCH_SIGNED;
-uint16_t EEMEM E_TEMP_MIN_GN1_SIGNED;
-uint16_t EEMEM E_TEMP_MAX_GN1_SIGNED;
-uint16_t EEMEM E_TEMP_MIN_GN2_SIGNED;
-uint16_t EEMEM E_TEMP_MAX_GN2_SIGNED;
-uint16_t EEMEM E_TEMP_MIN_GN3_SIGNED;
-uint16_t EEMEM E_TEMP_MAX_GN3_SIGNED;
+uint16_t EEMEM E_TEMP_MIN_SYSMON;
+uint16_t EEMEM E_TEMP_MAX_SYSMON;
+uint16_t EEMEM E_TEMP_MIN_NC;
+uint16_t EEMEM E_TEMP_MAX_NC;
+uint16_t EEMEM E_TEMP_MIN_SWITCH;
+uint16_t EEMEM E_TEMP_MAX_SWITCH;
+uint16_t EEMEM E_TEMP_MIN_GN1;
+uint16_t EEMEM E_TEMP_MAX_GN1;
+uint16_t EEMEM E_TEMP_MIN_GN2;
+uint16_t EEMEM E_TEMP_MAX_GN2;
+uint16_t EEMEM E_TEMP_MIN_GN3;
+uint16_t EEMEM E_TEMP_MAX_GN3;
 uint8_t EEMEM E_HUMIDITY_MIN_SYSMON;
 uint8_t EEMEM E_HUMIDITY_MAX_SYSMON;
 uint16_t EEMEM E_AMP_MAX_SYSMON;
@@ -115,7 +145,6 @@ uint16_t EEMEM E_AMP_MAX_SWITCH;
 uint16_t EEMEM E_AMP_MAX_GN1;
 uint16_t EEMEM E_AMP_MAX_GN2;
 uint16_t EEMEM E_AMP_MAX_GN3;
-
 // EEPROM addresses whose values are not set by node controller:
 uint8_t EEMEM E_NC_ENABLED;
 uint8_t EEMEM E_SWITCH_ENABLED;
@@ -152,13 +181,16 @@ void setup()
   #else
     // Boot self, node controller, and ethernet switch.  Boot successful?
     if(boot_primary())
+    {
+      Serial.println("Booted");
+
       // Boot the guest nodes
       boot_gn();
+    }
   #endif
 
-  // setTime(23, 31, 30, 13, 2, 2009);
-  // RTC.set(now());
-  // Serial.println(RTC.get());
+  // Clear counter, since its been counting for awhile already
+  timer1_interrupt_fired = 0;
 }
 
 
@@ -174,8 +206,9 @@ void loop()
 
     // Environ. checks go here
 
-    // Send status report to node controller
-    //send_status();
+    // Time to send a status report?
+    if(timer1_interrupt_fired >= eeprom_read_byte(&E_STATUS_REPORT_PERIOD))
+      send_status();
 
     // Send problem report to node controller
     //send_problem();
@@ -203,6 +236,8 @@ void send_status()
 
   Serial.print("Light: ");
   Serial.println(analogRead(PIN_PHOTOCELL));
+
+  timer1_interrupt_fired = 0;
 }
 
 
@@ -211,9 +246,11 @@ void send_status()
 /*
    Sends a problem report to the node controller.
 
+   :param String problem: description of the problem
+
    :rtype: none
 */
-void send_problem()
+void send_problem(String problem)
 {
   // Tell the node controller that a problem report is coming
   Serial.println(NC_NOTIFIER_PROBLEM);
@@ -223,61 +260,6 @@ void send_problem()
 
   // Send problem report
   Serial.println("problem report");
-}
-
-
-
-//---------- C H E C K _ H E A R T B E A T ------------------------------------
-/*
-   Checks that the device specified by the argument is alive.
-
-   :rtype: boolean
-*/
-boolean check_heartbeat(byte device)
-{
-  static byte count2 = 0;
-
-  // Which device is being checked?
-  switch (device) {
-      case 1:
-        break;
-
-      case 2:
-        // // Is heartbeat detected?
-        // if(digitalRead(PIN_HEARTBEAT2) == LOW)
-        // {
-        //   Serial.println("Heartbeat 2 not detected");
-
-        //   // Increment counter
-        //   count2++;
-
-        //   // Is the counter equal to the heartbeat timeout for GN2?
-        //   if(count2 == eeprom_read_byte(&E_HEARTBEAT_TIMEOUT_GN2))
-        //   {
-        //     // Power cycle the device
-        //     digitalWrite(PIN_RELAY2, LOW);
-        //     delay(50);
-        //     digitalWrite(PIN_RELAY2, HIGH);
-
-        //     // Reset the counter
-        //     count2 = 0;
-        //   }
-        // }
-        break;
-
-      case 3:
-        break;
-
-      case 4:
-        break;
-
-      case 5:
-        break;
-
-      // Invalid device
-      default:
-        break;
-  }
 }
 
 

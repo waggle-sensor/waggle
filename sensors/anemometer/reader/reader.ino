@@ -159,9 +159,10 @@ static void i2c_read8(byte address, byte reg, uint8_t *value)
 }
 
 void calc_windspeed()
-// Calculate frequency from dominant index
+// .684 offset only to be used when freq > 0
+// Coefficient determined experimentally to be .7324
 {
-    speed_mps = freq * .7324; // constant obtained experimentally in wind tunnel
+    speed_mps = freq * .7324 + .684*(freq>0); // constant obtained experimentally in wind tunnel
     #ifdef POST
     wdt_reset();
     #endif
