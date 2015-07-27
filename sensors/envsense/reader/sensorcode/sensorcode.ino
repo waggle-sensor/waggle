@@ -1164,7 +1164,9 @@ void take_wind_samples()
  */
 void calc_windspeed()
 {
-    speed_mps = freq * .7324; // constant obtained experimentally
+    // .684 offset only to be used when freq > 0
+    // Coefficient determined experimentally to be .7324
+    speed_mps = freq * .7324 + .684*(freq > 0); // constant obtained experimentally
     #ifdef POST
     wdt_reset();
     #endif
