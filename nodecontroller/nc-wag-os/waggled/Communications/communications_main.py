@@ -150,19 +150,19 @@ if __name__ == "__main__":
                 
             time.sleep(3)
 
-        ##terminate the external communication processes
-        #pika_pull.terminate()
-        #pika_push.terminate()
-        #external_push_client.terminate()
-        #external_pull_client.terminate()
-        #print 'External communications shut down.'
+        #terminate the external communication processes
+        pika_pull.terminate()
+        pika_push.terminate()
+        external_push_client.terminate()
+        external_pull_client.terminate()
+        print 'External communications shut down.'
 
-        ##terminate the internal communication processes
-        #pull_serv.terminate()
-        #push_serv.terminate()
-        #internal_push_client.terminate()
-        #internal_pull_client.terminate()
-        #print 'Internal communications shut down.'                
+        #terminate the internal communication processes
+        pull_serv.terminate()
+        push_serv.terminate()
+        internal_push_client.terminate()
+        internal_pull_client.terminate()
+        print 'Internal communications shut down.'                
                 
                 
         

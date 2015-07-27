@@ -1,6 +1,0 @@
-ERROR:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: timeout
-ERROR:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: timeout
-ERROR:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: timeout
-ERROR:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: timeout
-ERROR:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: timeout
-ERROR:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: timeout

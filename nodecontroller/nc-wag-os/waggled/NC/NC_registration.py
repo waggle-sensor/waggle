@@ -23,6 +23,7 @@ with open('/etc/waggle/queuename','r') as file_:
 #except: 
     #print 'Unable to pack message'
         
+#TODO add these to the packet maker class
 #function that returns the registration
 def NC_registration():
     try:
