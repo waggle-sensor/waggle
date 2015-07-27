@@ -41,7 +41,7 @@ class DataProcess(Process):
 			header,data = unpack(body)
 			data = un_gPickle(data)
 			# Send the data off to Cassandra
-			cassandra_insert(data)
+			self.cassandra_insert(data)
 			ch.basic_ack(delivery_tag=method.delivery_tag)
 		except Exception as e:
 			# Cassandra isn't connected or something. Shove it back in the queue for another process
