@@ -5,6 +5,7 @@ oldDIr=`pwd`
 # Install all of the dependencies that the Waggle server needs
 # Get the IP for the cassandra node you want to send data to.
 read -p "Enter the IP address of the Cassandra server you want to use: " c_ip
+touch /etc/waggle/cassandra_ip
 echo $c_ip > /etc/waggle/cassandra_ip
 
 dpkg -i packages_o/*.deb

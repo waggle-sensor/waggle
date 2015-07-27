@@ -10,9 +10,10 @@ from utilities.gPickler import *
 import logging
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.CRITICAL)
 from cassandra.cluster import Cluster
+import time
 
 with open('/etc/waggle/cassandra_ip','r') as f:
-	CASSANDRA_IP = f.read()
+	CASSANDRA_IP = f.read().strip()
 
 class DataProcess(Process):
 	"""
@@ -43,10 +44,13 @@ class DataProcess(Process):
 			cassandra_insert(data)
 			ch.basic_ack(delivery_tag=method.delivery_tag)
 		except Exception as e:
-			# Cassandra isn't connected or something. Shove it back in the queue
-			# and try again later.
+			# Cassandra isn't connected or something. Shove it back in the queue for another process
+			# Then try to re-establish a connection
 			ch.basic_nack(delivery_tag=method.delivery_tag)
-			print str(e)
+			print "Cassandra connection failed. Attempting to reconnect..."
+			# Wait a few seconds before trying to connect (to prevent this from taking up a ton of power)
+			time.sleep(1)
+			self.session = self.cluster.connect('waggle')
 
 	def cassandra_insert(self,data):
 		try:
@@ -60,7 +64,11 @@ class DataProcess(Process):
 
 	def run(self):
 		self.cluster = Cluster(contact_points=[CASSANDRA_IP])
-		self.session = self.cluster.connect('waggle')
+		try: # Might not immediately connect. That's fine. It'll try again if/when it needs to.
+			self.session = self.cluster.connect('waggle')
+		except:
+			print "WARNING: Cassandra connection to " + CASSANDRA_IP + " failed."
+			print "The process will attempt to re-connect when data is received."
 		self.channel.start_consuming()
 
 	def join(self):
