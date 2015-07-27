@@ -36,12 +36,11 @@ class DataProcess(Process):
 		self.cluster = None
 
 	def callback(self,ch,method,props,body):
-		print "In Data Process now."
 		try:
 			header,data = unpack(body)
 			data = un_gPickle(data)
 			# Send the data off to Cassandra
-			self.cassandra_insert(data)
+			self.cassandra_insert(header,data)
 			ch.basic_ack(delivery_tag=method.delivery_tag)
 		except Exception as e:
 			# Cassandra isn't connected or something. Shove it back in the queue for another process
@@ -52,7 +51,7 @@ class DataProcess(Process):
 			time.sleep(1)
 			self.cassandra_connect()
 
-	def cassandra_insert(self,data):
+	def cassandra_insert(self,header,data):
 		try:
 			prepared_statement = self.session.prepare("INSERT INTO sensor_data" + \
 				" (node_id, sensor_name, timestamp, data_types, data, units, extra_info)" + \
