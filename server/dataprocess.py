@@ -37,19 +37,26 @@ class DataProcess(Process):
 	def callback(self,ch,method,props,body):
 		print "In Data Process now."
 		try:
-
 			header,data = unpack(body)
 			data = un_gPickle(data)
 			# Send the data off to Cassandra
+			cassandra_insert(data)
+			ch.basic_ack(delivery_tag=method.delivery_tag)
+		except Exception as e:
+			# Cassandra isn't connected or something. Shove it back in the queue
+			# and try again later.
+			ch.basic_nack(delivery_tag=method.delivery_tag)
+			print str(e)
 
+	def cassandra_insert(self,data):
+		try:
 			prepared_statement = self.session.prepare("INSERT INTO sensor_data" + \
 				" (node_id, sensor_name, timestamp, data_types, data, units, extra_info)" + \
 				" VALUES (?, ?, ?, ?, ?, ?, ?)")
 			bound_statement = prepared_statement.bind([header["s_uniqid"],data[0],data[1],data[2],data[4],data[5],data[6]])
 			self.session.execute(bound_statement)
 		except Exception as e:
-			print str(e)
-		ch.basic_ack(delivery_tag = method.delivery_tag)
+			raise
 
 	def run(self):
 		self.cluster = Cluster(contact_points=[CASSANDRA_IP])

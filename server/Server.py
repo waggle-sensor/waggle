@@ -8,7 +8,13 @@ from multiprocessing import Manager
 from registrationprocess import RegProcess
 from dataprocess import DataProcess
 import time
-# Queues and exchanges the server will always need.
+
+# The number of processes of each type to run on this server instance
+NUM_ROUTER_PROCS = 1
+NUM_DATA_PROCS = 1
+NUM_REGISTRATION_PROCS = 1
+NUM_UTIL_PROCS = 1
+
 exchage_list = ["waggle_in","internal"]
 
 # Permanant queue bindings
@@ -51,63 +57,64 @@ for key in queue_bindings.keys():
 
 
 #start the processes
-router = WaggleRouter(routing_table)
-router.start()
-print("Router online.")
+router_procs = []
+for i in range (0,NUM_ROUTER_PROCS):
+	new_router = WaggleRouter(routing_table)
+	new_router.start()
+	router_procs.append(new_router)
+print "Routering processes online."
 
-util = UtilProcess()
-util.start()
-print("Utility process online.")
+util_procs = []
+for i in range (0,NUM_UTIL_PROCS):
+	new_util = UtilProcess()
+	new_util.start()
+	util_procs.append(new_util)
+print "Utility processes online."
 
-reg = RegProcess(routing_table)
-reg.start()
-print("Registration process online.")
+reg_procs = []
+for i in range (0,NUM_REGISTRATION_PROCS):
+	new_reg = RegProcess(routing_table)
+	new_reg.start()
+	reg_procs.append(new_reg)
+print "Registration processes online."
 
-data = DataProcess()
-data.start()
-print("Data process online.")
+data_procs = []
+for i in range (0,NUM_DATA_PROCS):
+	new_data = DataProcess()
+	new_data.start()
+	data_procs.append(new_reg)
+print "Data forwarding processes online."
 
 
 
 
 print("All processes online. Server is fully operational.")
 
-# Make sure all the processes stay alive. This will be
-# cleaned up once all the processes are complete, including
-# having Cassandra running.
+
+
+# Future work: This is where server commands should be processed.
+# This could be accomplished by reading from something like a multiprocessing queue
+# and then performing whatever needs to be done right here.
+# A separate command-line process might be a good way to do this, making sure that
+# it has sole control over standard in/out.
 while True:
-	if not router.is_alive():
-		print "The router has died. RIP In Peace."
-		print "Attempting to bring it back from the dead..."
-		router = WaggleRouter(routing_table)
-		router.start()
-		print "The router has risen from the grave!"
+	for i in range(0,len(router_procs)):
+		if not router_procs[0].is_alive():
+			new_router = WaggleRouter(routing_table)
+			router_procs[i] = new_router
+	for i in range(0,len(data_procs)):
+		if not data_procs[i].is_alive():
+			new_data = DataProcess()
+			data_procs[i] = new_data
 
-	if not util.is_alive():
-		print "The utilProcess has died. RIP In Peace."
-		print "Attempting to bring it back from the dead..."
-		util = UtilProcess()
-		util.start()
-		print "The utilProcess has risen from the grave!"
+	for i in range(0,len(reg_procs)):
+		if not reg_procs[i].is_alive():
+			new_reg = RegProcess(routing_table)
+			reg_procs[i] = new_reg
 
-	if not reg.is_alive():
-		print "The registrar has died. RIP In Peace."
-		print "Attempting to bring it back from the dead..."
-		reg = RegProcess(routing_table)
-		reg.start()
-		print "The registrar has risen from the grave!"
-
-	if not data.is_alive():
-		print "The data process has died. RIP In Peace."
-		print "Attempting to bring it back from the dead..."
-		data = DataProcess()
-		data.start()
-		print "The router has risen from the grave!"
+	for i in range(0,len(util_procs)):
+		if not util_procs[i].is_alive():
+			new_util = UtilProcess()
+			util_procs[i] = new_util
 
 	time.sleep(3)
-
-data.join()
-reg.join()
-util.join()
-router.join()
-print("Server has shut down cleanly.")
