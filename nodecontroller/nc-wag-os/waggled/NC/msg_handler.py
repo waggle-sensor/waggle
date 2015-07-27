@@ -20,7 +20,7 @@ def msg_handler(msg):
         #unpacks the header
         header = get_header(msg)
     except: 
-        print 'Message is corrupt.' #TODO should this send some kind of error response? 
+        print 'Message is corrupt: ', msg #TODO should this send some kind of error response? 
         
     #get the major header type
     major = chr(header['msg_mj_type'])
