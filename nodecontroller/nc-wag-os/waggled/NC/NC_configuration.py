@@ -1,5 +1,7 @@
+import sys
 from send import send
-
+sys.path.append('../../../../devtools/protocol_common/')
+from utilities.packetmaker import *
 
 """
     This file stores all of the configurable variables for the node controller. 
@@ -25,10 +27,18 @@ with open('/etc/waggle/NCIP','r') as file_:
     NCIP = file_.read().strip()
     
 #Maps the device ID to the queue location in DC 
-DEVICE_DICT = {
-    '1244' : 1, #test GN
-    HOSTNAME : 5 #NC
-    }
+with open('/etc/waggle/devices', 'r') as file_:
+    lines = file_.readlines()
+
+#the third line in the devices file contains a mapping of devices to their priority
+#that is used to contruct the dictionary
+mapping = []
+while lines[2].find(','):
+    device, lines[2] = lines[2].split(',', 1)
+    device, priority = device.split(':',1)
+    mapping.append((device,int(priority)))
+    
+DEVICE_DICT = dict(mapping)
 
 #lists the order of device priority. Each device corresponds with a location in the data cache
 #The highest priority position is at the front of the list, the lowest priority is at the end.
@@ -42,7 +52,27 @@ AVAILABLE_MEM = 299,999
 #The params used to connect to the cloud are stored here
 CLOUD_ADDR = 'amqps://waggle:waggle@10.10.10.110:5671/%2F'
 
-
+def send_config():
+    """ 
+    This function sends all of the stored information to the cloud.
+    
+    """
+    #add all the configuration
+    config ='Hostname: ' + HOSTNAME + '\n'
+    config = config + 'Queuename: ' + QUEUENAME + '\n'
+    config = config + 'Node Controller IP: ' + NCIP + '\n'
+    config = config + 'Device dictionary: ' + str(DEVICE_DICT) + '\n'
+    config = config + 'Priority order: ' + str(PRIORITY_ORDER) + '\n'
+    config = config + 'Available memory for data cache: ' + str(AVAILABLE_MEM) + '\n'
+    config = config + 'Cloud IP address and parameters: ' + CLOUD_ADDR + '\n'
+        
+    packet = make_config_reg(config)
+    for pack in packet:
+        send(pack)
+    
+    
+    
+    
     
     
     

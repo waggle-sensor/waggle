@@ -163,6 +163,7 @@ class push_server(Process):
                         break #breaks the loop when the client socket closes
                     elif data == 'Hello': #a handshake from a new guest node. #TODO This will change in the future
                         client_sock.sendall('Hi') #NC sends the queuename so the GN can register with the cloud
+                        client_sock.sendall(HOSTNAME)
                     else:
                         #print 'Push server pushing msg into DC: ', data
                         comm.DC_push.put(data)

@@ -11,7 +11,10 @@ from send import send
     A python script that creates a registration message packet and sends it to the NC. 
 """ 
 
-packet = packetmaker.registration_packet()
+with open('/etc/waggle/NCID','r') as file_:
+    NC_ID = file_.read().strip() 
+
+packet = packetmaker.make_GN_reg(NC_ID)
 print 'Registration packet made...' 
 for pack in packet:
         send(pack)

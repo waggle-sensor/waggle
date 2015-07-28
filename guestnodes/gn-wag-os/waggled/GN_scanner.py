@@ -68,13 +68,18 @@ for HOST in hosts:
         s.send(request)
         msg = s.recv(4028)
         if msg == 'Hi': #Nodecontroller! #TODO arbitrary 
-            with open('/etc/waggle/NCIP','r') as file_: #write nodecontroller IP to file
-                HOST= file_.read().strip() 
-            print 'NCIP is: ', HOST
+            with open('/etc/waggle/NCIP','w') as file_: #write nodecontroller IP to file
+                file_.write(HOST)
+            msg = s.recv(4028)#waits for node controller to send ID 
+            #Node controller unique ID is neccessary for registration
+            with open('/etc/waggle/NCID','w') as file_: #write nodecontroller ID to file
+                file_.write(msg)
+            s.close()
             break
         else:
             #Not the nodecontroller... 
             pass
+        s.close()
     except: 
         #Not the nodecontroller....
         pass
