@@ -1,0 +1,151 @@
+ERROR:pika.adapters.base_connection:Socket Error on fd 26: 104
+WARNING:pika.adapters.base_connection:Socket closed when connection was open
+ERROR:pika.adapters.base_connection:Socket Error on fd 26: 104
+WARNING:pika.adapters.base_connection:Socket closed when connection was open
+WARNING:root:Pika push connection closed. Waiting and trying again. 2015-07-27 15:00:07.751320
+WARNING:pika.adapters.blocking_connection:Disconnected from RabbitMQ at 10.10.10.110:5671 (320): CONNECTION_FORCED - broker forced connection closure with reason 'shutdown'
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 104] Connection reset by peer
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 104] Connection reset by peer
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 104] Connection reset by peer
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 104] Connection reset by peer
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 104] Connection reset by peer
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 104] Connection reset by peer
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 104] Connection reset by peer
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 104] Connection reset by peer
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 104] Connection reset by peer
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+ERROR:pika.adapters.base_connection:Socket connection was broken
+WARNING:pika.adapters.base_connection:Socket closed when connection was open
+WARNING:root:Pika push connection closed. Waiting and trying again. 2015-07-27 15:24:19.851280
+WARNING:pika.adapters.blocking_connection:Disconnected from RabbitMQ at 10.10.10.110:5671 (320): CONNECTION_FORCED - broker forced connection closure with reason 'shutdown'
+WARNING:pika.adapters.blocking_connection:Disconnected from RabbitMQ at 10.10.10.110:5671 (320): CONNECTION_FORCED - broker forced connection closure with reason 'shutdown'
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: _ssl.c:495: The handshake operation timed out
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 104] Connection reset by peer
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 104] Connection reset by peer
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 104] Connection reset by peer
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 104] Connection reset by peer
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 104] Connection reset by peer
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+CRITICAL:pika.connection:Attempted to send frame when closed
+CRITICAL:pika.connection:Attempted to send frame when closed
+CRITICAL:pika.connection:Attempted to send frame when closed
+CRITICAL:pika.connection:Attempted to send frame when closed
+CRITICAL:pika.connection:Attempted to send frame when closed
+CRITICAL:pika.connection:Attempted to send frame when closed
+CRITICAL:pika.connection:Attempted to send frame when closed
+CRITICAL:pika.connection:Attempted to send frame when closed
+CRITICAL:pika.connection:Attempted to send frame when closed
+CRITICAL:pika.connection:Attempted to send frame when closed
+CRITICAL:pika.connection:Attempted to send frame when closed
+WARNING:root:Pika push connection closed. Waiting and trying again. 2015-07-27 15:27:40.353258
+WARNING:pika.adapters.blocking_connection:Disconnected from RabbitMQ at 10.10.10.110:5671 (320): CONNECTION_FORCED - broker forced connection closure with reason 'shutdown'
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 104] Connection reset by peer
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 104] Connection reset by peer
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 104] Connection reset by peer
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 104] Connection reset by peer
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 104] Connection reset by peer
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 104] Connection reset by peer
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 104] Connection reset by peer
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 104] Connection reset by peer
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 104] Connection reset by peer
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+WARNING:pika.adapters.base_connection:Connection to 10.10.10.110:5671 failed: [Errno 111] Connection refused
+ERROR:pika.adapters.base_connection:Socket connection was broken
+WARNING:pika.adapters.base_connection:Socket closed when connection was open
+WARNING:root:Pika push connection closed. Waiting and trying again. 2015-07-27 15:34:06.216650
+WARNING:pika.adapters.blocking_connection:Received Channel.Close, closing: <METHOD(['channel_number=1', 'frame_type=1', 'method=<Channel.Close([\'class_id=60\', \'method_id=40\', \'reply_code=404\', "reply_text=NOT_FOUND - no exchange \'waggle_in\' in vhost \'/\'"])>'])>
+WARNING:root:Pika push has crashed. Restarting...2015-07-27 15:34:15.313931
+WARNING:root:External client pull disconnected from data cache. Waiting and trying again.
+WARNING:root:External client pull disconnected from data cache. Waiting and trying again.
+WARNING:root:External client pull disconnected from data cache. Waiting and trying again.
+WARNING:root:External client pull disconnected from data cache. Waiting and trying again.
+WARNING:root:External client pull disconnected from data cache. Waiting and trying again.
+WARNING:root:External client pull disconnected from data cache. Waiting and trying again.
+WARNING:root:External client pull disconnected from data cache. Waiting and trying again.
+WARNING:root:External client pull disconnected from data cache. Waiting and trying again.
