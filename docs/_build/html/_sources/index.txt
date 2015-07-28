@@ -19,4 +19,5 @@ Contents:
    guestNode/guestNode
    wagMan/wagMan
    protocol/protocol
+   docondoc
 
