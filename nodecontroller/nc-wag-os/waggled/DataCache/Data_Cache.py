@@ -5,8 +5,8 @@ from daemon import Daemon
 import sys, os, os.path, time, atexit, socket, datetime
 sys.path.append('../../../../devtools/protocol_common/')
 from protocol.PacketHandler import *
-sys.path.append('../Communications/')
-from device_dict import DEVICE_DICT
+sys.path.append('..')
+import NC_configuration
 from glob import glob
 
 """ 
@@ -18,11 +18,17 @@ from glob import glob
 #TODO clean up
 #TODO Figure out what to do once DC has messages stored in files
 
+#These variables only update when data cache is rebooted
+available_mem = NC_configuration.AVAILABLE_MEM
+DEVICE_DICT = NC_configuration.DEVICE_DICT #TODO this probably needs to update when config file updates
+priority_list = NC_configuration.PRIORITY_ORDER
+
 
 class Data_Cache(Daemon):
     #The priority list is now a list containing the number corresponding to a unique device. The highest priority no longer corresponds to the highest number, but rather the order in which the elements are in the list
-    priority_list = [5,4,3,2,1] #TODO will be stored in config file
-    available_mem = 299,999 #default #TODO will be stored in config file
+    #priority_list = NC_configuration.PRIORITY_ORDER
+    #available_mem = NC_configuration.AVAILABLE_MEM
+    
    
    #dummy variables 
     incoming_bffr = []
@@ -48,9 +54,9 @@ class Data_Cache(Daemon):
         
         #Each buffer is a matrix of queues for organization and indexing purposes.
         #make incoming buffer
-        Data_Cache.incoming_bffr = make_bffr(len(Data_Cache.priority_list))
+        Data_Cache.incoming_bffr = make_bffr(len(priority_list))
         #make outgoing buffer 
-        Data_Cache.outgoing_bffr = make_bffr(len(Data_Cache.priority_list))
+        Data_Cache.outgoing_bffr = make_bffr(len(priority_list))
         
         #the main server loop
         while True:
@@ -131,6 +137,7 @@ class Data_Cache(Daemon):
                                 if recipient == 0: #0 is the default ID for the cloud. Indicates an outgoing push.
                                     try: 
                                         dev_loc = DEVICE_DICT[str(sender)] #looks up the location of the sender device
+                                        #print 'dev_loc: ' , dev_loc
                                         if order==False: #indicates lifo. lifo has highest message priority
                                             msg_p=5
                                         #pushes the message into the outgoing buffer to the queue corresponding to the device location and message priority
@@ -172,9 +179,9 @@ def outgoing_push(dev, msg_p, msg, outgoing_available_queues, incoming_available
     """ 
     
     #if the msg counter is greater than or equal to the available memory, flush the outgoing queues into a file
-    if Data_Cache.msg_counter>= Data_Cache.available_mem:
-        #print 'msg counter: ',Data_Cache. msg_counter
-        #print 'available mem: ', Data_Cache.available_mem
+    if Data_Cache.msg_counter>= available_mem:
+        #print 'msg counter: ',Data_Cache.msg_counter
+        #print 'available mem: ', available_mem
         #Calls the data cache flush method and passes in the neccessary params
         DC_flush(incoming_available_queues, outgoing_available_queues) #Flushes all messages into a file
         Data_Cache.msg_counter = 0 #resets the message counter after all buffers have been saved to a file
@@ -206,7 +213,7 @@ def incoming_push(device, msg_p, msg, incoming_available_queues, outgoing_availa
     """ 
     
     #if the msg counter is greater than or equal to the available memory, flush the buffers into files
-    if Data_Cache.msg_counter >= Data_Cache.available_mem: 
+    if Data_Cache.msg_counter >= available_mem: 
         #Calls the data cache flush method
         DC_flush(incoming_available_queues, outgoing_available_queues)
         Data_Cache.msg_counter = 0 #resets the message counter after all buffers have been saved to a file
@@ -483,12 +490,12 @@ def get_priority(outgoing_available_queues):
     if len(outgoing_available_queues) == 0:
         return 'False'
     else:
-        highest_de_p = Data_Cache.priority_list[(len(Data_Cache.priority_list)-1)] #sets it to the lowest priority as default
+        highest_de_p = priority_list[(len(priority_list)-1)] #sets it to the lowest priority as default
         highest_msg_p = 0 #default
         for i in range(len(outgoing_available_queues)): #i has to be an int
             device_p, msg_p = outgoing_available_queues[i]
             if msg_p >= highest_msg_p: #if the msg_p is higher or equal to the current highest
-                if Data_Cache.priority_list.index(device_p) < Data_Cache.priority_list.index(highest_de_p): #and the device_p is higher
+                if priority_list.index(device_p) < priority_list.index(highest_de_p): #and the device_p is higher
                     highest_de_p = device_p #then that element becomes the new highest_p
                     highest_msg_p = msg_p
                 else: #but, if the device_p is lower, the element should still be the new highest_p that gets checked next

@@ -9,6 +9,11 @@ from protocol.PacketHandler import *
 import logging
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.CRITICAL)
 from crcmod.predefined import mkCrcFun 
+from cassandra.cluster import Cluster
+import time
+
+with open('/etc/waggle/cassandra_ip','r') as f:
+    CASSANDRA_IP = f.read().strip()
 
 class RegProcess(Process):
     """
@@ -32,8 +37,18 @@ class RegProcess(Process):
         # Declare this process's queue
         self.channel.queue_declare("registration")
         self.channel.basic_consume(self.callback, queue='registration')
+        self.session = None
+        self.cluster = None
 
     def callback(self,ch,method,props,body):
+        """
+            Handles incoming registration messages, including:
+                Initial registration (subtype 'r')
+                SSL Certificate Registration (subtype 's')
+                Configuration file registration (subtype 'n')
+
+            Each subtype is handled as a apart of an if-elif statement.
+        """
         print ("Received a registration request.")
 
         # Unpack the header and see if it is already registered
@@ -84,10 +99,50 @@ class RegProcess(Process):
             ch.basic_publish(exchange='',
                  routing_key=replyQueue,
                  body=cert)
+
+        elif header["msg_mi_type"] == ord('n'): # They are sending us a config file.
+        # Cassandra note: If the node is already in the node_info table,
+        # then this will preform an UPSERT of the config file instead of an INSERT.
+        # This is inherent to Cassandra, so is not explicitly stated here.
+            try:
+                self.cassandra_insert(header,msg)
+            except Exception:
+                print "Cassandra connection failed. Will retry soon..."
+                ch.basic_nack(delivery_tag = method.delivery_tag)
+                time.sleep(1)
+                self.cassandra_connect()
+                return
+
+
         ch.basic_ack(delivery_tag = method.delivery_tag)
 
+    def cassandra_insert(self,header,data):
+        try:
+            prepared_statement = self.session.prepare("INSERT INTO node_info" + \
+                " (node_id, config_file)" + \
+                " VALUES (?, ?)")
+            bound_statement = prepared_statement.bind([header["s_uniqid"],data])
+            self.session.execute(bound_statement)
+        except Exception as e:
+            raise
+
+    def cassandra_connect(self):
+        try:
+            self.cluster.shutdown()
+        except:
+            pass
+        self.cluster = Cluster(contact_points=[CASSANDRA_IP])
+
+        try: # Might not immediately connect. That's fine. It'll try again if/when it needs to.
+            self.session = self.cluster.connect('waggle')
+        except:
+            print "WARNING: Cassandra connection to " + CASSANDRA_IP + " failed."
+            print "The process will attempt to re-connect at a later time."
+
     def run(self):
+        self.cassandra_connect()
         self.channel.start_consuming()
+
 
     def join(self):
         super(RegProcess,self).terminate()

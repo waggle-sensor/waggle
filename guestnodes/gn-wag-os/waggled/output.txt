@@ -1,0 +1,25 @@
+
+Starting Nmap 6.40 ( http://nmap.org ) at 2015-07-28 13:03 CDT
+Nmap scan report for bishop.mcs.anl.gov (10.10.10.1)
+Host is up (0.00042s latency).
+Nmap scan report for bishop (10.10.10.10)
+Host is up (0.000039s latency).
+Nmap scan report for DanielLenovo.bishop.mcs.anl.gov (10.10.10.100)
+Host is up (0.00037s latency).
+Nmap scan report for BenjaminsT420.bishop.mcs.anl.gov (10.10.10.105)
+Host is up (0.00024s latency).
+Nmap scan report for WagServ.bishop.mcs.anl.gov (10.10.10.110)
+Host is up (0.00082s latency).
+Nmap scan report for Nathans-MBP.bishop.mcs.anl.gov (10.10.10.124)
+Host is up (0.00034s latency).
+Nmap scan report for Node5.bishop.mcs.anl.gov (10.10.10.131)
+Host is up (0.0015s latency).
+Nmap scan report for MaxsT61.bishop.mcs.anl.gov (10.10.10.132)
+Host is up (0.00014s latency).
+Nmap scan report for kyle-Aspire-V3-551G.bishop.mcs.anl.gov (10.10.10.140)
+Host is up (0.00049s latency).
+Nmap scan report for Bharadwaja.bishop.mcs.anl.gov (10.10.10.142)
+Host is up (0.0012s latency).
+Nmap scan report for Mothership.bishop.mcs.anl.gov (10.10.10.143)
+Host is up (0.00028s latency).
+Nmap done: 256 IP addresses (11 hosts up) scanned in 2.31 seconds
