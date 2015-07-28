@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Search &mdash; Waggle 0.3 documentation</title>
+  <title>Documentation Structure &mdash; Waggle 0.3 documentation</title>
   
 
   
@@ -32,7 +32,8 @@
   
 
   
-    <link rel="top" title="Waggle 0.3 documentation" href="index.html"/> 
+    <link rel="top" title="Waggle 0.3 documentation" href="index.html"/>
+        <link rel="prev" title="Packetmaker Module Functions" href="protocol/packetmaker.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -57,7 +58,7 @@
 
         
 <div role="search">
-  <form id="rtd-search-form" class="wy-form" action="#" method="get">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
@@ -71,7 +72,7 @@
         
           
           
-              <ul>
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="server/server.html">Waggle Server</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="server/installation.html">Waggle Server Installation and Configuration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="server/installation.html#quick-install">Quick install</a></li>
@@ -134,7 +135,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="docondoc.html">Documentation Structure</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Documentation Structure</a></li>
 </ul>
 
           
@@ -159,8 +160,12 @@
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
-    <li></li>
+    <li>Documentation Structure</li>
       <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/docondoc.txt" rel="nofollow"> View page source</a>
+          
         
       </li>
   </ul>
@@ -168,22 +173,29 @@
 </div>
           <div role="main" class="document">
             
-  <noscript>
-  <div id="fallback" class="admonition warning">
-    <p class="last">
-      Please activate JavaScript to enable the search
-      functionality.
-    </p>
-  </div>
-  </noscript>
+  <div class="section" id="documentation-structure">
+<h1>Documentation Structure<a class="headerlink" href="#documentation-structure" title="Permalink to this headline">¶</a></h1>
+<p>Waggle is documented using <a class="reference external" href="http://sphinx-doc.org/">Sphinx</a>. Within the git repo, there is a docs directory that contains
+all documentation files. The general structure of the documentation follows the structure of the
+documentation page, with the main sections of the documentation being broken down into directories
+and subdirectories, each of which has a main table of contents file with the same name as the directory
+in which it resides. Notable oddities in the documentaion include the fact that the C files for the
+Waggle system manager are run through a quick script to generate their rst files, and several source files
+are copied into the docs directory to allow autodoc to read them. To rebuild the documentation,
+run <cite>make clean</cite> from the docs directory, and then <cite>make html</cite> to build the site, which can then be found
+in docs/_build/html.</p>
+</div>
 
-  
-  <div id="search-results">
-  
-  </div>
 
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="protocol/packetmaker.html" class="btn btn-neutral" title="Packetmaker Module Functions" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>
@@ -220,7 +232,6 @@
       <script type="text/javascript" src="_static/jquery.js"></script>
       <script type="text/javascript" src="_static/underscore.js"></script>
       <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="_static/searchtools.js"></script>
 
   
 
@@ -236,14 +247,7 @@
           SphinxRtdTheme.StickyNav.enable();
       });
   </script>
-  
-  <script type="text/javascript">
-    jQuery(function() { Search.loadIndex("searchindex.js"); });
-  </script>
-  
-  <script type="text/javascript" id="searchindexloader"></script>
    
-
 
 </body>
 </html>
