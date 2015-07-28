@@ -1,3 +1,6 @@
+from send import send
+
+
 """
     This file stores all of the configurable variables for the node controller. 
 
@@ -40,6 +43,8 @@ AVAILABLE_MEM = 299,999
 CLOUD_ADDR = 'amqps://waggle:waggle@10.10.10.110:5671/%2F'
 
 
+    
+    
     
     
     
