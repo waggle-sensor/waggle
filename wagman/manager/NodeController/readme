@@ -1,3 +1,8 @@
-To run the node controller's WagMan layer, execute the following command:
+Instructions for running "heartbeat.cpp":
 
-./WagMan.sh
+cd /sys/class/gpio
+echo 204 > export
+cd gpio204
+echo out > direction
+g++ -o heartbeat heartbeat.cpp
+./heartbeat

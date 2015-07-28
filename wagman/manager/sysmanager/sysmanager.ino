@@ -64,20 +64,36 @@
 #define NC_NOTIFIER_PROBLEM '#'
 #define NC_NOTIFIER_PARAMS_CORE '$'
 #define NC_NOTIFIER_PARAMS_GN '^'
-#define NC_NOTIFIER_TIME '*'
+#define NC_NOTIFIER_TIME_REQUEST '*'
+#define NC_NOTIFIER_TIME_SEND '('
 #define NC_DELIMITER ','
 #define NC_TERMINATOR '!'
 
 // Messages to send to node controller
-#define PROBLEM_BOOT_GN1_TEMP "GN1:bf_t"
-#define PROBLEM_BOOT_GN1_POWER "GN1:bf_p"
-#define PROBLEM_BOOT_GN1_HEARTBEAT "GN1:bf_h"
-#define PROBLEM_BOOT_GN2_TEMP "GN2:bf_t"
-#define PROBLEM_BOOT_GN2_POWER "GN2:bf_p"
-#define PROBLEM_BOOT_GN2_HEARTBEAT "GN2:bf_h"
-#define PROBLEM_BOOT_GN3_TEMP "GN3:bf_t"
-#define PROBLEM_BOOT_GN3_POWER "GN3:bf_p"
-#define PROBLEM_BOOT_GN3_HEARTBEAT "GN3:bf_h"
+#define PROBLEM_SYSMON_TEMP "SM:t"
+#define PROBLEM_SYSMON_POWER "SM:p"
+#define PROBLEM_NC_TEMP "NC:t"
+#define PROBLEM_NC_POWER "NC:p"
+#define PROBLEM_SWITCH_TEMP "SW:t"
+#define PROBLEM_SWITCH_POWER "SW:p"
+#define PROBLEM_GN1_TEMP "GN1:t"
+#define PROBLEM_GN1_POWER "GN1:p"
+#define PROBLEM_GN1_HEARTBEAT "GN1:h"
+#define PROBLEM_GN2_TEMP "GN2:t"
+#define PROBLEM_GN2_POWER "GN2:p"
+#define PROBLEM_GN2_HEARTBEAT "GN2:h"
+#define PROBLEM_GN3_TEMP "GN3:t"
+#define PROBLEM_GN3_POWER "GN3:p"
+#define PROBLEM_GN3_HEARTBEAT "GN3:h"
+
+// Messages that might be received from node controller
+#define REQUEST_TIME "1"
+#define REQUEST_STATUS "2"
+#define REQUEST_REBOOT_NC "3"
+#define REQUEST_REBOOT_SWITCH "4"
+#define REQUEST_REBOOT_GN1 "5"
+#define REQUEST_REBOOT_GN2 "6"
+#define REQUEST_REBOOT_GN3 "7"
 
 
 
@@ -89,9 +105,29 @@ volatile boolean _USART_new_char = false;
 
 HTU21D SysMon_HTU21D;
 
-boolean GN1_booted = false;
-boolean GN2_booted = false;
-boolean GN3_booted = false;
+boolean _GN1_booted = false;
+boolean _GN2_booted = false;
+boolean _GN3_booted = false;
+
+byte count_status_report = 0;
+byte count_timeout_heartbeat_NC = 0;
+byte count_timeout_heartbeat_switch = 0;
+byte count_timeout_heartbeat_GN1 = 0;
+byte count_timeout_heartbeat_GN2 = 0;
+byte count_timeout_heartbeat_GN3 = 0;
+byte count_timeout_power_SysMon = 0;
+byte count_timeout_power_NC = 0;
+byte count_timeout_power_switch = 0;
+byte count_timeout_power_GN1 = 0;
+byte count_timeout_power_GN2 = 0;
+byte count_timeout_power_GN3 = 0;
+byte count_timeout_environ_SysMon = 0;
+byte count_timeout_environ_NC = 0;
+byte count_timeout_temp_switch = 0;
+byte count_timeout_temp_GN1 = 0;
+byte count_timeout_temp_GN2 = 0;
+byte count_timeout_temp_GN3 = 0;
+
 
 // EEPROM addresses whose values are set by node controller:
 uint32_t EEMEM E_USART_BAUD;
@@ -112,8 +148,8 @@ uint8_t EEMEM E_HEARTBEAT_TIMEOUT_SWITCH;
 uint8_t EEMEM E_HEARTBEAT_TIMEOUT_GN1;
 uint8_t EEMEM E_HEARTBEAT_TIMEOUT_GN2;
 uint8_t EEMEM E_HEARTBEAT_TIMEOUT_GN3;
-uint8_t EEMEM E_BAD_TEMP_TIMEOUT_SYSMON;
-uint8_t EEMEM E_BAD_TEMP_TIMEOUT_NC;
+uint8_t EEMEM E_BAD_ENVIRON_TIMEOUT_SYSMON;
+uint8_t EEMEM E_BAD_ENVIRON_TIMEOUT_NC;
 uint8_t EEMEM E_BAD_TEMP_TIMEOUT_SWITCH;
 uint8_t EEMEM E_BAD_TEMP_TIMEOUT_GN1;
 uint8_t EEMEM E_BAD_TEMP_TIMEOUT_GN2;
@@ -169,24 +205,20 @@ void setup()
     // Is everything (internal) working correctly?
     if(POST())
     {
-      // Boot self, node controller, and ethernet switch.  Boot successful?
+      // Boot SysMon, node controller, and ethernet switch.  Boot successful?
       if(boot_primary())
         // Boot the guest nodes
-        boot_gn();
+        boot_GN();
     }
     // Something non-fatal failed the POST
     else
       // Go to partial boot sequence
       boot_SOS();
   #else
-    // Boot self, node controller, and ethernet switch.  Boot successful?
+    // Boot SysMon, node controller, and ethernet switch.  Boot successful?
     if(boot_primary())
-    {
-      Serial.println("Booted");
-
       // Boot the guest nodes
-      boot_gn();
-    }
+      boot_GN();
   #endif
 
   // Clear counter, since its been counting for awhile already
@@ -201,20 +233,138 @@ void loop()
   // Has the timer finished a cycle?
   if(_timer1_cycle)
   {
-    // Clear the flag
-    _timer1_cycle = false;
+    // Increment status report counter
+    count_status_report++;
 
-    // Environ. checks go here
+    // Is SysMon's environment unacceptable?
+    if(!check_environ_SysMon())
+      // Increment counter
+      count_timeout_environ_SysMon++;
+    // Is SysMon's power draw unacceptable?
+    if(!check_power_SysMon())
+      // Increment counter
+      count_timeout_power_SysMon++;
+
+    // Is the node controller's environment unacceptable?
+    if(!check_environ_NC())
+      // Increment counter
+      count_timeout_environ_NC++;
+    // Is the node controller's power draw unacceptable?
+    if(!check_power_NC())
+      // Increment counter
+      count_timeout_power_NC++;
+    // Is the node controller's heartbeat not detected?
+    if(!check_heartbeat_odroid(PIN_HEARTBEAT_NC))
+      // Increment counter
+      count_timeout_heartbeat_NC++;
+
+    // Is the ethernet switch's temperature unacceptable?
+    if(!check_temp_switch())
+      // Increment counter
+      count_timeout_temp_switch++;
+    // Is the ethernet switch's power draw unacceptable?
+    if(!check_power_switch())
+      // Increment counter
+      count_timeout_power_switch++;
+
+    // Is guest node 1 operating?
+    if(_GN1_booted)
+    {
+      // Is the guest node's temperature unacceptable?
+      if(!check_temp_GN(1))
+        // Increment counter
+        count_timeout_temp_GN1++;
+      // Is the guest node's power draw unacceptable?
+      if(!check_power_GN(1))
+        // Increment counter
+        count_timeout_power_GN1++;
+      // Is the guest node's heartbeat not detected?
+      if(!check_heartbeat_odroid(PIN_HEARTBEAT_GN1))
+        // Increment counter
+        count_timeout_heartbeat_GN1++;
+    }
+
+    // Is guest node 2 operating?
+    if(_GN2_booted)
+    {
+      // Is the guest node's temperature unacceptable?
+      if(!check_temp_GN(2))
+        // Increment counter
+        count_timeout_temp_GN2++;
+      // Is the guest node's power draw unacceptable?
+      if(!check_power_GN(2))
+        // Increment counter
+        count_timeout_power_GN2++;
+      // Is the guest node's heartbeat not detected?
+      if(!check_heartbeat_odroid(PIN_HEARTBEAT_GN2))
+        // Increment counter
+        count_timeout_heartbeat_GN2++;
+    }
+
+    // Is guest node 3 operating?
+    if(_GN3_booted)
+    {
+      // Is the guest node's temperature unacceptable?
+      if(!check_temp_GN(3))
+        // Increment counter
+        count_timeout_temp_GN3++;
+      // Is the guest node's power draw unacceptable?
+      if(!check_power_GN(3))
+        // Increment counter
+        count_timeout_power_GN3++;
+      // Is the guest node's heartbeat not detected?
+      if(!check_heartbeat_odroid(PIN_HEARTBEAT_GN3))
+        // Increment counter
+        count_timeout_heartbeat_GN3++;
+    }
 
     // Time to send a status report?
-    if(timer1_interrupt_fired >= eeprom_read_byte(&E_STATUS_REPORT_PERIOD))
+    if(count_status_report >= eeprom_read_byte(&E_STATUS_REPORT_PERIOD))
       send_status();
 
-    // Send problem report to node controller
-    //send_problem();
+    // Clear the flag for the next timer cycle
+    _timer1_cycle = false;
+  }
 
-    // Check heartbeat of guest node 2
-    //check_heartbeat(2);
+  // Received a new serial character?
+  if(_USART_new_char)
+  {
+    // Clear flag
+    _USART_new_char = false;
+
+    // Which request was received?
+    switch (USART_RX_char) {
+      case REQUEST_TIME:
+        send_time();
+        break;
+
+      case REQUEST_STATUS:
+        send_status();
+        break;
+
+      case REQUEST_REBOOT_NC:
+        boot_NC();
+        break;
+
+      case REQUEST_REBOOT_SWITCH:
+        boot_switch();
+        break;
+
+      case REQUEST_REBOOT_GN1:
+        boot_GN1();
+        break;
+
+      case REQUEST_REBOOT_GN2:
+        boot_GN2();
+        break;
+
+      case REQUEST_REBOOT_GN3:
+        boot_GN3();
+        break;
+
+      default:
+        break;
+    }
   }
 }
 
@@ -236,8 +386,26 @@ void send_status()
 
   Serial.print("Light: ");
   Serial.println(analogRead(PIN_PHOTOCELL));
+}
 
-  timer1_interrupt_fired = 0;
+
+
+//---------- S E N D _ T I M E ------------------------------------------------
+/*
+   Sends the RTC time to the node controller.
+
+   :rtype: none
+*/
+void send_time()
+{
+  // Tell the node controller that a time report is coming
+  Serial.println(NC_NOTIFIER_TIME_SEND);
+
+  // Give it time to get ready
+  delay(10);
+
+  // Get time from RTC and send it to the node controller
+  Serial.println(RTC.get());
 }
 
 
@@ -259,7 +427,7 @@ void send_problem(String problem)
   delay(10);
 
   // Send problem report
-  Serial.println("problem report");
+  Serial.println(problem);
 }
 
 

@@ -29,118 +29,18 @@ boolean boot_primary()
       // Assign default parameters
       set_default_eeprom();
 
-	// Is SysMon drawing too much power?
-	if(!check_power_self())
-   {
-      // Giving SysMon one more chance...
-
-      // Wait for things to settle down, perhaps
-      delay(BOOT_BAD_POWER_WAIT_TIME * 1000);
-
-      // Is SysMon drawing too much power?
-      if(!check_power_self())
-         // Skip the rest of the boot sequence
-         return false;
-   }
-
-	// Is SysMon's environment outside of safe bounds?
-	if(!check_environ_self())
-   {
-      // Giving SysMon one more chance...
-
-      // Wait for things to settle down, perhaps
-      delay(BOOT_BAD_ENVIRON_WAIT_TIME * 1000);
-
-      // Is SysMon's environment outside of safe bounds?
-      if(!check_environ_self())
-         // Skip the rest of the boot sequence
-         return false;
-   }
-
-	// Is the node controller not enabled?
-	if(!eeprom_read_byte(&E_NC_ENABLED))
-		// Skip the rest of the boot sequence
+	// Booted SysMon successfully?
+   if(!boot_SysMon())
+      // Skip the rest of the boot sequence
       return false;
 
-	// Is the node controller's environment not suitable?
-	if(!check_environ_nc())
-   {
-      // Giving the node controller one more chance...
-
-      // Wait for things to settle down, perhaps
-      delay(BOOT_BAD_ENVIRON_WAIT_TIME * 1000);
-
-      // Is the node controller's environment not suitable?
-      if(!check_environ_nc())
-         // Skip the rest of the boot sequence
-         return false;
-   }
-
-	// Enable power to node controller
-   digitalWrite(PIN_RELAY_NC, HIGH);
-
-   // Give the node controller time to boot
-   delay(eeprom_read_word(&E_BOOT_TIME_NC) * 1000);
-
-	// Is the node controller not drawing an expected amount of power?
-	if(!check_power_nc())
-   {
-      // Giving the node controller one more chance...
-
-      // Power cycle the node controller
-      power_cycle(PIN_RELAY_NC);
-
-      // Give the node controller time to boot
-      delay(eeprom_read_word(&E_BOOT_TIME_NC) * 1000);
-
-      // Is the node controller not drawing an expected amount of power?
-      if(!check_power_nc())
-         // Skip the rest of the boot sequence
-         return false;
-   }
-
-	// Is the node controller alive (sending a "heartbeat")?
-	if(!check_heartbeat_odroid(PIN_HEARTBEAT_NC))
-   {
-      byte boot_attempts = 0;
-      boolean _heartbeat_detected = false;
-      
-      // Try to get a heartbeat from the NC as many times as allowed
-      while(boot_attempts < eeprom_read_byte(&E_MAX_NUM_SUBSYSTEM_BOOT_ATTEMPTS))
-      {
-         // Is "heartbeat" not detected?
-         if(!check_heartbeat_odroid(PIN_HEARTBEAT_NC))
-         {
-            // Power cycle the node controller
-            power_cycle(PIN_RELAY_NC);
-
-            // Give the node controller time to boot
-            delay(eeprom_read_word(&E_BOOT_TIME_NC) * 1000);
-         }
-         else
-            // Indicate that a heartbeat was detected
-            _heartbeat_detected = true;
-
-         // Increment counter for number of attempts
-         boot_attempts++;
-      }
-
-      // Still no heartbeat detected?
-      if(!_heartbeat_detected)
-      {
-         // Turn off the node controller
-         digitalWrite(PIN_RELAY_NC, LOW);
-
-         // Mark NC as dead
-         eeprom_update_byte(&E_NC_ENABLED, 0);
-
-         // Skip the rest of the boot sequence
-         return false;
-      }
-   }
+   // Booted node controller successfully?
+   if(!boot_NC())
+      // Skip the rest of the boot sequence
+      return false;
 
 	// Request time from node controller
-	get_time_nc();
+	get_time_NC();
 
    // Request operating parameters from node controller
    get_params_core();
@@ -150,47 +50,10 @@ boolean boot_primary()
 		// Skip the rest of the boot sequence
 		return false;
 
-	// Is the ethernet switch enabled?
-	if(!eeprom_read_byte(&E_SWITCH_ENABLED))
-		// Skip the rest of the boot sequence
-		return false;
-
-	// Is the ethernet switch's temperature outside of safe parameters?
-	if(!check_temp_switch())
-   {
-      // Giving the switch one more chance...
-
-      // Wait for things to settle down, perhaps
-      delay(BOOT_BAD_ENVIRON_WAIT_TIME * 1000);
-
-      // Is the ethernet switch's temperature outside of safe parameters?
-      if(!check_temp_switch())
-         // Skip the rest of the boot sequence
-         return false;
-   }
-
-	// Enable power to ethernet switch
-   digitalWrite(PIN_RELAY_SWITCH, HIGH);
-
-   // Give the ethernet switch time to boot
-   delay(eeprom_read_word(&E_BOOT_TIME_NC) * 1000);
-
-	// Is the ethernet switch not drawing an expected amount of power?
-	if(!check_power_switch())
-   {
-      // Giving the ethernet switch one more chance...
-
-      // Power cycle the switch
-      power_cycle(PIN_RELAY_SWITCH);
-
-      // Give the switch time to boot
-      delay(eeprom_read_byte(&E_BOOT_TIME_SWITCH) * 1000);
-
-      // Is the ethernet switch not drawing an expected amount of power?
-      if(!check_power_switch())
-         // Skip the rest of the boot sequence
-         return false;
-   }
+   // Booted ethernet switch successfully?
+   if(!boot_switch())
+      // Skip the rest of the boot sequence
+      return false;
 
 	// Everything is good, so exit sequence with success
 	return true;
@@ -335,17 +198,12 @@ void init_primary()
    // End I2C transaction (with stop bit)
    Wire.endTransmission(1);
 
-   // Set relay pins to output mode and make sure they're off
+   // Set relay pins to output mode
    pinMode(PIN_RELAY_NC, OUTPUT);
-   digitalWrite(PIN_RELAY_NC, LOW);
    pinMode(PIN_RELAY_SWITCH, OUTPUT);
-   digitalWrite(PIN_RELAY_SWITCH, LOW);
    pinMode(PIN_RELAY_GN1, OUTPUT);
-   digitalWrite(PIN_RELAY_GN1, LOW);
    pinMode(PIN_RELAY_GN2, OUTPUT);
-   digitalWrite(PIN_RELAY_GN2, LOW);
    pinMode(PIN_RELAY_GN3, OUTPUT);
-   digitalWrite(PIN_RELAY_GN3, LOW);
 
    // Set heartbeat pins to input mode (just for clarity)
    pinMode(PIN_HEARTBEAT_NC, INPUT);
@@ -386,8 +244,8 @@ void set_default_eeprom()
    eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_GN1, 5);
    eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_GN2, 5);
    eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_GN3, 5);
-   eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_SYSMON, 5);
-   eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_NC, 5);
+   eeprom_update_byte(&E_BAD_ENVIRON_TIMEOUT_SYSMON, 5);
+   eeprom_update_byte(&E_BAD_ENVIRON_TIMEOUT_NC, 5);
    eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_SWITCH, 5);
    eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_GN1, 5);
    eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_GN2, 5);
@@ -404,13 +262,13 @@ void set_default_eeprom()
    eeprom_update_word(&E_TEMP_MIN_NC, 0);
    eeprom_update_word(&E_TEMP_MAX_NC, 100);
    eeprom_update_word(&E_TEMP_MIN_SWITCH, 0);
-   eeprom_update_word(&E_TEMP_MAX_SWITCH, 100);
+   eeprom_update_word(&E_TEMP_MAX_SWITCH, 80);
    eeprom_update_word(&E_TEMP_MIN_GN1, 0);
-   eeprom_update_word(&E_TEMP_MAX_GN1, 100);
+   eeprom_update_word(&E_TEMP_MAX_GN1, 80);
    eeprom_update_word(&E_TEMP_MIN_GN2, 0);
-   eeprom_update_word(&E_TEMP_MAX_GN2, 100);
+   eeprom_update_word(&E_TEMP_MAX_GN2, 80);
    eeprom_update_word(&E_TEMP_MIN_GN3, 0);
-   eeprom_update_word(&E_TEMP_MAX_GN3, 100);
+   eeprom_update_word(&E_TEMP_MAX_GN3, 80);
    eeprom_update_byte(&E_HUMIDITY_MIN_SYSMON, 30);
    eeprom_update_byte(&E_HUMIDITY_MAX_SYSMON, 100);
    eeprom_update_word(&E_AMP_MAX_SYSMON, 400);
@@ -426,7 +284,234 @@ void set_default_eeprom()
 
 
 
-//---------- C H E C K _ P O W E R _ S E L F ----------------------------------
+//---------- B O O T _ S Y S M O N --------------------------------------------
+/*
+    Checks environment and power draw for SysMon.
+
+    Return TRUE: everything is good.
+    Return FALSE: environment/power draw is unacceptable.
+
+    :rtype: boolean
+*/
+boolean boot_SysMon()
+{
+   // Is SysMon drawing too much power?
+   if(!check_power_SysMon())
+   {
+      // Giving SysMon one more chance...
+
+      // Wait for things to settle down, perhaps
+      delay(BOOT_BAD_POWER_WAIT_TIME * 1000);
+
+      // Is SysMon drawing too much power?
+      if(!check_power_SysMon())
+         // Exit with failure
+         return false;
+   }
+
+   // Is SysMon's environment outside of safe bounds?
+   if(!check_environ_SysMon())
+   {
+      // Giving SysMon one more chance...
+
+      // Wait for things to settle down, perhaps
+      delay(BOOT_BAD_ENVIRON_WAIT_TIME * 1000);
+
+      // Is SysMon's environment outside of safe bounds?
+      if(!check_environ_SysMon())
+         // Exit with failure
+         return false;
+   }
+
+   // Exit with success
+   return true;
+}
+
+
+
+//---------- B O O T _ N C ----------------------------------------------------
+/*
+    Boots the node controller.  Checks environment, power draw, and heartbeat.
+
+    Return TRUE: everything is good, boot successful.
+    Return FALSE: something went wrong, boot unsuccessful.
+
+    :rtype: boolean
+*/
+boolean boot_NC()
+{
+   // Make sure the device is off
+   digitalWrite(PIN_RELAY_NC, LOW);
+
+   // Give the relay time to move
+   delay(100);
+
+   // Is the node controller not enabled?
+   if(!eeprom_read_byte(&E_NC_ENABLED))
+      // Exit with failure
+      return false;
+
+   // Is the node controller's environment not suitable?
+   if(!check_environ_NC())
+   {
+      // Giving the node controller one more chance...
+
+      // Wait for things to settle down, perhaps
+      delay(BOOT_BAD_ENVIRON_WAIT_TIME * 1000);
+
+      // Is the node controller's environment not suitable?
+      if(!check_environ_NC())
+         // Exit with failure
+         return false;
+   }
+
+   // Enable power to node controller
+   digitalWrite(PIN_RELAY_NC, HIGH);
+
+   // Give the node controller time to boot
+   delay(eeprom_read_word(&E_BOOT_TIME_NC) * 1000);
+
+   // Is the node controller not drawing an expected amount of power?
+   if(!check_power_NC())
+   {
+      // Giving the node controller one more chance...
+
+      // Power cycle the node controller
+      power_cycle(PIN_RELAY_NC);
+
+      // Give the node controller time to boot
+      delay(eeprom_read_word(&E_BOOT_TIME_NC) * 1000);
+
+      // Is the node controller not drawing an expected amount of power?
+      if(!check_power_NC())
+         // Exit with failure
+         return false;
+   }
+
+   // Is the node controller alive (sending a "heartbeat")?
+   if(!check_heartbeat_odroid(PIN_HEARTBEAT_NC))
+   {
+      byte boot_attempts = 0;
+      boolean _heartbeat_detected = false;
+      
+      // Try to get a heartbeat from the NC as many times as allowed
+      while(boot_attempts < eeprom_read_byte(&E_MAX_NUM_SUBSYSTEM_BOOT_ATTEMPTS))
+      {
+         // Is "heartbeat" not detected?
+         if(!check_heartbeat_odroid(PIN_HEARTBEAT_NC))
+         {
+            // Power cycle the node controller
+            power_cycle(PIN_RELAY_NC);
+
+            // Give the node controller time to boot
+            delay(eeprom_read_word(&E_BOOT_TIME_NC) * 1000);
+         }
+         else
+            // Indicate that a heartbeat was detected
+            _heartbeat_detected = true;
+
+         // Increment counter for number of attempts
+         boot_attempts++;
+      }
+
+      // Still no heartbeat detected?
+      if(!_heartbeat_detected)
+      {
+         // Turn off the node controller
+         digitalWrite(PIN_RELAY_NC, LOW);
+
+         // Mark NC as dead
+         eeprom_update_byte(&E_NC_ENABLED, 0);
+
+         // Exit with failure
+         return false;
+      }
+   }
+
+   // Exit with success
+   return true;
+}
+
+//---------- B O O T _ S W I T C H --------------------------------------------
+/*
+    Boots the ethernet switch.  Checks environment and power draw.
+    If something goes wrong, the node controller is notified.
+
+    Return TRUE: everything is good, boot successful.
+    Return FALSE: something went wrong, boot unsuccessful.
+
+    :rtype: boolean
+*/
+boolean boot_switch()
+{
+   // Make sure the device is off
+   digitalWrite(PIN_RELAY_SWITCH, LOW);
+
+   // Give the relay time to move
+   delay(100);
+
+   // Is the ethernet switch enabled?
+   if(!eeprom_read_byte(&E_SWITCH_ENABLED))
+      // Exit with failure
+      return false;
+
+   // Is the ethernet switch's temperature outside of safe parameters?
+   if(!check_temp_switch())
+   {
+      // Giving the switch one more chance...
+
+      // Wait for things to settle down, perhaps
+      delay(BOOT_BAD_ENVIRON_WAIT_TIME * 1000);
+
+      // Is the ethernet switch's temperature outside of safe parameters?
+      if(!check_temp_switch())
+      {
+         // Inform node controller of failure
+         send_problem(PROBLEM_SWITCH_TEMP);
+
+         // Exit with failure
+         return false;
+      }
+   }
+
+   // Enable power to ethernet switch
+   digitalWrite(PIN_RELAY_SWITCH, HIGH);
+
+   // Give the ethernet switch time to boot
+   delay(eeprom_read_word(&E_BOOT_TIME_NC) * 1000);
+
+   // Is the ethernet switch not drawing an expected amount of power?
+   if(!check_power_switch())
+   {
+      // Giving the ethernet switch one more chance...
+
+      // Power cycle the switch
+      power_cycle(PIN_RELAY_SWITCH);
+
+      // Give the switch time to boot
+      delay(eeprom_read_byte(&E_BOOT_TIME_SWITCH) * 1000);
+
+      // Is the ethernet switch not drawing an expected amount of power?
+      if(!check_power_switch())
+      {
+         // Turn off the switch
+         digitalWrite(PIN_RELAY_SWITCH, LOW);
+
+         // Inform node controller of failure
+         send_problem(PROBLEM_SWITCH_POWER);
+
+         // Exit with failure
+         return false;
+      }
+   }
+
+   // Exit with success
+   return true;
+}
+
+
+
+//---------- C H E C K _ P O W E R _ S Y S M O N ------------------------------
 /*
    Reads the SysMon's current sensor.
 
@@ -435,7 +520,7 @@ void set_default_eeprom()
 
    :rtype: boolean
 */
-boolean check_power_self()
+boolean check_power_SysMon()
 {
    byte msb, csb, lsb;
    
@@ -477,7 +562,7 @@ boolean check_power_self()
 
 
 
-//---------- C H E C K _ E N V I R O N _ S E L F ------------------------------
+//---------- C H E C K _ E N V I R O N _ S Y S M O N --------------------------
 /*
    Reads the HTU21D sensor.
 
@@ -486,7 +571,7 @@ boolean check_power_self()
 
    :rtype: boolean
 */
-boolean check_environ_self()
+boolean check_environ_SysMon()
 {
    // Read temperature and truncate it (so we don't deal with floats)
    int temp = SysMon_HTU21D.readTemperature();
@@ -519,7 +604,7 @@ boolean check_environ_self()
 
    :rtype: boolean
 */
-boolean check_environ_nc()
+boolean check_environ_NC()
 {
    // Read temperature and truncate it (so we don't deal with floats)
    int temp = SysMon_HTU21D.readTemperature();
@@ -547,7 +632,7 @@ boolean check_environ_nc()
 
    :rtype: boolean
 */
-boolean check_power_nc()
+boolean check_power_NC()
 {
    byte msb, csb, lsb;
    
@@ -621,6 +706,9 @@ boolean check_heartbeat_odroid(byte device)
    {
       // Trying one more time, in case we encountered edges...
 
+      // Wait just a bit to move past possible edges
+      delay(2);
+
       // Get first heartbeat sample
       sample1 = digitalRead(device);
 
@@ -648,10 +736,10 @@ boolean check_heartbeat_odroid(byte device)
 
    :rtype: none
 */
-void get_time_nc()
+void get_time_NC()
 {
    // Send request
-   Serial.println(NC_NOTIFIER_TIME);
+   Serial.println(NC_NOTIFIER_TIME_REQUEST);
 
    // Save the node controller's response into a string.
    // Default timeout value is 1 second
@@ -775,8 +863,8 @@ void get_params_core()
          Ethernet switch boot time
          Heartbeat timeout (node controller)
          Heartbeat timeout (switch)
-         Bad temperature timeout (system monitor)
-         Bad temperature timeout (node controller)
+         Bad environment timeout (system monitor)
+         Bad environment timeout (node controller)
          Bad temperature timeout (switch)
          Bad current timeout (system monitor)
          Bad current timeout (node controller)
@@ -805,22 +893,22 @@ void get_params_core()
       String switch_boot_time = "";
       String heartbeat_timeout_NC = "";
       String heartbeat_timeout_switch = "";
-      String bad_temp_timeout_sysmon = "";
-      String bad_temp_timeout_NC = "";
+      String bad_environ_timeout_SysMon = "";
+      String bad_environ_timeout_NC = "";
       String bad_temp_timeout_switch = "";
-      String bad_current_timeout_sysmon = "";
+      String bad_current_timeout_SysMon = "";
       String bad_current_timeout_NC = "";
       String bad_current_timeout_switch = "";
       String current_noise_ceiling = "";
-      String min_temp_sysmon = "";
-      String max_temp_sysmon = "";
+      String min_temp_SysMon = "";
+      String max_temp_SysMon = "";
       String min_temp_NC = "";
       String max_temp_NC = "";
       String min_temp_switch = "";
       String max_temp_switch = "";
-      String min_humidity_sysmon = "";
-      String max_humidity_sysmon = "";
-      String max_amp_sysmon = "";
+      String min_humidity_SysMon = "";
+      String max_humidity_SysMon = "";
+      String max_amp_SysMon = "";
       String max_amp_NC = "";
       String max_amp_switch = "";
 
@@ -866,11 +954,11 @@ void get_params_core()
       i++;
 
       while(received_params[i] != NC_DELIMITER)
-         bad_temp_timeout_sysmon += received_params[i++];
+         bad_environ_timeout_SysMon += received_params[i++];
       i++;
 
       while(received_params[i] != NC_DELIMITER)
-         bad_temp_timeout_NC += received_params[i++];
+         bad_environ_timeout_NC += received_params[i++];
       i++;
 
       while(received_params[i] != NC_DELIMITER)
@@ -878,7 +966,7 @@ void get_params_core()
       i++;
 
       while(received_params[i] != NC_DELIMITER)
-         bad_current_timeout_sysmon += received_params[i++];
+         bad_current_timeout_SysMon += received_params[i++];
       i++;
 
       while(received_params[i] != NC_DELIMITER)
@@ -894,11 +982,11 @@ void get_params_core()
       i++;
 
       while(received_params[i] != NC_DELIMITER)
-         min_temp_sysmon += received_params[i++];
+         min_temp_SysMon += received_params[i++];
       i++;
 
       while(received_params[i] != NC_DELIMITER)
-         max_temp_sysmon += received_params[i++];
+         max_temp_SysMon += received_params[i++];
       i++;
 
       while(received_params[i] != NC_DELIMITER)
@@ -918,15 +1006,15 @@ void get_params_core()
       i++;
 
       while(received_params[i] != NC_DELIMITER)
-         min_humidity_sysmon += received_params[i++];
+         min_humidity_SysMon += received_params[i++];
       i++;
 
       while(received_params[i] != NC_DELIMITER)
-         max_humidity_sysmon += received_params[i++];
+         max_humidity_SysMon += received_params[i++];
       i++;
 
       while(received_params[i] != NC_DELIMITER)
-         max_amp_sysmon += received_params[i++];
+         max_amp_SysMon += received_params[i++];
       i++;
 
       while(received_params[i] != NC_DELIMITER)
@@ -946,22 +1034,22 @@ void get_params_core()
       eeprom_update_byte(&E_BOOT_TIME_SWITCH, (uint8_t)switch_boot_time.toInt());
       eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_NC, (uint8_t)heartbeat_timeout_NC.toInt());
       eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_SWITCH, (uint8_t)heartbeat_timeout_switch.toInt());
-      eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_SYSMON, (uint8_t)bad_temp_timeout_sysmon.toInt());
-      eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_NC, (uint8_t)bad_temp_timeout_NC.toInt());
+      eeprom_update_byte(&E_BAD_ENVIRON_TIMEOUT_SYSMON, (uint8_t)bad_environ_timeout_SysMon.toInt());
+      eeprom_update_byte(&E_BAD_ENVIRON_TIMEOUT_NC, (uint8_t)bad_environ_timeout_NC.toInt());
       eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_SWITCH, (uint8_t)bad_temp_timeout_switch.toInt());
-      eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_SYSMON, (uint8_t)bad_current_timeout_sysmon.toInt());
+      eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_SYSMON, (uint8_t)bad_current_timeout_SysMon.toInt());
       eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_NC, (uint8_t)bad_current_timeout_NC.toInt());
       eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_SWITCH, (uint8_t)bad_current_timeout_switch.toInt());
       eeprom_update_word(&E_AMP_NOISE_CEILING, (uint16_t)current_noise_ceiling.toInt());
-      eeprom_update_word(&E_TEMP_MIN_SYSMON, (uint16_t)min_temp_sysmon.toInt());
-      eeprom_update_word(&E_TEMP_MAX_SYSMON, (uint16_t)max_temp_sysmon.toInt());
+      eeprom_update_word(&E_TEMP_MIN_SYSMON, (uint16_t)min_temp_SysMon.toInt());
+      eeprom_update_word(&E_TEMP_MAX_SYSMON, (uint16_t)max_temp_SysMon.toInt());
       eeprom_update_word(&E_TEMP_MIN_NC, (uint16_t)min_temp_NC.toInt());
       eeprom_update_word(&E_TEMP_MAX_NC, (uint16_t)max_temp_NC.toInt());
       eeprom_update_word(&E_TEMP_MIN_SWITCH, (uint16_t)min_temp_switch.toInt());
       eeprom_update_word(&E_TEMP_MAX_SWITCH, (uint16_t)max_temp_switch.toInt());
-      eeprom_update_byte(&E_HUMIDITY_MIN_SYSMON, (uint8_t)min_humidity_sysmon.toInt());
-      eeprom_update_byte(&E_HUMIDITY_MAX_SYSMON, (uint8_t)max_humidity_sysmon.toInt());
-      eeprom_update_word(&E_AMP_MAX_SYSMON, (uint16_t)max_amp_sysmon.toInt());
+      eeprom_update_byte(&E_HUMIDITY_MIN_SYSMON, (uint8_t)min_humidity_SysMon.toInt());
+      eeprom_update_byte(&E_HUMIDITY_MAX_SYSMON, (uint8_t)max_humidity_SysMon.toInt());
+      eeprom_update_word(&E_AMP_MAX_SYSMON, (uint16_t)max_amp_SysMon.toInt());
       eeprom_update_word(&E_AMP_MAX_NC, (uint16_t)max_amp_NC.toInt());
       eeprom_update_word(&E_AMP_MAX_SWITCH, (uint16_t)max_amp_switch.toInt());
    }
