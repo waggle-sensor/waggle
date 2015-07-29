@@ -72,10 +72,50 @@ def msg_handler(msg):
     #registration
     elif major =='r':
         #TODO do stuff here 
-        #unpack the message
-        reg = unpack(msg)
-        #print out the body of the message
-        print 'NC received registration: ', reg[1]
+        
+        sender = header['s_uniqid']
+        if sender == 0:
+            #message is from cloud
+            #unpack the message
+            reg = unpack(msg)
+            print 'NC received registration: ', reg[1]
+        else: 
+            with open('/etc/waggle/devices', 'r') as _file:
+                lines = _file.readlines()
+            #check if device is already registered
+            devices = []
+            #the first line of the file contains a list of already registered nodes
+            #deconstruct string into list
+            while lines[0].find(','):
+                device, lines[0] = lines[0].split(',',1)
+                devices.append(device)
+            try:
+                devices.index(sender) #if this works, the device is already registered
+                #nothing else to be done
+            except: 
+                #if it fails, the device is not yet registered. Need to find available priorities to assign it
+                #the second line of the file contains a list of available priorities
+                priorities = []
+                while lines[1].find(','):
+                    priority, lines[1] = lines[1].split(',',1)
+                    priorities.append(priority)
+                device_p = priorities.pop()
+                
+                #assign the device to its priority
+                #the third line of the file contains a mapping of device to its priority. 
+                #This is what is used to construct the device_dict
+                lines[2] = sender + ':' + device_p + ',' + lines[2]
+                
+                #put the list back together to be written back into the file
+                for priority in priorities:
+                    lines[1] = priority + ',' + lines[1]
+            #put the list back together to be written back into the file
+            for device in devices:
+                lines[0] = device + ',' + lines[0]
+              
+            #write the lines back into the file
+            with open('/etc/waggle/devices', 'w') as _file:
+                _file.writelines(lines)
     
     #message type unrecognized 
     else: 

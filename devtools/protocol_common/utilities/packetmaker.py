@@ -1,7 +1,7 @@
 # packetmaker.py
 """
-	This module contains a few utilities that autogenerate complete simple packets,
-	such as ping and time request packets.
+    This module contains a few utilities that autogenerate complete simple packets,
+    such as ping and time request packets.
 """
 from gPickler import gPickle
 import sys, os, os.path
@@ -12,28 +12,28 @@ with open('/etc/waggle/queuename','r') as file_:
     QUEUENAME = file_.read().strip() 
 
 def make_ping_packet():
-	"""
-		Returns a simple ping request packet.
+    """
+        Returns a simple ping request packet.
 
-		:rtype: string
-	"""
-	header_dict = {
-		"msg_mj_type" : ord('p'),
-		"msg_mi_type" : ord('r')
-	}
-	return pack(header_dict)
+        :rtype: string
+    """
+    header_dict = {
+        "msg_mj_type" : ord('p'),
+        "msg_mi_type" : ord('r')
+    }
+    return pack(header_dict)
 
 def make_time_packet():
-	"""
-		Returns a simple time request packet.
+    """
+        Returns a simple time request packet.
 
-		:rtype: string
-	"""
-	header_dict = {
-		"msg_mj_type" : ord('t'),
-		"msg_mi_type" : ord('r')
-	}
-	return pack(header_dict)
+        :rtype: string
+    """
+    header_dict = {
+        "msg_mj_type" : ord('t'),
+        "msg_mi_type" : ord('r')
+    }
+    return pack(header_dict)
 
 def make_data_packet(data):
     """
@@ -51,11 +51,11 @@ def make_data_packet(data):
 
 def registration_packet():
     """
-    	Returns a registration request packet.
+        Returns a registration request packet.
 
-    	:rtype: string
+        :rtype: string
     """ 
-   
+
     header_dict = {
         "msg_mj_type" : ord('r'),
         "msg_mi_type" : ord('r')
@@ -63,3 +63,46 @@ def registration_packet():
     msg = str(QUEUENAME)
         
     return pack(header_dict, message_data = msg)
+
+def make_config_reg(config):
+    """
+        Returns a configuration registration packet. 
+        
+        :param config: node configuration file
+        :rtype: string
+        
+    """
+    header_dict = {
+        "msg_mj_type" : ord('r'),
+        "msg_mi_type" : ord('n')
+        }
+    return pack(header_dict, message_data = config)
+    
+def make_GN_reg(recp_ID):
+    """
+        Returns a guestnode registration packet to send to the node controller.
+    """
+    
+    header_dict = {
+        "msg_mj_type" : ord('r'),
+        "msg_mi_type" : ord('r'),
+        "r_uniqid" : recp_ID
+        }
+
+    return pack(header_dict, message_data = '')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
