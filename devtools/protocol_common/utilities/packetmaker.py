@@ -8,8 +8,8 @@ import sys, os, os.path
 sys.path.append("..")
 from protocol.PacketHandler import *
 
-with open('/etc/waggle/queuename','r') as file_:
-    QUEUENAME = file_.read().strip() 
+#with open('/etc/waggle/queuename','r') as file_:
+    #QUEUENAME = file_.read().strip() 
 
 def make_ping_packet():
     """
@@ -87,7 +87,9 @@ def make_GN_reg(recp_ID):
         "msg_mj_type" : ord('r'),
         "msg_mi_type" : ord('r'),
         "r_uniqid" : recp_ID
+        
         }
+    
 
     return pack(header_dict, message_data = '')
 

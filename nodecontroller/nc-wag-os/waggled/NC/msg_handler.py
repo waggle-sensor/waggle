@@ -6,6 +6,7 @@ from protocol.PacketHandler import *
 sys.path.append('../../../../devtools/protocol_common/')
 from utilities import packetmaker
 from send import send
+from NC_configuration import *
 
 def msg_handler(msg):
     """
@@ -95,6 +96,7 @@ def msg_handler(msg):
             except: 
                 #if it fails, the device is not yet registered. Need to find available priorities to assign it
                 #the second line of the file contains a list of available priorities
+                print 'Adding device ',sender, 'to devices file.'
                 priorities = []
                 while lines[1].find(','):
                     priority, lines[1] = lines[1].split(',',1)
@@ -116,7 +118,21 @@ def msg_handler(msg):
             #write the lines back into the file
             with open('/etc/waggle/devices', 'w') as _file:
                 _file.writelines(lines)
-    
+            
+            #send GN registration to cloud
+            header_dict = {
+                "msg_mj_type" : ord('r'),
+                "msg_mi_type" : ord('r'),
+                "s_uniqid"    : int(sender)
+                }
+            msg = str(QUEUENAME)
+        try: 
+            
+            packet = pack(header_dict, message_data = msg)
+            print 'Registration made for node ID ', key
+            for pack_ in packet:
+                send(pack_)
+            
     #message type unrecognized 
     else: 
         print 'Message major type, ' , major, ' unrecognized.'
