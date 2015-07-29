@@ -5,6 +5,7 @@ sys.path.append("/usr/lib/waggle/")
 from multiprocessing import Process, Manager
 import pika
 from protocol.PacketHandler import *
+from utilities.packetassembler import PacketAssembler
 import logging
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.CRITICAL)
 
@@ -30,6 +31,7 @@ class WaggleRouter(Process):
 		self.rabbitConn = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
 		self.channel = self.rabbitConn.channel()
 		self.channel.basic_qos(prefetch_count=1)
+		# self.assembler = PacketAssembler() 
 
 		#Load all of the existing registered node queues
 		with open('registrations/nodes.txt','r') as nodes:

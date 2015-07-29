@@ -47,7 +47,7 @@ with open ('output.txt','r') as _file:
 for line in lines:
     #does the line contain an IP address?
     if line[0] == 'N': 
-        print 'Line: ', line
+        #print 'Line: ', line
         #remove the parenthesis around the IP address
         junk, IP = line.split('(',1)
         IP, junk = IP.split(')',1)

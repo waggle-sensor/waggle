@@ -4,20 +4,21 @@ import socket, os, os.path, sys
 sys.path.append('../../../devtools/protocol_common/')
 from protocol.PacketHandler import *
 from msg_handler import msg_handler
+from GN_configuration import *
 
 """ 
     This is a client socket that connects to the pull_server of the node controller to retrieve messages. 
 """
 
-with open('/etc/waggle/hostname','r') as file_:
-    HOSTNAME = file_.read().strip()
+#with open('/etc/waggle/hostname','r') as file_:
+    #HOSTNAME = file_.read().strip()
     
-#gets the IP address for the nodecontroller
-with open('/etc/waggle/NCIP','r') as file_:
-    IP = file_.read().strip() 
+##gets the IP address for the nodecontroller
+#with open('/etc/waggle/NCIP','r') as file_:
+    #IP = file_.read().strip() 
 
 def receive():
-    HOST = IP #Should connect to NodeController
+    HOST = NCIP #Should connect to NodeController
     PORT = 9091 #port for pull_server
     
     

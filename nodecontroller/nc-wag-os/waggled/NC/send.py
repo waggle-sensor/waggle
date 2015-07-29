@@ -18,13 +18,13 @@ def send(msg):
     try:
         try: 
             s.connect((HOST,PORT))
-            print 'Connected... Sending msg: ', msg
+            #print 'Connected... Sending msg: ', msg
             s.send(msg)
             time.sleep(1) 
-            print 'Message sent: ', msg
+            #print 'Message sent: ', msg
             
             s.close() #closes each time a message is sent.
-            print 'Connection closed...'
+            #print 'Connection closed...'
         except: 
             print 'Unable to connect...'
     except KeyboardInterrupt, k: 
