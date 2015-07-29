@@ -276,10 +276,10 @@ void set_default_eeprom()
    eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_GN2, 5);
    eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_GN3, 5);
    // Temperatures are ADC values (see WagMan.py on node controller)
-   eeprom_update_word(&E_TEMP_MIN_SYSMON, 417);
-   eeprom_update_word(&E_TEMP_MAX_SYSMON, 969);
-   eeprom_update_word(&E_TEMP_MIN_NC, 417);
-   eeprom_update_word(&E_TEMP_MAX_NC, 969);
+   eeprom_update_word(&E_TEMP_MIN_SYSMON, 0);
+   eeprom_update_word(&E_TEMP_MAX_SYSMON, 100);
+   eeprom_update_word(&E_TEMP_MIN_NC, 0);
+   eeprom_update_word(&E_TEMP_MAX_NC, 100);
    eeprom_update_word(&E_TEMP_MIN_SWITCH, 417);
    eeprom_update_word(&E_TEMP_MAX_SWITCH, 969);
    eeprom_update_word(&E_TEMP_MIN_GN1, 417);
@@ -331,6 +331,7 @@ boolean boot_SysMon()
    // Is SysMon's environment outside of safe bounds?
    if(!check_environ_SysMon())
    {
+      Serial.println("sysmon bad environ");
       // Giving SysMon one more chance...
 
       // Wait for things to settle down, perhaps

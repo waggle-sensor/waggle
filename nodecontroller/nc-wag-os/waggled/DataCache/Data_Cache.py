@@ -87,6 +87,7 @@ class Data_Cache(Daemon):
                     if not data:
                         break
                     else:
+                        #print 'Data: ', data
                         #Indicates that it is a pull request 
                         if data[0] == '|': #TODO This could be improved if there is a better way to distinguish between push and pull requests and from incoming and outgoing requests
                             data, dest = data.split('|', 1) #splits to get either 'o' for outgoing request or the device location for incoming request
@@ -109,13 +110,14 @@ class Data_Cache(Daemon):
                                     msg = 'False'
                                 try:
                                     client_sock.sendall(msg) #sends the message
-                                except:
+                                except Exception as e:
+                                    print e
                                     #pushes it back into the outgoing queue, if the client disconnects before the message is sent
                                     try:#Will pass if data is a pull request instead of a full message
                                         #TODO default msg_p is 5 for messages pushed back into queue. Improvement recommended.
                                         outgoing_push(int(dest),5,msg, outgoing_available_queues, incoming_available_queues)
-                                    except: 
-                                        pass
+                                    except Exception as e: 
+                                        print e
                         
                             time.sleep(1)
                             
@@ -135,21 +137,25 @@ class Data_Cache(Daemon):
                                             if order==False: #indicates lifo. lifo has highest message priority
                                                 msg_p=5
                                             #pushes the message into the outgoing buffer to the queue corresponding to the device location and message priority
-                                            outgoing_push(dev_loc, msg_p, data, outgoing_available_queues, incoming_available_queues)
-                                        except: 
+                                            outgoing_push(int(dev_loc), msg_p, data, outgoing_available_queues, incoming_available_queues)
+                                        except Exception as e: 
                                             #The device dictionary may not be up to date. Need to update and try again.
                                             #If the device is still not found after first try, move on.
-                                            from NC_configuration import DEVICE_DICT #trying to update
-                                            print 'Unknown sender ID. Message will not be stored in data cache.'
+                                            print e
+                                            DEVICE_DICT = update_dev_dict()
+                                            print 'Device dict: ', DEVICE_DICT
+                                            print 'Unknown sender ID. Message will not be stored in data cache.', sender
                                     else: #indicates an incoming push
                                         try:
                                             dev_loc = DEVICE_DICT[str(recipient)] #looks up the location of the recipient device
-                                            incoming_push(dev_loc,msg_p,data, incoming_available_queues, outgoing_available_queues)
-                                        except: 
+                                            incoming_push(int(dev_loc),msg_p,data, incoming_available_queues, outgoing_available_queues)
+                                        except Exception as e: 
                                             #The device dictionary may not be up to date. Need to update and try again.
                                             #If the device is still not found after first try, move on.
-                                            from NC_configuration import DEVICE_DICT #trying to update
-                                            print 'Unknown recipient ID. Message will not be stored in data cache.'
+                                            print e
+                                            DEVICE_DICT = update_dev_dict()
+                                            print 'Device dict: ', DEVICE_DICT
+                                            print 'Unknown recipient ID. Message will not be stored in data cache.' 
                             except:
                                 print 'Message corrupt. Will not store in data cache.'
                             time.sleep(1)
@@ -165,7 +171,7 @@ class Data_Cache(Daemon):
             server_sock.close()
             os.remove('/tmp/Data_Cache_server')
             
-   
+
 def outgoing_push(dev, msg_p, msg, outgoing_available_queues, incoming_available_queues): 
     """
         Function that pushes outgoing messages into the outgoing buffer.

@@ -13,6 +13,6 @@ pip install pyserial
 python GN_scanner.py
 python GN_registration.py #send registration to node controller
 #start receiving messages
-./receive_msg.sh
+./receive_msgs.sh
 python sensor.py #Will need to replace this with script that runs all plug-ins
 
