@@ -28,9 +28,9 @@ params_core['max num of SOS boot attempts'] = 3
 params_core['max num of subsystem boot attempts'] = 4
 
 # Min: 1, max: 65535
-params_core['boot time for NC (seconds)'] = 10
+params_core['boot time for NC (seconds)'] = 12
 # Min: 1, max: 255
-params_core['boot time for ethernet switch (seconds)'] = 6
+params_core['boot time for ethernet switch (seconds)'] = 12
 
 # Min: 1, max: 255
 params_core['heartbeat timeout (NC) (seconds)'] = 5
@@ -107,7 +107,7 @@ params_GuestNodes['bad current timeout (GN 3) (seconds)'] = 5
 # Min: -55, max: 80
 # If a guest node is not present, its value will be ignored
 params_GuestNodes['temperature min (GN 1) (Celsius)'] = -20
-params_GuestNodes['temperature max (GN 1) (Celsius)'] = 10
+params_GuestNodes['temperature max (GN 1) (Celsius)'] = 80
 params_GuestNodes['temperature min (GN 2) (Celsius)'] = -20
 params_GuestNodes['temperature max (GN 2) (Celsius)'] = 80
 params_GuestNodes['temperature min (GN 3) (Celsius)'] = -20
