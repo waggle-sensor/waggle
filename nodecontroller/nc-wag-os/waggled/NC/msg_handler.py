@@ -98,7 +98,7 @@ def msg_handler(msg):
             #nothing else to be done
             except: 
                 #if it fails, the device is not yet registered. Add to list of devices
-                #print 'Adding device ',sender, 'to devices file.'
+                print 'Adding device ',sender, 'to devices file.'
                 devices.append(sender)
                 #Need to find available priorities to assign it
                 #the second line of the file contains a list of available priorities

@@ -5,8 +5,6 @@ from multiprocessing import Process, Queue, Value
 import sys
 sys.path.append('../../../../devtools/protocol_common/')
 from protocol.PacketHandler import *
-#sys.path.append('..')
-from device_dict import DEVICE_DICT
 sys.path.append('../NC')
 from NC_registration import NC_registration, GN_registration
 sys.path.append('../NC/')

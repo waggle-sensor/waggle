@@ -26,23 +26,46 @@ with open('/etc/waggle/queuename','r') as file_:
 with open('/etc/waggle/NCIP','r') as file_:
     NCIP = file_.read().strip()
     
-#Maps the device ID to the queue location in DC 
-with open('/etc/waggle/devices', 'r') as file_:
-    lines = file_.readlines()
+##Maps the device ID to the queue location in DC 
+#with open('/etc/waggle/devices', 'r') as file_:
+    #lines = file_.readlines()
 
-#the third line in the devices file contains a mapping of devices to their priority
-#that is used to contruct the dictionary
-mapping = []
-while True:
-    if not lines[2].find(',') == -1:
-        device, lines[2] = lines[2].split(',', 1)
-        device, priority = device.split(':',1)
-        mapping.append((device,int(priority)))
-    else:
-        break
+##the third line in the devices file contains a mapping of devices to their priority
+##that is used to contruct the dictionary
+#mapping = []
+#while True:
+    #if not lines[2].find(',') == -1:
+        #device, lines[2] = lines[2].split(',', 1)
+        #device, priority = device.split(':',1)
+        #mapping.append((device,int(priority)))
+    #else:
+        #break
     
-DEVICE_DICT = dict(mapping)
+def create_dev_dict():
+    #Maps the device ID to the queue location in DC 
+    with open('/etc/waggle/devices', 'r') as file_:
+        lines = file_.readlines()
 
+    #the third line in the devices file contains a mapping of devices to their priority
+    #that is used to contruct the dictionary
+    mapping = []
+    while True:
+        if not lines[2].find(',') == -1:
+            device, lines[2] = lines[2].split(',', 1)
+            device, priority = device.split(':',1)
+            mapping.append((device,int(priority)))
+        else:
+            break
+    print 'create dev dict: ', mapping
+    return dict(mapping)
+
+
+DEVICE_DICT = create_dev_dict()
+
+def update_dev_dict():
+    DEVICE_DICT = create_dev_dict()
+    return DEVICE_DICT
+        
 #lists the order of device priority. Each device corresponds with a location in the data cache
 #The highest priority position is at the front of the list, the lowest priority is at the end.
 PRIORITY_ORDER = [5,4,3,2,1] 
@@ -53,7 +76,7 @@ AVAILABLE_MEM = 576482
 
 
 #The params used to connect to the cloud are stored here
-CLOUD_ADDR = 'amqps://waggle:waggle@10.10.10.110:5671/%2F'
+CLOUD_ADDR = 'amqps://waggle:waggle@10.10.10.109:5671/%2F'
 
 def send_config():
     """ 
