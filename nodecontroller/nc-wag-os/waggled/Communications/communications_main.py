@@ -3,8 +3,7 @@
 import os, os.path, pika, logging, datetime, sys
 sys.path.append('../NC/')
 from NC_configuration import *
-sys.path.append('../NC/')
-from receive import receive
+
 
 
 time = str(datetime.datetime.now())

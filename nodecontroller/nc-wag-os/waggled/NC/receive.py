@@ -30,9 +30,10 @@ def receive():
                     try:
                         msg_handler(msg)
                         s.close() #closes each time a message is received. #TODO might not need to close the socket each time
-                        #print 'Connection closed...'
-                    except:
-                        print 'Unpack unsuccessful.'
+                    except Exception as e: 
+                        print e
+                    #print 'Connection closed...'
+                    
                 else:
                     s.close() #closes each time a message is received.
                     time.sleep(1)

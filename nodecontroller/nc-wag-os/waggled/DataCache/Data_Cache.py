@@ -127,22 +127,29 @@ class Data_Cache(Daemon):
                                 msg_p = flags[1] 
                                 recipient = header['r_uniqid'] #gets the recipient ID
                                 sender = header['s_uniqid']
-                                if recipient == 0: #0 is the default ID for the cloud. Indicates an outgoing push.
-                                    try: 
-                                        dev_loc = DEVICE_DICT[str(sender)] #looks up the location of the sender device
-                                        #print 'dev_loc: ' , dev_loc
-                                        if order==False: #indicates lifo. lifo has highest message priority
-                                            msg_p=5
-                                        #pushes the message into the outgoing buffer to the queue corresponding to the device location and message priority
-                                        outgoing_push(dev_loc, msg_p, data, outgoing_available_queues, incoming_available_queues)
-                                    except: 
-                                        print 'Unknown sender ID. Message will not be stored in data cache.'
-                                else: #indicates an incoming push
-                                    try:
-                                        dev_loc = DEVICE_DICT[str(recipient)] #looks up the location of the recipient device
-                                        incoming_push(dev_loc,msg_p,data, incoming_available_queues, outgoing_available_queues)
-                                    except: 
-                                        print 'Unknown recipient ID. Message will not be stored in data cache.'
+                                for i in range(2):
+                                    if recipient == 0: #0 is the default ID for the cloud. Indicates an outgoing push.
+                                        try: 
+                                            dev_loc = DEVICE_DICT[str(sender)] #looks up the location of the sender device
+                                            #print 'dev_loc: ' , dev_loc
+                                            if order==False: #indicates lifo. lifo has highest message priority
+                                                msg_p=5
+                                            #pushes the message into the outgoing buffer to the queue corresponding to the device location and message priority
+                                            outgoing_push(dev_loc, msg_p, data, outgoing_available_queues, incoming_available_queues)
+                                        except: 
+                                            #The device dictionary may not be up to date. Need to update and try again.
+                                            #If the device is still not found after first try, move on.
+                                            from NC_configuration import DEVICE_DICT #trying to update
+                                            print 'Unknown sender ID. Message will not be stored in data cache.'
+                                    else: #indicates an incoming push
+                                        try:
+                                            dev_loc = DEVICE_DICT[str(recipient)] #looks up the location of the recipient device
+                                            incoming_push(dev_loc,msg_p,data, incoming_available_queues, outgoing_available_queues)
+                                        except: 
+                                            #The device dictionary may not be up to date. Need to update and try again.
+                                            #If the device is still not found after first try, move on.
+                                            from NC_configuration import DEVICE_DICT #trying to update
+                                            print 'Unknown recipient ID. Message will not be stored in data cache.'
                             except:
                                 print 'Message corrupt. Will not store in data cache.'
                             time.sleep(1)

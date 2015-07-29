@@ -49,7 +49,7 @@ def make_data_packet(data):
         }
     return pack(header_dict, message_data = msg)
 
-def registration_packet():
+def registration_packet(queuename):
     """
         Returns a registration request packet.
 

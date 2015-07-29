@@ -43,9 +43,9 @@ def msg_handler(msg):
         if minor == 'r':
             #send a ping response
             packet = packetmaker.make_ping_packet()
-            for pack in packet:
-                send(pack)
-         #ping answer
+            for pack_ in packet:
+                send(pack_)
+        #ping answer
         else:
             #unpack the message
             ping = unpack(msg)
@@ -57,8 +57,8 @@ def msg_handler(msg):
         if minor == 'r':
             #send time
             packet = packetmaker.make_time_packet()
-            for pack in packet:
-                send(pack)
+            for pack_ in packet:
+                send(pack_)
         #time answer
         else:
             #unpack the message
@@ -81,57 +81,69 @@ def msg_handler(msg):
             reg = unpack(msg)
             print 'NC received registration: ', reg[1]
         else: 
+            sender = str(sender) #convert from int to string
             with open('/etc/waggle/devices', 'r') as _file:
                 lines = _file.readlines()
             #check if device is already registered
             devices = []
             #the first line of the file contains a list of already registered nodes
             #deconstruct string into list
-            while lines[0].find(','):
+            while not lines[0].find(',')== -1:
                 device, lines[0] = lines[0].split(',',1)
                 devices.append(device)
+                #print 'Device loop'
+            #print 'Devices: ', devices
             try:
                 devices.index(sender) #if this works, the device is already registered
-                #nothing else to be done
+            #nothing else to be done
             except: 
-                #if it fails, the device is not yet registered. Need to find available priorities to assign it
+                #if it fails, the device is not yet registered. Add to list of devices
+                #print 'Adding device ',sender, 'to devices file.'
+                devices.append(sender)
+                #Need to find available priorities to assign it
                 #the second line of the file contains a list of available priorities
-                print 'Adding device ',sender, 'to devices file.'
                 priorities = []
-                while lines[1].find(','):
+                while not lines[1].find(',')== -1:
                     priority, lines[1] = lines[1].split(',',1)
                     priorities.append(priority)
+                #print 'Priorities: ', priorities
                 device_p = priorities.pop()
-                
+                #print 'Device_p: ', device_p
                 #assign the device to its priority
                 #the third line of the file contains a mapping of device to its priority. 
                 #This is what is used to construct the device_dict
                 lines[2] = sender + ':' + device_p + ',' + lines[2]
-                
+                #print 'Lines[2]: ', lines[2]
+
                 #put the list back together to be written back into the file
                 for priority in priorities:
                     lines[1] = priority + ',' + lines[1]
+                    
+                #send GN registration to cloud
+                header_dict = {
+                    "msg_mj_type" : ord('r'),
+                    "msg_mi_type" : ord('r'),
+                    "s_uniqid"    : int(sender)
+                    }
+                msg = str(QUEUENAME)
+                try: 
+                    packet = pack(header_dict, message_data = msg)
+                    print 'Registration made for node ID ', sender
+                    for pack_ in packet:
+                        send(pack_)
+                except Exception as e: 
+                    print e
+                
             #put the list back together to be written back into the file
             for device in devices:
                 lines[0] = device + ',' + lines[0]
-              
+            #print 'Device in devices: ', lines[0]
+            #print "Lines: ", lines
             #write the lines back into the file
             with open('/etc/waggle/devices', 'w') as _file:
                 _file.writelines(lines)
             
-            #send GN registration to cloud
-            header_dict = {
-                "msg_mj_type" : ord('r'),
-                "msg_mi_type" : ord('r'),
-                "s_uniqid"    : int(sender)
-                }
-            msg = str(QUEUENAME)
-        try: 
-            
-            packet = pack(header_dict, message_data = msg)
-            print 'Registration made for node ID ', key
-            for pack_ in packet:
-                send(pack_)
+           
             
     #message type unrecognized 
     else: 

@@ -19,5 +19,6 @@ from GN_configuration import *
 packet = packetmaker.make_GN_reg(int(NC_ID))
 print 'Registration packet made...' 
 for pack in packet:
-        send(pack)
-        
+    send(pack)
+
+#TODO figure out why this is sending two registration messages

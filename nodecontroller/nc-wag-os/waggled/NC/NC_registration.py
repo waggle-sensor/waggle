@@ -28,7 +28,7 @@ from NC_configuration import *
 #function that returns the registration
 def NC_registration():
     try:
-        packet = packetmaker.registration_packet()
+        packet = packetmaker.registration_packet(QUEUENAME)
         print 'NC registration packet made...' 
         for pack in packet:
             return pack
@@ -48,7 +48,6 @@ def GN_registration():
             }
         msg = str(QUEUENAME)
         try: 
-            
             packet = pack(header_dict, message_data = msg)
             print 'Registration made for node ID ', key
             for pack_ in packet:
