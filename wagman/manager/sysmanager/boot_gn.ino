@@ -21,15 +21,21 @@ void boot_GN()
     // Mark guest node as operational
     _GN1_booted = true;
 
+  Serial.println(_GN1_booted);
+
   // Guest node 2 booted successfully?
   if (boot_GN2())
     // Mark guest node as operational
     _GN2_booted = true;
 
+  Serial.println(_GN2_booted);
+
   // Guest node 3 booted successfully?
   if (boot_GN3())
     // Mark guest node as operational
     _GN3_booted = true;
+
+  Serial.println(_GN3_booted);
 }
 
 
@@ -94,8 +100,14 @@ boolean boot_GN1()
       // Is the guest node not drawing an expected amount of power?
       if(!check_power_GN(1))
       {
+        // Turn off the guest node
+        digitalWrite(PIN_RELAY_GN1, LOW);
+
         // Inform node controller of failure
         send_problem(PROBLEM_GN1_POWER);
+
+        // Mark GN as dead
+        eeprom_update_byte(&E_GN1_ENABLED, 0);
 
         // Exit with failure
         return false;
@@ -133,9 +145,6 @@ boolean boot_GN1()
       {
         // Turn off the guest node
         digitalWrite(PIN_RELAY_GN1, LOW);
-
-        // Mark GN as dead
-        eeprom_update_byte(&E_GN1_ENABLED, 0);
 
         // Inform node controller of failure
         send_problem(PROBLEM_GN1_HEARTBEAT);
@@ -215,8 +224,14 @@ boolean boot_GN2()
       // Is the guest node not drawing an expected amount of power?
       if(!check_power_GN(2))
       {
+        // Turn off the guest node
+        digitalWrite(PIN_RELAY_GN2, LOW);
+
         // Inform node controller of failure
         send_problem(PROBLEM_GN2_POWER);
+
+        // Mark GN as dead
+        eeprom_update_byte(&E_GN2_ENABLED, 0);
 
         // Exit with failure
         return false;
@@ -254,9 +269,6 @@ boolean boot_GN2()
       {
         // Turn off the guest node
         digitalWrite(PIN_RELAY_GN2, LOW);
-
-        // Mark GN as dead
-        eeprom_update_byte(&E_GN2_ENABLED, 0);
 
         // Inform node controller of failure
         send_problem(PROBLEM_GN2_HEARTBEAT);
@@ -336,8 +348,14 @@ boolean boot_GN3()
       // Is the guest node not drawing an expected amount of power?
       if(!check_power_GN(3))
       {
+        // Turn off the guest node
+        digitalWrite(PIN_RELAY_GN3, LOW);
+
         // Inform node controller of failure
         send_problem(PROBLEM_GN3_POWER);
+
+        // Mark GN as dead
+        eeprom_update_byte(&E_GN3_ENABLED, 0);
 
         // Exit with failure
         return false;
@@ -375,9 +393,6 @@ boolean boot_GN3()
       {
         // Turn off the guest node
         digitalWrite(PIN_RELAY_GN3, LOW);
-
-        // Mark GN as dead
-        eeprom_update_byte(&E_GN3_ENABLED, 0);
 
         // Inform node controller of failure
         send_problem(PROBLEM_GN3_HEARTBEAT);
@@ -417,8 +432,6 @@ boolean check_temp_GN(byte gn)
     case 1:
       // Get ADC result from thermistor
       temp_ADC = analogRead(PIN_THERMISTOR_GN1);
-
-      Serial.println(temp_ADC);
 
       // Is measured temperature acceptable?
       if((eeprom_read_word(&E_TEMP_MIN_GN1) < temp_ADC)

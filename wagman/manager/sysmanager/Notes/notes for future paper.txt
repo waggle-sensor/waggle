@@ -9,3 +9,5 @@
 - http://dangerousprototypes.com/docs/Self-test_guide
 
 - Boot up takes a long time, but that doesn't matter for us.  We can take several seconds to boot SysMon, because nothing happens until SysMon makes it so.
+
+- Devices are permanently disabled only if they are drawing too much power, since this is the only state that presents danger to the overall system.
