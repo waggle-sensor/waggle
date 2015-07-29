@@ -1,4 +1,5 @@
-CREATE KEYSPACE IF NOT EXISTS waggle;
+CREATE KEYSPACE IF NOT EXISTS waggle WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '2'}  AND durable_writes = true;
+
 
 CREATE TABLE waggle.sensor_data (
     node_id int,
