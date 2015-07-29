@@ -119,9 +119,9 @@ class RegProcess(Process):
     def cassandra_insert(self,header,data):
         try:
             prepared_statement = self.session.prepare("INSERT INTO node_info" + \
-                " (node_id, config_file)" + \
-                " VALUES (?, ?)")
-            bound_statement = prepared_statement.bind([header["s_uniqid"],data])
+                " (node_id, timestamp, config_file)" + \
+                " VALUES (?, ?, ?)")
+            bound_statement = prepared_statement.bind([header["s_uniqid"],time.time()*1000,data])
             self.session.execute(bound_statement)
         except Exception as e:
             raise
