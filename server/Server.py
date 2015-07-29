@@ -62,7 +62,7 @@ for i in range (0,NUM_ROUTER_PROCS):
 	new_router = WaggleRouter(routing_table)
 	new_router.start()
 	router_procs.append(new_router)
-print "Routering processes online."
+print "Routing processes online."
 
 util_procs = []
 for i in range (0,NUM_UTIL_PROCS):
