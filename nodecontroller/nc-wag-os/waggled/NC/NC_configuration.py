@@ -33,10 +33,13 @@ with open('/etc/waggle/devices', 'r') as file_:
 #the third line in the devices file contains a mapping of devices to their priority
 #that is used to contruct the dictionary
 mapping = []
-while lines[2].find(','):
-    device, lines[2] = lines[2].split(',', 1)
-    device, priority = device.split(':',1)
-    mapping.append((device,int(priority)))
+while True:
+    if not lines[2].find(',') == -1:
+        device, lines[2] = lines[2].split(',', 1)
+        device, priority = device.split(':',1)
+        mapping.append((device,int(priority)))
+    else:
+        break
     
 DEVICE_DICT = dict(mapping)
 
@@ -46,7 +49,7 @@ PRIORITY_ORDER = [5,4,3,2,1]
 
 #This specifies the maximum RAM available to the data cache
 #Here, we assume that each message stored is no larger than 1K
-AVAILABLE_MEM = 299,999
+AVAILABLE_MEM = 576482
 
 
 #The params used to connect to the cloud are stored here
@@ -65,7 +68,7 @@ def send_config():
     config = config + 'Priority order: ' + str(PRIORITY_ORDER) + '\n'
     config = config + 'Available memory for data cache: ' + str(AVAILABLE_MEM) + '\n'
     config = config + 'Cloud IP address and parameters: ' + CLOUD_ADDR + '\n'
-        
+
     packet = make_config_reg(config)
     for pack in packet:
         send(pack)

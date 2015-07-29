@@ -1,20 +1,18 @@
 #!/bin/bash
 #This configures an odroid to be a guest node
-export $WAGGLE=.
 dpkg -i gn-wag-os/packages_o/*.deb
-dir = .
 cd gn-wag-os/packages_o/
 pip install -e pika-0.9.14
-cd $dir
 mkdir /etc/waggle/
-rm /etc/smsc95xx_mac_addr
-echo $RANDOM > /etc/waggle/hostname # Set to 1244 for the demo. Needs to be changed to $RANDOM
+#make a random unique id and write to file
+echo $RANDOM > /etc/waggle/hostname 
 cd 
 cd waggle/guestnodes/gn-wag-os/waggled
 pip install pyserial
 #scan for node controller IP 
 python GN_scanner.py
 python GN_registration.py #send registration to node controller
-#want to start receive.py here probably
+#start receiving messages
+./receive_msg.sh
 python sensor.py #Will need to replace this with script that runs all plug-ins
 
