@@ -21,7 +21,7 @@ junk, IP_addr = line.split(':',1)
 
 #remove the extra stuff on the end that we don't need
 IP_addr, junk = IP_addr.split(' ', 1)
-
+print 'IP_addr: ', IP_addr
 #Now, we have the device's IP address.
 #write nodecontroller IP to file
 with open('/etc/waggle/NCIP','w') as file_: 

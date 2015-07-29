@@ -6,19 +6,21 @@ import sys
 sys.path.append('../../../../devtools/protocol_common/')
 from protocol.PacketHandler import *
 #sys.path.append('..')
-from device_dict import DEVICE_DICT
+#from device_dict import DEVICE_DICT
+sys.path.append('../NC/')
+from NC_configuration import *
     
-#gets the NC hostname 
-with open('/etc/waggle/hostname','r') as file_:
-    HOSTNAME = file_.read().strip()
+##gets the NC hostname 
+#with open('/etc/waggle/hostname','r') as file_:
+    #HOSTNAME = file_.read().strip()
     
-#gets the queuename
-with open('/etc/waggle/queuename','r') as file_:
-    QUEUENAME = file_.read().strip() 
+##gets the queuename
+#with open('/etc/waggle/queuename','r') as file_:
+    #QUEUENAME = file_.read().strip() 
     
-#gets the IP address for the nodecontroller
-with open('/etc/waggle/NCIP','r') as file_:
-    IP = file_.read().strip() 
+##gets the IP address for the nodecontroller
+#with open('/etc/waggle/NCIP','r') as file_:
+    #IP = file_.read().strip() 
     
 
     
@@ -144,7 +146,7 @@ class push_server(Process):
     
     def run(self):
         comm = internal_communicator()
-        HOST = IP #This should set the IP address as itself
+        HOST = NCIP #This should set the IP address as itself
         PORT = 9090
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.bind((HOST,PORT))
@@ -183,7 +185,7 @@ class pull_server(Process):
     
     def run(self):
         comm = internal_communicator()
-        HOST = IP #This should set the IP address as itself
+        HOST = NCIP #This should set the IP address as itself
         PORT = 9091
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.bind((HOST,PORT))
@@ -223,31 +225,31 @@ class pull_server(Process):
         server.close()
     
 ##uncomment for testing
-if __name__ == "__main__":
-    try:
-        #starts the pull server
-        pull_serv = pull_server()
-        pull_serv.start()
+#if __name__ == "__main__":
+    #try:
+        ##starts the pull server
+        #pull_serv = pull_server()
+        #pull_serv.start()
         
-        #starts the push server 
-        push_serv = push_server()
-        push_serv.start()
+        ##starts the push server 
+        #push_serv = push_server()
+        #push_serv.start()
         
-        #starts the push client
-        push_client = internal_client_push()
-        push_client.start()
+        ##starts the push client
+        #push_client = internal_client_push()
+        #push_client.start()
         
-        #starts the pull client
-        pull_client = internal_client_pull()
-        pull_client.start()
-        while True:
-            pass
+        ##starts the pull client
+        #pull_client = internal_client_pull()
+        #pull_client.start()
+        #while True:
+            #pass
         
-    except KeyboardInterrupt, k:
-        pull_serv.terminate()
-        push_serv.terminate()
-        push_client.terminate()
-        pull_client.terminate()
-        print 'Done.'
+    #except KeyboardInterrupt, k:
+        #pull_serv.terminate()
+        #push_serv.terminate()
+        #push_client.terminate()
+        #pull_client.terminate()
+        #print 'Done.'
     
                 
