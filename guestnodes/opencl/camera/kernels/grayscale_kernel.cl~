@@ -14,7 +14,7 @@ __kernel void grayscale_kernel(__global uchar* in,
     float value = 0;
     size_t col = get_global_id(0);
     size_t row = get_global_id(1);
-    size_t in_pos = row*cols + col*3;
+    size_t in_pos = row*cols*3 + col*3;
     size_t out_pos = row*cols + col;
 
     //Sum weighted BGR Channels to get grayscale value

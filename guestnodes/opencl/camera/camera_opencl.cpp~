@@ -267,7 +267,7 @@ int main(void)
         //Handle OpenCV processing first
         cap.read(frame);
         cvtColor(frame, frame, CV_BGR2GRAY);
-	GaussianBlur(frame, gray, Size(3, 3), 1.5, 1.5, BORDER_DEFAULT);
+	//GaussianBlur(frame, gray, Size(3, 3), 1.5, 1.5, BORDER_DEFAULT);
 
         //TODO: Create a for loop to enqueue both command_queues with in_ptr data
         //Map image to input buffer (mem_objects[0]);
@@ -341,7 +341,7 @@ int main(void)
         }
 
         //Display the images
-        imshow(window_cpu, gray);
+//        imshow(window_cpu, gray);
         imshow(window_gpu, grayscale);
 
         //Wait for user to quit
