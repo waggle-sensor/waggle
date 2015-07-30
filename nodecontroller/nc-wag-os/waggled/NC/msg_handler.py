@@ -91,14 +91,13 @@ def msg_handler(msg):
             while not lines[0].find(',')== -1:
                 device, lines[0] = lines[0].split(',',1)
                 devices.append(device)
-                #print 'Device loop'
             #print 'Devices: ', devices
             try:
                 devices.index(sender) #if this works, the device is already registered
             #nothing else to be done
             except: 
                 #if it fails, the device is not yet registered. Add to list of devices
-                #print 'Adding device ',sender, 'to devices file.'
+                print 'Adding device ',sender, 'to devices file.'
                 devices.append(sender)
                 #Need to find available priorities to assign it
                 #the second line of the file contains a list of available priorities

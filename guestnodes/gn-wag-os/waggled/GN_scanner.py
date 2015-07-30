@@ -3,7 +3,7 @@
 
 """
 
-import subprocess, os, socket
+import subprocess, os, socket, re
 
 #need to find the node's IP address 
 #so, first save results of ifconfig and grep commands to get IP address to a file
@@ -40,21 +40,11 @@ _file.writelines(output)
 _file.close()
 
 #list of available hosts that need to be checked
-hosts = []
+
 with open ('output.txt','r') as _file:
-    lines = _file.readlines()
-#check each line for a host IP address    
-for line in lines:
-    #does the line contain an IP address?
-    if line[0] == 'N': 
-        #print 'Line: ', line
-        #remove the parenthesis around the IP address
-        junk, IP = line.split('(',1)
-        IP, junk = IP.split(')',1)
-        #add it to the list of hosts
-        hosts.append(IP)
-    else:
-        pass
+    lines = _file.read()
+ 
+hosts = re.findall( r'[0-9]+(?:\.[0-9]+){3}', lines)
 
         
 #now, we need to check each host to find out if it is the node controller
@@ -78,8 +68,7 @@ for HOST in hosts:
             break
         else:
             #Not the nodecontroller... 
-            pass
-        s.close()
+            s.close()
     except: 
         #Not the nodecontroller....
         pass
