@@ -320,7 +320,7 @@ boolean boot_SysMon()
       // Giving SysMon one more chance...
 
       // Wait for things to settle down, perhaps
-      delay(BOOT_BAD_POWER_WAIT_TIME * 1000);
+      delay((long)BOOT_BAD_POWER_WAIT_TIME * 1000L);
 
       // Is SysMon drawing too much power?
       if(!check_power_SysMon())
@@ -335,7 +335,7 @@ boolean boot_SysMon()
       // Giving SysMon one more chance...
 
       // Wait for things to settle down, perhaps
-      delay(BOOT_BAD_ENVIRON_WAIT_TIME * 1000);
+      delay((long)BOOT_BAD_ENVIRON_WAIT_TIME * 1000L);
 
       // Is SysMon's environment outside of safe bounds?
       if(!check_environ_SysMon())
@@ -374,10 +374,12 @@ boolean boot_NC()
    // Is the node controller's environment not suitable?
    if(!check_environ_NC())
    {
+      Serial.println("nc bad environ");
+
       // Giving the node controller one more chance...
 
       // Wait for things to settle down, perhaps
-      delay(BOOT_BAD_ENVIRON_WAIT_TIME * 1000);
+      delay((long)BOOT_BAD_ENVIRON_WAIT_TIME * 1000L);
 
       // Is the node controller's environment not suitable?
       if(!check_environ_NC())
@@ -390,19 +392,28 @@ boolean boot_NC()
    // Enable power to node controller
    digitalWrite(PIN_RELAY_NC, HIGH);
 
+   Serial.println("nc relay on");
+
+   unsigned int x = eeprom_read_word(&E_BOOT_TIME_NC);
+   Serial.println(x);
+
    // Give the node controller time to boot
-   delay(eeprom_read_word(&E_BOOT_TIME_NC) * 1000);
+   delay((long)x * 1000L);
+
+   Serial.println("nc delay");
 
    // Is the node controller not drawing an expected amount of power?
    if(!check_power_NC())
    {
+      Serial.println("nc bad power");
+
       // Giving the node controller one more chance...
 
       // Power cycle the node controller
       power_cycle(PIN_RELAY_NC);
 
       // Give the node controller time to boot
-      delay(eeprom_read_word(&E_BOOT_TIME_NC) * 1000);
+      delay((long)eeprom_read_word(&E_BOOT_TIME_NC) * 1000L);
 
       // Is the node controller not drawing an expected amount of power?
       if(!check_power_NC())
@@ -418,9 +429,13 @@ boolean boot_NC()
       }
    }
 
+   Serial.println("nc power");
+
    // Is the node controller alive (sending a "heartbeat")?
    if(!check_heartbeat_odroid(PIN_HEARTBEAT_NC))
    {
+      Serial.println("nc bad heart");
+
       byte boot_attempts = 0;
       boolean _heartbeat_detected = false;
       
@@ -434,7 +449,7 @@ boolean boot_NC()
             power_cycle(PIN_RELAY_NC);
 
             // Give the node controller time to boot
-            delay(eeprom_read_word(&E_BOOT_TIME_NC) * 1000);
+            delay((long)eeprom_read_word(&E_BOOT_TIME_NC) * 1000L);
          }
          else
             // Indicate that a heartbeat was detected
@@ -454,6 +469,8 @@ boolean boot_NC()
          return false;
       }
    }
+
+   Serial.println("nc heart");
 
    // Exit with success
    return true;
@@ -488,7 +505,7 @@ boolean boot_switch()
       // Giving the switch one more chance...
 
       // Wait for things to settle down, perhaps
-      delay(BOOT_BAD_ENVIRON_WAIT_TIME * 1000);
+      delay((long)BOOT_BAD_ENVIRON_WAIT_TIME * 1000L);
 
       // Is the ethernet switch's temperature outside of safe parameters?
       if(!check_temp_switch())
@@ -505,7 +522,7 @@ boolean boot_switch()
    digitalWrite(PIN_RELAY_SWITCH, HIGH);
 
    // Give the ethernet switch time to boot
-   delay(eeprom_read_word(&E_BOOT_TIME_NC) * 1000);
+   delay((long)eeprom_read_word(&E_BOOT_TIME_NC) * 1000L);
 
    // Is the ethernet switch not drawing an expected amount of power?
    if(!check_power_switch())
@@ -516,7 +533,7 @@ boolean boot_switch()
       power_cycle(PIN_RELAY_SWITCH);
 
       // Give the switch time to boot
-      delay(eeprom_read_byte(&E_BOOT_TIME_SWITCH) * 1000);
+      delay((long)eeprom_read_byte(&E_BOOT_TIME_SWITCH) * 1000L);
 
       // Is the ethernet switch not drawing an expected amount of power?
       if(!check_power_switch())

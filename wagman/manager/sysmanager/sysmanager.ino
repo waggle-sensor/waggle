@@ -6,7 +6,7 @@
 #include <avr/wdt.h>
 #include <avr/eeprom.h>
 #include <Wire.h>
-#include <SparkFunHTU21D.h>
+#include <HTU21D.h>
 #include <Time.h>
 #include <MCP79412RTC.h>
 
@@ -200,6 +200,32 @@ void setup()
 {
   // Debug
   delay(5000);
+
+  // pinMode(PIN_RELAY_NC, OUTPUT);
+  // pinMode(PIN_RELAY_SWITCH, OUTPUT);
+  // pinMode(PIN_RELAY_GN1, OUTPUT);
+  // pinMode(PIN_RELAY_GN2, OUTPUT);
+  // pinMode(PIN_RELAY_GN3, OUTPUT);
+
+  // while(1)
+  // {
+  //   digitalWrite(PIN_RELAY_NC, HIGH);
+  //   delay(1000);
+  //   digitalWrite(PIN_RELAY_SWITCH, HIGH);
+  //   delay(1000);
+  //   digitalWrite(PIN_RELAY_GN1, HIGH);
+  //   delay(1000);
+  //   digitalWrite(PIN_RELAY_GN2, HIGH);
+  //   delay(1000);
+  //   digitalWrite(PIN_RELAY_GN3, HIGH);
+  //   delay(1000);
+  //   digitalWrite(PIN_RELAY_NC, LOW);
+  //   digitalWrite(PIN_RELAY_SWITCH, LOW);
+  //   digitalWrite(PIN_RELAY_GN1, LOW);
+  //   digitalWrite(PIN_RELAY_GN2, LOW);
+  //   digitalWrite(PIN_RELAY_GN3, LOW);
+  //   delay(1000);
+  // }
 
   // Is POST enabled?
   #ifdef BOOT_POST

@@ -28,9 +28,9 @@ params_core['max num of SOS boot attempts'] = 3
 params_core['max num of subsystem boot attempts'] = 4
 
 # Min: 1, max: 65535
-params_core['boot time for NC (seconds)'] = 12
+params_core['boot time for NC (seconds)'] = 5
 # Min: 1, max: 255
-params_core['boot time for ethernet switch (seconds)'] = 12
+params_core['boot time for ethernet switch (seconds)'] = 5
 
 # Min: 1, max: 255
 params_core['heartbeat timeout (NC) (seconds)'] = 5
@@ -82,7 +82,7 @@ params_GuestNodes['present (GN 2)'] = 0
 params_GuestNodes['present (GN 3)'] = 0
 
 # Min: 1, max: 65535
-params_GuestNodes['boot time (GN 1)'] = 12
+params_GuestNodes['boot time (GN 1)'] = 5
 params_GuestNodes['boot time (GN 2)'] = 12
 params_GuestNodes['boot time (GN 3)'] = 12
 
