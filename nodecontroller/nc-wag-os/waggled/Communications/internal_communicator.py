@@ -204,14 +204,16 @@ class pull_server(Process):
                                     #puts the message back into the DC_push queue if the GN disconnects before the message is sent.
                                     #print 'Putting message back into DC_push queue...'
                                     comm.DC_push.put(str(dev_loc))
+                                #If the device is registered and the push is successful, no need to try again, break the loop
+                                break 
                             except Exception as e:
-                                print e
+                                #print e
                                 #print 'Device dict: ', DEVICE_DICT
                                 #The device dictionary may not be up to date. Need to update and try again.
                                 #If the device is still not found after first try, move on.
                                 DEVICE_DICT = update_dev_dict()
-                                logging.warning('Error...Internal pull server device not in dictionary.')
-                                print 'Error...Internal pull server device not in dictionary.' , data
+                                #logging.warning('Error...Internal pull server device not in dictionary.')
+                                #print 'Error...Internal pull server device not in dictionary.' , data
                             
                 except KeyboardInterrupt, k:
                     print "Internal pull server shutting down."

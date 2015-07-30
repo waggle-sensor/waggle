@@ -56,7 +56,7 @@ def create_dev_dict():
             mapping.append((device,int(priority)))
         else:
             break
-    print 'create dev dict: ', mapping
+    #print 'create dev dict: ', mapping
     return dict(mapping)
 
 

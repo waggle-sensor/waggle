@@ -27,7 +27,7 @@ def receive():
             try: 
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 s.connect((HOST,PORT))
-                print 'Connected...'
+                #print 'Connected...'
                 request = HOSTNAME #device unique ID
                 s.send(request)
                 time.sleep(1) #waits for pull request to go through #TODO might be unneccessary 

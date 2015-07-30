@@ -91,7 +91,6 @@ def msg_handler(msg):
             while not lines[0].find(',')== -1:
                 device, lines[0] = lines[0].split(',',1)
                 devices.append(device)
-                #print 'Device loop'
             #print 'Devices: ', devices
             try:
                 devices.index(sender) #if this works, the device is already registered
