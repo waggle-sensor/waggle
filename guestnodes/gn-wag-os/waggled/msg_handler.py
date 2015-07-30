@@ -82,7 +82,7 @@ def msg_handler(msg):
         #unpack the message
         reg = unpack(msg)
         #print out the body of the message
-        print 'NC received registration: ', reg[1]
+        print 'GN received: ', reg[1]
     
     #message type unrecognized 
     else: 

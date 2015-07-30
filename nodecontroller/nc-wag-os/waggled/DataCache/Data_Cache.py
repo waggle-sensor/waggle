@@ -16,11 +16,10 @@ from glob import glob
 """
     
 #TODO clean up
-#TODO Figure out what to do once DC has messages stored in files
+#TODO make improvements. Suggestions for improvements are written as TODOs
 
 
 class Data_Cache(Daemon):
-    #The priority list is now a list containing the number corresponding to a unique device. The highest priority no longer corresponds to the highest number, but rather the order in which the elements are in the list
     
     
    
@@ -41,8 +40,6 @@ class Data_Cache(Daemon):
         #lists keeping track of which queues currently have messages stored in them
         outgoing_available_queues = list() 
         incoming_available_queues = list() 
-        #msg_counter = 0  #keeps track of how many messages are in the dc. It is incremented when messages are stored and decremented when messages are removed
-        #flush = 0 #indicator value. Default is 0, indicating that the data cache is running as normal. It will be changed to 1 if the data cache is flushing stored messages into files.
 
         
         #Each buffer is a matrix of queues for organization and indexing purposes.
@@ -129,7 +126,7 @@ class Data_Cache(Daemon):
                                 msg_p = flags[1] 
                                 recipient = header['r_uniqid'] #gets the recipient ID
                                 sender = header['s_uniqid']
-                                for i in range(2):
+                                for i in range(2): #loops in case device dictionary is not up-to-date
                                     if recipient == 0: #0 is the default ID for the cloud. Indicates an outgoing push.
                                         try: 
                                             dev_loc = DEVICE_DICT[str(sender)] #looks up the location of the sender device
@@ -138,24 +135,28 @@ class Data_Cache(Daemon):
                                                 msg_p=5
                                             #pushes the message into the outgoing buffer to the queue corresponding to the device location and message priority
                                             outgoing_push(int(dev_loc), msg_p, data, outgoing_available_queues, incoming_available_queues)
+                                            #If the device is registered and the push is successful, no need to try again, break the loop
+                                            break 
                                         except Exception as e: 
                                             #The device dictionary may not be up to date. Need to update and try again.
                                             #If the device is still not found after first try, move on.
-                                            print e
+                                            #print e
                                             DEVICE_DICT = update_dev_dict()
-                                            print 'Device dict: ', DEVICE_DICT
-                                            print 'Unknown sender ID. Message will not be stored in data cache.', sender
+                                            #print 'Device dict: ', DEVICE_DICT
+                                            #print 'Unknown sender ID. Message will not be stored in data cache.', sender
                                     else: #indicates an incoming push
                                         try:
                                             dev_loc = DEVICE_DICT[str(recipient)] #looks up the location of the recipient device
+                                            #If the device is registered and the push is successful, no need to try again, break the loop
                                             incoming_push(int(dev_loc),msg_p,data, incoming_available_queues, outgoing_available_queues)
+                                            break
                                         except Exception as e: 
                                             #The device dictionary may not be up to date. Need to update and try again.
                                             #If the device is still not found after first try, move on.
-                                            print e
+                                            #print e
                                             DEVICE_DICT = update_dev_dict()
-                                            print 'Device dict: ', DEVICE_DICT
-                                            print 'Unknown recipient ID. Message will not be stored in data cache.' 
+                                            #print 'Device dict: ', DEVICE_DICT
+                                            #print 'Unknown recipient ID. Message will not be stored in data cache.' 
                             except:
                                 print 'Message corrupt. Will not store in data cache.'
                             time.sleep(1)
