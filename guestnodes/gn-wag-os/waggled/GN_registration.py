@@ -21,4 +21,3 @@ print 'Registration packet made. Sending to ', NC_ID
 for pack in packet:
     send(pack)
 
-#TODO figure out why this is sending two registration messages

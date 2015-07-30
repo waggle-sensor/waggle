@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import socket, os, os.path, time
-from GN_configuration import *
 
 """ 
     This is a client socket that connects to the push_server of the node controller to send messages. It is called as a function with the packed message as an argument. 
@@ -9,8 +8,8 @@ from GN_configuration import *
     :param string msg: The packed waggle message that needs to be sent.
 """
 #gets the IP address for the nodecontroller
-#with open('/etc/waggle/NCIP','r') as file_:
-    #IP = file_.read().strip() 
+with open('/etc/waggle/NCIP','r') as file_:
+    IP = file_.read().strip() 
 
 def send(msg):
     HOST = NCIP #should set it to NodeController IP

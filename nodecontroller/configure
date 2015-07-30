@@ -3,13 +3,15 @@
 dpkg -i nc-wag-os/packages_o/*.deb
 cd nc-wag-os/packages_o/
 pip install -e pika-0.9.14
-# echo NodeController > /etc/hostname #Sets the odroid's hostname to NodeController so GuestNodes can easily find it
+echo NodeController > /etc/hostname #Sets the odroid's hostname to NodeController so GuestNodes can easily find it
 mkdir /etc/waggle/
 host_name=$RANDOM 
-echo "$host_name" > /etc/waggle/hostnametest # The node's waggle hostname
+echo " " > /etc/waggle/queuename
+echo "$host_name" > /etc/waggle/hostname # The node's waggle hostname
 echo "$host_name, \n" > /etc/waggle/devices
 echo "1,2,3,4, \n" >> /etc/waggle/devices
 echo "$host_name:5, \n" >> /etc/waggle/devices
+#TODO: Need to ask the user to input the cloud IP addr and save to a file... I guess
 reboot
 # cd waggle/nodecontroller/nc-wag-os/waggled/DataCache
 # python Data_Cache.py start #start the Data Data_Cache

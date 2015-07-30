@@ -190,7 +190,6 @@ class pull_server(Process):
                     if not data:
                         break
                     else:
-                        #print 'Data: ',data
                         for i in range(2): 
                             try:
                                 dev_loc = DEVICE_DICT[data] #gets the device queue location from dictionary

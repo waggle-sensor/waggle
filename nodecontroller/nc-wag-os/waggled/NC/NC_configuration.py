@@ -76,7 +76,7 @@ AVAILABLE_MEM = 576482
 
 
 #The params used to connect to the cloud are stored here
-CLOUD_ADDR = 'amqps://waggle:waggle@10.10.10.109:5671/%2F'
+CLOUD_ADDR = 'amqps://waggle:waggle@10.10.10.108:5671/%2F'
 
 def send_config():
     """ 
