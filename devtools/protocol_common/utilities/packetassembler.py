@@ -2,6 +2,8 @@
 
 """
 	This module contains a class that assembles packets.
+	TODO: Handshake to get this going. Ben's paper has the general
+	idea about the handshake. 
 """
 
 import sys
@@ -32,7 +34,7 @@ class PacketAssembler(object):
 
 			:param int num_packets: The number of packets in this transfer
 			:rtype: Int - The number of the transfer channel you were given
-			:rtype: None - Returned if no channels are available. Try again later! 
+			:rtype: None - Returned if no channels are available. Try again later!
 		"""
 
 		channel = -1
