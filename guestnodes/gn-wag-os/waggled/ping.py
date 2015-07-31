@@ -4,7 +4,7 @@
 import sys
 sys.path.append('../../../devtools/protocol_common/')
 from utilities import packetmaker
-from send import send
+from communicator import send_client
 
 
 """ 
@@ -14,4 +14,4 @@ from send import send
 packet = packetmaker.make_ping_packet()
 print 'Ping packet made...' 
 for pack in packet:
-        send(pack)
+    send(pack)

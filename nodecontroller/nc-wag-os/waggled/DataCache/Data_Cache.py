@@ -86,7 +86,7 @@ class Data_Cache(Daemon):
                     if not data:
                         break
                     else:
-                        #print 'Data: ', data
+                        print 'Data: ', data
                         #Indicates that it is a pull request 
                         if data[0] == '|': #TODO This could be improved if there is a better way to distinguish between push and pull requests and from incoming and outgoing requests
                             data, dest = data.split('|', 1) #splits to get either 'o' for outgoing request or the device location for incoming request
@@ -127,7 +127,7 @@ class Data_Cache(Daemon):
                                 order = flags[2] #lifo or fifo
                                 msg_p = flags[1] 
                                 recipient = header['r_uniqid'] #gets the recipient ID
-                                print 'recipient: ', recipient
+                                print 'recipient: ',recipient
                                 sender = header['s_uniqid']
                                 for i in range(2): #loops in case device dictionary is not up-to-date
                                     if recipient == 0: #0 is the default ID for the cloud. Indicates an outgoing push.

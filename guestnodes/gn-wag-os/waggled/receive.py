@@ -35,7 +35,7 @@ def receive():
                 msg = s.recv(4028) #arbitrary. Can put in a config file
                 if msg != 'False':
                     try:
-                        
+                        print 'Msg...', msg
                         msg_handler(msg)
                         s.close() #closes each time a message is received. #TODO might not need to close the socket each time
                         #print 'Connection closed...'
