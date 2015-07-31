@@ -33,6 +33,8 @@ class UtilProcess(Process):
 		"""
 			Called when a packet contianing a utility request is recieved
 		"""
+		#Here body is our full packet - header, message and CRC, and one can technically
+		#throw this back in the waggle_in and get it routed again.
 		header = get_header(body)
 
 

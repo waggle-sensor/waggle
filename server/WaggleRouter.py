@@ -41,7 +41,7 @@ class WaggleRouter(Process):
 					self.channel.queue_declare(info[1])
 
 		#declare the default queues
-		#TODO: Check to see if this section can be culled. 
+		#TODO: Check to see if this section can be culled.
 		queue_list = ["incoming","registration","util"]
 		for queueName in queue_list:
 			self.channel.queue_declare(queueName)
@@ -70,6 +70,13 @@ class WaggleRouter(Process):
 
 		else: # This is a message for someone else. Send it along.
 			try:
+                #TODO: This is where we have to check if the senderis allowed
+                #to send a message to the recipient. We need a permissions system
+                #here, with the permissions stored in the Cassandra data base.
+                # check if the sender is not impersonating someone else - is that
+                #possible? If so, where would that be done? - Check and see if
+                #RabbitMq permission system will help (Ben's idea)
+
 				recipient = self.routing_table[header['r_uniqid']]
 				self.channel.basic_publish(exchange='internal', routing_key = recipient, body=body)
 			except Exception as e:
