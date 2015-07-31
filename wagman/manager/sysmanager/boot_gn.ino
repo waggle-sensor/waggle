@@ -1,45 +1,3 @@
-//---------- C O N S T A N T S ------------------------------------------------
-
-
-
-
-//---------- G L O B A L S ----------------------------------------------------
-
-
-
-
-//---------- B O O T _ G N ----------------------------------------------------
-/*
-   Boots the guest nodes.
-
-   :rtype: none
-*/
-void boot_GN()
-{
-  // Guest node 1 booted successfully?
-  if(boot_GN1())
-    // Mark guest node as operational
-    _GN1_booted = true;
-
-  Serial.println(_GN1_booted);
-
-  // Guest node 2 booted successfully?
-  if(boot_GN2())
-    // Mark guest node as operational
-    _GN2_booted = true;
-
-  Serial.println(_GN2_booted);
-
-  // Guest node 3 booted successfully?
-  if(boot_GN3())
-    // Mark guest node as operational
-    _GN3_booted = true;
-
-  Serial.println(_GN3_booted);
-}
-
-
-
 //---------- B O O T _ G N 1 --------------------------------------------------
 /*
    Boots guest node 1.  Checks temperature, power draw, and heartbeat.
@@ -52,11 +10,14 @@ void boot_GN()
 */
 boolean boot_GN1()
 {
-  // Make sure the device is off
-   digitalWrite(PIN_RELAY_GN1, LOW);
+  // Mark guest node as not operational
+  _GN1_running = false;
 
-   // Give the relay time to move
-   delay(100);
+  // Make sure the device is off
+  digitalWrite(PIN_RELAY_GN1, LOW);
+
+  // Give the relay time to move
+  delay(100);
 
   // Is guest node 1 enabled and expected to be present?
   if(eeprom_read_byte(&E_GN1_ENABLED) && eeprom_read_byte(&E_PRESENT_GN1))
@@ -64,8 +25,6 @@ boolean boot_GN1()
     // Is the guest node's temperature outside of safe parameters?
     if(!check_temp_GN(1))
     {
-      Serial.println("gn1 bad temp");
-
       // Giving the guest node one more chance...
 
       // Wait for things to settle down, perhaps
@@ -82,26 +41,15 @@ boolean boot_GN1()
       }
     }
 
-    Serial.println("gn1 temp");
-
     // Turn on the guest node
     digitalWrite(PIN_RELAY_GN1, HIGH);
 
-    Serial.println("gn1 relay on");
-
-    unsigned int x = eeprom_read_word(&E_BOOT_TIME_GN1);
-    Serial.println(x);
-
     // Give the guest node time to boot
-    delay((long)x * 1000L);
-
-    Serial.println("gn1 delay");
+    delay((long)eeprom_read_word(&E_BOOT_TIME_GN1) * 1000L);
 
     // Is the guest node not drawing an expected amount of power?
     if(!check_power_GN(1))
     {
-      Serial.println("gn1 bad power");
-
       // Giving the guest node one more chance...
 
       // Power cycle the guest node
@@ -127,13 +75,9 @@ boolean boot_GN1()
       }
     }
 
-    Serial.println("gn1 power");
-
     // Is the guest node alive (sending a "heartbeat")?
     if(!check_heartbeat_odroid(PIN_HEARTBEAT_GN1))
     {
-      Serial.println("gn1 bad heart");
-
       byte boot_attempts = 0;
       boolean _heartbeat_detected = false;
 
@@ -171,7 +115,8 @@ boolean boot_GN1()
       }
     }
 
-    Serial.println("gn1 heart");
+    // Mark guest node as operational
+    _GN1_running = true;
 
     // Exit with success
     return true;
@@ -195,11 +140,14 @@ boolean boot_GN1()
 */
 boolean boot_GN2()
 {
-  // Make sure the device is off
-   digitalWrite(PIN_RELAY_GN2, LOW);
+  // Mark guest node as not operational
+  _GN2_running = false;
 
-   // Give the relay time to move
-   delay(100);
+  // Make sure the device is off
+  digitalWrite(PIN_RELAY_GN2, LOW);
+
+  // Give the relay time to move
+  delay(100);
 
   // Is guest node 2 enabled and expected to be present?
   if(eeprom_read_byte(&E_GN2_ENABLED) && eeprom_read_byte(&E_PRESENT_GN2))
@@ -297,6 +245,9 @@ boolean boot_GN2()
       }
     }
 
+    // Mark guest node as operational
+    _GN2_running = true;
+
     // Exit with success
     return true;
   }
@@ -319,11 +270,14 @@ boolean boot_GN2()
 */
 boolean boot_GN3()
 {
-  // Make sure the device is off
-   digitalWrite(PIN_RELAY_GN3, LOW);
+  // Mark guest node as not operational
+  _GN3_running = false;
 
-   // Give the relay time to move
-   delay(100);
+  // Make sure the device is off
+  digitalWrite(PIN_RELAY_GN3, LOW);
+
+  // Give the relay time to move
+  delay(100);
 
   // Is guest node 3 enabled and expected to be present?
   if(eeprom_read_byte(&E_GN3_ENABLED) && eeprom_read_byte(&E_PRESENT_GN3))
@@ -421,6 +375,9 @@ boolean boot_GN3()
       }
     }
 
+    // Mark guest node as operational
+    _GN3_running = true;
+
     // Exit with success
     return true;
   }
@@ -444,17 +401,15 @@ boolean boot_GN3()
 */
 boolean check_temp_GN(byte gn)
 {
-  unsigned int temp_ADC;
-
   // Which guest node is being checked?
   switch (gn) {
     case 1:
       // Get ADC result from thermistor
-      temp_ADC = analogRead(PIN_THERMISTOR_GN1);
+      latest_temp_GN1 = analogRead(PIN_THERMISTOR_GN1);
 
       // Is measured temperature acceptable?
-      if((eeprom_read_word(&E_TEMP_MIN_GN1) < temp_ADC)
-          && (temp_ADC < eeprom_read_word(&E_TEMP_MAX_GN1)))
+      if((eeprom_read_word(&E_TEMP_MIN_GN1) < latest_temp_GN1)
+          && (latest_temp_GN1 < eeprom_read_word(&E_TEMP_MAX_GN1)))
       {
         // Exit with success
         return true;
@@ -465,11 +420,11 @@ boolean check_temp_GN(byte gn)
 
     case 2:
       // Get ADC result from thermistor
-      temp_ADC = analogRead(PIN_THERMISTOR_GN2);
+      latest_temp_GN2 = analogRead(PIN_THERMISTOR_GN2);
 
       // Is measured temperature acceptable?
-      if((eeprom_read_word(&E_TEMP_MIN_GN2) < temp_ADC)
-          && (temp_ADC < eeprom_read_word(&E_TEMP_MAX_GN2)))
+      if((eeprom_read_word(&E_TEMP_MIN_GN2) < latest_temp_GN2)
+          && (latest_temp_GN2 < eeprom_read_word(&E_TEMP_MAX_GN2)))
       {
         // Exit with success
         return true;
@@ -480,11 +435,11 @@ boolean check_temp_GN(byte gn)
 
     case 3:
       // Get ADC result from thermistor
-      temp_ADC = analogRead(PIN_THERMISTOR_GN3);
+      latest_temp_GN3 = analogRead(PIN_THERMISTOR_GN3);
 
       // Is measured temperature acceptable?
-      if((eeprom_read_word(&E_TEMP_MIN_GN3) < temp_ADC)
-          && (temp_ADC < eeprom_read_word(&E_TEMP_MAX_GN3)))
+      if((eeprom_read_word(&E_TEMP_MIN_GN3) < latest_temp_GN3)
+          && (latest_temp_GN3 < eeprom_read_word(&E_TEMP_MAX_GN3)))
       {
         // Exit with success
         return true;
@@ -569,20 +524,29 @@ boolean check_power_GN(byte gn)
   // Which guest node is being checked?
   switch (gn) {
     case 1:
+      // Store power reading in global variable
+      latest_power_GN1 = milliamps;
+
       // Is measured current below allowed maximum?
-      if(milliamps < eeprom_read_word(&E_AMP_MAX_GN1))
+      if(latest_power_GN1 < eeprom_read_word(&E_AMP_MAX_GN1))
         // Exit with success
         return true;
 
     case 2:
+      // Store power reading in global variable
+      latest_power_GN2 = milliamps;
+
       // Is measured current below allowed maximum?
-      if(milliamps < eeprom_read_word(&E_AMP_MAX_GN2))
+      if(latest_power_GN2 < eeprom_read_word(&E_AMP_MAX_GN2))
         // Exit with success
         return true;
 
     case 3:
+      // Store power reading in global variable
+      latest_power_GN3 = milliamps;
+
       // Is measured current below allowed maximum?
-      if(milliamps < eeprom_read_word(&E_AMP_MAX_GN3))
+      if(latest_power_GN3 < eeprom_read_word(&E_AMP_MAX_GN3))
         // Exit with success
         return true;
 

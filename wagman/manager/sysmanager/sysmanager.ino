@@ -59,6 +59,9 @@
 // Resolution of current sensors (with 8A range) (mA)
 #define MILLIAMPS_PER_STEP 16
 
+// Time (ms) to give node controller to prepare to receive message
+#define NC_MESSAGE_DELAY 10
+
 // Special characters for interacting with the node controller
 #define NC_NOTIFIER_STATUS '@'
 #define NC_NOTIFIER_PROBLEM '#'
@@ -70,7 +73,7 @@
 #define NC_TERMINATOR '!'
 
 // Messages to send to node controller
-#define PROBLEM_SYSMON_TEMP "SM:t"
+#define PROBLEM_SYSMON_ENVIRON "SM:e"
 #define PROBLEM_SYSMON_POWER "SM:p"
 #define PROBLEM_NC_TEMP "NC:t"
 #define PROBLEM_NC_ENVIRON "NC:e"
@@ -78,6 +81,7 @@
 #define PROBLEM_NC_HEARTBEAT "NC:h"
 #define PROBLEM_SWITCH_TEMP "SW:t"
 #define PROBLEM_SWITCH_POWER "SW:p"
+#define PROBLEM_SWITCH_HEARTBEAT "SW:h"
 #define PROBLEM_GN1_TEMP "GN1:t"
 #define PROBLEM_GN1_POWER "GN1:p"
 #define PROBLEM_GN1_HEARTBEAT "GN1:h"
@@ -106,9 +110,10 @@ volatile boolean _USART_new_char = false;
 
 HTU21D SysMon_HTU21D;
 
-boolean _GN1_booted = false;
-boolean _GN2_booted = false;
-boolean _GN3_booted = false;
+boolean _switch_running = false;
+boolean _GN1_running = false;
+boolean _GN2_running = false;
+boolean _GN3_running = false;
 
 byte count_status_report = 0;
 byte count_timeout_heartbeat_NC = 0;
@@ -124,11 +129,25 @@ byte count_timeout_power_GN2 = 0;
 byte count_timeout_power_GN3 = 0;
 byte count_timeout_environ_SysMon = 0;
 byte count_timeout_environ_NC = 0;
+byte count_timeout_temp_processor_NC = 0;
 byte count_timeout_temp_switch = 0;
 byte count_timeout_temp_GN1 = 0;
 byte count_timeout_temp_GN2 = 0;
 byte count_timeout_temp_GN3 = 0;
 
+unsigned int latest_power_SysMon;
+int latest_environ_temp_SysMon_NC;
+byte latest_environ_hum_SysMon_NC;
+unsigned int latest_power_NC;
+unsigned int latest_temp_NC;
+unsigned int latest_power_switch;
+unsigned int latest_temp_switch;
+unsigned int latest_power_GN1;
+unsigned int latest_temp_GN1;
+unsigned int latest_power_GN2;
+unsigned int latest_temp_GN2;
+unsigned int latest_power_GN3;
+unsigned int latest_temp_GN3;
 
 // EEPROM addresses whose values are set by node controller:
 uint32_t EEMEM E_USART_BAUD;
@@ -151,6 +170,7 @@ uint8_t EEMEM E_HEARTBEAT_TIMEOUT_GN2;
 uint8_t EEMEM E_HEARTBEAT_TIMEOUT_GN3;
 uint8_t EEMEM E_BAD_ENVIRON_TIMEOUT_SYSMON;
 uint8_t EEMEM E_BAD_ENVIRON_TIMEOUT_NC;
+uint8_t EEMEM E_BAD_TEMP_PROCESSOR_TIMEOUT_NC;
 uint8_t EEMEM E_BAD_TEMP_TIMEOUT_SWITCH;
 uint8_t EEMEM E_BAD_TEMP_TIMEOUT_GN1;
 uint8_t EEMEM E_BAD_TEMP_TIMEOUT_GN2;
@@ -166,6 +186,8 @@ uint16_t EEMEM E_TEMP_MIN_SYSMON;
 uint16_t EEMEM E_TEMP_MAX_SYSMON;
 uint16_t EEMEM E_TEMP_MIN_NC;
 uint16_t EEMEM E_TEMP_MAX_NC;
+uint16_t EEMEM E_TEMP_MIN_PROCESSOR_NC;
+uint16_t EEMEM E_TEMP_MAX_PROCESSOR_NC;
 uint16_t EEMEM E_TEMP_MIN_SWITCH;
 uint16_t EEMEM E_TEMP_MAX_SWITCH;
 uint16_t EEMEM E_TEMP_MIN_GN1;
@@ -176,6 +198,8 @@ uint16_t EEMEM E_TEMP_MIN_GN3;
 uint16_t EEMEM E_TEMP_MAX_GN3;
 uint8_t EEMEM E_HUMIDITY_MIN_SYSMON;
 uint8_t EEMEM E_HUMIDITY_MAX_SYSMON;
+uint8_t EEMEM E_HUMIDITY_MIN_NC;
+uint8_t EEMEM E_HUMIDITY_MAX_NC;
 uint16_t EEMEM E_AMP_MAX_SYSMON;
 uint16_t EEMEM E_AMP_MAX_NC;
 uint16_t EEMEM E_AMP_MAX_SWITCH;
@@ -198,35 +222,6 @@ uint8_t EEMEM E_FIRST_BOOT;
 //---------- S E T U P --------------------------------------------------------
 void setup() 
 {
-  // Debug
-  delay(5000);
-
-  // pinMode(PIN_RELAY_NC, OUTPUT);
-  // pinMode(PIN_RELAY_SWITCH, OUTPUT);
-  // pinMode(PIN_RELAY_GN1, OUTPUT);
-  // pinMode(PIN_RELAY_GN2, OUTPUT);
-  // pinMode(PIN_RELAY_GN3, OUTPUT);
-
-  // while(1)
-  // {
-  //   digitalWrite(PIN_RELAY_NC, HIGH);
-  //   delay(1000);
-  //   digitalWrite(PIN_RELAY_SWITCH, HIGH);
-  //   delay(1000);
-  //   digitalWrite(PIN_RELAY_GN1, HIGH);
-  //   delay(1000);
-  //   digitalWrite(PIN_RELAY_GN2, HIGH);
-  //   delay(1000);
-  //   digitalWrite(PIN_RELAY_GN3, HIGH);
-  //   delay(1000);
-  //   digitalWrite(PIN_RELAY_NC, LOW);
-  //   digitalWrite(PIN_RELAY_SWITCH, LOW);
-  //   digitalWrite(PIN_RELAY_GN1, LOW);
-  //   digitalWrite(PIN_RELAY_GN2, LOW);
-  //   digitalWrite(PIN_RELAY_GN3, LOW);
-  //   delay(1000);
-  // }
-
   // Is POST enabled?
   #ifdef BOOT_POST
     // Is everything (internal) working correctly?
@@ -234,8 +229,15 @@ void setup()
     {
       // Boot SysMon, node controller, and ethernet switch.  Boot successful?
       if(boot_primary())
+      {
         // Boot the guest nodes
-        boot_GN();
+        boot_GN1();
+        boot_GN2();
+        boot_GN3();
+      }
+      else
+        // Boot failed, so go to sleep
+        sleep();
     }
     // Something non-fatal failed the POST
     else
@@ -245,10 +247,14 @@ void setup()
     // Boot SysMon, node controller, and ethernet switch.  Boot successful?
     if(boot_primary())
     {
-      Serial.println("boot primary");
       // Boot the guest nodes
-      boot_GN();
+      boot_GN1();
+      boot_GN2();
+      boot_GN3();
     }
+    else
+      // Boot failed, so go to sleep
+      sleep();
   #endif
 }
 
@@ -263,91 +269,429 @@ void loop()
     // Increment status report counter
     count_status_report++;
 
+    //////
+    // Increment/clear timeouts...
+    //////
+
     // Is SysMon's environment unacceptable?
     if(!check_environ_SysMon())
       // Increment counter
       count_timeout_environ_SysMon++;
+    else
+      // Reset counter (we want to track timeouts, not accumulations)
+      count_timeout_environ_SysMon = 0;
+
     // Is SysMon's power draw unacceptable?
     if(!check_power_SysMon())
-      // Increment counter
       count_timeout_power_SysMon++;
+    else
+      count_timeout_power_SysMon = 0;
+
 
     // Is the node controller's environment unacceptable?
     if(!check_environ_NC())
-      // Increment counter
       count_timeout_environ_NC++;
+    else
+      count_timeout_environ_NC = 0;
+
+    // Is the node controller's processor temperature unacceptable?
+    if(!check_temp_NC())
+      count_timeout_temp_processor_NC++;
+    else
+      count_timeout_temp_processor_NC = 0;
+
     // Is the node controller's power draw unacceptable?
     if(!check_power_NC())
-      // Increment counter
       count_timeout_power_NC++;
+    else
+      count_timeout_power_NC = 0;
+
     // Is the node controller's heartbeat not detected?
     if(!check_heartbeat_odroid(PIN_HEARTBEAT_NC))
-      // Increment counter
       count_timeout_heartbeat_NC++;
+    else
+      count_timeout_heartbeat_NC = 0;
 
-    // Is the ethernet switch's temperature unacceptable?
-    if(!check_temp_switch())
-      // Increment counter
-      count_timeout_temp_switch++;
-    // Is the ethernet switch's power draw unacceptable?
-    if(!check_power_switch())
-      // Increment counter
-      count_timeout_power_switch++;
+
+    // Is ethernet switch operating?
+    if(_switch_running)
+    {
+      // Is the ethernet switch's temperature unacceptable?
+      if(!check_temp_switch())
+        count_timeout_temp_switch++;
+      else
+        count_timeout_temp_switch = 0;
+
+      // Is the ethernet switch's power draw unacceptable?
+      if(!check_power_switch())
+        count_timeout_power_switch++;
+      else
+        count_timeout_power_switch = 0;
+    }
+
 
     // Is guest node 1 operating?
-    if(_GN1_booted)
+    if(_GN1_running)
     {
       // Is the guest node's temperature unacceptable?
       if(!check_temp_GN(1))
-        // Increment counter
         count_timeout_temp_GN1++;
+      else
+        count_timeout_temp_GN1 = 0;
+
       // Is the guest node's power draw unacceptable?
       if(!check_power_GN(1))
-        // Increment counter
         count_timeout_power_GN1++;
+      else
+        count_timeout_power_GN1 = 0;
+
       // Is the guest node's heartbeat not detected?
       if(!check_heartbeat_odroid(PIN_HEARTBEAT_GN1))
-        // Increment counter
         count_timeout_heartbeat_GN1++;
+      else
+        count_timeout_heartbeat_GN1 = 0;
     }
 
+
     // Is guest node 2 operating?
-    if(_GN2_booted)
+    if(_GN2_running)
     {
       // Is the guest node's temperature unacceptable?
       if(!check_temp_GN(2))
-        // Increment counter
         count_timeout_temp_GN2++;
+      else
+        count_timeout_temp_GN2 = 0;
+
       // Is the guest node's power draw unacceptable?
       if(!check_power_GN(2))
-        // Increment counter
         count_timeout_power_GN2++;
+      else
+        count_timeout_power_GN2 = 0;
+
       // Is the guest node's heartbeat not detected?
       if(!check_heartbeat_odroid(PIN_HEARTBEAT_GN2))
-        // Increment counter
         count_timeout_heartbeat_GN2++;
+      else
+        count_timeout_heartbeat_GN2 = 0;
     }
 
+
     // Is guest node 3 operating?
-    if(_GN3_booted)
+    if(_GN3_running)
     {
       // Is the guest node's temperature unacceptable?
       if(!check_temp_GN(3))
-        // Increment counter
         count_timeout_temp_GN3++;
+      else
+        count_timeout_temp_GN3 = 0;
+
       // Is the guest node's power draw unacceptable?
       if(!check_power_GN(3))
-        // Increment counter
         count_timeout_power_GN3++;
+      else
+        count_timeout_power_GN3 = 0;
+
       // Is the guest node's heartbeat not detected?
       if(!check_heartbeat_odroid(PIN_HEARTBEAT_GN3))
-        // Increment counter
         count_timeout_heartbeat_GN3++;
+      else
+        count_timeout_heartbeat_GN3 = 0;
     }
+
+    //////
+    // React to timeouts...
+    //////
+
+    // Bad power timeout for SysMon?
+    if(count_timeout_power_SysMon >= eeprom_read_byte(&E_BAD_CURRENT_TIMEOUT_SYSMON))
+    {
+      // Inform node controller of the problem
+      send_problem(PROBLEM_SYSMON_POWER);
+
+      // Clear all of SysMon's timeout counters
+      count_timeout_power_SysMon = 0;
+      count_timeout_environ_SysMon = 0;
+
+      // Go to sleep
+      sleep();
+    }
+    // Bad environment timeout for SysMon?
+    else if(count_timeout_environ_SysMon >= eeprom_read_byte(&E_BAD_ENVIRON_TIMEOUT_SYSMON))
+    {
+      // Inform node controller of the problem
+      send_problem(PROBLEM_SYSMON_ENVIRON);
+
+      // Clear all of SysMon's timeout counters
+      count_timeout_power_SysMon = 0;
+      count_timeout_environ_SysMon = 0;
+
+      // Go to sleep
+      sleep();
+    }
+
+
+    // Has something timed out for node controller?
+    if((count_timeout_heartbeat_NC >= eeprom_read_byte(&E_HEARTBEAT_TIMEOUT_NC))
+      || (count_timeout_power_NC >= eeprom_read_byte(&E_BAD_CURRENT_TIMEOUT_NC))
+      || (count_timeout_environ_NC >= eeprom_read_byte(&E_BAD_ENVIRON_TIMEOUT_NC))
+      || (count_timeout_temp_processor_NC >= eeprom_read_byte(&E_BAD_TEMP_PROCESSOR_TIMEOUT_NC)))
+    {
+      // Clear all the node controller's timeout counters
+      count_timeout_heartbeat_NC = 0;
+      count_timeout_power_NC = 0;
+      count_timeout_environ_NC = 0;
+      count_timeout_temp_processor_NC = 0;
+
+      // Reboot the node controller
+      boot_NC();
+    }
+
+
+    // Is ethernet switch operating?
+    if(_switch_running)
+    {
+      // Bad power timeout for ethernet switch?
+      if(count_timeout_power_switch >= eeprom_read_byte(&E_BAD_CURRENT_TIMEOUT_SWITCH))
+      {
+        // Inform node controller of the problem
+        send_problem(PROBLEM_SWITCH_POWER);
+
+        // Clear all of switch's timeout counters
+        count_timeout_power_switch = 0;
+        count_timeout_temp_switch = 0;
+
+        // Reboot the switch
+        boot_switch();
+      }
+      // Bad temperature timeout for ethernet switch?
+      else if(count_timeout_temp_switch >= eeprom_read_byte(&E_BAD_TEMP_TIMEOUT_SWITCH))
+      {
+        // Inform node controller of the problem
+        send_problem(PROBLEM_SWITCH_TEMP);
+
+        // Clear all of switch's timeout counters
+        count_timeout_power_switch = 0;
+        count_timeout_temp_switch = 0;
+
+        // Reboot the switch
+        boot_switch();
+
+        // Clear latest readings, in case the device failed to boot.
+        // This is so the status report doesn't keep reporting the last
+        // non-zero values.
+        latest_power_switch = 0;
+        latest_temp_switch = 0;
+      }
+    }
+
+
+    // Is guest node 1 operating?
+    if(_GN1_running)
+    {
+      // Bad power timeout for guest node 1?
+      if(count_timeout_power_GN1 >= eeprom_read_byte(&E_BAD_CURRENT_TIMEOUT_GN1))
+      {
+        // Inform node controller of the problem
+        send_problem(PROBLEM_GN1_POWER);
+
+        // Clear all of guest node's timeout counters
+        count_timeout_power_GN1 = 0;
+        count_timeout_temp_GN1 = 0;
+        count_timeout_heartbeat_GN1 = 0;
+
+        // Reboot guest node
+        boot_GN1();
+
+        // Clear latest readings, in case the device failed to boot.
+        // This is so the status report doesn't keep reporting the last
+        // non-zero values.
+        latest_power_GN1 = 0;
+        latest_temp_GN1 = 0;
+      }
+      // Bad temperature timeout for guest node 1?
+      else if(count_timeout_temp_GN1 >= eeprom_read_byte(&E_BAD_TEMP_TIMEOUT_GN1))
+      {
+        // Inform node controller of the problem
+        send_problem(PROBLEM_GN1_TEMP);
+
+        // Clear all of guest node's timeout counters
+        count_timeout_power_GN1 = 0;
+        count_timeout_temp_GN1 = 0;
+        count_timeout_heartbeat_GN1 = 0;
+
+        // Reboot guest node
+        boot_GN1();
+
+        // Clear latest readings, in case the device failed to boot.
+        // This is so the status report doesn't keep reporting the last
+        // non-zero values.
+        latest_power_GN1 = 0;
+        latest_temp_GN1 = 0;
+      }
+      // Bad heartbeat timeout for guest node 1?
+      else if(count_timeout_heartbeat_GN1 >= eeprom_read_byte(&E_HEARTBEAT_TIMEOUT_GN1))
+      {
+        // Inform node controller of the problem
+        send_problem(PROBLEM_GN1_HEARTBEAT);
+
+        // Clear all of guest node's timeout counters
+        count_timeout_power_GN1 = 0;
+        count_timeout_temp_GN1 = 0;
+        count_timeout_heartbeat_GN1 = 0;
+
+        // Reboot guest node
+        boot_GN1();
+
+        // Clear latest readings, in case the device failed to boot.
+        // This is so the status report doesn't keep reporting the last
+        // non-zero values.
+        latest_power_GN1 = 0;
+        latest_temp_GN1 = 0;
+      }
+    }
+
+
+    // Is guest node 2 operating?
+    if(_GN2_running)
+    {
+      // Bad power timeout for guest node 2?
+      if(count_timeout_power_GN2 >= eeprom_read_byte(&E_BAD_CURRENT_TIMEOUT_GN2))
+      {
+        // Inform node controller of the problem
+        send_problem(PROBLEM_GN2_POWER);
+
+        // Clear all of guest node's timeout counters
+        count_timeout_power_GN2 = 0;
+        count_timeout_temp_GN2 = 0;
+        count_timeout_heartbeat_GN2 = 0;
+
+        // Reboot guest node
+        boot_GN2();
+
+        // Clear latest readings, in case the device failed to boot.
+        // This is so the status report doesn't keep reporting the last
+        // non-zero values.
+        latest_power_GN2 = 0;
+        latest_temp_GN2 = 0;
+      }
+      // Bad temperature timeout for guest node 2?
+      else if(count_timeout_temp_GN2 >= eeprom_read_byte(&E_BAD_TEMP_TIMEOUT_GN2))
+      {
+        // Inform node controller of the problem
+        send_problem(PROBLEM_GN2_TEMP);
+
+        // Clear all of guest node's timeout counters
+        count_timeout_power_GN2 = 0;
+        count_timeout_temp_GN2 = 0;
+        count_timeout_heartbeat_GN2 = 0;
+
+        // Reboot guest node
+        boot_GN2();
+
+        // Clear latest readings, in case the device failed to boot.
+        // This is so the status report doesn't keep reporting the last
+        // non-zero values.
+        latest_power_GN2 = 0;
+        latest_temp_GN2 = 0;
+      }
+      // Bad heartbeat timeout for guest node 2?
+      else if(count_timeout_heartbeat_GN2 >= eeprom_read_byte(&E_HEARTBEAT_TIMEOUT_GN2))
+      {
+        // Inform node controller of the problem
+        send_problem(PROBLEM_GN2_HEARTBEAT);
+
+        // Clear all of guest node's timeout counters
+        count_timeout_power_GN2 = 0;
+        count_timeout_temp_GN2 = 0;
+        count_timeout_heartbeat_GN2 = 0;
+
+        // Reboot guest node
+        boot_GN2();
+
+        // Clear latest readings, in case the device failed to boot.
+        // This is so the status report doesn't keep reporting the last
+        // non-zero values.
+        latest_power_GN2 = 0;
+        latest_temp_GN2 = 0;
+      }
+    }
+
+
+    // Is guest node 3 operating?
+    if(_GN3_running)
+    {
+      // Bad power timeout for guest node 3?
+      if(count_timeout_power_GN3 >= eeprom_read_byte(&E_BAD_CURRENT_TIMEOUT_GN3))
+      {
+        // Inform node controller of the problem
+        send_problem(PROBLEM_GN3_POWER);
+
+        // Clear all of guest node's timeout counters
+        count_timeout_power_GN3 = 0;
+        count_timeout_temp_GN3 = 0;
+        count_timeout_heartbeat_GN3 = 0;
+
+        // Reboot guest node
+        boot_GN3();
+
+        // Clear latest readings, in case the device failed to boot.
+        // This is so the status report doesn't keep reporting the last
+        // non-zero values.
+        latest_power_GN3 = 0;
+        latest_temp_GN3 = 0;
+      }
+      // Bad temperature timeout for guest node 3?
+      else if(count_timeout_temp_GN3 >= eeprom_read_byte(&E_BAD_TEMP_TIMEOUT_GN3))
+      {
+        // Inform node controller of the problem
+        send_problem(PROBLEM_GN3_TEMP);
+
+        // Clear all of guest node's timeout counters
+        count_timeout_power_GN3 = 0;
+        count_timeout_temp_GN3 = 0;
+        count_timeout_heartbeat_GN3 = 0;
+
+        // Reboot guest node
+        boot_GN3();
+
+        // Clear latest readings, in case the device failed to boot.
+        // This is so the status report doesn't keep reporting the last
+        // non-zero values.
+        latest_power_GN3 = 0;
+        latest_temp_GN3 = 0;
+      }
+      // Bad heartbeat timeout for guest node 3?
+      else if(count_timeout_heartbeat_GN3 >= eeprom_read_byte(&E_HEARTBEAT_TIMEOUT_GN3))
+      {
+        // Inform node controller of the problem
+        send_problem(PROBLEM_GN3_HEARTBEAT);
+
+        // Clear all of guest node's timeout counters
+        count_timeout_power_GN3 = 0;
+        count_timeout_temp_GN3 = 0;
+        count_timeout_heartbeat_GN3 = 0;
+
+        // Reboot guest node
+        boot_GN3();
+
+        // Clear latest readings, in case the device failed to boot.
+        // This is so the status report doesn't keep reporting the last
+        // non-zero values.
+        latest_power_GN3 = 0;
+        latest_temp_GN3 = 0;
+      }
+    }
+
 
     // Time to send a status report?
     if(count_status_report >= eeprom_read_byte(&E_STATUS_REPORT_PERIOD))
+    {
+      // Clear the counter
+      count_status_report = 0;
+
       send_status();
+    }
+
 
     // Clear the flag for the next timer cycle
     _timer1_cycle = false;
@@ -365,8 +709,7 @@ void loop()
     else if(USART_RX_char == REQUEST_STATUS)
       send_status();
     else if(USART_RX_char == REQUEST_REBOOT_NC)
-      //boot_NC();
-      Serial.println("aaahh");
+      boot_NC();
     else if(USART_RX_char == REQUEST_REBOOT_SWITCH)
       boot_switch();
     else if(USART_RX_char == REQUEST_REBOOT_GN1)
@@ -388,28 +731,26 @@ void loop()
    RTC time,
    Light level (ADC value),
    Current draw (SysMon),
-   Temperature (SysMon & NC),
-   Humidity (SysMon & NC),
+   Environment temperature (SysMon & NC),
+   Relative humidity (SysMon & NC),
    Current draw (NC),
-   Heartbeat status (NC),
+   Temperature of processor (NC),
    Enabled/disabled (switch),
+   Running/not running (switch),
    Current draw (switch),
    Temperature (switch),
    Enabled/disabled (GN 1),
-   Booted/not booted (GN 1),
+   Running/not running (GN 1),
    Current draw (GN 1),
    Temperature (GN 1),
-   Heartbeat status (GN 1),
    Enabled/disabled (GN 2),
-   Booted/not booted (GN 2),
+   Running/not running (GN 2),
    Current draw (GN 2),
    Temperature (GN 2),
-   Heartbeat status (GN 2),
    Enabled/disabled (GN 3),
-   Booted/not booted (GN 3),
+   Running/not running (GN 3),
    Current draw (GN 3),
-   Temperature (GN 3),
-   Heartbeat status (GN 3)
+   Temperature (GN 3)
 
    :rtype: none
 */
@@ -421,11 +762,47 @@ void send_status()
   Serial.println(NC_NOTIFIER_STATUS);
 
   // Give it time to get ready
-  delay(10);
+  delay(NC_MESSAGE_DELAY);
 
   // Assemble the message
   message += String(RTC.get()) + NC_DELIMITER;
-  
+  message += String(analogRead(PIN_PHOTOCELL)) + NC_DELIMITER;
+  message += String(latest_power_SysMon) + NC_DELIMITER;
+  message += String(latest_environ_temp_SysMon_NC) + NC_DELIMITER;
+  message += String(latest_environ_hum_SysMon_NC) + NC_DELIMITER;
+  message += String(latest_power_NC) + NC_DELIMITER;
+  message += String(latest_temp_NC) + NC_DELIMITER;
+  if(eeprom_read_byte(&E_SWITCH_ENABLED))
+    message += String(1) + NC_DELIMITER;
+  else
+    message += String(0) + NC_DELIMITER;
+  message += String(_switch_running) + NC_DELIMITER;
+  message += String(latest_power_switch) + NC_DELIMITER;
+  message += String(latest_temp_switch) + NC_DELIMITER;
+  if(eeprom_read_byte(&E_GN1_ENABLED))
+    message += String(1) + NC_DELIMITER;
+  else
+    message += String(0) + NC_DELIMITER;
+  message += String(_GN1_running) + NC_DELIMITER;
+  message += String(latest_power_GN1) + NC_DELIMITER;
+  message += String(latest_temp_GN1) + NC_DELIMITER;
+  if(eeprom_read_byte(&E_GN2_ENABLED))
+    message += String(1) + NC_DELIMITER;
+  else
+    message += String(0) + NC_DELIMITER;
+  message += String(_GN2_running) + NC_DELIMITER;
+  message += String(latest_power_GN2) + NC_DELIMITER;
+  message += String(latest_temp_GN2) + NC_DELIMITER;
+  if(eeprom_read_byte(&E_GN3_ENABLED))
+    message += String(1) + NC_DELIMITER;
+  else
+    message += String(0) + NC_DELIMITER;
+  message += String(_GN3_running) + NC_DELIMITER;
+  message += String(latest_power_GN3) + NC_DELIMITER;
+  message += String(latest_temp_GN3);
+
+  // Send it
+  Serial.println(message);
 }
 
 
@@ -442,7 +819,7 @@ void send_time()
   Serial.println(NC_NOTIFIER_TIME_SEND);
 
   // Give it time to get ready
-  delay(10);
+  delay(NC_MESSAGE_DELAY);
 
   // Get time from RTC and send it to the node controller
   Serial.println(RTC.get());
@@ -464,7 +841,7 @@ void send_problem(String problem)
   Serial.println(NC_NOTIFIER_PROBLEM);
 
   // Give it time to get ready
-  delay(10);
+  delay(NC_MESSAGE_DELAY);
 
   // Send problem report
   Serial.println(problem);
