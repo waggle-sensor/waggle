@@ -1,20 +1,21 @@
 # PacketHandler.py
 """
-   This module contains methods relating to the construction and interpretation of waggle packets. 
-   The main functions to examine in this class are pack and unpack. This module handles 
+   This module contains methods relating to the construction and interpretation of waggle packets.
+   The main functions to examine in this class are pack and unpack. This module handles
    all CRC checking for the packets, so any sucessfully unpacked packet is known to be correct.
 """
-from crcmod.predefined import mkCrcFun 
+from crcmod.predefined import mkCrcFun
 from struct import pack
 import cStringIO as StringIO
 import time
 
 #Where each piece of information in a packet header is stored, by byte
+# Total header size is 40 bytes.
 HEADER_LOCATIONS = {
-    "prot_ver"         : 0,     # TODO: Make this always 0.3
+    "prot_ver"         : 0,
     "flags"            : 1,
-    "len_body"         : 2,     # TODO: Automatic
-    "time"             : 4,     # TODO: Make this automatic
+    "len_body"         : 2,
+    "time"             : 4,
     "msg_mj_type"      : 8,
     "msg_mi_type"      : 9,
     "snd_session"      : 10,    # For Friday: just zero. Eventually automatic
@@ -47,13 +48,18 @@ HEADER_BYTELENGTHS = {
 #The total header length
 HEADER_LENGTH = 40
 FOOTER_LENGTH = 4
+MAX_SEQ_NUMBER = pow(2,8*HEADER_BYTELENGTHS["snd_seq"])
+MAX_PACKET_SIZE = 1024
+
 VERSION = "0.3"
+
+#Sequence becomes zero when the node starts again or when the package is
+#reimported
 SEQUENCE = 0
 
+#The /etc/waggle folder has waggle specific information
 with open('/etc/waggle/hostname','r') as file_:
     UNIQUEID = int(file_.read())
-
-
 
 
 def pack(header_data, message_data=""):
@@ -69,37 +75,39 @@ def pack(header_data, message_data=""):
     global UNIQUEID
     global VERSION
 
-    #Generate the automatic fields and update them with user-supplied values
+    #Generate the automatic fields
     auto_header = {
-        "prot_ver"         : VERSION, 
+        "prot_ver"         : VERSION,
         "flags"            : (1,1,True),
         "len_body"         : len(message_data),
         "time"             : int(time.time()),
-        "snd_session"      : 0,    
-        "s_uniqid"         : UNIQUEID,    
-        "ext_header"       : 0,    
-        "resp_session"     : 0,   
-        "r_uniqid"         : 0,   
-        "snd_seq"          : SEQUENCE,   
+        "snd_session"      : 0,
+        "s_uniqid"         : UNIQUEID,
+        "ext_header"       : 0,
+        "resp_session"     : 0,
+        "r_uniqid"         : 0,
+        "snd_seq"          : SEQUENCE,
         "resp_seq"         : 0,
     }
+    #and update them with user-supplied values
     auto_header.update(header_data)
-    #Create the CRC function 
+
+    #Create the CRC function
     crc32fun = mkCrcFun('crc-32')
 
     #If it's a string, make it a file object
     if(type(message_data) is str):
         message_data = StringIO.StringIO(message_data)
 
-    #If it's under 1024b, send it off as a single packet
+    #If it's under 1K, send it off as a single packet
     #Jump to the end of the file
     message_data.seek(0,2)
 
-    #See if it is less than 2K
-    if(message_data.tell() < 2048):
+    #See if it is less than 1K
+    if(message_data.tell() < MAX_PACKET_SIZE):
         try:
             header = pack_header(auto_header)
-        except KeyError as e: 
+        except KeyError as e:
             raise
 
         #Save the short message to a string
@@ -108,7 +116,7 @@ def pack(header_data, message_data=""):
         message_data.close()
 
         #Calculate the CRC, pack it all up, and return the result.
-        SEQUENCE = (SEQUENCE + 1) % 16777216
+        SEQUENCE = (SEQUENCE + 1) % MAX_SEQ_NUMBER
         msg_crc32 = _bin_pack(crc32fun(msg),FOOTER_LENGTH)
 
         yield header + msg + msg_crc32
@@ -119,25 +127,24 @@ def pack(header_data, message_data=""):
         message_data.seek(0)
         packetNum = 0
 
-        # Create smaller packets 1024 bytes at a time, also attach packet number
-        while length > 1024:
+        # Create smaller packets MAX_PACKET_SIZE bytes at a time, also attach packet number
+        while length > MAX_PACKET_SIZE:
             try:
                 header = pack_header(auto_header)
-            except KeyError as e: 
+            except KeyError as e:
                 raise
-            msg = _bin_pack(packetNum,4) + message_data.read(1024)
-            SEQUENCE = (SEQUENCE + 1) % 16777216
+            msg = _bin_pack(packetNum,4) + message_data.read(MAX_PACKET_SIZE)
+            SEQUENCE = (SEQUENCE + 1) % MAX_SEQ_NUMBER
             packetNum += 1
             msg_crc32 = _bin_pack(crc32fun(msg),FOOTER_LENGTH)
-
             yield header + msg + msg_crc32
-            length -= 1024
+            length -= MAX_PACKET_SIZE
 
         # Finish sending the message
         if length > 0:
             header = pack_header(auto_header)
-            msg = _bin_pack(packetNum,4) + message_data.read(1024)
-            SEQUENCE = (SEQUENCE + 1) % 16777216
+            msg = _bin_pack(packetNum,4) + message_data.read(MAX_PACKET_SIZE)
+            SEQUENCE = (SEQUENCE + 1) % MAX_SEQ_NUMBER
             msg_crc32 = _bin_pack(crc32fun(msg),FOOTER_LENGTH)
             yield header + msg + msg_crc32
 
@@ -155,13 +162,12 @@ def unpack(packet):
         raise IOError("Packet body CRC-32 failed.")
     try:
         header = _unpack_header(packet[:HEADER_LENGTH])
-    except Exception as e: 
+    except Exception as e:
         raise
 
     return (header, packet[HEADER_LENGTH:-FOOTER_LENGTH])
 
 
-# TODO: Add in a convenience method to make constructing a header dictionary easier
 
 def pack_header(header_data):
     """
@@ -198,6 +204,29 @@ def pack_header(header_data):
     return header
 
 
+def get_header(packet):
+    """
+        Given a complete packet, this method will return the header as a dictionary.
+
+        :param string packet: A complete packet.
+        :rtype: dictionary
+        :raises IndexError: An IndexError will be raised if the packed header is not 40 bytes long
+        :raises IOError: An IOError will be raised if the packet header fails its CRC-16 check
+    """
+    try:
+        header = _unpack_header(packet[:HEADER_LENGTH])
+        return header
+    except Exception as e:
+        raise
+
+
+"""
+-------------------------------------------------------------------------------------------------------------------
+                                          private methods start here
+-------------------------------------------------------------------------------------------------------------------
+"""
+
+
 def _unpack_header(packed_header):
     """
         Given a packed header, this method will return a dictionary with the unpacked contents.
@@ -227,7 +256,7 @@ def _unpack_header(packed_header):
         "prot_ver"     : _unpack_version(header_IO.read(HEADER_BYTELENGTHS["prot_ver"])),        # Load protocol version
         "flags"        : _unpack_flags(header_IO.read(HEADER_BYTELENGTHS["flags"])),             # Load flags
         "len_body"     : _bin_unpack(header_IO.read(HEADER_BYTELENGTHS["len_body"])),            # Load message body length
-        "time"         : _bin_unpack(header_IO.read(HEADER_BYTELENGTHS["time"])),                # Load time    
+        "time"         : _bin_unpack(header_IO.read(HEADER_BYTELENGTHS["time"])),                # Load time
         "msg_mj_type"  : _bin_unpack(header_IO.read(HEADER_BYTELENGTHS["msg_mj_type"])),         # Load message major type
         "msg_mi_type"  : _bin_unpack(header_IO.read(HEADER_BYTELENGTHS["msg_mi_type"])),         # Load message minor type
         "ext_header"   : _bin_unpack(header_IO.read(HEADER_BYTELENGTHS["ext_header"])),          # Load extended header
@@ -241,29 +270,6 @@ def _unpack_header(packed_header):
 
     header_IO.close()
     return header
-
-def get_header(packet):
-    """
-        Given a complete packet, this method will return the header as a dictionary.
-
-        :param string packet: A complete packet.
-        :rtype: dictionary
-        :raises IndexError: An IndexError will be raised if the packed header is not 40 bytes long
-        :raises IOError: An IOError will be raised if the packet header fails its CRC-16 check
-    """
-    try:
-        header = _unpack_header(packet[:HEADER_LENGTH])
-        return header
-    except Exception as e:
-        raise
-
-        
-"""
--------------------------------------------------------------------------------------------------------------------
-                                          private methods start here
--------------------------------------------------------------------------------------------------------------------
-"""
-
 
 def _pack_flags(flags):
     """
@@ -304,8 +310,8 @@ def _unpack_version(version):
 
 def _pack_version(version):
     """
-        For internal use. 
-        Returns the protocol as a binary 
+        For internal use.
+        Returns the protocol as a binary
 
         :param string version: The version in human-readable format, i.e. "0.3"
         :rtype: The protocol version as a 1 byte string
