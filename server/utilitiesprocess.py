@@ -34,6 +34,8 @@ class UtilProcess(Process):
 			Called when a packet contianing a utility request is recieved
 		"""
 		header = get_header(body)
+
+
 		if(header['msg_mj_type'] == ord('p') and header["msg_mi_type"] == ord('r')): # It's a ping request
 			#Create a response header
 			resp_header = {
@@ -43,10 +45,13 @@ class UtilProcess(Process):
 				"resp_session": header["snd_session"]
 			}
 			packer = pack(resp_header,"Pong!")
+			# Need to use a for each loop because packer yields packets, it doesnt return them
 			for packet in packer:
 				response = packet
 			self.channel.basic_publish(exchange='waggle_in', routing_key = "in", body=response)
-		if(header['msg_mj_type'] == ord('t') and header["msg_mi_type"] == ord('r')): # It's a time request
+
+
+		elif(header['msg_mj_type'] == ord('t') and header["msg_mi_type"] == ord('r')): # It's a time request
 			# Make a response header
 			resp_header = {
 				"msg_mj_type" : ord('t'),

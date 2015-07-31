@@ -12,13 +12,13 @@ logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.CRITICAL)
 class WaggleRouter(Process):
 	"""
 		The WaggleRouter class receives all messages from the incoming queue in the RabbitMQ server.
-		It then reads the packet header to learn the message type, and forwards it to the appropriate
+		It then reads the packet header to learn the message Major type, and forwards it to the appropriate
 		queue for processing.
 	"""
 	def __init__(self,routing_table):
 		print "Initializing Routing Process"
 		super(WaggleRouter,self).__init__()
-		
+
 		self.routing_table = routing_table
 
 		self.routeQueues	= {
@@ -31,7 +31,7 @@ class WaggleRouter(Process):
 		self.rabbitConn = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
 		self.channel = self.rabbitConn.channel()
 		self.channel.basic_qos(prefetch_count=1)
-		# self.assembler = PacketAssembler() 
+		# self.assembler = PacketAssembler()
 
 		#Load all of the existing registered node queues
 		with open('registrations/nodes.txt','r') as nodes:
@@ -41,6 +41,7 @@ class WaggleRouter(Process):
 					self.channel.queue_declare(info[1])
 
 		#declare the default queues
+		#TODO: Check to see if this section can be culled. 
 		queue_list = ["incoming","registration","util"]
 		for queueName in queue_list:
 			self.channel.queue_declare(queueName)
