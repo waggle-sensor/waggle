@@ -2,6 +2,11 @@ import collections
 import time
 import datetime
 
+### I M P O R T A N T ###
+# SysMon's timer actually counts every 1.0486 seconds, so any timeouts
+# specified here will actually be multiplied by 1.0486.
+# However, only integer values may be specified.  Floats are truncated.
+
 ########################################################################
 #           Edit CORE (SysMon, NC, network switch) parameters here.
 #           Do not change the order or number of items.
@@ -18,7 +23,7 @@ params_core['baud rate'] = 57600
 params_core['SysMon RX buffer size (characters)'] = 150
 
 # Min: 1, max: 255
-params_core['status report period'] = 10
+params_core['status report period'] = 3
 
 # Min: 1, max: 255
 params_core['max num of SOS boot attempts'] = 3
@@ -28,9 +33,9 @@ params_core['max num of SOS boot attempts'] = 3
 params_core['max num of subsystem boot attempts'] = 4
 
 # Min: 1, max: 65535
-params_core['boot time for NC (seconds)'] = 5
+params_core['boot time for NC (seconds)'] = 3
 # Min: 1, max: 255
-params_core['boot time for ethernet switch (seconds)'] = 5
+params_core['boot time for ethernet switch (seconds)'] = 3
 
 # Min: 1, max: 255
 params_core['heartbeat timeout (NC) (seconds)'] = 5
@@ -39,6 +44,7 @@ params_core['heartbeat timeout (switch) (seconds)'] = 3
 # Min: 1, max: 255
 params_core['bad environment timeout (SysMon) (seconds)'] = 10
 params_core['bad environment timeout (NC) (seconds)'] = 15
+params_core['bad temperature (processor) timeout (NC) (seconds)'] = 6
 params_core['bad temperature timeout (switch) (seconds)'] = 15
 
 # Min: 1, max: 255
@@ -50,17 +56,21 @@ params_core['bad current timeout (switch) (seconds)'] = 6
 params_core['noise ceiling for current sensors (mA)'] = 15
 
 # Min: -40, max: 125
-params_core['temperature min (SysMon) (Celsius)'] = -20
-params_core['temperature max (SysMon) (Celsius)'] = 125
-params_core['temperature min (NC) (Celsius)'] = -20
-params_core['temperature max (NC) (Celsius)'] = 125
+params_core['temperature min of environment (SysMon) (Celsius)'] = -20
+params_core['temperature max of environment (SysMon) (Celsius)'] = 125
+params_core['temperature min of environment (NC) (Celsius)'] = -20
+params_core['temperature max of environment (NC) (Celsius)'] = 125
 # Min: -55, max: 80
+params_core['temperature min of processor (NC) (Celsius)'] = -30
+params_core['temperature max of processor (NC) (Celsius)'] = 80
 params_core['temperature min (switch) (Celsius)'] = -20
 params_core['temperature max (switch) (Celsius)'] = 80
 
 # Min: 0, max: 100
 params_core['relative humidity min (SysMon) (%)'] = 0
 params_core['relative humidity max (SysMon) (%)'] = 100
+params_core['relative humidity min (NC) (%)'] = 0
+params_core['relative humidity max (NC) (%)'] = 100
 
 # Min: 1, max: 8000
 params_core['maximum current draw (SysMon) (mA)'] = 500
@@ -82,7 +92,7 @@ params_GuestNodes['present (GN 2)'] = 0
 params_GuestNodes['present (GN 3)'] = 0
 
 # Min: 1, max: 65535
-params_GuestNodes['boot time (GN 1)'] = 5
+params_GuestNodes['boot time (GN 1)'] = 3
 params_GuestNodes['boot time (GN 2)'] = 12
 params_GuestNodes['boot time (GN 3)'] = 12
 
@@ -319,6 +329,10 @@ ser_SysMon = serial.Serial('/dev/arduinoMicro', params_core['baud rate'], timeou
 ########################################################################
 
 # Convert user-specified temperatures into ADC values for SysMon
+params_core['temperature min of processor (NC) (Celsius)'] = \
+    convert_tempToADC(params_core['temperature min of processor (NC) (Celsius)'])
+params_core['temperature max of processor (NC) (Celsius)'] = \
+    convert_tempToADC(params_core['temperature max of processor (NC) (Celsius)'])
 params_core['temperature min (switch) (Celsius)'] = \
     convert_tempToADC(params_core['temperature min (switch) (Celsius)'])
 params_core['temperature max (switch) (Celsius)'] = \

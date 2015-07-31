@@ -1,13 +1,3 @@
-//---------- C O N S T A N T S ------------------------------------------------
-
-
-
-
-//---------- G L O B A L S ----------------------------------------------------
-
-
-
-
 //---------- B O O T _ P R I M A R Y ------------------------------------------
 /*
    Starts/initializes/boots self, node controller, and ethernet switch.
@@ -24,32 +14,20 @@ boolean boot_primary()
 	// Initialize/start internal components
 	init_primary();
 
-   Serial.println("init");
-   delay(5);
-
    // Is this the first ever boot?
    if(eeprom_read_byte(&E_FIRST_BOOT) != 0)
       // Assign default parameters
       set_default_eeprom();
-
-   Serial.println("first boot");
-   delay(5);
 
 	// Booted SysMon successfully?
    if(!boot_SysMon())
       // Skip the rest of the boot sequence
       return false;
 
-   Serial.println("boot sysmon");
-   delay(5);
-
    // Booted node controller successfully?
    if(!boot_NC())
       // Skip the rest of the boot sequence
       return false;
-
-   Serial.println("boot nc");
-   delay(5);
 
 	// Request time from node controller
 	get_time_NC();
@@ -62,16 +40,10 @@ boolean boot_primary()
 		// Skip the rest of the boot sequence
 		return false;
 
-   Serial.println("boot params");
-   delay(5);
-
    // Booted ethernet switch successfully?
    if(!boot_switch())
       // Skip the rest of the boot sequence
       return false;
-
-   Serial.println("boot switch");
-   delay(5);
 
 	// Everything is good, so exit sequence with success
 	return true;
@@ -87,7 +59,11 @@ boolean boot_primary()
 */
 void init_primary()
 {
-	// Enable interrupts
+	// Reset and disable watchdog to avoid a reset loop
+   wdt_reset();
+   wdt_disable();
+
+   // Enable interrupts
 	interrupts();
 
 	// Start watchdog with 2 second timeout
@@ -264,6 +240,7 @@ void set_default_eeprom()
    eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_GN3, 5);
    eeprom_update_byte(&E_BAD_ENVIRON_TIMEOUT_SYSMON, 5);
    eeprom_update_byte(&E_BAD_ENVIRON_TIMEOUT_NC, 5);
+   eeprom_update_byte(&E_BAD_TEMP_PROCESSOR_TIMEOUT_NC, 5);
    eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_SWITCH, 5);
    eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_GN1, 5);
    eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_GN2, 5);
@@ -275,11 +252,13 @@ void set_default_eeprom()
    eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_GN1, 5);
    eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_GN2, 5);
    eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_GN3, 5);
-   // Temperatures are ADC values (see WagMan.py on node controller)
    eeprom_update_word(&E_TEMP_MIN_SYSMON, 0);
    eeprom_update_word(&E_TEMP_MAX_SYSMON, 100);
    eeprom_update_word(&E_TEMP_MIN_NC, 0);
    eeprom_update_word(&E_TEMP_MAX_NC, 100);
+   // Temperatures below are ADC values (see WagMan.py on node controller)
+   eeprom_update_word(&E_TEMP_MIN_PROCESSOR_NC, 115);
+   eeprom_update_word(&E_TEMP_MAX_PROCESSOR_NC, 969);
    eeprom_update_word(&E_TEMP_MIN_SWITCH, 417);
    eeprom_update_word(&E_TEMP_MAX_SWITCH, 969);
    eeprom_update_word(&E_TEMP_MIN_GN1, 417);
@@ -290,6 +269,8 @@ void set_default_eeprom()
    eeprom_update_word(&E_TEMP_MAX_GN3, 969);
    eeprom_update_byte(&E_HUMIDITY_MIN_SYSMON, 0);
    eeprom_update_byte(&E_HUMIDITY_MAX_SYSMON, 100);
+   eeprom_update_byte(&E_HUMIDITY_MIN_NC, 0);
+   eeprom_update_byte(&E_HUMIDITY_MAX_NC, 100);
    eeprom_update_word(&E_AMP_MAX_SYSMON, 400);
    eeprom_update_word(&E_AMP_MAX_NC, 4000);
    eeprom_update_word(&E_AMP_MAX_SWITCH, 1500);
@@ -331,7 +312,6 @@ boolean boot_SysMon()
    // Is SysMon's environment outside of safe bounds?
    if(!check_environ_SysMon())
    {
-      Serial.println("sysmon bad environ");
       // Giving SysMon one more chance...
 
       // Wait for things to settle down, perhaps
@@ -374,8 +354,6 @@ boolean boot_NC()
    // Is the node controller's environment not suitable?
    if(!check_environ_NC())
    {
-      Serial.println("nc bad environ");
-
       // Giving the node controller one more chance...
 
       // Wait for things to settle down, perhaps
@@ -387,26 +365,29 @@ boolean boot_NC()
          return false;
    }
 
-   Serial.println("nc environ");
+   // Is the node controller's processor temperature not suitable?
+   if(!check_temp_NC())
+   {
+      // Giving the node controller one more chance...
+
+      // Wait for things to settle down, perhaps
+      delay((long)BOOT_BAD_ENVIRON_WAIT_TIME * 1000L);
+
+      // Is the node controller's environment not suitable?
+      if(!check_temp_NC())
+         // Exit with failure
+         return false;
+   }
 
    // Enable power to node controller
    digitalWrite(PIN_RELAY_NC, HIGH);
 
-   Serial.println("nc relay on");
-
-   unsigned int x = eeprom_read_word(&E_BOOT_TIME_NC);
-   Serial.println(x);
-
    // Give the node controller time to boot
-   delay((long)x * 1000L);
-
-   Serial.println("nc delay");
+   delay((long)eeprom_read_word(&E_BOOT_TIME_NC) * 1000L);
 
    // Is the node controller not drawing an expected amount of power?
    if(!check_power_NC())
    {
-      Serial.println("nc bad power");
-
       // Giving the node controller one more chance...
 
       // Power cycle the node controller
@@ -429,13 +410,9 @@ boolean boot_NC()
       }
    }
 
-   Serial.println("nc power");
-
    // Is the node controller alive (sending a "heartbeat")?
    if(!check_heartbeat_odroid(PIN_HEARTBEAT_NC))
    {
-      Serial.println("nc bad heart");
-
       byte boot_attempts = 0;
       boolean _heartbeat_detected = false;
       
@@ -470,8 +447,6 @@ boolean boot_NC()
       }
    }
 
-   Serial.println("nc heart");
-
    // Exit with success
    return true;
 }
@@ -488,6 +463,9 @@ boolean boot_NC()
 */
 boolean boot_switch()
 {
+   // Mark switch as not operational
+   _switch_running = false;
+
    // Make sure the device is off
    digitalWrite(PIN_RELAY_SWITCH, LOW);
 
@@ -552,6 +530,9 @@ boolean boot_switch()
       }
    }
 
+   // Mark switch as operational
+   _switch_running = true;
+
    // Exit with success
    return true;
 }
@@ -596,10 +577,10 @@ boolean check_power_SysMon()
    Wire.endTransmission(1);
 
    // Calculate milliamps from raw sensor data
-   unsigned int milliamps = ((csb << 8) | lsb) * MILLIAMPS_PER_STEP;
+   latest_power_SysMon = ((csb << 8) | lsb) * MILLIAMPS_PER_STEP;
 
    // Is measured current below allowed maximum?
-   if(milliamps < eeprom_read_word(&E_AMP_MAX_SYSMON))
+   if(latest_power_SysMon < eeprom_read_word(&E_AMP_MAX_SYSMON))
       // Exit with success
       return true;
 
@@ -621,16 +602,16 @@ boolean check_power_SysMon()
 boolean check_environ_SysMon()
 {
    // Read temperature and truncate it (so we don't deal with floats)
-   int temp = SysMon_HTU21D.readTemperature();
+   latest_environ_temp_SysMon_NC = (int)SysMon_HTU21D.readTemperature();
 
    // Read humidity and truncate it (so we don't deal with floats)
-   byte humidity = SysMon_HTU21D.readHumidity();
+   latest_environ_hum_SysMon_NC = (byte)SysMon_HTU21D.readHumidity();
 
    // Is measured temperature acceptable?
-   if(((int)eeprom_read_word(&E_TEMP_MIN_SYSMON) < temp)
-      && (temp < (int)eeprom_read_word(&E_TEMP_MAX_SYSMON))
-      && (eeprom_read_byte(&E_HUMIDITY_MIN_SYSMON) < humidity)
-      && (humidity < eeprom_read_byte(&E_HUMIDITY_MAX_SYSMON)))
+   if(((int)eeprom_read_word(&E_TEMP_MIN_SYSMON) < latest_environ_temp_SysMon_NC)
+      && (latest_environ_temp_SysMon_NC < (int)eeprom_read_word(&E_TEMP_MAX_SYSMON))
+      && (eeprom_read_byte(&E_HUMIDITY_MIN_SYSMON) < latest_environ_hum_SysMon_NC)
+      && (latest_environ_hum_SysMon_NC < eeprom_read_byte(&E_HUMIDITY_MAX_SYSMON)))
    {
       // Exit with success
       return true;
@@ -654,11 +635,45 @@ boolean check_environ_SysMon()
 boolean check_environ_NC()
 {
    // Read temperature and truncate it (so we don't deal with floats)
-   int temp = SysMon_HTU21D.readTemperature();
+   latest_environ_temp_SysMon_NC = (int)SysMon_HTU21D.readTemperature();
+
+   // Read humidity and truncate it (so we don't deal with floats)
+   latest_environ_hum_SysMon_NC = (byte)SysMon_HTU21D.readHumidity();
 
    // Is measured temperature acceptable?
-   if(((int)eeprom_read_word(&E_TEMP_MIN_NC) < temp)
-      && (temp < (int)eeprom_read_word(&E_TEMP_MAX_NC)))
+   if(((int)eeprom_read_word(&E_TEMP_MIN_NC) < latest_environ_temp_SysMon_NC)
+      && (latest_environ_temp_SysMon_NC < (int)eeprom_read_word(&E_TEMP_MAX_NC))
+      && (eeprom_read_byte(&E_HUMIDITY_MIN_NC) < latest_environ_hum_SysMon_NC)
+      && (latest_environ_hum_SysMon_NC < eeprom_read_byte(&E_HUMIDITY_MAX_NC)))
+   {
+      // Exit with success
+      return true;
+   }
+
+   // Exit with failure
+   return false;
+}
+
+
+
+//---------- C H E C K _ T E M P _ N C ----------------------------------------
+/*
+   Reads the node controller's thermistor to determine if the processor's
+   temperature is within the safe operating parameters.
+
+   Return TRUE: temperature is safe.
+   Return FALSE: temperature is unsafe.
+
+   :rtype: boolean
+*/
+boolean check_temp_NC()
+{
+   // Read thermistor
+   latest_temp_NC = analogRead(PIN_THERMISTOR_NC);
+
+   // Is measured temperature acceptable?
+   if((eeprom_read_word(&E_TEMP_MIN_PROCESSOR_NC) < latest_temp_NC)
+      && (latest_temp_NC < eeprom_read_word(&E_TEMP_MAX_PROCESSOR_NC)))
    {
       // Exit with success
       return true;
@@ -708,10 +723,10 @@ boolean check_power_NC()
    Wire.endTransmission(1);
 
    // Calculate milliamps from raw sensor data
-   unsigned int milliamps = ((csb << 8) | lsb) * MILLIAMPS_PER_STEP;
+   latest_power_NC = ((csb << 8) | lsb) * MILLIAMPS_PER_STEP;
 
    // Is measured current below allowed maximum?
-   if(milliamps < eeprom_read_word(&E_AMP_MAX_NC))
+   if(latest_power_NC < eeprom_read_word(&E_AMP_MAX_NC))
       // Exit with success
       return true;
 
@@ -867,9 +882,6 @@ void get_time_NC()
 */
 void power_cycle(byte device)
 {
-   Serial.println("pc");
-   delay(10);
-
    // Turn off the device
    digitalWrite(device, LOW);
    // Give the relay time to move
@@ -915,19 +927,24 @@ void get_params_core()
          Heartbeat timeout (switch)
          Bad environment timeout (system monitor)
          Bad environment timeout (node controller)
+         Bad processor temperature timeout (node controller)
          Bad temperature timeout (switch)
          Bad current timeout (system monitor)
          Bad current timeout (node controller)
          Bad current timeout (switch)
          Current noise ceiling (mA)
-         Minimum temperature (Celsius) (system monitor)
-         Maximum temperature (Celsius) (system monitor)
-         Minimum temperature (Celsius) (node controller)
-         Maximum temperature (Celsius) (node controller)
+         Minimum temperature of environment (Celsius) (system monitor)
+         Maximum temperature of environment (Celsius) (system monitor)
+         Minimum temperature of environment (Celsius) (node controller)
+         Maximum temperature of environment (Celsius) (node controller)
+         Minimum temperature of processor (Celsius) (node controller)
+         Maximum temperature of processor (Celsius) (node controller)
          Minimum temperature (Celsius) (switch)
          Maximum temperature (Celsius) (switch)
          Minimum relative humidity (%) (system monitor)
          Maximum relative humidity (%) (system monitor)
+         Minimum relative humidity (%) (NC)
+         Maximum relative humidity (%) (NC)
          Maximum amp draw (mA) (system monitor)
          Maximum amp draw (mA) (node controller)
          Maximum amp draw (mA) (switch)
@@ -945,6 +962,7 @@ void get_params_core()
       String heartbeat_timeout_switch = "";
       String bad_environ_timeout_SysMon = "";
       String bad_environ_timeout_NC = "";
+      String bad_temp_processor_timeout_NC = "";
       String bad_temp_timeout_switch = "";
       String bad_current_timeout_SysMon = "";
       String bad_current_timeout_NC = "";
@@ -954,10 +972,14 @@ void get_params_core()
       String max_temp_SysMon = "";
       String min_temp_NC = "";
       String max_temp_NC = "";
+      String min_temp_processor_NC = "";
+      String max_temp_processor_NC = "";
       String min_temp_switch = "";
       String max_temp_switch = "";
       String min_humidity_SysMon = "";
       String max_humidity_SysMon = "";
+      String min_humidity_NC = "";
+      String max_humidity_NC = "";
       String max_amp_SysMon = "";
       String max_amp_NC = "";
       String max_amp_switch = "";
@@ -1012,6 +1034,10 @@ void get_params_core()
       i++;
 
       while(received_params[i] != NC_DELIMITER)
+         bad_temp_processor_timeout_NC += received_params[i++];
+      i++;
+
+      while(received_params[i] != NC_DELIMITER)
          bad_temp_timeout_switch += received_params[i++];
       i++;
 
@@ -1048,6 +1074,14 @@ void get_params_core()
       i++;
 
       while(received_params[i] != NC_DELIMITER)
+         min_temp_processor_NC += received_params[i++];
+      i++;
+
+      while(received_params[i] != NC_DELIMITER)
+         max_temp_processor_NC += received_params[i++];
+      i++;
+
+      while(received_params[i] != NC_DELIMITER)
          min_temp_switch += received_params[i++];
       i++;
 
@@ -1061,6 +1095,14 @@ void get_params_core()
 
       while(received_params[i] != NC_DELIMITER)
          max_humidity_SysMon += received_params[i++];
+      i++;
+
+      while(received_params[i] != NC_DELIMITER)
+         min_humidity_NC += received_params[i++];
+      i++;
+
+      while(received_params[i] != NC_DELIMITER)
+         max_humidity_NC += received_params[i++];
       i++;
 
       while(received_params[i] != NC_DELIMITER)
@@ -1086,6 +1128,7 @@ void get_params_core()
       eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_SWITCH, (uint8_t)heartbeat_timeout_switch.toInt());
       eeprom_update_byte(&E_BAD_ENVIRON_TIMEOUT_SYSMON, (uint8_t)bad_environ_timeout_SysMon.toInt());
       eeprom_update_byte(&E_BAD_ENVIRON_TIMEOUT_NC, (uint8_t)bad_environ_timeout_NC.toInt());
+      eeprom_update_byte(&E_BAD_TEMP_PROCESSOR_TIMEOUT_NC, (uint8_t)bad_temp_processor_timeout_NC.toInt());
       eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_SWITCH, (uint8_t)bad_temp_timeout_switch.toInt());
       eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_SYSMON, (uint8_t)bad_current_timeout_SysMon.toInt());
       eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_NC, (uint8_t)bad_current_timeout_NC.toInt());
@@ -1095,10 +1138,14 @@ void get_params_core()
       eeprom_update_word(&E_TEMP_MAX_SYSMON, (uint16_t)max_temp_SysMon.toInt());
       eeprom_update_word(&E_TEMP_MIN_NC, (uint16_t)min_temp_NC.toInt());
       eeprom_update_word(&E_TEMP_MAX_NC, (uint16_t)max_temp_NC.toInt());
+      eeprom_update_word(&E_TEMP_MIN_PROCESSOR_NC, (uint16_t)min_temp_processor_NC.toInt());
+      eeprom_update_word(&E_TEMP_MAX_PROCESSOR_NC, (uint16_t)max_temp_processor_NC.toInt());
       eeprom_update_word(&E_TEMP_MIN_SWITCH, (uint16_t)min_temp_switch.toInt());
       eeprom_update_word(&E_TEMP_MAX_SWITCH, (uint16_t)max_temp_switch.toInt());
       eeprom_update_byte(&E_HUMIDITY_MIN_SYSMON, (uint8_t)min_humidity_SysMon.toInt());
       eeprom_update_byte(&E_HUMIDITY_MAX_SYSMON, (uint8_t)max_humidity_SysMon.toInt());
+      eeprom_update_byte(&E_HUMIDITY_MIN_NC, (uint8_t)min_humidity_NC.toInt());
+      eeprom_update_byte(&E_HUMIDITY_MAX_NC, (uint8_t)max_humidity_NC.toInt());
       eeprom_update_word(&E_AMP_MAX_SYSMON, (uint16_t)max_amp_SysMon.toInt());
       eeprom_update_word(&E_AMP_MAX_NC, (uint16_t)max_amp_NC.toInt());
       eeprom_update_word(&E_AMP_MAX_SWITCH, (uint16_t)max_amp_switch.toInt());
@@ -1331,11 +1378,11 @@ boolean get_params_GNs()
 boolean check_temp_switch()
 {
    // Read thermistor
-   unsigned int temp_ADC = analogRead(PIN_THERMISTOR_SWITCH);
+   latest_temp_switch = analogRead(PIN_THERMISTOR_SWITCH);
 
    // Is measured temperature acceptable?
-   if((eeprom_read_word(&E_TEMP_MIN_SWITCH) < temp_ADC)
-      && (temp_ADC < eeprom_read_word(&E_TEMP_MAX_SWITCH)))
+   if((eeprom_read_word(&E_TEMP_MIN_SWITCH) < latest_temp_switch)
+      && (latest_temp_switch < eeprom_read_word(&E_TEMP_MAX_SWITCH)))
    {
       // Exit with success
       return true;
@@ -1385,10 +1432,10 @@ boolean check_power_switch()
    Wire.endTransmission(1);
 
    // Calculate milliamps from raw sensor data
-   unsigned int milliamps = ((csb << 8) | lsb) * MILLIAMPS_PER_STEP;
+   latest_power_switch = ((csb << 8) | lsb) * MILLIAMPS_PER_STEP;
 
    // Is measured current below allowed maximum?
-   if(milliamps < eeprom_read_word(&E_AMP_MAX_SWITCH))
+   if(latest_power_switch < eeprom_read_word(&E_AMP_MAX_SWITCH))
       // Exit with success
       return true;
 

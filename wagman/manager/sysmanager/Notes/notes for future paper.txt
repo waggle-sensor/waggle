@@ -11,4 +11,6 @@
 - Boot up takes a long time, but that doesn't matter for us.  We can take several seconds to boot SysMon, because nothing happens until SysMon makes it so.
 
 - Devices are permanently disabled only if they are drawing too much power, since this is the only state that presents danger to the overall system.
+- I want it to be kinda hard to disable a device, so this only happens during the power check on boot
+	- If a device times out for bad power, etc., it will reboot...so this works fine
 - Heartbeat is tried n number of times, because it is the most complex (and therefore, the most fragile).
