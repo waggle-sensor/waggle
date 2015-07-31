@@ -6,7 +6,7 @@
 #include <avr/wdt.h>
 #include <avr/eeprom.h>
 #include <Wire.h>
-#include <SparkFunHTU21D.h>
+#include <HTU21D.h>
 #include <Time.h>
 #include <MCP79412RTC.h>
 
@@ -73,7 +73,9 @@
 #define PROBLEM_SYSMON_TEMP "SM:t"
 #define PROBLEM_SYSMON_POWER "SM:p"
 #define PROBLEM_NC_TEMP "NC:t"
+#define PROBLEM_NC_ENVIRON "NC:e"
 #define PROBLEM_NC_POWER "NC:p"
+#define PROBLEM_NC_HEARTBEAT "NC:h"
 #define PROBLEM_SWITCH_TEMP "SW:t"
 #define PROBLEM_SWITCH_POWER "SW:p"
 #define PROBLEM_GN1_TEMP "GN1:t"
@@ -87,18 +89,17 @@
 #define PROBLEM_GN3_HEARTBEAT "GN3:h"
 
 // Messages that might be received from node controller
-#define REQUEST_TIME "1"
-#define REQUEST_STATUS "2"
-#define REQUEST_REBOOT_NC "3"
-#define REQUEST_REBOOT_SWITCH "4"
-#define REQUEST_REBOOT_GN1 "5"
-#define REQUEST_REBOOT_GN2 "6"
-#define REQUEST_REBOOT_GN3 "7"
+#define REQUEST_TIME '1'
+#define REQUEST_STATUS '2'
+#define REQUEST_REBOOT_NC '3'
+#define REQUEST_REBOOT_SWITCH '4'
+#define REQUEST_REBOOT_GN1 '5'
+#define REQUEST_REBOOT_GN2 '6'
+#define REQUEST_REBOOT_GN3 '7'
 
 
 
 //---------- G L O B A L S ----------------------------------------------------
-volatile byte timer1_interrupt_fired = 0;
 volatile byte _timer1_cycle = false;
 volatile char USART_RX_char;
 volatile boolean _USART_new_char = false;
@@ -200,6 +201,32 @@ void setup()
   // Debug
   delay(5000);
 
+  // pinMode(PIN_RELAY_NC, OUTPUT);
+  // pinMode(PIN_RELAY_SWITCH, OUTPUT);
+  // pinMode(PIN_RELAY_GN1, OUTPUT);
+  // pinMode(PIN_RELAY_GN2, OUTPUT);
+  // pinMode(PIN_RELAY_GN3, OUTPUT);
+
+  // while(1)
+  // {
+  //   digitalWrite(PIN_RELAY_NC, HIGH);
+  //   delay(1000);
+  //   digitalWrite(PIN_RELAY_SWITCH, HIGH);
+  //   delay(1000);
+  //   digitalWrite(PIN_RELAY_GN1, HIGH);
+  //   delay(1000);
+  //   digitalWrite(PIN_RELAY_GN2, HIGH);
+  //   delay(1000);
+  //   digitalWrite(PIN_RELAY_GN3, HIGH);
+  //   delay(1000);
+  //   digitalWrite(PIN_RELAY_NC, LOW);
+  //   digitalWrite(PIN_RELAY_SWITCH, LOW);
+  //   digitalWrite(PIN_RELAY_GN1, LOW);
+  //   digitalWrite(PIN_RELAY_GN2, LOW);
+  //   digitalWrite(PIN_RELAY_GN3, LOW);
+  //   delay(1000);
+  // }
+
   // Is POST enabled?
   #ifdef BOOT_POST
     // Is everything (internal) working correctly?
@@ -217,12 +244,12 @@ void setup()
   #else
     // Boot SysMon, node controller, and ethernet switch.  Boot successful?
     if(boot_primary())
+    {
+      Serial.println("boot primary");
       // Boot the guest nodes
       boot_GN();
+    }
   #endif
-
-  // Clear counter, since its been counting for awhile already
-  timer1_interrupt_fired = 0;
 }
 
 
@@ -333,38 +360,21 @@ void loop()
     _USART_new_char = false;
 
     // Which request was received?
-    switch (USART_RX_char) {
-      case REQUEST_TIME:
-        send_time();
-        break;
-
-      case REQUEST_STATUS:
-        send_status();
-        break;
-
-      case REQUEST_REBOOT_NC:
-        boot_NC();
-        break;
-
-      case REQUEST_REBOOT_SWITCH:
-        boot_switch();
-        break;
-
-      case REQUEST_REBOOT_GN1:
-        boot_GN1();
-        break;
-
-      case REQUEST_REBOOT_GN2:
-        boot_GN2();
-        break;
-
-      case REQUEST_REBOOT_GN3:
-        boot_GN3();
-        break;
-
-      default:
-        break;
-    }
+    if(USART_RX_char == REQUEST_TIME)
+      send_time();
+    else if(USART_RX_char == REQUEST_STATUS)
+      send_status();
+    else if(USART_RX_char == REQUEST_REBOOT_NC)
+      //boot_NC();
+      Serial.println("aaahh");
+    else if(USART_RX_char == REQUEST_REBOOT_SWITCH)
+      boot_switch();
+    else if(USART_RX_char == REQUEST_REBOOT_GN1)
+      boot_GN1();
+    else if(USART_RX_char == REQUEST_REBOOT_GN2)
+      boot_GN2();
+    else if(USART_RX_char == REQUEST_REBOOT_GN3)
+      boot_GN3();
   }
 }
 
@@ -374,18 +384,48 @@ void loop()
 /*
    Sends a status report of all important info to the node controller.
 
+   Message structure:
+   RTC time,
+   Light level (ADC value),
+   Current draw (SysMon),
+   Temperature (SysMon & NC),
+   Humidity (SysMon & NC),
+   Current draw (NC),
+   Heartbeat status (NC),
+   Enabled/disabled (switch),
+   Current draw (switch),
+   Temperature (switch),
+   Enabled/disabled (GN 1),
+   Booted/not booted (GN 1),
+   Current draw (GN 1),
+   Temperature (GN 1),
+   Heartbeat status (GN 1),
+   Enabled/disabled (GN 2),
+   Booted/not booted (GN 2),
+   Current draw (GN 2),
+   Temperature (GN 2),
+   Heartbeat status (GN 2),
+   Enabled/disabled (GN 3),
+   Booted/not booted (GN 3),
+   Current draw (GN 3),
+   Temperature (GN 3),
+   Heartbeat status (GN 3)
+
    :rtype: none
 */
 void send_status()
 {
+  String message = "";
+
   // Tell the node controller that a status report is coming
   Serial.println(NC_NOTIFIER_STATUS);
 
   // Give it time to get ready
   delay(10);
 
-  Serial.print("Light: ");
-  Serial.println(analogRead(PIN_PHOTOCELL));
+  // Assemble the message
+  message += String(RTC.get()) + NC_DELIMITER;
+  
 }
 
 
@@ -443,9 +483,6 @@ void send_problem(String problem)
 {
   // Reset watchdog
   wdt_reset();
-
-  // Increment the counter for how many timer overflows have occurred
-  timer1_interrupt_fired++;
 
   // Set the flag to indicate a complete timer cycle
   _timer1_cycle = true;

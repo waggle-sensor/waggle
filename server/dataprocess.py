@@ -56,7 +56,7 @@ class DataProcess(Process):
 			prepared_statement = self.session.prepare("INSERT INTO sensor_data" + \
 				" (node_id, sensor_name, timestamp, data_types, data, units, extra_info)" + \
 				" VALUES (?, ?, ?, ?, ?, ?, ?)")
-			bound_statement = prepared_statement.bind([header["s_uniqid"],data[0],data[1],data[2],data[4],data[5],data[6]])
+			bound_statement = prepared_statement.bind([header["s_uniqid"],data[0],data[1]*1000,data[2],data[4],data[5],data[6]])
 			self.session.execute(bound_statement)
 		except Exception as e:
 			raise

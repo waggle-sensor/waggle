@@ -1,16 +1,16 @@
 #!/usr/bin/env python
 
-import socket, os, os.path, time, pika, logging, datetime
+import socket, os, os.path, time, pika, logging, datetime, sys
 from multiprocessing import Process, Queue, Value
-import sys
 sys.path.append('../../../../devtools/protocol_common/')
 from protocol.PacketHandler import *
-#sys.path.append('..')
-from device_dict import DEVICE_DICT
-sys.path.append('../NC')
-from NC_registration import NC_registration, GN_registration
-sys.path.append('..')
-import NC_configuration
+sys.path.append('../../../../devtools/protocol_common/')
+from utilities import packetmaker
+sys.path.append('../NC/')
+from NC_configuration import *
+sys.path.append('../NC/')
+from send import send
+
 """ 
     The external communicator is the communication channel between the cloud and the DC. It consists of four processes: two pika clients for pushing and pulling to the cloud and two clients for pushing 
     and pulling to the data cache.
@@ -20,11 +20,11 @@ import NC_configuration
 
 
 
-with open('/etc/waggle/hostname','r') as file_:
-    HOSTNAME = file_.read().strip()
+#with open('/etc/waggle/hostname','r') as file_:
+    #HOSTNAME = file_.read().strip()
 
-with open('/etc/waggle/queuename','r') as file_:
-    QUEUENAME = file_.read().strip() 
+#with open('/etc/waggle/queuename','r') as file_:
+    #QUEUENAME = file_.read().strip() 
     
 
 class external_communicator(object):
@@ -38,7 +38,7 @@ class external_communicator(object):
     incoming = Queue() #stores messages to push into DC 
     outgoing = Queue() #stores messages going out to cloud
     cloud_connected = Value('i') #indicates if the cloud is or is not connected. Clients only connect to DC when cloud is connected. 
-    params = pika.connection.URLParameters("amqps://waggle:waggle@10.10.10.110:5671/%2F") #SSL 
+    params = pika.connection.URLParameters(CLOUD_ADDR) #SSL 
     #params = pika.connection.URLParameters("amqp://waggle:waggle@10.10.10.110:5672/%2F") #the parameters used to connect to the cloud 
 
 
@@ -63,11 +63,8 @@ class pika_push(Process):
                 channel.queue_declare(queue=QUEUENAME)
                 print 'Pika push connected to cloud.'
                 logging.info('Pika push connected to cloud.')
-                msg = NC_registration() #first sends the registration each time it connects to cloud
-                channel.basic_publish(exchange='waggle_in', routing_key= 'in', body= msg) #sends to cloud 
-                msg = GN_registration() #sends registration for each GN
-                channel.basic_publish(exchange='waggle_in', routing_key= 'in', body= msg) #sends to cloud
-                NC_configuration.send_config()
+                send_registrations() #sends registration for each node
+                send_config() #sends config file. This function is from NC_configuration.py
                 print 'Config file made'
                 connected = True
             except: 
@@ -230,32 +227,54 @@ class external_client_push(Process):
         
         print "Done."
         
-       
+
+def send_registrations():
+    """ 
+        Sends registration message for NC and GNs.
+    """
+    #loops through the list of nodes and send a registration for each one
+    for key in DEVICE_DICT.keys():
+        header_dict = {
+            "msg_mj_type" : ord('r'),
+            "msg_mi_type" : ord('r'),
+            "s_uniqid"    : int(key)
+            }
+        msg = str(QUEUENAME)
+        try: 
+            packet = pack(header_dict, message_data = msg)
+            print 'Registration made for node ID ', key
+            for pack_ in packet:
+                send(pack_)
+            
+        except Exception as e: 
+            print e
+            
+            
 ##uncomment for testing
-if __name__ == "__main__":
-    try:
-        #starts the pika pull client
-        pika_pull = pika_pull()
-        pika_pull.start()
+#if __name__ == "__main__":
+    #try:
+        ##starts the pika pull client
+        #pika_pull = pika_pull()
+        #pika_pull.start()
         
-        #starts the pika push client
-        pika_push = pika_push()
-        pika_push.start()
+        ##starts the pika push client
+        #pika_push = pika_push()
+        #pika_push.start()
         
-        #starts the push client
-        push_client = external_client_push()
-        push_client.start()
+        ##starts the push client
+        #push_client = external_client_push()
+        #push_client.start()
         
-        #starts the pull client
-        pull_client = external_client_pull()
-        pull_client.start()
-        while True:
-            pass
+        ##starts the pull client
+        #pull_client = external_client_pull()
+        #pull_client.start()
+        #while True:
+            #pass
         
-    except KeyboardInterrupt, k:
-        pika_pull.terminate()
-        pika_push.terminate()
-        push_client.terminate()
-        pull_client.terminate()
-        print 'Done.'
+    #except KeyboardInterrupt, k:
+        #pika_pull.terminate()
+        #pika_push.terminate()
+        #push_client.terminate()
+        #pull_client.terminate()
+        #print 'Done.'
         

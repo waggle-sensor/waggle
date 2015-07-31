@@ -1,12 +1,13 @@
 #!/bin/bash
 #This starts all necessary parts of the nodecontroller
 
-cd waggle/nodecontroller/nc-wag-os/waggled/
+cd nc-wag-os/waggled/
 #scan for node's IP and write to a file
 python NC_scanner.py
+cd DataCache/
+#start the Data Data_Cache
+python Data_Cache.py start 
 cd ..
-cd DataCache
-python Data_Cache.py start #start the Data Data_Cache
-cd ..
-cd Communications
-./background_comms.sh #start the background_comms
+cd Communications/
+#start the background_comms
+./background_comms.sh 

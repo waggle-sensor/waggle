@@ -24,20 +24,32 @@ boolean boot_primary()
 	// Initialize/start internal components
 	init_primary();
 
+   Serial.println("init");
+   delay(5);
+
    // Is this the first ever boot?
    if(eeprom_read_byte(&E_FIRST_BOOT) != 0)
       // Assign default parameters
       set_default_eeprom();
+
+   Serial.println("first boot");
+   delay(5);
 
 	// Booted SysMon successfully?
    if(!boot_SysMon())
       // Skip the rest of the boot sequence
       return false;
 
+   Serial.println("boot sysmon");
+   delay(5);
+
    // Booted node controller successfully?
    if(!boot_NC())
       // Skip the rest of the boot sequence
       return false;
+
+   Serial.println("boot nc");
+   delay(5);
 
 	// Request time from node controller
 	get_time_NC();
@@ -50,10 +62,16 @@ boolean boot_primary()
 		// Skip the rest of the boot sequence
 		return false;
 
+   Serial.println("boot params");
+   delay(5);
+
    // Booted ethernet switch successfully?
    if(!boot_switch())
       // Skip the rest of the boot sequence
       return false;
+
+   Serial.println("boot switch");
+   delay(5);
 
 	// Everything is good, so exit sequence with success
 	return true;
@@ -257,19 +275,20 @@ void set_default_eeprom()
    eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_GN1, 5);
    eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_GN2, 5);
    eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_GN3, 5);
+   // Temperatures are ADC values (see WagMan.py on node controller)
    eeprom_update_word(&E_TEMP_MIN_SYSMON, 0);
    eeprom_update_word(&E_TEMP_MAX_SYSMON, 100);
    eeprom_update_word(&E_TEMP_MIN_NC, 0);
    eeprom_update_word(&E_TEMP_MAX_NC, 100);
-   eeprom_update_word(&E_TEMP_MIN_SWITCH, 0);
-   eeprom_update_word(&E_TEMP_MAX_SWITCH, 80);
-   eeprom_update_word(&E_TEMP_MIN_GN1, 0);
-   eeprom_update_word(&E_TEMP_MAX_GN1, 80);
-   eeprom_update_word(&E_TEMP_MIN_GN2, 0);
-   eeprom_update_word(&E_TEMP_MAX_GN2, 80);
-   eeprom_update_word(&E_TEMP_MIN_GN3, 0);
-   eeprom_update_word(&E_TEMP_MAX_GN3, 80);
-   eeprom_update_byte(&E_HUMIDITY_MIN_SYSMON, 30);
+   eeprom_update_word(&E_TEMP_MIN_SWITCH, 417);
+   eeprom_update_word(&E_TEMP_MAX_SWITCH, 969);
+   eeprom_update_word(&E_TEMP_MIN_GN1, 417);
+   eeprom_update_word(&E_TEMP_MAX_GN1, 969);
+   eeprom_update_word(&E_TEMP_MIN_GN2, 417);
+   eeprom_update_word(&E_TEMP_MAX_GN2, 969);
+   eeprom_update_word(&E_TEMP_MIN_GN3, 417);
+   eeprom_update_word(&E_TEMP_MAX_GN3, 969);
+   eeprom_update_byte(&E_HUMIDITY_MIN_SYSMON, 0);
    eeprom_update_byte(&E_HUMIDITY_MAX_SYSMON, 100);
    eeprom_update_word(&E_AMP_MAX_SYSMON, 400);
    eeprom_update_word(&E_AMP_MAX_NC, 4000);
@@ -301,7 +320,7 @@ boolean boot_SysMon()
       // Giving SysMon one more chance...
 
       // Wait for things to settle down, perhaps
-      delay(BOOT_BAD_POWER_WAIT_TIME * 1000);
+      delay((long)BOOT_BAD_POWER_WAIT_TIME * 1000L);
 
       // Is SysMon drawing too much power?
       if(!check_power_SysMon())
@@ -312,10 +331,11 @@ boolean boot_SysMon()
    // Is SysMon's environment outside of safe bounds?
    if(!check_environ_SysMon())
    {
+      Serial.println("sysmon bad environ");
       // Giving SysMon one more chance...
 
       // Wait for things to settle down, perhaps
-      delay(BOOT_BAD_ENVIRON_WAIT_TIME * 1000);
+      delay((long)BOOT_BAD_ENVIRON_WAIT_TIME * 1000L);
 
       // Is SysMon's environment outside of safe bounds?
       if(!check_environ_SysMon())
@@ -354,10 +374,12 @@ boolean boot_NC()
    // Is the node controller's environment not suitable?
    if(!check_environ_NC())
    {
+      Serial.println("nc bad environ");
+
       // Giving the node controller one more chance...
 
       // Wait for things to settle down, perhaps
-      delay(BOOT_BAD_ENVIRON_WAIT_TIME * 1000);
+      delay((long)BOOT_BAD_ENVIRON_WAIT_TIME * 1000L);
 
       // Is the node controller's environment not suitable?
       if(!check_environ_NC())
@@ -365,32 +387,55 @@ boolean boot_NC()
          return false;
    }
 
+   Serial.println("nc environ");
+
    // Enable power to node controller
    digitalWrite(PIN_RELAY_NC, HIGH);
 
+   Serial.println("nc relay on");
+
+   unsigned int x = eeprom_read_word(&E_BOOT_TIME_NC);
+   Serial.println(x);
+
    // Give the node controller time to boot
-   delay(eeprom_read_word(&E_BOOT_TIME_NC) * 1000);
+   delay((long)x * 1000L);
+
+   Serial.println("nc delay");
 
    // Is the node controller not drawing an expected amount of power?
    if(!check_power_NC())
    {
+      Serial.println("nc bad power");
+
       // Giving the node controller one more chance...
 
       // Power cycle the node controller
       power_cycle(PIN_RELAY_NC);
 
       // Give the node controller time to boot
-      delay(eeprom_read_word(&E_BOOT_TIME_NC) * 1000);
+      delay((long)eeprom_read_word(&E_BOOT_TIME_NC) * 1000L);
 
       // Is the node controller not drawing an expected amount of power?
       if(!check_power_NC())
+      {
+         // Turn off the node controller
+         digitalWrite(PIN_RELAY_NC, LOW);
+
+         // Mark NC as dead
+         eeprom_update_byte(&E_NC_ENABLED, 0);
+
          // Exit with failure
          return false;
+      }
    }
+
+   Serial.println("nc power");
 
    // Is the node controller alive (sending a "heartbeat")?
    if(!check_heartbeat_odroid(PIN_HEARTBEAT_NC))
    {
+      Serial.println("nc bad heart");
+
       byte boot_attempts = 0;
       boolean _heartbeat_detected = false;
       
@@ -404,7 +449,7 @@ boolean boot_NC()
             power_cycle(PIN_RELAY_NC);
 
             // Give the node controller time to boot
-            delay(eeprom_read_word(&E_BOOT_TIME_NC) * 1000);
+            delay((long)eeprom_read_word(&E_BOOT_TIME_NC) * 1000L);
          }
          else
             // Indicate that a heartbeat was detected
@@ -420,13 +465,12 @@ boolean boot_NC()
          // Turn off the node controller
          digitalWrite(PIN_RELAY_NC, LOW);
 
-         // Mark NC as dead
-         eeprom_update_byte(&E_NC_ENABLED, 0);
-
          // Exit with failure
          return false;
       }
    }
+
+   Serial.println("nc heart");
 
    // Exit with success
    return true;
@@ -461,7 +505,7 @@ boolean boot_switch()
       // Giving the switch one more chance...
 
       // Wait for things to settle down, perhaps
-      delay(BOOT_BAD_ENVIRON_WAIT_TIME * 1000);
+      delay((long)BOOT_BAD_ENVIRON_WAIT_TIME * 1000L);
 
       // Is the ethernet switch's temperature outside of safe parameters?
       if(!check_temp_switch())
@@ -478,7 +522,7 @@ boolean boot_switch()
    digitalWrite(PIN_RELAY_SWITCH, HIGH);
 
    // Give the ethernet switch time to boot
-   delay(eeprom_read_word(&E_BOOT_TIME_NC) * 1000);
+   delay((long)eeprom_read_word(&E_BOOT_TIME_NC) * 1000L);
 
    // Is the ethernet switch not drawing an expected amount of power?
    if(!check_power_switch())
@@ -489,7 +533,7 @@ boolean boot_switch()
       power_cycle(PIN_RELAY_SWITCH);
 
       // Give the switch time to boot
-      delay(eeprom_read_byte(&E_BOOT_TIME_SWITCH) * 1000);
+      delay((long)eeprom_read_byte(&E_BOOT_TIME_SWITCH) * 1000L);
 
       // Is the ethernet switch not drawing an expected amount of power?
       if(!check_power_switch())
@@ -499,6 +543,9 @@ boolean boot_switch()
 
          // Inform node controller of failure
          send_problem(PROBLEM_SWITCH_POWER);
+
+         // Mark switch as dead
+         eeprom_update_byte(&E_SWITCH_ENABLED, 0);
 
          // Exit with failure
          return false;
@@ -580,8 +627,8 @@ boolean check_environ_SysMon()
    byte humidity = SysMon_HTU21D.readHumidity();
 
    // Is measured temperature acceptable?
-   if((eeprom_read_word(&E_TEMP_MIN_SYSMON) < temp)
-      && (temp < eeprom_read_word(&E_TEMP_MAX_SYSMON))
+   if(((int)eeprom_read_word(&E_TEMP_MIN_SYSMON) < temp)
+      && (temp < (int)eeprom_read_word(&E_TEMP_MAX_SYSMON))
       && (eeprom_read_byte(&E_HUMIDITY_MIN_SYSMON) < humidity)
       && (humidity < eeprom_read_byte(&E_HUMIDITY_MAX_SYSMON)))
    {
@@ -610,8 +657,8 @@ boolean check_environ_NC()
    int temp = SysMon_HTU21D.readTemperature();
 
    // Is measured temperature acceptable?
-   if((eeprom_read_word(&E_TEMP_MIN_NC) < temp)
-      && (temp < eeprom_read_word(&E_TEMP_MAX_NC)))
+   if(((int)eeprom_read_word(&E_TEMP_MIN_NC) < temp)
+      && (temp < (int)eeprom_read_word(&E_TEMP_MAX_NC)))
    {
       // Exit with success
       return true;
@@ -820,6 +867,9 @@ void get_time_NC()
 */
 void power_cycle(byte device)
 {
+   Serial.println("pc");
+   delay(10);
+
    // Turn off the device
    digitalWrite(device, LOW);
    // Give the relay time to move
@@ -1283,10 +1333,16 @@ boolean check_temp_switch()
    // Read thermistor
    unsigned int temp_ADC = analogRead(PIN_THERMISTOR_SWITCH);
 
-   // Convert ADC result to actual temperature
-   //int temp_actual = temp_ADC / 27;
+   // Is measured temperature acceptable?
+   if((eeprom_read_word(&E_TEMP_MIN_SWITCH) < temp_ADC)
+      && (temp_ADC < eeprom_read_word(&E_TEMP_MAX_SWITCH)))
+   {
+      // Exit with success
+      return true;
+   }
 
-   return true;
+   // Exit with failure
+   return false;
 }
 
 

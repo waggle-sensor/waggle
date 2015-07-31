@@ -21,15 +21,21 @@ void boot_GN()
     // Mark guest node as operational
     _GN1_booted = true;
 
+  Serial.println(_GN1_booted);
+
   // Guest node 2 booted successfully?
-  if (boot_GN2())
+  if(boot_GN2())
     // Mark guest node as operational
     _GN2_booted = true;
 
+  Serial.println(_GN2_booted);
+
   // Guest node 3 booted successfully?
-  if (boot_GN3())
+  if(boot_GN3())
     // Mark guest node as operational
     _GN3_booted = true;
+
+  Serial.println(_GN3_booted);
 }
 
 
@@ -58,10 +64,12 @@ boolean boot_GN1()
     // Is the guest node's temperature outside of safe parameters?
     if(!check_temp_GN(1))
     {
+      Serial.println("gn1 bad temp");
+
       // Giving the guest node one more chance...
 
       // Wait for things to settle down, perhaps
-      delay(BOOT_BAD_ENVIRON_WAIT_TIME * 1000);
+      delay((long)BOOT_BAD_ENVIRON_WAIT_TIME * 1000L);
 
       // Is the guest node's temperature outside of safe parameters?
       if(!check_temp_GN(1))
@@ -74,37 +82,58 @@ boolean boot_GN1()
       }
     }
 
+    Serial.println("gn1 temp");
+
     // Turn on the guest node
     digitalWrite(PIN_RELAY_GN1, HIGH);
 
+    Serial.println("gn1 relay on");
+
+    unsigned int x = eeprom_read_word(&E_BOOT_TIME_GN1);
+    Serial.println(x);
+
     // Give the guest node time to boot
-    delay(eeprom_read_word(&E_BOOT_TIME_GN1) * 1000);
+    delay((long)x * 1000L);
+
+    Serial.println("gn1 delay");
 
     // Is the guest node not drawing an expected amount of power?
     if(!check_power_GN(1))
     {
+      Serial.println("gn1 bad power");
+
       // Giving the guest node one more chance...
 
       // Power cycle the guest node
       power_cycle(PIN_RELAY_GN1);
 
       // Give the guest node time to boot
-      delay(eeprom_read_word(&E_BOOT_TIME_GN1) * 1000);
+      delay((long)eeprom_read_word(&E_BOOT_TIME_GN1) * 1000L);
 
       // Is the guest node not drawing an expected amount of power?
       if(!check_power_GN(1))
       {
+        // Turn off the guest node
+        digitalWrite(PIN_RELAY_GN1, LOW);
+
         // Inform node controller of failure
         send_problem(PROBLEM_GN1_POWER);
+
+        // Mark GN as dead
+        eeprom_update_byte(&E_GN1_ENABLED, 0);
 
         // Exit with failure
         return false;
       }
     }
 
+    Serial.println("gn1 power");
+
     // Is the guest node alive (sending a "heartbeat")?
     if(!check_heartbeat_odroid(PIN_HEARTBEAT_GN1))
     {
+      Serial.println("gn1 bad heart");
+
       byte boot_attempts = 0;
       boolean _heartbeat_detected = false;
 
@@ -118,7 +147,7 @@ boolean boot_GN1()
           power_cycle(PIN_RELAY_GN1);
 
           // Give the guest node time to boot
-          delay(eeprom_read_word(&E_BOOT_TIME_GN1) * 1000);
+          delay((long)eeprom_read_word(&E_BOOT_TIME_GN1) * 1000L);
         }
         else
           // Indicate that a heartbeat was detected
@@ -134,9 +163,6 @@ boolean boot_GN1()
         // Turn off the guest node
         digitalWrite(PIN_RELAY_GN1, LOW);
 
-        // Mark GN as dead
-        eeprom_update_byte(&E_GN1_ENABLED, 0);
-
         // Inform node controller of failure
         send_problem(PROBLEM_GN1_HEARTBEAT);
 
@@ -144,6 +170,8 @@ boolean boot_GN1()
         return false;
       }
     }
+
+    Serial.println("gn1 heart");
 
     // Exit with success
     return true;
@@ -182,7 +210,7 @@ boolean boot_GN2()
       // Giving the guest node one more chance...
 
       // Wait for things to settle down, perhaps
-      delay(BOOT_BAD_ENVIRON_WAIT_TIME * 1000);
+      delay((long)BOOT_BAD_ENVIRON_WAIT_TIME * 1000L);
 
       // Is the guest node's temperature outside of safe parameters?
       if(!check_temp_GN(2))
@@ -199,7 +227,7 @@ boolean boot_GN2()
     digitalWrite(PIN_RELAY_GN2, HIGH);
 
     // Give the guest node time to boot
-    delay(eeprom_read_word(&E_BOOT_TIME_GN2) * 1000);
+    delay((long)eeprom_read_word(&E_BOOT_TIME_GN2) * 1000L);
 
     // Is the guest node not drawing an expected amount of power?
     if(!check_power_GN(2))
@@ -210,13 +238,19 @@ boolean boot_GN2()
       power_cycle(PIN_RELAY_GN2);
 
       // Give the guest node time to boot
-      delay(eeprom_read_word(&E_BOOT_TIME_GN2) * 1000);
+      delay((long)eeprom_read_word(&E_BOOT_TIME_GN2) * 1000L);
 
       // Is the guest node not drawing an expected amount of power?
       if(!check_power_GN(2))
       {
+        // Turn off the guest node
+        digitalWrite(PIN_RELAY_GN2, LOW);
+
         // Inform node controller of failure
         send_problem(PROBLEM_GN2_POWER);
+
+        // Mark GN as dead
+        eeprom_update_byte(&E_GN2_ENABLED, 0);
 
         // Exit with failure
         return false;
@@ -239,7 +273,7 @@ boolean boot_GN2()
           power_cycle(PIN_RELAY_GN2);
 
           // Give the guest node time to boot
-          delay(eeprom_read_word(&E_BOOT_TIME_GN2) * 1000);
+          delay((long)eeprom_read_word(&E_BOOT_TIME_GN2) * 1000L);
         }
         else
           // Indicate that a heartbeat was detected
@@ -254,9 +288,6 @@ boolean boot_GN2()
       {
         // Turn off the guest node
         digitalWrite(PIN_RELAY_GN2, LOW);
-
-        // Mark GN as dead
-        eeprom_update_byte(&E_GN2_ENABLED, 0);
 
         // Inform node controller of failure
         send_problem(PROBLEM_GN2_HEARTBEAT);
@@ -303,7 +334,7 @@ boolean boot_GN3()
       // Giving the guest node one more chance...
 
       // Wait for things to settle down, perhaps
-      delay(BOOT_BAD_ENVIRON_WAIT_TIME * 1000);
+      delay((long)BOOT_BAD_ENVIRON_WAIT_TIME * 1000L);
 
       // Is the guest node's temperature outside of safe parameters?
       if(!check_temp_GN(3))
@@ -320,7 +351,7 @@ boolean boot_GN3()
     digitalWrite(PIN_RELAY_GN3, HIGH);
 
     // Give the guest node time to boot
-    delay(eeprom_read_word(&E_BOOT_TIME_GN3) * 1000);
+    delay((long)eeprom_read_word(&E_BOOT_TIME_GN3) * 1000L);
 
     // Is the guest node not drawing an expected amount of power?
     if(!check_power_GN(3))
@@ -331,13 +362,19 @@ boolean boot_GN3()
       power_cycle(PIN_RELAY_GN3);
 
       // Give the guest node time to boot
-      delay(eeprom_read_word(&E_BOOT_TIME_GN3) * 1000);
+      delay((long)eeprom_read_word(&E_BOOT_TIME_GN3) * 1000L);
 
       // Is the guest node not drawing an expected amount of power?
       if(!check_power_GN(3))
       {
+        // Turn off the guest node
+        digitalWrite(PIN_RELAY_GN3, LOW);
+
         // Inform node controller of failure
         send_problem(PROBLEM_GN3_POWER);
+
+        // Mark GN as dead
+        eeprom_update_byte(&E_GN3_ENABLED, 0);
 
         // Exit with failure
         return false;
@@ -360,7 +397,7 @@ boolean boot_GN3()
           power_cycle(PIN_RELAY_GN3);
 
           // Give the guest node time to boot
-          delay(eeprom_read_word(&E_BOOT_TIME_GN3) * 1000);
+          delay((long)eeprom_read_word(&E_BOOT_TIME_GN3) * 1000L);
         }
         else
           // Indicate that a heartbeat was detected
@@ -375,9 +412,6 @@ boolean boot_GN3()
       {
         // Turn off the guest node
         digitalWrite(PIN_RELAY_GN3, LOW);
-
-        // Mark GN as dead
-        eeprom_update_byte(&E_GN3_ENABLED, 0);
 
         // Inform node controller of failure
         send_problem(PROBLEM_GN3_HEARTBEAT);
@@ -417,8 +451,6 @@ boolean check_temp_GN(byte gn)
     case 1:
       // Get ADC result from thermistor
       temp_ADC = analogRead(PIN_THERMISTOR_GN1);
-
-      Serial.println(temp_ADC);
 
       // Is measured temperature acceptable?
       if((eeprom_read_word(&E_TEMP_MIN_GN1) < temp_ADC)
