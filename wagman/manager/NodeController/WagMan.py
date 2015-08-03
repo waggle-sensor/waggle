@@ -25,12 +25,21 @@ params_core['SysMon RX buffer size (characters)'] = 150
 # Min: 1, max: 255
 params_core['status report period'] = 3
 
+# SOS boot attempt occurs after a POST failure
 # Min: 1, max: 255
 params_core['max num of SOS boot attempts'] = 3
 
-# How many times NC and GNs should try to boot
+# How many times NC and GNs should try to boot if heartbeat is not detected
 # Min: 1, max: 255
 params_core['max num of subsystem boot attempts'] = 4
+
+# How many times SysMon should try the primary boot sequence if a failure occurs
+# Min: 1, max: 255
+params_core['max num of primary boot attempts'] = 3
+
+# Non-running devices were shut off due to bad temperature, power, or heartbeat
+# Min: 1, max: 65535
+params_core['time to wait before rebooting non-running devices (seconds)'] = 20
 
 # Min: 1, max: 65535
 params_core['boot time for NC (seconds)'] = 3
@@ -73,8 +82,8 @@ params_core['relative humidity min (NC) (%)'] = 0
 params_core['relative humidity max (NC) (%)'] = 100
 
 # Min: 1, max: 8000
-params_core['maximum current draw (SysMon) (mA)'] = 500
-params_core['maximum current draw (NC) (mA)'] = 4000
+params_core['maximum current draw (SysMon) (mA)'] = 4000
+params_core['maximum current draw (NC) (mA)'] = 3000
 params_core['maximum current draw (switch) (mA)'] = 1500
 ########################################################################
 
@@ -96,26 +105,26 @@ params_GuestNodes['boot time (GN 1)'] = 3
 params_GuestNodes['boot time (GN 2)'] = 12
 params_GuestNodes['boot time (GN 3)'] = 12
 
-# Min: 1, max: 255
 # If a guest node is not present, its value will be ignored
+# Min: 1, max: 255
 params_GuestNodes['heartbeat timeout (GN 1) (seconds)'] = 10
 params_GuestNodes['heartbeat timeout (GN 2) (seconds)'] = 10
 params_GuestNodes['heartbeat timeout (GN 3) (seconds)'] = 10
 
-# Min: 1, max: 255
 # If a guest node is not present, its value will be ignored
+# Min: 1, max: 255
 params_GuestNodes['bad temperature timeout (GN 1) (seconds)'] = 15
 params_GuestNodes['bad temperature timeout (GN 2) (seconds)'] = 15
 params_GuestNodes['bad temperature timeout (GN 3) (seconds)'] = 15
 
-# Min: 1, max: 255
 # If a guest node is not present, its value will be ignored
+# Min: 1, max: 255
 params_GuestNodes['bad current timeout (GN 1) (seconds)'] = 5
 params_GuestNodes['bad current timeout (GN 2) (seconds)'] = 5
 params_GuestNodes['bad current timeout (GN 3) (seconds)'] = 5
 
-# Min: -55, max: 80
 # If a guest node is not present, its value will be ignored
+# Min: -55, max: 80
 params_GuestNodes['temperature min (GN 1) (Celsius)'] = -20
 params_GuestNodes['temperature max (GN 1) (Celsius)'] = 80
 params_GuestNodes['temperature min (GN 2) (Celsius)'] = -20
@@ -123,11 +132,11 @@ params_GuestNodes['temperature max (GN 2) (Celsius)'] = 80
 params_GuestNodes['temperature min (GN 3) (Celsius)'] = -20
 params_GuestNodes['temperature max (GN 3) (Celsius)'] = 80
 
-# Min: 1, max: 8000
 # If a guest node is not present, its value will be ignored
-params_GuestNodes['maximum current draw (GN 1) (mA)'] = 4000
-params_GuestNodes['maximum current draw (GN 2) (mA)'] = 4000
-params_GuestNodes['maximum current draw (GN 3) (mA)'] = 4000
+# Min: 1, max: 8000
+params_GuestNodes['maximum current draw (GN 1) (mA)'] = 2500
+params_GuestNodes['maximum current draw (GN 2) (mA)'] = 2500
+params_GuestNodes['maximum current draw (GN 3) (mA)'] = 2500
 ########################################################################
 
 ########################################################################

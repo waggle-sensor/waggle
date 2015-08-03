@@ -110,6 +110,7 @@ volatile boolean _USART_new_char = false;
 
 HTU21D SysMon_HTU21D;
 
+boolean _NC_running = false;
 boolean _switch_running = false;
 boolean _GN1_running = false;
 boolean _GN2_running = false;
@@ -134,6 +135,7 @@ byte count_timeout_temp_switch = 0;
 byte count_timeout_temp_GN1 = 0;
 byte count_timeout_temp_GN2 = 0;
 byte count_timeout_temp_GN3 = 0;
+unsigned int count_device_reboot = 0;
 
 unsigned int latest_power_SysMon;
 int latest_environ_temp_SysMon_NC;
@@ -155,6 +157,8 @@ uint16_t EEMEM E_USART_RX_BUFFER_SIZE;
 uint8_t EEMEM E_STATUS_REPORT_PERIOD;
 uint8_t EEMEM E_MAX_NUM_SOS_BOOT_ATTEMPTS;
 uint8_t EEMEM E_MAX_NUM_SUBSYSTEM_BOOT_ATTEMPTS;
+uint8_t EEMEM E_MAX_NUM_PRIMARY_BOOT_ATTEMPTS;
+uint16_t EEMEM E_DEVICE_REBOOT_PERIOD;
 uint16_t EEMEM E_BOOT_TIME_NC;
 uint8_t EEMEM E_BOOT_TIME_SWITCH;
 uint16_t EEMEM E_BOOT_TIME_GN1;
@@ -215,11 +219,18 @@ uint8_t EEMEM E_GN3_ENABLED;
 uint8_t EEMEM E_POST_RESULT;
 uint8_t EEMEM E_TIMER_TEST_INCOMPLETE;
 uint8_t EEMEM E_NUM_SOS_BOOT_ATTEMPTS;
+uint8_t EEMEM E_NUM_PRIMARY_BOOT_ATTEMPTS;
 uint8_t EEMEM E_FIRST_BOOT;
 
 
 
 //---------- S E T U P --------------------------------------------------------
+/*
+   Call all appropriate boot routines, depending on enabled/disabled status
+   of POST.
+
+   :rtype: none
+*/
 void setup() 
 {
   // Is POST enabled?
@@ -236,8 +247,28 @@ void setup()
         boot_GN3();
       }
       else
-        // Boot failed, so go to sleep
-        sleep();
+      {
+        // Grab how many boot attempts have occurred
+        byte num_attempts = eeprom_read_byte(&E_NUM_PRIMARY_BOOT_ATTEMPTS);
+
+        // Add failed boot attempt to the counter
+        eeprom_update_byte(&E_NUM_PRIMARY_BOOT_ATTEMPTS, ++num_attempts);
+
+        // Number of boot attempts not yet reached maximum allowed?
+        if(num_attempts <= eeprom_read_byte(&E_MAX_NUM_PRIMARY_BOOT_ATTEMPTS))
+        {
+          // Disable watchdog
+          wdt_disable();
+          // Set watchdog for short timeout
+          wdt_enable(WDTO_15MS);
+
+          // Wait
+          while(1);
+        }
+        else
+          // We're done trying, so go to sleep
+          sleep();
+      }
     }
     // Something non-fatal failed the POST
     else
@@ -253,14 +284,41 @@ void setup()
       boot_GN3();
     }
     else
-      // Boot failed, so go to sleep
-      sleep();
+    {
+      // Grab how many boot attempts have occurred
+      byte num_attempts = eeprom_read_byte(&E_NUM_PRIMARY_BOOT_ATTEMPTS);
+
+      // Add failed boot attempt to the counter
+      eeprom_update_byte(&E_NUM_PRIMARY_BOOT_ATTEMPTS, ++num_attempts);
+
+      // Number of boot attempts not yet reached maximum allowed?
+      if(num_attempts <= eeprom_read_byte(&E_MAX_NUM_PRIMARY_BOOT_ATTEMPTS))
+      {
+        // Disable watchdog
+        wdt_disable();
+        // Set watchdog for short timeout
+        wdt_enable(WDTO_15MS);
+
+        // Wait
+        while(1);
+      }
+      else
+        // We're done trying, so go to sleep
+        sleep();
+    }
   #endif
 }
 
 
 
 //---------- L O O P ----------------------------------------------------------
+/*
+   Main operation of SysMon.  Monitors the system and keeps track of any
+   timeouts, then responds appropriately to them.  Any devices that are turned
+   off but not permanently disabled are rebooted after some time.
+
+   :rtype: none
+*/
 void loop() 
 {
   // Has the timer finished a cycle?
@@ -288,29 +346,33 @@ void loop()
       count_timeout_power_SysMon = 0;
 
 
-    // Is the node controller's environment unacceptable?
-    if(!check_environ_NC())
-      count_timeout_environ_NC++;
-    else
-      count_timeout_environ_NC = 0;
+    // Is node controller operating?
+    if(_NC_running)
+    {
+      // Is the node controller's environment unacceptable?
+      if(!check_environ_NC())
+        count_timeout_environ_NC++;
+      else
+        count_timeout_environ_NC = 0;
 
-    // Is the node controller's processor temperature unacceptable?
-    if(!check_temp_NC())
-      count_timeout_temp_processor_NC++;
-    else
-      count_timeout_temp_processor_NC = 0;
+      // Is the node controller's processor temperature unacceptable?
+      if(!check_temp_NC())
+        count_timeout_temp_processor_NC++;
+      else
+        count_timeout_temp_processor_NC = 0;
 
-    // Is the node controller's power draw unacceptable?
-    if(!check_power_NC())
-      count_timeout_power_NC++;
-    else
-      count_timeout_power_NC = 0;
+      // Is the node controller's power draw unacceptable?
+      if(!check_power_NC())
+        count_timeout_power_NC++;
+      else
+        count_timeout_power_NC = 0;
 
-    // Is the node controller's heartbeat not detected?
-    if(!check_heartbeat_odroid(PIN_HEARTBEAT_NC))
-      count_timeout_heartbeat_NC++;
-    else
-      count_timeout_heartbeat_NC = 0;
+      // Is the node controller's heartbeat not detected?
+      if(!check_heartbeat_odroid(PIN_HEARTBEAT_NC))
+        count_timeout_heartbeat_NC++;
+      else
+        count_timeout_heartbeat_NC = 0;
+    }
 
 
     // Is ethernet switch operating?
@@ -398,6 +460,11 @@ void loop()
         count_timeout_heartbeat_GN3 = 0;
     }
 
+
+    // Increment counter for rebooting devices that aren't running
+    count_device_reboot++;
+
+
     //////
     // React to timeouts...
     //////
@@ -430,20 +497,24 @@ void loop()
     }
 
 
-    // Has something timed out for node controller?
-    if((count_timeout_heartbeat_NC >= eeprom_read_byte(&E_HEARTBEAT_TIMEOUT_NC))
-      || (count_timeout_power_NC >= eeprom_read_byte(&E_BAD_CURRENT_TIMEOUT_NC))
-      || (count_timeout_environ_NC >= eeprom_read_byte(&E_BAD_ENVIRON_TIMEOUT_NC))
-      || (count_timeout_temp_processor_NC >= eeprom_read_byte(&E_BAD_TEMP_PROCESSOR_TIMEOUT_NC)))
+    // Is node controller operating?
+    if(_NC_running)
     {
-      // Clear all the node controller's timeout counters
-      count_timeout_heartbeat_NC = 0;
-      count_timeout_power_NC = 0;
-      count_timeout_environ_NC = 0;
-      count_timeout_temp_processor_NC = 0;
+      // Has something timed out for node controller?
+      if((count_timeout_heartbeat_NC >= eeprom_read_byte(&E_HEARTBEAT_TIMEOUT_NC))
+        || (count_timeout_power_NC >= eeprom_read_byte(&E_BAD_CURRENT_TIMEOUT_NC))
+        || (count_timeout_environ_NC >= eeprom_read_byte(&E_BAD_ENVIRON_TIMEOUT_NC))
+        || (count_timeout_temp_processor_NC >= eeprom_read_byte(&E_BAD_TEMP_PROCESSOR_TIMEOUT_NC)))
+      {
+        // Clear all the node controller's timeout counters
+        count_timeout_heartbeat_NC = 0;
+        count_timeout_power_NC = 0;
+        count_timeout_environ_NC = 0;
+        count_timeout_temp_processor_NC = 0;
 
-      // Reboot the node controller
-      boot_NC();
+        // Reboot the node controller
+        boot_NC();
+      }
     }
 
 
@@ -693,9 +764,46 @@ void loop()
     }
 
 
+    // Time to try to reboot any devices that aren't running?
+    if(count_device_reboot >= eeprom_read_word(&E_DEVICE_REBOOT_PERIOD))
+    {
+      // Clear the counter
+      count_device_reboot = 0;
+
+      // Is the node controller enabled but not running?
+      if((! _NC_running) && eeprom_read_byte(&E_NC_ENABLED))
+        // Try to boot the node controller
+        boot_NC();
+
+      // Is the ethernet switch enabled but not running?
+      if((! _switch_running) && eeprom_read_byte(&E_SWITCH_ENABLED))
+        // Try to boot the switch
+        boot_switch();
+
+      // Is the guest node present & enabled but not running?
+      if((! _GN1_running) && eeprom_read_byte(&E_GN1_ENABLED)
+        && eeprom_read_byte(&E_PRESENT_GN1))
+        // Try to boot the guest node
+        boot_GN1();
+
+      // Is the guest node present & enabled but not running?
+      if((! _GN2_running) && eeprom_read_byte(&E_GN2_ENABLED)
+        && eeprom_read_byte(&E_PRESENT_GN2))
+        // Try to boot the guest node
+        boot_GN2();
+
+      // Is the guest node present & enabled but not running?
+      if((! _GN3_running) && eeprom_read_byte(&E_GN3_ENABLED)
+        && eeprom_read_byte(&E_PRESENT_GN3))
+        // Try to boot the guest node
+        boot_GN3();
+    }
+
+
     // Clear the flag for the next timer cycle
     _timer1_cycle = false;
   }
+
 
   // Received a new serial character?
   if(_USART_new_char)
@@ -719,6 +827,553 @@ void loop()
     else if(USART_RX_char == REQUEST_REBOOT_GN3)
       boot_GN3();
   }
+}
+
+
+
+//---------- C H E C K _ E N V I R O N _ N C ----------------------------------
+/*
+   Reads the HTU21D sensor.
+
+   Return TRUE: environment is acceptable.
+   Return FALSE: environment is unacceptable.
+
+   :rtype: boolean
+*/
+boolean check_environ_NC()
+{
+   // Read temperature and truncate it (so we don't deal with floats)
+   latest_environ_temp_SysMon_NC = (int)SysMon_HTU21D.readTemperature();
+
+   // Read humidity and truncate it (so we don't deal with floats)
+   latest_environ_hum_SysMon_NC = (byte)SysMon_HTU21D.readHumidity();
+
+   // Is measured temperature acceptable?
+   if(((int)eeprom_read_word(&E_TEMP_MIN_NC) < latest_environ_temp_SysMon_NC)
+      && (latest_environ_temp_SysMon_NC < (int)eeprom_read_word(&E_TEMP_MAX_NC))
+      && (eeprom_read_byte(&E_HUMIDITY_MIN_NC) < latest_environ_hum_SysMon_NC)
+      && (latest_environ_hum_SysMon_NC < eeprom_read_byte(&E_HUMIDITY_MAX_NC)))
+   {
+      // Exit with success
+      return true;
+   }
+
+   // Exit with failure
+   return false;
+}
+
+
+
+//---------- C H E C K _ E N V I R O N _ S Y S M O N --------------------------
+/*
+   Reads the HTU21D sensor.
+
+   Return TRUE: environment is acceptable.
+   Return FALSE: environment is unacceptable.
+
+   :rtype: boolean
+*/
+boolean check_environ_SysMon()
+{
+   // Read temperature and truncate it (so we don't deal with floats)
+   latest_environ_temp_SysMon_NC = (int)SysMon_HTU21D.readTemperature();
+
+   // Read humidity and truncate it (so we don't deal with floats)
+   latest_environ_hum_SysMon_NC = (byte)SysMon_HTU21D.readHumidity();
+
+   // Is measured temperature acceptable?
+   if(((int)eeprom_read_word(&E_TEMP_MIN_SYSMON) < latest_environ_temp_SysMon_NC)
+      && (latest_environ_temp_SysMon_NC < (int)eeprom_read_word(&E_TEMP_MAX_SYSMON))
+      && (eeprom_read_byte(&E_HUMIDITY_MIN_SYSMON) < latest_environ_hum_SysMon_NC)
+      && (latest_environ_hum_SysMon_NC < eeprom_read_byte(&E_HUMIDITY_MAX_SYSMON)))
+   {
+      // Exit with success
+      return true;
+   }
+
+   // Exit with failure
+   return false;
+}
+
+
+
+//---------- C H E C K _ H E A R T B E A T _ O D R O I D ----------------------
+/*
+   Checks that the ODroid is alive and sending a heartbeat.
+
+   Return TRUE: heartbeat is good.
+   Return FALSE: heartbeat is not good.
+
+   :param byte device: the pin number of the device being checked
+
+   :rtype: boolean
+*/
+boolean check_heartbeat_odroid(byte device)
+{
+   boolean result = false;
+
+   // Get first heartbeat sample
+   byte sample1 = digitalRead(device);
+
+   // Wait for half the heartbeat period
+   delay(HEARTBEAT_PERIOD_ODROID / 2);
+
+   // Get second heartbeat sample
+   byte sample2 = digitalRead(device);
+
+   // Are the samples different? (which indicates a changing heartbeat)
+   if(sample1 != sample2)
+      // Success!
+      result = true;
+   else
+   {
+      // Trying one more time, in case we encountered edges...
+
+      // Wait just a bit to move past possible edges
+      delay(2);
+
+      // Get first heartbeat sample
+      sample1 = digitalRead(device);
+
+      // Wait for half the heartbeat period
+      delay(HEARTBEAT_PERIOD_ODROID / 2);
+
+      // Get second heartbeat sample
+      sample2 = digitalRead(device);
+
+      // Are the samples different? (which indicates a changing heartbeat)
+      if(sample1 != sample2)
+         // Success!
+         result = true;
+   }
+
+   return result;
+}
+
+
+
+//---------- C H E C K _ P O W E R _ G N --------------------------------------
+/*
+   Reads the specified guest node's current sensor.
+
+   Return TRUE: guest node is drawing expected current.
+   Return FALSE: guest node is drawing no/too much current.
+
+   :param byte gn: which guest node's power draw to check (1, 2 or 3)
+
+   :rtype: boolean
+*/
+boolean check_power_GN(byte gn)
+{
+  byte msb, csb, lsb;
+  int addr;
+
+  // Which guest node is being checked?
+  switch (gn) {
+    case 1:
+      // Assign the correct I2C address
+      addr = ADDR_CURRENT_SENSOR_GN1;
+      break;
+
+    case 2:
+      // Assign the correct I2C address
+      addr = ADDR_CURRENT_SENSOR_GN2;
+      break;
+
+    case 3:
+      // Assign the correct I2C address
+      addr = ADDR_CURRENT_SENSOR_GN3;
+      break;
+
+    default:
+      // Invalid guest node, so exit with failure
+      return false;
+  }
+
+  // Start I2C transaction with current sensor
+  Wire.beginTransmission(addr);
+  // Tell sensor we want to read "data" register
+  Wire.write(0);
+  // Sensor expects restart condition, so end I2C transaction (no stop bit)
+  Wire.endTransmission(0);
+  // Ask sensor for data
+  Wire.requestFrom(addr, 3);
+
+  // Read the 3 bytes that the sensor returns
+  if(Wire.available())
+  {
+    msb = Wire.read();
+    // We only care about the data, so the mask hides the SYNC flag
+    csb = Wire.read() & 0x01;
+    lsb = Wire.read();
+  }
+  else
+    // Exit with failure
+    return false;
+
+  // End I2C transaction (with stop bit)
+  Wire.endTransmission(1);
+
+  // Calculate milliamps from raw sensor data
+  unsigned int milliamps = ((csb << 8) | lsb) * MILLIAMPS_PER_STEP;
+
+  // Which guest node is being checked?
+  switch (gn) {
+    case 1:
+      // Store power reading in global variable
+      latest_power_GN1 = milliamps;
+
+      // Is measured current below allowed maximum?
+      if(latest_power_GN1 < eeprom_read_word(&E_AMP_MAX_GN1))
+        // Exit with success
+        return true;
+
+    case 2:
+      // Store power reading in global variable
+      latest_power_GN2 = milliamps;
+
+      // Is measured current below allowed maximum?
+      if(latest_power_GN2 < eeprom_read_word(&E_AMP_MAX_GN2))
+        // Exit with success
+        return true;
+
+    case 3:
+      // Store power reading in global variable
+      latest_power_GN3 = milliamps;
+
+      // Is measured current below allowed maximum?
+      if(latest_power_GN3 < eeprom_read_word(&E_AMP_MAX_GN3))
+        // Exit with success
+        return true;
+
+    default:
+      // Invalid guest node, so exit with failure
+      return false;
+  }
+
+  // Exit with failure
+  return false;
+}
+
+
+
+//---------- C H E C K _ P O W E R _ N C --------------------------------------
+/*
+   Reads the node controller's current sensor.
+
+   Return TRUE: node controller is drawing expected current.
+   Return FALSE: node controller is drawing no/too much current.
+
+   :rtype: boolean
+*/
+boolean check_power_NC()
+{
+   byte msb, csb, lsb;
+   
+   // Start I2C transaction with current sensor
+   Wire.beginTransmission(ADDR_CURRENT_SENSOR_NC);
+   // Tell sensor we want to read "data" register
+   Wire.write(0);
+   // Sensor expects restart condition, so end I2C transaction (no stop bit)
+   Wire.endTransmission(0);
+   // Ask sensor for data
+   Wire.requestFrom(ADDR_CURRENT_SENSOR_NC, 3);
+
+   // Read the 3 bytes that the sensor returns
+   if(Wire.available())
+   {
+      msb = Wire.read();
+      // We only care about the data, so the mask hides the SYNC flag
+      csb = Wire.read() & 0x01;
+      lsb = Wire.read();
+   }
+   else
+      // Exit with failure
+      return false;
+
+   // End I2C transaction (with stop bit)
+   Wire.endTransmission(1);
+
+   // Calculate milliamps from raw sensor data
+   latest_power_NC = ((csb << 8) | lsb) * MILLIAMPS_PER_STEP;
+
+   // Is measured current below allowed maximum?
+   if(latest_power_NC < eeprom_read_word(&E_AMP_MAX_NC))
+      // Exit with success
+      return true;
+
+   // Exit with failure
+   return false;
+}
+
+
+
+//---------- C H E C K _ P O W E R _ S W I T C H ------------------------------
+/*
+   Reads the network switch's current sensor.
+
+   Return TRUE: switch is drawing expected current.
+   Return FALSE: switch is drawing no/too much current.
+
+   :rtype: boolean
+*/
+boolean check_power_switch()
+{
+   byte msb, csb, lsb;
+   
+   // Start I2C transaction with current sensor
+   Wire.beginTransmission(ADDR_CURRENT_SENSOR_SWITCH);
+   // Tell sensor we want to read "data" register
+   Wire.write(0);
+   // Sensor expects restart condition, so end I2C transaction (no stop bit)
+   Wire.endTransmission(0);
+   // Ask sensor for data
+   Wire.requestFrom(ADDR_CURRENT_SENSOR_SWITCH, 3);
+
+   // Read the 3 bytes that the sensor returns
+   if(Wire.available())
+   {
+      msb = Wire.read();
+      // We only care about the data, so the mask hides the SYNC flag
+      csb = Wire.read() & 0x01;
+      lsb = Wire.read();
+   }
+   else
+      // Exit with failure
+      return false;
+
+   // End I2C transaction (with stop bit)
+   Wire.endTransmission(1);
+
+   // Calculate milliamps from raw sensor data
+   latest_power_switch = ((csb << 8) | lsb) * MILLIAMPS_PER_STEP;
+
+   // Is measured current below allowed maximum?
+   if(latest_power_switch < eeprom_read_word(&E_AMP_MAX_SWITCH))
+      // Exit with success
+      return true;
+
+   // Exit with failure
+   return false;
+}
+
+
+
+//---------- C H E C K _ P O W E R _ S Y S M O N ------------------------------
+/*
+   Reads the SysMon's current sensor.
+
+   Return TRUE: SysMon is drawing expected current.
+   Return FALSE: SysMon is drawing too much current.
+
+   :rtype: boolean
+*/
+boolean check_power_SysMon()
+{
+   byte msb, csb, lsb;
+   
+   // Start I2C transaction with current sensor
+   Wire.beginTransmission(ADDR_CURRENT_SENSOR_SYSMON);
+   // Tell sensor we want to read "data" register
+   Wire.write(0);
+   // Sensor expects restart condition, so end I2C transaction (no stop bit)
+   Wire.endTransmission(0);
+   // Ask sensor for data
+   Wire.requestFrom(ADDR_CURRENT_SENSOR_SYSMON, 3);
+
+   // Read the 3 bytes that the sensor returns
+   if(Wire.available())
+   {
+      msb = Wire.read();
+      // We only care about the data, so the mask hides the SYNC flag
+      csb = Wire.read() & 0x01;
+      lsb = Wire.read();
+   }
+   else
+      // Exit with failure
+      return false;
+
+   // End I2C transaction (with stop bit)
+   Wire.endTransmission(1);
+
+   // Calculate milliamps from raw sensor data
+   latest_power_SysMon = ((csb << 8) | lsb) * MILLIAMPS_PER_STEP;
+
+   // Is measured current below allowed maximum?
+   if(latest_power_SysMon < eeprom_read_word(&E_AMP_MAX_SYSMON))
+      // Exit with success
+      return true;
+
+   // Exit with failure
+   return false;
+}
+
+
+
+//---------- C H E C K _ T E M P _ G N ----------------------------------------
+/*
+   Reads the thermistor for the specified guest node.
+
+   Return TRUE: temperature is acceptable.
+   Return FALSE: temperature is unacceptable.
+
+   :param byte gn: which guest node's temperature to check (1, 2 or 3)
+
+   :rtype: boolean
+*/
+boolean check_temp_GN(byte gn)
+{
+  // Which guest node is being checked?
+  switch (gn) {
+    case 1:
+      // Get ADC result from thermistor
+      latest_temp_GN1 = analogRead(PIN_THERMISTOR_GN1);
+
+      // Is measured temperature acceptable?
+      if((eeprom_read_word(&E_TEMP_MIN_GN1) < latest_temp_GN1)
+          && (latest_temp_GN1 < eeprom_read_word(&E_TEMP_MAX_GN1)))
+      {
+        // Exit with success
+        return true;
+      }
+      else
+        // Exit with failure
+        return false;
+
+    case 2:
+      // Get ADC result from thermistor
+      latest_temp_GN2 = analogRead(PIN_THERMISTOR_GN2);
+
+      // Is measured temperature acceptable?
+      if((eeprom_read_word(&E_TEMP_MIN_GN2) < latest_temp_GN2)
+          && (latest_temp_GN2 < eeprom_read_word(&E_TEMP_MAX_GN2)))
+      {
+        // Exit with success
+        return true;
+      }
+      else
+        // Exit with failure
+        return false;
+
+    case 3:
+      // Get ADC result from thermistor
+      latest_temp_GN3 = analogRead(PIN_THERMISTOR_GN3);
+
+      // Is measured temperature acceptable?
+      if((eeprom_read_word(&E_TEMP_MIN_GN3) < latest_temp_GN3)
+          && (latest_temp_GN3 < eeprom_read_word(&E_TEMP_MAX_GN3)))
+      {
+        // Exit with success
+        return true;
+      }
+      else
+        // Exit with failure
+        return false;
+
+    default:
+      // Invalid guest node, so exit with failure
+      return false;
+  }
+}
+
+
+
+//---------- C H E C K _ T E M P _ N C ----------------------------------------
+/*
+   Reads the node controller's thermistor to determine if the processor's
+   temperature is within the safe operating parameters.
+
+   Return TRUE: temperature is safe.
+   Return FALSE: temperature is unsafe.
+
+   :rtype: boolean
+*/
+boolean check_temp_NC()
+{
+   // Read thermistor
+   latest_temp_NC = analogRead(PIN_THERMISTOR_NC);
+
+   // Is measured temperature acceptable?
+   if((eeprom_read_word(&E_TEMP_MIN_PROCESSOR_NC) < latest_temp_NC)
+      && (latest_temp_NC < eeprom_read_word(&E_TEMP_MAX_PROCESSOR_NC)))
+   {
+      // Exit with success
+      return true;
+   }
+
+   // Exit with failure
+   return false;
+}
+
+
+
+//---------- C H E C K _ T E M P _ S W I T C H --------------------------------
+/*
+   Reads the switch's thermistor to determine if the temperature is within
+   the safe operating parameters.
+
+   Return TRUE: temperature is safe.
+   Return FALSE: temperature is unsafe.
+
+   :rtype: boolean
+*/
+boolean check_temp_switch()
+{
+   // Read thermistor
+   latest_temp_switch = analogRead(PIN_THERMISTOR_SWITCH);
+
+   // Is measured temperature acceptable?
+   if((eeprom_read_word(&E_TEMP_MIN_SWITCH) < latest_temp_switch)
+      && (latest_temp_switch < eeprom_read_word(&E_TEMP_MAX_SWITCH)))
+   {
+      // Exit with success
+      return true;
+   }
+
+   // Exit with failure
+   return false;
+}
+
+
+
+//---------- P O W E R _ C Y C L E  -------------------------------------------
+/*
+   Power cycle the device specified by the argument.
+
+   :param byte device: pin number of the relay to power cycle
+
+   :rtype: none
+*/
+void power_cycle(byte device)
+{
+   // Turn off the device
+   digitalWrite(device, LOW);
+   // Give the relay time to move
+   delay(100);
+   // Turn on the device
+   digitalWrite(device, HIGH);
+}
+
+
+
+//---------- S E N D _ P R O B L E M ------------------------------------------
+/*
+   Sends a problem report to the node controller.
+
+   :param String problem: description of the problem
+
+   :rtype: none
+*/
+void send_problem(String problem)
+{
+  // Tell the node controller that a problem report is coming
+  Serial.println(NC_NOTIFIER_PROBLEM);
+
+  // Give it time to get ready
+  delay(NC_MESSAGE_DELAY);
+
+  // Send problem report
+  Serial.println(problem);
 }
 
 
@@ -823,28 +1478,6 @@ void send_time()
 
   // Get time from RTC and send it to the node controller
   Serial.println(RTC.get());
-}
-
-
-
-//---------- S E N D _ P R O B L E M ------------------------------------------
-/*
-   Sends a problem report to the node controller.
-
-   :param String problem: description of the problem
-
-   :rtype: none
-*/
-void send_problem(String problem)
-{
-  // Tell the node controller that a problem report is coming
-  Serial.println(NC_NOTIFIER_PROBLEM);
-
-  // Give it time to get ready
-  delay(NC_MESSAGE_DELAY);
-
-  // Send problem report
-  Serial.println(problem);
 }
 
 
