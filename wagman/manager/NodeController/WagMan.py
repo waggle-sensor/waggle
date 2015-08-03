@@ -42,7 +42,7 @@ params_core['max num of primary boot attempts'] = 3
 params_core['time to wait before rebooting non-running devices (seconds)'] = 20
 
 # Min: 1, max: 65535
-params_core['boot time for NC (seconds)'] = 3
+params_core['boot time for NC (seconds)'] = 5
 # Min: 1, max: 255
 params_core['boot time for ethernet switch (seconds)'] = 3
 
