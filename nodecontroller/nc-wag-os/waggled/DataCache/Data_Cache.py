@@ -25,11 +25,10 @@ class Data_Cache(Daemon):
     
     
    
-   #dummy variables 
+   #dummy variables. These buffers are created when the data cache starts.
     incoming_bffr = []
     outgoing_bffr = []
     
-    #TODO Can these be stored in the file itself instead of the class?
     flush = 0 #value that indicates if the DC is flushing or not
     msg_counter = 0 #keeps track of total messages in queues
     #If the data cache flushed messages to files, this stores the the current outgoing file that messages are being read from
@@ -55,7 +54,7 @@ class Data_Cache(Daemon):
             
             #indicates that the server is flushing the buffers. Shuts down the server until the all queues have been written to a file
             while Data_Cache.flush ==1: 
-                print 'Data_cache.flush while loop'
+                #print 'Data_cache.flush while loop'
                 time.sleep(1)
             if os.path.exists('/tmp/Data_Cache_server'): #checking for the file
                 os.remove('/tmp/Data_Cache_server')
@@ -86,7 +85,7 @@ class Data_Cache(Daemon):
                     if not data:
                         break
                     else:
-                        print 'Data: ', data
+                        #print 'Data: ', data
                         #Indicates that it is a pull request 
                         if data[0] == '|': #TODO This could be improved if there is a better way to distinguish between push and pull requests and from incoming and outgoing requests
                             data, dest = data.split('|', 1) #splits to get either 'o' for outgoing request or the device location for incoming request
@@ -127,7 +126,7 @@ class Data_Cache(Daemon):
                                 order = flags[2] #lifo or fifo
                                 msg_p = flags[1] 
                                 recipient = header['r_uniqid'] #gets the recipient ID
-                                print 'recipient: ',recipient
+                                #print 'recipient: ',recipient
                                 sender = header['s_uniqid']
                                 for i in range(2): #loops in case device dictionary is not up-to-date
                                     if recipient == 0: #0 is the default ID for the cloud. Indicates an outgoing push.
@@ -526,7 +525,6 @@ if __name__ == "__main__":
         if 'start' == sys.argv[1]:
             print 'starting.'
             dc.start()
-            #dc.run()
             
         elif 'stop' == sys.argv[1]:
             dc.stop()

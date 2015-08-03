@@ -3,7 +3,7 @@
 import os, os.path, sys
 sys.path.append('../../../devtools/protocol_common/')
 from protocol.PacketHandler import *
-from send import send
+from communicator import send
 
 def msg_handler(msg):
     """
