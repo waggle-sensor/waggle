@@ -4,32 +4,13 @@ import socket, os, os.path, time, logging, sys
 from multiprocessing import Process, Queue
 sys.path.append('../../../../devtools/protocol_common/')
 from protocol.PacketHandler import *
-sys.path.append('../NC/')
-from NC_configuration import *
 
-    
 """
     The internal communicator is the channel of communication between the GNs and the data cache. It consists of four processes: Push and pull unix socket client processes to communicate with the data cache
     and push and pull TCP server processes for communicating with the GNs. 
     
 """ 
 
-class internal_communicator(object):
-    """
-        This class stores shared variables among the processes.
-    
-    """ 
-    #TODO Could combine processes: one server and one client instead of two. Need to be able to distinguish between a pull request and a message push.
-    
-    def __init__(self):
-        pass
-    
-    DC_push = Queue() #stores messages to be pushed to the DC
-    incoming_request = Queue() #stores the unique ID of GNs currently connected
-    
-    #stores incoming msgs. Each guest node has a unique queue that corresponds to the location in the device dictionary.
-    incoming_msg = [Queue(), Queue(), Queue(), Queue(), Queue()] 
-        
 def send(msg):
     """
         This function is used only if the guest node and node controller are being run on the same machine. 
@@ -46,7 +27,7 @@ def send(msg):
                 client_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
                 try:
                     client_sock.connect('/tmp/Data_Cache_server')
-                    #print "Connected to data cache... "
+                    print "Connected to data cache... "
                     client_sock.sendall(msg)
                     client_sock.close() #closes socket after each message is sent #TODO is there a better way to do this?
                     break #break loop when message sent. Otherwise, keep trying until successful
@@ -65,6 +46,26 @@ def send(msg):
             print "Shutting down."
             break
     client_sock.close()
+    
+#Everything beyond this point is used for external guest nodes
+sys.path.append('../NC/')
+from NC_configuration import *
+class internal_communicator(object):
+    """
+        This class stores shared variables among the processes.
+    
+    """ 
+    #TODO Could combine processes: one server and one client instead of two. Need to be able to distinguish between a pull request and a message push.
+    
+    def __init__(self):
+        pass
+    
+    DC_push = Queue() #stores messages to be pushed to the DC
+    incoming_request = Queue() #stores the unique ID of GNs currently connected
+    
+    #stores incoming msgs. Each guest node has a unique queue that corresponds to the location in the device dictionary.
+    incoming_msg = [Queue(), Queue(), Queue(), Queue(), Queue()] 
+        
         
 class internal_client_push(Process):
     """ 

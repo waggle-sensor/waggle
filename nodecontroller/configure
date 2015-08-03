@@ -1,9 +1,15 @@
 #!/bin/bash
-#This is a configures an odroid to be a node controller
+#This is configures an odroid to be a node controller
+
+#install all dependencies for node
 dpkg -i nc-wag-os/packages_o/*.deb
 cd nc-wag-os/packages_o/
 pip install -e pika-0.9.14
-echo NodeController > /etc/hostname #Sets the odroid's hostname to NodeController so GuestNodes can easily find it
+
+#Sets the odroid's hostname to NodeController so GuestNodes can easily find it
+echo NodeController > /etc/hostname 
+
+#set waggle parameters
 mkdir /etc/waggle/
 host_name=$RANDOM 
 echo " " > /etc/waggle/queuename
@@ -11,10 +17,10 @@ echo "$host_name" > /etc/waggle/hostname # The node's waggle hostname
 echo "$host_name, \n" > /etc/waggle/devices
 echo "1,2,3,4, \n" >> /etc/waggle/devices
 echo "$host_name:5, \n" >> /etc/waggle/devices
-#TODO: Need to ask the user to input the cloud IP addr and save to a file... I guess
+
+# Get the IP for the server you want to connect to
+read -p "Enter the IP address of the cloud server you want to use: " server_ip
+echo $server_ip > /etc/waggle/server_ip
+echo "Odroid is now going reboot."
 reboot
-# cd waggle/nodecontroller/nc-wag-os/waggled/DataCache
-# python Data_Cache.py start #start the Data Data_Cache
-# cd ..
-# cd Communications
-# ./background_comms.sh #start the background_comms
+

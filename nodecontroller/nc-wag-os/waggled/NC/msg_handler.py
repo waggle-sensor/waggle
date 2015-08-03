@@ -5,7 +5,8 @@ sys.path.append('../../../../devtools/protocol_common/')
 from protocol.PacketHandler import *
 sys.path.append('../../../../devtools/protocol_common/')
 from utilities import packetmaker
-from send import send
+sys.path.append('../Communications/')
+from internal_communicator import send
 from NC_configuration import *
 
 def msg_handler(msg):
