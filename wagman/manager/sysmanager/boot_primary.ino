@@ -51,284 +51,6 @@ boolean boot_primary()
 
 
 
-//---------- I N I T _ P R I M A R Y ------------------------------------------
-/*
-   Initializes/starts all necessary ports, peripherals, interrupts, etc.
-
-   :rtype: none
-*/
-void init_primary()
-{
-	// Reset and disable watchdog to avoid a reset loop
-   wdt_reset();
-   wdt_disable();
-
-   // Enable interrupts
-	interrupts();
-
-	// Start watchdog with 2 second timeout
-	wdt_enable(WDTO_2S);
-
-   // Make sure all the Timer1 registers are cleared
-   TCCR1A = 0;
-   TCCR1B = 0;
-   TCCR1C = 0;
-   TCNT1 = 0;
-   OCR1A = 0;
-   OCR1B = 0;
-   OCR1C = 0;
-   ICR1 = 0;
-   TIMSK1 = 0;
-
-   // Enable Timer1 overflow interrupt
-   TIMSK1 = _BV(TOIE1);
-
-	// Start Timer1 with prescaler of clk/256 (timeout of approx. 1 second)
-	TCCR1B = _BV(CS12);
-
-	// Join I2C bus as master
-	Wire.begin();
-
-	// Enable serial comms
-   Serial.begin(eeprom_read_dword(&E_USART_BAUD));
-
-   // Clear POST result to avoid confusion if a future boot fails
-   eeprom_update_byte(&E_POST_RESULT, 0);
-   // Clear the number of SOS boot attempts to start with a clean slate
-   // for the next partial boot failure
-   eeprom_update_byte(&E_NUM_SOS_BOOT_ATTEMPTS, 0);
-   // Clear the flag for the timer test being incomplete, otherwise the next
-   // POST may incorrectly mark the timer as malfunctioning
-   eeprom_update_byte(&E_TIMER_TEST_INCOMPLETE, 0);
-
-   // Set ADC reference voltage to Vcc
-   analogReference(DEFAULT);
-   // Read ADC channels a few times to settle them down
-   analogRead(PIN_PHOTOCELL);
-   analogRead(PIN_PHOTOCELL);
-   analogRead(PIN_PHOTOCELL);
-   analogRead(PIN_THERMISTOR_NC);
-   analogRead(PIN_THERMISTOR_NC);
-   analogRead(PIN_THERMISTOR_NC);
-   analogRead(PIN_THERMISTOR_SWITCH);
-   analogRead(PIN_THERMISTOR_SWITCH);
-   analogRead(PIN_THERMISTOR_SWITCH);
-   analogRead(PIN_THERMISTOR_GN1);
-   analogRead(PIN_THERMISTOR_GN1);
-   analogRead(PIN_THERMISTOR_GN1);
-   analogRead(PIN_THERMISTOR_GN2);
-   analogRead(PIN_THERMISTOR_GN2);
-   analogRead(PIN_THERMISTOR_GN2);
-   analogRead(PIN_THERMISTOR_GN3);
-   analogRead(PIN_THERMISTOR_GN3);
-   analogRead(PIN_THERMISTOR_GN3);
-
-   // Start HTU21D
-   SysMon_HTU21D.begin();
-
-   // Start I2C transaction with SysMon's current sensor
-   Wire.beginTransmission(ADDR_CURRENT_SENSOR_SYSMON);
-   // Tell sensor we're writing to "gain" register
-   Wire.write(0x04);
-   // Write 3 expected bytes to "gain" register (select 8 amp range)
-   Wire.write(0x00);
-   Wire.write(0x00);
-   Wire.write(0x02);
-   // End I2C transaction (with stop bit)
-   Wire.endTransmission(1);
-
-   // Start I2C transaction with NC's current sensor
-   Wire.beginTransmission(ADDR_CURRENT_SENSOR_NC);
-   // Tell sensor we're writing to "gain" register
-   Wire.write(0x04);
-   // Write 3 expected bytes to "gain" register (select 8 amp range)
-   Wire.write(0x00);
-   Wire.write(0x00);
-   Wire.write(0x02);
-   // End I2C transaction (with stop bit)
-   Wire.endTransmission(1);
-
-   // Start I2C transaction with switch's current sensor
-   Wire.beginTransmission(ADDR_CURRENT_SENSOR_SWITCH);
-   // Tell sensor we're writing to "gain" register
-   Wire.write(0x04);
-   // Write 3 expected bytes to "gain" register (select 8 amp range)
-   Wire.write(0x00);
-   Wire.write(0x00);
-   Wire.write(0x02);
-   // End I2C transaction (with stop bit)
-   Wire.endTransmission(1);
-
-   // Start I2C transaction with GN1's current sensor
-   Wire.beginTransmission(ADDR_CURRENT_SENSOR_GN1);
-   // Tell sensor we're writing to "gain" register
-   Wire.write(0x04);
-   // Write 3 expected bytes to "gain" register (select 8 amp range)
-   Wire.write(0x00);
-   Wire.write(0x00);
-   Wire.write(0x02);
-   // End I2C transaction (with stop bit)
-   Wire.endTransmission(1);
-
-   // Start I2C transaction with GN2's current sensor
-   Wire.beginTransmission(ADDR_CURRENT_SENSOR_GN2);
-   // Tell sensor we're writing to "gain" register
-   Wire.write(0x04);
-   // Write 3 expected bytes to "gain" register (select 8 amp range)
-   Wire.write(0x00);
-   Wire.write(0x00);
-   Wire.write(0x02);
-   // End I2C transaction (with stop bit)
-   Wire.endTransmission(1);
-
-   // Start I2C transaction with GN3's current sensor
-   Wire.beginTransmission(ADDR_CURRENT_SENSOR_GN3);
-   // Tell sensor we're writing to "gain" register
-   Wire.write(0x04);
-   // Write 3 expected bytes to "gain" register (select 8 amp range)
-   Wire.write(0x00);
-   Wire.write(0x00);
-   Wire.write(0x02);
-   // End I2C transaction (with stop bit)
-   Wire.endTransmission(1);
-
-   // Set relay pins to output mode
-   pinMode(PIN_RELAY_NC, OUTPUT);
-   pinMode(PIN_RELAY_SWITCH, OUTPUT);
-   pinMode(PIN_RELAY_GN1, OUTPUT);
-   pinMode(PIN_RELAY_GN2, OUTPUT);
-   pinMode(PIN_RELAY_GN3, OUTPUT);
-
-   // Set heartbeat pins to input mode (just for clarity)
-   pinMode(PIN_HEARTBEAT_NC, INPUT);
-   pinMode(PIN_HEARTBEAT_SWITCH, INPUT);
-   pinMode(PIN_HEARTBEAT_GN1, INPUT);
-   pinMode(PIN_HEARTBEAT_GN2, INPUT);
-   pinMode(PIN_HEARTBEAT_GN3, INPUT);
-}
-
-
-
-//---------- S E T _ D E F A U L T _ E E P R O M ------------------------------
-/*
-    Assigns default values to the parameters stored in EEPROM.  This function
-    is only executed on the first boot of a new SysMon, to avoid writing to
-    EEPROM every time.
-
-    :rtype: none
-*/
-void set_default_eeprom()
-{
-   // EEPROM addresses whose values are set by node controller:
-   eeprom_update_dword(&E_USART_BAUD, 57600);
-   eeprom_update_word(&E_USART_RX_BUFFER_SIZE, 200);
-   eeprom_update_byte(&E_STATUS_REPORT_PERIOD, 30);
-   eeprom_update_byte(&E_MAX_NUM_SOS_BOOT_ATTEMPTS, 3);
-   eeprom_update_byte(&E_MAX_NUM_SUBSYSTEM_BOOT_ATTEMPTS, 3);
-   eeprom_update_word(&E_BOOT_TIME_NC, 10);
-   eeprom_update_byte(&E_BOOT_TIME_SWITCH, 5);
-   eeprom_update_word(&E_BOOT_TIME_GN1, 10);
-   eeprom_update_word(&E_BOOT_TIME_GN2, 10);
-   eeprom_update_word(&E_BOOT_TIME_GN2, 10);
-   eeprom_update_byte(&E_PRESENT_GN1, 1);
-   eeprom_update_byte(&E_PRESENT_GN2, 1);
-   eeprom_update_byte(&E_PRESENT_GN3, 1);
-   eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_NC, 5);
-   eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_SWITCH, 5);
-   eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_GN1, 5);
-   eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_GN2, 5);
-   eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_GN3, 5);
-   eeprom_update_byte(&E_BAD_ENVIRON_TIMEOUT_SYSMON, 5);
-   eeprom_update_byte(&E_BAD_ENVIRON_TIMEOUT_NC, 5);
-   eeprom_update_byte(&E_BAD_TEMP_PROCESSOR_TIMEOUT_NC, 5);
-   eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_SWITCH, 5);
-   eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_GN1, 5);
-   eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_GN2, 5);
-   eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_GN3, 5);
-   eeprom_update_word(&E_AMP_NOISE_CEILING, 31);
-   eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_SYSMON, 5);
-   eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_NC, 5);
-   eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_SWITCH, 5);
-   eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_GN1, 5);
-   eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_GN2, 5);
-   eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_GN3, 5);
-   eeprom_update_word(&E_TEMP_MIN_SYSMON, 0);
-   eeprom_update_word(&E_TEMP_MAX_SYSMON, 100);
-   eeprom_update_word(&E_TEMP_MIN_NC, 0);
-   eeprom_update_word(&E_TEMP_MAX_NC, 100);
-   // Temperatures below are ADC values (see WagMan.py on node controller)
-   eeprom_update_word(&E_TEMP_MIN_PROCESSOR_NC, 115);
-   eeprom_update_word(&E_TEMP_MAX_PROCESSOR_NC, 969);
-   eeprom_update_word(&E_TEMP_MIN_SWITCH, 417);
-   eeprom_update_word(&E_TEMP_MAX_SWITCH, 969);
-   eeprom_update_word(&E_TEMP_MIN_GN1, 417);
-   eeprom_update_word(&E_TEMP_MAX_GN1, 969);
-   eeprom_update_word(&E_TEMP_MIN_GN2, 417);
-   eeprom_update_word(&E_TEMP_MAX_GN2, 969);
-   eeprom_update_word(&E_TEMP_MIN_GN3, 417);
-   eeprom_update_word(&E_TEMP_MAX_GN3, 969);
-   eeprom_update_byte(&E_HUMIDITY_MIN_SYSMON, 0);
-   eeprom_update_byte(&E_HUMIDITY_MAX_SYSMON, 100);
-   eeprom_update_byte(&E_HUMIDITY_MIN_NC, 0);
-   eeprom_update_byte(&E_HUMIDITY_MAX_NC, 100);
-   eeprom_update_word(&E_AMP_MAX_SYSMON, 400);
-   eeprom_update_word(&E_AMP_MAX_NC, 4000);
-   eeprom_update_word(&E_AMP_MAX_SWITCH, 1500);
-   eeprom_update_word(&E_AMP_MAX_GN1, 4000);
-   eeprom_update_word(&E_AMP_MAX_GN2, 4000);
-   eeprom_update_word(&E_AMP_MAX_GN3, 4000);
-
-   // Save the indicator that this SysMon has booted before
-   eeprom_update_byte(&E_FIRST_BOOT, 0);
-}
-
-
-
-//---------- B O O T _ S Y S M O N --------------------------------------------
-/*
-    Checks environment and power draw for SysMon.
-
-    Return TRUE: everything is good.
-    Return FALSE: environment/power draw is unacceptable.
-
-    :rtype: boolean
-*/
-boolean boot_SysMon()
-{
-   // Is SysMon drawing too much power?
-   if(!check_power_SysMon())
-   {
-      // Giving SysMon one more chance...
-
-      // Wait for things to settle down, perhaps
-      delay((long)BOOT_BAD_POWER_WAIT_TIME * 1000L);
-
-      // Is SysMon drawing too much power?
-      if(!check_power_SysMon())
-         // Exit with failure
-         return false;
-   }
-
-   // Is SysMon's environment outside of safe bounds?
-   if(!check_environ_SysMon())
-   {
-      // Giving SysMon one more chance...
-
-      // Wait for things to settle down, perhaps
-      delay((long)BOOT_BAD_ENVIRON_WAIT_TIME * 1000L);
-
-      // Is SysMon's environment outside of safe bounds?
-      if(!check_environ_SysMon())
-         // Exit with failure
-         return false;
-   }
-
-   // Exit with success
-   return true;
-}
-
-
-
 //---------- B O O T _ N C ----------------------------------------------------
 /*
     Boots the node controller.  Checks environment, power draw, and heartbeat.
@@ -340,6 +62,9 @@ boolean boot_SysMon()
 */
 boolean boot_NC()
 {
+   // Mark NC as not operational
+   _NC_running = false;
+
    // Make sure the device is off
    digitalWrite(PIN_RELAY_NC, LOW);
 
@@ -447,9 +172,14 @@ boolean boot_NC()
       }
    }
 
+   // Mark NC as operational
+   _NC_running = true;
+
    // Exit with success
    return true;
 }
+
+
 
 //---------- B O O T _ S W I T C H --------------------------------------------
 /*
@@ -539,355 +269,47 @@ boolean boot_switch()
 
 
 
-//---------- C H E C K _ P O W E R _ S Y S M O N ------------------------------
+//---------- B O O T _ S Y S M O N --------------------------------------------
 /*
-   Reads the SysMon's current sensor.
+    Checks environment and power draw for SysMon.
 
-   Return TRUE: SysMon is drawing expected current.
-   Return FALSE: SysMon is drawing too much current.
+    Return TRUE: everything is good.
+    Return FALSE: environment/power draw is unacceptable.
 
-   :rtype: boolean
+    :rtype: boolean
 */
-boolean check_power_SysMon()
+boolean boot_SysMon()
 {
-   byte msb, csb, lsb;
-   
-   // Start I2C transaction with current sensor
-   Wire.beginTransmission(ADDR_CURRENT_SENSOR_SYSMON);
-   // Tell sensor we want to read "data" register
-   Wire.write(0);
-   // Sensor expects restart condition, so end I2C transaction (no stop bit)
-   Wire.endTransmission(0);
-   // Ask sensor for data
-   Wire.requestFrom(ADDR_CURRENT_SENSOR_SYSMON, 3);
-
-   // Read the 3 bytes that the sensor returns
-   if(Wire.available())
+   // Is SysMon drawing too much power?
+   if(!check_power_SysMon())
    {
-      msb = Wire.read();
-      // We only care about the data, so the mask hides the SYNC flag
-      csb = Wire.read() & 0x01;
-      lsb = Wire.read();
-   }
-   else
-      // Exit with failure
-      return false;
+      // Giving SysMon one more chance...
 
-   // End I2C transaction (with stop bit)
-   Wire.endTransmission(1);
+      // Wait for things to settle down, perhaps
+      delay((long)BOOT_BAD_POWER_WAIT_TIME * 1000L);
 
-   // Calculate milliamps from raw sensor data
-   latest_power_SysMon = ((csb << 8) | lsb) * MILLIAMPS_PER_STEP;
-
-   // Is measured current below allowed maximum?
-   if(latest_power_SysMon < eeprom_read_word(&E_AMP_MAX_SYSMON))
-      // Exit with success
-      return true;
-
-   // Exit with failure
-   return false;
-}
-
-
-
-//---------- C H E C K _ E N V I R O N _ S Y S M O N --------------------------
-/*
-   Reads the HTU21D sensor.
-
-   Return TRUE: environment is acceptable.
-   Return FALSE: environment is unacceptable.
-
-   :rtype: boolean
-*/
-boolean check_environ_SysMon()
-{
-   // Read temperature and truncate it (so we don't deal with floats)
-   latest_environ_temp_SysMon_NC = (int)SysMon_HTU21D.readTemperature();
-
-   // Read humidity and truncate it (so we don't deal with floats)
-   latest_environ_hum_SysMon_NC = (byte)SysMon_HTU21D.readHumidity();
-
-   // Is measured temperature acceptable?
-   if(((int)eeprom_read_word(&E_TEMP_MIN_SYSMON) < latest_environ_temp_SysMon_NC)
-      && (latest_environ_temp_SysMon_NC < (int)eeprom_read_word(&E_TEMP_MAX_SYSMON))
-      && (eeprom_read_byte(&E_HUMIDITY_MIN_SYSMON) < latest_environ_hum_SysMon_NC)
-      && (latest_environ_hum_SysMon_NC < eeprom_read_byte(&E_HUMIDITY_MAX_SYSMON)))
-   {
-      // Exit with success
-      return true;
+      // Is SysMon drawing too much power?
+      if(!check_power_SysMon())
+         // Exit with failure
+         return false;
    }
 
-   // Exit with failure
-   return false;
-}
-
-
-
-//---------- C H E C K _ E N V I R O N _ N C ----------------------------------
-/*
-   Reads the HTU21D sensor.
-
-   Return TRUE: environment is acceptable.
-   Return FALSE: environment is unacceptable.
-
-   :rtype: boolean
-*/
-boolean check_environ_NC()
-{
-   // Read temperature and truncate it (so we don't deal with floats)
-   latest_environ_temp_SysMon_NC = (int)SysMon_HTU21D.readTemperature();
-
-   // Read humidity and truncate it (so we don't deal with floats)
-   latest_environ_hum_SysMon_NC = (byte)SysMon_HTU21D.readHumidity();
-
-   // Is measured temperature acceptable?
-   if(((int)eeprom_read_word(&E_TEMP_MIN_NC) < latest_environ_temp_SysMon_NC)
-      && (latest_environ_temp_SysMon_NC < (int)eeprom_read_word(&E_TEMP_MAX_NC))
-      && (eeprom_read_byte(&E_HUMIDITY_MIN_NC) < latest_environ_hum_SysMon_NC)
-      && (latest_environ_hum_SysMon_NC < eeprom_read_byte(&E_HUMIDITY_MAX_NC)))
+   // Is SysMon's environment outside of safe bounds?
+   if(!check_environ_SysMon())
    {
-      // Exit with success
-      return true;
+      // Giving SysMon one more chance...
+
+      // Wait for things to settle down, perhaps
+      delay((long)BOOT_BAD_ENVIRON_WAIT_TIME * 1000L);
+
+      // Is SysMon's environment outside of safe bounds?
+      if(!check_environ_SysMon())
+         // Exit with failure
+         return false;
    }
 
-   // Exit with failure
-   return false;
-}
-
-
-
-//---------- C H E C K _ T E M P _ N C ----------------------------------------
-/*
-   Reads the node controller's thermistor to determine if the processor's
-   temperature is within the safe operating parameters.
-
-   Return TRUE: temperature is safe.
-   Return FALSE: temperature is unsafe.
-
-   :rtype: boolean
-*/
-boolean check_temp_NC()
-{
-   // Read thermistor
-   latest_temp_NC = analogRead(PIN_THERMISTOR_NC);
-
-   // Is measured temperature acceptable?
-   if((eeprom_read_word(&E_TEMP_MIN_PROCESSOR_NC) < latest_temp_NC)
-      && (latest_temp_NC < eeprom_read_word(&E_TEMP_MAX_PROCESSOR_NC)))
-   {
-      // Exit with success
-      return true;
-   }
-
-   // Exit with failure
-   return false;
-}
-
-
-
-//---------- C H E C K _ P O W E R _ N C --------------------------------------
-/*
-   Reads the node controller's current sensor.
-
-   Return TRUE: node controller is drawing expected current.
-   Return FALSE: node controller is drawing no/too much current.
-
-   :rtype: boolean
-*/
-boolean check_power_NC()
-{
-   byte msb, csb, lsb;
-   
-   // Start I2C transaction with current sensor
-   Wire.beginTransmission(ADDR_CURRENT_SENSOR_NC);
-   // Tell sensor we want to read "data" register
-   Wire.write(0);
-   // Sensor expects restart condition, so end I2C transaction (no stop bit)
-   Wire.endTransmission(0);
-   // Ask sensor for data
-   Wire.requestFrom(ADDR_CURRENT_SENSOR_NC, 3);
-
-   // Read the 3 bytes that the sensor returns
-   if(Wire.available())
-   {
-      msb = Wire.read();
-      // We only care about the data, so the mask hides the SYNC flag
-      csb = Wire.read() & 0x01;
-      lsb = Wire.read();
-   }
-   else
-      // Exit with failure
-      return false;
-
-   // End I2C transaction (with stop bit)
-   Wire.endTransmission(1);
-
-   // Calculate milliamps from raw sensor data
-   latest_power_NC = ((csb << 8) | lsb) * MILLIAMPS_PER_STEP;
-
-   // Is measured current below allowed maximum?
-   if(latest_power_NC < eeprom_read_word(&E_AMP_MAX_NC))
-      // Exit with success
-      return true;
-
-   // Exit with failure
-   return false;
-}
-
-
-
-//---------- C H E C K _ H E A R T B E A T _ O D R O I D ----------------------
-/*
-   Checks that the ODroid is alive and sending a heartbeat.
-
-   Return TRUE: heartbeat is good.
-   Return FALSE: heartbeat is not good.
-
-   :param byte device: the pin number of the device being checked
-
-   :rtype: boolean
-*/
-boolean check_heartbeat_odroid(byte device)
-{
-   boolean result = false;
-
-   // Get first heartbeat sample
-   byte sample1 = digitalRead(device);
-
-   // Wait for half the heartbeat period
-   delay(HEARTBEAT_PERIOD_ODROID / 2);
-
-   // Get second heartbeat sample
-   byte sample2 = digitalRead(device);
-
-   // Are the samples different? (which indicates a changing heartbeat)
-   if(sample1 != sample2)
-      // Success!
-      result = true;
-   else
-   {
-      // Trying one more time, in case we encountered edges...
-
-      // Wait just a bit to move past possible edges
-      delay(2);
-
-      // Get first heartbeat sample
-      sample1 = digitalRead(device);
-
-      // Wait for half the heartbeat period
-      delay(HEARTBEAT_PERIOD_ODROID / 2);
-
-      // Get second heartbeat sample
-      sample2 = digitalRead(device);
-
-      // Are the samples different? (which indicates a changing heartbeat)
-      if(sample1 != sample2)
-         // Success!
-         result = true;
-   }
-
-   return result;
-}
-
-
-
-//---------- G E T _ T I M E _ N C --------------------------------------------
-/*
-   Requests a time update from the node controller.  If an update is received,
-   the RTC is set to the new time.
-
-   :rtype: none
-*/
-void get_time_NC()
-{
-   // Send request
-   Serial.println(NC_NOTIFIER_TIME_REQUEST);
-
-   // Save the node controller's response into a string.
-   // Default timeout value is 1 second
-   String received_time = "";
-   received_time = Serial.readStringUntil(NC_TERMINATOR);
-
-   // Was time received?
-   if(received_time.length() > 0)
-   {
-      /* Order of values (coming from node controller):
-      
-      Year
-      Month
-      Day
-      Hour
-      Minute
-      Second
-      */
-
-      // Temporary strings for holding each value
-      String received_year = "";
-      String received_month = "";
-      String received_day = "";
-      String received_hour = "";
-      String received_minute = "";
-      String received_second = "";
-
-      // Index for iterating thru the received string
-      int i = 0;
-
-      // Parse the received list of values:
-      while(received_time[i] != NC_DELIMITER)
-         received_year += received_time[i++];
-      // Skip delimiter
-      i++;
-
-      while(received_time[i] != NC_DELIMITER)
-         received_month += received_time[i++];
-      i++;
-
-      while(received_time[i] != NC_DELIMITER)
-         received_day += received_time[i++];
-      i++;
-
-      while(received_time[i] != NC_DELIMITER)
-         received_hour += received_time[i++];
-      i++;
-
-      while(received_time[i] != NC_DELIMITER)
-         received_minute += received_time[i++];
-      i++;
-
-      while(received_time[i] != NC_DELIMITER)
-         received_second += received_time[i++];
-      i++;
-
-      // Set SysMon's time to received time
-      setTime(received_hour.toInt(),
-         received_minute.toInt(),
-         received_second.toInt(),
-         received_day.toInt(),
-         received_month.toInt(),
-         received_year.toInt());
-      // Set RTC time to SysMon's time
-      RTC.set(now());
-   }
-}
-
-
-
-//---------- P O W E R _ C Y C L E  -------------------------------------------
-/*
-   Power cycle the device specified by the argument.
-
-   :param byte device: pin number of the relay to power cycle
-
-   :rtype: none
-*/
-void power_cycle(byte device)
-{
-   // Turn off the device
-   digitalWrite(device, LOW);
-   // Give the relay time to move
-   delay(100);
-   // Turn on the device
-   digitalWrite(device, HIGH);
+   // Exit with success
+   return true;
 }
 
 
@@ -921,6 +343,8 @@ void get_params_core()
          Period at which status reports are sent to node controller
          Max number of SOS boot attempts
          Max number of subsystem boot attempts
+         Max number of primary boot attempts
+         Time to wait before trying to reboot non-running devices
          Node controller boot time
          Ethernet switch boot time
          Heartbeat timeout (node controller)
@@ -956,6 +380,8 @@ void get_params_core()
       String status_report_period = "";
       String max_num_SOS_boot_attempts = "";
       String max_num_subsystem_boot_attempts = "";
+      String max_num_primary_boot_attempts = "";
+      String device_reboot_period = "";
       String NC_boot_time = "";
       String switch_boot_time = "";
       String heartbeat_timeout_NC = "";
@@ -1007,6 +433,14 @@ void get_params_core()
 
       while(received_params[i] != NC_DELIMITER)
          max_num_subsystem_boot_attempts += received_params[i++];
+      i++;
+
+      while(received_params[i] != NC_DELIMITER)
+         max_num_primary_boot_attempts += received_params[i++];
+      i++;
+
+      while(received_params[i] != NC_DELIMITER)
+         device_reboot_period += received_params[i++];
       i++;
 
       while(received_params[i] != NC_DELIMITER)
@@ -1122,6 +556,8 @@ void get_params_core()
       eeprom_update_byte(&E_STATUS_REPORT_PERIOD, (uint8_t)status_report_period.toInt());
       eeprom_update_byte(&E_MAX_NUM_SOS_BOOT_ATTEMPTS, (uint8_t)max_num_SOS_boot_attempts.toInt());
       eeprom_update_byte(&E_MAX_NUM_SUBSYSTEM_BOOT_ATTEMPTS, (uint8_t)max_num_subsystem_boot_attempts.toInt());
+      eeprom_update_byte(&E_MAX_NUM_PRIMARY_BOOT_ATTEMPTS, (uint8_t)max_num_primary_boot_attempts.toInt());
+      eeprom_update_word(&E_DEVICE_REBOOT_PERIOD, (uint16_t)device_reboot_period.toInt());
       eeprom_update_word(&E_BOOT_TIME_NC, (uint16_t)NC_boot_time.toInt());
       eeprom_update_byte(&E_BOOT_TIME_SWITCH, (uint8_t)switch_boot_time.toInt());
       eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_NC, (uint8_t)heartbeat_timeout_NC.toInt());
@@ -1365,80 +801,319 @@ boolean get_params_GNs()
 
 
 
-//---------- C H E C K _ T E M P _ S W I T C H --------------------------------
+//---------- G E T _ T I M E _ N C --------------------------------------------
 /*
-   Reads the switch's thermistor to determine if the temperature is within
-   the safe operating parameters.
+   Requests a time update from the node controller.  If an update is received,
+   the RTC is set to the new time.
 
-   Return TRUE: temperature is safe.
-   Return FALSE: temperature is unsafe.
-
-   :rtype: boolean
+   :rtype: none
 */
-boolean check_temp_switch()
+void get_time_NC()
 {
-   // Read thermistor
-   latest_temp_switch = analogRead(PIN_THERMISTOR_SWITCH);
+   // Send request
+   Serial.println(NC_NOTIFIER_TIME_REQUEST);
 
-   // Is measured temperature acceptable?
-   if((eeprom_read_word(&E_TEMP_MIN_SWITCH) < latest_temp_switch)
-      && (latest_temp_switch < eeprom_read_word(&E_TEMP_MAX_SWITCH)))
+   // Save the node controller's response into a string.
+   // Default timeout value is 1 second
+   String received_time = "";
+   received_time = Serial.readStringUntil(NC_TERMINATOR);
+
+   // Was time received?
+   if(received_time.length() > 0)
    {
-      // Exit with success
-      return true;
-   }
+      /* Order of values (coming from node controller):
+      
+      Year
+      Month
+      Day
+      Hour
+      Minute
+      Second
+      */
 
-   // Exit with failure
-   return false;
+      // Temporary strings for holding each value
+      String received_year = "";
+      String received_month = "";
+      String received_day = "";
+      String received_hour = "";
+      String received_minute = "";
+      String received_second = "";
+
+      // Index for iterating thru the received string
+      int i = 0;
+
+      // Parse the received list of values:
+      while(received_time[i] != NC_DELIMITER)
+         received_year += received_time[i++];
+      // Skip delimiter
+      i++;
+
+      while(received_time[i] != NC_DELIMITER)
+         received_month += received_time[i++];
+      i++;
+
+      while(received_time[i] != NC_DELIMITER)
+         received_day += received_time[i++];
+      i++;
+
+      while(received_time[i] != NC_DELIMITER)
+         received_hour += received_time[i++];
+      i++;
+
+      while(received_time[i] != NC_DELIMITER)
+         received_minute += received_time[i++];
+      i++;
+
+      while(received_time[i] != NC_DELIMITER)
+         received_second += received_time[i++];
+      i++;
+
+      // Set SysMon's time to received time
+      setTime(received_hour.toInt(),
+         received_minute.toInt(),
+         received_second.toInt(),
+         received_day.toInt(),
+         received_month.toInt(),
+         received_year.toInt());
+      // Set RTC time to SysMon's time
+      RTC.set(now());
+   }
 }
 
 
 
-//---------- C H E C K _ P O W E R _ S W I T C H ------------------------------
+//---------- I N I T _ P R I M A R Y ------------------------------------------
 /*
-   Reads the network switch's current sensor.
+   Initializes/starts all necessary ports, peripherals, interrupts, etc.
 
-   Return TRUE: switch is drawing expected current.
-   Return FALSE: switch is drawing no/too much current.
-
-   :rtype: boolean
+   :rtype: none
 */
-boolean check_power_switch()
+void init_primary()
 {
-   byte msb, csb, lsb;
-   
-   // Start I2C transaction with current sensor
-   Wire.beginTransmission(ADDR_CURRENT_SENSOR_SWITCH);
-   // Tell sensor we want to read "data" register
-   Wire.write(0);
-   // Sensor expects restart condition, so end I2C transaction (no stop bit)
-   Wire.endTransmission(0);
-   // Ask sensor for data
-   Wire.requestFrom(ADDR_CURRENT_SENSOR_SWITCH, 3);
+   // Reset and disable watchdog to avoid a reset loop
+   wdt_reset();
+   wdt_disable();
 
-   // Read the 3 bytes that the sensor returns
-   if(Wire.available())
-   {
-      msb = Wire.read();
-      // We only care about the data, so the mask hides the SYNC flag
-      csb = Wire.read() & 0x01;
-      lsb = Wire.read();
-   }
-   else
-      // Exit with failure
-      return false;
+   // Enable interrupts
+   interrupts();
 
+   // Start watchdog with 2 second timeout
+   wdt_enable(WDTO_2S);
+
+   // Make sure all the Timer1 registers are cleared
+   TCCR1A = 0;
+   TCCR1B = 0;
+   TCCR1C = 0;
+   TCNT1 = 0;
+   OCR1A = 0;
+   OCR1B = 0;
+   OCR1C = 0;
+   ICR1 = 0;
+   TIMSK1 = 0;
+
+   // Enable Timer1 overflow interrupt
+   TIMSK1 = _BV(TOIE1);
+
+   // Start Timer1 with prescaler of clk/256 (timeout of approx. 1 second)
+   TCCR1B = _BV(CS12);
+
+   // Join I2C bus as master
+   Wire.begin();
+
+   // Enable serial comms
+   Serial.begin(eeprom_read_dword(&E_USART_BAUD));
+
+   // Clear POST result to avoid confusion if a future boot fails
+   eeprom_update_byte(&E_POST_RESULT, 0);
+   // Clear the number of SOS boot attempts to start with a clean slate
+   // for the next partial boot failure
+   eeprom_update_byte(&E_NUM_SOS_BOOT_ATTEMPTS, 0);
+   // Clear the number of primary boot attempts to start with a clean slate
+   // for the next boot failure
+   eeprom_update_byte(&E_NUM_PRIMARY_BOOT_ATTEMPTS, 0);
+   // Clear the flag for the timer test being incomplete, otherwise the next
+   // POST may incorrectly mark the timer as malfunctioning
+   eeprom_update_byte(&E_TIMER_TEST_INCOMPLETE, 0);
+
+   // Set ADC reference voltage to Vcc
+   analogReference(DEFAULT);
+   // Read ADC channels a few times to settle them down
+   analogRead(PIN_PHOTOCELL);
+   analogRead(PIN_PHOTOCELL);
+   analogRead(PIN_PHOTOCELL);
+   analogRead(PIN_THERMISTOR_NC);
+   analogRead(PIN_THERMISTOR_NC);
+   analogRead(PIN_THERMISTOR_NC);
+   analogRead(PIN_THERMISTOR_SWITCH);
+   analogRead(PIN_THERMISTOR_SWITCH);
+   analogRead(PIN_THERMISTOR_SWITCH);
+   analogRead(PIN_THERMISTOR_GN1);
+   analogRead(PIN_THERMISTOR_GN1);
+   analogRead(PIN_THERMISTOR_GN1);
+   analogRead(PIN_THERMISTOR_GN2);
+   analogRead(PIN_THERMISTOR_GN2);
+   analogRead(PIN_THERMISTOR_GN2);
+   analogRead(PIN_THERMISTOR_GN3);
+   analogRead(PIN_THERMISTOR_GN3);
+   analogRead(PIN_THERMISTOR_GN3);
+
+   // Start HTU21D
+   SysMon_HTU21D.begin();
+
+   // Start I2C transaction with SysMon's current sensor
+   Wire.beginTransmission(ADDR_CURRENT_SENSOR_SYSMON);
+   // Tell sensor we're writing to "gain" register
+   Wire.write(0x04);
+   // Write 3 expected bytes to "gain" register (select 8 amp range)
+   Wire.write(0x00);
+   Wire.write(0x00);
+   Wire.write(0x02);
    // End I2C transaction (with stop bit)
    Wire.endTransmission(1);
 
-   // Calculate milliamps from raw sensor data
-   latest_power_switch = ((csb << 8) | lsb) * MILLIAMPS_PER_STEP;
+   // Start I2C transaction with NC's current sensor
+   Wire.beginTransmission(ADDR_CURRENT_SENSOR_NC);
+   // Tell sensor we're writing to "gain" register
+   Wire.write(0x04);
+   // Write 3 expected bytes to "gain" register (select 8 amp range)
+   Wire.write(0x00);
+   Wire.write(0x00);
+   Wire.write(0x02);
+   // End I2C transaction (with stop bit)
+   Wire.endTransmission(1);
 
-   // Is measured current below allowed maximum?
-   if(latest_power_switch < eeprom_read_word(&E_AMP_MAX_SWITCH))
-      // Exit with success
-      return true;
+   // Start I2C transaction with switch's current sensor
+   Wire.beginTransmission(ADDR_CURRENT_SENSOR_SWITCH);
+   // Tell sensor we're writing to "gain" register
+   Wire.write(0x04);
+   // Write 3 expected bytes to "gain" register (select 8 amp range)
+   Wire.write(0x00);
+   Wire.write(0x00);
+   Wire.write(0x02);
+   // End I2C transaction (with stop bit)
+   Wire.endTransmission(1);
 
-   // Exit with failure
-   return false;
+   // Start I2C transaction with GN1's current sensor
+   Wire.beginTransmission(ADDR_CURRENT_SENSOR_GN1);
+   // Tell sensor we're writing to "gain" register
+   Wire.write(0x04);
+   // Write 3 expected bytes to "gain" register (select 8 amp range)
+   Wire.write(0x00);
+   Wire.write(0x00);
+   Wire.write(0x02);
+   // End I2C transaction (with stop bit)
+   Wire.endTransmission(1);
+
+   // Start I2C transaction with GN2's current sensor
+   Wire.beginTransmission(ADDR_CURRENT_SENSOR_GN2);
+   // Tell sensor we're writing to "gain" register
+   Wire.write(0x04);
+   // Write 3 expected bytes to "gain" register (select 8 amp range)
+   Wire.write(0x00);
+   Wire.write(0x00);
+   Wire.write(0x02);
+   // End I2C transaction (with stop bit)
+   Wire.endTransmission(1);
+
+   // Start I2C transaction with GN3's current sensor
+   Wire.beginTransmission(ADDR_CURRENT_SENSOR_GN3);
+   // Tell sensor we're writing to "gain" register
+   Wire.write(0x04);
+   // Write 3 expected bytes to "gain" register (select 8 amp range)
+   Wire.write(0x00);
+   Wire.write(0x00);
+   Wire.write(0x02);
+   // End I2C transaction (with stop bit)
+   Wire.endTransmission(1);
+
+   // Set relay pins to output mode
+   pinMode(PIN_RELAY_NC, OUTPUT);
+   pinMode(PIN_RELAY_SWITCH, OUTPUT);
+   pinMode(PIN_RELAY_GN1, OUTPUT);
+   pinMode(PIN_RELAY_GN2, OUTPUT);
+   pinMode(PIN_RELAY_GN3, OUTPUT);
+
+   // Set heartbeat pins to input mode (just for clarity)
+   pinMode(PIN_HEARTBEAT_NC, INPUT);
+   pinMode(PIN_HEARTBEAT_SWITCH, INPUT);
+   pinMode(PIN_HEARTBEAT_GN1, INPUT);
+   pinMode(PIN_HEARTBEAT_GN2, INPUT);
+   pinMode(PIN_HEARTBEAT_GN3, INPUT);
+}
+
+
+
+//---------- S E T _ D E F A U L T _ E E P R O M ------------------------------
+/*
+    Assigns default values to the parameters stored in EEPROM.  This function
+    is only executed on the first boot of a new SysMon, to avoid writing to
+    EEPROM every time.
+
+    :rtype: none
+*/
+void set_default_eeprom()
+{
+   // EEPROM addresses whose values are set by node controller:
+   eeprom_update_dword(&E_USART_BAUD, 57600);
+   eeprom_update_word(&E_USART_RX_BUFFER_SIZE, 200);
+   eeprom_update_byte(&E_STATUS_REPORT_PERIOD, 30);
+   eeprom_update_byte(&E_MAX_NUM_SOS_BOOT_ATTEMPTS, 3);
+   eeprom_update_byte(&E_MAX_NUM_SUBSYSTEM_BOOT_ATTEMPTS, 3);
+   eeprom_update_byte(&E_MAX_NUM_PRIMARY_BOOT_ATTEMPTS, 3);
+   eeprom_update_word(&E_DEVICE_REBOOT_PERIOD, 15);
+   eeprom_update_word(&E_BOOT_TIME_NC, 10);
+   eeprom_update_byte(&E_BOOT_TIME_SWITCH, 5);
+   eeprom_update_word(&E_BOOT_TIME_GN1, 10);
+   eeprom_update_word(&E_BOOT_TIME_GN2, 10);
+   eeprom_update_word(&E_BOOT_TIME_GN2, 10);
+   eeprom_update_byte(&E_PRESENT_GN1, 1);
+   eeprom_update_byte(&E_PRESENT_GN2, 1);
+   eeprom_update_byte(&E_PRESENT_GN3, 1);
+   eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_NC, 5);
+   eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_SWITCH, 5);
+   eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_GN1, 5);
+   eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_GN2, 5);
+   eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_GN3, 5);
+   eeprom_update_byte(&E_BAD_ENVIRON_TIMEOUT_SYSMON, 5);
+   eeprom_update_byte(&E_BAD_ENVIRON_TIMEOUT_NC, 5);
+   eeprom_update_byte(&E_BAD_TEMP_PROCESSOR_TIMEOUT_NC, 5);
+   eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_SWITCH, 5);
+   eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_GN1, 5);
+   eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_GN2, 5);
+   eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_GN3, 5);
+   eeprom_update_word(&E_AMP_NOISE_CEILING, 31);
+   eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_SYSMON, 5);
+   eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_NC, 5);
+   eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_SWITCH, 5);
+   eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_GN1, 5);
+   eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_GN2, 5);
+   eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_GN3, 5);
+   eeprom_update_word(&E_TEMP_MIN_SYSMON, 0);
+   eeprom_update_word(&E_TEMP_MAX_SYSMON, 100);
+   eeprom_update_word(&E_TEMP_MIN_NC, 0);
+   eeprom_update_word(&E_TEMP_MAX_NC, 100);
+   // Temperatures below are ADC values (see WagMan.py on node controller)
+   eeprom_update_word(&E_TEMP_MIN_PROCESSOR_NC, 115);
+   eeprom_update_word(&E_TEMP_MAX_PROCESSOR_NC, 969);
+   eeprom_update_word(&E_TEMP_MIN_SWITCH, 417);
+   eeprom_update_word(&E_TEMP_MAX_SWITCH, 969);
+   eeprom_update_word(&E_TEMP_MIN_GN1, 417);
+   eeprom_update_word(&E_TEMP_MAX_GN1, 969);
+   eeprom_update_word(&E_TEMP_MIN_GN2, 417);
+   eeprom_update_word(&E_TEMP_MAX_GN2, 969);
+   eeprom_update_word(&E_TEMP_MIN_GN3, 417);
+   eeprom_update_word(&E_TEMP_MAX_GN3, 969);
+   eeprom_update_byte(&E_HUMIDITY_MIN_SYSMON, 0);
+   eeprom_update_byte(&E_HUMIDITY_MAX_SYSMON, 100);
+   eeprom_update_byte(&E_HUMIDITY_MIN_NC, 0);
+   eeprom_update_byte(&E_HUMIDITY_MAX_NC, 100);
+   eeprom_update_word(&E_AMP_MAX_SYSMON, 4000);
+   eeprom_update_word(&E_AMP_MAX_NC, 2500);
+   eeprom_update_word(&E_AMP_MAX_SWITCH, 1500);
+   eeprom_update_word(&E_AMP_MAX_GN1, 2500);
+   eeprom_update_word(&E_AMP_MAX_GN2, 2500);
+   eeprom_update_word(&E_AMP_MAX_GN3, 2500);
+
+   // Save the indicator that this SysMon has booted before
+   eeprom_update_byte(&E_FIRST_BOOT, 0);
 }
