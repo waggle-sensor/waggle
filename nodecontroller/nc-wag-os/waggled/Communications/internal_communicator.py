@@ -5,15 +5,13 @@ from multiprocessing import Process, Queue
 import sys
 sys.path.append('../../../../devtools/protocol_common/')
 from protocol.PacketHandler import *
-#sys.path.append('..')
-#from device_dict import DEVICE_DICT
 sys.path.append('../NC/')
 from NC_configuration import *
 
     
 """
-    The internal communicator is the channel of communication between the GNs and the data cache. It consists of four processes: Push and pull client processes to communicate with the data cache
-    and push and pull server processes for communicating with the GNs. 
+    The internal communicator is the channel of communication between the GNs and the data cache. It consists of four processes: Push and pull unix socket client processes to communicate with the data cache
+    and push and pull TCP server processes for communicating with the GNs. 
     
 """ 
     
@@ -22,7 +20,7 @@ class internal_communicator(object):
         This class stores shared variables among the processes.
     
     """ 
-    #TODO Could combine processes: one server and one client instead of two.
+    #TODO Could combine processes: one server and one client instead of two. Need to be able to distinguish between a pull request and a message push.
     
     def __init__(self):
         pass
@@ -36,6 +34,8 @@ class internal_communicator(object):
 class internal_client_push(Process):
     """ 
         A client process that connects to the data cache and pushes outgoing messages. 
+        When a GN connects to the push server, the push server puts the msg into the DC_push queue. 
+        When the DC_push queue is not empty, the client process connects to the data cache server and pushes the message. 
     """
     print 'Internal client push started...'
     logging.info('Internal client push started...')
@@ -147,7 +147,7 @@ class push_server(Process):
             while True:
                 try:
                     data = client_sock.recv(4028) 
-                    #print 'Push server received: ', data
+                    print 'Push server received: ', data
                     if not data:
                         break #breaks the loop when the client socket closes
                     elif data == 'Hello': #a handshake from a new guest node. #TODO This will change in the future
@@ -182,11 +182,10 @@ class pull_server(Process):
         
         while True:
             client_sock, addr = server.accept()
-            #print "Connected to ", addr
             while True:
                 try:
                     data = client_sock.recv(4028) #Guest nodes connect and send their uniq_ID
-                    #print 'Pull server received: ', data
+                    print 'Pull server received: ', data
                     if not data:
                         break
                     else:
@@ -206,11 +205,10 @@ class pull_server(Process):
                                 #If the device is registered and the push is successful, no need to try again, break the loop
                                 break 
                             except Exception as e:
-                                #print e
-                                #print 'Device dict: ', DEVICE_DICT
                                 #The device dictionary may not be up to date. Need to update and try again.
                                 #If the device is still not found after first try, move on.
-                                DEVICE_DICT = update_dev_dict()
+                                DEVICE_DICT = update_dev_dict() #this function is in the NC_configuration module
+                                client_sock.sendall('False')
                                 #logging.warning('Error...Internal pull server device not in dictionary.')
                                 #print 'Error...Internal pull server device not in dictionary.' , data
                             

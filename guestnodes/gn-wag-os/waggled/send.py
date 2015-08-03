@@ -9,7 +9,7 @@ import socket, os, os.path, time
 """
 #gets the IP address for the nodecontroller
 with open('/etc/waggle/NCIP','r') as file_:
-    IP = file_.read().strip() 
+    NCIP = file_.read().strip() 
 
 def send(msg):
     HOST = NCIP #should set it to NodeController IP
