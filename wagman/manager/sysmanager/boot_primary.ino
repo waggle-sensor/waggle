@@ -1061,7 +1061,7 @@ void set_default_eeprom()
    eeprom_update_byte(&E_MAX_NUM_SUBSYSTEM_BOOT_ATTEMPTS, 3);
    eeprom_update_byte(&E_MAX_NUM_PRIMARY_BOOT_ATTEMPTS, 3);
    eeprom_update_word(&E_DEVICE_REBOOT_PERIOD, 15);
-   eeprom_update_word(&E_BOOT_TIME_NC, 10);
+   eeprom_update_word(&E_BOOT_TIME_NC, 5);
    eeprom_update_byte(&E_BOOT_TIME_SWITCH, 5);
    eeprom_update_word(&E_BOOT_TIME_GN1, 10);
    eeprom_update_word(&E_BOOT_TIME_GN2, 10);

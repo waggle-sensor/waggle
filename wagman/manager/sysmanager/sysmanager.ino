@@ -43,6 +43,9 @@
 // This needs to be small and an even number
 #define HEARTBEAT_PERIOD_ODROID 40
 
+// Delay before enabling relay after disabling it
+#define POWER_CYCLE_DELAY 2000
+
 // Delay after bad environment reading during boot (seconds)
 #define BOOT_BAD_ENVIRON_WAIT_TIME 5
 // Delay after bad power reading during boot (seconds)
@@ -1348,8 +1351,8 @@ void power_cycle(byte device)
 {
    // Turn off the device
    digitalWrite(device, LOW);
-   // Give the relay time to move
-   delay(100);
+   // Wait for it...
+   delay(POWER_CYCLE_DELAY);
    // Turn on the device
    digitalWrite(device, HIGH);
 }
