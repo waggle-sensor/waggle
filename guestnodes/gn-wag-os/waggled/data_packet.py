@@ -4,7 +4,6 @@ import sys
 sys.path.append('../../../devtools/protocol_common/')
 from utilities import packetmaker
 from send import send
-#TODO All message maker classes can likely be combined into one class
 
 def data_packet(data):
     """

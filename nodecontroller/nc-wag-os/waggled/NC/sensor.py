@@ -1,7 +1,7 @@
 import time, serial, sys
 sys.path.append('../../../devtools/protocol_common/')
 from utilities import packetmaker
-from communicator import send
+from internal_communicator import send
 
 """
    This connects to a sensor board via a serial connection. It reads and parses the sensor data into meaningful information, packs, and sends the data packet to the cloud. 
