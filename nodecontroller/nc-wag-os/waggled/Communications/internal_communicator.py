@@ -4,6 +4,10 @@ import socket, os, os.path, time, logging, sys
 from multiprocessing import Process, Queue
 sys.path.append('../../../../devtools/protocol_common/')
 from protocol.PacketHandler import *
+sys.path.append('../NC/')
+from NC_configuration import *
+
+
 
 """
     The internal communicator is the channel of communication between the GNs and the data cache. It consists of four processes: Push and pull unix socket client processes to communicate with the data cache
@@ -47,9 +51,7 @@ def send(msg):
             break
     client_sock.close()
     
-#Everything beyond this point is used for external guest nodes
-sys.path.append('../NC/')
-from NC_configuration import *
+
 class internal_communicator(object):
     """
         This class stores shared variables among the processes.

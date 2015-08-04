@@ -9,23 +9,13 @@ from utilities import packetmaker
 sys.path.append('../NC/')
 from NC_configuration import *
 sys.path.append('../NC/')
-from send import send
+from internal_communicator import send
 
 """ 
     The external communicator is the communication channel between the cloud and the DC. It consists of four processes: two pika clients for pushing and pulling to the cloud and two clients for pushing 
     and pulling to the data cache.
 """
 
-#TODO node SSL certificates
-
-
-
-#with open('/etc/waggle/hostname','r') as file_:
-    #HOSTNAME = file_.read().strip()
-
-#with open('/etc/waggle/queuename','r') as file_:
-    #QUEUENAME = file_.read().strip() 
-    
 
 class external_communicator(object):
     """
@@ -63,9 +53,7 @@ class pika_push(Process):
                 channel.queue_declare(queue=QUEUENAME)
                 print 'Pika push connected to cloud.'
                 logging.info('Pika push connected to cloud.')
-                send_registrations() #sends registration for each node
-                send_config() #sends config file. This function is from NC_configuration.py
-                print 'Config file made'
+                send_registrations() #sends registration for each node and node controller configuration file
                 connected = True
             except: 
                 #logging.warning('Pika_push currently unable to connect to cloud...')
@@ -230,7 +218,7 @@ class external_client_push(Process):
 
 def send_registrations():
     """ 
-        Sends registration message for NC and GNs.
+        Sends registration message for NC and GNs and configuration file for node controller.
     """
     #loops through the list of nodes and send a registration for each one
     for key in DEVICE_DICT.keys():
@@ -248,6 +236,14 @@ def send_registrations():
             
         except Exception as e: 
             print e
+    #send nodecontroller configuration file
+    config = get_config() #this function is in NC_configuration
+    try:
+        packet = make_config_reg(config)
+        for pack_ in packet:
+            send(pack_)
+    except Exception as e:
+        print e
             
             
 ##uncomment for testing
@@ -277,4 +273,3 @@ def send_registrations():
         #push_client.terminate()
         #pull_client.terminate()
         #print 'Done.'
-        

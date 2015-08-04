@@ -1,8 +1,6 @@
 import sys
 sys.path.append('../../../../devtools/protocol_common/')
 from utilities.packetmaker import *
-sys.path.append('../Communications/')
-from internal_communicator import send
 
 """
     This file stores all of the configurable variables for the node controller. 
@@ -68,7 +66,7 @@ AVAILABLE_MEM = 576482
 #CLOUD_ADDR = 'amqps://waggle:waggle@10.10.10.134:5671/%2F'
 CLOUD_ADDR = 'amqps://waggle:waggle@' + CLOUD_IP + ':5671/%2F'
 
-def send_config():
+def get_config():
     """ 
     This function sends all of the stored information to the cloud.
     
@@ -82,9 +80,7 @@ def send_config():
     config = config + 'Available memory for data cache: ' + str(AVAILABLE_MEM) + '\n'
     config = config + 'Cloud IP address and parameters: ' + CLOUD_ADDR + '\n'
 
-    packet = make_config_reg(config)
-    for pack in packet:
-        send(pack)
+    return config
     
     
     

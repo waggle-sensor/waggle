@@ -21,6 +21,18 @@ echo "$host_name:5, \n" >> /etc/waggle/devices
 # Get the IP for the server you want to connect to
 read -p "Enter the IP address of the cloud server you want to use: " server_ip
 echo $server_ip > /etc/waggle/server_ip
+cd
+
+#move the data_cache.sh and communications.sh into the init.d folder
+cd waggle/nodecontroller/nc-wag-os/waggled
+mv communications.sh /etc/init.d
+chmod +x /etc/init.d/communications.sh 
+update-rc.d communications.sh defaults 
+
+mv data_cache.sh /etc/init.d
+chmod +x /etc/init.d/data_cache.sh 
+update-rc.d data_cache.sh defaults 
+
 echo "Odroid is now going reboot."
 reboot
 
