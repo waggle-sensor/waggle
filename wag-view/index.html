@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Waggle Deployment Sites</title>
+        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+        <script src="nodes.json"></script>
+        <script src="popup_map.js"></script>
+        <style>
+            body {padding-top: 50px; background-color: #fff}
+            th {background-color: #fff; font-size: larger; height: 30px; text-align: center; margin: auto}
+            tr {background-color: #fff; vertical-align: middle; height: 40px; text-align: center; margin: auto}
+            .navbar-inverse {background: -moz-linear-gradient(top, #7d0101 0%, #651110 100%);
+                    background: -webkit-linear-gradient(top, #7d0101 0%, #651110 100%);
+                    background: linear-gradient(top, #7d0101 0%, #651110 100%);}
+            .navbar-inverse .navbar-brand {color: #fff}
+            .navbar-inverse .navbar-nav > li > a {color: #ddd}
+
+            #divide_top {position: relative; top: -5px; padding-top: 0px; margin: auto; width: 100%; border-bottom: 2px solid #101010;}
+            #divide_bottom {position: relative; top: 5px; padding-top: 0px; margin: auto; width: 100%; border-bottom: 2px solid #101010;}
+        </style>
+
+    </head>
+
+    <body>
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#">Waggle Dashboard</a>
+                    <a class="navbar-brand">|</a>
+                </div>
+                <div id="navbar" class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="http://wa8.gl/">Waggle Platform</a></li>
+                        <li><a></a></li>
+                        <li><a href="http://wa8.gl/?page_id=154">Waggle Nodes</a></li>
+                        <li><a></a></li>
+                        <li><a href="http://outworld.mcs.anl.gov/waggle-data/docs/">Waggle Documentation</a></li>
+                        <li><a></a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="col-md-12" style="width: 100%; margin: auto">
+        <p align="center"> <img src="banner.png" alt="banner image" style="width: 35%; height: 35%"/> </p>
+        </div>
+        <div class="container" width="100%" style="margin: auto">
+            <div class="table-responsive">
+                <form name="node_form" id="node_form">
+                    <table class="center-div" id="node_header" width="100%">
+                        <thead>
+                            <th width="15%">Name</th>
+                            <th width="15%">Group</th>
+                            <th width="20%">Location</th>
+                            <th width="20%">Coordinates</th>
+                            <th width="15%">Status</th>
+                            <th width="15%">Current Data</th>
+                        </thead>
+                    </table>
+                    <div id="divide_top"></div>
+                    <table class="center-div" id="node_table" width="100%">
+                    <tbody>
+                    <tr id="node_row">
+                    <td width="15%">UCAOT01</td>
+                    <td width="15%">AoT</td>
+                    <td width="20%">Regenstein Library</td>
+                    <td width="20%">
+                    <a id="UCAOT01" href="https://www.google.com/maps/dir//41.791848,-87.599566/@41.791848,-87.599566,16z">41.791848, -87.599566</a>
+                    </td>
+                    <td width="15%">Active</td>
+                    <td width="15%">
+                    <a class="btn btn-default" id="UCAOT01" href="http://outworld.mcs.anl.gov/waggle-data/node_pages/sensors.php?name=UCAOT01" role="button&quot;">View Data</a>
+                    </td>
+                    </tr>
+                    <tr id="node_row">
+                    <td width="15%">UCAOT02</td>
+                    <td width="15%">AoT</td>
+                    <td width="20%">Logan Center</td>
+                    <td width="20%">
+                    <a id="UCAOT02" href="https://www.google.com/maps/dir//41.785573,-87.604143/@41.785573,-87.604143,16z">41.785573, -87.604143</a>
+                    </td>
+                    <td width="15%">Active</td>
+                    <td width="15%">
+                    <a class="btn btn-default" id="UCAOT02" href="http://outworld.mcs.anl.gov/waggle-data/node_pages/sensors.php?name=UCAOT02" role="button&quot;">View Data</a>
+                    </td>
+                    </tr>
+                    <tr id="node_row">
+                    <td width="15%">UCAOT03</td>
+                    <td width="15%">AoT</td>
+                    <td width="20%">Ratner Center</td>
+                    <td width="20%">
+                    <a id="UCAOT03" href="https://www.google.com/maps/dir//41.793373,-87.602294/@41.793373,-87.602294,16z">41.793373, -87.602294</a>
+                    </td>
+                    <td width="15%">Active</td>
+                    <td width="15%">
+                    <a class="btn btn-default" id="UCAOT03" href="http://outworld.mcs.anl.gov/waggle-data/node_pages/sensors.php?name=UCAOT03" role="button&quot;">View Data</a>
+                    </td>
+                    </tr>
+                    <tr id="node_row">
+                    <td width="15%">UCAOT04</td>
+                    <td width="15%">AoT</td>
+                    <td width="20%">Smart Museum</td>
+                    <td width="20%">
+                    <a id="UCAOT04" href="https://www.google.com/maps/dir//41.793685,-87.600131/@41.793685,-87.600131,16z">41.793685, -87.600131</a>
+                    </td>
+                    <td width="15%">Active</td>
+                    <td width="15%">
+                    <a class="btn btn-default" id="UCAOT04" href="http://outworld.mcs.anl.gov/waggle-data/node_pages/sensors.php?name=UCAOT04" role="button&quot;">View Data</a>
+                    </td>
+                    </tr>
+                    <tr id="node_row">
+                    <td width="15%">UCAOT05</td>
+                    <td width="15%">AoT</td>
+                    <td width="20%">Mandel Hall</td>
+                    <td width="20%">
+                    <a id="UCAOT05" href="https://www.google.com/maps/dir//41.790758,-87.598514/@41.790758,-87.598514,16z">41.790758, -87.598514</a>
+                    </td>
+                    <td width="15%">Inactive</td>
+                    <td width="15%">
+                    <a class="btn btn-default" id="UCAOT05" href="http://outworld.mcs.anl.gov/waggle-data/Wportal/" role="button&quot;">View Data</a>
+                    </td>
+                    </tr>
+                    <tr id="node_row">
+                    <td width="15%">UCAOT06</td>
+                    <td width="15%">AoT</td>
+                    <td width="20%">Oriental Institute</td>
+                    <td width="20%">
+                    <a id="UCAOT06" href="https://www.google.com/maps/dir//41.789009,-87.597298/@41.789009,-87.597298,16z">41.789009, -87.597298</a>
+                    </td>
+                    <td width="15%">Active</td>
+                    <td width="15%">
+                    <a class="btn btn-default" id="UCAOT06" href="http://outworld.mcs.anl.gov/waggle-data/node_pages/sensors.php?name=UCAOT06" role="button&quot;">View Data</a>
+                    </td>
+                    </tr>
+                    <tr id="node_row">
+                    <td width="15%">UCAOT07</td>
+                    <td width="15%">AoT</td>
+                    <td width="20%">Levi Hall</td>
+                    <td width="20%">
+                    <a id="UCAOT07" href="https://www.google.com/maps/dir//41.789274,-87.600936/@41.789274,-87.600936,16z">41.789274, -87.600936</a>
+                    </td>
+                    <td width="15%">Active</td>
+                    <td width="15%">
+                    <a class="btn btn-default" id="UCAOT07" href="http://outworld.mcs.anl.gov/waggle-data/node_pages/sensors.php?name=UCAOT07" role="button&quot;">View Data</a>
+                    </td>
+                    </tr>
+                    <tr id="node_row">
+                    <td width="15%">WXSENETDEPAUL01</td>
+                    <td width="15%">WxSeNet</td>
+                    <td width="20%">McGowan Roof</td>
+                    <td width="20%">
+                    <a id="WXSENETDEPAUL01" href="https://www.google.com/maps/dir//41.923693,-87.656892/@41.923693,-87.656892,16z">41.923693, -87.656892</a>
+                    </td>
+                    <td width="15%">Active</td>
+                    <td width="15%">
+                    <a class="btn btn-default" id="WXSENETDEPAUL01" href="http://outworld.mcs.anl.gov/waggle-data/node_pages/sensors.php?name=WXSENETDEPAUL01" role="button&quot;">View Data</a>
+                    </td>
+                    </tr>
+                    <tr id="node_row">
+                    <td width="15%">WXSENETANL01</td>
+                    <td width="15%">WxSeNet</td>
+                    <td width="20%">TCS 240 Roof</td>
+                    <td width="20%">
+                    <a id="WXSENETANL01" href="https://www.google.com/maps/dir//41.717602,-87.982415/@41.717602,-87.982415,16z">41.717602, -87.982415</a>
+                    </td>
+                    <td width="15%">Inactive</td>
+                    <td width="15%">
+                    <a class="btn btn-default" id="WXSENETANL01" href="http://outworld.mcs.anl.gov/waggle-data/Wportal/" role="button&quot;">View Data</a>
+                    </td>
+                    </tr>
+                    <tr id="node_row">
+                    <td width="15%">WXSENETANL02</td>
+                    <td width="15%">WxSeNet</td>
+                    <td width="20%">Area 460</td>
+                    <td width="20%">
+                    <a id="WXSENETANL02" href="https://www.google.com/maps/dir//41.701558,-87.994766/@41.701558,-87.994766,16z">41.701558, -87.994766</a>
+                    </td>
+                    <td width="15%">Inactive</td>
+                    <td width="15%">
+                    <a class="btn btn-default" id="WXSENETANL02" href="http://outworld.mcs.anl.gov/waggle-data/Wportal/" role="button&quot;">View Data</a>
+                    </td>
+                    </tr>
+                    </tbody>
+                    </table>
+                </form>
+            </div>
+            <div id="divide_bottom"></div>
+        </div>
+    </body>
+</html>
