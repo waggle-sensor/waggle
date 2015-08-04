@@ -70,7 +70,7 @@ window.onload = function() {
 	};
 
 	var wxsenetdepaul01_settings = {
-		placement: 'bottom',
+		placement: 'top',
 		container: 'body',
 		html: true,
 		trigger: "hover",
@@ -80,7 +80,7 @@ window.onload = function() {
 	};
 
 	var wxsenetanl01_settings = {
-		placement: 'bottom',
+		placement: 'top',
 		container: 'body',
 		html: true,
 		trigger: "hover",
@@ -90,7 +90,7 @@ window.onload = function() {
 	};
 
 	var wxsenetanl02_settings = {
-		placement: 'bottom',
+		placement: 'top',
 		container: 'body',
 		html: true,
 		trigger: "hover",
@@ -107,6 +107,6 @@ window.onload = function() {
 	$('a#UCAOT06').popover(ucaot06_settings);
 	$('a#UCAOT07').popover(ucaot07_settings);
 	$('a#WXSENETDEPAUL01').popover(wxsenetdepaul01_settings);
-	$('a#WXSENETANL01').popover(wxsenteanl01_settings);
+	$('a#WXSENETANL01').popover(wxsenetanl01_settings);
 	$('a#WXSENETANL02').popover(wxsenetanl02_settings);
 }
