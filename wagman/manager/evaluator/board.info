@@ -1,0 +1,2 @@
+TARGET=sysmonV1
+PORT=/dev/ttyACM0
