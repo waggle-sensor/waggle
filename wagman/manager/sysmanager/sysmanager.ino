@@ -162,6 +162,7 @@ uint8_t EEMEM E_MAX_NUM_SOS_BOOT_ATTEMPTS;
 uint8_t EEMEM E_MAX_NUM_SUBSYSTEM_BOOT_ATTEMPTS;
 uint8_t EEMEM E_MAX_NUM_PRIMARY_BOOT_ATTEMPTS;
 uint16_t EEMEM E_DEVICE_REBOOT_PERIOD;
+uint8_t EEMEM E_PRESENT_SWITCH;
 uint16_t EEMEM E_BOOT_TIME_NC;
 uint8_t EEMEM E_BOOT_TIME_SWITCH;
 uint16_t EEMEM E_BOOT_TIME_GN1;
@@ -182,7 +183,6 @@ uint8_t EEMEM E_BAD_TEMP_TIMEOUT_SWITCH;
 uint8_t EEMEM E_BAD_TEMP_TIMEOUT_GN1;
 uint8_t EEMEM E_BAD_TEMP_TIMEOUT_GN2;
 uint8_t EEMEM E_BAD_TEMP_TIMEOUT_GN3;
-uint16_t EEMEM E_AMP_NOISE_CEILING;
 uint8_t EEMEM E_BAD_CURRENT_TIMEOUT_SYSMON;
 uint8_t EEMEM E_BAD_CURRENT_TIMEOUT_NC;
 uint8_t EEMEM E_BAD_CURRENT_TIMEOUT_SWITCH;
@@ -245,9 +245,9 @@ void setup()
       if(boot_primary())
       {
         // Boot the guest nodes
-        boot_GN1();
-        boot_GN2();
-        boot_GN3();
+        boot_GN(1);
+        boot_GN(2);
+        boot_GN(3);
       }
       else
       {
@@ -282,9 +282,9 @@ void setup()
     if(boot_primary())
     {
       // Boot the guest nodes
-      boot_GN1();
-      boot_GN2();
-      boot_GN3();
+      boot_GN(1);
+      boot_GN(2);
+      boot_GN(3);
     }
     else
     {
@@ -574,7 +574,7 @@ void loop()
         count_timeout_heartbeat_GN1 = 0;
 
         // Reboot guest node
-        boot_GN1();
+        boot_GN(1);
 
         // Clear latest readings, in case the device failed to boot.
         // This is so the status report doesn't keep reporting the last
@@ -594,7 +594,7 @@ void loop()
         count_timeout_heartbeat_GN1 = 0;
 
         // Reboot guest node
-        boot_GN1();
+        boot_GN(1);
 
         // Clear latest readings, in case the device failed to boot.
         // This is so the status report doesn't keep reporting the last
@@ -614,7 +614,7 @@ void loop()
         count_timeout_heartbeat_GN1 = 0;
 
         // Reboot guest node
-        boot_GN1();
+        boot_GN(1);
 
         // Clear latest readings, in case the device failed to boot.
         // This is so the status report doesn't keep reporting the last
@@ -640,7 +640,7 @@ void loop()
         count_timeout_heartbeat_GN2 = 0;
 
         // Reboot guest node
-        boot_GN2();
+        boot_GN(2);
 
         // Clear latest readings, in case the device failed to boot.
         // This is so the status report doesn't keep reporting the last
@@ -660,7 +660,7 @@ void loop()
         count_timeout_heartbeat_GN2 = 0;
 
         // Reboot guest node
-        boot_GN2();
+        boot_GN(2);
 
         // Clear latest readings, in case the device failed to boot.
         // This is so the status report doesn't keep reporting the last
@@ -680,7 +680,7 @@ void loop()
         count_timeout_heartbeat_GN2 = 0;
 
         // Reboot guest node
-        boot_GN2();
+        boot_GN(2);
 
         // Clear latest readings, in case the device failed to boot.
         // This is so the status report doesn't keep reporting the last
@@ -706,7 +706,7 @@ void loop()
         count_timeout_heartbeat_GN3 = 0;
 
         // Reboot guest node
-        boot_GN3();
+        boot_GN(3);
 
         // Clear latest readings, in case the device failed to boot.
         // This is so the status report doesn't keep reporting the last
@@ -726,7 +726,7 @@ void loop()
         count_timeout_heartbeat_GN3 = 0;
 
         // Reboot guest node
-        boot_GN3();
+        boot_GN(3);
 
         // Clear latest readings, in case the device failed to boot.
         // This is so the status report doesn't keep reporting the last
@@ -746,7 +746,7 @@ void loop()
         count_timeout_heartbeat_GN3 = 0;
 
         // Reboot guest node
-        boot_GN3();
+        boot_GN(3);
 
         // Clear latest readings, in case the device failed to boot.
         // This is so the status report doesn't keep reporting the last
@@ -787,19 +787,19 @@ void loop()
       if((! _GN1_running) && eeprom_read_byte(&E_GN1_ENABLED)
         && eeprom_read_byte(&E_PRESENT_GN1))
         // Try to boot the guest node
-        boot_GN1();
+        boot_GN(1);
 
       // Is the guest node present & enabled but not running?
       if((! _GN2_running) && eeprom_read_byte(&E_GN2_ENABLED)
         && eeprom_read_byte(&E_PRESENT_GN2))
         // Try to boot the guest node
-        boot_GN2();
+        boot_GN(2);
 
       // Is the guest node present & enabled but not running?
       if((! _GN3_running) && eeprom_read_byte(&E_GN3_ENABLED)
         && eeprom_read_byte(&E_PRESENT_GN3))
         // Try to boot the guest node
-        boot_GN3();
+        boot_GN(3);
     }
 
 
@@ -824,11 +824,11 @@ void loop()
     else if(USART_RX_char == REQUEST_REBOOT_SWITCH)
       boot_switch();
     else if(USART_RX_char == REQUEST_REBOOT_GN1)
-      boot_GN1();
+      boot_GN(1);
     else if(USART_RX_char == REQUEST_REBOOT_GN2)
-      boot_GN2();
+      boot_GN(2);
     else if(USART_RX_char == REQUEST_REBOOT_GN3)
-      boot_GN3();
+      boot_GN(3);
   }
 }
 

@@ -41,8 +41,11 @@ params_core['max num of primary boot attempts'] = 3
 # Min: 1, max: 65535
 params_core['time to wait before rebooting non-running devices (seconds)'] = 20
 
+# Present: 1, not present: 0
+params_core['present (ethernet switch)'] = 1
+
 # Min: 1, max: 65535
-params_core['boot time for NC (seconds)'] = 5
+params_core['boot time for NC (seconds)'] = 30
 # Min: 1, max: 255
 params_core['boot time for ethernet switch (seconds)'] = 3
 
@@ -60,9 +63,6 @@ params_core['bad temperature timeout (switch) (seconds)'] = 15
 params_core['bad current timeout (SysMon) (seconds)'] = 6
 params_core['bad current timeout (NC) (seconds)'] = 6
 params_core['bad current timeout (switch) (seconds)'] = 6
-
-# Min: 15, max: 8000
-params_core['noise ceiling for current sensors (mA)'] = 15
 
 # Min: -40, max: 125
 params_core['temperature min of environment (SysMon) (Celsius)'] = -20
