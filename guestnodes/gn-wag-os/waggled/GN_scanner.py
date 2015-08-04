@@ -68,8 +68,7 @@ for HOST in hosts:
             break
         else:
             #Not the nodecontroller... 
-            pass
-        s.close()
+            s.close()
     except: 
         #Not the nodecontroller....
         pass

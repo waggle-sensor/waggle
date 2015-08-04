@@ -1,14 +1,15 @@
 #!/usr/bin/env python
 
-import socket, os, os.path, time, pika, logging, datetime
+import socket, os, os.path, time, pika, logging, datetime, sys
 from multiprocessing import Process, Queue, Value
-import sys
 sys.path.append('../../../../devtools/protocol_common/')
 from protocol.PacketHandler import *
-sys.path.append('../NC')
-from NC_registration import NC_registration, GN_registration
+sys.path.append('../../../../devtools/protocol_common/')
+from utilities import packetmaker
 sys.path.append('../NC/')
 from NC_configuration import *
+sys.path.append('../NC/')
+from send import send
 
 """ 
     The external communicator is the communication channel between the cloud and the DC. It consists of four processes: two pika clients for pushing and pulling to the cloud and two clients for pushing 
@@ -62,11 +63,8 @@ class pika_push(Process):
                 channel.queue_declare(queue=QUEUENAME)
                 print 'Pika push connected to cloud.'
                 logging.info('Pika push connected to cloud.')
-                #msg = NC_registration() #first sends the registration each time it connects to cloud
-                #channel.basic_publish(exchange='waggle_in', routing_key= 'in', body= msg) #sends to cloud 
-                GN_registration() #sends registration for each GN
-                #channel.basic_publish(exchange='waggle_in', routing_key= 'in', body= msg) #sends to cloud
-                send_config()
+                send_registrations() #sends registration for each node
+                send_config() #sends config file. This function is from NC_configuration.py
                 print 'Config file made'
                 connected = True
             except: 
@@ -229,7 +227,29 @@ class external_client_push(Process):
         
         print "Done."
         
-       
+
+def send_registrations():
+    """ 
+        Sends registration message for NC and GNs.
+    """
+    #loops through the list of nodes and send a registration for each one
+    for key in DEVICE_DICT.keys():
+        header_dict = {
+            "msg_mj_type" : ord('r'),
+            "msg_mi_type" : ord('r'),
+            "s_uniqid"    : int(key)
+            }
+        msg = str(QUEUENAME)
+        try: 
+            packet = pack(header_dict, message_data = msg)
+            print 'Registration made for node ID ', key
+            for pack_ in packet:
+                send(pack_)
+            
+        except Exception as e: 
+            print e
+            
+            
 ##uncomment for testing
 #if __name__ == "__main__":
     #try:

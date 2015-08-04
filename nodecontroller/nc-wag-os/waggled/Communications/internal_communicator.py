@@ -1,28 +1,61 @@
 #!/usr/bin/env python
 
-import socket, os, os.path, time, logging
+import socket, os, os.path, time, logging, sys
 from multiprocessing import Process, Queue
-import sys
 sys.path.append('../../../../devtools/protocol_common/')
 from protocol.PacketHandler import *
-#sys.path.append('..')
-#from device_dict import DEVICE_DICT
-sys.path.append('../NC/')
-from NC_configuration import *
 
-    
 """
-    The internal communicator is the channel of communication between the GNs and the data cache. It consists of four processes: Push and pull client processes to communicate with the data cache
-    and push and pull server processes for communicating with the GNs. 
+    The internal communicator is the channel of communication between the GNs and the data cache. It consists of four processes: Push and pull unix socket client processes to communicate with the data cache
+    and push and pull TCP server processes for communicating with the GNs. 
     
 """ 
+
+def send(msg):
+    """
+        This function is used only if the guest node and node controller are being run on the same machine. 
+        It skips the push server that is used to connect with external guestnodes and pushes the message directly into the data cache.
+        Skipping the server eliminates the need for a network setup in order to get messages from sensors to the data cache, 
+        allowing a bare-essentials version of waggle to be used anywhere. 
+        
+        :param string msg: The packed waggle message that needs to be sent.
+    """
+    while True:
+        try:
+        #connect to DC and send msg
+            if os.path.exists('/tmp/Data_Cache_server'):
+                client_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+                try:
+                    client_sock.connect('/tmp/Data_Cache_server')
+                    print "Connected to data cache... "
+                    client_sock.sendall(msg)
+                    client_sock.close() #closes socket after each message is sent #TODO is there a better way to do this?
+                    break #break loop when message sent. Otherwise, keep trying until successful
+                except Exception as e:
+                    print e
+                    logging.warning(e)
+                    time.sleep(5)
+                    client_sock.close()
+
+            else: 
+                time.sleep(5)
+                logging.warning('Unable to connect to DC...')
+                print 'Unable to connect to DC...'
+
+        except KeyboardInterrupt, k:
+            print "Shutting down."
+            break
+    client_sock.close()
     
+#Everything beyond this point is used for external guest nodes
+sys.path.append('../NC/')
+from NC_configuration import *
 class internal_communicator(object):
     """
         This class stores shared variables among the processes.
     
     """ 
-    #TODO Could combine processes: one server and one client instead of two.
+    #TODO Could combine processes: one server and one client instead of two. Need to be able to distinguish between a pull request and a message push.
     
     def __init__(self):
         pass
@@ -32,16 +65,20 @@ class internal_communicator(object):
     
     #stores incoming msgs. Each guest node has a unique queue that corresponds to the location in the device dictionary.
     incoming_msg = [Queue(), Queue(), Queue(), Queue(), Queue()] 
-    
+        
+        
 class internal_client_push(Process):
     """ 
         A client process that connects to the data cache and pushes outgoing messages. 
+        When a GN connects to the push server, the push server puts the msg into the DC_push queue. 
+        When the DC_push queue is not empty, the client process connects to the data cache server and pushes the message. 
     """
-    print 'Internal client push started...'
-    logging.info('Internal client push started...')
+
     
     def run(self):
         comm = internal_communicator()
+        print 'Internal client push started...'
+        logging.info('Internal client push started...')
         while True:
             try:
                 #if the queue is not empty, connect to DC and send msg
@@ -50,16 +87,16 @@ class internal_client_push(Process):
                         client_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
                         try:
                             client_sock.connect('/tmp/Data_Cache_server')
-                            #print "client_push connected to data cache... "
+                            print "client_push connected to data cache... "
                             data = comm.DC_push.get() #Gets message out of the queue and sends to data cache
-                            #print "sending: " , data
+                            print "sending: " , data
                             client_sock.sendall(data)
                             client_sock.close() #closes socket after each message is sent #TODO is there a better way to do this?
-                        except:
-                            logging.warning('Internal client push unable to connect to DC... connection likely refused.')
-                            print 'Internal client push unable to connect to DC... connection likely refused.'
-                            time.sleep(5)
+                        except Exception as e:
+                            logging.warning(e)
+                            print e
                             client_sock.close()
+                            time.sleep(5)
                         
                     else: 
                         time.sleep(5)
@@ -112,9 +149,9 @@ class internal_client_pull(Process):
                             client_sock.close() #closes socket after each message is sent #TODO is there a better way to do this?
                             
                                     
-                    except:
-                        logging.warning('Internal client pull unable to connect to DC... connection likely refused.')
-                        print 'Internal client pull unable to connect to DC... connection likely refused.'
+                    except Exception as e:
+                        logging.warning(e)
+                        print e
                         client_sock.close()
                         time.sleep(5)
                 else:
@@ -182,7 +219,6 @@ class pull_server(Process):
         
         while True:
             client_sock, addr = server.accept()
-            #print "Connected to ", addr
             while True:
                 try:
                     data = client_sock.recv(4028) #Guest nodes connect and send their uniq_ID
@@ -190,7 +226,6 @@ class pull_server(Process):
                     if not data:
                         break
                     else:
-                        #print 'Data: ',data
                         for i in range(2): 
                             try:
                                 dev_loc = DEVICE_DICT[data] #gets the device queue location from dictionary
@@ -207,11 +242,10 @@ class pull_server(Process):
                                 #If the device is registered and the push is successful, no need to try again, break the loop
                                 break 
                             except Exception as e:
-                                #print e
-                                #print 'Device dict: ', DEVICE_DICT
                                 #The device dictionary may not be up to date. Need to update and try again.
                                 #If the device is still not found after first try, move on.
-                                DEVICE_DICT = update_dev_dict()
+                                DEVICE_DICT = update_dev_dict() #this function is in the NC_configuration module
+                                client_sock.sendall('False')
                                 #logging.warning('Error...Internal pull server device not in dictionary.')
                                 #print 'Error...Internal pull server device not in dictionary.' , data
                             
@@ -220,6 +254,7 @@ class pull_server(Process):
                     server.close()
                     break
         server.close()
+
 
 ##uncomment for testing
 #if __name__ == "__main__":

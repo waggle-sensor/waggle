@@ -1,7 +1,8 @@
 import sys
-from send import send
 sys.path.append('../../../../devtools/protocol_common/')
 from utilities.packetmaker import *
+sys.path.append('../Communications/')
+from internal_communicator import send
 
 """
     This file stores all of the configurable variables for the node controller. 
@@ -26,20 +27,8 @@ with open('/etc/waggle/queuename','r') as file_:
 with open('/etc/waggle/NCIP','r') as file_:
     NCIP = file_.read().strip()
     
-##Maps the device ID to the queue location in DC 
-#with open('/etc/waggle/devices', 'r') as file_:
-    #lines = file_.readlines()
-
-##the third line in the devices file contains a mapping of devices to their priority
-##that is used to contruct the dictionary
-#mapping = []
-#while True:
-    #if not lines[2].find(',') == -1:
-        #device, lines[2] = lines[2].split(',', 1)
-        #device, priority = device.split(':',1)
-        #mapping.append((device,int(priority)))
-    #else:
-        #break
+with open('/etc/waggle/server_ip','r') as file_:
+    CLOUD_IP = file_.read().strip()
     
 def create_dev_dict():
     #Maps the device ID to the queue location in DC 
@@ -76,7 +65,8 @@ AVAILABLE_MEM = 576482
 
 
 #The params used to connect to the cloud are stored here
-CLOUD_ADDR = 'amqps://waggle:waggle@10.10.10.109:5671/%2F'
+#CLOUD_ADDR = 'amqps://waggle:waggle@10.10.10.134:5671/%2F'
+CLOUD_ADDR = 'amqps://waggle:waggle@' + CLOUD_IP + ':5671/%2F'
 
 def send_config():
     """ 

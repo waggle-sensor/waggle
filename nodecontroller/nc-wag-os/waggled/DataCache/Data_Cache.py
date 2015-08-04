@@ -7,6 +7,8 @@ sys.path.append('../../../../devtools/protocol_common/')
 from protocol.PacketHandler import *
 sys.path.append('../NC/')
 from NC_configuration import *
+sys.path.append('../NC/')
+from msg_handler import msg_handler
 from glob import glob
 
 """ 
@@ -23,11 +25,10 @@ class Data_Cache(Daemon):
     
     
    
-   #dummy variables 
+   #dummy variables. These buffers are created when the data cache starts.
     incoming_bffr = []
     outgoing_bffr = []
     
-    #TODO Can these be stored in the file itself instead of the class?
     flush = 0 #value that indicates if the DC is flushing or not
     msg_counter = 0 #keeps track of total messages in queues
     #If the data cache flushed messages to files, this stores the the current outgoing file that messages are being read from
@@ -53,7 +54,7 @@ class Data_Cache(Daemon):
             
             #indicates that the server is flushing the buffers. Shuts down the server until the all queues have been written to a file
             while Data_Cache.flush ==1: 
-                print 'Data_cache.flush while loop'
+                #print 'Data_cache.flush while loop'
                 time.sleep(1)
             if os.path.exists('/tmp/Data_Cache_server'): #checking for the file
                 os.remove('/tmp/Data_Cache_server')
@@ -125,6 +126,7 @@ class Data_Cache(Daemon):
                                 order = flags[2] #lifo or fifo
                                 msg_p = flags[1] 
                                 recipient = header['r_uniqid'] #gets the recipient ID
+                                #print 'recipient: ',recipient
                                 sender = header['s_uniqid']
                                 for i in range(2): #loops in case device dictionary is not up-to-date
                                     if recipient == 0: #0 is the default ID for the cloud. Indicates an outgoing push.
@@ -144,7 +146,11 @@ class Data_Cache(Daemon):
                                             DEVICE_DICT = update_dev_dict()
                                             #print 'Device dict: ', DEVICE_DICT
                                             #print 'Unknown sender ID. Message will not be stored in data cache.', sender
-                                    else: #indicates an incoming push
+                                    #indicates an incoming push
+                                    elif str(recipient) == HOSTNAME:
+                                        msg_handler(data)
+                                        break
+                                    else:
                                         try:
                                             dev_loc = DEVICE_DICT[str(recipient)] #looks up the location of the recipient device
                                             #If the device is registered and the push is successful, no need to try again, break the loop
@@ -519,7 +525,6 @@ if __name__ == "__main__":
         if 'start' == sys.argv[1]:
             print 'starting.'
             dc.start()
-            #dc.run()
             
         elif 'stop' == sys.argv[1]:
             dc.stop()

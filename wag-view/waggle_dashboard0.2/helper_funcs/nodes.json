@@ -1,6 +1,0 @@
-[
-	{"node_name":"ANL", "lat":"10.5", "lng":"40", "active":"Active", "page":"#"},
-	{"node_name":"UIC", "lat":"23.32", "lng":"-2.333", "active":"Active", "page":"#"},
-	{"node_name":"IIT", "lat":"89.664", "lng":"40.1103", "active":"Inactive", "page":"#"},
-	{"node_name":"Mizzou", "lat":"19.35", "lng":"-75.1", "active":"Active", "page":"#"}
-]

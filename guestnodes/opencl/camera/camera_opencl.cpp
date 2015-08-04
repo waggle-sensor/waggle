@@ -1,15 +1,5 @@
-/*
- * This confidential and proprietary software may be used only as
- * authorised by a licensing agreement from ARM Limited
- *    (C) COPYRIGHT 2013 ARM Limited
- *        ALL RIGHTS RESERVED
- * The entire notice above must be reproduced on all authorised
- * copies and copies may only be made to the extent permitted
- * by a licensing agreement from ARM Limited.
- */
-
-/**
- * Take a live camera feed and apply Canny Edge detection utilizing OpenCL
+ /**
+ * Take a live RGB camera feed and converts it to grayscale utilizing OpenCL
  * Details: Mali T-628 GPU is split into 2 devices: dev[0] has 4 cores, dev[1] has 2.
  *          Creates 2 Command Queues to use both devices.
  *          Runs 3 kernels sequentially to convert image to grayscale, smooth, and apply edge detection
@@ -34,14 +24,15 @@
 #include <cstddef>
 #include <cmath>
 #include <sys/time.h>
+#include <bitset>
 
 using namespace std;
 using namespace cv;
 
 //Global variables
-const std::string kernel_str[1] = {"kernels/grayscale_kernel.cl"};
-const cl_int image_width = 642;
-const cl_int image_height = 480;
+const std::string kernel_str[2] = {"kernels/grayscale_kernel.cl", "kernels/blur_kernel.cl"};
+const int image_width = 640;
+const int image_height = 480;
 
 //Function prototypes
 void freeOpenCL(cl_context, cl_program*, cl_kernel*, cl_command_queue*, cl_mem*, const unsigned int, const unsigned int, const unsigned int, const unsigned int);
@@ -56,34 +47,22 @@ int main(void)
     const std::string window_cpu = "Grayscale CPU";
     const std::string window_gpu = "Grayscale GPU";
 
-    //Open the default camera
-    VideoCapture cap(0);
-    cap.set(CV_CAP_PROP_FRAME_WIDTH, image_width);
-    cap.set(CV_CAP_PROP_FRAME_HEIGHT, image_height);
-    if(!cap.isOpened())
-    {
-        cout << "Could not open camera!" << endl;
-        return -1;
-    }
-    else
-    {
-        cout << "Camera started..." << endl;
-    }
-
     //OpenCL variables
     const unsigned int num_programs = 1;
     const unsigned int num_kernels = 1;
     const unsigned int num_queues = 2;
-    const unsigned int num_mem_objects = 1;
+    const unsigned int num_mem_objects = 2;
     const unsigned int num_events = 1;
     const size_t buffer_size = image_width*image_height*sizeof(cl_uchar);
-    const size_t global_work_size[2] = {image_width/3, image_height};
-    cl_uchar* in_ptr = NULL;
-    cl_uchar* out_ptr = NULL;
+    const size_t global_work_size[2] = {image_width, image_height};
 
     cl_uint num_platforms = 1;
     cl_uint num_devices = 2;
     cl_int error;
+
+    //BGR image is 3B/px while grayscale is 1B/px, so input image size must be 3 times as large as output image
+    cl_uchar* in_ptr = (cl_uchar*)malloc(buffer_size*3);
+    cl_uchar* out_ptr = (cl_uchar*)malloc(buffer_size);
 
     cl_context context;
     cl_program program[num_programs];
@@ -164,7 +143,7 @@ int main(void)
     }
 
     //Create and build the programs to be run
-    fstream in(kernel_str[0].c_str());
+    fstream in(kernel_str[1].c_str());
     string str((istreambuf_iterator<char>(in)), istreambuf_iterator<char>());
     const char* cstr = str.c_str();
 
@@ -218,7 +197,7 @@ int main(void)
     }
 
     //Create kernels
-    kernel[0] = clCreateKernel(program[0], "grayscale_kernel", &error);
+    kernel[0] = clCreateKernel(program[0], "gaussian_kernel", &error);
     if(error != CL_SUCCESS)
     {
         freeOpenCL(context, program, kernel, command_queue, mem_objects, num_programs, num_kernels, num_queues, num_mem_objects);
@@ -240,7 +219,7 @@ int main(void)
     }
 
     //Create an output buffers for input data and computed kernel data
-    mem_objects[0] = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_ALLOC_HOST_PTR, buffer_size, in_ptr, &error);
+    mem_objects[0] = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, buffer_size, in_ptr, &error);
     if(error != CL_SUCCESS)
     {
         freeOpenCL(context, program, kernel, command_queue, mem_objects, num_programs, num_kernels, num_queues, num_mem_objects);
@@ -248,7 +227,7 @@ int main(void)
         return -1;
     }
 
-    mem_objects[1] = clCreateBuffer(context, CL_MEM_WRITE_ONLY | CL_MEM_ALLOC_HOST_PTR, buffer_size, out_ptr, &error);
+    mem_objects[1] = clCreateBuffer(context, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR, buffer_size, out_ptr, &error);
     if(error != CL_SUCCESS)
     {
         freeOpenCL(context, program, kernel, command_queue, mem_objects, num_programs, num_kernels, num_queues, num_mem_objects);
@@ -257,22 +236,38 @@ int main(void)
     }
 
     //Set up kernel arguments
-    //grayscale_kernel
-    clSetKernelArg(kernel[0], 0, sizeof(cl_mem), &mem_objects[0]);
-    clSetKernelArg(kernel[0], 1, sizeof(cl_mem), &mem_objects[1]);
-    clSetKernelArg(kernel[0], 2, sizeof(cl_int), &image_width);
-    clSetKernelArg(kernel[0], 3, sizeof(cl_int), &image_height);
+        //grayscale_kernel
+        clSetKernelArg(kernel[0], 0, sizeof(cl_mem), &mem_objects[0]);
+        clSetKernelArg(kernel[0], 1, sizeof(cl_mem), &mem_objects[1]);
+        clSetKernelArg(kernel[0], 2, sizeof(cl_int), &image_height);
+        clSetKernelArg(kernel[0], 3, sizeof(cl_int), &image_width);
 
     //***TEST***//
-    int iterations = 0;
+    cout << "cmdQ: " << (command_queue[0] != NULL) << " | kernel: " << (kernel[0] != NULL);
+    cout << " | global_work_size: {" << global_work_size[0] << "," << global_work_size[1] << "}" << "\t(0 empty, 1 used)" << endl;
     //***TEST***//
+
+    //Open the default camera
+    VideoCapture cap(0);
+    cap.set(CV_CAP_PROP_FRAME_WIDTH, image_width);
+    cap.set(CV_CAP_PROP_FRAME_HEIGHT, image_height);
+    if(!cap.isOpened())
+    {
+        cout << "Could not open camera!" << endl;
+        return -1;
+    }
+    else
+    {
+        cout << "Camera started..." << endl;
+    }
 
     //Capture new frames and process them until user quits
     for(;;)
     {
         //Handle OpenCV processing first
         cap.read(frame);
-        cvtColor(frame, gray, CV_BGR2GRAY);
+        cvtColor(frame, frame, CV_BGR2GRAY);
+	GaussianBlur(frame, gray, Size(3, 3), 1.5, 1.5, BORDER_DEFAULT);
 
         //TODO: Create a for loop to enqueue both command_queues with in_ptr data
         //Map image to input buffer (mem_objects[0]);
@@ -284,9 +279,10 @@ int main(void)
             return -1;
         }
 
+        //copy frame data into in_ptr
         uchar* frame_ptr = frame.data;
         unsigned long i = 0;
-        while(i < image_height*image_width)
+        while(i < buffer_size)
         {
             in_ptr[i] = *frame_ptr;
             frame_ptr++;
@@ -302,9 +298,8 @@ int main(void)
         }
 
         //Enqueue the kernel
-        cout << "cmdQ: " << (command_queue[0] != NULL) << " | kernel: " << (kernel[0] != NULL) << " | global_work_size: {" << global_work_size[0] << "," << global_work_size[1] << "}" << "\t(0 empty, 1 used)" << endl;
         error = clEnqueueNDRangeKernel(command_queue[0], kernel[0], 2, NULL, global_work_size, NULL, 0, NULL, &event[0]);
-        if(error != CL_SUCCESS && error != CL_INVALID_KERNEL_ARGS)
+        if(error != CL_SUCCESS)
         {
             freeOpenCL(context, program, kernel, command_queue, mem_objects, num_programs, num_kernels, num_queues, num_mem_objects);
             cout << "Could not map data to kernel. Error #: " << error << endl;
@@ -341,18 +336,13 @@ int main(void)
         if(error != CL_SUCCESS)
         {
             freeOpenCL(context, program, kernel, command_queue, mem_objects, num_programs, num_kernels, num_queues, num_mem_objects);
-            cout << "Could not map input frame to buffer. Error #: " << error << endl;
+            cout << "Could not unmap output memory object from buffer. Error #: " << error << endl;
             return -1;
         }
 
         //Display the images
         imshow(window_cpu, gray);
         imshow(window_gpu, grayscale);
-
-        //***TEST***//
-        cout << "Iteration: " << iterations << endl;
-        iterations++;
-        //***TEST***//
 
         //Wait for user to quit
         if(waitKey(30) > 0)
@@ -373,17 +363,6 @@ int main(void)
 
             break;
         }
-
-/*
-        //Sleep for 1 second
-        time(&time_0);
-        while(timer < 1)
-        {
-            time(&time_1);
-            timer = difftime(time_0, time_1);
-        }
-*/
-
     }
 
     //Free all OpenCL objects
@@ -487,6 +466,7 @@ void freeOpenCL(cl_context context, cl_program* program, cl_kernel* kernel, cl_c
                 case CL_SUCCESS:
                     break;
                 case CL_INVALID_MEM_OBJECT:
+
                     cout << "Invalid memory object provided" << endl;
                     break;
                 case CL_OUT_OF_RESOURCES:

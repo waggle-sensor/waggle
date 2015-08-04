@@ -100,6 +100,30 @@ then
     echo "FLASH_BOARD = \$(FLASHER) -i -d --port=\$(PORT) -U true -e -w -v -b \$(BIN_DIR)/\$(TARGET).cpp.bin -R" >> makefile
     echo "BUILD_COMPLETE = mv \$(BUILD_DIR)/\$(TARGET).cpp.bin \$(BIN_DIR)" >> makefile
 
+elif [ "${BOARD_NAME##*=}" == "envsenseV2_NAT" ]
+then
+    echo "PACKAGE = arduino" >> makefile
+    echo "ARCH = sam" >> makefile
+    echo "BOARD = SAM_DUE" >> makefile
+    echo "TYPE = " >> makefile
+    echo "FLASHER_BAUD_RATE = 115200" >> makefile
+    echo "PORT = ${PORT_NAME##*=}" >> makefile
+    echo "BOARD_FLASH = \$(PACKAGE):\$(ARCH):\$(BOARD):cpu=\$(TYPE)" >> makefile
+    echo "BOOT_LOADER_TYPE = wiring" >>  makefile
+    echo "PRE_FLASH_COMMAND = #"  >> makefile
+
+elif [ "${BOARD_NAME##*=}" == "envsenseV2_PROG" ]
+then
+    echo "PACKAGE = arduino" >> makefile
+    echo "ARCH = sam" >> makefile
+    echo "BOARD = due" >> makefile
+    echo "TYPE = " >> makefile
+    echo "FLASHER_BAUD_RATE = 115200" >> makefile
+    echo "PORT = ${PORT_NAME##*=}" >> makefile
+    echo "BOARD_FLASH = \$(PACKAGE):\$(ARCH):\$(BOARD):cpu=\$(TYPE)" >> makefile
+    echo "BOOT_LOADER_TYPE = wiring" >>  makefile
+    echo "PRE_FLASH_COMMAND = #"  >> makefile
+
 fi
 
 cat MakeFile >> makefile
