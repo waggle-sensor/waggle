@@ -1,8 +1,32 @@
-Instructions for running "heartbeat.cpp":
+Compile "heartbeat.cpp":
+-----
+g++ -o heartbeat heartbeat.cpp
 
+
+Setup heartbeat:
+-----
 cd /sys/class/gpio
 echo 204 > export
 cd gpio204
 echo out > direction
-g++ -o heartbeat heartbeat.cpp
-./heartbeat
+
+
+Start heartbeat on boot (ODroid):
+-----
+1) setup heartbeat (as above)
+2) put "heartbeat_start.sh" in /etc/init.d
+3) put "heartbeat" (executable) in home directory
+3) cd /etc/init.d
+4) chmod +x heartbeat_start.sh
+5) update-rc.d heartbeat_start.sh defaults
+
+
+Start WagMan script on boot (ODroid):
+-----
+1) put "WagMan_start.sh" in /etc/init.d
+2) put "WagMan.py" in home directory
+3) cd /etc/init.d
+4) chmod +x WagMan_start.sh
+5) update-rc.d WagMan_start.sh defaults
+6) install pyserial
+7) put "99-usb-serial.rules" in /etc/udev/rules.d

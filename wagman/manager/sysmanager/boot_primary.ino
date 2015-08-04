@@ -202,10 +202,13 @@ boolean boot_switch()
    // Give the relay time to move
    delay(100);
 
-   // Is the ethernet switch enabled?
-   if(!eeprom_read_byte(&E_SWITCH_ENABLED))
+   // Is the ethernet switch disabled or not present?
+   if(!(eeprom_read_byte(&E_SWITCH_ENABLED)
+      && eeprom_read_byte(&E_PRESENT_SWITCH)))
+   {
       // Exit with failure
       return false;
+   }
 
    // Is the ethernet switch's temperature outside of safe parameters?
    if(!check_temp_switch())
@@ -345,6 +348,7 @@ void get_params_core()
          Max number of subsystem boot attempts
          Max number of primary boot attempts
          Time to wait before trying to reboot non-running devices
+         Present/not present (switch)
          Node controller boot time
          Ethernet switch boot time
          Heartbeat timeout (node controller)
@@ -356,7 +360,6 @@ void get_params_core()
          Bad current timeout (system monitor)
          Bad current timeout (node controller)
          Bad current timeout (switch)
-         Current noise ceiling (mA)
          Minimum temperature of environment (Celsius) (system monitor)
          Maximum temperature of environment (Celsius) (system monitor)
          Minimum temperature of environment (Celsius) (node controller)
@@ -382,6 +385,7 @@ void get_params_core()
       String max_num_subsystem_boot_attempts = "";
       String max_num_primary_boot_attempts = "";
       String device_reboot_period = "";
+      String present_switch = "";
       String NC_boot_time = "";
       String switch_boot_time = "";
       String heartbeat_timeout_NC = "";
@@ -393,7 +397,6 @@ void get_params_core()
       String bad_current_timeout_SysMon = "";
       String bad_current_timeout_NC = "";
       String bad_current_timeout_switch = "";
-      String current_noise_ceiling = "";
       String min_temp_SysMon = "";
       String max_temp_SysMon = "";
       String min_temp_NC = "";
@@ -444,6 +447,10 @@ void get_params_core()
       i++;
 
       while(received_params[i] != NC_DELIMITER)
+         present_switch += received_params[i++];
+      i++;
+
+      while(received_params[i] != NC_DELIMITER)
          NC_boot_time += received_params[i++];
       i++;
 
@@ -485,10 +492,6 @@ void get_params_core()
 
       while(received_params[i] != NC_DELIMITER)
          bad_current_timeout_switch += received_params[i++];
-      i++;
-
-      while(received_params[i] != NC_DELIMITER)
-         current_noise_ceiling += received_params[i++];
       i++;
 
       while(received_params[i] != NC_DELIMITER)
@@ -558,6 +561,7 @@ void get_params_core()
       eeprom_update_byte(&E_MAX_NUM_SUBSYSTEM_BOOT_ATTEMPTS, (uint8_t)max_num_subsystem_boot_attempts.toInt());
       eeprom_update_byte(&E_MAX_NUM_PRIMARY_BOOT_ATTEMPTS, (uint8_t)max_num_primary_boot_attempts.toInt());
       eeprom_update_word(&E_DEVICE_REBOOT_PERIOD, (uint16_t)device_reboot_period.toInt());
+      eeprom_update_byte(&E_PRESENT_SWITCH, (uint8_t)present_switch.toInt());
       eeprom_update_word(&E_BOOT_TIME_NC, (uint16_t)NC_boot_time.toInt());
       eeprom_update_byte(&E_BOOT_TIME_SWITCH, (uint8_t)switch_boot_time.toInt());
       eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_NC, (uint8_t)heartbeat_timeout_NC.toInt());
@@ -569,7 +573,6 @@ void get_params_core()
       eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_SYSMON, (uint8_t)bad_current_timeout_SysMon.toInt());
       eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_NC, (uint8_t)bad_current_timeout_NC.toInt());
       eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_SWITCH, (uint8_t)bad_current_timeout_switch.toInt());
-      eeprom_update_word(&E_AMP_NOISE_CEILING, (uint16_t)current_noise_ceiling.toInt());
       eeprom_update_word(&E_TEMP_MIN_SYSMON, (uint16_t)min_temp_SysMon.toInt());
       eeprom_update_word(&E_TEMP_MAX_SYSMON, (uint16_t)max_temp_SysMon.toInt());
       eeprom_update_word(&E_TEMP_MIN_NC, (uint16_t)min_temp_NC.toInt());
@@ -1061,7 +1064,8 @@ void set_default_eeprom()
    eeprom_update_byte(&E_MAX_NUM_SUBSYSTEM_BOOT_ATTEMPTS, 3);
    eeprom_update_byte(&E_MAX_NUM_PRIMARY_BOOT_ATTEMPTS, 3);
    eeprom_update_word(&E_DEVICE_REBOOT_PERIOD, 15);
-   eeprom_update_word(&E_BOOT_TIME_NC, 5);
+   eeprom_update_byte(&E_PRESENT_SWITCH, 1);
+   eeprom_update_word(&E_BOOT_TIME_NC, 30);
    eeprom_update_byte(&E_BOOT_TIME_SWITCH, 5);
    eeprom_update_word(&E_BOOT_TIME_GN1, 10);
    eeprom_update_word(&E_BOOT_TIME_GN2, 10);
@@ -1081,7 +1085,6 @@ void set_default_eeprom()
    eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_GN1, 5);
    eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_GN2, 5);
    eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_GN3, 5);
-   eeprom_update_word(&E_AMP_NOISE_CEILING, 31);
    eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_SYSMON, 5);
    eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_NC, 5);
    eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_SWITCH, 5);
