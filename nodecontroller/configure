@@ -5,6 +5,7 @@
 dpkg -i nc-wag-os/packages_o/*.deb
 cd nc-wag-os/packages_o/
 pip install -e pika-0.9.14
+pip install pyserial
 
 #Sets the odroid's hostname to NodeController so GuestNodes can easily find it
 echo NodeController > /etc/hostname 
@@ -17,6 +18,7 @@ echo "$host_name" > /etc/waggle/hostname # The node's waggle hostname
 echo "$host_name, \n" > /etc/waggle/devices
 echo "1,2,3,4, \n" >> /etc/waggle/devices
 echo "$host_name:5, \n" >> /etc/waggle/devices
+echo " " >> /etc/waggle/NCIP
 
 #make directory to store data cache log files and stored messages
 mkdir /var/dc
@@ -32,7 +34,6 @@ mkdir /var/comms
 # Get the IP for the server you want to connect to
 read -p "Enter the IP address of the cloud server you want to use: " server_ip
 echo $server_ip > /etc/waggle/server_ip
-cd
 
 #set processes to start at boot
 
@@ -57,7 +58,9 @@ chmod +x /etc/init.d/start_sensor.sh
 update-rc.d start_sensor.sh defaults 
 
 #set up SysMon stuff
-
+#find and set IP address if possible
+cd ~/waggle/nodecontroller/nc-wag-os/waggled
+python NC_scanner.py
 echo "Odroid is now going reboot."
 reboot
 
