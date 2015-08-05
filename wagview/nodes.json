@@ -35,7 +35,7 @@
 	 "Banner":"UChicago.png",
 	 "InstalledDate":"July 24, 2015",
 	 "Status":"Active",
-	 "Data":"http://outworld.mcs.anl.gov/waggle-data/ucaot03data/",
+	 "Data":"http://outworld.mcs.anl.gov/waggle-data/ucaot03/data/",
 	 "IPAddress":"205.208.116.230"
 	},
 	{
@@ -48,7 +48,7 @@
 	 "Banner":"UChicago.png",
 	 "InstalledDate":"July 24, 2015",
 	 "Status":"Active",
-	 "Data":"data/",
+	 "Data":"http://outworld.mcs.anl.gov/waggle-data/ucaot04/data/",
 	 "IPAddress":"128.135.196.208"
 	},
 	{
@@ -74,7 +74,7 @@
 	 "Banner":"UChicago.png",
 	 "InstalledDate":"July 24, 2015",
 	 "Status":"Active",
-	 "Data":"http://outworld.mcs.anl.gov/waggle-data/ucaot06data/",
+	 "Data":"http://outworld.mcs.anl.gov/waggle-data/ucaot06/data/",
 	 "IPAddress":"205.208.112.202"
 	},
 	{
@@ -100,7 +100,7 @@
 	 "Banner":"DePaul.png",
 	 "InstalledDate":"January 20, 2015",
 	 "Status":"Active",
-	 "Data":"http://outworld.mcs.anl.gov/waggle-data/wxsenetDePaul01/data/",
+	 "Data":"http://outworld.mcs.anl.gov/waggle-data/wxsenetdepaul01/data/",
 	 "IPAddress":"140.192.102.221"
 	},
 	{
@@ -113,7 +113,7 @@
 	 "Banner":"banner.png",
 	 "InstalledDate":"",
 	 "Status":"Inactive",
-	 "Data":"http://outworld.mcs.anl.gov/waggle-data/wxsenetANL01/data/",
+	 "Data":"http://outworld.mcs.anl.gov/waggle-data/wxsenetanl01/data/",
 	 "IPAddress":"0.0.0.0"
 	},
 	{
@@ -126,7 +126,7 @@
 	 "Banner":"banner.png",
 	 "InstalledDate":"",
 	 "Status":"Inactive",
-	 "Data":"http://outworld.mcs.anl.gov/waggle-data/wxsenetANL02/data/",
+	 "Data":"http://outworld.mcs.anl.gov/waggle-data/wxsenetanl02/data/",
 	 "IPAddress":"0.0.0.0"
 	}
 ]
