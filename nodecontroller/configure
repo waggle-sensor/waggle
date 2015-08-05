@@ -26,6 +26,9 @@ mkdir /var/dc/outgoing_msgs
 #each external guest node that registers with the nodecontroller will have a separate folder
 mkdir /var/dc/incoming_msgs
 
+#make directory to store comms log files
+mkdir /var/comms
+
 # Get the IP for the server you want to connect to
 read -p "Enter the IP address of the cloud server you want to use: " server_ip
 echo $server_ip > /etc/waggle/server_ip
