@@ -1,26 +1,27 @@
-ARD_HOME = /devtools/arduino/compilers/arduino-1.6.5-linux/arduino_64
+ARD_HOME = /home/rajesh/GIT/github/waggle//devtools/arduino/compilers/arduino-1.6.5-linux/arduino_64
 TARGET = sensorcode
 PACKAGE = arduino
-ARCH = avr
-BOARD = mega
-TYPE = atmega2560
+ARCH = sam
+BOARD = arduino_due_x
+TYPE = 
 FLASHER_BAUD_RATE = 115200
 PORT = /dev/ttyACM0
-BOARD_FLASH = $(PACKAGE):$(ARCH):$(BOARD):cpu=$(TYPE)
+BOARD_FLASH = $(PACKAGE):$(ARCH):$(BOARD)
 BOOT_LOADER_TYPE = wiring
 PRE_FLASH_COMMAND = #
+FLASHER = $(ARD_HOME)/tools/bossac/1.3a-arduino/bossac
+FLASH_BOARD = $(FLASHER) -i -d --port=$(PORT) -U true -e -w -v -b $(BIN_DIR)/$(TARGET).cpp.bin -R
+BUILD_COMPLETE = mv $(BUILD_DIR)/$(TARGET).cpp.bin $(BIN_DIR)
 CC = $(ARD_HOME)/arduino
 BUILD_DIR = ./build
 BIN_DIR = ./bin
 CFLAGS  = --verbose-build --verify
-FLASHER = $(ARD_HOME)/hardware/tools/avr/bin/avrdude
-FLASHER_CONFIGS = $(ARD_HOME)/hardware/tools/avr/etc/avrdude.conf
 
 all: $(TARGET)
 
 $(TARGET): $(TARGET).ino
 	$(CC) --board $(BOARD_FLASH) $(CFLAGS) --pref build.path=$(BUILD_DIR) $(TARGET).ino
-	mv $(BUILD_DIR)/$(TARGET).cpp.hex $(BIN_DIR)
+	$(BUILD_COMPLETE)
 	rm -rf $(BUILD_DIR)/*
 clean:
 	rm -rf $(BIN_DIR)/*
@@ -28,4 +29,4 @@ clean:
 
 install:
 	$(PRE_FLASH_COMMAND)
-	$(FLASHER) -C$(FLASHER_CONFIGS) -v -p$(TYPE) -c$(BOOT_LOADER_TYPE) -P$(PORT) -b$(FLASHER_BAUD_RATE) -D -Uflash:w:$(BIN_DIR)/$(TARGET).cpp.hex:i
+	$(FLASH_BOARD)

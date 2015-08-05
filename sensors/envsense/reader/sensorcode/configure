@@ -63,6 +63,11 @@ then
     echo "BOARD_FLASH = \$(PACKAGE):\$(ARCH):\$(BOARD):cpu=\$(TYPE)" >> makefile
     echo "BOOT_LOADER_TYPE = wiring" >>  makefile
     echo "PRE_FLASH_COMMAND = #"  >> makefile
+    echo "FLASHER = \$(ARD_HOME)/hardware/tools/avr/bin/avrdude" >> makefile
+    echo "FLASHER_CONFIGS = \$(ARD_HOME)/hardware/tools/avr/etc/avrdude.conf" >> makefile
+    echo "FLASH_BOARD = \$(FLASHER) -C\$(FLASHER_CONFIGS) -v -p\$(TYPE) -c\$(BOOT_LOADER_TYPE) -P\$(PORT) -b\$(FLASHER_BAUD_RATE) -D -Uflash:w:\$(BIN_DIR)/\$(TARGET).cpp.hex:i" >> makefile
+    echo "BUILD_COMPLETE = mv \$(BUILD_DIR)/\$(TARGET).cpp.hex \$(BIN_DIR)" >> makefile
+
 
 elif [ "${BOARD_NAME##*=}" == "sysmonV1" ]
 then
@@ -75,6 +80,25 @@ then
     echo "BOARD_FLASH = \$(PACKAGE):\$(ARCH):\$(BOARD)" >> makefile
     echo "BOOT_LOADER_TYPE = avr109" >>  makefile
     echo "PRE_FLASH_COMMAND = stty -F \$(PORT) 1200 hupcl; sleep 2"  >> makefile
+    echo "FLASHER = \$(ARD_HOME)/hardware/tools/avr/bin/avrdude" >> makefile
+    echo "FLASHER_CONFIGS = \$(ARD_HOME)/hardware/tools/avr/etc/avrdude.conf" >> makefile
+    echo "FLASH_BOARD = \$(FLASHER) -C\$(FLASHER_CONFIGS) -v -p\$(TYPE) -c\$(BOOT_LOADER_TYPE) -P\$(PORT) -b\$(FLASHER_BAUD_RATE) -D -Uflash:w:\$(BIN_DIR)/\$(TARGET).cpp.hex:i" >> makefile
+    echo "BUILD_COMPLETE = mv \$(BUILD_DIR)/\$(TARGET).cpp.hex \$(BIN_DIR)" >> makefile
+
+elif [ "${BOARD_NAME##*=}" == "envsenseV2_NAT" ]
+then
+    echo "PACKAGE = arduino" >> makefile
+    echo "ARCH = sam" >> makefile
+    echo "BOARD = arduino_due_x" >> makefile
+    echo "TYPE = " >> makefile
+    echo "FLASHER_BAUD_RATE = 115200" >> makefile
+    echo "PORT = ${PORT_NAME##*=}" >> makefile
+    echo "BOARD_FLASH = \$(PACKAGE):\$(ARCH):\$(BOARD)" >> makefile
+    echo "BOOT_LOADER_TYPE = wiring" >>  makefile
+    echo "PRE_FLASH_COMMAND = #"  >> makefile
+    echo "FLASHER = \$(ARD_HOME)/tools/bossac/1.3a-arduino/bossac" >> makefile
+    echo "FLASH_BOARD = \$(FLASHER) -i -d --port=\$(PORT) -U true -e -w -v -b \$(BIN_DIR)/\$(TARGET).cpp.bin -R" >> makefile
+    echo "BUILD_COMPLETE = mv \$(BUILD_DIR)/\$(TARGET).cpp.bin \$(BIN_DIR)" >> makefile
 
 elif [ "${BOARD_NAME##*=}" == "envsenseV2_NAT" ]
 then

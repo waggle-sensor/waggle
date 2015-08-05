@@ -1,8 +1,0 @@
-language: haskell
-install:
-  - wget http://deadfoxygrandpa.github.io/elm-travis-cache/elm-test-install.sh
-  - bash elm-test-install.sh
-before_script: 
-  - ./elm-make --yes --output raw-test.js Tests/Tests.elm
-  - bash elm-io.sh raw-test.js test.js
-script: node test.js

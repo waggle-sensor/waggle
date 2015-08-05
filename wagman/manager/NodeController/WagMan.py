@@ -2,6 +2,11 @@ import collections
 import time
 import datetime
 
+### I M P O R T A N T ###
+# SysMon's timer actually counts every 1.0486 seconds, so any timeouts
+# specified here will actually be multiplied by 1.0486.
+# However, only integer values may be specified.  Floats are truncated.
+
 ########################################################################
 #           Edit CORE (SysMon, NC, network switch) parameters here.
 #           Do not change the order or number of items.
@@ -18,19 +23,31 @@ params_core['baud rate'] = 57600
 params_core['SysMon RX buffer size (characters)'] = 150
 
 # Min: 1, max: 255
-params_core['status report period'] = 10
+params_core['status report period'] = 3
 
+# SOS boot attempt occurs after a POST failure
 # Min: 1, max: 255
 params_core['max num of SOS boot attempts'] = 3
 
-# How many times NC and GNs should try to boot
+# How many times NC and GNs should try to boot if heartbeat is not detected
 # Min: 1, max: 255
 params_core['max num of subsystem boot attempts'] = 4
 
-# Min: 1, max: 65535
-params_core['boot time for NC (seconds)'] = 12
+# How many times SysMon should try the primary boot sequence if a failure occurs
 # Min: 1, max: 255
-params_core['boot time for ethernet switch (seconds)'] = 12
+params_core['max num of primary boot attempts'] = 3
+
+# Non-running devices were shut off due to bad temperature, power, or heartbeat
+# Min: 1, max: 65535
+params_core['time to wait before rebooting non-running devices (seconds)'] = 20
+
+# Present: 1, not present: 0
+params_core['present (ethernet switch)'] = 1
+
+# Min: 1, max: 65535
+params_core['boot time for NC (seconds)'] = 30
+# Min: 1, max: 255
+params_core['boot time for ethernet switch (seconds)'] = 3
 
 # Min: 1, max: 255
 params_core['heartbeat timeout (NC) (seconds)'] = 5
@@ -39,6 +56,7 @@ params_core['heartbeat timeout (switch) (seconds)'] = 3
 # Min: 1, max: 255
 params_core['bad environment timeout (SysMon) (seconds)'] = 10
 params_core['bad environment timeout (NC) (seconds)'] = 15
+params_core['bad temperature (processor) timeout (NC) (seconds)'] = 6
 params_core['bad temperature timeout (switch) (seconds)'] = 15
 
 # Min: 1, max: 255
@@ -46,25 +64,26 @@ params_core['bad current timeout (SysMon) (seconds)'] = 6
 params_core['bad current timeout (NC) (seconds)'] = 6
 params_core['bad current timeout (switch) (seconds)'] = 6
 
-# Min: 15, max: 8000
-params_core['noise ceiling for current sensors (mA)'] = 15
-
 # Min: -40, max: 125
-params_core['temperature min (SysMon) (Celsius)'] = -20
-params_core['temperature max (SysMon) (Celsius)'] = 125
-params_core['temperature min (NC) (Celsius)'] = -20
-params_core['temperature max (NC) (Celsius)'] = 125
+params_core['temperature min of environment (SysMon) (Celsius)'] = -20
+params_core['temperature max of environment (SysMon) (Celsius)'] = 125
+params_core['temperature min of environment (NC) (Celsius)'] = -20
+params_core['temperature max of environment (NC) (Celsius)'] = 125
 # Min: -55, max: 80
+params_core['temperature min of processor (NC) (Celsius)'] = -30
+params_core['temperature max of processor (NC) (Celsius)'] = 80
 params_core['temperature min (switch) (Celsius)'] = -20
 params_core['temperature max (switch) (Celsius)'] = 80
 
 # Min: 0, max: 100
 params_core['relative humidity min (SysMon) (%)'] = 0
 params_core['relative humidity max (SysMon) (%)'] = 100
+params_core['relative humidity min (NC) (%)'] = 0
+params_core['relative humidity max (NC) (%)'] = 100
 
 # Min: 1, max: 8000
-params_core['maximum current draw (SysMon) (mA)'] = 500
-params_core['maximum current draw (NC) (mA)'] = 4000
+params_core['maximum current draw (SysMon) (mA)'] = 4000
+params_core['maximum current draw (NC) (mA)'] = 3000
 params_core['maximum current draw (switch) (mA)'] = 1500
 ########################################################################
 
@@ -82,30 +101,30 @@ params_GuestNodes['present (GN 2)'] = 0
 params_GuestNodes['present (GN 3)'] = 0
 
 # Min: 1, max: 65535
-params_GuestNodes['boot time (GN 1)'] = 12
+params_GuestNodes['boot time (GN 1)'] = 3
 params_GuestNodes['boot time (GN 2)'] = 12
 params_GuestNodes['boot time (GN 3)'] = 12
 
-# Min: 1, max: 255
 # If a guest node is not present, its value will be ignored
+# Min: 1, max: 255
 params_GuestNodes['heartbeat timeout (GN 1) (seconds)'] = 10
 params_GuestNodes['heartbeat timeout (GN 2) (seconds)'] = 10
 params_GuestNodes['heartbeat timeout (GN 3) (seconds)'] = 10
 
-# Min: 1, max: 255
 # If a guest node is not present, its value will be ignored
+# Min: 1, max: 255
 params_GuestNodes['bad temperature timeout (GN 1) (seconds)'] = 15
 params_GuestNodes['bad temperature timeout (GN 2) (seconds)'] = 15
 params_GuestNodes['bad temperature timeout (GN 3) (seconds)'] = 15
 
-# Min: 1, max: 255
 # If a guest node is not present, its value will be ignored
+# Min: 1, max: 255
 params_GuestNodes['bad current timeout (GN 1) (seconds)'] = 5
 params_GuestNodes['bad current timeout (GN 2) (seconds)'] = 5
 params_GuestNodes['bad current timeout (GN 3) (seconds)'] = 5
 
-# Min: -55, max: 80
 # If a guest node is not present, its value will be ignored
+# Min: -55, max: 80
 params_GuestNodes['temperature min (GN 1) (Celsius)'] = -20
 params_GuestNodes['temperature max (GN 1) (Celsius)'] = 80
 params_GuestNodes['temperature min (GN 2) (Celsius)'] = -20
@@ -113,11 +132,11 @@ params_GuestNodes['temperature max (GN 2) (Celsius)'] = 80
 params_GuestNodes['temperature min (GN 3) (Celsius)'] = -20
 params_GuestNodes['temperature max (GN 3) (Celsius)'] = 80
 
-# Min: 1, max: 8000
 # If a guest node is not present, its value will be ignored
-params_GuestNodes['maximum current draw (GN 1) (mA)'] = 4000
-params_GuestNodes['maximum current draw (GN 2) (mA)'] = 4000
-params_GuestNodes['maximum current draw (GN 3) (mA)'] = 4000
+# Min: 1, max: 8000
+params_GuestNodes['maximum current draw (GN 1) (mA)'] = 2500
+params_GuestNodes['maximum current draw (GN 2) (mA)'] = 2500
+params_GuestNodes['maximum current draw (GN 3) (mA)'] = 2500
 ########################################################################
 
 ########################################################################
@@ -319,6 +338,10 @@ ser_SysMon = serial.Serial('/dev/arduinoMicro', params_core['baud rate'], timeou
 ########################################################################
 
 # Convert user-specified temperatures into ADC values for SysMon
+params_core['temperature min of processor (NC) (Celsius)'] = \
+    convert_tempToADC(params_core['temperature min of processor (NC) (Celsius)'])
+params_core['temperature max of processor (NC) (Celsius)'] = \
+    convert_tempToADC(params_core['temperature max of processor (NC) (Celsius)'])
 params_core['temperature min (switch) (Celsius)'] = \
     convert_tempToADC(params_core['temperature min (switch) (Celsius)'])
 params_core['temperature max (switch) (Celsius)'] = \

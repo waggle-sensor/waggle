@@ -14,4 +14,4 @@ from send import send
 packet = packetmaker.make_ping_packet()
 print 'Ping packet made...' 
 for pack in packet:
-        send(pack)
+    send(pack)

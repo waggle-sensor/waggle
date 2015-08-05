@@ -1,5 +1,4 @@
 import sys
-from send import send
 sys.path.append('../../../../devtools/protocol_common/')
 from utilities.packetmaker import *
 
@@ -26,20 +25,8 @@ with open('/etc/waggle/queuename','r') as file_:
 with open('/etc/waggle/NCIP','r') as file_:
     NCIP = file_.read().strip()
     
-##Maps the device ID to the queue location in DC 
-#with open('/etc/waggle/devices', 'r') as file_:
-    #lines = file_.readlines()
-
-##the third line in the devices file contains a mapping of devices to their priority
-##that is used to contruct the dictionary
-#mapping = []
-#while True:
-    #if not lines[2].find(',') == -1:
-        #device, lines[2] = lines[2].split(',', 1)
-        #device, priority = device.split(':',1)
-        #mapping.append((device,int(priority)))
-    #else:
-        #break
+with open('/etc/waggle/server_ip','r') as file_:
+    CLOUD_IP = file_.read().strip()
     
 def create_dev_dict():
     #Maps the device ID to the queue location in DC 
@@ -73,12 +60,13 @@ PRIORITY_ORDER = [5,4,3,2,1]
 #This specifies the maximum RAM available to the data cache
 #Here, we assume that each message stored is no larger than 1K
 AVAILABLE_MEM = 576482
-
+#AVAILABLE_MEM = 2
 
 #The params used to connect to the cloud are stored here
-CLOUD_ADDR = 'amqps://waggle:waggle@10.10.10.109:5671/%2F'
+#CLOUD_ADDR = 'amqps://waggle:waggle@10.10.10.134:5671/%2F'
+CLOUD_ADDR = 'amqps://waggle:waggle@' + CLOUD_IP + ':5671/%2F'
 
-def send_config():
+def get_config():
     """ 
     This function sends all of the stored information to the cloud.
     
@@ -92,9 +80,7 @@ def send_config():
     config = config + 'Available memory for data cache: ' + str(AVAILABLE_MEM) + '\n'
     config = config + 'Cloud IP address and parameters: ' + CLOUD_ADDR + '\n'
 
-    packet = make_config_reg(config)
-    for pack in packet:
-        send(pack)
+    return config
     
     
     

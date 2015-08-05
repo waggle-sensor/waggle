@@ -8,7 +8,7 @@ import pika
 from protocol.PacketHandler import *
 import logging
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.CRITICAL)
-from crcmod.predefined import mkCrcFun 
+from crcmod.predefined import mkCrcFun
 from cassandra.cluster import Cluster
 import time
 
@@ -79,7 +79,7 @@ class RegProcess(Process):
                 response = packet
             self.channel.basic_publish(exchange='waggle_in',routing_key="in",body=response)
 
-        elif header["msg_mi_type"] == ord('s'): #They want to get an SSL Certificate
+        elif header["msg_mi_type"] == ord('s'): # They want to get an SSL Certificate
             print "Someone wants an SSL cert."
             # Write the request to a file to be used by the CA for signing
             replyQueue = msg.split("\n")[0]
@@ -117,6 +117,9 @@ class RegProcess(Process):
         ch.basic_ack(delivery_tag = method.delivery_tag)
 
     def cassandra_insert(self,header,data):
+    """
+        Insert a list of data into the currently connected Cassandra database.
+    """
         try:
             prepared_statement = self.session.prepare("INSERT INTO node_info" + \
                 " (node_id, timestamp, config_file)" + \
@@ -126,7 +129,11 @@ class RegProcess(Process):
         except Exception as e:
             raise
 
+
     def cassandra_connect(self):
+    """
+        Try to establish a new connection to Cassandra.
+    """
         try:
             self.cluster.shutdown()
         except:

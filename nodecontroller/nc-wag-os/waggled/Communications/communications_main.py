@@ -2,13 +2,16 @@
 
 import os, os.path, pika, logging, datetime, sys
 sys.path.append('../NC/')
+from multiprocessing import Process
 from NC_configuration import *
+from external_communicator import *
+from internal_communicator import *
 
 
-
-time = str(datetime.datetime.now())
-LOG_FILE = 'comms_' + time + '.log'
+cur_time = str(datetime.datetime.now().strftime('%Y%m%d%H:%M:%S'))
+LOG_FILE = '/var/comms/' + cur_time + '.log'
 logging.basicConfig(filename=LOG_FILE)
+
 
 """
 
@@ -19,7 +22,9 @@ logging.basicConfig(filename=LOG_FILE)
 if __name__ == "__main__":
     try:
         #TODO if the pika_push and pika_pull clients can be combined into one process, add an if statement to that process that checks for initial contact with the cloud
-        if not os.path.isfile('/etc/waggle/queuename'):
+        #checks if the queuename has been established yet
+        #The default file is empty. So, if it is empty, make an initial connection to get a unique queuename.
+        if QUEUENAME == ' ':
             #get the connection parameters
             #params = pika.connection.URLParameters("amqps://waggle:waggle@10.10.10.110:5671/%2F") #This will need to change according to where the server is
             params = pika.connection.URLParameters(CLOUD_ADDR)
@@ -34,28 +39,22 @@ if __name__ == "__main__":
             #close the connection
             connection.close()
             
-            #strip 'amq.gen-' from queuename
+            #strip 'amq.gen-' from queuename 
             junk, queuename = queuename.split('-', 1)
             
-            #write the queuename into the configuration file
-            NC_configuration.QUEUENAME = queuename
-            
             #write the queuename to a file
-            file_ = open('/etc/waggle/queuename', 'w') 
-            file_.write(queuename)
-            file_.close()
+            with open('/etc/waggle/queuename', 'w') as file_: 
+                file_.write(queuename)
         
-        from external_communicator import *
-        from internal_communicator import *
         
         #start the external communication processes
         #start the pika pull client
-        pika_pull = pika_pull()
-        pika_pull.start()
+        pull_pika = pika_pull()
+        pull_pika.start()
         
         #start the pika push client 
-        pika_push = pika_push()
-        pika_push.start()
+        push_pika = pika_push()
+        push_pika.start()
         
         #starts the push client
         external_push_client = external_client_push()
@@ -85,19 +84,19 @@ if __name__ == "__main__":
         
         
         while True:
-            if not pika_pull.is_alive():
+            if not pull_pika.is_alive():
                 #print 'Pika pull has crashed. Restarting...'
                 logging.warning('Pika pull has crashed. Restarting...' + str(datetime.datetime.now()))
-                pika_pull = pika_pull()
-                pika_pull.start()
+                pull_pika = pika_pull()
+                pull_pika.start()
                 logging.info('Pika pull restarted.')
                 #print 'Pika pull restarted.'
             
-            if not pika_push.is_alive():
+            if not push_pika.is_alive():
                 #print 'Pika push has crashed. Restarting...'
                 logging.warning('Pika push has crashed. Restarting...' + str(datetime.datetime.now()))
-                pika_push = pika_push()
-                pika_push.start()
+                push_pika = pika_push()
+                push_pika.start()
                 logging.info('Pika push restarted.')
                 #print 'Pika push restarted.'
                 
@@ -153,8 +152,8 @@ if __name__ == "__main__":
             time.sleep(3)
 
         #terminate the external communication processes
-        pika_pull.terminate()
-        pika_push.terminate()
+        pull_pika.terminate()
+        push_pika.terminate()
         external_push_client.terminate()
         external_pull_client.terminate()
         print 'External communications shut down.'
@@ -170,8 +169,8 @@ if __name__ == "__main__":
         
     except KeyboardInterrupt, k:
         #terminate the external communication processes
-        pika_pull.terminate()
-        pika_push.terminate()
+        pull_pika.terminate()
+        push_pika.terminate()
         external_push_client.terminate()
         external_pull_client.terminate()
         print 'External communications shut down.'
@@ -182,4 +181,6 @@ if __name__ == "__main__":
         internal_push_client.terminate()
         internal_pull_client.terminate()
         print 'Internal communications shut down.'
+
         
+       
