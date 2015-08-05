@@ -9,7 +9,7 @@
 # Description:       Enable service provided by daemon.
 ### END INIT INFO
 
-dir="~/"
+dir="/home/odroid"
 cmd="python WagMan.py"
 user=""
 

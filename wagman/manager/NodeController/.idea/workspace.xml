@@ -24,7 +24,7 @@
       <file leaf-file-name="WagMan.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/WagMan.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-8.031898">
+            <state vertical-scroll-proportion="-8.118022">
               <caret line="44" column="44" selection-start-line="44" selection-start-column="44" selection-end-line="44" selection-end-column="44" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
@@ -277,7 +277,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="41" width="1920" height="1159" extended-state="7" />
+    <frame x="0" y="41" width="1920" height="1159" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -480,7 +480,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/WagMan.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-8.031898">
+        <state vertical-scroll-proportion="-8.118022">
           <caret line="44" column="44" selection-start-line="44" selection-start-column="44" selection-end-line="44" selection-end-column="44" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />

@@ -1,6 +1,6 @@
 #!/bin/sh
 ### BEGIN INIT INFO
-# Provides:	     WagMan_start.sh
+# Provides:	     heartbeat_setup_start.sh
 # Required-Start:    $remote_fs $syslog
 # Required-Stop:     $remote_fs $syslog
 # Default-Start:     2 3 4 5
@@ -9,8 +9,8 @@
 # Description:       Enable service provided by daemon.
 ### END INIT INFO
 
-dir="~/"
-cmd="python WagMan.py"
+dir="/home/odroid"
+cmd="./heartbeat_setup.sh"
 user=""
 
 name=`basename $0`
