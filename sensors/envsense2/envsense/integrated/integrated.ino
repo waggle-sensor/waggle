@@ -7,7 +7,7 @@ unsigned char parameter[PARAM_SIZE_INTEL];
 unsigned char cnt = 0;
 boolean ready = false;
 unsigned char INTEL_MAC[6] ={0,0,0,0,0,0};
-double param_value;
+float param_value;
 
 void setup()
 {
