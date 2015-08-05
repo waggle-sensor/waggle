@@ -18,24 +18,43 @@ echo "$host_name, \n" > /etc/waggle/devices
 echo "1,2,3,4, \n" >> /etc/waggle/devices
 echo "$host_name:5, \n" >> /etc/waggle/devices
 
+#make directory to store data cache log files and stored messages
+mkdir /var/dc
+#store outoing messages here
+mkdir /var/dc/outgoing_msgs
+#store incoming messages here
+#each external guest node that registers with the nodecontroller will have a separate folder
+mkdir /var/dc/incoming_msgs
+
 # Get the IP for the server you want to connect to
 read -p "Enter the IP address of the cloud server you want to use: " server_ip
 echo $server_ip > /etc/waggle/server_ip
 cd
 
-#move the data_cache.sh and communications.sh into the init.d folder
+#set processes to start at boot
+
+#move communications.sh into the init.d folder and update
+#starts communication processes
 cd waggle/nodecontroller/nc-wag-os/waggled
 mv communications.sh /etc/init.d
 chmod +x /etc/init.d/communications.sh 
 update-rc.d communications.sh defaults 
 
+#move data_cache.sh into the init.d folder and update
+#starts data cache process
 mv data_cache.sh /etc/init.d
 chmod +x /etc/init.d/data_cache.sh 
 update-rc.d data_cache.sh defaults 
 
+#comment this out if nodecontroller and guestnode are separate machines
+#move sensor.sh into the init.d folder and update
+#starts sensor script
+mv start_sensor.sh /etc/init.d
+chmod +x /etc/init.d/start_sensor.sh 
+update-rc.d start_sensor.sh defaults 
+
 #set up SysMon stuff
 
-#set up sensor for demo
 echo "Odroid is now going reboot."
 reboot
 

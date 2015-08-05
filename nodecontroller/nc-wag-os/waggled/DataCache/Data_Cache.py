@@ -22,8 +22,6 @@ from glob import glob
 
 
 class Data_Cache(Daemon):
-    
-    
    
    #dummy variables. These buffers are created when the data cache starts.
     incoming_bffr = []
@@ -85,8 +83,12 @@ class Data_Cache(Daemon):
                     if not data:
                         break
                     else:
+                        #'Flush' means that there is an external flush request.
+                        if data == 'Flush':
+                            #flush all stored messages into files
+                            DC_flush(incoming_available_queues, outgoing_available_queues)
                         #Indicates that it is a pull request 
-                        if data[0] == '|': #TODO This could be improved if there is a better way to distinguish between push and pull requests and from incoming and outgoing requests
+                        elif data[0] == '|': #TODO This could be improved if there is a better way to distinguish between push and pull requests and from incoming and outgoing requests
                             data, dest = data.split('|', 1) #splits to get either 'o' for outgoing request or the device location for incoming request
                             if dest != 'o':
                                 msg = incoming_pull(int(dest), incoming_available_queues) #pulls a message from that device's queue
@@ -172,6 +174,33 @@ class Data_Cache(Daemon):
             server_sock.close()
             os.remove('/tmp/Data_Cache_server')
             
+    def stop(self):
+        try:
+            external_flush()
+            #The data cache needs time to flush the messages before stopping the process
+            time.sleep(5)
+            Daemon.stop(self)
+        except Exception as e:
+            print e
+
+def external_flush():
+    """
+        This function is called to force a flush of the data cache from an external source (i.e. before a system reboot). 
+        It connects to the server socket of the data cache to request a flush. 
+    """
+     #connect to DC and send 'Flush'
+    if os.path.exists('/tmp/Data_Cache_server'):
+        client_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        try:
+            client_sock.connect('/tmp/Data_Cache_server')
+            client_sock.sendall('Flush')
+            client_sock.close()
+        except Exception as e:
+            print e
+            client_sock.close()
+    else: 
+        print 'Data cache running?'
+            
 
 def outgoing_push(dev, msg_p, msg, outgoing_available_queues, incoming_available_queues): 
     """
@@ -184,11 +213,11 @@ def outgoing_push(dev, msg_p, msg, outgoing_available_queues, incoming_available
         :param int flush: Value indicating if the data cache needs to flush the buffers into files.
         :param list incoming_available_queues: A list of tuples that specify the location of incoming queues that currently have stored messages
     """ 
-    
+    #print 'msg counter: ',Data_Cache.msg_counter
+    #print 'available mem: ', AVAILABLE_MEM
     #if the msg counter is greater than or equal to the available memory, flush the outgoing queues into a file
     if Data_Cache.msg_counter>= AVAILABLE_MEM:
-        #print 'msg counter: ',Data_Cache.msg_counter
-        #print 'available mem: ', AVAILABLE_MEM
+        
         #Calls the data cache flush method and passes in the neccessary params
         DC_flush(incoming_available_queues, outgoing_available_queues) #Flushes all messages into a file
         Data_Cache.msg_counter = 0 #resets the message counter after all buffers have been saved to a file
@@ -218,7 +247,8 @@ def incoming_push(device, msg_p, msg, incoming_available_queues, outgoing_availa
         :param int flush: Value indicating if the data cache needs to flush the buffers into files.
         :param list incoming_available_queues: A list of tuples that specify the location of incoming queues that currently have stored messages
     """ 
-    
+    #print 'msg counter: ',Data_Cache.msg_counter
+    #print 'available mem: ', AVAILABLE_MEM
     #if the msg counter is greater than or equal to the available memory, flush the buffers into files
     if Data_Cache.msg_counter >= AVAILABLE_MEM: 
         #Calls the data cache flush method
@@ -260,13 +290,13 @@ def outgoing_pull(outgoing_available_queues):
         #if so, those need to be sent to the cloud first without needing to load all messages from the file and taking up too much RAM
         #so, send the messages one by one using a file generator object.
         #when all messages have been read from file and sent to cloud, close and delete that file from the directory.
-        if len(glob('outgoing_stored/*')) > 0 and Data_Cache.flush == 0: #prevents the flush from pulling messages from files
+        if len(glob('/var/dc/outgoing_msgs/*')) > 0 and Data_Cache.flush == 0: #prevents the flush from pulling messages from files
             #print 'Len(glob) outgoing_stored/* is greater than 0'
             #is there a file generator object already stored as the current file?
             if Data_Cache.outgoing_cur_file == '':
                 #print 'cur_file is empty string.'
                 #set the first file in the outgoing_stored directory as the current file generator object
-                Data_Cache.outgoing_cur_file = open(glob('outgoing_stored/*')[0]) 
+                Data_Cache.outgoing_cur_file = open(glob('/var/dc/outgoing_msgs/*')[0]) 
                 #print 'opened file'
                 try: 
                     #print 'trying to read from file'
@@ -328,12 +358,12 @@ def incoming_pull(dev, incoming_available_queues):
         #if so, those need to be sent first without needing to load all messages from the file and taking up too much RAM
         #so, send the messages one by one using a file generator object.
         #when all messages have been read from file and sent to device, close and delete that file from the directory.
-        if len(glob('incoming_stored/' + str(dev) + '/*')) > 0 and Data_Cache.flush == 0: #only pulls messages from file if DC is not flushing
+        if len(glob('/var/dc/incoming_msgs/' + str(dev) + '/*')) > 0 and Data_Cache.flush == 0: #only pulls messages from file if DC is not flushing
             #print 'Len(glob) incoming_stored/' + str(dev) + '/* is greater than 0'
             #is there a file generator object already stored as the current file?
             if Data_Cache.incoming_cur_file[dev - 1] == '':
                 #set the first file in the incoming_stored/dev directory as the current file generator object
-                Data_Cache.incoming_cur_file[dev -1] = open(glob('incoming_stored/' + str(dev) + '/*')[0]) 
+                Data_Cache.incoming_cur_file[dev -1] = open(glob('/var/dc/incoming_msgs/' + str(dev) + '/*')[0]) 
                 try: 
                     msg = Data_Cache.incoming_cur_file[dev -1].next().strip() #reads the next message in file, strips the \n
                     return msg
@@ -396,47 +426,50 @@ def DC_flush(incoming_available_queues, outgoing_available_queues):
     #print 'Msg_counter: ' , Data_Cache.msg_counter
     ##print 'Available mem: ', AVAILABLE_MEM
     
-    
-    date = str(datetime.datetime.now().strftime('%Y%m%d%H:%M:%S'))
-    filename = 'outgoing_stored/' + date #file name is date of flush
-    f = open(filename, 'w')
-    print 'Flushing outgoing'
-    while True: #write all outgoing messages to outgoing file
-        #messages are written to file with highest priority at the top
-        msg = outgoing_pull(outgoing_available_queues) #returns false when all queues are empty
-        if msg=='False': #no more messages available. break and close file
-            break
-        else:
-            #write the message to the file
-            f.write(msg + '\n') 
-    f.close()
-    print 'Flushing incoming'
-    for i in PRIORITY_ORDER: #write all incoming messages to file
-        #each device has a separate folder. This prevents needing to loop through all messages or all files to find messages for only the connected devices.
-        pathname = 'incoming_stored/' + str(i) + '/' #set the path
-        #print 'pathname: ', pathname
-        if not os.path.exists(pathname): #make sure the directory exists
-            os.makedirs(pathname)
-        filename = pathname + date #set the file name to the date and time of flush
-        #print 'filename is: ', filename
+    try:
+        cur_date = str(datetime.datetime.now().strftime('%Y%m%d%H:%M:%S'))
+        filename = '/var/dc/outgoing_msgs/' + cur_date #file name is date of flush
         f = open(filename, 'w')
-        while True:
-            #for each device, messages are stored with highest priority on the top of the file
-            msg = incoming_pull(i, incoming_available_queues)
-            if msg=='False':  #No more messages available. break and close file.
-                f.close()
-                break
-            elif msg =='None': #No messages currently available for device. Close and remove file
-                f.close()
-                if os.path.isfile(f.name):
-                    os.remove(f.name)
+        print 'Flushing outgoing'
+        while True: #write all outgoing messages to outgoing file
+            #messages are written to file with highest priority at the top
+            msg = outgoing_pull(outgoing_available_queues) #returns false when all queues are empty
+            if msg=='False': #no more messages available. break and close file
                 break
             else:
                 #write the message to the file
-                f.write(msg + '\n')
-                
-    Data_Cache.flush = 0 #restart server
-    print 'Data cache restarted'
+                f.write(msg + '\n') 
+        f.close()
+        print 'Flushing incoming'
+        for i in PRIORITY_ORDER: #write all incoming messages to file
+            #each device has a separate folder. This prevents needing to loop through all messages or all files to find messages for only the connected devices.
+            #TODO Change this to /etc/waggle/dc/outgoing or something
+            pathname = '/var/dc/incoming_msgs/' + str(i) + '/' #set the path
+            #print 'pathname: ', pathname
+            if not os.path.exists(pathname): #make sure the directory exists
+                os.makedirs(pathname)
+            filename = pathname + cur_date #set the file name to the date and time of flush
+            #print 'filename is: ', filename
+            f = open(filename, 'w')
+            while True:
+                #for each device, messages are stored with highest priority on the top of the file
+                msg = incoming_pull(i, incoming_available_queues)
+                if msg=='False':  #No more messages available. break and close file.
+                    f.close()
+                    break
+                elif msg =='None': #No messages currently available for device. Close and remove file
+                    f.close()
+                    if os.path.isfile(f.name):
+                        os.remove(f.name)
+                    break
+                else:
+                    #write the message to the file
+                    f.write(msg + '\n')
+                    
+        Data_Cache.flush = 0 #restart server
+        print 'Data cache restarted'
+    except Exception as e:
+        print e
 
 def get_status():
     """
@@ -514,7 +547,7 @@ def get_priority(outgoing_available_queues):
         return (highest_de_p, highest_msg_p)           
 
 if __name__ == "__main__":
-    dc = Data_Cache('/tmp/Data_Cache.pid') #TODO may need to change this
+    dc = Data_Cache('/tmp/Data_Cache.pid',stdout='/var/dc/dc_out.log', stderr='/var/dc/dc_err.log') #TODO may need to change this
     if len(sys.argv) == 2:
         if 'start' == sys.argv[1]:
             print 'starting.'

@@ -60,7 +60,7 @@ PRIORITY_ORDER = [5,4,3,2,1]
 #This specifies the maximum RAM available to the data cache
 #Here, we assume that each message stored is no larger than 1K
 AVAILABLE_MEM = 576482
-
+#AVAILABLE_MEM = 2
 
 #The params used to connect to the cloud are stored here
 #CLOUD_ADDR = 'amqps://waggle:waggle@10.10.10.134:5671/%2F'
