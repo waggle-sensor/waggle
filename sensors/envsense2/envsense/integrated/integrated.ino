@@ -7,6 +7,7 @@ unsigned char parameter[PARAM_SIZE_INTEL];
 unsigned char cnt = 0;
 boolean ready = false;
 unsigned char INTEL_MAC[6] ={0,0,0,0,0,0};
+double param_value;
 
 void setup()
 {
@@ -14,11 +15,34 @@ void setup()
     Serial1.begin(115200);
 }
 
-void loop() {
+void get_value (unsigned char pidx)
+{
+    param_value = 0;
+    for (unsigned char idx = 0; idx < pidx; idx ++)
+    {
+        if (parameter[idx] != 0x2d)
+        {
+            parameter[idx] = parameter[idx] - 48;
+            param_value = (param_value * 10) + parameter[idx];
+        }
+    }
+
+    if (parameter[0] == 0x2d)
+    {
+        param_value = param_value * (-1);
+    }
+    return;
+}
+
+void intel_aquire ()
+{
+
     while (Serial1.available())
     {
         char inByte = Serial1.read();
-        Serial.write(inByte);
+        #ifdef DEBUG_INTEL
+            Serial.write(inByte);
+        #endif
         if (( inByte != '\n') && (cnt < BUFFER_SIZE_INTEL))
         {
             buffer[cnt] = inByte;
@@ -30,6 +54,12 @@ void loop() {
             cnt = cnt + 1;
         }
     }
+    return;
+}
+
+
+void loop() {
+    intel_aquire();
     if (ready == true)
     {
         ready = false;
@@ -50,12 +80,11 @@ void loop() {
             }
         }
 
-        Serial.println(count,DEC);
-        Serial.println(pidx,DEC);
-
         if ((count == 15) && (pidx == 12))
         {
+            #ifdef DEBUG_INTEL
             Serial.println("Received full packet");
+            #endif
             unsigned char count = 0, pidx = 0;
             for (unsigned char index = CR_ENABLE; index < cnt; index ++)
             {
@@ -64,12 +93,12 @@ void loop() {
                     parameter[pidx] = buffer[index];
                     pidx = pidx + 1;
                 }
+
                 else
                 {
-
                     if (count == 0)
                     {
-                        Serial.println("MAC");
+                        //Serial.println("MAC");
                         for (unsigned char idx = 0; idx < pidx; idx ++)
                         {
                             if ((parameter[idx] > 96) && (parameter[idx] < 103))
@@ -87,7 +116,6 @@ void loop() {
                             }
 
                             INTEL_MAC [idx/2] = INTEL_MAC[idx/2] | parameter[idx];
-                            Serial.print(parameter[idx],HEX);
                         }
                         Serial.print("\n");
                         for (unsigned char idx = 0; idx < 6; idx ++)
@@ -99,69 +127,95 @@ void loop() {
 
                     else if (count == 1)
                     {
-                        Serial.println("HDC_Temp");
+                        //Serial.println("HDC_Temp");
+                        get_value(pidx);
+                        Serial.println(param_value);
                     }
                     else if (count == 2)
                     {
-                        Serial.println("HDC_RH");
+                        //Serial.println("HDC_RH");
+                        get_value(pidx);
+                        Serial.println(param_value);
                     }
                     else if (count == 3)
                     {
-                        Serial.println("SHT_Temp");
+                        //Serial.println("SHT_Temp");
+                        get_value(pidx);
+                        Serial.println(param_value);
                     }
                     else if (count == 4)
                     {
-                        Serial.println("SHT_RH");
+                        //Serial.println("SHT_RH");
+                        get_value(pidx);
+                        Serial.println(param_value);
                     }
                     else if (count == 5)
                     {
-                        Serial.println("LPS_Temp");
+                        //Serial.println("LPS_Temp");
+                        get_value(pidx);
+                        Serial.println(param_value);
                     }
                     else if (count == 6)
                     {
-                        Serial.println("UV");
+                        //Serial.println("UV");
+                        get_value(pidx);
+                        Serial.println(param_value);
                     }
                     else if (count == 7)
                     {
-                        Serial.println("Pressure");
+                        //Serial.println("Pressure");
+                        get_value(pidx);
+                        Serial.println(param_value);
                     }
                     else if (count == 8)
                     {
-                        Serial.println("H2S");
+                        //Serial.println("H2S");
+                        get_value(pidx);
+                        Serial.println(param_value);
                     }
                     else if (count == 9)
                     {
-                        Serial.println("O3");
+                        //Serial.println("O3");
+                        get_value(pidx);
+                        Serial.println(param_value);
                     }
                     else if (count == 10)
                     {
-                        Serial.println("NO2");
+                        //Serial.println("NO2");
+                        get_value(pidx);
+                        Serial.println(param_value);
                     }
                     else if (count == 11)
                     {
-                        Serial.println("CO");
+                        //Serial.println("CO");
+                        get_value(pidx);
+                        Serial.println(param_value);
                     }
                     else if (count == 12)
                     {
-                        Serial.println("SO2");
+                        //Serial.println("SO2");
+                        get_value(pidx);
+                        Serial.println(param_value);
                     }
 
                     else if (count == 13)
                     {
-                        Serial.println("TotalOX");
+                        //Serial.println("TotalOX");
+                        get_value(pidx);
+                        Serial.println(param_value);
                     }
                     else if (count == 14)
                     {
-                        Serial.println("TotalRed");
+                        //Serial.println("TotalRed");
+                        get_value(pidx);
+                        Serial.println(param_value);
                     }
-                    else if (count == 15)
-                    {
-                        Serial.println("ETOH");
-                    }
-
                     count = count + 1;
+                    pidx = 0;
                 }
             }
+            get_value(pidx-1);
+            Serial.println(param_value);
         }
 
         cnt = 0;
