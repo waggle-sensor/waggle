@@ -9,7 +9,7 @@
 # Description:       Enable service provided by daemon.
 ### END INIT INFO
 
-dir="waggle/nodecontroller/nc-wag-os/waggled/Data_Cache"
+dir="/root/waggle/nodecontroller/nc-wag-os/waggled/Data_Cache"
 cmd="python Data_Cache.py start"
 user=""
 

@@ -33,6 +33,9 @@ mv data_cache.sh /etc/init.d
 chmod +x /etc/init.d/data_cache.sh 
 update-rc.d data_cache.sh defaults 
 
+#set up SysMon stuff
+
+#set up sensor for demo
 echo "Odroid is now going reboot."
 reboot
 
