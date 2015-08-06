@@ -72,7 +72,7 @@ unsigned char buffer [BUFFER_SIZE_CHEMSENSE];
 unsigned char parameter[PARAM_SIZE_CHEMSENSE];
 unsigned char cnt = 0;
 boolean chemsense_ready = false;
-float param_value;
+long param_value;
 unsigned char attenuate = 0;
 byte valid;
 
