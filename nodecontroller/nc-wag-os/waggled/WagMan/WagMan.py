@@ -52,6 +52,7 @@ params_core['present (ethernet switch)'] = 1
 
 # Min: 1, max: 65535
 params_core['boot time for NC (seconds)'] = 30
+params_core['first-time config time for NC (seconds)'] = 600
 # Min: 1, max: 255
 params_core['boot time for ethernet switch (seconds)'] = 3
 

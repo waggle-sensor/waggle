@@ -164,6 +164,7 @@ uint8_t EEMEM E_MAX_NUM_PRIMARY_BOOT_ATTEMPTS;
 uint16_t EEMEM E_DEVICE_REBOOT_PERIOD;
 uint8_t EEMEM E_PRESENT_SWITCH;
 uint16_t EEMEM E_BOOT_TIME_NC;
+uint16_t EEMEM E_CONFIG_TIME_NC;
 uint8_t EEMEM E_BOOT_TIME_SWITCH;
 uint16_t EEMEM E_BOOT_TIME_GN1;
 uint16_t EEMEM E_BOOT_TIME_GN2;
@@ -299,19 +300,15 @@ void setup()
 
       // Number of boot attempts not yet reached maximum allowed?
       if(num_attempts < eeprom_read_byte(&E_MAX_NUM_PRIMARY_BOOT_ATTEMPTS))
-      {
-        Serial.println(2);
-
         soft_restart();
-      }
       else
       {
         // Clear the counter for number of primary boot attempts.
         // We want to start with a clean slate after reset.
         eeprom_update_byte(&E_NUM_PRIMARY_BOOT_ATTEMPTS, 0);
 
-        Serial.println(3);
-        delay(5);
+        // Give it time to write to EEPROM, just to be sure
+        delay(10);
 
         // We're done trying, so go to sleep
         noInterrupts();
