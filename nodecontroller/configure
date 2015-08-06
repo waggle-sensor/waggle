@@ -39,7 +39,7 @@ echo $server_ip > /etc/waggle/server_ip
 
 #move communications.sh into the init.d folder and update
 #starts communication processes
-cd waggle/nodecontroller/nc-wag-os/waggled
+cd ~/waggle/nodecontroller/nc-wag-os/waggled
 mv communications.sh /etc/init.d
 chmod +x /etc/init.d/communications.sh 
 update-rc.d communications.sh defaults 
