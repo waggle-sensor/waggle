@@ -103,6 +103,11 @@ boolean boot_NC()
    // Enable power to node controller
    digitalWrite(PIN_RELAY_NC, HIGH);
 
+   Serial.setTimeout(600L * 1000L);
+   String x = Serial.readStringUntil(NC_TERMINATOR);
+   if(x != "=")
+      return false;
+
    // Give the node controller time to boot
    delay((long)eeprom_read_word(&E_BOOT_TIME_NC) * 1000L);
 
