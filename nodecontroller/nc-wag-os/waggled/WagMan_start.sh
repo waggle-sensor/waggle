@@ -1,6 +1,6 @@
 #!/bin/sh
 ### BEGIN INIT INFO
-# Provides:	     WagMan_start.sh
+# Provides:	         WagMan_start.sh
 # Required-Start:    $remote_fs $syslog
 # Required-Stop:     $remote_fs $syslog
 # Default-Start:     2 3 4 5
@@ -9,7 +9,7 @@
 # Description:       Enable service provided by daemon.
 ### END INIT INFO
 
-dir="/home/odroid"
+dir="/root/waggle/nodecontroller/nc-wag-os/waggled/WagMan"
 cmd="python WagMan.py"
 user=""
 

@@ -1,9 +1,9 @@
 import serial
 import time
 Link_unavailable = True
-PORT_DEV='/dev/ttyACM1'
+PORT_DEV='/dev/ttyACM0'
 
-sensor_list = ["Board MAC","TMP112","HTU21D","GP2Y1010AU0F","BMP180","PR103J2","TSL250RD","MMA8452Q","SPV1840LR5H-B","TSYS01","HMC5883L","HIH6130","APDS-9006-020","TSL260RD","TSL250RD","MLX75305","ML8511","D6T","MLX90614","TMP421","SPV1840LR5H-B","Total reducing gases","Ethanol (C2H5-OH)","Nitrogen Di-oxide (NO2)","Ozone (03)","Hydrogen Sulphide (H2S)","Total Oxidizing gases","Carbon Monoxide (C0)","Sulfur Dioxide (SO2)","Temperature and Humidity (Sensirion)","Atmospheric Pressure (Bosh)","Intel MAC"]
+sensor_list = ["Board MAC","TMP112","HTU21D","GP2Y1010AU0F","BMP180","PR103J2","TSL250RD","MMA8452Q","SPV1840LR5H-B","TSYS01","HMC5883L","HIH6130","APDS-9006-020","TSL260RD","TSL250RD","MLX75305","ML8511","D6T","MLX90614","TMP421","SPV1840LR5H-B","Total reducing gases","Ethanol (C2H5-OH)","Nitrogen Di-oxide (NO2)","Ozone (03)","Hydrogen Sulphide (H2S)","Total Oxidizing gases","Carbon Monoxide (C0)","Sulfur Dioxide (SO2)","SHT25","LPS25H","Si1145","Intel MAC"]
 
 
 def calc_crc (data_byte,CRC_Value):
@@ -151,43 +151,43 @@ def parse_sensor (sensor_id,sensor_data):
 
     elif sensor_id == '21':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@',
-        print "Data:", format2(sensor_data)
+        print "Data:", format6(sensor_data)
 
     elif sensor_id == '22':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@',
-        print "Data:", format2(sensor_data)
+        print "Data:", format6(sensor_data)
 
     elif sensor_id == '23':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@',
-        print "Data:", format2(sensor_data)
+        print "Data:", format6(sensor_data)
 
     elif sensor_id == '24':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@',
-        print "Data:", format2(sensor_data)
+        print "Data:", format6(sensor_data)
 
     elif sensor_id == '25':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@',
-        print "Data:", format2(sensor_data)
+        print "Data:", format6(sensor_data)
 
     elif sensor_id == '26':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@',
-        print "Data:", format2(sensor_data)
+        print "Data:", format6(sensor_data)
 
     elif sensor_id == '27':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@',
-        print "Data:", format2(sensor_data)
+        print "Data:", format6(sensor_data)
 
     elif sensor_id == '28':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@',
-        print "Data:", format2(sensor_data)
+        print "Data:", format6(sensor_data)
 
     elif sensor_id == '29':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@',
-        print "Data:", format1(sensor_data[0:2]),format1(sensor_data[2:4])
+        print "Data:", format5(sensor_data[0:2]),format5(sensor_data[2:4])
 
     elif sensor_id == '30':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@',
-        print "Data:", format6(sensor_data)
+        print "Data:", format5(sensor_data[0:1]), format5(sensor_data[2:3])
 
     elif sensor_id == '31':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@',
@@ -195,10 +195,6 @@ def parse_sensor (sensor_id,sensor_data):
         ':'+str(format3(sensor_data[-3]))+':'+str(format3(sensor_data[2]))+ \
         ':'+str(format3(sensor_data[1]))+':'+str(format3(sensor_data[0]))
         print "Data:", data
-
-    elif sensor_id == '255':
-        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@',
-        print "Data:", formatNULL(sensor_data)
 
 
 while Link_unavailable:
@@ -214,7 +210,19 @@ while Link_unavailable:
 
 while 1:
     data = link.readline()
-    data_bytes = data.split(',')[:-1]
+    if (data.find(',')==-1):
+        try:
+            data_bytes = data.split(' ')[:-1]
+        except:
+            pass
+    else:
+        try:
+            data_bytes = data.split(',')[:-1]
+        except:
+            pass
+
+    print data_bytes
+
     try:
         if data_bytes[0x00] == '170':
             protocol = data_bytes[1]

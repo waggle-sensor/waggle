@@ -1,6 +1,13 @@
-import collections
-import time
-import datetime
+import collections, time, datetime, serial, sys
+sys.path.append('../../../../devtools/protocol_common/')
+from utilities import packetmaker
+sys.path.append('../Communications/')
+from internal_communicator import send
+
+"""
+    This is where parameters for SysMon are defined and communication between node controller and SysMon occurs. 
+"""
+
 
 ### I M P O R T A N T ###
 # SysMon's timer actually counts every 1.0486 seconds, so any timeouts
@@ -46,6 +53,7 @@ params_core['present (ethernet switch)'] = 1
 
 # Min: 1, max: 65535
 params_core['boot time for NC (seconds)'] = 30
+params_core['first-time config time for NC (seconds)'] = 600
 # Min: 1, max: 255
 params_core['boot time for ethernet switch (seconds)'] = 3
 
@@ -329,10 +337,18 @@ def convert_tempToADC(temperature):
 
 
 ########################################################################
-import serial
 
-# Establish serial connection to SysMon
-ser_SysMon = serial.Serial('/dev/arduinoMicro', params_core['baud rate'], timeout = 10)
+#Tries to establish connect. Will loop until connection is made.
+#TODO May want to send error report to cloud if this happens?
+while True: 
+    try:
+        # Establish serial connection to SysMon
+        ser_SysMon = serial.Serial('/dev/arduinoMicro', params_core['baud rate'], timeout = 10)
+        #send the signal to SysMon to indicate successful node controller configuration
+        ser_SysMon.write("=!")
+        break
+    except Exception as e:
+        print e
 ########################################################################
 #           DO NOT TOUCH ANYTHING BELOW HERE
 ########################################################################
@@ -362,7 +378,6 @@ params_GuestNodes['temperature max (GN 3) (Celsius)'] = \
 while True:
     # Receive line from SysMon
     incomingNotifier = ser_SysMon.readline().strip()
-
     print incomingNotifier
 
     # Did SysMon request parameters?
@@ -379,12 +394,22 @@ while True:
     elif incomingNotifier == "@":
         # Wait for status report
         incomingStatus = ser_SysMon.readline().strip()
+        #pack status report as waggle message
+        packet = packetmaker.make_data_packet(incomingStatus)
+        #send status report to cloud
+        for _pack in packet:
+            send(_pack)
         print incomingStatus
 
     # Is SysMon about to inform me of a problem?
     elif incomingNotifier == "#":
         # Wait for problem report
         incomingProblem = ser_SysMon.readline().strip()
+        #pack status report as waggle message
+        packet = acketmaker.make_data_packet(incomingProblem)
+        #send status report to cloud
+        for _pack in packet:
+            send(_pack)
         print incomingProblem
 
     # Did SysMon request guest node info?
@@ -408,6 +433,7 @@ while True:
     elif incomingNotifier == "(":
         # Wait for time message
         incomingTime = ser_SysMon.readline().strip()
+
         print incomingTime
 
     # Clear incomingNotifier

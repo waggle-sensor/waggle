@@ -5,6 +5,7 @@
 dpkg -i nc-wag-os/packages_o/*.deb
 cd nc-wag-os/packages_o/
 pip install -e pika-0.9.14
+pip install pyserial
 
 #Sets the odroid's hostname to NodeController so GuestNodes can easily find it
 echo NodeController > /etc/hostname 
@@ -17,6 +18,7 @@ echo "$host_name" > /etc/waggle/hostname # The node's waggle hostname
 echo "$host_name, \n" > /etc/waggle/devices
 echo "1,2,3,4, \n" >> /etc/waggle/devices
 echo "$host_name:5, \n" >> /etc/waggle/devices
+echo " " >> /etc/waggle/NCIP
 
 #make directory to store data cache log files and stored messages
 mkdir /var/dc
@@ -32,13 +34,12 @@ mkdir /var/comms
 # Get the IP for the server you want to connect to
 read -p "Enter the IP address of the cloud server you want to use: " server_ip
 echo $server_ip > /etc/waggle/server_ip
-cd
 
 #set processes to start at boot
 
 #move communications.sh into the init.d folder and update
 #starts communication processes
-cd waggle/nodecontroller/nc-wag-os/waggled
+cd ~/waggle/nodecontroller/nc-wag-os/waggled
 mv communications.sh /etc/init.d
 chmod +x /etc/init.d/communications.sh 
 update-rc.d communications.sh defaults 
@@ -57,7 +58,30 @@ chmod +x /etc/init.d/start_sensor.sh
 update-rc.d start_sensor.sh defaults 
 
 #set up SysMon stuff
+#starts WagMan script at boot
+mv WagMan_start.sh /etc/init.d
+chmod +x /etc/init.d/WagMan_start.sh 
+update-rc.d WagMan_start.sh defaults 
 
-echo "Odroid is now going reboot."
+#starts set-up for heart beat script at boot
+mv heartbeat_setup_start.sh /etc/init.d
+chmod +x /etc/init.d/heartbeat_setup_start.sh 
+update-rc.d heartbeat_setup_start.sh defaults 
+
+#starts node controller heart beat at boot
+mv heartbeat_start.sh /etc/init.d
+chmod +x /etc/init.d/heartbeat_start.sh 
+update-rc.d heartbeat_start.sh defaults 
+
+#creates udev rule to attach SysMon to /dev/arduinoMicro
+mv 99-usb-serial.rules /etc/udev/rules.d
+
+#find and set IP address if possible
+cd ~/waggle/nodecontroller/nc-wag-os/waggled
+python NC_scanner.py
+
+cd WagMan
+chmod +x heartbeat_setup.sh
+echo "Odroid is now going to reboot."
 reboot
 

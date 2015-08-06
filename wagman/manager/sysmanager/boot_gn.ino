@@ -129,16 +129,17 @@ void boot_GN(byte gn)
       }
     }
 
-    // Is the guest node alive (sending a "heartbeat")?
+    // Is the guest node alive (sending a heartbeat)?
     if(!check_heartbeat_odroid(pin_heartbeat))
     {
-      byte boot_attempts = 0;
+      // Start at 1 boot attempt, since we had to boot to get here
+      byte boot_attempts = 1;
       boolean _heartbeat_detected = false;
 
       // Try to get a heartbeat from the GN as many times as allowed
-      while (boot_attempts < eeprom_read_byte(&E_MAX_NUM_SUBSYSTEM_BOOT_ATTEMPTS))
+      while (boot_attempts <= eeprom_read_byte(&E_MAX_NUM_SUBSYSTEM_BOOT_ATTEMPTS))
       {
-        // Is "heartbeat" not detected?
+        // Is heartbeat not detected?
         if(!check_heartbeat_odroid(pin_heartbeat))
         {
           // Power cycle the guest node
@@ -168,27 +169,27 @@ void boot_GN(byte gn)
         return;
       }
     }
-  }
 
-  // Which guest node is being booted?
-  switch (gn) {
-    case 1:
-      // Mark guest node as operational
-      _GN1_running = true;
+    // Which guest node is being booted?
+    switch (gn) {
+      case 1:
+        // Mark guest node as operational
+        _GN1_running = true;
 
-      break;
-    case 2:
-      // Mark guest node as operational
-      _GN2_running = true;
-      
-      break;
-    case 3:
-      // Mark guest node as operational
-      _GN3_running = true;
-      
-      break;
-    // Invalid guest node
-    default:
-      return;
+        break;
+      case 2:
+        // Mark guest node as operational
+        _GN2_running = true;
+        
+        break;
+      case 3:
+        // Mark guest node as operational
+        _GN3_running = true;
+        
+        break;
+      // Invalid guest node
+      default:
+        return;
+    }
   }
 }

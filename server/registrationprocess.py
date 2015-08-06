@@ -117,9 +117,9 @@ class RegProcess(Process):
         ch.basic_ack(delivery_tag = method.delivery_tag)
 
     def cassandra_insert(self,header,data):
-    """
-        Insert a list of data into the currently connected Cassandra database.
-    """
+        """
+            Insert a list of data into the currently connected Cassandra database.
+        """
         try:
             prepared_statement = self.session.prepare("INSERT INTO node_info" + \
                 " (node_id, timestamp, config_file)" + \
@@ -131,9 +131,9 @@ class RegProcess(Process):
 
 
     def cassandra_connect(self):
-    """
-        Try to establish a new connection to Cassandra.
-    """
+        """
+            Try to establish a new connection to Cassandra.
+        """
         try:
             self.cluster.shutdown()
         except:

@@ -3,12 +3,12 @@
 #include <avr/interrupt.h>
 #include <avr/sleep.h>
 #include <avr/power.h>
-#include <avr/wdt.h>
 #include <avr/eeprom.h>
 #include <Wire.h>
 #include <HTU21D.h>
 #include <Time.h>
 #include <MCP79412RTC.h>
+#include <SoftReset.h>
 
 
 
@@ -72,28 +72,29 @@
 #define NC_NOTIFIER_PARAMS_GN '^'
 #define NC_NOTIFIER_TIME_REQUEST '*'
 #define NC_NOTIFIER_TIME_SEND '('
+#define NC_NOTIFIER_CONFIG_DONE "="
 #define NC_DELIMITER ','
 #define NC_TERMINATOR '!'
 
 // Messages to send to node controller
-#define PROBLEM_SYSMON_ENVIRON "SM:e"
-#define PROBLEM_SYSMON_POWER "SM:p"
-#define PROBLEM_NC_TEMP "NC:t"
-#define PROBLEM_NC_ENVIRON "NC:e"
-#define PROBLEM_NC_POWER "NC:p"
-#define PROBLEM_NC_HEARTBEAT "NC:h"
-#define PROBLEM_SWITCH_TEMP "SW:t"
-#define PROBLEM_SWITCH_POWER "SW:p"
-#define PROBLEM_SWITCH_HEARTBEAT "SW:h"
-#define PROBLEM_GN1_TEMP "GN1:t"
-#define PROBLEM_GN1_POWER "GN1:p"
-#define PROBLEM_GN1_HEARTBEAT "GN1:h"
-#define PROBLEM_GN2_TEMP "GN2:t"
-#define PROBLEM_GN2_POWER "GN2:p"
-#define PROBLEM_GN2_HEARTBEAT "GN2:h"
-#define PROBLEM_GN3_TEMP "GN3:t"
-#define PROBLEM_GN3_POWER "GN3:p"
-#define PROBLEM_GN3_HEARTBEAT "GN3:h"
+#define PROBLEM_SYSMON_ENVIRON "SM,e"
+#define PROBLEM_SYSMON_POWER "SM,p"
+#define PROBLEM_NC_TEMP "NC,t"
+#define PROBLEM_NC_ENVIRON "NC,e"
+#define PROBLEM_NC_POWER "NC,p"
+#define PROBLEM_NC_HEARTBEAT "NC,h"
+#define PROBLEM_SWITCH_TEMP "SW,t"
+#define PROBLEM_SWITCH_POWER "SW,p"
+#define PROBLEM_SWITCH_HEARTBEAT "SW,h"
+#define PROBLEM_GN1_TEMP "GN1,t"
+#define PROBLEM_GN1_POWER "GN1,p"
+#define PROBLEM_GN1_HEARTBEAT "GN1,h"
+#define PROBLEM_GN2_TEMP "GN2,t"
+#define PROBLEM_GN2_POWER "GN2,p"
+#define PROBLEM_GN2_HEARTBEAT "GN2,h"
+#define PROBLEM_GN3_TEMP "GN3,t"
+#define PROBLEM_GN3_POWER "GN3,p"
+#define PROBLEM_GN3_HEARTBEAT "GN3,h"
 
 // Messages that might be received from node controller
 #define REQUEST_TIME '1'
@@ -164,6 +165,7 @@ uint8_t EEMEM E_MAX_NUM_PRIMARY_BOOT_ATTEMPTS;
 uint16_t EEMEM E_DEVICE_REBOOT_PERIOD;
 uint8_t EEMEM E_PRESENT_SWITCH;
 uint16_t EEMEM E_BOOT_TIME_NC;
+uint16_t EEMEM E_CONFIG_TIME_NC;
 uint8_t EEMEM E_BOOT_TIME_SWITCH;
 uint16_t EEMEM E_BOOT_TIME_GN1;
 uint16_t EEMEM E_BOOT_TIME_GN2;
@@ -236,6 +238,9 @@ uint8_t EEMEM E_FIRST_BOOT;
 */
 void setup() 
 {
+  // Disable watchdog to avoid a reset loop
+  wdt_disable();
+
   // Is POST enabled?
   #ifdef BOOT_POST
     // Is everything (internal) working correctly?
@@ -251,11 +256,11 @@ void setup()
       }
       else
       {
-        // Grab how many boot attempts have occurred
-        byte num_attempts = eeprom_read_byte(&E_NUM_PRIMARY_BOOT_ATTEMPTS);
+        // Grab how many boot attempts have occurred (+1 for this attempt)
+        byte num_attempts = eeprom_read_byte(&E_NUM_PRIMARY_BOOT_ATTEMPTS) + 1;
 
         // Add failed boot attempt to the counter
-        eeprom_update_byte(&E_NUM_PRIMARY_BOOT_ATTEMPTS, ++num_attempts);
+        eeprom_update_byte(&E_NUM_PRIMARY_BOOT_ATTEMPTS, num_attempts);
 
         // Number of boot attempts not yet reached maximum allowed?
         if(num_attempts <= eeprom_read_byte(&E_MAX_NUM_PRIMARY_BOOT_ATTEMPTS))
@@ -288,26 +293,28 @@ void setup()
     }
     else
     {
-      // Grab how many boot attempts have occurred
-      byte num_attempts = eeprom_read_byte(&E_NUM_PRIMARY_BOOT_ATTEMPTS);
+      // Grab how many boot attempts have occurred (+1 for this attempt)
+      byte num_attempts = eeprom_read_byte(&E_NUM_PRIMARY_BOOT_ATTEMPTS) + 1;
 
       // Add failed boot attempt to the counter
-      eeprom_update_byte(&E_NUM_PRIMARY_BOOT_ATTEMPTS, ++num_attempts);
+      eeprom_update_byte(&E_NUM_PRIMARY_BOOT_ATTEMPTS, num_attempts);
 
       // Number of boot attempts not yet reached maximum allowed?
-      if(num_attempts <= eeprom_read_byte(&E_MAX_NUM_PRIMARY_BOOT_ATTEMPTS))
-      {
-        // Disable watchdog
-        wdt_disable();
-        // Set watchdog for short timeout
-        wdt_enable(WDTO_15MS);
-
-        // Wait
-        while(1);
-      }
+      if(num_attempts < eeprom_read_byte(&E_MAX_NUM_PRIMARY_BOOT_ATTEMPTS))
+        soft_restart();
       else
+      {
+        // Clear the counter for number of primary boot attempts.
+        // We want to start with a clean slate after reset.
+        eeprom_update_byte(&E_NUM_PRIMARY_BOOT_ATTEMPTS, 0);
+
+        // Give it time to write to EEPROM, just to be sure
+        delay(10);
+
         // We're done trying, so go to sleep
-        sleep();
+        noInterrupts();
+        sleep_mode();
+      }
     }
   #endif
 }
@@ -1386,6 +1393,7 @@ void send_problem(String problem)
    Sends a status report of all important info to the node controller.
 
    Message structure:
+   Header,
    RTC time,
    Light level (ADC value),
    Current draw (SysMon),
