@@ -112,7 +112,7 @@ boolean boot_NC()
    // Return serial receive timeout to default (1000 ms)
    Serial.setTimeout(1000L);
    // Did NC fail to notify us that it is configured?
-   if(config_WagMan != "=")
+   if(config_WagMan != NC_NOTIFIER_CONFIG_DONE)
       // Exit with failure
       return false;
 

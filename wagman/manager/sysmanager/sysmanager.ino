@@ -72,28 +72,29 @@
 #define NC_NOTIFIER_PARAMS_GN '^'
 #define NC_NOTIFIER_TIME_REQUEST '*'
 #define NC_NOTIFIER_TIME_SEND '('
+#define NC_NOTIFIER_CONFIG_DONE "="
 #define NC_DELIMITER ','
 #define NC_TERMINATOR '!'
 
 // Messages to send to node controller
-#define PROBLEM_SYSMON_ENVIRON "SM:e"
-#define PROBLEM_SYSMON_POWER "SM:p"
-#define PROBLEM_NC_TEMP "NC:t"
-#define PROBLEM_NC_ENVIRON "NC:e"
-#define PROBLEM_NC_POWER "NC:p"
-#define PROBLEM_NC_HEARTBEAT "NC:h"
-#define PROBLEM_SWITCH_TEMP "SW:t"
-#define PROBLEM_SWITCH_POWER "SW:p"
-#define PROBLEM_SWITCH_HEARTBEAT "SW:h"
-#define PROBLEM_GN1_TEMP "GN1:t"
-#define PROBLEM_GN1_POWER "GN1:p"
-#define PROBLEM_GN1_HEARTBEAT "GN1:h"
-#define PROBLEM_GN2_TEMP "GN2:t"
-#define PROBLEM_GN2_POWER "GN2:p"
-#define PROBLEM_GN2_HEARTBEAT "GN2:h"
-#define PROBLEM_GN3_TEMP "GN3:t"
-#define PROBLEM_GN3_POWER "GN3:p"
-#define PROBLEM_GN3_HEARTBEAT "GN3:h"
+#define PROBLEM_SYSMON_ENVIRON "SM,e"
+#define PROBLEM_SYSMON_POWER "SM,p"
+#define PROBLEM_NC_TEMP "NC,t"
+#define PROBLEM_NC_ENVIRON "NC,e"
+#define PROBLEM_NC_POWER "NC,p"
+#define PROBLEM_NC_HEARTBEAT "NC,h"
+#define PROBLEM_SWITCH_TEMP "SW,t"
+#define PROBLEM_SWITCH_POWER "SW,p"
+#define PROBLEM_SWITCH_HEARTBEAT "SW,h"
+#define PROBLEM_GN1_TEMP "GN1,t"
+#define PROBLEM_GN1_POWER "GN1,p"
+#define PROBLEM_GN1_HEARTBEAT "GN1,h"
+#define PROBLEM_GN2_TEMP "GN2,t"
+#define PROBLEM_GN2_POWER "GN2,p"
+#define PROBLEM_GN2_HEARTBEAT "GN2,h"
+#define PROBLEM_GN3_TEMP "GN3,t"
+#define PROBLEM_GN3_POWER "GN3,p"
+#define PROBLEM_GN3_HEARTBEAT "GN3,h"
 
 // Messages that might be received from node controller
 #define REQUEST_TIME '1'
@@ -1392,6 +1393,7 @@ void send_problem(String problem)
    Sends a status report of all important info to the node controller.
 
    Message structure:
+   Header,
    RTC time,
    Light level (ADC value),
    Current draw (SysMon),
