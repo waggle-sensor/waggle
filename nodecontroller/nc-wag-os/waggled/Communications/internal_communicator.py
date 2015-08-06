@@ -172,13 +172,12 @@ class push_server(Process):
     
     def run(self):
         comm = internal_communicator()
-        HOST = NCIP #This should set the IP address as itself
+        HOST = 'localhost' 
         PORT = 9090
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.bind((HOST,PORT))
         server.listen(5) #supports up to 5 threads, one for each GN
         print 'Internal push server process started...'
-        logging.info('Internal push server process started...')
 
         while True:
             client_sock, addr = server.accept()
@@ -211,14 +210,12 @@ class pull_server(Process):
     
     def run(self):
         comm = internal_communicator()
-        HOST = NCIP #This should set the IP address as itself
+        HOST = 'localhost' 
         PORT = 9091
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.bind((HOST,PORT))
         server.listen(5) #supports up to 5 threads, one for each GN
         print 'Internal pull server process started...'
-        logging.info('Internal pull server process started...')
-        
         while True:
             client_sock, addr = server.accept()
             while True:

@@ -8,6 +8,7 @@ from internal_communicator import send
     This is where parameters for SysMon are defined and communication between node controller and SysMon occurs. 
 """
 
+
 ### I M P O R T A N T ###
 # SysMon's timer actually counts every 1.0486 seconds, so any timeouts
 # specified here will actually be multiplied by 1.0486.
@@ -377,7 +378,6 @@ params_GuestNodes['temperature max (GN 3) (Celsius)'] = \
 while True:
     # Receive line from SysMon
     incomingNotifier = ser_SysMon.readline().strip()
-
     print incomingNotifier
 
     # Did SysMon request parameters?
@@ -395,7 +395,7 @@ while True:
         # Wait for status report
         incomingStatus = ser_SysMon.readline().strip()
         #pack status report as waggle message
-        packet = make_data_packet(incomingStatus)
+        packet = packetmaker.make_data_packet(incomingStatus)
         #send status report to cloud
         for _pack in packet:
             send(_pack)
@@ -406,7 +406,7 @@ while True:
         # Wait for problem report
         incomingProblem = ser_SysMon.readline().strip()
         #pack status report as waggle message
-        packet = make_data_packet(incomingProblem)
+        packet = acketmaker.make_data_packet(incomingProblem)
         #send status report to cloud
         for _pack in packet:
             send(_pack)
