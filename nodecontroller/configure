@@ -80,8 +80,8 @@ mv 99-usb-serial.rules /etc/udev/rules.d
 cd ~/waggle/nodecontroller/nc-wag-os/waggled
 python NC_scanner.py
 
-cd /WagMan
-chmod +x heartbest_setup.sh
+cd WagMan
+chmod +x heartbeat_setup.sh
 echo "Odroid is now going to reboot."
 reboot
 

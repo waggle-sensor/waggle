@@ -48,19 +48,20 @@
 #define ID_TOTAL_OXIDIZING_GASES  0x1A
 #define ID_CARBON_MONOXIDE  0x1B
 #define ID_SULFUR_DIOXIDE  0x1C
-// #define ID_SENSIRION  0x1D
-// #define ID_BOSH  0x1E
-#define ID_INTEL_MAC  0x1F
-#define ID_SHT25 0x20
-#define ID_LPS25H 0x21
-#define ID_Si1145 0x22
+#define ID_SHT25 0x1D
+#define ID_LPS25H 0x1E
+#define ID_CHEMSENSE_MAC  0x1F
+#define ID_Si1145 0x20
 #define ID_HEALTH  0xFE
 
 /**************************************************************************************/
 
 
 // Main board
-// #define MAC_ID_include 0x01
+#define MAC_ID_include 0x01
+
+
+
 // #define TMP112_include 0x01
 // #define HTU21D_include 0x01
 // #define GP2Y1010AU0F_include 0x01
@@ -84,7 +85,7 @@
 // #define TMP421_include 0x01
 // #define SPV1840LR5HB_2_include 0x01
 
-// Intel board
+// Chemsense board
 #define total_reducing_gases_include 0x01
 #define ethanol_include 0x01
 #define nitrogen_dioxide_include 0x01
@@ -96,9 +97,9 @@
 #define SHT25_include 0x01
 #define LPS25H_include 0x01
 #define Si1145_include 0x01
-#define intel_MAC_ID_include 0x01
-#define system_health_include 0x01
+#define chemsense_MAC_ID_include 0x01
+// #define system_health_include 0x01
 
 
 // #define RANDOMIZE_VALID 0x01
-#define SERIAL_DEBUG 0x01
+// #define SERIAL_DEBUG 0x01
