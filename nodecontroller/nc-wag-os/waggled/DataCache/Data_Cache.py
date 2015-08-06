@@ -176,6 +176,7 @@ class Data_Cache(Daemon):
             
     def stop(self):
         try:
+            print 'Flushing data cache....'
             external_flush()
             #The data cache needs time to flush the messages before stopping the process
             time.sleep(5)

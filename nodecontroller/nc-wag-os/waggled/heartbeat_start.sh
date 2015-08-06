@@ -1,6 +1,6 @@
 #!/bin/sh
 ### BEGIN INIT INFO
-# Provides:          Data Cache
+# Provides:	     heartbeat_start.sh
 # Required-Start:    $remote_fs $syslog
 # Required-Stop:     $remote_fs $syslog
 # Default-Start:     2 3 4 5
@@ -9,9 +9,8 @@
 # Description:       Enable service provided by daemon.
 ### END INIT INFO
 
-dir="/root/waggle/nodecontroller/nc-wag-os/waggled/DataCache"
-cmd_start="python Data_Cache.py start"
-cmd_stop="python Data_Cache.py stop"
+dir="/home/odroid"
+cmd="./heartbeat"
 user=""
 
 name=`basename $0`
@@ -35,9 +34,9 @@ case "$1" in
         echo "Starting $name"
         cd "$dir"
         if [ -z "$user" ]; then
-            sudo $cmd_start >> "$stdout_log" 2>> "$stderr_log" &
+            sudo $cmd >> "$stdout_log" 2>> "$stderr_log" &
         else
-            sudo -u "$user" $cmd_start >> "$stdout_log" 2>> "$stderr_log" &
+            sudo -u "$user" $cmd >> "$stdout_log" 2>> "$stderr_log" &
         fi
         echo $! > "$pid_file"
         if ! is_running; then
@@ -49,8 +48,6 @@ case "$1" in
     stop)
     if is_running; then
         echo -n "Stopping $name.."
-        cd "$dir"
-        sudo $cmd_stop
         kill `get_pid`
         for i in {1..10}
         do
