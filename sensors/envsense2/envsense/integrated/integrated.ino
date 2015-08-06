@@ -451,20 +451,20 @@ void loop() {
                     else if (count == 11)
                     {
                         //Serial.println("CO");
-                        #ifdef hydrogen_sulphide_include
+                        #ifdef carbon_monoxide_include
                         //LPS Pressure Value
                         valid = 1;
                         get_value(pidx);
                         // The raw value is 24 bits - we will make it 22 bits loosing
                         // the 2 LSB bits in the process
                         format6(long(param_value) >> 1);
-                        hydrogen_sulphide[0] = ID_HYDROGEN_SULPHIDE;
-                        hydrogen_sulphide[1] = (valid << 7) | (LENGTH_FORMAT6);
-                        hydrogen_sulphide[2] = packet_format6[0];
-                        hydrogen_sulphide[3] = packet_format6[1];
-                        hydrogen_sulphide[4] = packet_format6[2];
+                        carbon_monoxide[0] = ID_CARBON_MONOXIDE;
+                        carbon_monoxide[1] = (valid << 7) | (LENGTH_FORMAT6);
+                        carbon_monoxide[2] = packet_format6[0];
+                        carbon_monoxide[3] = packet_format6[1];
+                        carbon_monoxide[4] = packet_format6[2];
                         #ifdef SERIAL_DEBUG
-                        Serial.print("H2S: ");
+                        Serial.print("CO: ");
                         Serial.println(long(param_value) >> 1);
                         #endif
                         #endif
@@ -472,20 +472,20 @@ void loop() {
                     else if (count == 12)
                     {
                         //Serial.println("SO2");
-                        #ifdef hydrogen_sulphide_include
+                        #ifdef sulfure_dioxide_include
                         //LPS Pressure Value
                         valid = 1;
                         get_value(pidx);
                         // The raw value is 24 bits - we will make it 22 bits loosing
                         // the 2 LSB bits in the process
                         format6(long(param_value) >> 1);
-                        hydrogen_sulphide[0] = ID_HYDROGEN_SULPHIDE;
-                        hydrogen_sulphide[1] = (valid << 7) | (LENGTH_FORMAT6);
-                        hydrogen_sulphide[2] = packet_format6[0];
-                        hydrogen_sulphide[3] = packet_format6[1];
-                        hydrogen_sulphide[4] = packet_format6[2];
+                        sulfure_dioxide[0] = ID_SULFUR_DIOXIDE;
+                        sulfure_dioxide[1] = (valid << 7) | (LENGTH_FORMAT6);
+                        sulfure_dioxide[2] = packet_format6[0];
+                        sulfure_dioxide[3] = packet_format6[1];
+                        sulfure_dioxide[4] = packet_format6[2];
                         #ifdef SERIAL_DEBUG
-                        Serial.print("H2S: ");
+                        Serial.print("SO2: ");
                         Serial.println(long(param_value) >> 1);
                         #endif
                         #endif
@@ -494,20 +494,20 @@ void loop() {
                     else if (count == 13)
                     {
                         //Serial.println("TotalOX");
-                        #ifdef hydrogen_sulphide_include
+                        #ifdef total_oxidizing_gases_include
                         //LPS Pressure Value
                         valid = 1;
                         get_value(pidx);
                         // The raw value is 24 bits - we will make it 22 bits loosing
                         // the 2 LSB bits in the process
                         format6(long(param_value) >> 1);
-                        hydrogen_sulphide[0] = ID_HYDROGEN_SULPHIDE;
-                        hydrogen_sulphide[1] = (valid << 7) | (LENGTH_FORMAT6);
-                        hydrogen_sulphide[2] = packet_format6[0];
-                        hydrogen_sulphide[3] = packet_format6[1];
-                        hydrogen_sulphide[4] = packet_format6[2];
+                        total_oxidizing_gases[0] = ID_TOTAL_OXIDIZING_GASES;
+                        total_oxidizing_gases[1] = (valid << 7) | (LENGTH_FORMAT6);
+                        total_oxidizing_gases[2] = packet_format6[0];
+                        total_oxidizing_gases[3] = packet_format6[1];
+                        total_oxidizing_gases[4] = packet_format6[2];
                         #ifdef SERIAL_DEBUG
-                        Serial.print("H2S: ");
+                        Serial.print("ToX: ");
                         Serial.println(long(param_value) >> 1);
                         #endif
                         #endif
@@ -515,20 +515,20 @@ void loop() {
                     else if (count == 14)
                     {
                         //Serial.println("TotalRed");
-                        #ifdef hydrogen_sulphide_include
+                        #ifdef total_reducing_gases_include
                         //LPS Pressure Value
                         valid = 1;
                         get_value(pidx);
                         // The raw value is 24 bits - we will make it 22 bits loosing
                         // the 2 LSB bits in the process
                         format6(long(param_value) >> 1);
-                        hydrogen_sulphide[0] = ID_HYDROGEN_SULPHIDE;
-                        hydrogen_sulphide[1] = (valid << 7) | (LENGTH_FORMAT6);
-                        hydrogen_sulphide[2] = packet_format6[0];
-                        hydrogen_sulphide[3] = packet_format6[1];
-                        hydrogen_sulphide[4] = packet_format6[2];
+                        total_reducing_gases[0] = ID_TOTAL_REDUCING_GASES;
+                        total_reducing_gases[1] = (valid << 7) | (LENGTH_FORMAT6);
+                        total_reducing_gases[2] = packet_format6[0];
+                        total_reducing_gases[3] = packet_format6[1];
+                        total_reducing_gases[4] = packet_format6[2];
                         #ifdef SERIAL_DEBUG
-                        Serial.print("H2S: ");
+                        Serial.print("ToR: ");
                         Serial.println(long(param_value) >> 1);
                         #endif
                         #endif
