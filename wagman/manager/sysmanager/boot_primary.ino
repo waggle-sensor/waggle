@@ -879,6 +879,10 @@ void init_primary()
    // Enable interrupts
    interrupts();
 
+   // Set sleep mode to "power down" (turns off all clocks).
+   // See datasheet and sleep.h file.
+   set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+
    // Start watchdog with 2 second timeout
    wdt_enable(WDTO_2S);
 
@@ -912,7 +916,7 @@ void init_primary()
    eeprom_update_byte(&E_NUM_SOS_BOOT_ATTEMPTS, 0);
    // Clear the number of primary boot attempts to start with a clean slate
    // for the next boot failure
-   eeprom_update_byte(&E_NUM_PRIMARY_BOOT_ATTEMPTS, 0);
+   //eeprom_update_byte(&E_NUM_PRIMARY_BOOT_ATTEMPTS, 0);
    // Clear the flag for the timer test being incomplete, otherwise the next
    // POST may incorrectly mark the timer as malfunctioning
    eeprom_update_byte(&E_TIMER_TEST_INCOMPLETE, 0);
@@ -1103,4 +1107,7 @@ void set_default_eeprom()
 
    // Save the indicator that this SysMon has booted before
    eeprom_update_byte(&E_FIRST_BOOT, 0);
+
+   // Clear the counter for number of primary boot attempts
+   eeprom_update_byte(&E_NUM_PRIMARY_BOOT_ATTEMPTS, 0);
 }
