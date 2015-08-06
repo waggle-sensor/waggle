@@ -298,15 +298,25 @@ void setup()
       eeprom_update_byte(&E_NUM_PRIMARY_BOOT_ATTEMPTS, num_attempts);
 
       // Number of boot attempts not yet reached maximum allowed?
-      if(num_attempts <= eeprom_read_byte(&E_MAX_NUM_PRIMARY_BOOT_ATTEMPTS))
+      if(num_attempts < eeprom_read_byte(&E_MAX_NUM_PRIMARY_BOOT_ATTEMPTS))
       {
         Serial.println(2);
 
         soft_restart();
       }
       else
+      {
+        // Clear the counter for number of primary boot attempts.
+        // We want to start with a clean slate after reset.
+        eeprom_update_byte(&E_NUM_PRIMARY_BOOT_ATTEMPTS, 0);
+
+        Serial.println(3);
+        delay(5);
+
         // We're done trying, so go to sleep
-        sleep();
+        noInterrupts();
+        sleep_mode();
+      }
     }
   #endif
 }
