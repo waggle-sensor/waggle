@@ -379,12 +379,14 @@ while True:
     elif incomingNotifier == "@":
         # Wait for status report
         incomingStatus = ser_SysMon.readline().strip()
+
         print incomingStatus
 
     # Is SysMon about to inform me of a problem?
     elif incomingNotifier == "#":
         # Wait for problem report
         incomingProblem = ser_SysMon.readline().strip()
+
         print incomingProblem
 
     # Did SysMon request guest node info?
@@ -408,6 +410,7 @@ while True:
     elif incomingNotifier == "(":
         # Wait for time message
         incomingTime = ser_SysMon.readline().strip()
+
         print incomingTime
 
     # Clear incomingNotifier

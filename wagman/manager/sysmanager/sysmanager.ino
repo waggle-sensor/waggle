@@ -3,12 +3,12 @@
 #include <avr/interrupt.h>
 #include <avr/sleep.h>
 #include <avr/power.h>
-#include <avr/wdt.h>
 #include <avr/eeprom.h>
 #include <Wire.h>
 #include <HTU21D.h>
 #include <Time.h>
 #include <MCP79412RTC.h>
+#include <SoftReset.h>
 
 
 
@@ -236,6 +236,9 @@ uint8_t EEMEM E_FIRST_BOOT;
 */
 void setup() 
 {
+  // Disable watchdog to avoid a reset loop
+  wdt_disable();
+
   // Is POST enabled?
   #ifdef BOOT_POST
     // Is everything (internal) working correctly?
@@ -251,11 +254,11 @@ void setup()
       }
       else
       {
-        // Grab how many boot attempts have occurred
-        byte num_attempts = eeprom_read_byte(&E_NUM_PRIMARY_BOOT_ATTEMPTS);
+        // Grab how many boot attempts have occurred (+1 for this attempt)
+        byte num_attempts = eeprom_read_byte(&E_NUM_PRIMARY_BOOT_ATTEMPTS) + 1;
 
         // Add failed boot attempt to the counter
-        eeprom_update_byte(&E_NUM_PRIMARY_BOOT_ATTEMPTS, ++num_attempts);
+        eeprom_update_byte(&E_NUM_PRIMARY_BOOT_ATTEMPTS, num_attempts);
 
         // Number of boot attempts not yet reached maximum allowed?
         if(num_attempts <= eeprom_read_byte(&E_MAX_NUM_PRIMARY_BOOT_ATTEMPTS))
@@ -288,22 +291,18 @@ void setup()
     }
     else
     {
-      // Grab how many boot attempts have occurred
-      byte num_attempts = eeprom_read_byte(&E_NUM_PRIMARY_BOOT_ATTEMPTS);
+      // Grab how many boot attempts have occurred (+1 for this attempt)
+      byte num_attempts = eeprom_read_byte(&E_NUM_PRIMARY_BOOT_ATTEMPTS) + 1;
 
       // Add failed boot attempt to the counter
-      eeprom_update_byte(&E_NUM_PRIMARY_BOOT_ATTEMPTS, ++num_attempts);
+      eeprom_update_byte(&E_NUM_PRIMARY_BOOT_ATTEMPTS, num_attempts);
 
       // Number of boot attempts not yet reached maximum allowed?
       if(num_attempts <= eeprom_read_byte(&E_MAX_NUM_PRIMARY_BOOT_ATTEMPTS))
       {
-        // Disable watchdog
-        wdt_disable();
-        // Set watchdog for short timeout
-        wdt_enable(WDTO_15MS);
+        Serial.println(2);
 
-        // Wait
-        while(1);
+        soft_restart();
       }
       else
         // We're done trying, so go to sleep

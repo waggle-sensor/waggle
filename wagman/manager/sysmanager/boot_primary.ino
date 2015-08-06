@@ -35,15 +35,11 @@ boolean boot_primary()
    // Request operating parameters from node controller
    get_params_core();
 
-	// Request guest node info from node controller.  No info received?
-	if(!get_params_GNs())
-		// Skip the rest of the boot sequence
-		return false;
+	// Request guest node parameters from node controller
+	get_params_GNs();
 
-   // Booted ethernet switch successfully?
-   if(!boot_switch())
-      // Skip the rest of the boot sequence
-      return false;
+   // Boot ethernet switch
+   boot_switch();
 
 	// Everything is good, so exit sequence with success
 	return true;
@@ -135,16 +131,17 @@ boolean boot_NC()
       }
    }
 
-   // Is the node controller alive (sending a "heartbeat")?
+   // Is the node controller alive (sending a heartbeat)?
    if(!check_heartbeat_odroid(PIN_HEARTBEAT_NC))
    {
-      byte boot_attempts = 0;
+      // Start at 1 boot attempt, since we had to boot to get here
+      byte boot_attempts = 1;
       boolean _heartbeat_detected = false;
       
       // Try to get a heartbeat from the NC as many times as allowed
-      while(boot_attempts < eeprom_read_byte(&E_MAX_NUM_SUBSYSTEM_BOOT_ATTEMPTS))
+      while(boot_attempts <= eeprom_read_byte(&E_MAX_NUM_SUBSYSTEM_BOOT_ATTEMPTS))
       {
-         // Is "heartbeat" not detected?
+         // Is heartbeat not detected?
          if(!check_heartbeat_odroid(PIN_HEARTBEAT_NC))
          {
             // Power cycle the node controller
@@ -186,12 +183,9 @@ boolean boot_NC()
     Boots the ethernet switch.  Checks environment and power draw.
     If something goes wrong, the node controller is notified.
 
-    Return TRUE: everything is good, boot successful.
-    Return FALSE: something went wrong, boot unsuccessful.
-
-    :rtype: boolean
+    :rtype: none
 */
-boolean boot_switch()
+void boot_switch()
 {
    // Mark switch as not operational
    _switch_running = false;
@@ -207,7 +201,7 @@ boolean boot_switch()
       && eeprom_read_byte(&E_PRESENT_SWITCH)))
    {
       // Exit with failure
-      return false;
+      return;
    }
 
    // Is the ethernet switch's temperature outside of safe parameters?
@@ -225,7 +219,7 @@ boolean boot_switch()
          send_problem(PROBLEM_SWITCH_TEMP);
 
          // Exit with failure
-         return false;
+         return;
       }
    }
 
@@ -233,7 +227,7 @@ boolean boot_switch()
    digitalWrite(PIN_RELAY_SWITCH, HIGH);
 
    // Give the ethernet switch time to boot
-   delay((long)eeprom_read_word(&E_BOOT_TIME_NC) * 1000L);
+   delay((long)eeprom_read_byte(&E_BOOT_TIME_SWITCH) * 1000L);
 
    // Is the ethernet switch not drawing an expected amount of power?
    if(!check_power_switch())
@@ -259,15 +253,12 @@ boolean boot_switch()
          eeprom_update_byte(&E_SWITCH_ENABLED, 0);
 
          // Exit with failure
-         return false;
+         return;
       }
    }
 
    // Mark switch as operational
    _switch_running = true;
-
-   // Exit with success
-   return true;
 }
 
 
@@ -596,13 +587,10 @@ void get_params_core()
 //---------- G E T _ P A R A M S _ G N S --------------------------------------
 /*
    Requests information about the guest nodes from the node controller.
-   
-   Return TRUE: guest node information received.
-   Return FALSE: guest node information not received.
 
-   :rtype: boolean
+   :rtype: none
 */
-boolean get_params_GNs()
+void get_params_GNs()
 {
    // Send request
    Serial.println(NC_NOTIFIER_PARAMS_GN);
@@ -794,12 +782,7 @@ boolean get_params_GNs()
       eeprom_update_word(&E_AMP_MAX_GN1, (uint16_t)max_amp_GN1.toInt());
       eeprom_update_word(&E_AMP_MAX_GN2, (uint16_t)max_amp_GN2.toInt());
       eeprom_update_word(&E_AMP_MAX_GN3, (uint16_t)max_amp_GN3.toInt());
-
-      return true;
    }
-   // No parameters received?
-   else
-      return false;
 }
 
 
@@ -893,10 +876,6 @@ void get_time_NC()
 */
 void init_primary()
 {
-   // Reset and disable watchdog to avoid a reset loop
-   wdt_reset();
-   wdt_disable();
-
    // Enable interrupts
    interrupts();
 
@@ -1029,6 +1008,9 @@ void init_primary()
    // End I2C transaction (with stop bit)
    Wire.endTransmission(1);
 
+   // Give relays time to settle down, in case there was a chip reset
+   delay(POWER_CYCLE_DELAY);
+
    // Set relay pins to output mode
    pinMode(PIN_RELAY_NC, OUTPUT);
    pinMode(PIN_RELAY_SWITCH, OUTPUT);
@@ -1042,6 +1024,8 @@ void init_primary()
    pinMode(PIN_HEARTBEAT_GN1, INPUT);
    pinMode(PIN_HEARTBEAT_GN2, INPUT);
    pinMode(PIN_HEARTBEAT_GN3, INPUT);
+
+   Serial.println(1);
 }
 
 
@@ -1064,15 +1048,15 @@ void set_default_eeprom()
    eeprom_update_byte(&E_MAX_NUM_SUBSYSTEM_BOOT_ATTEMPTS, 3);
    eeprom_update_byte(&E_MAX_NUM_PRIMARY_BOOT_ATTEMPTS, 3);
    eeprom_update_word(&E_DEVICE_REBOOT_PERIOD, 15);
-   eeprom_update_byte(&E_PRESENT_SWITCH, 1);
-   eeprom_update_word(&E_BOOT_TIME_NC, 30);
+   eeprom_update_byte(&E_PRESENT_SWITCH, 0);
+   eeprom_update_word(&E_BOOT_TIME_NC, 10);
    eeprom_update_byte(&E_BOOT_TIME_SWITCH, 5);
    eeprom_update_word(&E_BOOT_TIME_GN1, 10);
    eeprom_update_word(&E_BOOT_TIME_GN2, 10);
    eeprom_update_word(&E_BOOT_TIME_GN2, 10);
-   eeprom_update_byte(&E_PRESENT_GN1, 1);
-   eeprom_update_byte(&E_PRESENT_GN2, 1);
-   eeprom_update_byte(&E_PRESENT_GN3, 1);
+   eeprom_update_byte(&E_PRESENT_GN1, 0);
+   eeprom_update_byte(&E_PRESENT_GN2, 0);
+   eeprom_update_byte(&E_PRESENT_GN3, 0);
    eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_NC, 5);
    eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_SWITCH, 5);
    eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_GN1, 5);
