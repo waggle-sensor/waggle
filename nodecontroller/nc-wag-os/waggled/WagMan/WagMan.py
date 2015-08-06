@@ -1,4 +1,4 @@
-import collections, time, datetime, serial
+import collections, time, datetime, serial, sys
 sys.path.append('../../../../devtools/protocol_common/')
 from utilities import packetmaker
 sys.path.append('../Communications/')
@@ -342,6 +342,8 @@ while True:
     try:
         # Establish serial connection to SysMon
         ser_SysMon = serial.Serial('/dev/arduinoMicro', params_core['baud rate'], timeout = 10)
+        #send the signal to SysMon to indicate successful node controller configuration
+        ser_SysMon.write("=!")
         break
     except Exception as e:
         print e
