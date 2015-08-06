@@ -1,0 +1,35 @@
+Compile "heartbeat.cpp" (only if you don't already have the executable):
+-----
+g++ -o heartbeat heartbeat.cpp
+
+
+Start heartbeat on boot (ODroid):
+-----
+1) put "heartbeat_setup_start.sh" in /etc/init.d
+2) put "heartbeat_start.sh" in /etc/init.d
+3) put "heartbeat_setup.sh" in dir specified at the top of "heartbeat_setup_start.sh"
+4) put "heartbeat" (executable) in dir specified at the top of "heartbeat_start.sh"
+5) cd to dir where you put "heartbeat_setup.sh"
+6) chmod +x heartbeat_setup.sh
+5) cd /etc/init.d
+6) chmod +x heartbeat_start.sh
+7) chmod +x heartbeat_setup_start.sh
+8) update-rc.d heartbeat_start.sh defaults
+9) update-rc.d heartbeat_setup_start.sh defaults
+
+
+Start WagMan script on boot (ODroid):
+-----
+1) put "WagMan_start.sh" in /etc/init.d
+2) put "WagMan.py" in dir specified at the top of "WagMan_start.sh"
+3) put "99-usb-serial.rules" in /etc/udev/rules.d
+3) cd /etc/init.d
+4) chmod +x WagMan_start.sh
+5) update-rc.d WagMan_start.sh defaults
+6) cd /home/odroid/Downloads
+7) wget https://bootstrap.pypa.io/get-pip.py
+8) python get-pip.py
+9) pip install pyserial
+
+
+Reboot to become the WagMan (or part of it, anyway)!

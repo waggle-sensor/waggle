@@ -58,9 +58,30 @@ chmod +x /etc/init.d/start_sensor.sh
 update-rc.d start_sensor.sh defaults 
 
 #set up SysMon stuff
+#starts WagMan script at boot
+mv WagMan_start.sh /etc/init.d
+chmod +x /etc/init.d/WagMan_start.sh 
+update-rc.d WagMan_start.sh defaults 
+
+#starts set-up for heart beat script at boot
+mv heartbeat_setup_start.sh /etc/init.d
+chmod +x /etc/init.d/heartbeat_setup_start.sh 
+update-rc.d heartbeat_setup_start.sh defaults 
+
+#starts node controller heart beat at boot
+mv heartbeat_start.sh /etc/init.d
+chmod +x /etc/init.d/heartbeat_start.sh 
+update-rc.d heartbeat_start.sh defaults 
+
+#creates udev rule to attach SysMon to /dev/arduinoMicro
+mv 99-usb-serial.rules /etc/udev/rules.d
+
 #find and set IP address if possible
 cd ~/waggle/nodecontroller/nc-wag-os/waggled
 python NC_scanner.py
-echo "Odroid is now going reboot."
+
+cd /WagMan
+chmod +x heartbest_setup.sh
+echo "Odroid is now going to reboot."
 reboot
 
