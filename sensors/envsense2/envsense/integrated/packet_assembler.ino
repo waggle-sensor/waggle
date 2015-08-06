@@ -11,7 +11,7 @@ void assemble_packet_empty()
 void assemble_packet_whole()
 {
     int packet_whole_index = 3; // start at 3 to account for header
-
+//     #ifdef SERIAL_DEBUG Serial.println("Packer Called.");
     #ifdef MAC_ID_include
     // Append MAC_ID
     for (int i = 0; i < sizeof(MAC_ID); i++)
@@ -241,20 +241,27 @@ void assemble_packet_whole()
         packet_whole_index++;
     }
     #endif
-    #ifdef total_reducing_gases_include
 
+
+    #ifdef total_reducing_gases_include
     // Append total_reducing_gases
+    #ifdef SERIAL_DEBUG
+    Serial.println("ToR");
+    #endif
     for (int i = 0; i < sizeof(total_reducing_gases); i++)
     {
         packet_whole[packet_whole_index] = total_reducing_gases[i];
-
         // Increment index for whole packet
         packet_whole_index++;
     }
     #endif
-    #ifdef ethanol_include
 
+
+    #ifdef ethanol_include
     // Append ethanol
+    #ifdef SERIAL_DEBUG
+    Serial.println("ETOH");
+    #endif
     for (int i = 0; i < sizeof(ethanol); i++)
     {
         packet_whole[packet_whole_index] = ethanol[i];
@@ -266,6 +273,9 @@ void assemble_packet_whole()
     #ifdef nitrogen_dioxide_include
 
     // Append nitrogen_dioxide
+    #ifdef SERIAL_DEBUG
+    Serial.println("NO2");
+    #endif
     for (int i = 0; i < sizeof(nitrogen_dioxide); i++)
     {
         packet_whole[packet_whole_index] = nitrogen_dioxide[i];
@@ -277,6 +287,9 @@ void assemble_packet_whole()
     #ifdef ozone_include
 
     // Append ozone
+    #ifdef SERIAL_DEBUG
+    Serial.println("OZONE");
+    #endif
     for (int i = 0; i < sizeof(ozone); i++)
     {
         packet_whole[packet_whole_index] = ozone[i];
@@ -288,6 +301,9 @@ void assemble_packet_whole()
     #ifdef hydrogen_sulphide_include
 
     // Append hydrogen_sulphide
+    #ifdef SERIAL_DEBUG
+    Serial.println("H2S");
+    #endif
     for (int i = 0; i < sizeof(hydrogen_sulphide); i++)
     {
         packet_whole[packet_whole_index] = hydrogen_sulphide[i];
@@ -299,6 +315,9 @@ void assemble_packet_whole()
     #ifdef total_oxidizing_gases_include
 
     // Append total_oxidizing_gases
+    #ifdef SERIAL_DEBUG
+    Serial.println("ToX");
+    #endif
     for (int i = 0; i < sizeof(total_oxidizing_gases); i++)
     {
         packet_whole[packet_whole_index] = total_oxidizing_gases[i];
@@ -310,6 +329,9 @@ void assemble_packet_whole()
     #ifdef carbon_monoxide_include
 
     // Append carbon_monoxide
+    #ifdef SERIAL_DEBUG
+    Serial.println("CO");
+    #endif
     for (int i = 0; i < sizeof(carbon_monoxide); i++)
     {
         packet_whole[packet_whole_index] = carbon_monoxide[i];
@@ -321,6 +343,9 @@ void assemble_packet_whole()
     #ifdef sulfur_dioxide_include
 
     // Append sulfur_dioxide
+    #ifdef SERIAL_DEBUG
+    Serial.println("SO2");
+    #endif
     for (int i = 0; i < sizeof(sulfur_dioxide); i++)
     {
         packet_whole[packet_whole_index] = sulfur_dioxide[i];
@@ -330,27 +355,49 @@ void assemble_packet_whole()
     }
 
     #endif
-    #ifdef sensirion_include
+    #ifdef SHT25_include
     // Append sensirion
-    for (int i = 0; i < sizeof(sensirion); i++)
+    #ifdef SERIAL_DEBUG
+    Serial.println("SHT25");
+    #endif
+    for (int i = 0; i < sizeof(SHT25); i++)
     {
-        packet_whole[packet_whole_index] = sensirion[i];
+        packet_whole[packet_whole_index] = SHT25[i];
 
         // Increment index for whole packet
         packet_whole_index++;
     }
     #endif
-    #ifdef bosh_include
+    #ifdef LPS25H_include
 
-    // Append bosh
-    for (int i = 0; i < sizeof(bosh); i++)
+    // Append LPS25H
+    #ifdef SERIAL_DEBUG
+    Serial.println("LPS25H");
+    #endif
+    for (int i = 0; i < sizeof(LPS25H); i++)
     {
-        packet_whole[packet_whole_index] = bosh[i];
+        packet_whole[packet_whole_index] = LPS25H[i];
 
         // Increment index for whole packet
         packet_whole_index++;
     }
     #endif
+
+    #ifdef Si1145_include
+
+    // Append Si1145
+    #ifdef SERIAL_DEBUG
+    Serial.println("Si1145");
+    #endif
+    for (int i = 0; i < sizeof(Si1145); i++)
+    {
+        packet_whole[packet_whole_index] = Si1145[i];
+
+        // Increment index for whole packet
+        packet_whole_index++;
+    }
+    #endif
+
     #ifdef intel_MAC_ID_include
 
     // Append intel_MAC_ID
