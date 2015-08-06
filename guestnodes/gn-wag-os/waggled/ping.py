@@ -4,7 +4,7 @@
 import sys
 sys.path.append('../../../devtools/protocol_common/')
 from utilities import packetmaker
-from communicator import send
+from send import send
 
 
 """ 

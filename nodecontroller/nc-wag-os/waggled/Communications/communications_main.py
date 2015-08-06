@@ -9,7 +9,7 @@ from internal_communicator import *
 
 
 cur_time = str(datetime.datetime.now().strftime('%Y%m%d%H:%M:%S'))
-LOG_FILE = 'comms_' + cur_time + '.log'
+LOG_FILE = '/var/comms/' + cur_time + '.log'
 logging.basicConfig(filename=LOG_FILE)
 
 

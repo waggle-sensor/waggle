@@ -26,7 +26,7 @@ def send(msg):
     """
     while True:
         try:
-        #connect to DC and send msg
+            #connect to DC and send msg
             if os.path.exists('/tmp/Data_Cache_server'):
                 client_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
                 try:
