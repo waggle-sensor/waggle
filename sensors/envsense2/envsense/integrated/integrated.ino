@@ -3,9 +3,9 @@
 
 // #define CR_ENABLE 0
 #define CR_ENABLE 1
-#define BUFFER_SIZE_INTEL 150
-#define PARAM_SIZE_INTEL 15
-#define DEBUG_INTEL 0
+#define BUFFER_SIZE_CHEMSENSE 150
+#define PARAM_SIZE_CHEMSENSE 15
+#define DEBUG_chemsense 0
 
 // Main board
 byte MAC_ID[LENGTH_FORMAT3 + 2] = {ID_MAC, 134,2,3,4,5,6,7}; // MAC address
@@ -32,7 +32,7 @@ byte MLX90614[LENGTH_FORMAT1 + 2]; // temp of pavement
 byte TMP421[LENGTH_FORMAT1 + 2]; // temp inside transparent box
 byte SPV1840LR5HB_2[LENGTH_FORMAT2 + 2]; // sound pressure
 
-// Intel board
+// chemsense board
 byte total_reducing_gases[LENGTH_FORMAT6 + 2]; // ambient concentration
 byte ethanol[LENGTH_FORMAT6 + 2]; // ambient concentration
 byte nitrogen_dioxide[LENGTH_FORMAT6 + 2]; // ambient concentration
@@ -46,7 +46,7 @@ byte SHT25[(LENGTH_FORMAT5 * 2) + 2]; // ambient temp and RH
 byte LPS25H[LENGTH_FORMAT5 + LENGTH_FORMAT6 + 2]; // atmospheric temperature and pressure
 byte Si1145[LENGTH_FORMAT2 + 2]; // UV
 
-byte intel_MAC_ID[LENGTH_FORMAT3 + 2] = {0,0,0,0,0,0,0,0}; // MAC address of Intel board
+byte chemsense_MAC_ID[LENGTH_FORMAT3 + 2] = {0,0,0,0,0,0,0,0}; // MAC address of chemsense board
 
 
 
@@ -68,10 +68,10 @@ byte length_whole_actual;
 byte length_data_actual;
 
 
-unsigned char buffer [BUFFER_SIZE_INTEL];
-unsigned char parameter[PARAM_SIZE_INTEL];
+unsigned char buffer [BUFFER_SIZE_CHEMSENSE];
+unsigned char parameter[PARAM_SIZE_CHEMSENSE];
 unsigned char cnt = 0;
-boolean intel_ready = false;
+boolean chemsense_ready = false;
 float param_value;
 unsigned char attenuate = 0;
 byte valid;
@@ -127,7 +127,7 @@ void setup()
 
 void loop()
 {
-    intel_aquire();
-    intel_pack();
+    chemsense_aquire();
+    chemsense_pack();
 //     delay(2000);
 }

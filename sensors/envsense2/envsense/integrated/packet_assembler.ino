@@ -398,12 +398,12 @@ void assemble_packet_whole()
     }
     #endif
 
-    #ifdef intel_MAC_ID_include
+    #ifdef chemsense_MAC_ID_include
 
-    // Append intel_MAC_ID
-    for (int i = 0; i < sizeof(intel_MAC_ID); i++)
+    // Append chemsense_MAC_ID
+    for (int i = 0; i < sizeof(chemsense_MAC_ID); i++)
     {
-        packet_whole[packet_whole_index] = intel_MAC_ID[i];
+        packet_whole[packet_whole_index] = chemsense_MAC_ID[i];
 
         // Increment index for whole packet
         packet_whole_index++;

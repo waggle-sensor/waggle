@@ -1,4 +1,4 @@
-void intel_parse_value (unsigned char pidx)
+void chemsense_parse_value (unsigned char pidx)
 {
     param_value = 0;
     for (unsigned char idx = 0; idx < pidx; idx ++)
@@ -24,23 +24,23 @@ void intel_parse_value (unsigned char pidx)
     return;
 }
 
-void intel_aquire (void)
+void chemsense_aquire (void)
 {
 
     while (Serial1.available())
     {
         char inByte = Serial1.read();
-        #ifdef DEBUG_INTEL
+        #ifdef DEBUG_chemsense
         Serial.write(inByte);
         #endif
-        if (( inByte != '\n') && (cnt < BUFFER_SIZE_INTEL))
+        if (( inByte != '\n') && (cnt < BUFFER_SIZE_CHEMSENSE))
         {
             buffer[cnt] = inByte;
             cnt = cnt + 1;
         }
         else
         {
-            intel_ready = true;
+            chemsense_ready = true;
             cnt = cnt + 1;
         }
     }
@@ -48,17 +48,17 @@ void intel_aquire (void)
 }
 
 
-void intel_pack (void)
+void chemsense_pack (void)
 {
-    if (intel_ready == true)
+    if (chemsense_ready == true)
     {
-        intel_ready = false;
+        chemsense_ready = false;
         unsigned char count = 0, pidx = 0;
         for (unsigned char index = CR_ENABLE; index < cnt; index ++)
         {
             if (buffer[index] != ',')
             {
-                if ((count == 0) && (pidx < PARAM_SIZE_INTEL))
+                if ((count == 0) && (pidx < PARAM_SIZE_CHEMSENSE))
                 {
                     parameter[pidx] = buffer[index];
                     pidx = pidx + 1;
@@ -75,7 +75,7 @@ void intel_pack (void)
             unsigned char count = 0, pidx = 0;
             for (unsigned char index = CR_ENABLE; index < cnt; index ++)
             {
-                if ((buffer[index] != ',') && (pidx < PARAM_SIZE_INTEL))
+                if ((buffer[index] != ',') && (pidx < PARAM_SIZE_CHEMSENSE))
                 {
                     parameter[pidx] = buffer[index];
                     pidx = pidx + 1;
@@ -85,11 +85,11 @@ void intel_pack (void)
                 {
                     if (count == 0)
                     {
-                        #ifdef intel_MAC_ID_include
-                        // Intel MAC address (format 3)
+                        #ifdef chemsense_MAC_ID_include
+                        // chemsense MAC address (format 3)
                         valid = 1;
-                        intel_MAC_ID[0] = ID_INTEL_MAC;
-                        intel_MAC_ID[1] = (valid << 7) | LENGTH_FORMAT3;
+                        chemsense_MAC_ID[0] = ID_CHEMSENSE_MAC;
+                        chemsense_MAC_ID[1] = (valid << 7) | LENGTH_FORMAT3;
                         for (unsigned char idx = 0; idx < pidx; idx ++)
                         {
                             if ((parameter[idx] > 96) && (parameter[idx] < 103))
@@ -105,12 +105,12 @@ void intel_pack (void)
                             {
                                 parameter[idx] = parameter[idx] << 4;
                             }
-                            intel_MAC_ID[(idx/2)+2] = intel_MAC_ID[(idx/2)+2] | parameter[idx];
+                            chemsense_MAC_ID[(idx/2)+2] = chemsense_MAC_ID[(idx/2)+2] | parameter[idx];
                         }
                         #ifdef SERIAL_DEBUG
-                        Serial.print("Intel MAC ID: ");
+                        Serial.print("chemsense MAC ID: ");
                         for (int i = 2; i < (LENGTH_FORMAT3 + 2); i++)
-                            Serial.print(intel_MAC_ID[i], HEX);
+                            Serial.print(chemsense_MAC_ID[i], HEX);
                         Serial.println("");
                         #endif
                         #endif
@@ -120,7 +120,7 @@ void intel_pack (void)
                     {
                         #ifdef HDC_1000_include
                         Serial.println("HDC_Temp");
-                        intel_parse_value(pidx);
+                        chemsense_parse_value(pidx);
                         Serial.println(param_value);
                         #endif
                     }
@@ -128,7 +128,7 @@ void intel_pack (void)
                     {
                         #ifdef HDC_1000_include
                         Serial.println("HDC_RH");
-                        intel_parse_value(pidx);
+                        chemsense_parse_value(pidx);
                         Serial.println(param_value);
                         #endif
                     }
@@ -136,7 +136,7 @@ void intel_pack (void)
                     {
                         #ifdef SHT25_include
                         valid = 1;
-                        intel_parse_value(pidx);
+                        chemsense_parse_value(pidx);
                         format5(int(param_value));
                         SHT25[0] = ID_SHT25;
                         SHT25[1] = (valid << 7) | ((LENGTH_FORMAT5) * 2);
@@ -152,7 +152,7 @@ void intel_pack (void)
                     {
                         #ifdef SHT25_include
                         valid = 1;
-                        intel_parse_value(pidx);
+                        chemsense_parse_value(pidx);
                         format5(int(param_value));
                         SHT25[0] = ID_SHT25;
                         SHT25[1] = (valid << 7) | ((LENGTH_FORMAT5) * 2);
@@ -169,7 +169,7 @@ void intel_pack (void)
                     {
                         #ifdef LPS25H_include
                         valid = 1;
-                        intel_parse_value(pidx);
+                        chemsense_parse_value(pidx);
                         format5(int(param_value) >> 1);
                         LPS25H[0] = ID_LPS25H;
                         LPS25H[1] = (valid << 7) | (LENGTH_FORMAT5 + LENGTH_FORMAT6);
@@ -186,7 +186,7 @@ void intel_pack (void)
                     {
                         #ifdef Si1145_include
                         valid = 1;
-                        intel_parse_value(pidx);
+                        chemsense_parse_value(pidx);
                         format2(int(param_value) >> 1);
                         Si1145[0] = ID_Si1145;
                         Si1145[1] = (valid << 7) | (LENGTH_FORMAT2);
@@ -202,7 +202,7 @@ void intel_pack (void)
                     {
                         #ifdef LPS25H_include
                         valid = 1;
-                        intel_parse_value(pidx);
+                        chemsense_parse_value(pidx);
                         format6(long(param_value) >> 2);
                         LPS25H[0] = ID_LPS25H;
                         LPS25H[1] = (valid << 7) | (LENGTH_FORMAT5 + LENGTH_FORMAT6);
@@ -219,7 +219,7 @@ void intel_pack (void)
                     {
                         #ifdef hydrogen_sulphide_include
                         valid = 1;
-                        intel_parse_value(pidx);
+                        chemsense_parse_value(pidx);
                         format6(long(param_value) >> 1);
                         hydrogen_sulphide[0] = ID_HYDROGEN_SULPHIDE;
                         hydrogen_sulphide[1] = (valid << 7) | (LENGTH_FORMAT6);
@@ -236,7 +236,7 @@ void intel_pack (void)
                     {
                         #ifdef ozone_include
                         valid = 1;
-                        intel_parse_value(pidx);
+                        chemsense_parse_value(pidx);
                         format6(long(param_value) >> 1);
                         ozone[0] = ID_OZONE;
                         ozone[1] = (valid << 7) | (LENGTH_FORMAT6);
@@ -253,7 +253,7 @@ void intel_pack (void)
                     {
                         #ifdef nitrogen_dioxide_include
                         valid = 1;
-                        intel_parse_value(pidx);
+                        chemsense_parse_value(pidx);
                         format6(long(param_value) >> 1);
                         nitrogen_dioxide[0] = ID_NITROGEN_DIOXIDE;
                         nitrogen_dioxide[1] = (valid << 7) | (LENGTH_FORMAT6);
@@ -270,7 +270,7 @@ void intel_pack (void)
                     {
                         #ifdef carbon_monoxide_include
                         valid = 1;
-                        intel_parse_value(pidx);
+                        chemsense_parse_value(pidx);
                         format6(long(param_value) >> 1);
                         carbon_monoxide[0] = ID_CARBON_MONOXIDE;
                         carbon_monoxide[1] = (valid << 7) | (LENGTH_FORMAT6);
@@ -287,7 +287,7 @@ void intel_pack (void)
                     {
                         #ifdef sulfur_dioxide_include
                         valid = 1;
-                        intel_parse_value(pidx);
+                        chemsense_parse_value(pidx);
                         format6(long(param_value) >> 1);
                         sulfur_dioxide[0] = ID_SULFUR_DIOXIDE;
                         sulfur_dioxide[1] = (valid << 7) | (LENGTH_FORMAT6);
@@ -305,7 +305,7 @@ void intel_pack (void)
                     {
                         #ifdef total_oxidizing_gases_include
                         valid = 1;
-                        intel_parse_value(pidx);
+                        chemsense_parse_value(pidx);
                         format6(long(param_value) >> 1);
                         total_oxidizing_gases[0] = ID_TOTAL_OXIDIZING_GASES;
                         total_oxidizing_gases[1] = (valid << 7) | (LENGTH_FORMAT6);
@@ -322,7 +322,7 @@ void intel_pack (void)
                     {
                         #ifdef total_reducing_gases_include
                         valid = 1;
-                        intel_parse_value(pidx);
+                        chemsense_parse_value(pidx);
                         format6(long(param_value) >> 1);
                         total_reducing_gases[0] = ID_TOTAL_REDUCING_GASES;
                         total_reducing_gases[1] = (valid << 7) | (LENGTH_FORMAT6);
@@ -342,7 +342,7 @@ void intel_pack (void)
 
             #ifdef ethanol_include
             valid = 1;
-            intel_parse_value(pidx-1);
+            chemsense_parse_value(pidx-1);
             format6(long(param_value) >> 1);
             ethanol[0] = ID_ETHANOL;
             ethanol[1] = (valid << 7) | (LENGTH_FORMAT6);

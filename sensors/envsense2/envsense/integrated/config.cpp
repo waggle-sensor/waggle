@@ -50,7 +50,7 @@
 #define ID_SULFUR_DIOXIDE  0x1C
 #define ID_SHT25 0x1D
 #define ID_LPS25H 0x1E
-#define ID_INTEL_MAC  0x1F
+#define ID_CHEMSENSE_MAC  0x1F
 #define ID_Si1145 0x20
 #define ID_HEALTH  0xFE
 
@@ -97,7 +97,7 @@
 #define SHT25_include 0x01
 #define LPS25H_include 0x01
 #define Si1145_include 0x01
-#define intel_MAC_ID_include 0x01
+#define chemsense_MAC_ID_include 0x01
 // #define system_health_include 0x01
 
 
