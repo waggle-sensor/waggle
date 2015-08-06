@@ -72,28 +72,29 @@
 #define NC_NOTIFIER_PARAMS_GN '^'
 #define NC_NOTIFIER_TIME_REQUEST '*'
 #define NC_NOTIFIER_TIME_SEND '('
+#define NC_NOTIFIER_CONFIG_DONE "="
 #define NC_DELIMITER ','
 #define NC_TERMINATOR '!'
 
 // Messages to send to node controller
-#define PROBLEM_SYSMON_ENVIRON "SM:e"
-#define PROBLEM_SYSMON_POWER "SM:p"
-#define PROBLEM_NC_TEMP "NC:t"
-#define PROBLEM_NC_ENVIRON "NC:e"
-#define PROBLEM_NC_POWER "NC:p"
-#define PROBLEM_NC_HEARTBEAT "NC:h"
-#define PROBLEM_SWITCH_TEMP "SW:t"
-#define PROBLEM_SWITCH_POWER "SW:p"
-#define PROBLEM_SWITCH_HEARTBEAT "SW:h"
-#define PROBLEM_GN1_TEMP "GN1:t"
-#define PROBLEM_GN1_POWER "GN1:p"
-#define PROBLEM_GN1_HEARTBEAT "GN1:h"
-#define PROBLEM_GN2_TEMP "GN2:t"
-#define PROBLEM_GN2_POWER "GN2:p"
-#define PROBLEM_GN2_HEARTBEAT "GN2:h"
-#define PROBLEM_GN3_TEMP "GN3:t"
-#define PROBLEM_GN3_POWER "GN3:p"
-#define PROBLEM_GN3_HEARTBEAT "GN3:h"
+#define PROBLEM_SYSMON_ENVIRON "SM,e"
+#define PROBLEM_SYSMON_POWER "SM,p"
+#define PROBLEM_NC_TEMP "NC,t"
+#define PROBLEM_NC_ENVIRON "NC,e"
+#define PROBLEM_NC_POWER "NC,p"
+#define PROBLEM_NC_HEARTBEAT "NC,h"
+#define PROBLEM_SWITCH_TEMP "SW,t"
+#define PROBLEM_SWITCH_POWER "SW,p"
+#define PROBLEM_SWITCH_HEARTBEAT "SW,h"
+#define PROBLEM_GN1_TEMP "GN1,t"
+#define PROBLEM_GN1_POWER "GN1,p"
+#define PROBLEM_GN1_HEARTBEAT "GN1,h"
+#define PROBLEM_GN2_TEMP "GN2,t"
+#define PROBLEM_GN2_POWER "GN2,p"
+#define PROBLEM_GN2_HEARTBEAT "GN2,h"
+#define PROBLEM_GN3_TEMP "GN3,t"
+#define PROBLEM_GN3_POWER "GN3,p"
+#define PROBLEM_GN3_HEARTBEAT "GN3,h"
 
 // Messages that might be received from node controller
 #define REQUEST_TIME '1'
@@ -164,6 +165,7 @@ uint8_t EEMEM E_MAX_NUM_PRIMARY_BOOT_ATTEMPTS;
 uint16_t EEMEM E_DEVICE_REBOOT_PERIOD;
 uint8_t EEMEM E_PRESENT_SWITCH;
 uint16_t EEMEM E_BOOT_TIME_NC;
+uint16_t EEMEM E_CONFIG_TIME_NC;
 uint8_t EEMEM E_BOOT_TIME_SWITCH;
 uint16_t EEMEM E_BOOT_TIME_GN1;
 uint16_t EEMEM E_BOOT_TIME_GN2;
@@ -299,19 +301,15 @@ void setup()
 
       // Number of boot attempts not yet reached maximum allowed?
       if(num_attempts < eeprom_read_byte(&E_MAX_NUM_PRIMARY_BOOT_ATTEMPTS))
-      {
-        Serial.println(2);
-
         soft_restart();
-      }
       else
       {
         // Clear the counter for number of primary boot attempts.
         // We want to start with a clean slate after reset.
         eeprom_update_byte(&E_NUM_PRIMARY_BOOT_ATTEMPTS, 0);
 
-        Serial.println(3);
-        delay(5);
+        // Give it time to write to EEPROM, just to be sure
+        delay(10);
 
         // We're done trying, so go to sleep
         noInterrupts();
@@ -1395,6 +1393,7 @@ void send_problem(String problem)
    Sends a status report of all important info to the node controller.
 
    Message structure:
+   Header,
    RTC time,
    Light level (ADC value),
    Current draw (SysMon),

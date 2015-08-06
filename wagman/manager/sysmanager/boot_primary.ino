@@ -103,6 +103,19 @@ boolean boot_NC()
    // Enable power to node controller
    digitalWrite(PIN_RELAY_NC, HIGH);
 
+   // Give NC time to be configured, in case this is a new NC...
+
+   // Set serial receive timeout to time specified by parameter
+   Serial.setTimeout((long)eeprom_read_word(&E_CONFIG_TIME_NC) * 1000L);
+   // Wait for notification from NC that it is configured for WagMan
+   String config_WagMan = Serial.readStringUntil(NC_TERMINATOR);
+   // Return serial receive timeout to default (1000 ms)
+   Serial.setTimeout(1000L);
+   // Did NC fail to notify us that it is configured?
+   if(config_WagMan != NC_NOTIFIER_CONFIG_DONE)
+      // Exit with failure
+      return false;
+
    // Give the node controller time to boot
    delay((long)eeprom_read_word(&E_BOOT_TIME_NC) * 1000L);
 
@@ -341,6 +354,7 @@ void get_params_core()
          Time to wait before trying to reboot non-running devices
          Present/not present (switch)
          Node controller boot time
+         Node controller first-time configuration time
          Ethernet switch boot time
          Heartbeat timeout (node controller)
          Heartbeat timeout (switch)
@@ -378,6 +392,7 @@ void get_params_core()
       String device_reboot_period = "";
       String present_switch = "";
       String NC_boot_time = "";
+      String NC_config_time = "";
       String switch_boot_time = "";
       String heartbeat_timeout_NC = "";
       String heartbeat_timeout_switch = "";
@@ -443,6 +458,10 @@ void get_params_core()
 
       while(received_params[i] != NC_DELIMITER)
          NC_boot_time += received_params[i++];
+      i++;
+
+      while(received_params[i] != NC_DELIMITER)
+         NC_config_time += received_params[i++];
       i++;
 
       while(received_params[i] != NC_DELIMITER)
@@ -554,6 +573,7 @@ void get_params_core()
       eeprom_update_word(&E_DEVICE_REBOOT_PERIOD, (uint16_t)device_reboot_period.toInt());
       eeprom_update_byte(&E_PRESENT_SWITCH, (uint8_t)present_switch.toInt());
       eeprom_update_word(&E_BOOT_TIME_NC, (uint16_t)NC_boot_time.toInt());
+      eeprom_update_word(&E_CONFIG_TIME_NC, (uint16_t)NC_config_time.toInt());
       eeprom_update_byte(&E_BOOT_TIME_SWITCH, (uint8_t)switch_boot_time.toInt());
       eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_NC, (uint8_t)heartbeat_timeout_NC.toInt());
       eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_SWITCH, (uint8_t)heartbeat_timeout_switch.toInt());
@@ -1028,8 +1048,6 @@ void init_primary()
    pinMode(PIN_HEARTBEAT_GN1, INPUT);
    pinMode(PIN_HEARTBEAT_GN2, INPUT);
    pinMode(PIN_HEARTBEAT_GN3, INPUT);
-
-   Serial.println(1);
 }
 
 
@@ -1053,7 +1071,8 @@ void set_default_eeprom()
    eeprom_update_byte(&E_MAX_NUM_PRIMARY_BOOT_ATTEMPTS, 3);
    eeprom_update_word(&E_DEVICE_REBOOT_PERIOD, 15);
    eeprom_update_byte(&E_PRESENT_SWITCH, 0);
-   eeprom_update_word(&E_BOOT_TIME_NC, 10);
+   eeprom_update_word(&E_BOOT_TIME_NC, 30);
+   eeprom_update_word(&E_CONFIG_TIME_NC, 600);
    eeprom_update_byte(&E_BOOT_TIME_SWITCH, 5);
    eeprom_update_word(&E_BOOT_TIME_GN1, 10);
    eeprom_update_word(&E_BOOT_TIME_GN2, 10);
