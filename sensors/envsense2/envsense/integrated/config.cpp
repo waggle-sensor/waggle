@@ -85,7 +85,7 @@
 // #define TMP421_include 0x01
 // #define SPV1840LR5HB_2_include 0x01
 
-// Intel board
+// Chemsense board
 #define total_reducing_gases_include 0x01
 #define ethanol_include 0x01
 #define nitrogen_dioxide_include 0x01
