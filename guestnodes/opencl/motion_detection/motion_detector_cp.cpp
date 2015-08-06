@@ -43,8 +43,11 @@ int main(void)
     Mat background(Size(image_width, image_height), CV_8UC1);
 
     //TEST
-    vector<vector<Point> > contours;
-    vector<Vec4i> hierarchy;
+    vector<Rect> face;
+    Point center(0, 0);
+    int radius = 0;
+    CascadeClassifier face_cascade;
+    if(!face_cascade.load("/root/opencv/data/haarcascades/haarcascade_frontalface_default.xml")){cout << "LOSE" << endl;}
 
     const std::string window_cpu = "Grayscale CPU";
     const std::string window_gpu = "Grayscale GPU";
@@ -78,7 +81,7 @@ int main(void)
 
     //Parameters for motion detection
     const double alpha = 0.1;
-    const int threshold = 15;
+    const int threshold = 30;
 
     //Query the platforms and devices available to us
     //Find platforms
@@ -291,7 +294,7 @@ int main(void)
             //copy image data into background_ptr
 	    if(i == 0)
 	    {
-		//Capture background image once
+		//Capture background image
 		cap.read(background);
 
                 uchar* frame_ptr = background.data;
@@ -321,7 +324,7 @@ int main(void)
                 return -1;
             }
 
-	    //Always capture the current image
+	    //Capture the current image
 	    cap.read(src);
 
             //copy image data into in_ptr
@@ -411,46 +414,31 @@ int main(void)
             return -1;
         }
 
-        //Display the images
-	/***TEST***/
-	Mat element = getStructuringElement(MORPH_RECT, Size(3, 3), Point(0, 0));
-	erode(dst, dst, element);
-	findContours(dst, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
-	vector<vector<Point> > contours_poly(contours.size());
-	vector<Point2f> center(contours.size());
-	vector<float> radius(contours.size());
+        //Detect a moving face or body
+	face_cascade.detectMultiScale(src, face, 1.1, 2, 0, Size(50, 50));
 
-	for(uint m=0; m<contours.size(); m++)
+	for(uint i = 0; i < face.size(); i++)
 	{
-	    approxPolyDP(Mat(contours[m]), contours_poly[m], 3, true);
-	    minEnclosingCircle((Mat)contours_poly[m], center[m], radius[m]);
-	}
-
-	for(uint n=0; n<contours.size(); n++)
-	{
-	    if(radius[n] < 75)
+	    //Ignore false positives with small objects
+	    if((face[i].width+face[i].height)*0.25 < 70)
 	    {
-		//Ignore features that are to small
-	        continue;
+		continue;
 	    }
 
-	    //If two features are close, they're probably part of same object
-	    /*for(uint l = 0; l < contours.size(); l++)
-	    {
-	        if(sqrt(pow((center[l].x-center[n].x), 2)+pow((center[l].y-center[n].y), 2)) < 30 && l != n)
-		{
-		    Point2f new_center(abs(center[n].x + center[l].x)*0.5, abs(center[n].y + center[l].y)*0.5);
-		    float new_radius = (radius[n] + radius[l])*0.8;
-		    circle(src, new_center, (int)new_radius, Scalar(255, 255, 0), 3, 8, 0);
-	            cout << "Motion Detected from Object " << n << ": (" << new_center.x << ", " << new_center.y << ")" << endl;
-		}
-	    }*/
+	    Point center_face_new(face[i].x+face[i].width*0.5, face[i].y+face[i].height*0.5);
+	    int radius_face_new = (face[i].width+face[i].height)*0.25;
 
-	    circle(src, center[n], (int)radius[n], Scalar(255, 255, 0), 3, 8, 0);
-	    cout << "Motion Detected from Object " << n << ": (" << center[n].x << ", " << center[n].y << ")" << endl;
+	    if(sqrt(pow((center.x-center_face_new.x), 2)+pow((center.y-center_face_new.y), 2)) > 30)
+	    {
+		center = center_face_new;
+		radius = radius_face_new;
+		cout << "Motion detected at: (" << center.x << ", " << center.y << ")" << endl;
+	    }
+
+	    circle(src, center, radius, Scalar(255, 255, 0), 4, 8, 0);
 	}
-	/***TEST***/
-	
+
+	//Display the images
         imshow(window_cpu, src);
         imshow(window_gpu, dst);
 
