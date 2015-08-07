@@ -63,6 +63,7 @@ if __name__ == "__main__":
         #starts the pull client
         external_pull_client = external_client_pull()
         external_pull_client.start()
+        print 'External comms started.'
         
         #start the internal communication processes
         #start the pull server
@@ -80,9 +81,10 @@ if __name__ == "__main__":
         #start the pull client
         internal_pull_client = internal_client_pull()
         internal_pull_client.start()
+        print 'Internal comms started.'
         
         
-        
+        #TODO get rid of the logging stuff
         while True:
             if not pull_pika.is_alive():
                 #print 'Pika pull has crashed. Restarting...'

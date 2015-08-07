@@ -83,14 +83,10 @@ class Data_Cache(Daemon):
                     if not data:
                         break
                     else:
-                        #'Flush' means that there is an external flush request.
+                        #'Flush' means that there is an external flush request or if WagMan is about to shut down the node controller
                         if data == 'Flush':
                             #flush all stored messages into files
-                            DC_flush(incoming_available_queues, outgoing_available_queues)
-                        #'Shutdown' means WagMan is about to shut down the node controller
-                        #data cache needs to flush messages to a file
-                        elif data == 'Shutdown':
-                            #flush all stored messages into files
+                            print 'Flush request made.'
                             DC_flush(incoming_available_queues, outgoing_available_queues)
                         #Indicates that it is a pull request 
                         elif data[0] == '|': #TODO This could be improved if there is a better way to distinguish between push and pull requests and from incoming and outgoing requests
@@ -428,12 +424,13 @@ def DC_flush(incoming_available_queues, outgoing_available_queues):
         :param int msg_counter: Keeps track of total messages in the data cache.
     """ 
     Data_Cache.flush = 1
-    print 'Flushing!' #for testing
+    cur_date = str(datetime.datetime.now().strftime('%Y%m%d%H:%M:%S'))
+    print 'Flushing at ' + cur_date
     #print 'Msg_counter: ' , Data_Cache.msg_counter
     ##print 'Available mem: ', AVAILABLE_MEM
     
     try:
-        cur_date = str(datetime.datetime.now().strftime('%Y%m%d%H:%M:%S'))
+        
         filename = '/var/dc/outgoing_msgs/' + cur_date #file name is date of flush
         f = open(filename, 'w')
         print 'Flushing outgoing'
@@ -553,7 +550,7 @@ def get_priority(outgoing_available_queues):
         return (highest_de_p, highest_msg_p)           
 
 if __name__ == "__main__":
-    dc = Data_Cache('/tmp/Data_Cache.pid',stdout='/var/dc/dc_out.log', stderr='/var/dc/dc_err.log') #TODO may need to change this
+    dc = Data_Cache('/tmp/Data_Cache.pid',stdout='/var/log/dc_out.log', stderr='/var/log/dc_err.log') #TODO may need to change this
     if len(sys.argv) == 2:
         if 'start' == sys.argv[1]:
             print 'starting.'

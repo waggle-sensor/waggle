@@ -7,7 +7,7 @@ from protocol.PacketHandler import *
 sys.path.append('../NC/')
 from NC_configuration import *
 
-
+#TODO perhaps create log files for each process
 
 """
     The internal communicator is the channel of communication between the GNs and the data cache. It consists of four processes: Push and pull unix socket client processes to communicate with the data cache
@@ -31,19 +31,17 @@ def send(msg):
                 client_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
                 try:
                     client_sock.connect('/tmp/Data_Cache_server')
-                    print "Connected to data cache... "
+                    #print "Connected to data cache... "
                     client_sock.sendall(msg)
                     client_sock.close() #closes socket after each message is sent #TODO is there a better way to do this?
                     break #break loop when message sent. Otherwise, keep trying until successful
                 except Exception as e:
                     print e
-                    logging.warning(e)
                     time.sleep(5)
                     client_sock.close()
 
             else: 
                 time.sleep(5)
-                logging.warning('Unable to connect to DC...')
                 print 'Unable to connect to DC...'
 
         except KeyboardInterrupt, k:
@@ -78,9 +76,12 @@ class internal_client_push(Process):
 
     
     def run(self):
+        #set log files
+        stdout='/var/log/comms/internal_client_push.log'
+        stderr='/var/log/comms/internal_client_push.err'
+        
         comm = internal_communicator()
-        print 'Internal client push started...'
-        logging.info('Internal client push started...')
+        sys.stdout.write('Internal client push started...\n')
         while True:
             try:
                 #if the queue is not empty, connect to DC and send msg
@@ -89,21 +90,20 @@ class internal_client_push(Process):
                         client_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
                         try:
                             client_sock.connect('/tmp/Data_Cache_server')
-                            print "client_push connected to data cache... "
+                            #print "client_push connected to data cache... "
                             data = comm.DC_push.get() #Gets message out of the queue and sends to data cache
-                            print "sending: " , data
+                            #print "sending: " , data
                             client_sock.sendall(data)
                             client_sock.close() #closes socket after each message is sent #TODO is there a better way to do this?
                         except Exception as e:
-                            logging.warning(e)
-                            print e
+                            sys.stderr.write(e)
+                            #print e
                             client_sock.close()
                             time.sleep(5)
                         
                     else: 
                         time.sleep(5)
-                        logging.warning('Internal client push unable to connect to DC...')
-                        print 'Internal client push unable to connect to DC...'
+                        sys.stderr.write('Internal client push unable to connect to DC...\n')
                 else: 
                     time.sleep(1) #else, wait until messages are in queue
             except KeyboardInterrupt, k:
@@ -119,9 +119,12 @@ class internal_client_pull(Process):
     """
     
     def run(self):
+        #set log files
+        stdout='/var/log/comms/internal_client_pull.log'
+        stderr='/var/log/comms/internal_client_pull.err'
+        
         comm = internal_communicator()
-        #print 'Internal client pull started...'
-        logging.info('Internal client pull started...')
+        sys.stdout.write('Internal client pull started...\n')
         
         while True:
             while comm.incoming_request.empty(): #sleeps until a GN initiates a pull request
@@ -152,13 +155,12 @@ class internal_client_pull(Process):
                             
                                     
                     except Exception as e:
-                        logging.warning(e)
+                        sys.stderr.write(e)
                         print e
                         client_sock.close()
                         time.sleep(5)
                 else:
-                    print "Internal client pull unable to connect to DC."
-                    logging.warning('Internal client pull unable to connect to DC.')
+                    sys.stderr.write('Internal client pull unable to connect to DC.\n')
                     time.sleep(1)
             except KeyboardInterrupt, k:
                 print "Internal client pull shutting down."
@@ -171,13 +173,17 @@ class push_server(Process):
     """
     
     def run(self):
+        #set log files
+        stdout='/var/log/comms/push_server.log'
+        stderr='/var/log/comms/push_server.err'
+        
         comm = internal_communicator()
         HOST = 'localhost' 
         PORT = 9090
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.bind((HOST,PORT))
         server.listen(5) #supports up to 5 threads, one for each GN
-        print 'Internal push server process started...'
+        sys.stdout.write('Internal push server process started...\n')
 
         while True:
             client_sock, addr = server.accept()
@@ -209,13 +215,17 @@ class pull_server(Process):
     """
     
     def run(self):
+        #set log files
+        stdout='/var/log/comms/pull_server.log'
+        stderr='/var/log/comms/pull_server.err'
+        
         comm = internal_communicator()
         HOST = 'localhost' 
         PORT = 9091
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.bind((HOST,PORT))
         server.listen(5) #supports up to 5 threads, one for each GN
-        print 'Internal pull server process started...'
+        sys.stdout.write('Internal pull server process started...\n')
         while True:
             client_sock, addr = server.accept()
             while True:
