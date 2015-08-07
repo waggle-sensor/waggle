@@ -64,7 +64,7 @@ boolean boot_NC()
    // Tell NC that it is about to be shut down, in case this is a reboot
    Serial.println(NC_NOTIFIER_SHUTDOWN);
    // Give it time to shut down properly
-   delay(NC_SHUTDOWN_DELAY);
+   delay((long)NC_SHUTDOWN_DELAY);
 
    // Turn NC off (disable the relay)
    digitalWrite(PIN_RELAY_NC, LOW);
@@ -804,87 +804,6 @@ void get_params_GNs()
       eeprom_update_word(&E_AMP_MAX_GN1, (uint16_t)max_amp_GN1.toInt());
       eeprom_update_word(&E_AMP_MAX_GN2, (uint16_t)max_amp_GN2.toInt());
       eeprom_update_word(&E_AMP_MAX_GN3, (uint16_t)max_amp_GN3.toInt());
-   }
-}
-
-
-
-//---------- G E T _ T I M E _ N C --------------------------------------------
-/*
-   Requests a time update from the node controller.  If an update is received,
-   the RTC is set to the new time.
-
-   :rtype: none
-*/
-void get_time_NC()
-{
-   // Send request
-   Serial.println(NC_NOTIFIER_TIME_REQUEST);
-
-   // Save the node controller's response into a string.
-   // Default timeout value is 1 second
-   String received_time = "";
-   received_time = Serial.readStringUntil(NC_TERMINATOR);
-
-   // Was time received?
-   if(received_time.length() > 0)
-   {
-      /* Order of values (coming from node controller):
-      
-      Year
-      Month
-      Day
-      Hour
-      Minute
-      Second
-      */
-
-      // Temporary strings for holding each value
-      String received_year = "";
-      String received_month = "";
-      String received_day = "";
-      String received_hour = "";
-      String received_minute = "";
-      String received_second = "";
-
-      // Index for iterating thru the received string
-      int i = 0;
-
-      // Parse the received list of values:
-      while(received_time[i] != NC_DELIMITER)
-         received_year += received_time[i++];
-      // Skip delimiter
-      i++;
-
-      while(received_time[i] != NC_DELIMITER)
-         received_month += received_time[i++];
-      i++;
-
-      while(received_time[i] != NC_DELIMITER)
-         received_day += received_time[i++];
-      i++;
-
-      while(received_time[i] != NC_DELIMITER)
-         received_hour += received_time[i++];
-      i++;
-
-      while(received_time[i] != NC_DELIMITER)
-         received_minute += received_time[i++];
-      i++;
-
-      while(received_time[i] != NC_DELIMITER)
-         received_second += received_time[i++];
-      i++;
-
-      // Set SysMon's time to received time
-      setTime(received_hour.toInt(),
-         received_minute.toInt(),
-         received_second.toInt(),
-         received_day.toInt(),
-         received_month.toInt(),
-         received_year.toInt());
-      // Set RTC time to SysMon's time
-      RTC.set(now());
    }
 }
 
