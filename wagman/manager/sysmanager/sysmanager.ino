@@ -64,6 +64,8 @@
 
 // Time (ms) to give node controller to prepare to receive message
 #define NC_MESSAGE_DELAY 10
+// Time (ms) to give node controller to prepare for shutdown
+#define NC_SHUTDOWN_DELAY 5000
 
 // Special characters for interacting with the node controller
 #define NC_NOTIFIER_STATUS '@'
@@ -73,6 +75,7 @@
 #define NC_NOTIFIER_TIME_REQUEST '*'
 #define NC_NOTIFIER_TIME_SEND '('
 #define NC_NOTIFIER_CONFIG_DONE "="
+#define NC_NOTIFIER_SHUTDOWN '?'
 #define NC_DELIMITER ','
 #define NC_TERMINATOR '!'
 

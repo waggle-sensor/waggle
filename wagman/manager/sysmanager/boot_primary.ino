@@ -61,11 +61,16 @@ boolean boot_NC()
    // Mark NC as not operational
    _NC_running = false;
 
-   // Make sure the device is off
+   // Tell NC that it is about to be shut down, in case this is a reboot
+   Serial.println(NC_NOTIFIER_SHUTDOWN);
+   // Give it time to shut down properly
+   delay(NC_SHUTDOWN_DELAY);
+
+   // Turn NC off (disable the relay)
    digitalWrite(PIN_RELAY_NC, LOW);
 
-   // Give the relay time to move
-   delay(100);
+   // Give the device time to rest
+   delay(POWER_CYCLE_DELAY);
 
    // Is the node controller not enabled?
    if(!eeprom_read_byte(&E_NC_ENABLED))
@@ -115,9 +120,6 @@ boolean boot_NC()
    if(config_WagMan != NC_NOTIFIER_CONFIG_DONE)
       // Exit with failure
       return false;
-
-   // Give the node controller time to boot
-   delay((long)eeprom_read_word(&E_BOOT_TIME_NC) * 1000L);
 
    // Is the node controller not drawing an expected amount of power?
    if(!check_power_NC())
@@ -206,8 +208,8 @@ void boot_switch()
    // Make sure the device is off
    digitalWrite(PIN_RELAY_SWITCH, LOW);
 
-   // Give the relay time to move
-   delay(100);
+   // Give the device time to rest
+   delay(POWER_CYCLE_DELAY);
 
    // Is the ethernet switch disabled or not present?
    if(!(eeprom_read_byte(&E_SWITCH_ENABLED)
@@ -1069,7 +1071,7 @@ void set_default_eeprom()
    eeprom_update_byte(&E_MAX_NUM_SOS_BOOT_ATTEMPTS, 3);
    eeprom_update_byte(&E_MAX_NUM_SUBSYSTEM_BOOT_ATTEMPTS, 3);
    eeprom_update_byte(&E_MAX_NUM_PRIMARY_BOOT_ATTEMPTS, 3);
-   eeprom_update_word(&E_DEVICE_REBOOT_PERIOD, 15);
+   eeprom_update_word(&E_DEVICE_REBOOT_PERIOD, 60);
    eeprom_update_byte(&E_PRESENT_SWITCH, 0);
    eeprom_update_word(&E_BOOT_TIME_NC, 30);
    eeprom_update_word(&E_CONFIG_TIME_NC, 600);

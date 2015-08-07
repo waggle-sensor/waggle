@@ -436,5 +436,9 @@ while True:
 
         print incomingTime
 
+    # Is SysMon about to shut me down?
+    elif incomingNotifier == "?":
+        # AMY AMY AMY do something here
+
     # Clear incomingNotifier
     incomingNotifier = ''
