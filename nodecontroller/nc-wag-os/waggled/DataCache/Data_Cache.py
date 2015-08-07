@@ -87,6 +87,11 @@ class Data_Cache(Daemon):
                         if data == 'Flush':
                             #flush all stored messages into files
                             DC_flush(incoming_available_queues, outgoing_available_queues)
+                        #'Shutdown' means WagMan is about to shut down the node controller
+                        #data cache needs to flush messages to a file
+                        elif data == 'Shutdown':
+                            #flush all stored messages into files
+                            DC_flush(incoming_available_queues, outgoing_available_queues)
                         #Indicates that it is a pull request 
                         elif data[0] == '|': #TODO This could be improved if there is a better way to distinguish between push and pull requests and from incoming and outgoing requests
                             data, dest = data.split('|', 1) #splits to get either 'o' for outgoing request or the device location for incoming request

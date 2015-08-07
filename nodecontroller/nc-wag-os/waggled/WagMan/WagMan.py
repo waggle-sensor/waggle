@@ -438,7 +438,8 @@ while True:
 
     # Is SysMon about to shut me down?
     elif incomingNotifier == "?":
-        # AMY AMY AMY do something here
+        #send Shutdown to datacache to flush messages to file before shutting down.
+        send('Shutdown')
 
     # Clear incomingNotifier
     incomingNotifier = ''
