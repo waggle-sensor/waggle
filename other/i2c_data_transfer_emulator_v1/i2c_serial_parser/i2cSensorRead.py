@@ -1,10 +1,14 @@
 import serial
 import time
+import sys
 Link_unavailable = True
 PORT_DEV='/dev/ttyACM0'
+count = 0
 
 sensor_list = ["Board MAC","TMP112","HTU21D","GP2Y1010AU0F","BMP180","PR103J2","TSL250RD","MMA8452Q","SPV1840LR5H-B","TSYS01","HMC5883L","HIH6130","APDS-9006-020","TSL260RD","TSL250RD","MLX75305","ML8511","D6T","MLX90614","TMP421","SPV1840LR5H-B","Total reducing gases","Ethanol (C2H5-OH)","Nitrogen Di-oxide (NO2)","Ozone (03)","Hydrogen Sulphide (H2S)","Total Oxidizing gases","Carbon Monoxide (C0)","Sulfur Dioxide (SO2)","SHT25","LPS25H","Si1145","Intel MAC"]
 
+decoded_output = ['0' for x in range(16)]
+print len(decoded_output)
 
 def calc_crc (data_byte,CRC_Value):
     CRC_Value = data_byte ^ CRC_Value
@@ -31,7 +35,7 @@ def format2 (input):
     return value
 
 def format3 (input):
-    return hex(int(input))
+    return str(hex(int(input)))[2:]
 
 def format4 (input):
     byte1 = int(input[0])
@@ -42,13 +46,18 @@ def format4 (input):
     return value
 
 def format5 (input):
-    return input
+    byte1 = int(input[0])
+    byte2 = int(input[1])
+    value = ((byte1 & 0x3F) << 8) | (byte2)
+    if byte1 & 0x40 == 0x40:
+        value = value * -1
+    return value
 
 def format6 (input):
     byte1 = int(input[0])
     byte2 = int(input[1])
     byte3 = int(input[2])
-    value = ((byte1 & 0x3F) << 16 ) + (byte2 << 8) + byte1
+    value = ((byte1 & 0x3F) << 16 ) | (byte2 << 8) | byte3
     if (byte1 & 0x40) == 0x40:
         value = value * -1
     return value
@@ -59,11 +68,12 @@ def formatNULL (input):
 def parse_sensor (sensor_id,sensor_data):
 
     if sensor_id == '0':
-        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@',
-        data = str(format3(sensor_data[-1]))+':'+str(format3(sensor_data[-2]))+ \
-        ':'+str(format3(sensor_data[-3]))+':'+str(format3(sensor_data[2]))+ \
-        ':'+str(format3(sensor_data[1]))+':'+str(format3(sensor_data[0]))
-        print "Data:", data
+        #print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@',
+        #data = ''
+        #for i in range(len(sensor_data)):
+            #data = data + str(format3(sensor_data[i]))
+        #print "Data:", data
+        pass
 
     elif sensor_id == '1':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@',
@@ -136,7 +146,6 @@ def parse_sensor (sensor_id,sensor_data):
             data = data + str(format1(sensor_data[2*i:2*(i+1)])) + ' '
         print "Data:", data
 
-
     elif sensor_id == '18':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@',
         print "Data:", format1(sensor_data)
@@ -149,52 +158,76 @@ def parse_sensor (sensor_id,sensor_data):
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@',
         print "Data:", format2(sensor_data)
 
+    #These are changing now, so have to be carefully checked.
+
+    #gas sensors start here -->
+
     elif sensor_id == '21':
-        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@',
-        print "Data:", format6(sensor_data)
+        #print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@',
+        #print "Data:",
+        decoded_output[14] = str(format6(sensor_data) << 1)
 
     elif sensor_id == '22':
-        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@',
-        print "Data:", format6(sensor_data)
+        #print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@',
+        #print "Data:",
+        decoded_output[15] = str(format6(sensor_data) << 1)+'\n'
 
     elif sensor_id == '23':
-        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@',
-        print "Data:", format6(sensor_data)
+        #print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@',
+        #print "Data:", format6(sensor_data) << 1
+        decoded_output[10] = str(format6(sensor_data) << 1)
 
     elif sensor_id == '24':
-        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@',
-        print "Data:", format6(sensor_data)
+        #print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@',
+        #print "Data:", format6(sensor_data) << 1
+        decoded_output[9] = str(format6(sensor_data) << 1)
 
     elif sensor_id == '25':
-        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@',
-        print "Data:", format6(sensor_data)
+        #print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@',
+        #print "Data:", format6(sensor_data) << 1
+        decoded_output[8] = str(format6(sensor_data) << 1)
 
     elif sensor_id == '26':
-        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@',
-        print "Data:", format6(sensor_data)
+        #print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@',
+        #print "Data:", format6(sensor_data) << 1
+        decoded_output[13] = str(format6(sensor_data) << 1)
 
     elif sensor_id == '27':
-        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@',
-        print "Data:", format6(sensor_data)
+        #print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@',
+        #print "Data:", format6(sensor_data) << 1
+        decoded_output[11] = str(format6(sensor_data) << 1)
 
     elif sensor_id == '28':
-        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@',
-        print "Data:", format6(sensor_data)
+        #print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@',
+        #print "Data:", format6(sensor_data) << 1
+        decoded_output[12] = str(format6(sensor_data) << 1)
+
+    # <-- gas sensors end here
 
     elif sensor_id == '29':
-        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@',
-        print "Data:", format5(sensor_data[0:2]),format5(sensor_data[2:4])
+        #print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@',
+        #print "Data:", format5(sensor_data[0:2]),format5(sensor_data[2:4])
+        decoded_output[3] = str(format5(sensor_data[0:2]))
+        decoded_output[4] = str(format5(sensor_data[2:4]))
 
     elif sensor_id == '30':
-        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@',
-        print "Data:", format5(sensor_data[0:1]), format5(sensor_data[2:3])
+        #print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@',
+        #print "Data:", format5(sensor_data[0:2]) << 1, format6(sensor_data[2:5]) << 2
+        decoded_output[5] = str(format5(sensor_data[0:2]) << 1)
+        decoded_output[7] = str(format6(sensor_data[2:5]) << 2)
 
     elif sensor_id == '31':
-        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@',
-        data = str(format3(sensor_data[-1]))+':'+str(format3(sensor_data[-2]))+ \
-        ':'+str(format3(sensor_data[-3]))+':'+str(format3(sensor_data[2]))+ \
-        ':'+str(format3(sensor_data[1]))+':'+str(format3(sensor_data[0]))
-        print "Data:", data
+        #print "Sensor:", sensor_id, sensor_list[int(sensor_id)],'@',
+        #print "Data:", format2(sensor_data) << 1
+        decoded_output[6] = str(format2(sensor_data) << 1)
+
+    elif sensor_id == '32':
+        #print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@',
+        data = ''
+        for i in range(len(sensor_data)):
+            data = data + str(format3(sensor_data[i]))
+        #print "Data:", data
+        decoded_output[0] = '.*'+data
 
 
 while Link_unavailable:
@@ -209,28 +242,30 @@ while Link_unavailable:
 
 
 while 1:
+
     data = link.readline()
+    #print data
     if (data.find(',')==-1):
         try:
-            data_bytes = data.split(' ')[:-1]
+            data_bytes = data.split(' ')
         except:
             pass
     else:
         try:
-            data_bytes = data.split(',')[:-1]
+            data_bytes = data.split(',')
+            initial_input = data_bytes
         except:
             pass
-
-    print data_bytes
-
+    if (data.find(',') == -1) and (data.find(' ') == -1):
+        print data
     try:
         if data_bytes[0x00] == '170':
+            count = count + 1
             protocol = data_bytes[1]
-            print "------------------------"
             if protocol == '0':
-                print 'protocol version:', protocol,
+                #print 'protocol version:', protocol,
                 length_of_packet = int(data_bytes[0x02])
-                print "Packet Length:",length_of_packet
+                #print "Packet Length:",length_of_packet
                 if len(data_bytes) > length_of_packet+4:
                     if data_bytes[length_of_packet+4] == '85':
                         CRC_Value = 0x00
@@ -239,7 +274,7 @@ while 1:
                         for current_byte in range(length_of_packet+1):
                             CRC_Value = calc_crc( int(data_bytes[current_byte+3]), CRC_Value)
                         if CRC_Value == 0:
-                            print "====>Packet CRC correct."
+                            #print "====>Packet CRC correct."
                             consume_ptr = 0x03
                             while consume_ptr < length_of_packet:
                                 This_id = data_bytes[consume_ptr]
@@ -256,5 +291,17 @@ while 1:
 
                         else:
                             print "Invalid CRC, not parsing packet.<===="
+
+            decoded_output[15] = str(decoded_output[15].split('\n')[0])
+            initial_input[15] = str(initial_input[15].split('\n')[0])
+            print count
+            for k in range(len(decoded_output)-1):
+                if (( abs(int(decoded_output[k+1]) - int(initial_input[k+1])) > 1) and k <> 6) or (( abs(int(decoded_output[k+1]) - int(initial_input[k+1])) > 4) and k == 6):
+                    print ">>>>>>>>>>>>>"
+                    print time.asctime()
+                    print k
+                    print decoded_output
+                    print initial_input
+                    print "<<<<<<<<<<<<<"
     except:
         pass

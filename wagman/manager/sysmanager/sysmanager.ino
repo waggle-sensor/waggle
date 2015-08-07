@@ -64,6 +64,11 @@
 
 // Time (ms) to give node controller to prepare to receive message
 #define NC_MESSAGE_DELAY 10
+// Time (ms) to give node controller to prepare for shutdown
+#define NC_SHUTDOWN_DELAY 5000
+
+// Period of SysMon's requests for updated time from NC
+#define TIME_UPDATE_REQUEST_PERIOD 3600
 
 // Special characters for interacting with the node controller
 #define NC_NOTIFIER_STATUS '@'
@@ -73,6 +78,7 @@
 #define NC_NOTIFIER_TIME_REQUEST '*'
 #define NC_NOTIFIER_TIME_SEND '('
 #define NC_NOTIFIER_CONFIG_DONE "="
+#define NC_NOTIFIER_SHUTDOWN '?'
 #define NC_DELIMITER ','
 #define NC_TERMINATOR '!'
 
@@ -121,6 +127,7 @@ boolean _GN2_running = false;
 boolean _GN3_running = false;
 
 byte count_status_report = 0;
+long count_time_update_request = 0;
 byte count_timeout_heartbeat_NC = 0;
 byte count_timeout_heartbeat_switch = 0;
 byte count_timeout_heartbeat_GN1 = 0;
@@ -337,6 +344,9 @@ void loop()
     // Increment status report counter
     count_status_report++;
 
+    // Increment time request counter
+    count_time_update_request++;
+
     //////
     // Increment/clear timeouts...
     //////
@@ -510,17 +520,62 @@ void loop()
     // Is node controller operating?
     if(_NC_running)
     {
-      // Has something timed out for node controller?
-      if((count_timeout_heartbeat_NC >= eeprom_read_byte(&E_HEARTBEAT_TIMEOUT_NC))
-        || (count_timeout_power_NC >= eeprom_read_byte(&E_BAD_CURRENT_TIMEOUT_NC))
-        || (count_timeout_environ_NC >= eeprom_read_byte(&E_BAD_ENVIRON_TIMEOUT_NC))
-        || (count_timeout_temp_processor_NC >= eeprom_read_byte(&E_BAD_TEMP_PROCESSOR_TIMEOUT_NC)))
+      // Bad heartbeat timeout for NC?
+      if(count_timeout_heartbeat_NC >= eeprom_read_byte(&E_HEARTBEAT_TIMEOUT_NC))
       {
-        // Clear all the node controller's timeout counters
-        count_timeout_heartbeat_NC = 0;
+        // Inform node controller of the problem
+        send_problem(PROBLEM_NC_HEARTBEAT);
+
+        // Clear all of NC's timeout counters
         count_timeout_power_NC = 0;
-        count_timeout_environ_NC = 0;
         count_timeout_temp_processor_NC = 0;
+        count_timeout_environ_NC = 0;
+        count_timeout_heartbeat_NC = 0;
+
+        // Reboot the node controller
+        boot_NC();
+      }
+      // Bad power timeout for NC?
+      else if(count_timeout_power_NC >= eeprom_read_byte(&E_BAD_CURRENT_TIMEOUT_NC))
+      {
+        // Inform node controller of the problem
+        send_problem(PROBLEM_NC_POWER);
+
+        // Clear all of NC's timeout counters
+        count_timeout_power_NC = 0;
+        count_timeout_temp_processor_NC = 0;
+        count_timeout_environ_NC = 0;
+        count_timeout_heartbeat_NC = 0;
+
+        // Reboot the node controller
+        boot_NC();
+      }
+      // Bad environment timeout for NC?
+      else if(count_timeout_environ_NC >= eeprom_read_byte(&E_BAD_ENVIRON_TIMEOUT_NC))
+      {
+        // Inform node controller of the problem
+        send_problem(PROBLEM_NC_ENVIRON);
+
+        // Clear all of NC's timeout counters
+        count_timeout_power_NC = 0;
+        count_timeout_temp_processor_NC = 0;
+        count_timeout_environ_NC = 0;
+        count_timeout_heartbeat_NC = 0;
+
+        // Reboot the node controller
+        boot_NC();
+      }
+      // Bad processor temperature timeout for NC?
+      else if(count_timeout_temp_processor_NC >= eeprom_read_byte(&E_BAD_TEMP_PROCESSOR_TIMEOUT_NC))
+      {
+        // Inform node controller of the problem
+        send_problem(PROBLEM_NC_TEMP);
+
+        // Clear all of NC's timeout counters
+        count_timeout_power_NC = 0;
+        count_timeout_temp_processor_NC = 0;
+        count_timeout_environ_NC = 0;
+        count_timeout_heartbeat_NC = 0;
 
         // Reboot the node controller
         boot_NC();
@@ -770,7 +825,19 @@ void loop()
       // Clear the counter
       count_status_report = 0;
 
+      // Send it
       send_status();
+    }
+
+
+    // Time to request updated time from NC?
+    if(count_time_update_request >= TIME_UPDATE_REQUEST_PERIOD)
+    {
+      // Clear the counter
+      count_time_update_request = 0;
+
+      // Request time
+      get_time_NC();
     }
 
 
@@ -1346,6 +1413,87 @@ boolean check_temp_switch()
 
 
 
+//---------- G E T _ T I M E _ N C --------------------------------------------
+/*
+   Requests a time update from the node controller.  If an update is received,
+   the RTC is set to the new time.
+
+   :rtype: none
+*/
+void get_time_NC()
+{
+   // Send request
+   Serial.println(NC_NOTIFIER_TIME_REQUEST);
+
+   // Save the node controller's response into a string.
+   // Default timeout value is 1 second
+   String received_time = "";
+   received_time = Serial.readStringUntil(NC_TERMINATOR);
+
+   // Was time received?
+   if(received_time.length() > 0)
+   {
+      /* Order of values (coming from node controller):
+      
+      Year
+      Month
+      Day
+      Hour
+      Minute
+      Second
+      */
+
+      // Temporary strings for holding each value
+      String received_year = "";
+      String received_month = "";
+      String received_day = "";
+      String received_hour = "";
+      String received_minute = "";
+      String received_second = "";
+
+      // Index for iterating thru the received string
+      int i = 0;
+
+      // Parse the received list of values:
+      while(received_time[i] != NC_DELIMITER)
+         received_year += received_time[i++];
+      // Skip delimiter
+      i++;
+
+      while(received_time[i] != NC_DELIMITER)
+         received_month += received_time[i++];
+      i++;
+
+      while(received_time[i] != NC_DELIMITER)
+         received_day += received_time[i++];
+      i++;
+
+      while(received_time[i] != NC_DELIMITER)
+         received_hour += received_time[i++];
+      i++;
+
+      while(received_time[i] != NC_DELIMITER)
+         received_minute += received_time[i++];
+      i++;
+
+      while(received_time[i] != NC_DELIMITER)
+         received_second += received_time[i++];
+      i++;
+
+      // Set SysMon's time to received time
+      setTime(received_hour.toInt(),
+         received_minute.toInt(),
+         received_second.toInt(),
+         received_day.toInt(),
+         received_month.toInt(),
+         received_year.toInt());
+      // Set RTC time to SysMon's time
+      RTC.set(now());
+   }
+}
+
+
+
 //---------- P O W E R _ C Y C L E  -------------------------------------------
 /*
    Power cycle the device specified by the argument.
@@ -1384,6 +1532,10 @@ void send_problem(String problem)
 
   // Send problem report
   Serial.println(problem);
+
+  // Give it time to send, in case another message is going to be sent
+  // right after this
+  delay(NC_MESSAGE_DELAY);
 }
 
 

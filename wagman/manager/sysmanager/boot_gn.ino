@@ -70,8 +70,8 @@ void boot_GN(byte gn)
   // Make sure the device is off
   digitalWrite(pin_relay, LOW);
 
-  // Give the relay time to move
-  delay(100);
+  // Give the device time to rest
+  delay(POWER_CYCLE_DELAY);
 
   // Is guest node enabled and expected to be present?
   if(eeprom_read_byte(enabled) && eeprom_read_byte(present))

@@ -15,12 +15,6 @@ void chemsense_parse_value (unsigned char pidx)
         param_value = param_value * (-1);
     }
 
-    if (attenuate == 1)
-    {
-        param_value = param_value / 256;
-        attenuate = 0;
-    }
-
     return;
 }
 
@@ -220,7 +214,7 @@ void chemsense_pack (void)
                         #ifdef hydrogen_sulphide_include
                         valid = 1;
                         chemsense_parse_value(pidx);
-                        format6(long(param_value) >> 1);
+                        format6(param_value >> 1);
                         hydrogen_sulphide[0] = ID_HYDROGEN_SULPHIDE;
                         hydrogen_sulphide[1] = (valid << 7) | (LENGTH_FORMAT6);
                         hydrogen_sulphide[2] = packet_format6[0];

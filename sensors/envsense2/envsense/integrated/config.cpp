@@ -50,8 +50,8 @@
 #define ID_SULFUR_DIOXIDE  0x1C
 #define ID_SHT25 0x1D
 #define ID_LPS25H 0x1E
-#define ID_CHEMSENSE_MAC  0x1F
-#define ID_Si1145 0x20
+#define ID_Si1145 0x1F
+#define ID_CHEMSENSE_MAC  0x20
 #define ID_HEALTH  0xFE
 
 /**************************************************************************************/

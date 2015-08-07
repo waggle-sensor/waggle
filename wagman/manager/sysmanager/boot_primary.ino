@@ -61,11 +61,16 @@ boolean boot_NC()
    // Mark NC as not operational
    _NC_running = false;
 
-   // Make sure the device is off
+   // Tell NC that it is about to be shut down, in case this is a reboot
+   Serial.println(NC_NOTIFIER_SHUTDOWN);
+   // Give it time to shut down properly
+   delay((long)NC_SHUTDOWN_DELAY);
+
+   // Turn NC off (disable the relay)
    digitalWrite(PIN_RELAY_NC, LOW);
 
-   // Give the relay time to move
-   delay(100);
+   // Give the device time to rest
+   delay(POWER_CYCLE_DELAY);
 
    // Is the node controller not enabled?
    if(!eeprom_read_byte(&E_NC_ENABLED))
@@ -115,9 +120,6 @@ boolean boot_NC()
    if(config_WagMan != NC_NOTIFIER_CONFIG_DONE)
       // Exit with failure
       return false;
-
-   // Give the node controller time to boot
-   delay((long)eeprom_read_word(&E_BOOT_TIME_NC) * 1000L);
 
    // Is the node controller not drawing an expected amount of power?
    if(!check_power_NC())
@@ -206,8 +208,8 @@ void boot_switch()
    // Make sure the device is off
    digitalWrite(PIN_RELAY_SWITCH, LOW);
 
-   // Give the relay time to move
-   delay(100);
+   // Give the device time to rest
+   delay(POWER_CYCLE_DELAY);
 
    // Is the ethernet switch disabled or not present?
    if(!(eeprom_read_byte(&E_SWITCH_ENABLED)
@@ -807,87 +809,6 @@ void get_params_GNs()
 
 
 
-//---------- G E T _ T I M E _ N C --------------------------------------------
-/*
-   Requests a time update from the node controller.  If an update is received,
-   the RTC is set to the new time.
-
-   :rtype: none
-*/
-void get_time_NC()
-{
-   // Send request
-   Serial.println(NC_NOTIFIER_TIME_REQUEST);
-
-   // Save the node controller's response into a string.
-   // Default timeout value is 1 second
-   String received_time = "";
-   received_time = Serial.readStringUntil(NC_TERMINATOR);
-
-   // Was time received?
-   if(received_time.length() > 0)
-   {
-      /* Order of values (coming from node controller):
-      
-      Year
-      Month
-      Day
-      Hour
-      Minute
-      Second
-      */
-
-      // Temporary strings for holding each value
-      String received_year = "";
-      String received_month = "";
-      String received_day = "";
-      String received_hour = "";
-      String received_minute = "";
-      String received_second = "";
-
-      // Index for iterating thru the received string
-      int i = 0;
-
-      // Parse the received list of values:
-      while(received_time[i] != NC_DELIMITER)
-         received_year += received_time[i++];
-      // Skip delimiter
-      i++;
-
-      while(received_time[i] != NC_DELIMITER)
-         received_month += received_time[i++];
-      i++;
-
-      while(received_time[i] != NC_DELIMITER)
-         received_day += received_time[i++];
-      i++;
-
-      while(received_time[i] != NC_DELIMITER)
-         received_hour += received_time[i++];
-      i++;
-
-      while(received_time[i] != NC_DELIMITER)
-         received_minute += received_time[i++];
-      i++;
-
-      while(received_time[i] != NC_DELIMITER)
-         received_second += received_time[i++];
-      i++;
-
-      // Set SysMon's time to received time
-      setTime(received_hour.toInt(),
-         received_minute.toInt(),
-         received_second.toInt(),
-         received_day.toInt(),
-         received_month.toInt(),
-         received_year.toInt());
-      // Set RTC time to SysMon's time
-      RTC.set(now());
-   }
-}
-
-
-
 //---------- I N I T _ P R I M A R Y ------------------------------------------
 /*
    Initializes/starts all necessary ports, peripherals, interrupts, etc.
@@ -1069,7 +990,7 @@ void set_default_eeprom()
    eeprom_update_byte(&E_MAX_NUM_SOS_BOOT_ATTEMPTS, 3);
    eeprom_update_byte(&E_MAX_NUM_SUBSYSTEM_BOOT_ATTEMPTS, 3);
    eeprom_update_byte(&E_MAX_NUM_PRIMARY_BOOT_ATTEMPTS, 3);
-   eeprom_update_word(&E_DEVICE_REBOOT_PERIOD, 15);
+   eeprom_update_word(&E_DEVICE_REBOOT_PERIOD, 60);
    eeprom_update_byte(&E_PRESENT_SWITCH, 0);
    eeprom_update_word(&E_BOOT_TIME_NC, 30);
    eeprom_update_word(&E_CONFIG_TIME_NC, 600);
