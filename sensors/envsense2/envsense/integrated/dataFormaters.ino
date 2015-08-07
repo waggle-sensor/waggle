@@ -140,7 +140,6 @@ void format6(long input)
 {
     // Flag to store pos/neg info
     byte _negative;
-
     // Input negative?
     if (input < 0) {
         _negative = 1;
@@ -148,60 +147,19 @@ void format6(long input)
     else {
         _negative = 0;
     }
-
     // Get abs. value of input
     input = abs(input);
-
-
     // Second byte
-    byte byte1 = (1 << 7) | (_negative << 6); // 1 = converted data
+    byte byte1 = (0x80) | (_negative << 6); // 1 = converted data
     // Add 6 upper bits to complete byte 1
-    byte1 |= input >> 16;
-
+    byte1 = byte1 | ((input >> 16) & 0x3f);
     // Third byte
-    byte byte2 = input >> 8;
-
+    byte byte2 = (input >> 8) & 0xff;
     // Fourth byte
     byte byte3 = input;
-
     // Assemble sub-packet
     packet_format6[0] = byte1;
     packet_format6[1] = byte2;
     packet_format6[2] = byte3;
-}
-/**************************************************************************************/
-
-
-/** Format 8 assembler ****************************************************************/
-void format8(long input)
-{
-    // Flag to store pos/neg info
-    byte _negative;
-
-    // Input negative?
-    if (input < 0) {
-        _negative = 1;
-    }
-    else {
-        _negative = 0;
-    }
-
-    // Get abs. value of input
-    input = abs(input);
-
-    // Extract MSB
-    byte byte3 = ((input >> 16) & 0x7f) | (_negative << 6);
-
-    //Extract middle byte
-    byte byte2 = (input >> 8) & 0xff;
-
-    // Extract LSB
-    byte byte1 = input & 0xff;
-
-    // Assemble sub-packet
-    packet_format2[0] = byte1;
-    packet_format2[1] = byte2;
-    packet_format2[2] = byte3;
-
 }
 /**************************************************************************************/
