@@ -341,6 +341,13 @@ void loop()
   // Has the timer finished a cycle?
   if(_timer1_cycle)
   {
+    Serial.println(eeprom_read_word(&E_BOOT_TIME_GN1));
+    Serial.println(eeprom_read_word(&E_BOOT_TIME_GN2));
+    Serial.println(eeprom_read_word(&E_BOOT_TIME_GN3));
+    Serial.println(eeprom_read_byte(&E_PRESENT_GN1));
+    Serial.println(eeprom_read_byte(&E_PRESENT_GN2));
+    Serial.println(eeprom_read_byte(&E_PRESENT_GN3));
+
     // Increment status report counter
     count_status_report++;
 
