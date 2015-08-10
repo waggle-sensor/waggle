@@ -137,7 +137,7 @@ void boot_GN(byte gn)
       boolean _heartbeat_detected = false;
 
       // Try to get a heartbeat from the GN as many times as allowed
-      while (boot_attempts <= eeprom_read_byte(&E_MAX_NUM_SUBSYSTEM_BOOT_ATTEMPTS))
+      while (boot_attempts < eeprom_read_byte(&E_MAX_NUM_SUBSYSTEM_BOOT_ATTEMPTS))
       {
         // Is heartbeat not detected?
         if(!check_heartbeat_odroid(pin_heartbeat))
