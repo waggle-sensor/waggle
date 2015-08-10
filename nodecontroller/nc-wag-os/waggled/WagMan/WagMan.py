@@ -406,7 +406,7 @@ while True:
         # Wait for problem report
         incomingProblem = ser_SysMon.readline().strip()
         #pack status report as waggle message
-        packet = acketmaker.make_data_packet(incomingProblem)
+        packet = packetmaker.make_data_packet(incomingProblem)
         #send status report to cloud
         for _pack in packet:
             send(_pack)
@@ -442,7 +442,9 @@ while True:
     # Is SysMon about to shut me down?
     elif incomingNotifier == "?":
         #send Shutdown to datacache to flush messages to file before shutting down.
-        send('Shutdown')
+        print 'Sending flush request to data cache.'
+        print incomingNotifier
+        send('Flush')
 
     # Clear incomingNotifier
     incomingNotifier = ''
