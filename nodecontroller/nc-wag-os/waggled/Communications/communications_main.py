@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import os, os.path, pika, logging, datetime, sys
+import os, os.path, pika, datetime, sys
 sys.path.append('../NC/')
 from multiprocessing import Process
 from NC_configuration import *
@@ -8,9 +8,7 @@ from external_communicator import *
 from internal_communicator import *
 
 
-cur_time = str(datetime.datetime.now().strftime('%Y%m%d%H:%M:%S'))
-LOG_FILE = '/var/comms/' + cur_time + '.log'
-logging.basicConfig(filename=LOG_FILE)
+#cur_time = str(datetime.datetime.now().strftime('%Y%m%d%H:%M:%S'))
 
 
 """
@@ -51,14 +49,17 @@ if __name__ == "__main__":
         #start the pika pull client
         pull_pika = pika_pull()
         pull_pika.start()
+        print 'Pika pull has started.'
         
         #start the pika push client 
         push_pika = pika_push()
         push_pika.start()
+        print 'Pika push has started.'
         
         #starts the push client
         external_push_client = external_client_push()
         external_push_client.start()
+        print 'external push has started.'
         
         #starts the pull client
         external_pull_client = external_client_pull()
@@ -69,14 +70,17 @@ if __name__ == "__main__":
         #start the pull server
         pull_serv = pull_server()
         pull_serv.start()
+        print 'pull server has started.'
         
         #start the push server 
         push_serv = push_server()
         push_serv.start()
+        print 'push server has started.'
         
         #start the push client
         internal_push_client = internal_client_push()
         internal_push_client.start()
+        print 'internal push client has started.'
         
         #start the pull client
         internal_pull_client = internal_client_pull()
@@ -88,67 +92,57 @@ if __name__ == "__main__":
         while True:
             if not pull_pika.is_alive():
                 #print 'Pika pull has crashed. Restarting...'
-                logging.warning('Pika pull has crashed. Restarting...' + str(datetime.datetime.now()))
+                print 'Pika pull has crashed. Restarting...', str(datetime.datetime.now())
                 pull_pika = pika_pull()
                 pull_pika.start()
-                logging.info('Pika pull restarted.')
-                #print 'Pika pull restarted.'
+                print 'Pika pull restarted.'
             
             if not push_pika.is_alive():
                 #print 'Pika push has crashed. Restarting...'
-                logging.warning('Pika push has crashed. Restarting...' + str(datetime.datetime.now()))
+                print 'Pika push has crashed. Restarting...' , str(datetime.datetime.now())
                 push_pika = pika_push()
                 push_pika.start()
-                logging.info('Pika push restarted.')
-                #print 'Pika push restarted.'
+                print 'Pika push restarted.'
                 
             if not external_push_client.is_alive():
                 #print 'External push client has crashed. Restarting...'
-                logging.warning('External push client has crashed. Restarting...' + str(datetime.datetime.now()))
+                print 'External push client has crashed. Restarting...', str(datetime.datetime.now())
                 external_push_client = external_client_push()
                 external_push_client.start()
-                logging.info('External_push_client restarted.')
-                #print 'External_push_client restarted.'
+                print 'External_push_client restarted.'
                 
             if not external_pull_client.is_alive():
                 #print 'external_pull_client has crashed. Restarting...'
-                logging.warning('external_pull_client has crashed. Restarting...' + str(datetime.datetime.now()))
+                print 'external_pull_client has crashed. Restarting...', str(datetime.datetime.now())
                 external_pull_client = external_client_pull()
                 external_pull_client.start()
-                logging.info('external_pull_client restarted.')
-                #print 'external_pull_client restarted.'
+                print 'external_pull_client restarted.'
                 
             if not pull_serv.is_alive():
                 #print 'pull_serv has crashed. Restarting...'
-                logging.warning('pull_serv has crashed. Restarting...' + str(datetime.datetime.now()))
+                print 'pull_serv has crashed. Restarting...', str(datetime.datetime.now())
                 pull_serv = pull_server()
                 pull_serv.start()
-                logging.info('pull_serv restarted.')
-                #print 'pull_serv restarted.'
+                print 'pull_serv restarted.'
                 
             if not push_serv.is_alive():
                 #print 'push_serv has crashed. Restarting...'
-                logging.warning('push_serv has crashed. Restarting...' + str(datetime.datetime.now()))
+                print 'push_serv has crashed. Restarting...', str(datetime.datetime.now())
                 push_serv = push_server()
                 push_serv.start()
-                logging.info('push_servrestarted.')
-                #print 'push_servrestarted.'
+                print 'push_serv restarted.'
                 
             if not internal_push_client.is_alive():
-                #print 'internal_push_client has crashed. Restarting...'
-                logging.warning('internal_push_client has crashed. Restarting...' + str(datetime.datetime.now()))
+                print 'internal_push_client has crashed. Restarting...', str(datetime.datetime.now())
                 internal_push_client = internal_client_push()
                 internal_push_client.start()
-                logging.info('internal_push_client restarted.')
-                #print 'internal_push_client restarted.'
+                print 'internal_push_client restarted.'
                 
             if not internal_pull_client.is_alive():
-                #print 'internal_pull_client has crashed. Restarting...'
-                logging.warning('internal_pull_client has crashed. Restarting...' + str(datetime.datetime.now()))
+                print 'internal_pull_client has crashed. Restarting...' , str(datetime.datetime.now())
                 internal_pull_client = internal_client_pull()
                 internal_pull_client.start()
-                logging.info('internal_pull_client restarted.')
-                #print 'internal_pull_client restarted.'
+                print 'internal_pull_client restarted.'
                 
                 
             time.sleep(3)

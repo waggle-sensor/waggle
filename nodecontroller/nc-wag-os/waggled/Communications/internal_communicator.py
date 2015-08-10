@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import socket, os, os.path, time, logging, sys
+import socket, os, os.path, time, sys
 from multiprocessing import Process, Queue
 sys.path.append('../../../../devtools/protocol_common/')
 from protocol.PacketHandler import *
