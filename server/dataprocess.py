@@ -39,6 +39,7 @@ class DataProcess(Process):
 		try:
 			header,data = unpack(body)
 			data = un_gPickle(data)
+			print "Data: ", data
 			# Send the data off to Cassandra
 			self.cassandra_insert(header,data)
 			ch.basic_ack(delivery_tag=method.delivery_tag)

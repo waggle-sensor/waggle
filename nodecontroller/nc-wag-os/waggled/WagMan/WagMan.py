@@ -457,6 +457,7 @@ while True:
         
         #Lastly, put it all together in Cassandra accepted format 
         #TODO may want to add a special Cassandra accepted format for WagMan problem reports that makes more sense
+        #TODO figure out where to specify data types in Cassandra
         problem_report = ['WagMan', timestamp, measuring, ['str', 'str'], report, ['',''],['']]
         
         #pack status report as waggle message
