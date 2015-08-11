@@ -394,22 +394,28 @@ while True:
     elif incomingNotifier == "@":
         # Wait for status report
         incomingStatus = ser_SysMon.readline().strip()
-        #pack status report as waggle message
+
+        # Pack status report as waggle message
         packet = packetmaker.make_data_packet(incomingStatus)
-        #send status report to cloud
+
+        # Send status report to cloud
         for _pack in packet:
             send(_pack)
+
         print incomingStatus
 
     # Is SysMon about to inform me of a problem?
     elif incomingNotifier == "#":
         # Wait for problem report
         incomingProblem = ser_SysMon.readline().strip()
-        #pack status report as waggle message
+
+        # Pack status report as waggle message
         packet = packetmaker.make_data_packet(incomingProblem)
-        #send status report to cloud
+
+        # Send status report to cloud
         for _pack in packet:
             send(_pack)
+
         print incomingProblem
 
     # Did SysMon request guest node info?
@@ -426,7 +432,9 @@ while True:
     elif incomingNotifier == "*":
         # Get current time
         secondsSinceEpoch = time.time()
+        # Put time into format SysMon is expecting
         timeStamp = datetime.datetime.fromtimestamp(secondsSinceEpoch).strftime('%Y,%m,%d,%H,%M,%S')
+
         ser_SysMon.write(timeStamp)
 
         # Send terminator
@@ -441,9 +449,11 @@ while True:
 
     # Is SysMon about to shut me down?
     elif incomingNotifier == "?":
-        #send Shutdown to datacache to flush messages to file before shutting down.
+        # Send Shutdown to datacache to flush messages to file before shutting down.
         print 'Sending flush request to data cache.'
+
         print incomingNotifier
+
         send('Flush')
 
     # Clear incomingNotifier

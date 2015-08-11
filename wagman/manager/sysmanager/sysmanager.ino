@@ -282,7 +282,7 @@ void setup()
         }
         else
           // We're done trying, so go to sleep
-          sleep();
+          sleep_SysMon();
       }
     }
     // Something non-fatal failed the POST
@@ -319,8 +319,7 @@ void setup()
         delay(10);
 
         // We're done trying, so go to sleep
-        noInterrupts();
-        sleep_mode();
+        sleep_SysMon();
       }
     }
   #endif
@@ -341,13 +340,6 @@ void loop()
   // Has the timer finished a cycle?
   if(_timer1_cycle)
   {
-    Serial.println(eeprom_read_word(&E_BOOT_TIME_GN1));
-    Serial.println(eeprom_read_word(&E_BOOT_TIME_GN2));
-    Serial.println(eeprom_read_word(&E_BOOT_TIME_GN3));
-    Serial.println(eeprom_read_byte(&E_PRESENT_GN1));
-    Serial.println(eeprom_read_byte(&E_PRESENT_GN2));
-    Serial.println(eeprom_read_byte(&E_PRESENT_GN3));
-
     // Increment status report counter
     count_status_report++;
 
@@ -507,7 +499,7 @@ void loop()
       count_timeout_environ_SysMon = 0;
 
       // Go to sleep
-      sleep();
+      sleep_SysMon();
     }
     // Bad environment timeout for SysMon?
     else if(count_timeout_environ_SysMon >= eeprom_read_byte(&E_BAD_ENVIRON_TIMEOUT_SYSMON))
@@ -520,7 +512,7 @@ void loop()
       count_timeout_environ_SysMon = 0;
 
       // Go to sleep
-      sleep();
+      sleep_SysMon();
     }
 
 
@@ -860,7 +852,8 @@ void loop()
         boot_NC();
 
       // Is the ethernet switch enabled but not running?
-      if((! _switch_running) && eeprom_read_byte(&E_SWITCH_ENABLED))
+      if((! _switch_running) && eeprom_read_byte(&E_SWITCH_ENABLED)
+        && eeprom_read_byte(&E_PRESENT_SWITCH))
         // Try to boot the switch
         boot_switch();
 
@@ -926,24 +919,24 @@ void loop()
 */
 boolean check_environ_NC()
 {
-   // Read temperature and truncate it (so we don't deal with floats)
-   latest_environ_temp_SysMon_NC = (int)SysMon_HTU21D.readTemperature();
+  // Read temperature and truncate it (so we don't deal with floats)
+  latest_environ_temp_SysMon_NC = (int)SysMon_HTU21D.readTemperature();
 
-   // Read humidity and truncate it (so we don't deal with floats)
-   latest_environ_hum_SysMon_NC = (byte)SysMon_HTU21D.readHumidity();
+  // Read humidity and truncate it (so we don't deal with floats)
+  latest_environ_hum_SysMon_NC = (byte)SysMon_HTU21D.readHumidity();
 
-   // Is measured temperature acceptable?
-   if(((int)eeprom_read_word(&E_TEMP_MIN_NC) < latest_environ_temp_SysMon_NC)
-      && (latest_environ_temp_SysMon_NC < (int)eeprom_read_word(&E_TEMP_MAX_NC))
-      && (eeprom_read_byte(&E_HUMIDITY_MIN_NC) < latest_environ_hum_SysMon_NC)
-      && (latest_environ_hum_SysMon_NC < eeprom_read_byte(&E_HUMIDITY_MAX_NC)))
-   {
-      // Exit with success
-      return true;
-   }
+  // Is measured temperature acceptable?
+  if(((int)eeprom_read_word(&E_TEMP_MIN_NC) < latest_environ_temp_SysMon_NC)
+    && (latest_environ_temp_SysMon_NC < (int)eeprom_read_word(&E_TEMP_MAX_NC))
+    && (eeprom_read_byte(&E_HUMIDITY_MIN_NC) < latest_environ_hum_SysMon_NC)
+    && (latest_environ_hum_SysMon_NC < eeprom_read_byte(&E_HUMIDITY_MAX_NC)))
+  {
+    // Exit with success
+    return true;
+  }
 
-   // Exit with failure
-   return false;
+  // Exit with failure
+  return false;
 }
 
 
@@ -959,24 +952,24 @@ boolean check_environ_NC()
 */
 boolean check_environ_SysMon()
 {
-   // Read temperature and truncate it (so we don't deal with floats)
-   latest_environ_temp_SysMon_NC = (int)SysMon_HTU21D.readTemperature();
+  // Read temperature and truncate it (so we don't deal with floats)
+  latest_environ_temp_SysMon_NC = (int)SysMon_HTU21D.readTemperature();
 
-   // Read humidity and truncate it (so we don't deal with floats)
-   latest_environ_hum_SysMon_NC = (byte)SysMon_HTU21D.readHumidity();
+  // Read humidity and truncate it (so we don't deal with floats)
+  latest_environ_hum_SysMon_NC = (byte)SysMon_HTU21D.readHumidity();
 
-   // Is measured temperature acceptable?
-   if(((int)eeprom_read_word(&E_TEMP_MIN_SYSMON) < latest_environ_temp_SysMon_NC)
-      && (latest_environ_temp_SysMon_NC < (int)eeprom_read_word(&E_TEMP_MAX_SYSMON))
-      && (eeprom_read_byte(&E_HUMIDITY_MIN_SYSMON) < latest_environ_hum_SysMon_NC)
-      && (latest_environ_hum_SysMon_NC < eeprom_read_byte(&E_HUMIDITY_MAX_SYSMON)))
-   {
-      // Exit with success
-      return true;
-   }
+  // Is measured temperature acceptable?
+  if(((int)eeprom_read_word(&E_TEMP_MIN_SYSMON) < latest_environ_temp_SysMon_NC)
+    && (latest_environ_temp_SysMon_NC < (int)eeprom_read_word(&E_TEMP_MAX_SYSMON))
+    && (eeprom_read_byte(&E_HUMIDITY_MIN_SYSMON) < latest_environ_hum_SysMon_NC)
+    && (latest_environ_hum_SysMon_NC < eeprom_read_byte(&E_HUMIDITY_MAX_SYSMON)))
+  {
+    // Exit with success
+    return true;
+  }
 
-   // Exit with failure
-   return false;
+  // Exit with failure
+  return false;
 }
 
 
@@ -1112,6 +1105,8 @@ boolean check_power_GN(byte gn)
         // Exit with success
         return true;
 
+      break;
+
     case 2:
       // Store power reading in global variable
       latest_power_GN2 = milliamps;
@@ -1121,6 +1116,8 @@ boolean check_power_GN(byte gn)
         // Exit with success
         return true;
 
+      break;
+
     case 3:
       // Store power reading in global variable
       latest_power_GN3 = milliamps;
@@ -1129,6 +1126,8 @@ boolean check_power_GN(byte gn)
       if(latest_power_GN3 < eeprom_read_word(&E_AMP_MAX_GN3))
         // Exit with success
         return true;
+
+      break;
 
     default:
       // Invalid guest node, so exit with failure
@@ -1152,42 +1151,42 @@ boolean check_power_GN(byte gn)
 */
 boolean check_power_NC()
 {
-   byte msb, csb, lsb;
-   
-   // Start I2C transaction with current sensor
-   Wire.beginTransmission(ADDR_CURRENT_SENSOR_NC);
-   // Tell sensor we want to read "data" register
-   Wire.write(0);
-   // Sensor expects restart condition, so end I2C transaction (no stop bit)
-   Wire.endTransmission(0);
-   // Ask sensor for data
-   Wire.requestFrom(ADDR_CURRENT_SENSOR_NC, 3);
+  byte msb, csb, lsb;
 
-   // Read the 3 bytes that the sensor returns
-   if(Wire.available())
-   {
-      msb = Wire.read();
-      // We only care about the data, so the mask hides the SYNC flag
-      csb = Wire.read() & 0x01;
-      lsb = Wire.read();
-   }
-   else
-      // Exit with failure
-      return false;
+  // Start I2C transaction with current sensor
+  Wire.beginTransmission(ADDR_CURRENT_SENSOR_NC);
+  // Tell sensor we want to read "data" register
+  Wire.write(0);
+  // Sensor expects restart condition, so end I2C transaction (no stop bit)
+  Wire.endTransmission(0);
+  // Ask sensor for data
+  Wire.requestFrom(ADDR_CURRENT_SENSOR_NC, 3);
 
-   // End I2C transaction (with stop bit)
-   Wire.endTransmission(1);
+  // Read the 3 bytes that the sensor returns
+  if(Wire.available())
+  {
+    msb = Wire.read();
+    // We only care about the data, so the mask hides the SYNC flag
+    csb = Wire.read() & 0x01;
+    lsb = Wire.read();
+  }
+  else
+    // Exit with failure
+    return false;
 
-   // Calculate milliamps from raw sensor data
-   latest_power_NC = ((csb << 8) | lsb) * MILLIAMPS_PER_STEP;
+  // End I2C transaction (with stop bit)
+  Wire.endTransmission(1);
 
-   // Is measured current below allowed maximum?
-   if(latest_power_NC < eeprom_read_word(&E_AMP_MAX_NC))
-      // Exit with success
-      return true;
+  // Calculate milliamps from raw sensor data
+  latest_power_NC = ((csb << 8) | lsb) * MILLIAMPS_PER_STEP;
 
-   // Exit with failure
-   return false;
+  // Is measured current below allowed maximum?
+  if(latest_power_NC < eeprom_read_word(&E_AMP_MAX_NC))
+    // Exit with success
+    return true;
+
+  // Exit with failure
+  return false;
 }
 
 
@@ -1203,42 +1202,42 @@ boolean check_power_NC()
 */
 boolean check_power_switch()
 {
-   byte msb, csb, lsb;
-   
-   // Start I2C transaction with current sensor
-   Wire.beginTransmission(ADDR_CURRENT_SENSOR_SWITCH);
-   // Tell sensor we want to read "data" register
-   Wire.write(0);
-   // Sensor expects restart condition, so end I2C transaction (no stop bit)
-   Wire.endTransmission(0);
-   // Ask sensor for data
-   Wire.requestFrom(ADDR_CURRENT_SENSOR_SWITCH, 3);
+  byte msb, csb, lsb;
 
-   // Read the 3 bytes that the sensor returns
-   if(Wire.available())
-   {
-      msb = Wire.read();
-      // We only care about the data, so the mask hides the SYNC flag
-      csb = Wire.read() & 0x01;
-      lsb = Wire.read();
-   }
-   else
-      // Exit with failure
-      return false;
+  // Start I2C transaction with current sensor
+  Wire.beginTransmission(ADDR_CURRENT_SENSOR_SWITCH);
+  // Tell sensor we want to read "data" register
+  Wire.write(0);
+  // Sensor expects restart condition, so end I2C transaction (no stop bit)
+  Wire.endTransmission(0);
+  // Ask sensor for data
+  Wire.requestFrom(ADDR_CURRENT_SENSOR_SWITCH, 3);
 
-   // End I2C transaction (with stop bit)
-   Wire.endTransmission(1);
+  // Read the 3 bytes that the sensor returns
+  if(Wire.available())
+  {
+    msb = Wire.read();
+    // We only care about the data, so the mask hides the SYNC flag
+    csb = Wire.read() & 0x01;
+    lsb = Wire.read();
+  }
+  else
+    // Exit with failure
+    return false;
 
-   // Calculate milliamps from raw sensor data
-   latest_power_switch = ((csb << 8) | lsb) * MILLIAMPS_PER_STEP;
+  // End I2C transaction (with stop bit)
+  Wire.endTransmission(1);
 
-   // Is measured current below allowed maximum?
-   if(latest_power_switch < eeprom_read_word(&E_AMP_MAX_SWITCH))
-      // Exit with success
-      return true;
+  // Calculate milliamps from raw sensor data
+  latest_power_switch = ((csb << 8) | lsb) * MILLIAMPS_PER_STEP;
 
-   // Exit with failure
-   return false;
+  // Is measured current below allowed maximum?
+  if(latest_power_switch < eeprom_read_word(&E_AMP_MAX_SWITCH))
+    // Exit with success
+    return true;
+
+  // Exit with failure
+  return false;
 }
 
 
@@ -1254,42 +1253,42 @@ boolean check_power_switch()
 */
 boolean check_power_SysMon()
 {
-   byte msb, csb, lsb;
+  byte msb, csb, lsb;
    
-   // Start I2C transaction with current sensor
-   Wire.beginTransmission(ADDR_CURRENT_SENSOR_SYSMON);
-   // Tell sensor we want to read "data" register
-   Wire.write(0);
-   // Sensor expects restart condition, so end I2C transaction (no stop bit)
-   Wire.endTransmission(0);
-   // Ask sensor for data
-   Wire.requestFrom(ADDR_CURRENT_SENSOR_SYSMON, 3);
+  // Start I2C transaction with current sensor
+  Wire.beginTransmission(ADDR_CURRENT_SENSOR_SYSMON);
+  // Tell sensor we want to read "data" register
+  Wire.write(0);
+  // Sensor expects restart condition, so end I2C transaction (no stop bit)
+  Wire.endTransmission(0);
+  // Ask sensor for data
+  Wire.requestFrom(ADDR_CURRENT_SENSOR_SYSMON, 3);
 
-   // Read the 3 bytes that the sensor returns
-   if(Wire.available())
-   {
-      msb = Wire.read();
-      // We only care about the data, so the mask hides the SYNC flag
-      csb = Wire.read() & 0x01;
-      lsb = Wire.read();
-   }
-   else
-      // Exit with failure
-      return false;
+  // Read the 3 bytes that the sensor returns
+  if(Wire.available())
+  {
+    msb = Wire.read();
+    // We only care about the data, so the mask hides the SYNC flag
+    csb = Wire.read() & 0x01;
+    lsb = Wire.read();
+  }
+  else
+    // Exit with failure
+    return false;
 
-   // End I2C transaction (with stop bit)
-   Wire.endTransmission(1);
+  // End I2C transaction (with stop bit)
+  Wire.endTransmission(1);
 
-   // Calculate milliamps from raw sensor data
-   latest_power_SysMon = ((csb << 8) | lsb) * MILLIAMPS_PER_STEP;
+  // Calculate milliamps from raw sensor data
+  latest_power_SysMon = ((csb << 8) | lsb) * MILLIAMPS_PER_STEP;
 
-   // Is measured current below allowed maximum?
-   if(latest_power_SysMon < eeprom_read_word(&E_AMP_MAX_SYSMON))
-      // Exit with success
-      return true;
+  // Is measured current below allowed maximum?
+  if(latest_power_SysMon < eeprom_read_word(&E_AMP_MAX_SYSMON))
+    // Exit with success
+    return true;
 
-   // Exit with failure
-   return false;
+  // Exit with failure
+  return false;
 }
 
 
@@ -1374,19 +1373,19 @@ boolean check_temp_GN(byte gn)
 */
 boolean check_temp_NC()
 {
-   // Read thermistor
-   latest_temp_NC = analogRead(PIN_THERMISTOR_NC);
+  // Read thermistor
+  latest_temp_NC = analogRead(PIN_THERMISTOR_NC);
 
-   // Is measured temperature acceptable?
-   if((eeprom_read_word(&E_TEMP_MIN_PROCESSOR_NC) < latest_temp_NC)
-      && (latest_temp_NC < eeprom_read_word(&E_TEMP_MAX_PROCESSOR_NC)))
-   {
-      // Exit with success
-      return true;
-   }
+  // Is measured temperature acceptable?
+  if((eeprom_read_word(&E_TEMP_MIN_PROCESSOR_NC) < latest_temp_NC)
+    && (latest_temp_NC < eeprom_read_word(&E_TEMP_MAX_PROCESSOR_NC)))
+  {
+    // Exit with success
+    return true;
+  }
 
-   // Exit with failure
-   return false;
+  // Exit with failure
+  return false;
 }
 
 
@@ -1403,19 +1402,19 @@ boolean check_temp_NC()
 */
 boolean check_temp_switch()
 {
-   // Read thermistor
-   latest_temp_switch = analogRead(PIN_THERMISTOR_SWITCH);
+  // Read thermistor
+  latest_temp_switch = analogRead(PIN_THERMISTOR_SWITCH);
 
-   // Is measured temperature acceptable?
-   if((eeprom_read_word(&E_TEMP_MIN_SWITCH) < latest_temp_switch)
-      && (latest_temp_switch < eeprom_read_word(&E_TEMP_MAX_SWITCH)))
-   {
-      // Exit with success
-      return true;
-   }
+  // Is measured temperature acceptable?
+  if((eeprom_read_word(&E_TEMP_MIN_SWITCH) < latest_temp_switch)
+    && (latest_temp_switch < eeprom_read_word(&E_TEMP_MAX_SWITCH)))
+  {
+    // Exit with success
+    return true;
+  }
 
-   // Exit with failure
-   return false;
+  // Exit with failure
+  return false;
 }
 
 
@@ -1537,6 +1536,9 @@ void send_problem(String problem)
   // Give it time to get ready
   delay(NC_MESSAGE_DELAY);
 
+  // Prepend the timestamp
+  problem = String(RTC.get()) + NC_DELIMITER + problem;
+
   // Send problem report
   Serial.println(problem);
 
@@ -1552,30 +1554,29 @@ void send_problem(String problem)
    Sends a status report of all important info to the node controller.
 
    Message structure:
-   Header,
-   RTC time,
+   RTC time (seconds since epoch),
    Light level (ADC value),
-   Current draw (SysMon),
-   Environment temperature (SysMon & NC),
-   Relative humidity (SysMon & NC),
-   Current draw (NC),
-   Temperature of processor (NC),
+   Current draw (SysMon) (mA),
+   Environment temperature (SysMon & NC) (Celsius),
+   Relative humidity (SysMon & NC) (%),
+   Current draw (NC) (mA),
+   Temperature of processor (NC) (ADC value),
    Enabled/disabled (switch),
    Running/not running (switch),
-   Current draw (switch),
-   Temperature (switch),
+   Current draw (switch) (mA),
+   Temperature (switch) (ADC value),
    Enabled/disabled (GN 1),
    Running/not running (GN 1),
-   Current draw (GN 1),
-   Temperature (GN 1),
+   Current draw (GN 1) (mA),
+   Temperature (GN 1) (ADC value),
    Enabled/disabled (GN 2),
    Running/not running (GN 2),
-   Current draw (GN 2),
-   Temperature (GN 2),
+   Current draw (GN 2) (mA),
+   Temperature (GN 2) (ADC value),
    Enabled/disabled (GN 3),
    Running/not running (GN 3),
-   Current draw (GN 3),
-   Temperature (GN 3)
+   Current draw (GN 3) (mA),
+   Temperature (GN 3) (ADC value)
 
    :rtype: none
 */
@@ -1648,6 +1649,26 @@ void send_time()
 
   // Get time from RTC and send it to the node controller
   Serial.println(RTC.get());
+}
+
+
+
+//---------- S L E E P _ S Y S M O N ------------------------------------------
+/*
+   Puts SysMon into sleep mode.
+
+   :rtype: none
+*/
+void sleep_SysMon()
+{
+  // Disable interrupts to stop things from waking up SysMon
+  // noInterrupts();
+
+  // Go to sleep
+  // sleep_mode();
+
+  // Temporary patch until sleep is working
+  while(1);
 }
 
 

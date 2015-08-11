@@ -30,13 +30,13 @@ boolean boot_primary()
       return false;
 
 	// Request time from node controller
-	get_time_NC();
+	//get_time_NC();
 
    // Request operating parameters from node controller
-   get_params_core();
+   //get_params_core();
 
 	// Request guest node parameters from node controller
-	get_params_GNs();
+	//get_params_GNs();
 
    // Boot ethernet switch
    boot_switch();
@@ -110,16 +110,16 @@ boolean boot_NC()
 
    // Give NC time to be configured, in case this is a new NC...
 
-   // Set serial receive timeout to time specified by parameter
-   Serial.setTimeout((long)eeprom_read_word(&E_CONFIG_TIME_NC) * 1000L);
-   // Wait for notification from NC that it is configured for WagMan
-   String config_WagMan = Serial.readStringUntil(NC_TERMINATOR);
-   // Return serial receive timeout to default (1000 ms)
-   Serial.setTimeout(1000L);
-   // Did NC fail to notify us that it is configured?
-   if(config_WagMan != NC_NOTIFIER_CONFIG_DONE)
-      // Exit with failure
-      return false;
+   // // Set serial receive timeout to time specified by parameter
+   // Serial.setTimeout((long)eeprom_read_word(&E_CONFIG_TIME_NC) * 1000L);
+   // // Wait for notification from NC that it is configured for WagMan
+   // String config_WagMan = Serial.readStringUntil(NC_TERMINATOR);
+   // // Return serial receive timeout to default (1000 ms)
+   // Serial.setTimeout(1000L);
+   // // Did NC fail to notify us that it is configured?
+   // if(config_WagMan != NC_NOTIFIER_CONFIG_DONE)
+   //    // Exit with failure
+   //    return false;
 
    // Is the node controller not drawing an expected amount of power?
    if(!check_power_NC())
@@ -979,6 +979,10 @@ void init_primary()
     is only executed on the first boot of a new SysMon, to avoid writing to
     EEPROM every time.
 
+    Note: EEPROM only stores raw data, meaning no data types.  If you want to
+    store a negative number, you'll have to store it as the two's complement
+    value, then type cast it when you're reading it.
+
     :rtype: none
 */
 void set_default_eeprom()
@@ -991,14 +995,14 @@ void set_default_eeprom()
    eeprom_update_byte(&E_MAX_NUM_SUBSYSTEM_BOOT_ATTEMPTS, 5);
    eeprom_update_byte(&E_MAX_NUM_PRIMARY_BOOT_ATTEMPTS, 5);
    eeprom_update_word(&E_DEVICE_REBOOT_PERIOD, 60);
-   eeprom_update_byte(&E_PRESENT_SWITCH, 0);
+   eeprom_update_byte(&E_PRESENT_SWITCH, 1);
    eeprom_update_word(&E_BOOT_TIME_NC, 40);
    eeprom_update_word(&E_CONFIG_TIME_NC, 600);
    eeprom_update_byte(&E_BOOT_TIME_SWITCH, 15);
-   eeprom_update_word(&E_BOOT_TIME_GN1, 30);
-   eeprom_update_word(&E_BOOT_TIME_GN2, 30);
-   eeprom_update_word(&E_BOOT_TIME_GN3, 30);
-   eeprom_update_byte(&E_PRESENT_GN1, 0);
+   eeprom_update_word(&E_BOOT_TIME_GN1, 10);
+   eeprom_update_word(&E_BOOT_TIME_GN2, 10);
+   eeprom_update_word(&E_BOOT_TIME_GN3, 10);
+   eeprom_update_byte(&E_PRESENT_GN1, 1);
    eeprom_update_byte(&E_PRESENT_GN2, 0);
    eeprom_update_byte(&E_PRESENT_GN3, 0);
    eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_NC, 5);
@@ -1038,12 +1042,12 @@ void set_default_eeprom()
    eeprom_update_byte(&E_HUMIDITY_MAX_SYSMON, 100);
    eeprom_update_byte(&E_HUMIDITY_MIN_NC, 0);
    eeprom_update_byte(&E_HUMIDITY_MAX_NC, 100);
-   eeprom_update_word(&E_AMP_MAX_SYSMON, 4000);
+   eeprom_update_word(&E_AMP_MAX_SYSMON, 5000);
    eeprom_update_word(&E_AMP_MAX_NC, 2500);
    eeprom_update_word(&E_AMP_MAX_SWITCH, 1500);
-   eeprom_update_word(&E_AMP_MAX_GN1, 2500);
-   eeprom_update_word(&E_AMP_MAX_GN2, 2500);
-   eeprom_update_word(&E_AMP_MAX_GN3, 2500);
+   eeprom_update_word(&E_AMP_MAX_GN1, 1500);
+   eeprom_update_word(&E_AMP_MAX_GN2, 1500);
+   eeprom_update_word(&E_AMP_MAX_GN3, 1500);
 
    // Save the indicator that this SysMon has booted before
    eeprom_update_byte(&E_FIRST_BOOT, 0);
