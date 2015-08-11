@@ -154,7 +154,7 @@ boolean boot_NC()
       boolean _heartbeat_detected = false;
       
       // Try to get a heartbeat from the NC as many times as allowed
-      while(boot_attempts <= eeprom_read_byte(&E_MAX_NUM_SUBSYSTEM_BOOT_ATTEMPTS))
+      while(boot_attempts < eeprom_read_byte(&E_MAX_NUM_SUBSYSTEM_BOOT_ATTEMPTS))
       {
          // Is heartbeat not detected?
          if(!check_heartbeat_odroid(PIN_HEARTBEAT_NC))
@@ -987,17 +987,17 @@ void set_default_eeprom()
    eeprom_update_dword(&E_USART_BAUD, 57600);
    eeprom_update_word(&E_USART_RX_BUFFER_SIZE, 200);
    eeprom_update_byte(&E_STATUS_REPORT_PERIOD, 30);
-   eeprom_update_byte(&E_MAX_NUM_SOS_BOOT_ATTEMPTS, 3);
-   eeprom_update_byte(&E_MAX_NUM_SUBSYSTEM_BOOT_ATTEMPTS, 3);
-   eeprom_update_byte(&E_MAX_NUM_PRIMARY_BOOT_ATTEMPTS, 3);
+   eeprom_update_byte(&E_MAX_NUM_SOS_BOOT_ATTEMPTS, 5);
+   eeprom_update_byte(&E_MAX_NUM_SUBSYSTEM_BOOT_ATTEMPTS, 5);
+   eeprom_update_byte(&E_MAX_NUM_PRIMARY_BOOT_ATTEMPTS, 5);
    eeprom_update_word(&E_DEVICE_REBOOT_PERIOD, 60);
    eeprom_update_byte(&E_PRESENT_SWITCH, 0);
-   eeprom_update_word(&E_BOOT_TIME_NC, 30);
+   eeprom_update_word(&E_BOOT_TIME_NC, 40);
    eeprom_update_word(&E_CONFIG_TIME_NC, 600);
-   eeprom_update_byte(&E_BOOT_TIME_SWITCH, 5);
-   eeprom_update_word(&E_BOOT_TIME_GN1, 10);
-   eeprom_update_word(&E_BOOT_TIME_GN2, 10);
-   eeprom_update_word(&E_BOOT_TIME_GN2, 10);
+   eeprom_update_byte(&E_BOOT_TIME_SWITCH, 15);
+   eeprom_update_word(&E_BOOT_TIME_GN1, 30);
+   eeprom_update_word(&E_BOOT_TIME_GN2, 30);
+   eeprom_update_word(&E_BOOT_TIME_GN3, 30);
    eeprom_update_byte(&E_PRESENT_GN1, 0);
    eeprom_update_byte(&E_PRESENT_GN2, 0);
    eeprom_update_byte(&E_PRESENT_GN3, 0);

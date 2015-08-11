@@ -53,19 +53,19 @@ params_core['present (ethernet switch)'] = 1
 
 # Min: 1, max: 65535
 params_core['boot time for NC (seconds)'] = 30
-params_core['first-time config time for NC (seconds)'] = 600
+params_core['first-time config time for NC (seconds)'] = 300
 # Min: 1, max: 255
-params_core['boot time for ethernet switch (seconds)'] = 3
+params_core['boot time for ethernet switch (seconds)'] = 5
 
 # Min: 1, max: 255
-params_core['heartbeat timeout (NC) (seconds)'] = 5
+params_core['heartbeat timeout (NC) (seconds)'] = 6
 params_core['heartbeat timeout (switch) (seconds)'] = 3
 
 # Min: 1, max: 255
 params_core['bad environment timeout (SysMon) (seconds)'] = 10
 params_core['bad environment timeout (NC) (seconds)'] = 15
 params_core['bad temperature (processor) timeout (NC) (seconds)'] = 6
-params_core['bad temperature timeout (switch) (seconds)'] = 15
+params_core['bad temperature timeout (switch) (seconds)'] = 10
 
 # Min: 1, max: 255
 params_core['bad current timeout (SysMon) (seconds)'] = 6
@@ -78,21 +78,21 @@ params_core['temperature max of environment (SysMon) (Celsius)'] = 125
 params_core['temperature min of environment (NC) (Celsius)'] = -20
 params_core['temperature max of environment (NC) (Celsius)'] = 125
 # Min: -55, max: 80
-params_core['temperature min of processor (NC) (Celsius)'] = -30
-params_core['temperature max of processor (NC) (Celsius)'] = 80
+params_core['temperature min of processor (NC) (Celsius)'] = -29
+params_core['temperature max of processor (NC) (Celsius)'] = 79
 params_core['temperature min (switch) (Celsius)'] = -20
-params_core['temperature max (switch) (Celsius)'] = 80
+params_core['temperature max (switch) (Celsius)'] = 79
 
 # Min: 0, max: 100
-params_core['relative humidity min (SysMon) (%)'] = 0
-params_core['relative humidity max (SysMon) (%)'] = 100
-params_core['relative humidity min (NC) (%)'] = 0
-params_core['relative humidity max (NC) (%)'] = 100
+params_core['relative humidity min (SysMon) (%)'] = 1
+params_core['relative humidity max (SysMon) (%)'] = 99
+params_core['relative humidity min (NC) (%)'] = 1
+params_core['relative humidity max (NC) (%)'] = 99
 
 # Min: 1, max: 8000
-params_core['maximum current draw (SysMon) (mA)'] = 4000
-params_core['maximum current draw (NC) (mA)'] = 3000
-params_core['maximum current draw (switch) (mA)'] = 1500
+params_core['maximum current draw (SysMon) (mA)'] = 5000
+params_core['maximum current draw (NC) (mA)'] = 2400
+params_core['maximum current draw (switch) (mA)'] = 1400
 ########################################################################
 
 ########################################################################
@@ -105,8 +105,8 @@ params_GuestNodes = collections.OrderedDict()
 
 # Present: 1, not present: 0
 params_GuestNodes['present (GN 1)'] = 1
-params_GuestNodes['present (GN 2)'] = 0
-params_GuestNodes['present (GN 3)'] = 0
+params_GuestNodes['present (GN 2)'] = 1
+params_GuestNodes['present (GN 3)'] = 1
 
 # Min: 1, max: 65535
 params_GuestNodes['boot time (GN 1)'] = 3
@@ -121,30 +121,30 @@ params_GuestNodes['heartbeat timeout (GN 3) (seconds)'] = 10
 
 # If a guest node is not present, its value will be ignored
 # Min: 1, max: 255
-params_GuestNodes['bad temperature timeout (GN 1) (seconds)'] = 15
-params_GuestNodes['bad temperature timeout (GN 2) (seconds)'] = 15
-params_GuestNodes['bad temperature timeout (GN 3) (seconds)'] = 15
+params_GuestNodes['bad temperature timeout (GN 1) (seconds)'] = 10
+params_GuestNodes['bad temperature timeout (GN 2) (seconds)'] = 10
+params_GuestNodes['bad temperature timeout (GN 3) (seconds)'] = 10
 
 # If a guest node is not present, its value will be ignored
 # Min: 1, max: 255
-params_GuestNodes['bad current timeout (GN 1) (seconds)'] = 5
-params_GuestNodes['bad current timeout (GN 2) (seconds)'] = 5
-params_GuestNodes['bad current timeout (GN 3) (seconds)'] = 5
+params_GuestNodes['bad current timeout (GN 1) (seconds)'] = 6
+params_GuestNodes['bad current timeout (GN 2) (seconds)'] = 6
+params_GuestNodes['bad current timeout (GN 3) (seconds)'] = 6
 
 # If a guest node is not present, its value will be ignored
 # Min: -55, max: 80
 params_GuestNodes['temperature min (GN 1) (Celsius)'] = -20
-params_GuestNodes['temperature max (GN 1) (Celsius)'] = 80
+params_GuestNodes['temperature max (GN 1) (Celsius)'] = 79
 params_GuestNodes['temperature min (GN 2) (Celsius)'] = -20
-params_GuestNodes['temperature max (GN 2) (Celsius)'] = 80
+params_GuestNodes['temperature max (GN 2) (Celsius)'] = 79
 params_GuestNodes['temperature min (GN 3) (Celsius)'] = -20
-params_GuestNodes['temperature max (GN 3) (Celsius)'] = 80
+params_GuestNodes['temperature max (GN 3) (Celsius)'] = 79
 
 # If a guest node is not present, its value will be ignored
 # Min: 1, max: 8000
-params_GuestNodes['maximum current draw (GN 1) (mA)'] = 2500
-params_GuestNodes['maximum current draw (GN 2) (mA)'] = 2500
-params_GuestNodes['maximum current draw (GN 3) (mA)'] = 2500
+params_GuestNodes['maximum current draw (GN 1) (mA)'] = 1500
+params_GuestNodes['maximum current draw (GN 2) (mA)'] = 1500
+params_GuestNodes['maximum current draw (GN 3) (mA)'] = 1500
 ########################################################################
 
 ########################################################################
@@ -472,6 +472,9 @@ while True:
         for i in params_GuestNodes.keys():
             ser_SysMon.write(str(params_GuestNodes[i]))
             ser_SysMon.write(",")
+
+        # Send terminator
+        ser_SysMon.write("!")
 
     # Did SysMon request the current time?
     elif incomingNotifier == "*":
