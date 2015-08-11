@@ -1,8 +1,7 @@
 import time, serial, sys
 sys.path.append('../../../devtools/protocol_common/')
 from utilities import packetmaker
-from communicator import send
-
+from send import send
 """
    This connects to a sensor board via a serial connection. It reads and parses the sensor data into meaningful information, packs, and sends the data packet to the cloud. 
    
@@ -93,12 +92,14 @@ try:
         wxconnection = False
         while wxconnection == False:
             try:
+                #TODO change this if the serial port is different than the one specified.
+                #TODO may want to create a rule to specify which port the board will use
                 wxsensor = serial.Serial('/dev/ttyACM0',57600,timeout=300)
                 wxconnection = True
             except:
                 #Will not work if sensor board is not plugged in. 
                 #If sensor board is plugged in, check to see if it is trying to connect to the right port
-                print "Still Waiting for Connection..."
+                print "Still Waiting for Connection... Is the sensor board plugged in?"
                 time.sleep(1)
         try:
             wxsensor.flushInput()
@@ -125,10 +126,10 @@ try:
 
                 if sensorDataAvail == True:
                     if sensorsData[0] == 'WXSensor' and sensorsData[-1]=='WXSensor\r\n':
-                        print sensorsData[1:-1]
+                        #print sensorsData[1:-1]
                         sensorReading_bucket = [[[] for col in range(5)] for row in range(16)]
                         for i in range(len(sensorsData)-2):
-                            print sensorsData[i+1]
+                            #print sensorsData[i+1]
                             currentSensor = sensorsData[i+1].split(':')
                             if currentSensor[0] <> 'D6T_44L_06_1_T_C':
                                 try:
