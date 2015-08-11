@@ -394,23 +394,77 @@ while True:
     elif incomingNotifier == "@":
         # Wait for status report
         incomingStatus = ser_SysMon.readline().strip()
-        #pack status report as waggle message
-        packet = packetmaker.make_data_packet(incomingStatus)
-        #send status report to cloud
+        #TODO change this if you no longer want WagMan data to go to Cassandra
+        #status report comes in a string of raw data separated by commas
+        #need to format status report for Cassandra before sending to cloud. 
+        
+        #First, convert string into list of raw data
+        raw_data = [] #list of raw data
+        timestamp, data = incomingStatus.split(',', 1) #get the timestamp
+        while not data.find(',') == -1: #loops until it reaches the end of the string
+            measurement, data = data.split(',', 1)
+            raw_data.append(float(measurement)) #adds measurement to list
+            
+        #Second, need a human readable list of what the raw data is measuring 
+        measuring = ['Light level', 'SysMon current draw','Environment temperature', 'Relative humidity','NC current draw','Temperature of NC processor', 'Enabled?','Running?', 'Current draw (switch)', 'Temperature (switch)',
+                     'GN1 enabled?','GN1 running?','GN1 current draw','GN1 temperature','GN2 enabled?','GN2 running?','GN2 current draw','GN2 temperature','GN3 enabled?','GN3 running?','GN3 current draw','GN3 temperature']
+        
+        #Third, need list of corresponding units
+        units = ['ADC value', 'mA','C','%','mA','ADC value','','','mA','ADC value','','','mA','ADC value','','','mA','ADC value','','','mA','ADC value']
+       
+       #Fourth, specify data types
+        data_types = ['f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f','f']
+        
+       #Lastly, put it all together in Cassandra accepted format
+        status_report = ['WagMan', timestamp, measuring, data_types , raw_data, units, ['']]
+       
+       #pack status report as waggle message
+        packet = packetmaker.make_data_packet(status_report)
+       
+       #send status report to cloud
         for _pack in packet:
             send(_pack)
-        print incomingStatus
+        print status_report
 
     # Is SysMon about to inform me of a problem?
     elif incomingNotifier == "#":
         # Wait for problem report
         incomingProblem = ser_SysMon.readline().strip()
+        #TODO change this if you no longer want WagMan data to go to Cassandra
+        #problem report comes in a string 
+        #need to format problem report for Cassandra before sending to cloud. 
+        
+        #First, convert string into list 
+        report = []
+        timestamp, data = incomingProblem.split(',', 1) #get the timestamp
+        problem_node, problem = data.split(',', 1) #get node and problem
+        
+        #Second, make problem easy for human to read and add to report list
+        if problem == 'e':
+            problem = 'environment'
+        elif problem == 'p': 
+            problem = 'power'
+        elif problem == 't':
+            problem = 'temperature'
+        elif problem == 'h':
+            problem = 'heartbeat'
+        
+        report.append(problem_node)
+        report.append(problem)
+        
+        #Third, need a human readable list of what this report says
+        measuring = ['Node', 'Problem']
+        
+        #Lastly, put it all together in Cassandra accepted format 
+        #TODO may want to add a special Cassandra accepted format for WagMan problem reports that makes more sense
+        problem_report = ['WagMan', timestamp, measuring, ['str', 'str'], report, ['',''],['']]
+        
         #pack status report as waggle message
-        packet = packetmaker.make_data_packet(incomingProblem)
+        packet = packetmaker.make_data_packet(problem_report)
         #send status report to cloud
         for _pack in packet:
             send(_pack)
-        print incomingProblem
+        print problem_report
 
     # Did SysMon request guest node info?
     elif incomingNotifier == "^":

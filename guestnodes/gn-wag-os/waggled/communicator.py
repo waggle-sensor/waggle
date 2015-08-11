@@ -47,7 +47,7 @@ with open('/etc/waggle/hostname','r') as file_:
 
 
 
-
+#TODO make this a background process
 class receive(Process):
     """ 
         This is a client socket that connects to the pull_server of the node controller to retrieve messages. 

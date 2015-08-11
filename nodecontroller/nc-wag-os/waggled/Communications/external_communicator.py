@@ -58,7 +58,6 @@ class pika_push(Process):
                 send_registrations() #sends registration for each node and node controller configuration file
                 connected = True
             except: 
-                #logging.warning('Pika_push currently unable to connect to cloud...')
                 #print 'Pika_push currently unable to connect to cloud...' 
                 comm.cloud_connected.value = 0 #set the flag to 0 when not connected to the cloud. I
                 time.sleep(5)

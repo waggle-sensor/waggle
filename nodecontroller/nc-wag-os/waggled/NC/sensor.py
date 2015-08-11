@@ -94,12 +94,14 @@ try:
         wxconnection = False
         while wxconnection == False:
             try:
+                #TODO change this if the serial port is different than the one specified
                 wxsensor = serial.Serial('/dev/ttyACM0',57600,timeout=300)
                 wxconnection = True
             except:
                 #Will not work if sensor board is not plugged in. 
                 #If sensor board is plugged in, check to see if it is trying to connect to the right port
-                print "Still Waiting for Connection..."
+                #TODO may want to add a rule to the configuration to specify which port will be used.
+                print "Still waiting for connection... Is the sensor board plugged in?"
                 time.sleep(1)
         try:
             wxsensor.flushInput()
@@ -126,10 +128,10 @@ try:
 
                 if sensorDataAvail == True:
                     if sensorsData[0] == 'WXSensor' and sensorsData[-1]=='WXSensor\r\n':
-                        print sensorsData[1:-1]
+                        #print sensorsData[1:-1]
                         sensorReading_bucket = [[[] for col in range(5)] for row in range(16)]
                         for i in range(len(sensorsData)-2):
-                            print sensorsData[i+1]
+                            #print sensorsData[i+1]
                             currentSensor = sensorsData[i+1].split(':')
                             if currentSensor[0] <> 'D6T_44L_06_1_T_C':
                                 try:
@@ -159,7 +161,7 @@ try:
                         for all in range(len(sensorReading_bucket)):
                             if (sensorReading_bucket[all] <> [[],[],[],[],[]]):
                                 sendData=[sensor_names[all],int(time.time()),sensorReading_bucket[all][0],sensorReading_bucket[all][1],sensorReading_bucket[all][2],sensorReading_bucket[all][3],sensorReading_bucket[all][4]]
-                                #print sendData
+                                print 'Sending data: ',sendData
                                 #packs and sends the data
                                 packet = packetmaker.make_data_packet(sendData)
                                 for pack in packet:

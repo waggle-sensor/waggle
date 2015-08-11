@@ -550,7 +550,7 @@ def get_priority(outgoing_available_queues):
         return (highest_de_p, highest_msg_p)           
 
 if __name__ == "__main__":
-    dc = Data_Cache('/tmp/Data_Cache.pid',stdout='/var/dc/dc_out.log', stderr='/var/dc/dc_err.err') #TODO may need to change this
+    dc = Data_Cache('/tmp/Data_Cache.pid',stdout='/var/dc/dc_out.log', stderr='/var/dc/dc_err.err') #TODO may want to change this
     if len(sys.argv) == 2:
         if 'start' == sys.argv[1]:
             print 'starting.'

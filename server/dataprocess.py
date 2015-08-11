@@ -43,14 +43,15 @@ class DataProcess(Process):
 			self.cassandra_insert(header,data)
 			ch.basic_ack(delivery_tag=method.delivery_tag)
 		except Exception as e:
-			# Cassandra isn't connected or something. Shove it back in the queue for another process
-			# Then try to re-establish a connection
-			ch.basic_nack(delivery_tag=method.delivery_tag)
-			print "Cassandra connection failed. Attempting to reconnect..."
+			# Something went wrong when trying to insert the data into Cassandra
+			#It was most likely a formatting issue with the data string
+			#Cassandra is very specific so the data string must follow the expected format found in the cassandra_insert function below
+			ch.basic_ack(delivery_tag=method.delivery_tag)
+			print "Error when trying to insert data into Cassandra. Please check data format."
 			print e
-			# Wait a few seconds before trying to connect (to prevent this from taking up a ton of power)
+			# Wait a few seconds before trying to reconnect
 			time.sleep(1)
-			self.cassandra_connect()
+			self.cassandra_connect()#TODO I don't know if this is neccessary
 
 	def cassandra_insert(self,header,data):
 		try:
