@@ -378,7 +378,7 @@ params_GuestNodes['temperature max (GN 3) (Celsius)'] = \
 while True:
     # Receive line from SysMon
     incomingNotifier = ser_SysMon.readline().strip()
-    print incomingNotifier
+    #print incomingNotifier
 
     # Did SysMon request parameters?
     if incomingNotifier == "$":
@@ -424,7 +424,7 @@ while True:
        #send status report to cloud
         for _pack in packet:
             send(_pack)
-        print status_report
+        #print status_report
 
     # Is SysMon about to inform me of a problem?
     elif incomingNotifier == "#":
@@ -464,7 +464,7 @@ while True:
         #send status report to cloud
         for _pack in packet:
             send(_pack)
-        print problem_report
+        #print problem_report
 
     # Did SysMon request guest node info?
     elif incomingNotifier == "^":
@@ -477,8 +477,10 @@ while True:
     elif incomingNotifier == "*":
         # Get current time
         secondsSinceEpoch = time.time()
-        timeStamp = datetime.datetime.fromtimestamp(secondsSinceEpoch).strftime('%Y,%m,%d,%H,%M,%S')
-        ser_SysMon.write(timeStamp)
+        secondsSinceEpoch_int = int(secondsSinceEpoch)
+        secondsSinceEpoch_str = str(secondsSinceEpoch_int)
+
+        ser_SysMon.write(secondsSinceEpoch_str)
 
         # Send terminator
         ser_SysMon.write("!")
@@ -488,13 +490,13 @@ while True:
         # Wait for time message
         incomingTime = ser_SysMon.readline().strip()
 
-        print incomingTime
+        #print incomingTime
 
     # Is SysMon about to shut me down?
     elif incomingNotifier == "?":
         #send Shutdown to datacache to flush messages to file before shutting down.
         print 'Sending flush request to data cache.'
-        print incomingNotifier
+        #print incomingNotifier
         send('Flush')
 
     # Clear incomingNotifier
