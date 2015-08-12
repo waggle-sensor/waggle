@@ -66,6 +66,8 @@
 #define NC_MESSAGE_DELAY 10
 // Time (ms) to give node controller to prepare for shutdown
 #define NC_SHUTDOWN_DELAY 5000
+// Time (ms) to give node controller to acquire the time from the internet
+#define NC_TIME_ACQUIRE_DELAY 20000
 
 // Period of SysMon's requests for updated time from NC
 #define TIME_UPDATE_REQUEST_PERIOD 3600
@@ -297,6 +299,10 @@ void setup()
       boot_GN(1);
       boot_GN(2);
       boot_GN(3);
+
+      // TEMP FOR TESTING...
+
+      eeprom_update_word(&E_TEMP_MAX_SWITCH, 300);
     }
     else
     {
@@ -498,8 +504,8 @@ void loop()
       count_timeout_power_SysMon = 0;
       count_timeout_environ_SysMon = 0;
 
-      // Go to sleep
-      sleep_SysMon();
+      // Reboot SysMon
+      soft_restart();
     }
     // Bad environment timeout for SysMon?
     else if(count_timeout_environ_SysMon >= eeprom_read_byte(&E_BAD_ENVIRON_TIMEOUT_SYSMON))
@@ -511,8 +517,8 @@ void loop()
       count_timeout_power_SysMon = 0;
       count_timeout_environ_SysMon = 0;
 
-      // Go to sleep
-      sleep_SysMon();
+      // Reboot SysMon
+      soft_restart();
     }
 
 
@@ -1439,62 +1445,11 @@ void get_time_NC()
    // Was time received?
    if(received_time.length() > 0)
    {
-      /* Order of values (coming from node controller):
-      
-      Year
-      Month
-      Day
-      Hour
-      Minute
-      Second
-      */
+      // Convert received time (string) to a number
+      unsigned long seconds_since_epoch = received_time.toInt();
 
-      // Temporary strings for holding each value
-      String received_year = "";
-      String received_month = "";
-      String received_day = "";
-      String received_hour = "";
-      String received_minute = "";
-      String received_second = "";
-
-      // Index for iterating thru the received string
-      int i = 0;
-
-      // Parse the received list of values:
-      while(received_time[i] != NC_DELIMITER)
-         received_year += received_time[i++];
-      // Skip delimiter
-      i++;
-
-      while(received_time[i] != NC_DELIMITER)
-         received_month += received_time[i++];
-      i++;
-
-      while(received_time[i] != NC_DELIMITER)
-         received_day += received_time[i++];
-      i++;
-
-      while(received_time[i] != NC_DELIMITER)
-         received_hour += received_time[i++];
-      i++;
-
-      while(received_time[i] != NC_DELIMITER)
-         received_minute += received_time[i++];
-      i++;
-
-      while(received_time[i] != NC_DELIMITER)
-         received_second += received_time[i++];
-      i++;
-
-      // Set SysMon's time to received time
-      setTime(received_hour.toInt(),
-         received_minute.toInt(),
-         received_second.toInt(),
-         received_day.toInt(),
-         received_month.toInt(),
-         received_year.toInt());
-      // Set RTC time to SysMon's time
-      RTC.set(now());
+      // Set RTC time
+      RTC.set(seconds_since_epoch);
    }
 }
 
@@ -1667,7 +1622,14 @@ void sleep_SysMon()
   // Go to sleep
   // sleep_mode();
 
+  
+
   // Temporary patch until sleep is working
+  digitalWrite(PIN_RELAY_NC, LOW);
+  digitalWrite(PIN_RELAY_SWITCH, LOW);
+  digitalWrite(PIN_RELAY_GN1, LOW);
+  digitalWrite(PIN_RELAY_GN2, LOW);
+  digitalWrite(PIN_RELAY_GN3, LOW);
   while(1);
 }
 

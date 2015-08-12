@@ -24,8 +24,8 @@
       <file leaf-file-name="WagMan.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/WagMan.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="1.5370549">
-              <caret line="491" column="48" selection-start-line="491" selection-start-column="8" selection-end-line="491" selection-end-column="48" />
+            <state vertical-scroll-proportion="0.5842156">
+              <caret line="482" column="47" selection-start-line="482" selection-start-column="47" selection-end-line="482" selection-end-column="47" />
               <folding />
             </state>
           </provider>
@@ -265,7 +265,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="41" width="1920" height="1159" extended-state="0" />
+    <frame x="0" y="41" width="1920" height="1159" extended-state="1" />
     <editor active="true" />
     <layout>
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -310,6 +310,14 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/WagMan.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/WagMan.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -527,8 +535,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/WagMan.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.5370549">
-          <caret line="491" column="48" selection-start-line="491" selection-start-column="8" selection-end-line="491" selection-end-column="48" />
+        <state vertical-scroll-proportion="0.5842156">
+          <caret line="482" column="47" selection-start-line="482" selection-start-column="47" selection-end-line="482" selection-end-column="47" />
           <folding />
         </state>
       </provider>

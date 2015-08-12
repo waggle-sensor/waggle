@@ -477,8 +477,10 @@ while True:
     elif incomingNotifier == "*":
         # Get current time
         secondsSinceEpoch = time.time()
-        timeStamp = datetime.datetime.fromtimestamp(secondsSinceEpoch).strftime('%Y,%m,%d,%H,%M,%S')
-        ser_SysMon.write(timeStamp)
+        secondsSinceEpoch_int = int(secondsSinceEpoch)
+        secondsSinceEpoch_str = str(secondsSinceEpoch_int)
+
+        ser_SysMon.write(secondsSinceEpoch_str)
 
         # Send terminator
         ser_SysMon.write("!")

@@ -29,14 +29,17 @@ boolean boot_primary()
       // Skip the rest of the boot sequence
       return false;
 
+   // Give node controller the chance to acquire the time from the internet
+   delay(NC_TIME_ACQUIRE_DELAY);
+
 	// Request time from node controller
-	//get_time_NC();
+	get_time_NC();
 
    // Request operating parameters from node controller
-   //get_params_core();
+   get_params_core();
 
 	// Request guest node parameters from node controller
-	//get_params_GNs();
+	get_params_GNs();
 
    // Boot ethernet switch
    boot_switch();
@@ -202,6 +205,15 @@ boolean boot_NC()
 */
 void boot_switch()
 {
+   digitalWrite(PIN_RELAY_GN2, HIGH);
+   delay(50);
+   digitalWrite(PIN_RELAY_GN2, LOW);
+   delay(50);
+   digitalWrite(PIN_RELAY_GN2, HIGH);
+   delay(50);
+   digitalWrite(PIN_RELAY_GN2, LOW);
+   delay(50);
+   
    // Mark switch as not operational
    _switch_running = false;
 
@@ -995,14 +1007,14 @@ void set_default_eeprom()
    eeprom_update_byte(&E_MAX_NUM_SUBSYSTEM_BOOT_ATTEMPTS, 5);
    eeprom_update_byte(&E_MAX_NUM_PRIMARY_BOOT_ATTEMPTS, 5);
    eeprom_update_word(&E_DEVICE_REBOOT_PERIOD, 60);
-   eeprom_update_byte(&E_PRESENT_SWITCH, 1);
+   eeprom_update_byte(&E_PRESENT_SWITCH, 0);
    eeprom_update_word(&E_BOOT_TIME_NC, 40);
    eeprom_update_word(&E_CONFIG_TIME_NC, 600);
    eeprom_update_byte(&E_BOOT_TIME_SWITCH, 15);
    eeprom_update_word(&E_BOOT_TIME_GN1, 10);
    eeprom_update_word(&E_BOOT_TIME_GN2, 10);
    eeprom_update_word(&E_BOOT_TIME_GN3, 10);
-   eeprom_update_byte(&E_PRESENT_GN1, 1);
+   eeprom_update_byte(&E_PRESENT_GN1, 0);
    eeprom_update_byte(&E_PRESENT_GN2, 0);
    eeprom_update_byte(&E_PRESENT_GN3, 0);
    eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_NC, 5);
