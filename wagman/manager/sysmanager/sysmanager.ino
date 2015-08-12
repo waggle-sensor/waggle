@@ -302,7 +302,7 @@ void setup()
 
       // TEMP FOR TESTING...
 
-      eeprom_update_word(&E_TEMP_MAX_SWITCH, 300);
+      //eeprom_update_word(&E_TEMP_MAX_GN1, 0);
     }
     else
     {

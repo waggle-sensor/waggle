@@ -205,15 +205,6 @@ boolean boot_NC()
 */
 void boot_switch()
 {
-   digitalWrite(PIN_RELAY_GN2, HIGH);
-   delay(50);
-   digitalWrite(PIN_RELAY_GN2, LOW);
-   delay(50);
-   digitalWrite(PIN_RELAY_GN2, HIGH);
-   delay(50);
-   digitalWrite(PIN_RELAY_GN2, LOW);
-   delay(50);
-   
    // Mark switch as not operational
    _switch_running = false;
 
