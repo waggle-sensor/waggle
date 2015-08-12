@@ -111,7 +111,7 @@ def msg_handler(msg):
                         priorities.append(priority)
                     device_p = priorities.pop()
                     
-                    if device_p not == '': #make sure it isn't empty
+                    if not device_p == '': #make sure it isn't empty
                         #assign the device to its priority
                         #the third line of the file contains a mapping of device to its priority. 
                         #This is what is used to construct the device_dict
@@ -149,6 +149,7 @@ def msg_handler(msg):
                     _file.writelines(lines)
                     
         elif minor == 'd': #de-registration request from guest node
+            print 'Received de-registration message from node ', sender
             sender = str(sender) #convert from int to string
             with open('/etc/waggle/devices', 'r') as _file:
                 lines = _file.readlines()
@@ -162,16 +163,16 @@ def msg_handler(msg):
                 devices.append(device)
             try: 
                #try to remove the device from the devices list
-               devices.remove(sender)
+                devices.remove(sender)
                
                #get the device's priority/location from dictionary
-               device_p = DEVICE_DICT[sender]
+                device_p = DEVICE_DICT[sender]
                
                #now, need to get the priorities list
-               while not lines[1].find(',')== -1:
-                        priority, lines[1] = lines[1].split(',',1)
-                        priorities.append(priority)
-                        
+                while not lines[1].find(',')== -1:
+                    priority, lines[1] = lines[1].split(',',1)
+                    priorities.append(priority)
+                    
                 #add the device's priority/location back to the list
                 priorities.append(device_p)
                 
