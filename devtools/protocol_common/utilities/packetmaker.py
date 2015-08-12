@@ -93,7 +93,21 @@ def make_GN_reg(recp_ID):
 
     return pack(header_dict, message_data = '')
 
+def deregistration_packet(recp_ID):
+    """
+        Returns a deregistration request packet.
 
+        :rtype: string
+    """ 
+
+    header_dict = {
+        "msg_mj_type" : ord('r'),
+        "msg_mi_type" : ord('d'),
+        "r_uniqid" : recp_ID
+        }
+  
+        
+    return pack(header_dict, message_data = '')
 
 
 

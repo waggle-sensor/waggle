@@ -144,7 +144,7 @@ class Data_Cache(Daemon):
                                         except Exception as e: 
                                             #The device dictionary may not be up to date. Need to update and try again.
                                             #If the device is still not found after first try, move on.
-                                            DEVICE_DICT = update_dev_dict()
+                                            DEVICE_DICT = update_dev_dict() #this function is in NC_configuration.py
                                             
                                     #indicates an incoming push
                                     elif str(recipient) == HOSTNAME:
