@@ -152,6 +152,14 @@ boolean boot_NC()
    // Is the node controller alive (sending a heartbeat)?
    if(!check_heartbeat_odroid(PIN_HEARTBEAT_NC))
    {
+      digitalWrite(PIN_RELAY_GN2, HIGH);
+      delay(30);
+      digitalWrite(PIN_RELAY_GN2, LOW);
+      delay(30);
+      digitalWrite(PIN_RELAY_GN2, HIGH);
+      delay(30);
+      digitalWrite(PIN_RELAY_GN2, LOW);
+
       // Start at 1 boot attempt, since we had to boot to get here
       byte boot_attempts = 1;
       boolean _heartbeat_detected = false;
@@ -162,6 +170,14 @@ boolean boot_NC()
          // Is heartbeat not detected?
          if(!check_heartbeat_odroid(PIN_HEARTBEAT_NC))
          {
+            digitalWrite(PIN_RELAY_GN2, HIGH);
+            delay(30);
+            digitalWrite(PIN_RELAY_GN2, LOW);
+            delay(30);
+            digitalWrite(PIN_RELAY_GN2, HIGH);
+            delay(30);
+            digitalWrite(PIN_RELAY_GN2, LOW);
+
             // Power cycle the node controller
             power_cycle(PIN_RELAY_NC);
 
@@ -363,13 +379,13 @@ void get_params_core()
          Ethernet switch boot time
          Heartbeat timeout (node controller)
          Heartbeat timeout (switch)
-         Bad environment timeout (system monitor)
-         Bad environment timeout (node controller)
-         Bad processor temperature timeout (node controller)
-         Bad temperature timeout (switch)
-         Bad current timeout (system monitor)
-         Bad current timeout (node controller)
-         Bad current timeout (switch)
+         Environment timeout (system monitor)
+         Environment timeout (node controller)
+         Processor temperature timeout (node controller)
+         Temperature timeout (switch)
+         Power timeout (system monitor)
+         Power timeout (node controller)
+         Power timeout (switch)
          Minimum temperature of environment (Celsius) (system monitor)
          Maximum temperature of environment (Celsius) (system monitor)
          Minimum temperature of environment (Celsius) (node controller)
@@ -401,13 +417,13 @@ void get_params_core()
       String switch_boot_time = "";
       String heartbeat_timeout_NC = "";
       String heartbeat_timeout_switch = "";
-      String bad_environ_timeout_SysMon = "";
-      String bad_environ_timeout_NC = "";
-      String bad_temp_processor_timeout_NC = "";
-      String bad_temp_timeout_switch = "";
-      String bad_current_timeout_SysMon = "";
-      String bad_current_timeout_NC = "";
-      String bad_current_timeout_switch = "";
+      String environ_timeout_SysMon = "";
+      String environ_timeout_NC = "";
+      String temp_processor_timeout_NC = "";
+      String temp_timeout_switch = "";
+      String power_timeout_SysMon = "";
+      String power_timeout_NC = "";
+      String power_timeout_switch = "";
       String min_temp_SysMon = "";
       String max_temp_SysMon = "";
       String min_temp_NC = "";
@@ -482,31 +498,31 @@ void get_params_core()
       i++;
 
       while(received_params[i] != NC_DELIMITER)
-         bad_environ_timeout_SysMon += received_params[i++];
+         environ_timeout_SysMon += received_params[i++];
       i++;
 
       while(received_params[i] != NC_DELIMITER)
-         bad_environ_timeout_NC += received_params[i++];
+         environ_timeout_NC += received_params[i++];
       i++;
 
       while(received_params[i] != NC_DELIMITER)
-         bad_temp_processor_timeout_NC += received_params[i++];
+         temp_processor_timeout_NC += received_params[i++];
       i++;
 
       while(received_params[i] != NC_DELIMITER)
-         bad_temp_timeout_switch += received_params[i++];
+         temp_timeout_switch += received_params[i++];
       i++;
 
       while(received_params[i] != NC_DELIMITER)
-         bad_current_timeout_SysMon += received_params[i++];
+         power_timeout_SysMon += received_params[i++];
       i++;
 
       while(received_params[i] != NC_DELIMITER)
-         bad_current_timeout_NC += received_params[i++];
+         power_timeout_NC += received_params[i++];
       i++;
 
       while(received_params[i] != NC_DELIMITER)
-         bad_current_timeout_switch += received_params[i++];
+         power_timeout_switch += received_params[i++];
       i++;
 
       while(received_params[i] != NC_DELIMITER)
@@ -582,13 +598,13 @@ void get_params_core()
       eeprom_update_byte(&E_BOOT_TIME_SWITCH, (uint8_t)switch_boot_time.toInt());
       eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_NC, (uint8_t)heartbeat_timeout_NC.toInt());
       eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_SWITCH, (uint8_t)heartbeat_timeout_switch.toInt());
-      eeprom_update_byte(&E_BAD_ENVIRON_TIMEOUT_SYSMON, (uint8_t)bad_environ_timeout_SysMon.toInt());
-      eeprom_update_byte(&E_BAD_ENVIRON_TIMEOUT_NC, (uint8_t)bad_environ_timeout_NC.toInt());
-      eeprom_update_byte(&E_BAD_TEMP_PROCESSOR_TIMEOUT_NC, (uint8_t)bad_temp_processor_timeout_NC.toInt());
-      eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_SWITCH, (uint8_t)bad_temp_timeout_switch.toInt());
-      eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_SYSMON, (uint8_t)bad_current_timeout_SysMon.toInt());
-      eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_NC, (uint8_t)bad_current_timeout_NC.toInt());
-      eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_SWITCH, (uint8_t)bad_current_timeout_switch.toInt());
+      eeprom_update_byte(&E_ENVIRON_TIMEOUT_SYSMON, (uint8_t)environ_timeout_SysMon.toInt());
+      eeprom_update_byte(&E_ENVIRON_TIMEOUT_NC, (uint8_t)environ_timeout_NC.toInt());
+      eeprom_update_byte(&E_TEMP_PROCESSOR_TIMEOUT_NC, (uint8_t)temp_processor_timeout_NC.toInt());
+      eeprom_update_byte(&E_TEMP_TIMEOUT_SWITCH, (uint8_t)temp_timeout_switch.toInt());
+      eeprom_update_byte(&E_POWER_TIMEOUT_SYSMON, (uint8_t)power_timeout_SysMon.toInt());
+      eeprom_update_byte(&E_POWER_TIMEOUT_NC, (uint8_t)power_timeout_NC.toInt());
+      eeprom_update_byte(&E_POWER_TIMEOUT_SWITCH, (uint8_t)power_timeout_switch.toInt());
       eeprom_update_word(&E_TEMP_MIN_SYSMON, (uint16_t)min_temp_SysMon.toInt());
       eeprom_update_word(&E_TEMP_MAX_SYSMON, (uint16_t)max_temp_SysMon.toInt());
       eeprom_update_word(&E_TEMP_MIN_NC, (uint16_t)min_temp_NC.toInt());
@@ -601,9 +617,9 @@ void get_params_core()
       eeprom_update_byte(&E_HUMIDITY_MAX_SYSMON, (uint8_t)max_humidity_SysMon.toInt());
       eeprom_update_byte(&E_HUMIDITY_MIN_NC, (uint8_t)min_humidity_NC.toInt());
       eeprom_update_byte(&E_HUMIDITY_MAX_NC, (uint8_t)max_humidity_NC.toInt());
-      eeprom_update_word(&E_AMP_MAX_SYSMON, (uint16_t)max_amp_SysMon.toInt());
-      eeprom_update_word(&E_AMP_MAX_NC, (uint16_t)max_amp_NC.toInt());
-      eeprom_update_word(&E_AMP_MAX_SWITCH, (uint16_t)max_amp_switch.toInt());
+      eeprom_update_word(&E_MILLIAMP_MAX_SYSMON, (uint16_t)max_amp_SysMon.toInt());
+      eeprom_update_word(&E_MILLIAMP_MAX_NC, (uint16_t)max_amp_NC.toInt());
+      eeprom_update_word(&E_MILLIAMP_MAX_SWITCH, (uint16_t)max_amp_switch.toInt());
    }
 }
 
@@ -639,12 +655,12 @@ void get_params_GNs()
          Heartbeat timeout (guest node 1)
          Heartbeat timeout (guest node 2)
          Heartbeat timeout (guest node 3)
-         Bad temperature timeout (guest node 1)
-         Bad temperature timeout (guest node 2)
-         Bad temperature timeout (guest node 3)
-         Bad current timeout (guest node 1)
-         Bad current timeout (guest node 2)
-         Bad current timeout (guest node 3)
+         Temperature timeout (guest node 1)
+         Temperature timeout (guest node 2)
+         Temperature timeout (guest node 3)
+         Power timeout (guest node 1)
+         Power timeout (guest node 2)
+         Power timeout (guest node 3)
          Minimum temperature (Celsius) (guest node 1)
          Maximum temperature (Celsius) (guest node 1)
          Minimum temperature (Celsius) (guest node 2)
@@ -666,12 +682,12 @@ void get_params_GNs()
       String heartbeat_timeout_GN1 = "";
       String heartbeat_timeout_GN2 = "";
       String heartbeat_timeout_GN3 = "";
-      String bad_temp_timeout_GN1 = "";
-      String bad_temp_timeout_GN2 = "";
-      String bad_temp_timeout_GN3 = "";
-      String bad_current_timeout_GN1 = "";
-      String bad_current_timeout_GN2 = "";
-      String bad_current_timeout_GN3 = "";
+      String temp_timeout_GN1 = "";
+      String temp_timeout_GN2 = "";
+      String temp_timeout_GN3 = "";
+      String power_timeout_GN1 = "";
+      String power_timeout_GN2 = "";
+      String power_timeout_GN3 = "";
       String min_temp_GN1 = "";
       String max_temp_GN1 = "";
       String min_temp_GN2 = "";
@@ -724,27 +740,27 @@ void get_params_GNs()
       i++;
 
       while(received_params[i] != NC_DELIMITER)
-         bad_temp_timeout_GN1 += received_params[i++];
+         temp_timeout_GN1 += received_params[i++];
       i++;
 
       while(received_params[i] != NC_DELIMITER)
-         bad_temp_timeout_GN2 += received_params[i++];
+         temp_timeout_GN2 += received_params[i++];
       i++;
 
       while(received_params[i] != NC_DELIMITER)
-         bad_temp_timeout_GN3 += received_params[i++];
+         temp_timeout_GN3 += received_params[i++];
       i++;
 
       while(received_params[i] != NC_DELIMITER)
-         bad_current_timeout_GN1 += received_params[i++];
+         power_timeout_GN1 += received_params[i++];
       i++;
 
       while(received_params[i] != NC_DELIMITER)
-         bad_current_timeout_GN2 += received_params[i++];
+         power_timeout_GN2 += received_params[i++];
       i++;
 
       while(received_params[i] != NC_DELIMITER)
-         bad_current_timeout_GN3 += received_params[i++];
+         power_timeout_GN3 += received_params[i++];
       i++;
 
       while(received_params[i] != NC_DELIMITER)
@@ -792,21 +808,21 @@ void get_params_GNs()
       eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_GN1, (uint8_t)heartbeat_timeout_GN1.toInt());
       eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_GN2, (uint8_t)heartbeat_timeout_GN2.toInt());
       eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_GN3, (uint8_t)heartbeat_timeout_GN3.toInt());
-      eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_GN1, (uint8_t)bad_temp_timeout_GN1.toInt());
-      eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_GN2, (uint8_t)bad_temp_timeout_GN2.toInt());
-      eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_GN3, (uint8_t)bad_temp_timeout_GN3.toInt());
-      eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_GN1, (uint8_t)bad_current_timeout_GN1.toInt());
-      eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_GN2, (uint8_t)bad_current_timeout_GN2.toInt());
-      eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_GN3, (uint8_t)bad_current_timeout_GN3.toInt());
+      eeprom_update_byte(&E_TEMP_TIMEOUT_GN1, (uint8_t)temp_timeout_GN1.toInt());
+      eeprom_update_byte(&E_TEMP_TIMEOUT_GN2, (uint8_t)temp_timeout_GN2.toInt());
+      eeprom_update_byte(&E_TEMP_TIMEOUT_GN3, (uint8_t)temp_timeout_GN3.toInt());
+      eeprom_update_byte(&E_POWER_TIMEOUT_GN1, (uint8_t)power_timeout_GN1.toInt());
+      eeprom_update_byte(&E_POWER_TIMEOUT_GN2, (uint8_t)power_timeout_GN2.toInt());
+      eeprom_update_byte(&E_POWER_TIMEOUT_GN3, (uint8_t)power_timeout_GN3.toInt());
       eeprom_update_word(&E_TEMP_MIN_GN1, (uint16_t)min_temp_GN1.toInt());
       eeprom_update_word(&E_TEMP_MAX_GN1, (uint16_t)max_temp_GN1.toInt());
       eeprom_update_word(&E_TEMP_MIN_GN2, (uint16_t)min_temp_GN2.toInt());
       eeprom_update_word(&E_TEMP_MAX_GN2, (uint16_t)max_temp_GN2.toInt());
       eeprom_update_word(&E_TEMP_MIN_GN3, (uint16_t)min_temp_GN3.toInt());
       eeprom_update_word(&E_TEMP_MAX_GN3, (uint16_t)max_temp_GN3.toInt());
-      eeprom_update_word(&E_AMP_MAX_GN1, (uint16_t)max_amp_GN1.toInt());
-      eeprom_update_word(&E_AMP_MAX_GN2, (uint16_t)max_amp_GN2.toInt());
-      eeprom_update_word(&E_AMP_MAX_GN3, (uint16_t)max_amp_GN3.toInt());
+      eeprom_update_word(&E_MILLIAMP_MAX_GN1, (uint16_t)max_amp_GN1.toInt());
+      eeprom_update_word(&E_MILLIAMP_MAX_GN2, (uint16_t)max_amp_GN2.toInt());
+      eeprom_update_word(&E_MILLIAMP_MAX_GN3, (uint16_t)max_amp_GN3.toInt());
    }
 }
 
@@ -1013,19 +1029,19 @@ void set_default_eeprom()
    eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_GN1, 5);
    eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_GN2, 5);
    eeprom_update_byte(&E_HEARTBEAT_TIMEOUT_GN3, 5);
-   eeprom_update_byte(&E_BAD_ENVIRON_TIMEOUT_SYSMON, 5);
-   eeprom_update_byte(&E_BAD_ENVIRON_TIMEOUT_NC, 5);
-   eeprom_update_byte(&E_BAD_TEMP_PROCESSOR_TIMEOUT_NC, 5);
-   eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_SWITCH, 5);
-   eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_GN1, 5);
-   eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_GN2, 5);
-   eeprom_update_byte(&E_BAD_TEMP_TIMEOUT_GN3, 5);
-   eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_SYSMON, 5);
-   eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_NC, 5);
-   eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_SWITCH, 5);
-   eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_GN1, 5);
-   eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_GN2, 5);
-   eeprom_update_byte(&E_BAD_CURRENT_TIMEOUT_GN3, 5);
+   eeprom_update_byte(&E_ENVIRON_TIMEOUT_SYSMON, 5);
+   eeprom_update_byte(&E_ENVIRON_TIMEOUT_NC, 5);
+   eeprom_update_byte(&E_TEMP_PROCESSOR_TIMEOUT_NC, 5);
+   eeprom_update_byte(&E_TEMP_TIMEOUT_SWITCH, 5);
+   eeprom_update_byte(&E_TEMP_TIMEOUT_GN1, 5);
+   eeprom_update_byte(&E_TEMP_TIMEOUT_GN2, 5);
+   eeprom_update_byte(&E_TEMP_TIMEOUT_GN3, 5);
+   eeprom_update_byte(&E_POWER_TIMEOUT_SYSMON, 5);
+   eeprom_update_byte(&E_POWER_TIMEOUT_NC, 5);
+   eeprom_update_byte(&E_POWER_TIMEOUT_SWITCH, 5);
+   eeprom_update_byte(&E_POWER_TIMEOUT_GN1, 5);
+   eeprom_update_byte(&E_POWER_TIMEOUT_GN2, 5);
+   eeprom_update_byte(&E_POWER_TIMEOUT_GN3, 5);
    eeprom_update_word(&E_TEMP_MIN_SYSMON, 0);
    eeprom_update_word(&E_TEMP_MAX_SYSMON, 100);
    eeprom_update_word(&E_TEMP_MIN_NC, 0);
@@ -1045,12 +1061,12 @@ void set_default_eeprom()
    eeprom_update_byte(&E_HUMIDITY_MAX_SYSMON, 100);
    eeprom_update_byte(&E_HUMIDITY_MIN_NC, 0);
    eeprom_update_byte(&E_HUMIDITY_MAX_NC, 100);
-   eeprom_update_word(&E_AMP_MAX_SYSMON, 5000);
-   eeprom_update_word(&E_AMP_MAX_NC, 2500);
-   eeprom_update_word(&E_AMP_MAX_SWITCH, 1500);
-   eeprom_update_word(&E_AMP_MAX_GN1, 1500);
-   eeprom_update_word(&E_AMP_MAX_GN2, 1500);
-   eeprom_update_word(&E_AMP_MAX_GN3, 1500);
+   eeprom_update_word(&E_MILLIAMP_MAX_SYSMON, 5000);
+   eeprom_update_word(&E_MILLIAMP_MAX_NC, 2500);
+   eeprom_update_word(&E_MILLIAMP_MAX_SWITCH, 1500);
+   eeprom_update_word(&E_MILLIAMP_MAX_GN1, 1500);
+   eeprom_update_word(&E_MILLIAMP_MAX_GN2, 1500);
+   eeprom_update_word(&E_MILLIAMP_MAX_GN3, 1500);
 
    // Save the indicator that this SysMon has booted before
    eeprom_update_byte(&E_FIRST_BOOT, 0);

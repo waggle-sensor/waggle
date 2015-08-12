@@ -14,7 +14,6 @@ void boot_GN(byte gn)
   byte *enabled, *present;
   unsigned int *boot_time;
 
-
   // Which guest node is being booted?
   switch (gn) {
     case 1:

@@ -117,8 +117,6 @@
 
 //---------- G L O B A L S ----------------------------------------------------
 volatile byte _timer1_cycle = false;
-volatile char USART_RX_char;
-volatile boolean _USART_new_char = false;
 
 HTU21D SysMon_HTU21D;
 
@@ -187,19 +185,19 @@ uint8_t EEMEM E_HEARTBEAT_TIMEOUT_SWITCH;
 uint8_t EEMEM E_HEARTBEAT_TIMEOUT_GN1;
 uint8_t EEMEM E_HEARTBEAT_TIMEOUT_GN2;
 uint8_t EEMEM E_HEARTBEAT_TIMEOUT_GN3;
-uint8_t EEMEM E_BAD_ENVIRON_TIMEOUT_SYSMON;
-uint8_t EEMEM E_BAD_ENVIRON_TIMEOUT_NC;
-uint8_t EEMEM E_BAD_TEMP_PROCESSOR_TIMEOUT_NC;
-uint8_t EEMEM E_BAD_TEMP_TIMEOUT_SWITCH;
-uint8_t EEMEM E_BAD_TEMP_TIMEOUT_GN1;
-uint8_t EEMEM E_BAD_TEMP_TIMEOUT_GN2;
-uint8_t EEMEM E_BAD_TEMP_TIMEOUT_GN3;
-uint8_t EEMEM E_BAD_CURRENT_TIMEOUT_SYSMON;
-uint8_t EEMEM E_BAD_CURRENT_TIMEOUT_NC;
-uint8_t EEMEM E_BAD_CURRENT_TIMEOUT_SWITCH;
-uint8_t EEMEM E_BAD_CURRENT_TIMEOUT_GN1;
-uint8_t EEMEM E_BAD_CURRENT_TIMEOUT_GN2;
-uint8_t EEMEM E_BAD_CURRENT_TIMEOUT_GN3;
+uint8_t EEMEM E_ENVIRON_TIMEOUT_SYSMON;
+uint8_t EEMEM E_ENVIRON_TIMEOUT_NC;
+uint8_t EEMEM E_TEMP_PROCESSOR_TIMEOUT_NC;
+uint8_t EEMEM E_TEMP_TIMEOUT_SWITCH;
+uint8_t EEMEM E_TEMP_TIMEOUT_GN1;
+uint8_t EEMEM E_TEMP_TIMEOUT_GN2;
+uint8_t EEMEM E_TEMP_TIMEOUT_GN3;
+uint8_t EEMEM E_POWER_TIMEOUT_SYSMON;
+uint8_t EEMEM E_POWER_TIMEOUT_NC;
+uint8_t EEMEM E_POWER_TIMEOUT_SWITCH;
+uint8_t EEMEM E_POWER_TIMEOUT_GN1;
+uint8_t EEMEM E_POWER_TIMEOUT_GN2;
+uint8_t EEMEM E_POWER_TIMEOUT_GN3;
 uint16_t EEMEM E_TEMP_MIN_SYSMON;
 uint16_t EEMEM E_TEMP_MAX_SYSMON;
 uint16_t EEMEM E_TEMP_MIN_NC;
@@ -218,12 +216,12 @@ uint8_t EEMEM E_HUMIDITY_MIN_SYSMON;
 uint8_t EEMEM E_HUMIDITY_MAX_SYSMON;
 uint8_t EEMEM E_HUMIDITY_MIN_NC;
 uint8_t EEMEM E_HUMIDITY_MAX_NC;
-uint16_t EEMEM E_AMP_MAX_SYSMON;
-uint16_t EEMEM E_AMP_MAX_NC;
-uint16_t EEMEM E_AMP_MAX_SWITCH;
-uint16_t EEMEM E_AMP_MAX_GN1;
-uint16_t EEMEM E_AMP_MAX_GN2;
-uint16_t EEMEM E_AMP_MAX_GN3;
+uint16_t EEMEM E_MILLIAMP_MAX_SYSMON;
+uint16_t EEMEM E_MILLIAMP_MAX_NC;
+uint16_t EEMEM E_MILLIAMP_MAX_SWITCH;
+uint16_t EEMEM E_MILLIAMP_MAX_GN1;
+uint16_t EEMEM E_MILLIAMP_MAX_GN2;
+uint16_t EEMEM E_MILLIAMP_MAX_GN3;
 // EEPROM addresses whose values are not set by node controller:
 uint8_t EEMEM E_NC_ENABLED;
 uint8_t EEMEM E_SWITCH_ENABLED;
@@ -299,10 +297,6 @@ void setup()
       boot_GN(1);
       boot_GN(2);
       boot_GN(3);
-
-      // TEMP FOR TESTING...
-
-      //eeprom_update_word(&E_TEMP_MAX_GN1, 0);
     }
     else
     {
@@ -495,7 +489,7 @@ void loop()
     //////
 
     // Bad power timeout for SysMon?
-    if(count_timeout_power_SysMon >= eeprom_read_byte(&E_BAD_CURRENT_TIMEOUT_SYSMON))
+    if(count_timeout_power_SysMon >= eeprom_read_byte(&E_POWER_TIMEOUT_SYSMON))
     {
       // Inform node controller of the problem
       send_problem(PROBLEM_SYSMON_POWER);
@@ -508,7 +502,7 @@ void loop()
       soft_restart();
     }
     // Bad environment timeout for SysMon?
-    else if(count_timeout_environ_SysMon >= eeprom_read_byte(&E_BAD_ENVIRON_TIMEOUT_SYSMON))
+    else if(count_timeout_environ_SysMon >= eeprom_read_byte(&E_ENVIRON_TIMEOUT_SYSMON))
     {
       // Inform node controller of the problem
       send_problem(PROBLEM_SYSMON_ENVIRON);
@@ -541,7 +535,7 @@ void loop()
         boot_NC();
       }
       // Bad power timeout for NC?
-      else if(count_timeout_power_NC >= eeprom_read_byte(&E_BAD_CURRENT_TIMEOUT_NC))
+      else if(count_timeout_power_NC >= eeprom_read_byte(&E_POWER_TIMEOUT_NC))
       {
         // Inform node controller of the problem
         send_problem(PROBLEM_NC_POWER);
@@ -556,7 +550,7 @@ void loop()
         boot_NC();
       }
       // Bad environment timeout for NC?
-      else if(count_timeout_environ_NC >= eeprom_read_byte(&E_BAD_ENVIRON_TIMEOUT_NC))
+      else if(count_timeout_environ_NC >= eeprom_read_byte(&E_ENVIRON_TIMEOUT_NC))
       {
         // Inform node controller of the problem
         send_problem(PROBLEM_NC_ENVIRON);
@@ -571,7 +565,7 @@ void loop()
         boot_NC();
       }
       // Bad processor temperature timeout for NC?
-      else if(count_timeout_temp_processor_NC >= eeprom_read_byte(&E_BAD_TEMP_PROCESSOR_TIMEOUT_NC))
+      else if(count_timeout_temp_processor_NC >= eeprom_read_byte(&E_TEMP_PROCESSOR_TIMEOUT_NC))
       {
         // Inform node controller of the problem
         send_problem(PROBLEM_NC_TEMP);
@@ -592,7 +586,7 @@ void loop()
     if(_switch_running)
     {
       // Bad power timeout for ethernet switch?
-      if(count_timeout_power_switch >= eeprom_read_byte(&E_BAD_CURRENT_TIMEOUT_SWITCH))
+      if(count_timeout_power_switch >= eeprom_read_byte(&E_POWER_TIMEOUT_SWITCH))
       {
         // Inform node controller of the problem
         send_problem(PROBLEM_SWITCH_POWER);
@@ -605,7 +599,7 @@ void loop()
         boot_switch();
       }
       // Bad temperature timeout for ethernet switch?
-      else if(count_timeout_temp_switch >= eeprom_read_byte(&E_BAD_TEMP_TIMEOUT_SWITCH))
+      else if(count_timeout_temp_switch >= eeprom_read_byte(&E_TEMP_TIMEOUT_SWITCH))
       {
         // Inform node controller of the problem
         send_problem(PROBLEM_SWITCH_TEMP);
@@ -630,7 +624,7 @@ void loop()
     if(_GN1_running)
     {
       // Bad power timeout for guest node 1?
-      if(count_timeout_power_GN1 >= eeprom_read_byte(&E_BAD_CURRENT_TIMEOUT_GN1))
+      if(count_timeout_power_GN1 >= eeprom_read_byte(&E_POWER_TIMEOUT_GN1))
       {
         // Inform node controller of the problem
         send_problem(PROBLEM_GN1_POWER);
@@ -650,7 +644,7 @@ void loop()
         latest_temp_GN1 = 0;
       }
       // Bad temperature timeout for guest node 1?
-      else if(count_timeout_temp_GN1 >= eeprom_read_byte(&E_BAD_TEMP_TIMEOUT_GN1))
+      else if(count_timeout_temp_GN1 >= eeprom_read_byte(&E_TEMP_TIMEOUT_GN1))
       {
         // Inform node controller of the problem
         send_problem(PROBLEM_GN1_TEMP);
@@ -696,7 +690,7 @@ void loop()
     if(_GN2_running)
     {
       // Bad power timeout for guest node 2?
-      if(count_timeout_power_GN2 >= eeprom_read_byte(&E_BAD_CURRENT_TIMEOUT_GN2))
+      if(count_timeout_power_GN2 >= eeprom_read_byte(&E_POWER_TIMEOUT_GN2))
       {
         // Inform node controller of the problem
         send_problem(PROBLEM_GN2_POWER);
@@ -716,7 +710,7 @@ void loop()
         latest_temp_GN2 = 0;
       }
       // Bad temperature timeout for guest node 2?
-      else if(count_timeout_temp_GN2 >= eeprom_read_byte(&E_BAD_TEMP_TIMEOUT_GN2))
+      else if(count_timeout_temp_GN2 >= eeprom_read_byte(&E_TEMP_TIMEOUT_GN2))
       {
         // Inform node controller of the problem
         send_problem(PROBLEM_GN2_TEMP);
@@ -762,7 +756,7 @@ void loop()
     if(_GN3_running)
     {
       // Bad power timeout for guest node 3?
-      if(count_timeout_power_GN3 >= eeprom_read_byte(&E_BAD_CURRENT_TIMEOUT_GN3))
+      if(count_timeout_power_GN3 >= eeprom_read_byte(&E_POWER_TIMEOUT_GN3))
       {
         // Inform node controller of the problem
         send_problem(PROBLEM_GN3_POWER);
@@ -782,7 +776,7 @@ void loop()
         latest_temp_GN3 = 0;
       }
       // Bad temperature timeout for guest node 3?
-      else if(count_timeout_temp_GN3 >= eeprom_read_byte(&E_BAD_TEMP_TIMEOUT_GN3))
+      else if(count_timeout_temp_GN3 >= eeprom_read_byte(&E_TEMP_TIMEOUT_GN3))
       {
         // Inform node controller of the problem
         send_problem(PROBLEM_GN3_TEMP);
@@ -845,6 +839,28 @@ void loop()
       get_time_NC();
     }
 
+    // Received a new serial character?
+    if(Serial.available() > 0)
+    {
+      char incoming = Serial.read();
+
+      // Which request was received?
+      if(incoming == REQUEST_TIME)
+        send_time();
+      else if(incoming == REQUEST_STATUS)
+        send_status();
+      else if(incoming == REQUEST_REBOOT_NC)
+        boot_NC();
+      else if(incoming == REQUEST_REBOOT_SWITCH)
+        boot_switch();
+      else if(incoming == REQUEST_REBOOT_GN1)
+        boot_GN(1);
+      else if(incoming == REQUEST_REBOOT_GN2)
+        boot_GN(2);
+      else if(incoming == REQUEST_REBOOT_GN3)
+        boot_GN(3);
+    }
+
 
     // Time to try to reboot any devices that aren't running?
     if(count_device_reboot >= eeprom_read_word(&E_DEVICE_REBOOT_PERIOD))
@@ -885,30 +901,6 @@ void loop()
 
     // Clear the flag for the next timer cycle
     _timer1_cycle = false;
-  }
-
-
-  // Received a new serial character?
-  if(_USART_new_char)
-  {
-    // Clear flag
-    _USART_new_char = false;
-
-    // Which request was received?
-    if(USART_RX_char == REQUEST_TIME)
-      send_time();
-    else if(USART_RX_char == REQUEST_STATUS)
-      send_status();
-    else if(USART_RX_char == REQUEST_REBOOT_NC)
-      boot_NC();
-    else if(USART_RX_char == REQUEST_REBOOT_SWITCH)
-      boot_switch();
-    else if(USART_RX_char == REQUEST_REBOOT_GN1)
-      boot_GN(1);
-    else if(USART_RX_char == REQUEST_REBOOT_GN2)
-      boot_GN(2);
-    else if(USART_RX_char == REQUEST_REBOOT_GN3)
-      boot_GN(3);
   }
 }
 
@@ -1107,7 +1099,7 @@ boolean check_power_GN(byte gn)
       latest_power_GN1 = milliamps;
 
       // Is measured current below allowed maximum?
-      if(latest_power_GN1 < eeprom_read_word(&E_AMP_MAX_GN1))
+      if(latest_power_GN1 < eeprom_read_word(&E_MILLIAMP_MAX_GN1))
         // Exit with success
         return true;
 
@@ -1118,7 +1110,7 @@ boolean check_power_GN(byte gn)
       latest_power_GN2 = milliamps;
 
       // Is measured current below allowed maximum?
-      if(latest_power_GN2 < eeprom_read_word(&E_AMP_MAX_GN2))
+      if(latest_power_GN2 < eeprom_read_word(&E_MILLIAMP_MAX_GN2))
         // Exit with success
         return true;
 
@@ -1129,7 +1121,7 @@ boolean check_power_GN(byte gn)
       latest_power_GN3 = milliamps;
 
       // Is measured current below allowed maximum?
-      if(latest_power_GN3 < eeprom_read_word(&E_AMP_MAX_GN3))
+      if(latest_power_GN3 < eeprom_read_word(&E_MILLIAMP_MAX_GN3))
         // Exit with success
         return true;
 
@@ -1187,7 +1179,7 @@ boolean check_power_NC()
   latest_power_NC = ((csb << 8) | lsb) * MILLIAMPS_PER_STEP;
 
   // Is measured current below allowed maximum?
-  if(latest_power_NC < eeprom_read_word(&E_AMP_MAX_NC))
+  if(latest_power_NC < eeprom_read_word(&E_MILLIAMP_MAX_NC))
     // Exit with success
     return true;
 
@@ -1238,7 +1230,7 @@ boolean check_power_switch()
   latest_power_switch = ((csb << 8) | lsb) * MILLIAMPS_PER_STEP;
 
   // Is measured current below allowed maximum?
-  if(latest_power_switch < eeprom_read_word(&E_AMP_MAX_SWITCH))
+  if(latest_power_switch < eeprom_read_word(&E_MILLIAMP_MAX_SWITCH))
     // Exit with success
     return true;
 
@@ -1289,7 +1281,7 @@ boolean check_power_SysMon()
   latest_power_SysMon = ((csb << 8) | lsb) * MILLIAMPS_PER_STEP;
 
   // Is measured current below allowed maximum?
-  if(latest_power_SysMon < eeprom_read_word(&E_AMP_MAX_SYSMON))
+  if(latest_power_SysMon < eeprom_read_word(&E_MILLIAMP_MAX_SYSMON))
     // Exit with success
     return true;
 
@@ -1649,21 +1641,4 @@ void sleep_SysMon()
 
   // Set the flag to indicate a complete timer cycle
   _timer1_cycle = true;
-}
-
-
-
-//---------- U S A R T 1 _ R X _ I N T E R R U P T ----------------------------
-/*
-   Interrupt for USART1 receive.
-
-   :rtype: none
-*/
-ISR(USART1_RX_vect)
-{
-  // Read and store new character
-  USART_RX_char = Serial.read();
-
-  // Set flag to tell main program that new serial data is available
-  _USART_new_char = true;
 }
