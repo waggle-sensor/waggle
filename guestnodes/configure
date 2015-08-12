@@ -6,6 +6,11 @@ pip install -e pika-0.9.14
 mkdir /etc/waggle/
 #make a random unique id and write to file
 echo $RANDOM > /etc/waggle/hostname 
+
+# Let the user give the Odroid a new name
+read -p "Enter a name for this guest node: " name
+echo $name > /etc/hostname
+
 cd 
 cd waggle/guestnodes/gn-wag-os/waggled
 pip install pyserial

@@ -1,6 +1,6 @@
 #!/bin/sh
 ### BEGIN INIT INFO
-# Provides:          receive function for guest nodes -  receieves and handles messages
+# Provides:          receive function for guest nodes -  receives and handles messages
 # Required-Start:    $remote_fs $syslog
 # Required-Stop:     $remote_fs $syslog
 # Default-Start:     2 3 4 5
@@ -9,7 +9,7 @@
 # Description:       Enable service provided by daemon.
 ### END INIT INFO
 
-dir="/root/waggle/guestnodes/gn-wag-os"
+dir="/root/waggle/guestnodes/gn-wag-os/waggled"
 cmd="python communicator.py"
 user=""
 
