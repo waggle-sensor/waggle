@@ -121,8 +121,6 @@ def msg_handler(msg):
                         for priority in priorities:
                             lines[1] = priority + ',' + lines[1]
                         
-                        #add comma to the end so nothing gets left behind
-                            lines[1] = lines[1] + ','
                             
                         #send GN registration to cloud
                         header_dict = {
@@ -166,9 +164,10 @@ def msg_handler(msg):
                 devices.remove(sender)
                
                #get the device's priority/location from dictionary
-                device_p = DEVICE_DICT[sender]
+                device_p = str(DEVICE_DICT[sender])
                
                #now, need to get the priorities list
+                priorities = []
                 while not lines[1].find(',')== -1:
                     priority, lines[1] = lines[1].split(',',1)
                     priorities.append(priority)
@@ -183,14 +182,13 @@ def msg_handler(msg):
                     mapping.append(device_map)
                 dev_map = sender + ':' + device_p
                 
+                print 'dev_map: ', dev_map
                 #remove device mapping from file
                 mapping.remove(dev_map)
                 
                 #put everything back together to be written back onto the file
                 for priority in priorities:
                     lines[1] = priority + ',' + lines[1]
-                #add comma to the end so nothing gets left behind
-                lines[1] = lines[1] + ','
                 
                 for device in devices:
                     lines[0] = device + ',' + lines[0]
@@ -198,11 +196,14 @@ def msg_handler(msg):
                 for maps in mapping: 
                     lines[2] = maps + ',' + lines[2]
                     
+                print 'Lines: ', lines
                 #write the lines back into the file
                 with open('/etc/waggle/devices', 'w') as _file:
                     _file.writelines(lines)
             except Exception as e:
                 #device does not seem to be registered. Nothing needs to be done.
+                #TODO need to update the dictionary and try again
+                #TODO figure out what is happening with that weird print statement. 
                 print e
             
     #message type unrecognized 
