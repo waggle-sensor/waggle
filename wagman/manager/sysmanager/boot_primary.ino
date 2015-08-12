@@ -152,14 +152,6 @@ boolean boot_NC()
    // Is the node controller alive (sending a heartbeat)?
    if(!check_heartbeat_odroid(PIN_HEARTBEAT_NC))
    {
-      digitalWrite(PIN_RELAY_GN2, HIGH);
-      delay(30);
-      digitalWrite(PIN_RELAY_GN2, LOW);
-      delay(30);
-      digitalWrite(PIN_RELAY_GN2, HIGH);
-      delay(30);
-      digitalWrite(PIN_RELAY_GN2, LOW);
-
       // Start at 1 boot attempt, since we had to boot to get here
       byte boot_attempts = 1;
       boolean _heartbeat_detected = false;
@@ -170,14 +162,6 @@ boolean boot_NC()
          // Is heartbeat not detected?
          if(!check_heartbeat_odroid(PIN_HEARTBEAT_NC))
          {
-            digitalWrite(PIN_RELAY_GN2, HIGH);
-            delay(30);
-            digitalWrite(PIN_RELAY_GN2, LOW);
-            delay(30);
-            digitalWrite(PIN_RELAY_GN2, HIGH);
-            delay(30);
-            digitalWrite(PIN_RELAY_GN2, LOW);
-
             // Power cycle the node controller
             power_cycle(PIN_RELAY_NC);
 
