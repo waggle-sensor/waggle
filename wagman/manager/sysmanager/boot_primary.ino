@@ -1000,7 +1000,7 @@ void set_default_eeprom()
    eeprom_update_word(&E_DEVICE_REBOOT_PERIOD, 60);
    eeprom_update_byte(&E_PRESENT_SWITCH, 0);
    eeprom_update_word(&E_BOOT_TIME_NC, 40);
-   eeprom_update_word(&E_CONFIG_TIME_NC, 600);
+   eeprom_update_word(&E_CONFIG_TIME_NC, 1800);
    eeprom_update_byte(&E_BOOT_TIME_SWITCH, 15);
    eeprom_update_word(&E_BOOT_TIME_GN1, 10);
    eeprom_update_word(&E_BOOT_TIME_GN2, 10);
