@@ -1,5 +1,5 @@
 ARD_HOME = /home/rajesh/GIT/github/waggle//devtools/arduino/compilers/arduino-1.6.5-linux/arduino_64
-TARGET = sensorcode
+TARGET = MCP2
 PACKAGE = arduino
 ARCH = avr
 BOARD = mega
