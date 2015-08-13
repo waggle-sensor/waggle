@@ -4,7 +4,7 @@ int PRJ103J2 = 0;           // variable to store the value read
 void setup()
 {
     delay(5000);
-    SerialUSB.begin(9600);          //  setup serial
+    SerialUSB.begin(115200);          //  setup serial
 }
 
 
