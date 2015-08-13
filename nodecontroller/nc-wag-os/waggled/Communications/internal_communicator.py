@@ -178,7 +178,7 @@ class push_server(Process):
         stderr='/var/log/comms/push_server.err'
         
         comm = internal_communicator()
-        HOST = 'localhost' 
+        HOST = NCIP 
         PORT = 9090
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.bind((HOST,PORT))
@@ -220,7 +220,7 @@ class pull_server(Process):
         stderr='/var/log/comms/pull_server.err'
         
         comm = internal_communicator()
-        HOST = 'localhost' 
+        HOST = NCIP
         PORT = 9091
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.bind((HOST,PORT))

@@ -58,7 +58,6 @@ class pika_push(Process):
                 send_registrations() #sends registration for each node and node controller configuration file
                 connected = True
             except: 
-                #logging.warning('Pika_push currently unable to connect to cloud...')
                 #print 'Pika_push currently unable to connect to cloud...' 
                 comm.cloud_connected.value = 0 #set the flag to 0 when not connected to the cloud. I
                 time.sleep(5)
@@ -76,6 +75,7 @@ class pika_push(Process):
                     
                 except pika.exceptions.ConnectionClosed:
                     sys.stderr.write("Pika push connection closed. Waiting and trying again " + str(datetime.datetime.now()) + '\n')
+                    print "Pika push connection closed. Waiting and trying again "
                     comm.cloud_connected.value = 0
                     time.sleep(5)
                     break #need to break this loop to reconnect
@@ -120,6 +120,7 @@ class pika_pull(Process):
                
             except pika.exceptions.ConnectionClosed:
                 sys.stderr.write("Pika pull connection closed. Waiting before trying again." + str(datetime.datetime.now()) + '\n')
+                print "Pika pull connection closed. Waiting before trying again."
                 comm.cloud_connected.value = 0 #set the flag to false when not connected to the cloud
                 time.sleep(5)
         connection.close()

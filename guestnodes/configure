@@ -6,11 +6,27 @@ pip install -e pika-0.9.14
 mkdir /etc/waggle/
 #make a random unique id and write to file
 echo $RANDOM > /etc/waggle/hostname 
+
+# Let the user give the Odroid a new name
+read -p "Enter a name for this guest node: " name
+echo $name > /etc/hostname
+
 cd 
 cd waggle/guestnodes/gn-wag-os/waggled
 pip install pyserial
 #scan for node controller IP 
 python GN_scanner.py
 python GN_registration.py #send registration to node controller
-python sensor.py #Will need to replace this with script that runs all plug-ins
+
+#move communicator.sh into the init.d folder and update
+#starts communicator process to receive and handle messages
+mv communicator.sh /etc/init.d
+chmod +x /etc/init.d/communicator.sh 
+update-rc.d communicator.sh defaults 
+
+echo "Odroid will now reboot." 
+reboot
+
+
+# python sensor.py #Will need to replace this with script that runs all plug-ins
 
