@@ -1,18 +1,17 @@
-ARD_HOME = /home/rajesh/GIT/github/waggle//devtools/arduino/compilers/arduino-1.6.5-linux/arduino_64
-TARGET = MCP2
+ARD_HOME = /home/rajesh/GIT/waggle/devtools/arduino/compilers/arduino-1.6.5-linux/arduino_64
+TARGET = MCP
 PACKAGE = arduino
-ARCH = avr
-BOARD = mega
-TYPE = atmega2560
+ARCH = sam
+BOARD = arduino_due_x
+TYPE = 
 FLASHER_BAUD_RATE = 115200
-PORT = /dev/ttyACM0
-BOARD_FLASH = $(PACKAGE):$(ARCH):$(BOARD):cpu=$(TYPE)
+PORT = ttyACM0
+BOARD_FLASH = $(PACKAGE):$(ARCH):$(BOARD)
 BOOT_LOADER_TYPE = wiring
-PRE_FLASH_COMMAND = #
-FLASHER = $(ARD_HOME)/hardware/tools/avr/bin/avrdude
-FLASHER_CONFIGS = $(ARD_HOME)/hardware/tools/avr/etc/avrdude.conf
-FLASH_BOARD = $(FLASHER) -C$(FLASHER_CONFIGS) -v -p$(TYPE) -c$(BOOT_LOADER_TYPE) -P$(PORT) -b$(FLASHER_BAUD_RATE) -D -Uflash:w:$(BIN_DIR)/$(TARGET).cpp.hex:i
-BUILD_COMPLETE = mv $(BUILD_DIR)/$(TARGET).cpp.hex $(BIN_DIR)
+PRE_FLASH_COMMAND = stty -F /dev/$(PORT) 1200 hupcl; sleep 2
+FLASHER = $(ARD_HOME)/tools/bossac/1.3a-arduino/bossac
+FLASH_BOARD = $(FLASHER) -i -d --port=$(PORT) -U true -e -w -v -b $(BIN_DIR)/$(TARGET).cpp.bin -R
+BUILD_COMPLETE = mv $(BUILD_DIR)/$(TARGET).cpp.bin $(BIN_DIR)
 CC = $(ARD_HOME)/arduino
 BUILD_DIR = ./build
 BIN_DIR = ./bin
@@ -28,6 +27,10 @@ clean:
 	rm -rf $(BIN_DIR)/*
 	rm -rf $(BUILD_DIR)/*
 
-install:
+install: all
 	$(PRE_FLASH_COMMAND)
 	$(FLASH_BOARD)
+
+run:    install
+	sleep 2
+	screen /dev/$(PORT) 115200
