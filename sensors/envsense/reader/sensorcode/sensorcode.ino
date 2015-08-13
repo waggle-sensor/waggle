@@ -70,10 +70,10 @@ bool HMC5883_begin()
 {
     // Enable I2C
     Wire.begin();
-    
+
     // Enable the magnetometer
     i2c_write8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_MR_REG_M, 0x00);
-    
+
     // Set the gain to a known level
     i2c_write8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_CRB_REG_M, (byte)0x20);
     return true;
@@ -89,10 +89,10 @@ void HMC5883_getEvent() {
     HMC5883_data_x = 0;
     HMC5883_data_y = 0;
     HMC5883_data_z = 0;
-    
+
     /* Read new data */
     HMC5883_read();
-    
+
     /* Process the raw data */
     HMC5883_data_x = HMC5883_data_x / _hmc5883_Gauss_LSB_XY * SENSORS_GAUSS_TO_MICROTESLA;
     HMC5883_data_y = HMC5883_data_y / _hmc5883_Gauss_LSB_XY * SENSORS_GAUSS_TO_MICROTESLA;
@@ -114,18 +114,18 @@ void HMC5883_read()
     #endif
     Wire.endTransmission();
     Wire.requestFrom((byte)HMC5883_ADDRESS_MAG, (byte)6);
-    
+
     // Wait around until enough data is available
     while (Wire.available() < 6);
-    
-    // Note high before low (different than accel)  
+
+    // Note high before low (different than accel)
     uint8_t xhi = Wire.read();
     uint8_t xlo = Wire.read();
     uint8_t zhi = Wire.read();
     uint8_t zlo = Wire.read();
     uint8_t yhi = Wire.read();
     uint8_t ylo = Wire.read();
-    
+
     // Shift values to create properly formed integer (low byte first)
     HMC5883_data_x = (int16_t)(xlo | ((int16_t)xhi << 8));
     HMC5883_data_y = (int16_t)(ylo | ((int16_t)yhi << 8));
@@ -142,7 +142,7 @@ float t_PTAT;
 float tPEC;
 bool data_check;
 
-/* 
+/*
  * Get data from the D6T Sensor through I2C bus
  * Data is stored in array tdata
  * :rtype:boolean
@@ -177,7 +177,7 @@ bool D6T_get_data(void) {
     #ifdef POST
     wdt_reset();
     #endif
-    
+
     if (!D6T_checkPEC(rbuf, 34)) {
         return false;
     }
@@ -217,7 +217,7 @@ void output_csv() {
  */
 int D6T_checkPEC(int* buf, int pPEC) {
     byte crc;
-    
+
     crc = calc_crc(0x14);
     crc = calc_crc(0x4C ^ crc);
     crc = calc_crc(0x15 ^ crc);
@@ -249,8 +249,10 @@ byte calc_crc(byte data) {
 #ifndef I2C_ADD
 #define I2C_ADD 1
 #endif //I2C_ADD
-#define MMA8452_ADDRESS_WRITE 0x3A
-#define MMA8452_ADDRESS_READ 0x3B
+// #define MMA8452_ADDRESS_WRITE 0x3A
+// #define MMA8452_ADDRESS_READ 0x3B
+#define MMA8452_ADDRESS_WRITE 0x38
+#define MMA8452_ADDRESS_READ 0x39
 #define OUT_X_MSB 0x01
 #define XYZ_DATA_CFG 0x0E
 #define WHO_AM_I 0x0D
@@ -277,12 +279,12 @@ void MMA8452_get_means()
 {
     int accelCount[3]; // Stores the 12-bit signed value
     float accelG[3]; // Stores the real accel value in g's
-    
+
     bool good_data = readAccelData(accelCount); // Read the x/y/z adc values
     // Serial.println(accelCount[1]);
-    
-    
-    
+
+
+
     if (good_data == false)
     {
         accelG[0] = -999;
@@ -290,24 +292,24 @@ void MMA8452_get_means()
         accelG[2] = -999;
         // return false;
     }
-    
+
     else {
         for (int i = 0 ; i < 3 ; i++) {
-            accelG[i] = (float) accelCount[i] / ((1<<12)/(2*GSCALE)); 
+            accelG[i] = (float) accelCount[i] / ((1<<12)/(2*GSCALE));
             // get actual g value, this depends on scale being set
         }
     }
-    
+
     xvals[q] = accelG[0];
     yvals[q] = accelG[1];
     zvals[q] = accelG[2];
-    
+
     xmean = (xmean*q+xvals[q])/(q+1);
     ymean = (ymean*q+yvals[q])/(q+1);
     zmean = (zmean*q+zvals[q])/(q+1);
-    
+
     q++;
-    
+
     // return true;
 }
 
@@ -322,7 +324,7 @@ void calc_MMA_RMS() {
         yvar += sq(yvals[j] - ymean);
         zvar += sq(zvals[j] - zmean);
     }
-    
+
     mean_square_var = (sq(xvar) + sq(yvar) + sq(zvar))/3;
     rt_mean_sq = sqrt(mean_square_var);
 }
@@ -330,26 +332,26 @@ void calc_MMA_RMS() {
 bool readAccelData(int *destination)
 {
     byte rawData[6]; // x/y/z accel register data stored here
-    
-    bool read_success = readRegisters(OUT_X_MSB, 6, rawData); 
+
+    bool read_success = readRegisters(OUT_X_MSB, 6, rawData);
     // Read the six raw data registers into data array
-    
+
     if (read_success == false) return false;
-    
+
     // Loop to calculate 12-bit ADC and g value for each axis
     for(int i = 0; i < 3 ; i++)
     {
-        int gCount = (rawData[i*2] << 8) | rawData[(i*2)+1]; 
+        int gCount = (rawData[i*2] << 8) | rawData[(i*2)+1];
         //Combine the two 8 bit registers into one 12-bit number
         gCount >>= 4; //The registers are left align, here we right align the 12-bit integer
-        
+
         // If the number is negative, we have to make it so manually (no 12-bit data type)
         if (rawData[i*2] > 0x7F)
         {
             gCount = ~gCount + 1;
             gCount *= -1; // Transform into negative 2's complement #
         }
-        
+
         destination[i] = gCount; //Record this gCount into the 3 int array
     }
     return true;
@@ -358,7 +360,7 @@ bool readAccelData(int *destination)
 /*
  * Initializes the MMA8452
  * :rtype:void
- */ 
+ */
 bool initMMA8452()
 {
     byte c = readRegister(WHO_AM_I); // Read WHO_AM_I register
@@ -371,7 +373,7 @@ bool initMMA8452()
     if(fsr > 8) fsr = 8; //Easy error check
     fsr >>= 2;
     writeRegister(XYZ_DATA_CFG, fsr);
-    
+
     MMA8452Active(); // Set to active to start reading
     return true;
 }
@@ -383,7 +385,7 @@ bool initMMA8452()
 void MMA8452Standby()
 {
     byte c = readRegister(CTRL_REG1);
-    writeRegister(CTRL_REG1, c & ~(0x01)); 
+    writeRegister(CTRL_REG1, c & ~(0x01));
 }
 
 /*
@@ -393,7 +395,7 @@ void MMA8452Standby()
 void MMA8452Active()
 {
     byte c = readRegister(CTRL_REG1);
-    writeRegister(CTRL_REG1, c | 0x01); 
+    writeRegister(CTRL_REG1, c | 0x01);
 }
 
 /*
@@ -406,16 +408,16 @@ bool readRegisters(byte addressToRead, int bytesToRead, byte * dest)
     i2c_start(MMA8452_ADDRESS_WRITE);
     i2c_write(addressToRead);
     i2c_rep_start(MMA8452_ADDRESS_READ);
-    
+
     for(int x = 0 ; x < bytesToRead ; x++)
     {
         if (x == bytesToRead - 1)
             dest[x] = i2c_readNak();
         else
             dest[x] = i2c_readAck();
-        if (dest[x] == -999) 
+        if (dest[x] == -999)
         {
-            
+
             i2c_stop();
             return false;
         }
@@ -435,7 +437,7 @@ byte readRegister(byte addressToRead)
     i2c_write(addressToRead);
     i2c_rep_start(MMA8452_ADDRESS_READ); // Read address
     //i2c_stop();
-    
+
     return i2c_readNak();
 }
 
@@ -544,41 +546,41 @@ float DS18B20_1_getTemp()
 {
     byte data[12];
     byte addr[8];
-    
+
     if (!DS18B20_1_ds.search(addr)) {
         //no more sensors on chain, reset search
         DS18B20_1_ds.reset_search();
         return -1000;
     }
-    
+
     if ( OneWire::crc8( addr, 7) != addr[7]) {
         //Serial.println("CRC is not valid!");
         return -1000;
     }
-    
+
     if ( addr[0] != 0x10 && addr[0] != 0x28) {
         //Serial.print("Device is not recognized");
         return -1000;
     }
-    
+
     DS18B20_1_ds.reset();
     DS18B20_1_ds.select(addr);
     DS18B20_1_ds.write(0x44,1); // start conversion, with parasite power on at the end
-    
+
     //   byte present = DS18B20_1_ds.reset();
     DS18B20_1_ds.reset();
     DS18B20_1_ds.select(addr);
     DS18B20_1_ds.write(0xBE); // Read Scratchpad
-    
+
     for (int i = 0; i < 9; i++) { // we need 9 bytes
         data[i] = DS18B20_1_ds.read();
     }
-    
+
     DS18B20_1_ds.reset_search();
-    
+
     byte MSB = data[1];
     byte LSB = data[0];
-    
+
     //float tempRead = ((MSB << 8) | LSB); //using two's compliment
     float tempRead = ((MSB << 8) | LSB); //using two's compliment
     float TemperatureSum;
@@ -622,9 +624,9 @@ uint8_t FlagsMask = ~ErrorMask;
  * Sets the error for the HIH6130 chip
  * :rtype:uint8_t
  */
-uint8_t setError(uint8_t error) { 
-    f = (f & ~ErrorMask) | error; 
-    return error; 
+uint8_t setError(uint8_t error) {
+    f = (f & ~ErrorMask) | error;
+    return error;
 }
 
 /*
@@ -649,23 +651,23 @@ uint8_t HIH61XX_update()
     if(!(f & RunningFlag)) {
         f = (f & ~ErrorMask) | NotRunningError;
     }
-    
+
     uint8_t x, y, s;
-    
+
     Wire.beginTransmission(hih6130_address);
     int azer = Wire.endTransmission();
-    if(azer == 0) {    
+    if(azer == 0) {
         while(true) {
             delay(10);
-            
+
             int c = Wire.requestFrom(hih6130_address, (uint8_t) 4);
             if (c == 0) Serial.println("Problem with request");
             if(Wire.available()) {
                 x = Wire.read();
                 y = Wire.read();
                 s = x >> 6;
-                
-                switch(s) { 
+
+                switch(s) {
                     case 0:
                         HIH61XX_humidity = (((uint16_t) (x & 0x3f)) << 8) | y;
                         x = Wire.read();
@@ -673,11 +675,11 @@ uint8_t HIH61XX_update()
                         HIH61XX_temp = ((((uint16_t) x) << 8) | y) >> 2;
                         Wire.endTransmission();
                         return setError(0);
-                        
+
                     case 1:
                         Wire.endTransmission();
                         break;
-                        
+
                     case 2:
                         Wire.endTransmission();
                         return setError(CommandModeError);
@@ -720,7 +722,7 @@ float TMP421_1_temperature;
  * :rtype:uint8_t
  */
 uint8_t TMP421_getRegisterValue(void) {
-    
+
     int TMP_err = Wire.requestFrom(0x2A, 1);
     if (TMP_err != 0) {
         while(Wire.available() <= 0) {
@@ -740,7 +742,7 @@ uint8_t TMP421_getRegisterValue(void) {
  * :rtype:void
  */
 void TMP421_setPtrLoc(uint8_t ptrLoc) {
-    
+
     //Set the pointer location
     Wire.beginTransmission(0x2A);   //begin
     Wire.write(ptrLoc);             //send the pointer location
@@ -758,14 +760,14 @@ float TMP421_GetTemperature(void) {
     uint8_t in[2];
     float frac = 0.0;
     uint8_t bit;
-    
+
     TMP421_setPtrLoc(0x00);                //high-byte
     in[0] = TMP421_getRegisterValue();
-    
+
     TMP421_setPtrLoc(0x10);                //low-byte
     in[1] = TMP421_getRegisterValue();
     in[1] >>=4;                     //shift-off the unused bits
-    
+
     if (in[0] == -999 || in[1] == -999) {
         frac = -999;
     }
@@ -773,22 +775,22 @@ float TMP421_GetTemperature(void) {
         /* Assemble the fraction */
         bit = in[1] & 0x01;
         frac += (bit * 0.5) * (bit * 0.5) * (bit * 0.5) * (bit * 0.5);
-        
+
         in[1] >>= 1;
         bit = in[1] & 0x01;
         frac += (bit * 0.5) * (bit * 0.5) * (bit * 0.5);
-        
+
         in[1] >>= 1;
         bit = in[1] & 0x01;
         frac += (bit * 0.5) * (bit * 0.5);
-        
+
         in[1] >>= 1;
         bit = in[1] & 0x01;
         frac += (bit * 0.5);
-        
+
         /* Add the MSB to the fraction */
         frac += in[0];
-        
+
         /* frac is unsigned, make it signed to allow for negative temps */
         if (frac > 128.0)
             frac -= 256;
@@ -854,9 +856,9 @@ bool BMP_begin()
     /* Mode boundary check */
     if ((BMP_mode > BMP085_MODE_ULTRAHIGHRES) || (BMP_mode < 0))
     {
-        BMP_mode = BMP085_MODE_ULTRAHIGHRES;  
+        BMP_mode = BMP085_MODE_ULTRAHIGHRES;
     }
-    
+
     // Calibrate the device
     i2c_readS16(BMP_address, BMP085_REGISTER_CAL_AC1, &bmp085_coeffs_ac1);
     i2c_readS16(BMP_address, BMP085_REGISTER_CAL_AC2, &bmp085_coeffs_ac2);
@@ -869,10 +871,10 @@ bool BMP_begin()
     i2c_readS16(BMP_address, BMP085_REGISTER_CAL_MB, &bmp085_coeffs_mb);
     i2c_readS16(BMP_address, BMP085_REGISTER_CAL_MC, &bmp085_coeffs_mc);
     i2c_readS16(BMP_address, BMP085_REGISTER_CAL_MD, &bmp085_coeffs_md);
-    
+
     /* Make sure we have the right device */
     uint8_t checkid;
-    
+
     // Read 8 from BMP085_REGISTER_CHIPID
     i2c_read8(BMP_address, BMP085_REGISTER_CHIPID, &checkid);
     if(checkid != 0x55)
@@ -891,19 +893,19 @@ void BMP180_getPressure(float *pressure)
     int32_t  ut = 0, up = 0, compp = 0;
     int32_t  x1, x2, b5, b6, x3, b3, p;
     uint32_t b4, b7;
-    
+
     /* Get the raw pressure and temperature values */
-    
+
     uint16_t t;
     i2c_write8(BMP_address, BMP085_REGISTER_CONTROL, BMP085_REGISTER_READTEMPCMD);
     delay(5);
     i2c_read16(BMP_address, BMP085_REGISTER_TEMPDATA, &t);
     ut = t;
-    
+
     uint8_t  p8;
     uint16_t p16;
     int32_t  p32;
-    
+
     i2c_write8(BMP_address, BMP085_REGISTER_CONTROL, BMP085_REGISTER_READPRESSURECMD + (BMP_mode << 6));
     switch(BMP_mode)
     {
@@ -927,19 +929,19 @@ void BMP180_getPressure(float *pressure)
         i2c_read8(BMP_address, BMP085_REGISTER_PRESSUREDATA+2, &p8);
         p32 += p8;
         p32 >>= (8 - BMP_mode);
-        
+
         up = p32;
     }
     else {
         up = p16;
     }
-    
+
     if (ut != -999 && up != -999) {
         /* Temperature compensation */
         x1 = (ut - (int32_t)(bmp085_coeffs_ac6))*((int32_t)(bmp085_coeffs_ac5))/pow(2,15);
         x2 = ((int32_t)(bmp085_coeffs_mc*pow(2,11)))/(x1+(int32_t)(bmp085_coeffs_md));
         b5 = x1 + x2;
-        
+
         /* Pressure compensation */
         b6 = b5 - 4000;
         x1 = (bmp085_coeffs_b2 * ((b6 * b6) >> 12)) >> 11;
@@ -951,7 +953,7 @@ void BMP180_getPressure(float *pressure)
         x3 = ((x1 + x2) + 2) >> 2;
         b4 = (bmp085_coeffs_ac4 * (uint32_t) (x3 + 32768)) >> 15;
         b7 = ((uint32_t) (up - b3) * (50000 >> BMP_mode));
-        
+
         if (b7 < 0x80000000)
         {
             p = (b7 << 1) / b4;
@@ -960,7 +962,7 @@ void BMP180_getPressure(float *pressure)
         {
             p = (b7 / b4) << 1;
         }
-        
+
         x1 = (p >> 8) * (p >> 8);
         x1 = (x1 * 3038) >> 16;
         x2 = (-7357 * p) >> 16;
@@ -982,14 +984,14 @@ void BMP180_getTemperature(float *temp)
 {
     int32_t UT, X1, X2, B5;     // following ds convention
     float t;
-    
+
     uint16_t temp2;
     i2c_write8(BMP_address, BMP085_REGISTER_CONTROL, BMP085_REGISTER_READTEMPCMD);
     delay(5);
     i2c_read16(BMP_address, BMP085_REGISTER_TEMPDATA, &temp2);
     UT = temp2;
-    
-    
+
+
     if (UT != -999) {
         // step 1
         X1 = (UT - (int32_t)bmp085_coeffs_ac6) * ((int32_t)bmp085_coeffs_ac5) / pow(2,15);
@@ -1044,7 +1046,7 @@ typedef enum
 // DELAY: 25 - Sampling Rate: 36.8 Hz    Max observed freq: 18.40 Hz   Max observed speed: 20.0  m/s
 int sample_delay = 4;// Give sensor time to take measurement (must be >= 1)
 float sample_rate = 160.0;
-// This delay sets the sampling frequency. 
+// This delay sets the sampling frequency.
 // The rest of the measurement takes ~2.4 ms
 
 int previous=0;
@@ -1060,10 +1062,10 @@ bool HMC5883_begin()
 {
     // Enable I2C
     Wire.begin();
-    
+
     // Enable the magnetometer
     i2c_write8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_MR_REG_M, 0x00);
-    
+
     // Set the gain to a known level
     i2c_write8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_CRB_REG_M, (byte)0x20);
     return true;
@@ -1082,26 +1084,26 @@ void HMC5883_setDataReady(uint8_t data) {
     i2c_read8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_SR_REG_Mg, &drdy);   // Get current bit
     drdy = drdy & 0xFE;     // Clear last bit
     drdy = drdy | data;     // Set last bit to desired value
-    i2c_write8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_SR_REG_Mg, drdy);    
+    i2c_write8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_SR_REG_Mg, drdy);
 }
 
 
-/* 
+/*
  * Put the sensor into single measurement mode, and a new measurement
  * is taken immediately after.
  * :rtype:void
  */
 void HMC5883_setSingleMeasurementMode() {
     uint8_t value;
-    
+
     i2c_read8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_MR_REG_M, &value);
     value &= 0b11111100;
     value |= 0b01;  // Single measurement
-    
+
     i2c_write8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_MR_REG_M, value);
 }
 
-/* 
+/*
  * Collects samples and find frequency of rotation of wind cup device
  * :rtype:void
  */
@@ -1116,13 +1118,13 @@ void take_wind_samples()
     for (int i = 0; i<sample_rate*sample_time; i++)
     {
         HMC5883_setSingleMeasurementMode(); // Let the measurement begin
-        delay(sample_delay); // Give sensor time to take measurement(must be >=1)   
-        byte ready_bit;     
+        delay(sample_delay); // Give sensor time to take measurement(must be >=1)
+        byte ready_bit;
         i2c_read8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_SR_REG_Mg, &ready_bit);
         while((ready_bit & 0x01) != 0x01)
             i2c_read8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_SR_REG_Mg, &ready_bit);
         // DRDY bit monitoring only needed for high sampling frequencies
-        
+
         // Read 16 bit Y value output
         int16_t y_val;
         Wire.beginTransmission(HMC5883_ADDRESS_MAG);  // Open communication w/ HMC
@@ -1135,12 +1137,12 @@ void take_wind_samples()
         uint8_t vla = Wire.read();
         Wire.endTransmission();
         y_val = vha << 8 | vla;          // Adjust output for MSB's and LSB's
-        
+
         if(y_val < 0)   // Establish new hemisphere
             sign = -1;
         else
             sign = 1;
-        
+
         if(sign != previous)    // If hemisphere differs from previous,
         {                       // Count it as a rotation
             previous = sign;
@@ -1152,7 +1154,7 @@ void take_wind_samples()
         #endif
     }
     freq = freq/2/sample_time;  //Overcounted originally
-    
+
     #ifdef POST
     wdt_reset();
     #endif
@@ -1201,9 +1203,9 @@ void quick_sensors()
     wdt_reset();
     #endif
     #endif
-    
+
     #ifdef MAX4466_ADD
-    if((EEPROM.read(MAX4466_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor    
+    if((EEPROM.read(MAX4466_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
     {
         for (int i = 0; i < 900; i++) {
             MAX4466_get_max();
@@ -1280,7 +1282,7 @@ static void i2c_readS16(byte address, byte reg, int16_t *value)
  * This function controls the quick_sensors() function and counts
  * the number of cycles of measurements for the MAX and MMA sensors
  * :rtype:void
- */ 
+ */
 void increment_time() {
     current_time++; // Increases every 7 seconds
     quick_sensors();
@@ -1301,8 +1303,8 @@ void setup()
     Serial.println("\nStarting Up");
     Serial.flush();
     #endif //debug_serial
-    
-    
+
+
     #ifdef POST
     post();
     #ifdef debug_serial
@@ -1314,11 +1316,11 @@ void setup()
         EEPROM.write(i+128, 0xFF);
     }
     #endif
-    
+
     // Determine Board ID
     #ifdef DS18B20_ADD
     if((EEPROM.read(DS18B20_ADD+128) & Consistency_Mask) == Consistency_Mask)
-    {  
+    {
         byte i;
         byte present = 0;
         byte data[12];
@@ -1354,21 +1356,21 @@ void setup()
         for (int i = 0; i<8; i++)
             board_ID[i] = 0;
     }
-    #else   
+    #else
     for (int i = 0; i<8; i++)
         board_ID[i] = 0;
     #endif  // DS18B20
 
 
     #ifdef TMP421_ADD
-    if((EEPROM.read(TMP421_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor    
+    if((EEPROM.read(TMP421_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
     {
         /************ The LibTemp421 library turns on Arduino pins A2, A3 (aka 16, 17) to power the sensor.
          *  This is necessary due to the fact that Wire.begin() is called in the constructor and needs to be
          *  talk to the chip, which needs to be powered. If you are using the sensor in a differnt location
          *  and powering it from dedicated GND and +5V lines then include the lines below to reset the
          *  A2 & A3 pins for use as analog inputs. */
-        
+
         //  Uncomment the three lines below to reset the analog pins A2 & A3
         #ifndef POST
         pinMode(A2, INPUT);        // GND pin
@@ -1381,9 +1383,9 @@ void setup()
         #endif
     }
     #endif //TMP421_ADD
-    
+
     #ifdef MLX90614_ADD
-    if((EEPROM.read(MLX90614_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor    
+    if((EEPROM.read(MLX90614_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
     {
         #ifndef POST
         Serial.println("Initializing MLX");
@@ -1396,9 +1398,9 @@ void setup()
         #endif
     }
     #endif //MLX90614_ADD
-    
+
     #ifdef IR_D6T_44L_06_ADD
-    if((EEPROM.read(IR_D6T_44L_06_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor    
+    if((EEPROM.read(IR_D6T_44L_06_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
     {
         #ifndef POST
         #ifdef debug_serial
@@ -1422,9 +1424,9 @@ void setup()
         #endif
     }
     #endif //IR_D6T_44L_06_ADD
-    
+
     #ifdef BMP180_ADD
-    if((EEPROM.read(BMP180_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor    
+    if((EEPROM.read(BMP180_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
     {
         #ifdef debug_serial
         Serial.println("Initializing BMP");
@@ -1433,13 +1435,13 @@ void setup()
         BMP_begin(); //Initialise and calibrate the sensor bus
     }
     #endif //BMP180
-    
+
     #ifdef POST
     wdt_reset();
     #endif
-    
+
     #ifdef MMA8452
-    if((EEPROM.read(MMA8452+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor    
+    if((EEPROM.read(MMA8452+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
     {
         #ifndef I2C_INIT_ADD
         i2c_init();
@@ -1454,7 +1456,7 @@ void setup()
         #endif
     }
     #endif //MMA8452
-    
+
     #if FASTADC
     #ifdef debug_serial
     Serial.println("FASTADC");
@@ -1467,10 +1469,10 @@ void setup()
     wdt_reset();
     #endif
     #endif //FASTADC
-    
+
     #ifdef HTU21D_ADD
     #ifndef POST    // Command executed in self test
-    if((EEPROM.read(HTU21D_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor    
+    if((EEPROM.read(HTU21D_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
     {
         #ifdef debug_serial
         Serial.println("Initializing HTU");
@@ -1482,14 +1484,14 @@ void setup()
     }
     #endif //POST
     #endif //HTU21D_ADD
-    
-    
+
+
     #ifdef POST
     wdt_reset();
     #endif
-    
+
     #ifdef HMC5883_ADD
-    if((EEPROM.read(HMC5883_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor    
+    if((EEPROM.read(HMC5883_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
     {
         #ifndef POST
         #ifdef debug_serial
@@ -1502,13 +1504,13 @@ void setup()
         #endif
     }
     #endif //HMC5883_ADD
-    
+
     #ifdef POST
     wdt_reset();
     #endif
-    
+
     #ifdef WindVel_ADD
-    if((EEPROM.read(WindVel_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor    
+    if((EEPROM.read(WindVel_ADD+128) & Consistency_Mask) == Consistency_Mask)    // Determine status of sensor
     {
         #ifdef debug_serial
         Serial.println("Initializing WindVel");
@@ -1520,14 +1522,14 @@ void setup()
         // Set Single measurement mode on sensor
         #ifdef POST
         wdt_reset();
-        #endif 
+        #endif
         HMC5883_setSingleMeasurementMode();
         #ifdef POST
         wdt_reset();
         #endif
     }
     #endif //WindVel
-    
+
     #ifdef POST
     wdt_disable();
     wdt_enable(WDTO_8S);
