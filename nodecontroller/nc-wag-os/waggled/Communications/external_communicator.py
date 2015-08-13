@@ -75,6 +75,7 @@ class pika_push(Process):
                     
                 except pika.exceptions.ConnectionClosed:
                     sys.stderr.write("Pika push connection closed. Waiting and trying again " + str(datetime.datetime.now()) + '\n')
+                    print "Pika push connection closed. Waiting and trying again "
                     comm.cloud_connected.value = 0
                     time.sleep(5)
                     break #need to break this loop to reconnect
@@ -119,6 +120,7 @@ class pika_pull(Process):
                
             except pika.exceptions.ConnectionClosed:
                 sys.stderr.write("Pika pull connection closed. Waiting before trying again." + str(datetime.datetime.now()) + '\n')
+                print "Pika pull connection closed. Waiting before trying again."
                 comm.cloud_connected.value = 0 #set the flag to false when not connected to the cloud
                 time.sleep(5)
         connection.close()
