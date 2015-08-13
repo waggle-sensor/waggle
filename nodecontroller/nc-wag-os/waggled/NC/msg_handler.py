@@ -7,9 +7,9 @@ sys.path.append('../../../../devtools/protocol_common/')
 from utilities import packetmaker
 sys.path.append('../Communications/')
 from internal_communicator import send
-from NC_configuration import *
+from NC_configuration import QUEUENAME
 
-def msg_handler(msg):
+def msg_handler(msg, DEVICE_DICT):
     """
     
         Unpacks and acts on messages sent to the node.
@@ -17,7 +17,6 @@ def msg_handler(msg):
         :param string msg: The packed message sent to the node.
         
     """
-    
     try:
         #unpacks the header
         header = get_header(msg)
@@ -147,11 +146,10 @@ def msg_handler(msg):
                     _file.writelines(lines)
                     
         elif minor == 'd': #de-registration request from guest node
-            print 'Received de-registration message from node ', sender
             sender = str(sender) #convert from int to string
+            print 'Received de-registration message from node ', sender
             with open('/etc/waggle/devices', 'r') as _file:
                 lines = _file.readlines()
-                
             #check if device is already registered and remove from devices list
             devices = []
             #the first line of the file contains a list of already registered nodes
@@ -159,53 +157,48 @@ def msg_handler(msg):
             while not lines[0].find(',')== -1:
                 device, lines[0] = lines[0].split(',',1)
                 devices.append(device)
-            try: 
-               #try to remove the device from the devices list
-                devices.remove(sender)
-               
-               #get the device's priority/location from dictionary
-                device_p = str(DEVICE_DICT[sender])
-               
-               #now, need to get the priorities list
-                priorities = []
-                while not lines[1].find(',')== -1:
-                    priority, lines[1] = lines[1].split(',',1)
-                    priorities.append(priority)
-                    
-                #add the device's priority/location back to the list
-                priorities.append(device_p)
-                
-                #need to remove the device mapping 
-                mapping = []
-                while not lines[2].find(',')== -1:
-                    device_map, lines[2] = lines[2].split(',',1)
-                    mapping.append(device_map)
-                dev_map = sender + ':' + device_p
-                
-                print 'dev_map: ', dev_map
-                #remove device mapping from file
-                mapping.remove(dev_map)
-                
-                #put everything back together to be written back onto the file
-                for priority in priorities:
-                    lines[1] = priority + ',' + lines[1]
-                
-                for device in devices:
-                    lines[0] = device + ',' + lines[0]
-                    
-                for maps in mapping: 
-                    lines[2] = maps + ',' + lines[2]
-                    
-                print 'Lines: ', lines
-                #write the lines back into the file
-                with open('/etc/waggle/devices', 'w') as _file:
-                    _file.writelines(lines)
-            except Exception as e:
-                #device does not seem to be registered. Nothing needs to be done.
-                #TODO need to update the dictionary and try again
-                #TODO figure out what is happening with that weird print statement. 
-                print e
             
+            #now, need to get the priorities list
+            priorities = []
+            while not lines[1].find(',')== -1:
+                priority, lines[1] = lines[1].split(',',1)
+                priorities.append(priority)
+                
+            #need to remove the device mapping 
+            mapping = []
+            while not lines[2].find(',')== -1:
+                device_map, lines[2] = lines[2].split(',',1)
+                mapping.append(device_map)
+                
+            #try to remove the device from the devices list
+            devices.remove(sender)
+        
+            #get the device's priority/location from dictionary
+            device_p = DEVICE_DICT[sender]
+           
+            #add the device's priority/location back to the list
+            priorities.append(str(device_p))
+            
+            dev_map = sender + ':' + str(device_p)
+            
+            #remove device mapping from file
+            mapping.remove(dev_map)
+         
+            #put everything back together to be written back onto the file
+            for priority in priorities:
+                lines[1] = priority + ',' + lines[1]
+            
+            for device in devices:
+                lines[0] = device + ',' + lines[0]
+                
+            for maps in mapping: 
+                lines[2] = maps + ',' + lines[2]
+            
+            #write the lines back into the file
+            with open('/etc/waggle/devices', 'w') as _file:
+                _file.writelines(lines)
+            
+        
     #message type unrecognized 
     else: 
         print 'Message major type, ' , major, ' unrecognized.'

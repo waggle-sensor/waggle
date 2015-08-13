@@ -49,6 +49,7 @@ def create_dev_dict():
 
 DEVICE_DICT = create_dev_dict()
 
+#if new devices were registered after the initial start up, the device dictionary will occasionally need to be updated
 def update_dev_dict():
     DEVICE_DICT = create_dev_dict()
     return DEVICE_DICT
@@ -59,7 +60,7 @@ PRIORITY_ORDER = [5,4,3,2,1]
 
 #This specifies the maximum RAM available to the data cache
 #Here, we assume that each message stored is no larger than 1K
-AVAILABLE_MEM = 576482
+AVAILABLE_MEM = 256000
 #AVAILABLE_MEM = 2
 
 #The params used to connect to the cloud are stored here

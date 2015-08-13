@@ -148,8 +148,15 @@ class Data_Cache(Daemon):
                                             
                                     #indicates an incoming push
                                     elif str(recipient) == HOSTNAME:
-                                        msg_handler(data)
-                                        break
+                                        try:
+                                            #an error will occur if a guestnode registers and then tries to deregister before the device dictionary has been updated
+                                            #this may be unlikely but is still very possible
+                                            #need to update the device dictionary and try again
+                                            msg_handler(data,DEVICE_DICT)
+                                            break #break the loop if this is successful
+                                        except Exception as e:
+                                            #print e
+                                            DEVICE_DICT = update_dev_dict()
                                     else:
                                         try:
                                             dev_loc = DEVICE_DICT[str(recipient)] #looks up the location of the recipient device
@@ -160,8 +167,9 @@ class Data_Cache(Daemon):
                                             #The device dictionary may not be up to date. Need to update and try again.
                                             #If the device is still not found after first try, move on.
                                             DEVICE_DICT = update_dev_dict()
-                            except:
+                            except Exception as e:
                                 print 'Message corrupt. Will not store in data cache.'
+                                print e
                             time.sleep(1)
 
                         
