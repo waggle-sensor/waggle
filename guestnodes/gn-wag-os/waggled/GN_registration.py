@@ -11,6 +11,7 @@ from send import send
     A python script that creates a registration message packet and sends it to the NC. 
 """ 
 
+#Get the NC's unique ID
 with open('/etc/waggle/NCID','r') as file_:
     NC_ID = file_.read().strip() 
 

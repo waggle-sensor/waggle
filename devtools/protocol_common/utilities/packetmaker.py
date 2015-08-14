@@ -8,8 +8,6 @@ import sys, os, os.path
 sys.path.append("..")
 from protocol.PacketHandler import *
 
-#with open('/etc/waggle/queuename','r') as file_:
-    #QUEUENAME = file_.read().strip() 
 
 def make_ping_packet():
     """
@@ -97,6 +95,7 @@ def deregistration_packet(recp_ID):
     """
         Returns a deregistration request packet.
 
+        :param recp_ID: Unique ID of the message recipient
         :rtype: string
     """ 
 

@@ -72,9 +72,7 @@ def msg_handler(msg, DEVICE_DICT):
     
     #registration
     elif major =='r':
-        #TODO do stuff here 
         sender = header['s_uniqid']
-        
         if minor == 'r': #registration request
             if sender == 0:
                 #message is from cloud
@@ -93,10 +91,9 @@ def msg_handler(msg, DEVICE_DICT):
                 while not lines[0].find(',')== -1:
                     device, lines[0] = lines[0].split(',',1)
                     devices.append(device)
-                #print 'Devices: ', devices
                 try:
                     devices.index(sender) #if this works, the device is already registered
-                #nothing else to be done
+                    #nothing else to be done
                 except: 
                     #if it fails, the device is not yet registered. Add to list of devices
                     print 'Adding device ',sender, 'to devices file.'
