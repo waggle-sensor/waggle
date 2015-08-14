@@ -1,6 +1,6 @@
 #!/bin/sh
 ### BEGIN INIT INFO
-# Provides:          receive function for guest nodes -  receives and handles messages
+# Provides:          receives and handles messages for guest nodes
 # Required-Start:    $remote_fs $syslog
 # Required-Stop:     $remote_fs $syslog
 # Default-Start:     2 3 4 5
@@ -13,6 +13,7 @@ dir="/root/waggle/guestnodes/gn-wag-os/waggled"
 cmd="python communicator.py"
 user=""
 
+#can change to /etc/waggle/...
 name=`basename $0`
 pid_file="/var/run/$name.pid"
 stdout_log="/var/log/$name.log"

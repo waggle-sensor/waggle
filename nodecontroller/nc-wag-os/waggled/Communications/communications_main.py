@@ -21,7 +21,6 @@ if __name__ == "__main__":
         #The default file is empty. So, if it is empty, make an initial connection to get a unique queuename.
         if QUEUENAME == ' ':
             #get the connection parameters
-            #params = pika.connection.URLParameters("amqps://waggle:waggle@10.10.10.110:5671/%2F") #This will need to change according to where the server is
             params = pika.connection.URLParameters(CLOUD_ADDR)
             #make the connection
             connection = pika.BlockingConnection(params)

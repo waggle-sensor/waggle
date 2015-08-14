@@ -91,6 +91,7 @@ def make_GN_reg(recp_ID):
 
     return pack(header_dict, message_data = '')
 
+#TODO may want to add an additional option argument to specify sender_id so that server can send a de-registration message for a GN
 def deregistration_packet(recp_ID):
     """
         Returns a deregistration request packet.

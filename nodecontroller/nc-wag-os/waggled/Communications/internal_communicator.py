@@ -36,11 +36,11 @@ def send(msg):
                     break #break loop when message sent. Otherwise, keep trying to connect until successful.
                 except Exception as e:
                     print e
-                    time.sleep(5)
+                    time.sleep(1)
                     client_sock.close()
 
             else: 
-                time.sleep(5)
+                time.sleep(1)
                 print 'Unable to connect to DC...'
 
         except KeyboardInterrupt, k:
@@ -96,10 +96,10 @@ class internal_client_push(Process):
                             sys.stderr.write(e)
                             #print e
                             client_sock.close()
-                            time.sleep(5)
+                            time.sleep(1)
                         
                     else: 
-                        time.sleep(5)
+                        time.sleep(1)
                         sys.stderr.write('Internal client push unable to connect to DC...\n')
                 else: 
                     time.sleep(1) #else, wait until messages are in queue

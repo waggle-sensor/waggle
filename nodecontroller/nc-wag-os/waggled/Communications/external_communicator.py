@@ -29,7 +29,6 @@ class external_communicator(object):
     outgoing = Queue() #stores messages going out to cloud
     cloud_connected = Value('i') #indicates if the cloud is or is not connected. Clients only connect to DC when cloud is connected. 
     params = pika.connection.URLParameters(CLOUD_ADDR) #SSL 
-    #params = pika.connection.URLParameters("amqp://waggle:waggle@10.10.10.110:5672/%2F") #the parameters used to connect to the cloud 
 
 
 class pika_push(Process):
@@ -39,6 +38,7 @@ class pika_push(Process):
     """ 
     def run(self):
         #set log files
+        #TODO The logging doesn't work for the individual processes. Log for all communications processes can be cound in /var/log
         stdout='/var/log/comms/pika_push.log'
         stderr='/var/log/comms/pika_push.err'
         
@@ -88,6 +88,7 @@ class pika_pull(Process):
     
     def run(self):
         #set log files
+        #TODO The logging doesn't work for the individual processes. Log for all communications processes can be cound in /var/log
         stdout='/var/log/comms/pika_pull.log'
         stderr='/var/log/comms/pika_pull.err'
         
@@ -143,6 +144,7 @@ class external_client_pull(Process):
     
     def run(self):
         #set log files
+        #TODO The logging doesn't work for the individual processes. Log for all communications processes can be cound in /var/log
         stdout='/var/log/comms/external_client_pull.log'
         stderr='/var/log/comms/external_client_pull.err'
         
@@ -192,6 +194,7 @@ class external_client_push(Process):
     
     def run(self):
         #set log files
+        #TODO The logging doesn't work for the individual processes. Log for all communications processes can be cound in /var/log
         stdout='/var/log/comms/external_client_pull.log'
         stderr='/var/log/comms/external_client_pull.err'
         

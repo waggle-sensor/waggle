@@ -2,7 +2,7 @@
     This script scans for the Node Controller IP address and writes it to a file.
 
 """
-
+#TODO can be added to a process in communicator to periodically scan for NC and send registration if needed
 import subprocess, os, socket, re
 
 #need to find the node's IP address 
@@ -46,7 +46,7 @@ with open ('output.txt','r') as _file:
  
 hosts = re.findall( r'[0-9]+(?:\.[0-9]+){3}', lines)
 
-        
+#TODO for robustness, go through all 255 addresses in subnet
 #now, we need to check each host to find out if it is the node controller
 PORT = 9090 #port for push_server
 for HOST in hosts:
@@ -64,6 +64,7 @@ for HOST in hosts:
             #Node controller unique ID is neccessary for registration
             with open('/etc/waggle/NCID','w') as file_: #write nodecontroller ID to file
                 file_.write(msg)
+            #TODO send registration here
             s.close()
             break
         else:

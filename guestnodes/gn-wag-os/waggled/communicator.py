@@ -7,7 +7,8 @@ from msg_handler import msg_handler
     This process runs in the background after guest node configuration.
     
 """
-
+#TODO add GN_scanner here, check if GN has been registered, if not, start GN scanner and register
+#make a process, when it connects, write to file, use indicator to indicate that receive process can start running. 
 #gets the IP address for the nodecontroller
 with open('/etc/waggle/NCIP','r') as file_:
     NCIP = file_.read().strip() 
@@ -25,7 +26,7 @@ class receive(Process):
     def run(self):
         HOST = NCIP #Should connect to NodeController
         PORT = 9091 #port for pull_server
-        
+        #if NCIP not == '':
         
         while True: #loop that keeps connecting to node controller
             try:

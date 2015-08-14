@@ -16,6 +16,7 @@ with open('/etc/waggle/NCID','r') as file_:
     NC_ID = file_.read().strip() 
 
 #send registration to NC
+#destination ID
 packet = packetmaker.make_GN_reg(int(NC_ID))
 print 'Registration packet made. Sending to ', NC_ID 
 for pack in packet:
