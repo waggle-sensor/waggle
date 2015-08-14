@@ -61,7 +61,7 @@ class Data_Cache(Daemon):
             server_sock.bind('/tmp/Data_Cache_server') #binds to this file path
             
             #become a server socket and start listening for clients
-            server_sock.listen(5)
+            server_sock.listen(6)
     
             while True:
             

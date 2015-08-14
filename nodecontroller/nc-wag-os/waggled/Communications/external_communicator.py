@@ -44,7 +44,6 @@ class pika_push(Process):
         
         comm = external_communicator()
         params = comm.params
-        #params = pika.connection.URLParameters("amqps://waggle:waggle@10.10.10.108:5671/%2F") #SSL
         sys.stdout.write('Pika push started...\n')
         while True:
             try: 
@@ -56,12 +55,12 @@ class pika_push(Process):
                 channel.queue_declare(queue=QUEUENAME)
                 sys.stdout.write('Pika push connected to cloud.\n')
                 send_registrations() #sends registration for each node and node controller configuration file
-                connected = True
+                connected = True #might not be neccessary 
             except: 
                 #print 'Pika_push currently unable to connect to cloud...' 
                 comm.cloud_connected.value = 0 #set the flag to 0 when not connected to the cloud. I
                 time.sleep(5)
-                connected = False
+                connected = False #might not be neccessary
                 
             while connected:
                 try:
@@ -201,7 +200,7 @@ class external_client_push(Process):
         sys.stdout.write('External client push started...\n')
         comm = external_communicator()
         
-            #TODO clean up if possible
+        
         while True:
             while comm.incoming.empty(): #sleeps until a message arrives in the incoming queue 
                 time.sleep(1)
