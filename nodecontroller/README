@@ -10,7 +10,8 @@ are three basic pieces:
   hyperspectral data, etc.
 
 How to configure your odroid as a node controller: 
-1) Type ./configure in the command line and hit enter. Wait for odroid to reboot.
-2) SSH into root@NodeController
-3) cd waggle/nodecontroller
-4) ./startup.sh
+1) Type ./configure in the command line and hit enter. 
+2)Follow instructions to type in server_ip address.
+2)Wait for odroid to reboot.
+3)Voila! You have a node controller. No additional actions neccessary. 
+
