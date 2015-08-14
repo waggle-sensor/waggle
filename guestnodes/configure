@@ -14,6 +14,7 @@ echo $name > /etc/hostname
 cd 
 cd waggle/guestnodes/gn-wag-os/waggled
 pip install pyserial
+
 #scan for node controller IP 
 python GN_scanner.py
 python GN_registration.py #send registration to node controller

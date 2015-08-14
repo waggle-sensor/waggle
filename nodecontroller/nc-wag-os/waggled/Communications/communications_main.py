@@ -8,18 +8,15 @@ from external_communicator import *
 from internal_communicator import *
 
 
-#cur_time = str(datetime.datetime.now().strftime('%Y%m%d%H:%M:%S'))
-
-
+#TODO if the pika_push and pika_pull clients can be combined into one process, add an if statement to that process that checks for initial contact with the cloud
 """
 
-    Communications main starts the internal and external communication processes and starts the process to start receiving messages. 
+    Communications main starts the internal and external communication processes. 
     It then continuously monitors each of the processes. It restarts the processes of it ever crashes.
 """
 
 if __name__ == "__main__":
     try:
-        #TODO if the pika_push and pika_pull clients can be combined into one process, add an if statement to that process that checks for initial contact with the cloud
         #checks if the queuename has been established yet
         #The default file is empty. So, if it is empty, make an initial connection to get a unique queuename.
         if QUEUENAME == ' ':
@@ -90,42 +87,36 @@ if __name__ == "__main__":
        
         while True:
             if not pull_pika.is_alive():
-                #print 'Pika pull has crashed. Restarting...'
                 print 'Pika pull has crashed. Restarting...', str(datetime.datetime.now())
                 pull_pika = pika_pull()
                 pull_pika.start()
                 print 'Pika pull restarted.'
             
             if not push_pika.is_alive():
-                #print 'Pika push has crashed. Restarting...'
                 print 'Pika push has crashed. Restarting...' , str(datetime.datetime.now())
                 push_pika = pika_push()
                 push_pika.start()
                 print 'Pika push restarted.'
                 
             if not external_push_client.is_alive():
-                #print 'External push client has crashed. Restarting...'
                 print 'External push client has crashed. Restarting...', str(datetime.datetime.now())
                 external_push_client = external_client_push()
                 external_push_client.start()
                 print 'External_push_client restarted.'
                 
             if not external_pull_client.is_alive():
-                #print 'external_pull_client has crashed. Restarting...'
                 print 'external_pull_client has crashed. Restarting...', str(datetime.datetime.now())
                 external_pull_client = external_client_pull()
                 external_pull_client.start()
                 print 'external_pull_client restarted.'
                 
             if not pull_serv.is_alive():
-                #print 'pull_serv has crashed. Restarting...'
                 print 'pull_serv has crashed. Restarting...', str(datetime.datetime.now())
                 pull_serv = pull_server()
                 pull_serv.start()
                 print 'pull_serv restarted.'
                 
             if not push_serv.is_alive():
-                #print 'push_serv has crashed. Restarting...'
                 print 'push_serv has crashed. Restarting...', str(datetime.datetime.now())
                 push_serv = push_server()
                 push_serv.start()

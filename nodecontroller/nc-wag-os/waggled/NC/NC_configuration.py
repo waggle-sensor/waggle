@@ -7,12 +7,6 @@ from utilities.packetmaker import *
 
 """
 
-#TODO Need to make sure this file can be updated by other classes
-#This contains a dictionary mapping GN device priority data cache queue location. 
-#The dictionary is used by both internal and external comms for message storage.
-#TODO Need to add or remove devices as needed
-#TODO Devices should be added when they register to NC
-
 #Node's hostname
 with open('/etc/waggle/hostname','r') as file_:
     HOSTNAME = file_.read().strip()
@@ -21,15 +15,20 @@ with open('/etc/waggle/hostname','r') as file_:
 with open('/etc/waggle/queuename','r') as file_:
     QUEUENAME = file_.read().strip() 
     
-#The IP address of the node controller is stored here
+#Get node controller IP
 with open('/etc/waggle/NCIP','r') as file_:
     NCIP = file_.read().strip()
     
+#get server IP from file
 with open('/etc/waggle/server_ip','r') as file_:
     CLOUD_IP = file_.read().strip()
     
 def create_dev_dict():
-    #Maps the device ID to the queue location in DC 
+    """
+        This function creates the device dictionary that maps each node with its location/ priority in the data cache. 
+    """
+    #Registered devices, available locations/priorities, and current device:location/priority maps are stored in this file
+    #This file is updated in msg_handler.py when a GN registers or de-registers
     with open('/etc/waggle/devices', 'r') as file_:
         lines = file_.readlines()
 
@@ -43,7 +42,6 @@ def create_dev_dict():
             mapping.append((device,int(priority)))
         else:
             break
-    #print 'create dev dict: ', mapping
     return dict(mapping)
 
 
@@ -51,20 +49,22 @@ DEVICE_DICT = create_dev_dict()
 
 #if new devices were registered after the initial start up, the device dictionary will occasionally need to be updated
 def update_dev_dict():
+    """
+        This function updates the device dictionary when a GN registers or de-registers.
+    """
     DEVICE_DICT = create_dev_dict()
     return DEVICE_DICT
         
 #lists the order of device priority. Each device corresponds with a location in the data cache
 #The highest priority position is at the front of the list, the lowest priority is at the end.
+#The node controller is 5
 PRIORITY_ORDER = [5,4,3,2,1] 
 
 #This specifies the maximum RAM available to the data cache
 #Here, we assume that each message stored is no larger than 1K
 AVAILABLE_MEM = 256000
-#AVAILABLE_MEM = 2
 
 #The params used to connect to the cloud are stored here
-#CLOUD_ADDR = 'amqps://waggle:waggle@10.10.10.134:5671/%2F'
 CLOUD_ADDR = 'amqps://waggle:waggle@' + CLOUD_IP + ':5671/%2F'
 
 def get_config():
