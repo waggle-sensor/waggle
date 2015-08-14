@@ -270,19 +270,20 @@ void setup()
         eeprom_update_byte(&E_NUM_PRIMARY_BOOT_ATTEMPTS, num_attempts);
 
         // Number of boot attempts not yet reached maximum allowed?
-        if(num_attempts <= eeprom_read_byte(&E_MAX_NUM_PRIMARY_BOOT_ATTEMPTS))
-        {
-          // Disable watchdog
-          wdt_disable();
-          // Set watchdog for short timeout
-          wdt_enable(WDTO_15MS);
-
-          // Wait
-          while(1);
-        }
+        if(num_attempts < eeprom_read_byte(&E_MAX_NUM_PRIMARY_BOOT_ATTEMPTS))
+          soft_restart();
         else
+        {
+          // Clear the counter for number of primary boot attempts.
+          // We want to start with a clean slate after reset.
+          eeprom_update_byte(&E_NUM_PRIMARY_BOOT_ATTEMPTS, 0);
+
+          // Give it time to write to EEPROM, just to be sure
+          delay(10);
+
           // We're done trying, so go to sleep
           sleep_SysMon();
+        }
       }
     }
     // Something non-fatal failed the POST
