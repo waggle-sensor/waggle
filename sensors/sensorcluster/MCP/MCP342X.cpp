@@ -7,6 +7,7 @@
 
 #include "MCP342X.h"
 #include <Wire.h>
+extern TwoWire Wire1;
 
 void MCP342X::init(byte A0, byte A1)
 {
@@ -31,19 +32,19 @@ void MCP342X::selectChannel(byte channel, byte gain)
 			0 << BIT_OC |
 			1 << BIT_S1 |
 			gain;
-	Wire.beginTransmission(I2C_ADDRESS);
-	Wire.write(reg);
-	Wire.endTransmission();
+	Wire1.beginTransmission(I2C_ADDRESS);
+	Wire1.write(reg);
+	Wire1.endTransmission();
 }
 
 unsigned int MCP342X::readADC()
 {
     delay(80);
     unsigned int t;
-  	Wire.requestFrom(I2C_ADDRESS, (byte) 3);
-	byte h = Wire.read();
-  	byte l = Wire.read();
-  	byte r = Wire.read();
+  	Wire1.requestFrom(I2C_ADDRESS, (byte) 3);
+	byte h = Wire1.read();
+  	byte l = Wire1.read();
+  	byte r = Wire1.read();
     t = (h << 8) |  l;
     return t;
 }

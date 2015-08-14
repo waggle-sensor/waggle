@@ -1,5 +1,5 @@
 ARD_HOME = /home/rajesh/GIT/waggle/devtools/arduino/compilers/arduino-1.6.5-linux/arduino_64
-TARGET = MCP
+TARGET = SPV1840LR5H-B_1
 PACKAGE = arduino
 ARCH = sam
 BOARD = arduino_due_x

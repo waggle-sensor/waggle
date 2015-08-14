@@ -1,5 +1,5 @@
 ARD_HOME = /home/rajesh/GIT/waggle/devtools/arduino/compilers/arduino-1.6.5-linux/arduino_64
-TARGET = MCP
+TARGET = HTU
 PACKAGE = arduino
 ARCH = sam
 BOARD = arduino_due_x
