@@ -18,7 +18,7 @@ from internal_communicator import send
 #           Edit CORE (SysMon, NC, network switch) parameters here.
 #           Do not change the order or number of items.
 #           (if you must change it, you need to modify the
-#            "get_params_nc()" function in SysMon)
+#            "get_params_core()" function in SysMon)
 ########################################################################
 params_core = collections.OrderedDict()
 

@@ -3,10 +3,12 @@ import time, socket, sys
 from msg_handler import msg_handler
 
 """
-    This module contains the communication processes for the node.
+    This module contains the communication processes for the node. It receives messages from the NC and passes them to msg_handler.py.
+    This process runs in the background after guest node configuration.
     
 """
-
+#TODO add GN_scanner here, check if GN has been registered, if not, start GN scanner and register
+#make a process, when it connects, write to file, use indicator to indicate that receive process can start running. 
 #gets the IP address for the nodecontroller
 with open('/etc/waggle/NCIP','r') as file_:
     NCIP = file_.read().strip() 
@@ -14,40 +16,7 @@ with open('/etc/waggle/NCIP','r') as file_:
 with open('/etc/waggle/hostname','r') as file_:
     HOSTNAME = file_.read().strip()
     
-#def send(msg):
-    
-    #""" 
-    
-        #This is a client socket that connects to the push_server of the node controller to send messages. 
-        
-        #:param string msg: The packed waggle message that needs to be sent.
-        
-    #"""
 
-##TODO May want to add guestnode message robustness. If node controller is currently unavailable, all guest node messages are lost.
-    #HOST = NCIP #sets to NodeController IP
-    #PORT = 9090 #port for push_server
-
-    #try:
-        #s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        #try: 
-            #s.connect((HOST,PORT))
-            #s.send(msg)
-            ##print 'Message sent: ', msg
-            #s.close() #closes each time a message is sent.
-        ##print 'Connection closed...'
-        #except Exception as e: 
-            #print e
-            #time.sleep(1)
-            ##print 'Unable to connect...'
-    #except Exception as e:
-        #print e
-        #print 'Connection disrupted...'
-        #s.close()
-
-
-
-#TODO make this a background process
 class receive(Process):
     """ 
         This is a client socket that connects to the pull_server of the node controller to retrieve messages. 
@@ -57,7 +26,7 @@ class receive(Process):
     def run(self):
         HOST = NCIP #Should connect to NodeController
         PORT = 9091 #port for pull_server
-        
+        #if NCIP not == '':
         
         while True: #loop that keeps connecting to node controller
             try:
@@ -72,10 +41,9 @@ class receive(Process):
                     msg = s.recv(4028) #arbitrary. Can put in a config file
                     if msg != 'False':
                         try:
-                            #print 'Msg: ',msg
                             #sends incoming messages to msg_handler class 
                             msg_handler(msg)
-                            s.close() #closes each time a message is received. #TODO might not need to close the socket each time
+                            s.close() #closes each time a message is received. 
                             #print 'Connection closed...'
                         except:
                             print 'Unpack unsuccessful.'

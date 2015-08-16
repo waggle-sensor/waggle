@@ -21,7 +21,6 @@ all: $(TARGET)
 $(TARGET): $(TARGET).ino
 	$(CC) --board $(BOARD_FLASH) $(CFLAGS) --pref build.path=$(BUILD_DIR) $(TARGET).ino
 	mv $(BUILD_DIR)/$(TARGET).cpp.hex $(BIN_DIR)
-	rm -rf $(BUILD_DIR)/*
 clean:
 	rm -rf $(BIN_DIR)/*
 	rm -rf $(BUILD_DIR)/*

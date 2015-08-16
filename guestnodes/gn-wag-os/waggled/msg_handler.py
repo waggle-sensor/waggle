@@ -8,7 +8,7 @@ from send import send
 def msg_handler(msg):
     """
     
-        Unpacks and acts on messages sent to the node.
+        Unpacks and acts on messages sent to the node. This is called by the communicator process whenever messages are received. 
         
         :param string msg: The packed message sent to the node.
         

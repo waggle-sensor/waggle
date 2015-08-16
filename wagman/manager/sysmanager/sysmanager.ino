@@ -93,6 +93,9 @@
 #define PROBLEM_NC_HEARTBEAT "NC,h"
 #define PROBLEM_SWITCH_TEMP "SW,t"
 #define PROBLEM_SWITCH_POWER "SW,p"
+// Currently no implementation of heartbeat for switch.
+// Most switches will not have a reliable source of heartbeat to tie into.
+// Could use NC to emulate heartbeat for switch.
 #define PROBLEM_SWITCH_HEARTBEAT "SW,h"
 #define PROBLEM_GN1_TEMP "GN1,t"
 #define PROBLEM_GN1_POWER "GN1,p"
@@ -270,19 +273,20 @@ void setup()
         eeprom_update_byte(&E_NUM_PRIMARY_BOOT_ATTEMPTS, num_attempts);
 
         // Number of boot attempts not yet reached maximum allowed?
-        if(num_attempts <= eeprom_read_byte(&E_MAX_NUM_PRIMARY_BOOT_ATTEMPTS))
-        {
-          // Disable watchdog
-          wdt_disable();
-          // Set watchdog for short timeout
-          wdt_enable(WDTO_15MS);
-
-          // Wait
-          while(1);
-        }
+        if(num_attempts < eeprom_read_byte(&E_MAX_NUM_PRIMARY_BOOT_ATTEMPTS))
+          soft_restart();
         else
+        {
+          // Clear the counter for number of primary boot attempts.
+          // We want to start with a clean slate after reset.
+          eeprom_update_byte(&E_NUM_PRIMARY_BOOT_ATTEMPTS, 0);
+
+          // Give it time to write to EEPROM, just to be sure
+          delay(10);
+
           // We're done trying, so go to sleep
           sleep_SysMon();
+        }
       }
     }
     // Something non-fatal failed the POST
@@ -1022,6 +1026,8 @@ boolean check_heartbeat_odroid(byte device)
          result = true;
    }
 
+   delay(2000);
+
    return result;
 }
 
@@ -1608,6 +1614,8 @@ void send_time()
 */
 void sleep_SysMon()
 {
+  // Try disabling watchdog before noInterrupts() and see if chip
+  // stays asleep.
   // Disable interrupts to stop things from waking up SysMon
   // noInterrupts();
 
@@ -1616,7 +1624,11 @@ void sleep_SysMon()
 
   
 
-  // Temporary patch until sleep is working
+  // Temporary patch until sleep is working.
+  // Should disable/clear all timer registers.
+  // Should disable watchdog.
+  // The goal is to have minimal core activity.
+  // Infinite loop with nop().
   digitalWrite(PIN_RELAY_NC, LOW);
   digitalWrite(PIN_RELAY_SWITCH, LOW);
   digitalWrite(PIN_RELAY_GN1, LOW);

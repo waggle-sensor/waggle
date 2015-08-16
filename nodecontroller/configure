@@ -4,6 +4,7 @@
 #install all dependencies for node
 dpkg -i nc-wag-os/packages_o/*.deb
 cd nc-wag-os/packages_o/
+#change to offline install
 pip install -e pika-0.9.14
 pip install pyserial
 
@@ -12,7 +13,7 @@ echo NodeController > /etc/hostname
 
 #set waggle parameters
 mkdir /etc/waggle/
-host_name=$RANDOM 
+host_name=$RANDOM #has to changed so that the requirement for node ID in the packet header is met
 echo " " > /etc/waggle/queuename
 echo "$host_name" > /etc/waggle/hostname # The node's waggle hostname
 echo "$host_name, \n" > /etc/waggle/devices
@@ -21,6 +22,7 @@ echo "$host_name:5, \n" >> /etc/waggle/devices
 echo " " >> /etc/waggle/NCIP
 
 #make directory to store data cache log files and stored messages
+#make / as large as possible, all the cached data gets stored here. 
 mkdir /var/dc
 #store outoing messages here
 mkdir /var/dc/outgoing_msgs

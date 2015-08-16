@@ -29,7 +29,6 @@ class external_communicator(object):
     outgoing = Queue() #stores messages going out to cloud
     cloud_connected = Value('i') #indicates if the cloud is or is not connected. Clients only connect to DC when cloud is connected. 
     params = pika.connection.URLParameters(CLOUD_ADDR) #SSL 
-    #params = pika.connection.URLParameters("amqp://waggle:waggle@10.10.10.110:5672/%2F") #the parameters used to connect to the cloud 
 
 
 class pika_push(Process):
@@ -39,12 +38,12 @@ class pika_push(Process):
     """ 
     def run(self):
         #set log files
+        #TODO The logging doesn't work for the individual processes. Log for all communications processes can be cound in /var/log
         stdout='/var/log/comms/pika_push.log'
         stderr='/var/log/comms/pika_push.err'
         
         comm = external_communicator()
         params = comm.params
-        #params = pika.connection.URLParameters("amqps://waggle:waggle@10.10.10.108:5671/%2F") #SSL
         sys.stdout.write('Pika push started...\n')
         while True:
             try: 
@@ -56,12 +55,12 @@ class pika_push(Process):
                 channel.queue_declare(queue=QUEUENAME)
                 sys.stdout.write('Pika push connected to cloud.\n')
                 send_registrations() #sends registration for each node and node controller configuration file
-                connected = True
+                connected = True #might not be neccessary 
             except: 
                 #print 'Pika_push currently unable to connect to cloud...' 
                 comm.cloud_connected.value = 0 #set the flag to 0 when not connected to the cloud. I
                 time.sleep(5)
-                connected = False
+                connected = False #might not be neccessary
                 
             while connected:
                 try:
@@ -88,6 +87,7 @@ class pika_pull(Process):
     
     def run(self):
         #set log files
+        #TODO The logging doesn't work for the individual processes. Log for all communications processes can be cound in /var/log
         stdout='/var/log/comms/pika_pull.log'
         stderr='/var/log/comms/pika_pull.err'
         
@@ -143,6 +143,7 @@ class external_client_pull(Process):
     
     def run(self):
         #set log files
+        #TODO The logging doesn't work for the individual processes. Log for all communications processes can be cound in /var/log
         stdout='/var/log/comms/external_client_pull.log'
         stderr='/var/log/comms/external_client_pull.err'
         
@@ -192,13 +193,14 @@ class external_client_push(Process):
     
     def run(self):
         #set log files
+        #TODO The logging doesn't work for the individual processes. Log for all communications processes can be cound in /var/log
         stdout='/var/log/comms/external_client_pull.log'
         stderr='/var/log/comms/external_client_pull.err'
         
         sys.stdout.write('External client push started...\n')
         comm = external_communicator()
         
-            #TODO clean up if possible
+        
         while True:
             while comm.incoming.empty(): #sleeps until a message arrives in the incoming queue 
                 time.sleep(1)

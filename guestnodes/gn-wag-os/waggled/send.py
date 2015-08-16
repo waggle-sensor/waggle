@@ -17,7 +17,10 @@ def send(msg):
         
     """
 
-#TODO May want to add guestnode message robustness. If node controller is currently unavailable, all guest node messages are lost.
+#TODO May want to add guestnode message robustness. Currently, if node controller is currently unavailable, all guest node messages are lost. Can add a loop or
+#TODO Can add robustness by making this a daemon process that plugins can connect to using unix sockets. Send process puts messages in a queue to add robustness. 
+#TODO Send process can pull messages and send to NC if connected or hold on to the messages until NC connects. 
+
     HOST = NCIP #sets to NodeController IP
     PORT = 9090 #port for push_server
 
@@ -26,7 +29,6 @@ def send(msg):
         try: 
             s.connect((HOST,PORT))
             s.send(msg)
-            #print 'Message sent: ', msg
             s.close() #closes each time a message is sent.
         #print 'Connection closed...'
         except Exception as e: 
