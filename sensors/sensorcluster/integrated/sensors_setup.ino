@@ -66,5 +66,51 @@ SerialUSB.println("HIH6130.");
 #endif
 #endif
 
+#ifdef TMP421_include
+#ifdef SERIAL_DEBUG
+SerialUSB.println("TMP421.");
+#endif
+#endif
+
+#ifdef APDS9006020_include
+#ifdef SERIAL_DEBUG
+SerialUSB.println("APDS9006020.");
+#endif
+#endif
+
+#ifdef TSL260RD_include
+#ifdef SERIAL_DEBUG
+SerialUSB.println("TSL260RD.");
+#endif
+#endif
+
+#ifdef TSL250RD_2_include
+#ifdef SERIAL_DEBUG
+SerialUSB.println("TSL250RD_2.");
+#endif
+#endif
+
+#ifdef MLX75305_include
+#ifdef SERIAL_DEBUG
+SerialUSB.println("MLX75305.");
+#endif
+#endif
+
+#ifdef ML8511_include
+#ifdef SERIAL_DEBUG
+SerialUSB.println("ML8511.");
+#endif
+#endif
+
+
+#ifdef SPV1840LR5HB_2_include
+#ifdef SERIAL_DEBUG
+SerialUSB.println("SPV1840LR5HB_2.");
+#endif
+#endif
+
+mcp3428_1.init(MCP342X::L, MCP342X::L);
+mcp3428_2.init(MCP342X::L, MCP342X::F);
+
 return;
 }

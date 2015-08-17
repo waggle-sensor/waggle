@@ -2,6 +2,12 @@
 extern TwoWire Wire1;
 #include "config.cpp"
 
+#include "MCP342X.h"
+MCP342X mcp3428_1;
+MCP342X mcp3428_2;
+
+
+
 #ifdef HTU21D_include
 #include <HTU21D.h>
 HTU21D myHumidity;
@@ -55,9 +61,15 @@ uint16_t TSYS_coefficents[5];
 #define HIH_ADDRESS 0x27
 #endif
 
-// #define CR_ENABLE 0
-#define CR_ENABLE 1
-#define BUFFER_SIZE_CHEMSENSE 150
+#ifdef TMP421_include
+#include "LibTempTMP421.h"
+LibTempTMP421 TMP421_Sensor = LibTempTMP421();
+#endif
+
+
+#define CR_ENABLE 0
+// #define CR_ENABLE 1
+#define BUFFER_SIZE_CHEMSENSE 250
 #define PARAM_SIZE_CHEMSENSE 15
 #define DEBUG_chemsense 0
 
@@ -192,10 +204,8 @@ void setup()
 
 void loop()
 {
-    airsense_acquire();
-    lightsense_acquire();
+//     airsense_acquire();
+//     lightsense_acquire();
     chemsense_aquire();
     chemsense_pack();
-//     requestEvent();
-    delay(2000);
 }

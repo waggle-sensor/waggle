@@ -11,7 +11,7 @@ void assemble_packet_empty()
 void assemble_packet_whole()
 {
     int packet_whole_index = 3; // start at 3 to account for header
-//     #ifdef SERIAL_DEBUG Serial.println("Packer Called.");
+//     #ifdef SERIAL_DEBUG SerialUSB.println("Packer Called.");
     #ifdef MAC_ID_include
     // Append MAC_ID
     for (int i = 0; i < sizeof(MAC_ID); i++)
@@ -246,7 +246,7 @@ void assemble_packet_whole()
     #ifdef total_reducing_gases_include
     // Append total_reducing_gases
     #ifdef SERIAL_DEBUG
-    Serial.println("ToR");
+    SerialUSB.println("ToR");
     #endif
     for (int i = 0; i < sizeof(total_reducing_gases); i++)
     {
@@ -260,7 +260,7 @@ void assemble_packet_whole()
     #ifdef ethanol_include
     // Append ethanol
     #ifdef SERIAL_DEBUG
-    Serial.println("ETOH");
+    SerialUSB.println("ETOH");
     #endif
     for (int i = 0; i < sizeof(ethanol); i++)
     {
@@ -274,7 +274,7 @@ void assemble_packet_whole()
 
     // Append nitrogen_dioxide
     #ifdef SERIAL_DEBUG
-    Serial.println("NO2");
+    SerialUSB.println("NO2");
     #endif
     for (int i = 0; i < sizeof(nitrogen_dioxide); i++)
     {
@@ -288,7 +288,7 @@ void assemble_packet_whole()
 
     // Append ozone
     #ifdef SERIAL_DEBUG
-    Serial.println("OZONE");
+    SerialUSB.println("OZONE");
     #endif
     for (int i = 0; i < sizeof(ozone); i++)
     {
@@ -302,7 +302,7 @@ void assemble_packet_whole()
 
     // Append hydrogen_sulphide
     #ifdef SERIAL_DEBUG
-    Serial.println("H2S");
+    SerialUSB.println("H2S");
     #endif
     for (int i = 0; i < sizeof(hydrogen_sulphide); i++)
     {
@@ -316,7 +316,7 @@ void assemble_packet_whole()
 
     // Append total_oxidizing_gases
     #ifdef SERIAL_DEBUG
-    Serial.println("ToX");
+    SerialUSB.println("ToX");
     #endif
     for (int i = 0; i < sizeof(total_oxidizing_gases); i++)
     {
@@ -330,7 +330,7 @@ void assemble_packet_whole()
 
     // Append carbon_monoxide
     #ifdef SERIAL_DEBUG
-    Serial.println("CO");
+    SerialUSB.println("CO");
     #endif
     for (int i = 0; i < sizeof(carbon_monoxide); i++)
     {
@@ -344,7 +344,7 @@ void assemble_packet_whole()
 
     // Append sulfur_dioxide
     #ifdef SERIAL_DEBUG
-    Serial.println("SO2");
+    SerialUSB.println("SO2");
     #endif
     for (int i = 0; i < sizeof(sulfur_dioxide); i++)
     {
@@ -358,7 +358,7 @@ void assemble_packet_whole()
     #ifdef SHT25_include
     // Append sensirion
     #ifdef SERIAL_DEBUG
-    Serial.println("SHT25");
+    SerialUSB.println("SHT25");
     #endif
     for (int i = 0; i < sizeof(SHT25); i++)
     {
@@ -372,7 +372,7 @@ void assemble_packet_whole()
 
     // Append LPS25H
     #ifdef SERIAL_DEBUG
-    Serial.println("LPS25H");
+    SerialUSB.println("LPS25H");
     #endif
     for (int i = 0; i < sizeof(LPS25H); i++)
     {
@@ -387,7 +387,7 @@ void assemble_packet_whole()
 
     // Append Si1145
     #ifdef SERIAL_DEBUG
-    Serial.println("Si1145");
+    SerialUSB.println("Si1145");
     #endif
     for (int i = 0; i < sizeof(Si1145); i++)
     {

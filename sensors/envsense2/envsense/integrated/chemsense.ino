@@ -19,13 +19,13 @@ void chemsense_parse_value (unsigned char pidx)
 }
 
 void chemsense_aquire (void)
-{
+{   char inByte;
 
-    while (Serial1.available())
+    while (Serial3.available())
     {
-        char inByte = Serial1.read();
+        inByte = Serial3.read();
         #ifdef DEBUG_chemsense
-        Serial.write(inByte);
+        SerialUSB.write(inByte);
         #endif
         if (( inByte != '\n') && (cnt < BUFFER_SIZE_CHEMSENSE))
         {
@@ -36,6 +36,7 @@ void chemsense_aquire (void)
         {
             chemsense_ready = true;
             cnt = cnt + 1;
+            chemsense_pack();
         }
     }
     return;
@@ -67,6 +68,7 @@ void chemsense_pack (void)
         if ((count == 15) && (pidx == 12))
         {
             unsigned char count = 0, pidx = 0;
+            SerialUSB.println("*");
             for (unsigned char index = CR_ENABLE; index < cnt; index ++)
             {
                 if ((buffer[index] != ',') && (pidx < PARAM_SIZE_CHEMSENSE))
@@ -102,10 +104,10 @@ void chemsense_pack (void)
                             chemsense_MAC_ID[(idx/2)+2] = chemsense_MAC_ID[(idx/2)+2] | parameter[idx];
                         }
                         #ifdef SERIAL_DEBUG
-                        Serial.print("chemsense MAC ID: ");
+                        SerialUSB.print("chemsense MAC ID: ");
                         for (int i = 2; i < (LENGTH_FORMAT3 + 2); i++)
-                            Serial.print(chemsense_MAC_ID[i], HEX);
-                        Serial.println("");
+                            SerialUSB.print(chemsense_MAC_ID[i], HEX);
+                        SerialUSB.println("");
                         #endif
                         #endif
                     }
@@ -113,17 +115,17 @@ void chemsense_pack (void)
                     else if (count == 1)
                     {
                         #ifdef HDC_1000_include
-                        Serial.println("HDC_Temp");
+                        SerialUSB.println("HDC_Temp");
                         chemsense_parse_value(pidx);
-                        Serial.println(param_value);
+                        SerialUSB.println(param_value);
                         #endif
                     }
                     else if (count == 2)
                     {
                         #ifdef HDC_1000_include
-                        Serial.println("HDC_RH");
+                        SerialUSB.println("HDC_RH");
                         chemsense_parse_value(pidx);
-                        Serial.println(param_value);
+                        SerialUSB.println(param_value);
                         #endif
                     }
                     else if (count == 3)
@@ -137,8 +139,8 @@ void chemsense_pack (void)
                         SHT25[2] = packet_format5[0];
                         SHT25[3] = packet_format5[1];
                         #ifdef SERIAL_DEBUG
-                        Serial.print("SHT25 Temperature: ");
-                        Serial.println(int(param_value));
+                        SerialUSB.print("SHT25 Temperature: ");
+                        SerialUSB.println(int(param_value));
                         #endif
                         #endif
                     }
@@ -153,8 +155,8 @@ void chemsense_pack (void)
                         SHT25[4] = packet_format5[0];
                         SHT25[5] = packet_format5[1];
                         #ifdef SERIAL_DEBUG
-                        Serial.print("SHT25 RH: ");
-                        Serial.println(int(param_value));
+                        SerialUSB.print("SHT25 RH: ");
+                        SerialUSB.println(int(param_value));
                         #endif
                         #endif
 
@@ -170,8 +172,8 @@ void chemsense_pack (void)
                         LPS25H[2] = packet_format5[0];
                         LPS25H[3] = packet_format5[1];
                         #ifdef SERIAL_DEBUG
-                        Serial.print("LPS25H Temp: ");
-                        Serial.println(int(param_value));
+                        SerialUSB.print("LPS25H Temp: ");
+                        SerialUSB.println(int(param_value));
                         #endif
                         #endif
 
@@ -187,8 +189,8 @@ void chemsense_pack (void)
                         Si1145[2] = packet_format2[0];
                         Si1145[3] = packet_format2[1];
                         #ifdef SERIAL_DEBUG
-                        Serial.print("Si1145 UV: ");
-                        Serial.println(int(param_value) >> 1);
+                        SerialUSB.print("Si1145 UV: ");
+                        SerialUSB.println(int(param_value) >> 1);
                         #endif
                         #endif
                     }
@@ -204,8 +206,8 @@ void chemsense_pack (void)
                         LPS25H[5] = packet_format6[1];
                         LPS25H[6] = packet_format6[2];
                         #ifdef SERIAL_DEBUG
-                        Serial.print("LPS25H Pressure: ");
-                        Serial.println(long(param_value) >> 2);
+                        SerialUSB.print("LPS25H Pressure: ");
+                        SerialUSB.println(long(param_value) >> 2);
                         #endif
                         #endif
                     }
@@ -221,8 +223,8 @@ void chemsense_pack (void)
                         hydrogen_sulphide[3] = packet_format6[1];
                         hydrogen_sulphide[4] = packet_format6[2];
                         #ifdef SERIAL_DEBUG
-                        Serial.print("H2S: ");
-                        Serial.println(long(param_value) >> 1);
+                        SerialUSB.print("H2S: ");
+                        SerialUSB.println(long(param_value) >> 1);
                         #endif
                         #endif
                     }
@@ -238,8 +240,8 @@ void chemsense_pack (void)
                         ozone[3] = packet_format6[1];
                         ozone[4] = packet_format6[2];
                         #ifdef SERIAL_DEBUG
-                        Serial.print("O3: ");
-                        Serial.println(long(param_value) >> 1);
+                        SerialUSB.print("O3: ");
+                        SerialUSB.println(long(param_value) >> 1);
                         #endif
                         #endif
                     }
@@ -255,8 +257,8 @@ void chemsense_pack (void)
                         nitrogen_dioxide[3] = packet_format6[1];
                         nitrogen_dioxide[4] = packet_format6[2];
                         #ifdef SERIAL_DEBUG
-                        Serial.print("NO2: ");
-                        Serial.println(long(param_value) >> 1);
+                        SerialUSB.print("NO2: ");
+                        SerialUSB.println(long(param_value) >> 1);
                         #endif
                         #endif
                     }
@@ -272,8 +274,8 @@ void chemsense_pack (void)
                         carbon_monoxide[3] = packet_format6[1];
                         carbon_monoxide[4] = packet_format6[2];
                         #ifdef SERIAL_DEBUG
-                        Serial.print("CO: ");
-                        Serial.println(long(param_value) >> 1);
+                        SerialUSB.print("CO: ");
+                        SerialUSB.println(long(param_value) >> 1);
                         #endif
                         #endif
                     }
@@ -289,8 +291,8 @@ void chemsense_pack (void)
                         sulfur_dioxide[3] = packet_format6[1];
                         sulfur_dioxide[4] = packet_format6[2];
                         #ifdef SERIAL_DEBUG
-                        Serial.print("SO2: ");
-                        Serial.println(long(param_value) >> 1);
+                        SerialUSB.print("SO2: ");
+                        SerialUSB.println(long(param_value) >> 1);
                         #endif
                         #endif
                     }
@@ -307,8 +309,8 @@ void chemsense_pack (void)
                         total_oxidizing_gases[3] = packet_format6[1];
                         total_oxidizing_gases[4] = packet_format6[2];
                         #ifdef SERIAL_DEBUG
-                        Serial.print("ToX: ");
-                        Serial.println(long(param_value) >> 1);
+                        SerialUSB.print("ToX: ");
+                        SerialUSB.println(long(param_value) >> 1);
                         #endif
                         #endif
                     }
@@ -324,8 +326,8 @@ void chemsense_pack (void)
                         total_reducing_gases[3] = packet_format6[1];
                         total_reducing_gases[4] = packet_format6[2];
                         #ifdef SERIAL_DEBUG
-                        Serial.print("ToR: ");
-                        Serial.println(long(param_value) >> 1);
+                        SerialUSB.print("ToR: ");
+                        SerialUSB.println(long(param_value) >> 1);
                         #endif
                         #endif
                     }
@@ -344,8 +346,8 @@ void chemsense_pack (void)
             ethanol[3] = packet_format6[1];
             ethanol[4] = packet_format6[2];
             #ifdef SERIAL_DEBUG
-            Serial.print("ETOH: ");
-            Serial.println(long(param_value) >> 1);
+            SerialUSB.print("ETOH: ");
+            SerialUSB.println(long(param_value) >> 1);
             #endif
             #endif
         }

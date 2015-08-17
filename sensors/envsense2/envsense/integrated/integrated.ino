@@ -92,10 +92,10 @@ void requestEvent()
     assemble_packet_whole();
     for(int i = 0; i < packet_whole[0x02]+0x05; i++)
     {
-        Serial.print(packet_whole[i], DEC);
-        Serial.print(" ");
+        SerialUSB.print(packet_whole[i], DEC);
+        SerialUSB.print(" ");
     }
-    Serial.print("\n");
+    SerialUSB.print("\n");
 }
 /**************************************************************************************/
 
@@ -105,9 +105,10 @@ void requestEvent()
 void setup()
 {
     // Let us wait for the processor and the sensors to settle down
-    delay(2000);
-    Serial.begin(115200);
-    Serial1.begin(115200);
+    delay(6000);
+    SerialUSB.begin(115200);
+    SerialUSB.println("Starting UP..");
+    Serial3.begin(115200);
     //     Setup the I2C buffer
     for (byte i=0x00; i<LENGTH_WHOLE; i++)
     {
@@ -128,6 +129,5 @@ void setup()
 void loop()
 {
     chemsense_aquire();
-    chemsense_pack();
 //     delay(2000);
 }
