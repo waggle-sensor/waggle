@@ -2,7 +2,10 @@
 void assemble_packet_empty()
 {
     packet_whole[0x02]= 0x00;
-    packet_whole[LENGTH_WHOLE-2] = 0x00;
+    packet_whole[0x03]= 0x00;
+    packet_whole[0x04]= 0x55;
+//     packet_whole[LENGTH_WHOLE-2] = 0x00;
+
 }
 /**************************************************************************************/
 

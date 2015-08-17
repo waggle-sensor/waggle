@@ -160,6 +160,7 @@ unsigned long LOOPING;
 
 // CRC-8
 byte crc = 0x00;
+byte I2C_READ_COMPLETE = true;
 /**************************************************************************************/
 
 
@@ -167,56 +168,17 @@ byte crc = 0x00;
 /** I2C request interrupt *************************************************************/
 void requestEvent()
 {
-    // Send it!
-    // Wire.write(packet_whole, packet_whole[0x02]+0x05);
-    // Put whole packet together
+//     Wire.write(packet_whole, 0x10);
+//     Wire.write(packet_whole, 150);
+    char bytes_to_send;
+    bytes_to_send = packet_whole[0x02] +0x05;
+    Wire.write(packet_whole, bytes_to_send );
+    I2C_READ_COMPLETE = true;
     assemble_packet_empty();
-    assemble_packet_whole();
-    #ifdef PRINT_BUFFER
-    for(int i = 0; i < packet_whole[0x02]+0x05; i++)
-    {
-        SerialUSB.print(packet_whole[i], DEC);
-        SerialUSB.print(" ");
-    }
-    SerialUSB.print("\n");
-    SerialUSB.flush();
-    #endif
 }
 /**************************************************************************************/
 
-
-
-/** Arduino: setup ********************************************************************/
-void setup()
-{
-    // Let us wait for the processor and the sensors to settle down
-    delay(6000);
-
-    SerialUSB.begin(115200);
-    #ifdef SERIAL_DEBUG
-    SerialUSB.println("Starting...");
-    #endif
-    Serial3.begin(115200);
-    //     Setup the I2C buffer
-    for (byte i=0x00; i<LENGTH_WHOLE; i++)
-    {
-        packet_whole[i] = 0x00;
-    }
-    packet_whole[0x00] = START_BYTE;
-    packet_whole[0x01] = HEADER_RESERVED | HEADER_VERSION;
-    packet_whole[0x02] = 0x00;
-    packet_whole[0x03] = 0x00;
-    packet_whole[0x04] = END_BYTE;
-    Wire1.begin();
-    Sensors_Setup();
-    // Join I2C bus as slave
-    // Wire.begin(I2C_SLAVE_ADDRESS);
-    // Register interrupt
-    // Wire.onRequest(requestEvent);
-}
-/**************************************************************************************/
-
-void loop()
+void ALL_SENSOR_READ ()
 {
     airsense_acquire();
     lightsense_acquire();
@@ -248,7 +210,61 @@ void loop()
             break;
         }
     }
+    assemble_packet_empty();
+    assemble_packet_whole();
 
-    requestEvent();
-    delay(3000);
+    #ifdef PRINT_BUFFER
+    for(int i = 0; i < packet_whole[0x02]+0x05; i++)
+    {
+        SerialUSB.print(packet_whole[i], DEC);
+        SerialUSB.print(" ");
+    }
+    SerialUSB.print("\n");
+    SerialUSB.flush();
+    #endif
+}
+
+/** Arduino: setup ********************************************************************/
+void setup()
+{
+    // Let us wait for the processor and the sensors to settle down
+    delay(6000);
+
+    #ifdef PRINT_BUFFER
+    SerialUSB.begin(115200);
+    #endif
+
+    #ifdef SERIAL_DEBUG
+    SerialUSB.println("Starting...");
+    #endif
+
+
+    Serial3.begin(115200);
+    //     Setup the I2C buffer
+    for (byte i=0x00; i<LENGTH_WHOLE; i++)
+    {
+        packet_whole[i] = 0x00;
+    }
+    packet_whole[0x00] = START_BYTE;
+    packet_whole[0x01] = HEADER_RESERVED | HEADER_VERSION;
+    packet_whole[0x02] = 0x00;
+    packet_whole[0x03] = 0x00;
+    packet_whole[0x04] = END_BYTE;
+    assemble_packet_empty();
+    Wire1.begin();
+    Sensors_Setup();
+    ALL_SENSOR_READ ();
+    Wire.begin(I2C_SLAVE_ADDRESS);
+    Wire.onRequest(requestEvent);
+}
+/**************************************************************************************/
+
+void loop()
+{
+    if (I2C_READ_COMPLETE == true)
+    {
+        ALL_SENSOR_READ();
+        I2C_READ_COMPLETE = false;
+    }
+    delay(10);
 }
