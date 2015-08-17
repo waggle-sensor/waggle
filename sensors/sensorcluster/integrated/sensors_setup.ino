@@ -102,6 +102,11 @@ SerialUSB.println("ML8511.");
 #endif
 #endif
 
+#ifdef SPV1840LR5HB_1_include
+#ifdef SERIAL_DEBUG
+SerialUSB.println("SPV1840LR5HB_1.");
+#endif
+#endif
 
 #ifdef SPV1840LR5HB_2_include
 #ifdef SERIAL_DEBUG

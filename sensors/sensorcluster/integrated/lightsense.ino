@@ -1,7 +1,7 @@
 void lightsense_acquire (void)
 {
     #ifdef SERIAL_DEBUG
-    SerialUSB.print("***");
+    SerialUSB.print("\n");
     SerialUSB.println("Acquiring LightSense Data.");
     #endif
 

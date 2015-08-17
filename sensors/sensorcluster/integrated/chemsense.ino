@@ -22,22 +22,37 @@ void chemsense_aquire (void)
 {
     while (Serial3.available())
     {
-        char inByte = Serial3.read();
-        #ifdef DEBUG_chemsense
-        SerialUSB.write(inByte);
-        #endif
-        if (( inByte != '\n') && (cnt < BUFFER_SIZE_CHEMSENSE))
+        inByte = Serial3.read();
+
+        if (inByte == '\r')
         {
-            buffer[cnt] = inByte;
-            cnt = cnt + 1;
+            cnt = 0;
+            Chemsense_locked = 1;
         }
-        else
+
+        if (Chemsense_locked == 1)
         {
-            chemsense_ready = true;
-            cnt = cnt + 1;
-            return;
+            if (inByte == '\n')
+            {
+                cnt = cnt + 1;
+                ChemSensed = 1;
+                chemsense_ready = true;
+                SerialUSB.print("\n");
+            }
+            else
+            {
+//                 #ifdef DEBUG_chemsense
+//                 SerialUSB.write(inByte);
+//                 #endif
+                if ( cnt < BUFFER_SIZE_CHEMSENSE )
+                {
+                    buffer[cnt] = inByte;
+                    cnt = cnt + 1;
+                }
+            }
         }
     }
+    return;
 }
 
 
@@ -45,7 +60,6 @@ void chemsense_pack (void)
 {
     if (chemsense_ready == true)
     {
-        SerialUSB.println("Obtained - ");
         chemsense_ready = false;
         unsigned char count = 0, pidx = 0;
         for (unsigned char index = CR_ENABLE; index < cnt; index ++)
@@ -63,13 +77,13 @@ void chemsense_pack (void)
                 count = count + 1;
             }
         }
-        SerialUSB.println(count);
-        SerialUSB.println(pidx);
-        if ((count == 15) && (pidx == 12))
+//         SerialUSB.println(count);
+//         SerialUSB.println(pidx);
+        if ((count == 15) && (pidx == 13))
         {
-            SerialUSB.println("Packing @@@@@@@@@@ ");
             unsigned char count = 0, pidx = 0;
-            for (unsigned char index = CR_ENABLE; index < cnt; index ++)
+
+            for (unsigned char index = CR_ENABLE + 1; index < cnt; index ++)
             {
                 if ((buffer[index] != ',') && (pidx < PARAM_SIZE_CHEMSENSE))
                 {
@@ -352,6 +366,6 @@ void chemsense_pack (void)
             #endif
         }
         cnt = 0;
-        requestEvent();
+        ChemSensed = 1;
     }
 }

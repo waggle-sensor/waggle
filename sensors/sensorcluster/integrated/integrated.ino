@@ -25,6 +25,11 @@ sensors_event_t event;
 #define A2D_PRJ103J2 0
 #endif
 
+#ifdef SPV1840LR5HB_1_include
+#define SPV_1_SPL 6
+#define SPV_1_AMP 5
+#endif
+
 #ifdef TSL250RD_1_include
 #define A2D_TSL250RD_1 1
 #endif
@@ -68,8 +73,7 @@ LibTempTMP421 TMP421_Sensor = LibTempTMP421();
 
 
 #define CR_ENABLE 0
-// #define CR_ENABLE 1
-#define BUFFER_SIZE_CHEMSENSE 250
+#define BUFFER_SIZE_CHEMSENSE 150
 #define PARAM_SIZE_CHEMSENSE 15
 #define DEBUG_chemsense 0
 
@@ -149,6 +153,10 @@ uint16_t Temp_uint16;
 long Temp_long;
 int Temp_int[3];
 
+char inByte;
+char ChemSensed = 0;
+char Chemsense_locked = 0;
+
 
 // CRC-8
 byte crc = 0x00;
@@ -181,7 +189,9 @@ void setup()
     // Let us wait for the processor and the sensors to settle down
     delay(6000);
     SerialUSB.begin(115200);
-    SerialUSB.println("Starting UP..");
+    #ifdef SERIAL_DEBUG
+    SerialUSB.println("Starting...");
+    #endif
     Serial3.begin(115200);
     //     Setup the I2C buffer
     for (byte i=0x00; i<LENGTH_WHOLE; i++)
@@ -204,8 +214,27 @@ void setup()
 
 void loop()
 {
-//     airsense_acquire();
-//     lightsense_acquire();
-    chemsense_aquire();
-    chemsense_pack();
+    airsense_acquire();
+    lightsense_acquire();
+    #ifdef SERIAL_DEBUG
+    SerialUSB.println("Acquiring ChemSense Data.");
+    #endif
+    while (Serial3.available() > 0)
+    {
+       Serial3.read();
+    }
+    ChemSensed = 0;
+    Chemsense_locked = 0;
+    while(1)
+    {
+        chemsense_aquire();
+        if (ChemSensed == 1)
+        {
+            chemsense_pack();
+            requestEvent();
+            ChemSensed = 0;
+            break;
+        }
+    }
+    delay(2000);
 }

@@ -173,6 +173,22 @@ void airsense_acquire (void)
     #endif
 
 
+    #ifdef SPV1840LR5HB_1_include
+
+    SPV1840LR5HB_1[0] = ID_SPV1840LR5HB_1;
+    SPV1840LR5HB_1[1] = (1 << 7) | LENGTH_FORMAT2;
+
+    Temp_uint16 = analogRead(SPV_1_AMP);
+    format2(Temp_uint16);
+
+    SPV1840LR5HB_1[2] = packet_format2[0];
+    SPV1840LR5HB_1[3] = packet_format2[1];
+    #ifdef SERIAL_DEBUG
+    Serial.print("SPV1840LR5HB: ");
+    Serial.println(Temp_uint16);
+    #endif
+    #endif
+
 
 
 }
