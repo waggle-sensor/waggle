@@ -156,7 +156,7 @@ int Temp_int[3];
 char inByte;
 char ChemSensed = 0;
 char Chemsense_locked = 0;
-
+unsigned long LOOPING;
 
 // CRC-8
 byte crc = 0x00;
@@ -170,14 +170,17 @@ void requestEvent()
     // Send it!
     // Wire.write(packet_whole, packet_whole[0x02]+0x05);
     // Put whole packet together
-    // assemble_packet_empty();
+    assemble_packet_empty();
     assemble_packet_whole();
+    #ifdef PRINT_BUFFER
     for(int i = 0; i < packet_whole[0x02]+0x05; i++)
     {
         SerialUSB.print(packet_whole[i], DEC);
         SerialUSB.print(" ");
     }
     SerialUSB.print("\n");
+    SerialUSB.flush();
+    #endif
 }
 /**************************************************************************************/
 
@@ -188,6 +191,7 @@ void setup()
 {
     // Let us wait for the processor and the sensors to settle down
     delay(6000);
+
     SerialUSB.begin(115200);
     #ifdef SERIAL_DEBUG
     SerialUSB.println("Starting...");
@@ -221,20 +225,30 @@ void loop()
     #endif
     while (Serial3.available() > 0)
     {
-       Serial3.read();
+        Serial3.read();
     }
     ChemSensed = 0;
     Chemsense_locked = 0;
+    LOOPING = millis();
     while(1)
     {
         chemsense_aquire();
         if (ChemSensed == 1)
         {
             chemsense_pack();
-            requestEvent();
+            break;
+        }
+
+        if (  millis() - LOOPING > 3000)
+        {
+            #ifdef SERIAL_DEBUG
+            SerialUSB.println("Intel Board Missing.");
+            #endif
             ChemSensed = 0;
             break;
         }
     }
-    delay(2000);
+
+    requestEvent();
+    delay(3000);
 }

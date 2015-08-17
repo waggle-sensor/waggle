@@ -41,9 +41,6 @@ void chemsense_aquire (void)
             }
             else
             {
-//                 #ifdef DEBUG_chemsense
-//                 SerialUSB.write(inByte);
-//                 #endif
                 if ( cnt < BUFFER_SIZE_CHEMSENSE )
                 {
                     buffer[cnt] = inByte;

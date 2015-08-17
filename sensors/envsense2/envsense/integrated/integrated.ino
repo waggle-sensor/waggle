@@ -78,11 +78,13 @@ byte valid;
 char inByte;
 char ChemSensed = 0;
 char Chemsense_locked = 0;
-
+unsigned long LOOPING;
 
 // CRC-8
 byte crc = 0x00;
 /**************************************************************************************/
+
+
 
 /** I2C request interrupt *************************************************************/
 void requestEvent()
@@ -138,6 +140,7 @@ void loop()
     }
     ChemSensed = 0;
     Chemsense_locked = 0;
+    LOOPING = millis();
     while(1)
     {
         chemsense_aquire();
@@ -148,6 +151,16 @@ void loop()
             ChemSensed = 0;
             break;
         }
+
+        else if (ChemSensed == 2)
+        {
+            break;
+        }
+        if (  millis() - LOOPING > 3000)
+        {
+            SerialUSB.println("Intel Board Missing.");
+            ChemSensed = 2;
+        }
     }
-    delay(2000);
+    delay(30000);
 }

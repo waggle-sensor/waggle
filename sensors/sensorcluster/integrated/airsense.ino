@@ -174,12 +174,28 @@ void airsense_acquire (void)
 
 
     #ifdef SPV1840LR5HB_1_include
+    long SPV_1_AMPV[100];
+    double SPV_1_AMPV_AVG = 0;
+
+    for(int i = 0; i < 100; i++)
+    {
+        SPV_1_AMPV[i] = 512 - analogRead(SPV_1_AMP);
+        if (SPV_1_AMPV[i] < 0)
+        {
+            SPV_1_AMPV[i] = SPV_1_AMPV[i] * -1;
+        }
+        delay(1);
+    }
+
+    for(int i = 0; i < 100; i++)
+    {
+        SPV_1_AMPV_AVG = ((SPV_1_AMPV_AVG * i) + SPV_1_AMPV[i]) / (i+1);
+    }
 
     SPV1840LR5HB_1[0] = ID_SPV1840LR5HB_1;
     SPV1840LR5HB_1[1] = (1 << 7) | LENGTH_FORMAT2;
 
-    Temp_uint16 = analogRead(SPV_1_AMP);
-    format2(Temp_uint16);
+    format2(int(SPV_1_AMPV_AVG * 10));
 
     SPV1840LR5HB_1[2] = packet_format2[0];
     SPV1840LR5HB_1[3] = packet_format2[1];
