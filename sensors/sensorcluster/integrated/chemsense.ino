@@ -350,6 +350,5 @@ void chemsense_pack (void)
             #endif
         }
         cnt = 0;
-        requestEvent();
     }
 }

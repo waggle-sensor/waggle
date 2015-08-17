@@ -59,13 +59,10 @@
 
 // Main board
 #define MAC_ID_include 0x01
-
-
-
-// #define TMP112_include 0x01
-// #define HTU21D_include 0x01
+#define TMP112_include 0x01
+#define HTU21D_include 0x01
 // #define GP2Y1010AU0F_include 0x01
-// #define BMP180_include 0x01
+#define BMP180_include 0x01
 // #define PR103J2_include 0x01
 // #define TSL250RD_1_include 0x01
 // #define MMA8452Q_include 0x01
@@ -86,20 +83,20 @@
 // #define SPV1840LR5HB_2_include 0x01
 
 // Chemsense board
-#define total_reducing_gases_include 0x01
-#define ethanol_include 0x01
-#define nitrogen_dioxide_include 0x01
-#define ozone_include 0x01
-#define hydrogen_sulphide_include 0x01
-#define total_oxidizing_gases_include 0x01
-#define carbon_monoxide_include 0x01
-#define sulfur_dioxide_include 0x01
-#define SHT25_include 0x01
-#define LPS25H_include 0x01
-#define Si1145_include 0x01
-#define chemsense_MAC_ID_include 0x01
+// #define total_reducing_gases_include 0x01
+// #define ethanol_include 0x01
+// #define nitrogen_dioxide_include 0x01
+// #define ozone_include 0x01
+// #define hydrogen_sulphide_include 0x01
+// #define total_oxidizing_gases_include 0x01
+// #define carbon_monoxide_include 0x01
+// #define sulfur_dioxide_include 0x01
+// #define SHT25_include 0x01
+// #define LPS25H_include 0x01
+// #define Si1145_include 0x01
+// #define chemsense_MAC_ID_include 0x01
 // #define system_health_include 0x01
 
 
 // #define RANDOMIZE_VALID 0x01
-// #define SERIAL_DEBUG 0x01
+#define SERIAL_DEBUG 0x01

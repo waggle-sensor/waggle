@@ -1,5 +1,19 @@
 #include <Wire.h>
+extern TwoWire Wire1;
 #include "config.cpp"
+
+#ifdef HTU21D_include
+#include <HTU21D.h>
+HTU21D myHumidity;
+#endif
+
+#ifdef  BMP180_include
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BMP085_U.h>
+Adafruit_BMP085_Unified bmp = Adafruit_BMP085_Unified(10085);
+sensors_event_t event;
+#endif
+
 
 // #define CR_ENABLE 0
 #define CR_ENABLE 1
@@ -77,10 +91,17 @@ unsigned char attenuate = 0;
 byte valid;
 
 
+float Temp_float[3];
+byte Temp_byte[3];
+uint16_t Temp_uint16;
+long Temp_long;
+
 
 // CRC-8
 byte crc = 0x00;
 /**************************************************************************************/
+
+
 
 /** I2C request interrupt *************************************************************/
 void requestEvent()
@@ -119,6 +140,8 @@ void setup()
     packet_whole[0x02] = 0x00;
     packet_whole[0x03] = 0x00;
     packet_whole[0x04] = END_BYTE;
+    Wire1.begin();
+    Sensors_Setup();
     // Join I2C bus as slave
     // Wire.begin(I2C_SLAVE_ADDRESS);
     // Register interrupt
@@ -128,7 +151,9 @@ void setup()
 
 void loop()
 {
+    airsense_acquire();
     chemsense_aquire();
     chemsense_pack();
-//     delay(2000);
+//     requestEvent();
+    delay(2000);
 }

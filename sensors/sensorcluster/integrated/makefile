@@ -1,4 +1,4 @@
-ARD_HOME = /home/rajesh/GIT/waggle//devtools/arduino/compilers/arduino-1.6.5-linux/arduino_64
+ARD_HOME = /home/rajesh/GIT/waggle/devtools/arduino/compilers/arduino-1.6.5-linux/arduino_64
 TARGET = integrated
 PACKAGE = arduino
 ARCH = sam
@@ -27,6 +27,10 @@ clean:
 	rm -rf $(BIN_DIR)/*
 	rm -rf $(BUILD_DIR)/*
 
-install:
+install: all
 	$(PRE_FLASH_COMMAND)
 	$(FLASH_BOARD)
+
+run:    install
+	sleep 2
+	screen /dev/$(PORT) 115200
