@@ -19,37 +19,24 @@ void chemsense_parse_value (unsigned char pidx)
 }
 
 void chemsense_aquire (void)
-{
+{   char inByte;
+
     while (Serial3.available())
     {
         inByte = Serial3.read();
-
-        if (inByte == '\r')
+        #ifdef DEBUG_chemsense
+        SerialUSB.write(inByte);
+        #endif
+        if (( inByte != '\n') && (cnt < BUFFER_SIZE_CHEMSENSE))
         {
-            cnt = 0;
-            Chemsense_locked = 1;
+            buffer[cnt] = inByte;
+            cnt = cnt + 1;
         }
-
-        if (Chemsense_locked == 1)
+        else
         {
-            if (inByte == '\n')
-            {
-                cnt = cnt + 1;
-                ChemSensed = 1;
-                chemsense_ready = true;
-                SerialUSB.print("\n");
-            }
-            else
-            {
-                #ifdef DEBUG_chemsense
-                SerialUSB.write(inByte);
-                #endif
-                if ( cnt < BUFFER_SIZE_CHEMSENSE )
-                {
-                    buffer[cnt] = inByte;
-                    cnt = cnt + 1;
-                }
-            }
+            chemsense_ready = true;
+            cnt = cnt + 1;
+            chemsense_pack();
         }
     }
     return;
@@ -77,13 +64,12 @@ void chemsense_pack (void)
                 count = count + 1;
             }
         }
-//         SerialUSB.println(count);
-//         SerialUSB.println(pidx);
-        if ((count == 15) && (pidx == 13))
+
+        if ((count == 15) && (pidx == 12))
         {
             unsigned char count = 0, pidx = 0;
-
-            for (unsigned char index = CR_ENABLE + 1; index < cnt; index ++)
+            SerialUSB.println("*");
+            for (unsigned char index = CR_ENABLE; index < cnt; index ++)
             {
                 if ((buffer[index] != ',') && (pidx < PARAM_SIZE_CHEMSENSE))
                 {
@@ -366,6 +352,6 @@ void chemsense_pack (void)
             #endif
         }
         cnt = 0;
-        ChemSensed = 1;
+        requestEvent();
     }
 }

@@ -1,8 +1,7 @@
 #include <Wire.h>
 #include "config.cpp"
 
-// #define CR_ENABLE 0
-#define CR_ENABLE 1
+#define CR_ENABLE 0
 #define BUFFER_SIZE_CHEMSENSE 150
 #define PARAM_SIZE_CHEMSENSE 15
 #define DEBUG_chemsense 0
@@ -76,6 +75,9 @@ long param_value;
 unsigned char attenuate = 0;
 byte valid;
 
+char inByte;
+char ChemSensed = 0;
+char Chemsense_locked = 0;
 
 
 // CRC-8
@@ -128,6 +130,24 @@ void setup()
 
 void loop()
 {
-    chemsense_aquire();
-//     delay(2000);
+
+
+    while (Serial3.available() > 0)
+    {
+       Serial3.read();
+    }
+    ChemSensed = 0;
+    Chemsense_locked = 0;
+    while(1)
+    {
+        chemsense_aquire();
+        if (ChemSensed == 1)
+        {
+            chemsense_pack();
+            requestEvent();
+            ChemSensed = 0;
+            break;
+        }
+    }
+    delay(2000);
 }
