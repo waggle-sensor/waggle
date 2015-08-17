@@ -51,6 +51,10 @@ uint16_t TSYS_coefficents[5];
 #endif
 
 
+#ifdef HIH6130_include
+#define HIH_ADDRESS 0x27
+#endif
+
 // #define CR_ENABLE 0
 #define CR_ENABLE 1
 #define BUFFER_SIZE_CHEMSENSE 150
@@ -128,7 +132,7 @@ byte valid;
 
 
 float Temp_float[3];
-byte Temp_byte[3];
+byte Temp_byte[5];
 uint16_t Temp_uint16;
 long Temp_long;
 int Temp_int[3];
@@ -189,6 +193,7 @@ void setup()
 void loop()
 {
     airsense_acquire();
+    lightsense_acquire();
     chemsense_aquire();
     chemsense_pack();
 //     requestEvent();

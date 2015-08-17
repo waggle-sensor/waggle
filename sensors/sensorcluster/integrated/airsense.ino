@@ -160,8 +160,7 @@ void airsense_acquire (void)
     #endif
 
     #ifdef TSYS01_include
-
-
+    TSYS01_read();
     TSYS01[0] = ID_TSYS01;
     TSYS01[1] = (1 << 7) | LENGTH_FORMAT2;
     format2(Temp_float[0]);  // Put it into format 2

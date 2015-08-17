@@ -60,6 +60,11 @@ SerialUSB.println("TSYS01.");
 TSYS01_CONFIG();
 #endif
 
+#ifdef HIH6130_include
+#ifdef SERIAL_DEBUG
+SerialUSB.println("HIH6130.");
+#endif
+#endif
 
 return;
 }
