@@ -63,11 +63,11 @@
 #define HTU21D_include 0x01
 // #define GP2Y1010AU0F_include 0x01
 #define BMP180_include 0x01
-// #define PR103J2_include 0x01
-// #define TSL250RD_1_include 0x01
-// #define MMA8452Q_include 0x01
+#define PR103J2_include 0x01
+#define TSL250RD_1_include 0x01
+#define MMA8452Q_include 0x01
 // #define SPV1840LR5HB_1_include 0x01
-// #define TSYS01_include 0x01
+#define TSYS01_include 0x01
 
 // Aux board
 // #define HMC5883L_include 0x01

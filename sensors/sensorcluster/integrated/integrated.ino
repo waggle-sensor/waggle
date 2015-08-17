@@ -15,6 +15,42 @@ sensors_event_t event;
 #endif
 
 
+#ifdef  PR103J2_include
+#define A2D_PRJ103J2 0
+#endif
+
+#ifdef TSL250RD_1_include
+#define A2D_TSL250RD_1 1
+#endif
+
+#ifdef MMA8452Q_include
+#define MMA8452_ADDRESS 0x1C
+#define OUT_X_MSB 0x01
+#define XYZ_DATA_CFG  0x0E
+#define WHO_AM_I   0x0D
+#define CTRL_REG1  0x2A
+#define GSCALE 2 // Sets full-scale range to +/-2, 4, or 8g. Used to calc real g values.
+#endif
+
+
+#ifdef TSYS01_include
+#define TSYS01Address 0x76  //address left shifted by arduino as required to match datasheet
+#define TSYS01Reset 0x1E //initiates reset
+#define TSYS01StartReg 0x48 //commands sensor to begin measurement / output calculation
+#define TSYS01TempReg 0x00 //requests most recent output from measurement
+typedef enum TSYS_KPoly_E //structure to hold calibration values from temperature sensor registers
+{
+    TSYS_K4 = 0,
+    TSYS_K3,
+    TSYS_K2,
+    TSYS_K1,
+    TSYS_K0
+}
+TSYS_KPoly_T;
+uint16_t TSYS_coefficents[5];
+#endif
+
+
 // #define CR_ENABLE 0
 #define CR_ENABLE 1
 #define BUFFER_SIZE_CHEMSENSE 150
@@ -95,6 +131,7 @@ float Temp_float[3];
 byte Temp_byte[3];
 uint16_t Temp_uint16;
 long Temp_long;
+int Temp_int[3];
 
 
 // CRC-8
