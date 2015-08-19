@@ -1,4 +1,4 @@
-class register(object):
+#class register(object):
     def __init__(self):
         sensor_read()
 
