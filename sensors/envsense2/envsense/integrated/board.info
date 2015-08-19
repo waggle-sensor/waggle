@@ -1,2 +1,0 @@
-TARGET=envsenseV2_NAT
-PORT=/dev/ttyACM0

@@ -1,1 +1,0 @@
-TMP112 Library for MSP430 Launchpad and Arduino Boards
