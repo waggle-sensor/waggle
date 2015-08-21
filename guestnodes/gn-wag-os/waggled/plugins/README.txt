@@ -4,7 +4,8 @@ from https://github.com/samwyse/sspp
 To create a Python plugin, simply create a .py file in the plugins folder.
 The plugin should define a callable object named "register" that will be 
 invoked when the plugin is loaded.
-Outside the plugin folder, run the run_plugins.py script to run the plugins
+Outside the plugin folder, run the run_plugins.py script to run the plugins.
+Currently the plugins are run sequentially, in alphabetical order.
 
 The __init__.py file within the plugin folder turns the directory into a module,
 and automatically loads any python files in the plugins folder into the
