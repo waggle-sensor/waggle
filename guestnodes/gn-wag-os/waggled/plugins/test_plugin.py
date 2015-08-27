@@ -5,6 +5,8 @@
 	print ' '
 	print 'We are printing from the __init__ of the register class'
 	print ' '
+    value = 20
+    #self.test()
 	test_function()
 	testplug = test_plugin()
 	testplug.run()
@@ -16,6 +18,7 @@ def test_function():
     print 'We can print from functions defined in the test_plugin.py'
     print 'outside of the register class'
     print ' '
+    print value
 
 class test_plugin(object):
     
