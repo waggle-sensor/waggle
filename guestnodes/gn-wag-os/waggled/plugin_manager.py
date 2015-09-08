@@ -4,7 +4,7 @@ import run_plugins_multi
 
 #instructions for user
 def help_dialogue():
-	print '\nIf you want to work with a specific plugin, enter the name of the plugin you would like to manipulate. \nEnter "startall" if you would like to activate all non-blacklisted plugins.\nUse "stopall" to stop all plugins, or "killall" to kill all plugins. \nUse "pauseall" or "unpauseall" to pause and unpause active plugins. \nUse "startwhite" or "sw" to start plugins from the whitelist. \nType "list" or "l" for a list of available plugins. \nType "quit" or "q" to exit. \n\n'
+	print '\nIf you want to work with a specific plugin, enter the name of the plugin you would like to manipulate. \nEnter "startall" if you would like to activate all non-blacklisted plugins.\nUse "whitelist" or "blacklist" to view them. \nUse "stopall" to stop all plugins, or "killall" to kill all plugins. \nUse "pauseall" or "unpauseall" to pause and unpause active plugins. \nUse "startwhite" or "sw" to start plugins from the whitelist. \nType "list" or "l" for a list of available plugins. \nType "quit" or "q" to exit. \n\n'
 
 #takes a plugin name and adds or removes it from the blacklist or whitelist, as specified by caller
 def manip_list(plugin, listtype, manipulation):
@@ -100,7 +100,7 @@ if __name__ == '__main__':
 	print '\nAutomatically starting whitelisted plugins...'
 	start_whitelist()
 	time.sleep(2)
-	print '\nPlease enter the name of the plugin you would like to manipulate. \nEnter "startall" if you would like to activate all non-blacklisted plugins. \nUse "stopall" to stop all plugins, or "killall" to kill all plugins. \nYou can also use "pauseall" and "unpauseall" on active plugins. \nUse "startwhite" to start plugins from the whitelist.\nType "quit" to exit. \n\nThe following plugins are available.'
+	print '\nPlease enter the name of the plugin you would like to manipulate. \nEnter "startall" if you would like to activate all non-blacklisted plugins. \nUse "stopall" to stop all plugins, or "killall" to kill all plugins. \nUse "pauseall" and "unpauseall" on active plugins. \nYou can also use "infoall" to get information on all running plugins.\nType "whitelist" or "blacklist" to view their contents. \nUse "startwhite" to start plugins from the whitelist.\nType "quit" to exit. \n\nThe following plugins are available.'
 	list_plugins_full()
 	print 'To see this list again, type "list". \nIf you need to review the commands, type "help".'
 
@@ -121,11 +121,19 @@ if __name__ == '__main__':
 			plug.pause_all()
 		elif (command == "unpauseall"):
 			plug.unpause_all()
+		elif (command == "whitelist"):
+			whitelist = open('plugins/whitelist.txt','r').read()
+			print "Whitelist:\n",whitelist
+		elif (command == "blacklist"):
+			blacklist = open('plugins/blacklist.txt','r').read()
+			print "Blacklist:\n",blacklist
+		elif (command == "infoall"):
+			plug.info_all()
 
 		#if the entry matches the name of a plugin, go to plugin menu
 		elif (command in plugins.__all__):
 			while True:
-				print '\nWould you like to "start", "stop", "pause", "unpause", or "kill" the plugin? \nYou can also "blacklist" or "whitelist" the plugin. \nType "back" to go back to the main menu.'
+				print '\nWould you like to "start", "stop", "pause", "unpause", or "kill" the plugin? \nYou can also "blacklist" or "whitelist" the plugin, or get "info" on it. \nType "back" to go back to the main menu.'
 				command2 = raw_input('Enter your command: ')
 				if (command2 == "start"):
 					if (on_blacklist(command)):
@@ -144,6 +152,12 @@ if __name__ == '__main__':
 					break
 				elif (command2 == "unpause"):
 					plug.unpause_plugin(command)
+					break
+				elif (command2 == "pid"):
+					print 'Plugin',command+"'s PID:",plug.plugin_pid(command)
+					break
+				elif (command2 == "info"):
+					plug.plugin_info(command)
 					break
 
 				#Go to whitelist/blacklist process, choose whether to add or remove from list

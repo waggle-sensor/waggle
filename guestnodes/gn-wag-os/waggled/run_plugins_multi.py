@@ -1,4 +1,4 @@
-import multiprocessing, time, sys
+import multiprocessing, time, sys, psutil
 from multiprocessing import Manager
 
 """
@@ -82,11 +82,15 @@ class plugin_runner(object):
         for j in self.jobs:
             if (j.name == plugin_name):
                 self.man[plugin_name] = 0
-                j.join()
-                print 'Plugin', j.name, 'stopped.'
-                stopped = 1
-                self.jobs[:] = [x for x in self.jobs if x.is_alive()]
-                return stopped
+                j.join(10)
+                if (j.is_alive()):
+                    print plugin_name,'has failed to stop.'
+                    return 0
+                else:
+                    print 'Plugin', j.name, 'stopped.'
+                    stopped = 1
+                    self.jobs[:] = [x for x in self.jobs if x.is_alive()]
+                    return stopped
         if (stopped == 0):
             print 'Plugin', plugin_name, 'not active - cannot stop.'
             return stopped
@@ -98,7 +102,7 @@ class plugin_runner(object):
             if (j.name == plugin_name):
                 self.man[plugin_name] = -1
                 paused = 1
-                time.sleep(2)
+                print 'Pause signal sent.'
                 return paused
         if (paused == 0):
             print 'Plugin', plugin_name, 'not active - cannot pause.'
@@ -212,3 +216,31 @@ class plugin_runner(object):
             print 'All processes started.'
         else:
             print 'Attempted to start all processes with', fail, 'failures.'
+
+    def plugin_pid(self, plugin_name):
+        for j in self.jobs:
+            if (j.name == plugin_name):
+                return j.pid
+        print 'Plugin',plugin_name,'not running, there is no PID.'
+        return 0
+
+    def plugin_info(self, plugin_name):
+        pid = self.plugin_pid(plugin_name)
+        if (pid == 0):
+            return 0
+        else:
+            print "PID:",pid
+            p = psutil.Process(pid)
+            print plugin_name+":\nMemory Percent:",p.memory_percent(),"\tCPU Percent:",p.cpu_percent(interval=1.0)
+            return 1
+
+    def info_all(self):
+        fail = 0
+        for j in self.jobs:
+            if (self.plugin_info(j.name) == 0):
+                fail = fail + 1
+        if (fail == 0):
+            return 1
+        else:
+            print "Attempted to get info on all active plugins, but",fail,"failures occurred."
+            return 0

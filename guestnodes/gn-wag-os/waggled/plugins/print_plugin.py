@@ -2,9 +2,7 @@ class register(object):
 	def __init__(self, name, man):
 		import time
 		man[name] = 1
-		print 'This is the printing plugin!'
-		print 'All it does it print a few lines'
-		print 'And then increment until 100'
+		print 'This is the printing plugin!\nAll it does it print a few lines\nAnd then increment until 100'
 		i = 0
 		while True:
 			while ((i < 100) and (man[name] == 1)):
