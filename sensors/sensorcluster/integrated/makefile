@@ -1,4 +1,4 @@
-ARD_HOME = /home/rajesh/GIT/waggle/devtools/arduino/compilers/arduino-1.6.5-linux/arduino_64
+ARD_HOME = /home/kaitlyn/repos/waggle/devtools/arduino/compilers/arduino-1.6.5-linux/arduino_64
 TARGET = integrated
 PACKAGE = arduino
 ARCH = sam

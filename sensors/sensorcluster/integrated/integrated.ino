@@ -261,10 +261,14 @@ void setup()
 
 void loop()
 {
+
     if (I2C_READ_COMPLETE == true)
     {
         ALL_SENSOR_READ();
         I2C_READ_COMPLETE = false;
     }
-    delay(10);
+
+    requestEvent();
+
+    delay(30000);
 }
