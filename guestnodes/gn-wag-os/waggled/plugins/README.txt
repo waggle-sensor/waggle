@@ -16,7 +16,11 @@ and follow the instructions printed.
 The __init__.py file within the plugin folder turns the directory into a module,
 and automatically loads any python files in the plugins folder into the
 __all__ list variable. From there, you can do anything you want with the
-plugins.
+plugins. By default, when you open plugin_manager.py, it will automatically run
+all of the plugins listed in the whitelist.txt file, which can be manipulated
+from within the manager. The blacklist.txt file can also be manipulated from
+the manager, and any plugin listed within is disallowed from being run by the
+manager.
 
 The run_plugins_multi.py script only tries to invoke the "register" object in each
 of the plugins in the __all__ list variable in sequence, but can be

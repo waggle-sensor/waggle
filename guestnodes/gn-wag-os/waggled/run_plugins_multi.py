@@ -1,4 +1,4 @@
-import multiprocessing, time, sys, psutil
+import multiprocessing, time, sys, psutil, os, signal
 from multiprocessing import Manager
 
 """
@@ -60,14 +60,22 @@ class plugin_runner(object):
             return 0
         
     #Tries to stop a plugin with the name given by argument. Returns 1 for successful stop, 0 for failure
+    #If the terminate() call times out (SIGTERM fails to stop the process), it sends a SIGKILL to the process
     def kill_plugin(self, plugin_name):
         killed = 0
         #Tries to find plugin in list of active processes
         for j in self.jobs:
             if (j.name == plugin_name):
                 j.terminate()
-                j.join()
-                print 'Plugin', j.name, 'terminated.'
+                j.join(5)
+                if (j.is_alive()):
+                    os.kill(self.plugin_pid(j.name), signal.SIGKILL)
+                    j.join(5)
+                    if (j.is_alive():
+                        break
+                    print 'Plugin', j.name, 'ended with kill signal.'
+                else: 
+                    print 'Plugin', j.name, 'terminated.'
                 killed = 1
                 #removes plugin from list of active plugins
                 self.jobs[:] = [x for x in self.jobs if x.is_alive()]
@@ -123,6 +131,26 @@ class plugin_runner(object):
         if (unpaused == 0):
             print 'Plugin', plugin_name, 'not active - cannot unpause.'
             return unpaused
+
+    #Sends a SIGSTOP signal to process attached to plugin_name to suspend operations (unused)
+    def suspend_plugin(self, plugin_name):
+        pid = self.plugin_pid(plugin_name)
+        if (pid == 0):
+            return 0
+        else:
+            p = psutil.Process(pid)
+            p.suspend()
+            return 1
+
+    #Sends a SIGCONT signal to process attached to plugin_name to resume operations (unused)
+    def resume_plugin(self, plugin_name):
+        pid = self.plugin_pid(plugin_name)
+        if (pid == 0):
+            return 0
+        else:
+            p = psutil.Process(pid)
+            p.resume()
+            return 1
 
     #runs kill_plugin, then start_plugin if the first is successful
     def restart_plugin(self, plugin_name):
@@ -217,6 +245,7 @@ class plugin_runner(object):
         else:
             print 'Attempted to start all processes with', fail, 'failures.'
 
+    #Retrieves the PID of plugin_name and returns it, or 0 if that plugin is not running.
     def plugin_pid(self, plugin_name):
         for j in self.jobs:
             if (j.name == plugin_name):
@@ -224,6 +253,7 @@ class plugin_runner(object):
         print 'Plugin',plugin_name,'not running, there is no PID.'
         return 0
 
+    #Using PID of plugin, returns memory% and CPU% of that process.
     def plugin_info(self, plugin_name):
         pid = self.plugin_pid(plugin_name)
         if (pid == 0):
@@ -234,6 +264,7 @@ class plugin_runner(object):
             print plugin_name+":\nMemory Percent:",p.memory_percent(),"\tCPU Percent:",p.cpu_percent(interval=1.0)
             return 1
 
+    #Calls plugin_info on all active plugins.
     def info_all(self):
         fail = 0
         for j in self.jobs:

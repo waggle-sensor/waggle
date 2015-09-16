@@ -159,6 +159,12 @@ if __name__ == '__main__':
 				elif (command2 == "info"):
 					plug.plugin_info(command)
 					break
+				#elif (command2 == "suspend"):
+				#	plug.suspend_plugin(command)
+				#	break
+				#elif (command2 == "resume"):
+				#	plug.resume_plugin(command)
+				#	break
 
 				#Go to whitelist/blacklist process, choose whether to add or remove from list
 				elif (command2 == "whitelist" or command2 == "blacklist"):
