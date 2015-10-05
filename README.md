@@ -1,4 +1,6 @@
-# This is the waggle project (www.wa8.gl).
+# This is the waggle project 
+
+homepage: www.wa8.gl
 
 
 ## A very high level view of the pieces of this project are:
