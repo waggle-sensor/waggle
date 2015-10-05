@@ -1,7 +1,7 @@
-This is the waggle project (www.wa8.gl).
-****************************************
+# This is the waggle project (www.wa8.gl).
 
-A very high level view of the pieces of this project are:
+
+## A very high level view of the pieces of this project are:
 
 1) A Node Controller.  This is the Linux-based brain for a sensor
 node.  Currently, we are using a hardkernel.com ODROID single-board
@@ -17,7 +17,7 @@ detect when the waggle node is too hot, etc.
 
 4) The Cloud-based software (Beehive)
 
---
+## Directories
 
 The directories are organized as follows (in alphabetical order)
 
