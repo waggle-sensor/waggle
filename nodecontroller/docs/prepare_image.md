@@ -1,6 +1,6 @@
 
 
-# Copy stock image to SD-card
+# Copy stock or waggle image to SD-card
 This document explains how to load an odroid stock image or our waggle image onto an SD-card or eMMC.
 
 
@@ -71,7 +71,7 @@ OSX: sudo diskutil eject /dev/r${DEVICE_NAME}
 Now plug SD-card into your ODROID and boot it.
 
 Get your IP address, e.g.:
-```bash
+```text
 ifconfig -a
 ```
 
