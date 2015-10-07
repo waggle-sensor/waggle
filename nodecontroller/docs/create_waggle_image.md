@@ -1,8 +1,7 @@
 
+# Remove and install packages
 
-First boot into ODROID stock image (ubuntu)
-
-Before we remove packages we verify that we do not remove the network-manager. For this do the apt-get purge with simulation option -s. Then do the purge without the -s option.
+The waggle image is based on the ODROID stock image (ubuntu). As there is currently no officially supported/maintained minimal server image, we take the default ubuntu image for ODROID and remove all packages that are not needed. Before we remove packages we verify that we do not remove the network-manager. For this do the apt-get purge first with simulation option "-s". Then do the actual purge without the "-s" option.
  
 ```bash
 apt-get update
@@ -15,7 +14,7 @@ glib-networking+ libsoup2.4-1+ wpasupplicant+ policykit-1+ network-manager+ dpkg
 Note that the last line contains packages we do not want to be removed ! Those package have a plus character as suffix.
 
 
-In case you want sort the list of packages after modifiying.
+In case you make changes to the above list of packages, you may want to sort it afterwards:
 ```bash
 echo b a | tr " " "\n" | sort | tr "\n" " "
 ```
@@ -36,7 +35,11 @@ Packages we want to install:
 apt-get install htop iotop iftop bwm-ng screen git python-serial python-pip
 ```
 
+# Other image modifications
 
+Deploy start-up script for host key etc...
 
+# Shrink image
 
+TODO: e2fsck, resize2fs, fdisk
 
