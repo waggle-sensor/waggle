@@ -34,7 +34,7 @@ unxz ${IMAGE}.xz
 Detect SD-card device:
 ```bash
 df -h
-or
+# or
 diskutil list
 ```
 
@@ -45,19 +45,21 @@ export DEVICE_NAME="disk2"
 
 Unmount device:
 ```bash
-Linux: umount /dev/${DEVICE_NAME}
-OSX:   sudo diskutil unmountDisk /dev/${DEVICE_NAME}
+# Linux: 
+umount /dev/${DEVICE_NAME}
+# OSX:
+sudo diskutil unmountDisk /dev/${DEVICE_NAME}
 ```
 
 Copy .img-image to media (SD-card or eMMC)
 ```bash
-Linux:
+# Linux:
 sudo dd if=${IMAGE} of=/dev/${DEVICE_NAME} bs=1M conv=fsync
 sudo sync
-OSX:
+# OSX:
 sudo dd if=${IMAGE} of=/dev/r${DEVICE_NAME} bs=1m
 sudo sync
-(Use ctrl-T to see progress)
+# (Use ctrl-T to see progress)
 ```
 
 
@@ -66,19 +68,23 @@ Eject image:
 OSX: sudo diskutil eject /dev/r${DEVICE_NAME}
 ```
 
-Plug SD-card into ODROID and boot it.
-
+Now plug SD-card into your ODROID and boot it.
 
 Get your IP address, e.g.:
-
 ```bash
 ifconfig -a
 ```
 
+Install nmap:
+```bash
+# Linux:
+apt-get install nmap
+# OSX:
+brew install nmap
+```
+
 Find IP address of odroid device in your network:
 ```bash
-OSX: brew install nmap
-Linux: apt-get install nmap
 nmap -sP <yourIP>/24 
 ```
 
