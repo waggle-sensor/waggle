@@ -71,3 +71,6 @@ echo root:waggle | chpasswd
 echo > /root/.bash_history
 echo > /home/waggle/.bash_history
 
+### mark image for first boot
+touch /root/first_boot
+
