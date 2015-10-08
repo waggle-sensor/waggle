@@ -8,6 +8,8 @@
 
 #######################################
 
+set -x
+
 apt-get update
 
 apt-get purge -y \
@@ -27,7 +29,7 @@ glib-networking+ libsoup2.4-1+ wpasupplicant+ policykit-1+ network-manager+ dpkg
 rm -rf /usr/local/share/kodi/ /etc/cups /usr/lib/xorg/modules/drivers
 apt-get clean
 apt-get autoclean
-apt-get upgrade
+apt-get upgrade -y
 apt-get clean
 apt-get autoclean
 dpkg --list | grep ^rc | awk -F" " ' { print $2 } ' | xargs apt-get -y purge
