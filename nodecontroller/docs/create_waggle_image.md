@@ -61,6 +61,10 @@ echo "Etc/UTC" > /etc/timezone
 ### disallow root access
 sed -i 's/\(PermitRootLogin\) .*/\1 no/' /etc/ssh/sshd_config
 
+# default password
+echo waggle:waggle | chpasswd
+echo root:waggle | chpasswd
+
 ### for paranoids
 echo > /root/.bash_history
 echo > /home/waggle/.bash_history
