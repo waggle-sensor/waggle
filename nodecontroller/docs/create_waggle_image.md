@@ -46,6 +46,9 @@ Deploy start-up script for host key etc...
 #This will change only the user's login name. It requires you logged in as another user, e.g. root
 usermod -l waggle odroid
 
+# real name
+usermod -c "waggle user" waggle
+
 #change home directory
 usermod -m -d /home/waggle/ waggle
 
