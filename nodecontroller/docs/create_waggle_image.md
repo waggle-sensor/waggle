@@ -40,6 +40,18 @@ apt-get install htop iotop iftop bwm-ng screen git python-serial python-pip moni
 Deploy start-up script for host key etc...
 
 ```bash
+# note: changing username requires that you ssh into the machine as root!
+
+### username
+#This will change only the user's login name. It requires you logged in as another user, e.g. root
+usermod -l waggle odroid
+
+#change home directory
+usermod -m -d /home/waggle/ waggle
+
+#change group name
+groupmod -n waggle odroid
+
 ### timezone
 echo "Etc/UTC" > /etc/timezone
 
@@ -59,6 +71,11 @@ export SERIAL=`python -c "cid = '$(cat ${CID_FILE})' ; len=len(cid) ; mid=cid[:2
 if [ ! ${#SERIAL} -ge 11 ]; then echo "error: could not create unique identifier" ; exit ; fi
 
 echo waggle_${SERIAL} > /etc hostname
+
+### for paranoids
+echo > /root/.bash_history
+echo > /home/waggle/.bash_history
+
 
 # MAC address?
 echo > /etc/udev/rules.d/70-persistent-net.rules
