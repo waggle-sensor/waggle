@@ -2,8 +2,8 @@
 #This is configures an odroid to be a node controller
 
 #install all dependencies for node
-dpkg -i nc-wag-os/packages_o/*.deb
-cd nc-wag-os/packages_o/
+#dpkg -i nc-wag-os/packages/debian/*.deb
+cd nc-wag-os/packages/python/
 #change to offline install
 pip install -e pika-0.9.14
 pip install pyserial
