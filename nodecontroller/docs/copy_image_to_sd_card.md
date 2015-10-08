@@ -1,7 +1,7 @@
 
 
-# Copy stock or waggle image to SD-card
-This document explains how to load an odroid stock image or our waggle image onto an SD-card or eMMC.
+# Copy ubuntu or waggle image to SD-card
+This document explains how to load an odroid stock ubuntu image or our waggle image onto an SD-card or eMMC.
 
 
 For our waggle image use this:
