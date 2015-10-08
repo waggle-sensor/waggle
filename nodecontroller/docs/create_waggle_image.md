@@ -39,6 +39,35 @@ apt-get install htop iotop iftop bwm-ng screen git python-serial python-pip moni
 
 Deploy start-up script for host key etc...
 
+```bash
+### timezone
+echo "Etc/UTC" > /etc/timezone
+
+### disallow root access
+sed -i 's/\(PermitRootLogin\) .*/\1 no/' /etc/ssh/sshd_config
+
+### hostname
+# The ODROID C1+ does not have serial number that can be easily read. We therfore 
+# read the serial number of the SD-card and make it part of the hostname. 
+
+export CID_FILE="/sys/block/mmcblk0/device/cid"
+if [ ! -e ${CID_FILE} ] ; then 
+  echo "error: File not found: ${CID_FILE}" 
+  exit 1 
+fi
+export SERIAL=`python -c "cid = '$(cat ${CID_FILE})' ; len=len(cid) ; mid=cid[:2] ; psn=cid[-14:-6] ; print mid+'_'+psn"`
+if [ ! ${#SERIAL} -ge 11 ]; then echo "error: could not create unique identifier" ; exit ; fi
+
+echo waggle_${SERIAL} > /etc hostname
+
+# MAC address?
+echo > /etc/udev/rules.d/70-persistent-net.rules
+#poweroff or #reboot
+
+
+```
+
+
 # Shrink image
 
 TODO: e2fsck, resize2fs, fdisk
