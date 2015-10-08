@@ -4,14 +4,14 @@
 
 2) Download and execute create_waggle_image.sh.
 ```bash
-wget https://github.com/waggle-sensor/waggle/blob/master/nodecontroller/scripts/create_waggle_image.sh
+wget https://raw.githubusercontent.com/waggle-sensor/waggle/master/nodecontroller/scripts/create_waggle_image.sh
 chmod +x create_waggle_image.sh
 ./create_waggle_image.sh
 ```
 
 3) deploy first_boot.sh
 ```bash
-wget https://github.com/waggle-sensor/waggle/blob/master/nodecontroller/scripts/first_boot.sh
+wget https://raw.githubusercontent.com/waggle-sensor/waggle/master/nodecontroller/scripts/first_boot.sh
 chmod +x first_boot.sh
 ```
 
