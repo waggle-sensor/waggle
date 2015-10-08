@@ -58,29 +58,37 @@ echo "Etc/UTC" > /etc/timezone
 ### disallow root access
 sed -i 's/\(PermitRootLogin\) .*/\1 no/' /etc/ssh/sshd_config
 
-### hostname
-# The ODROID C1+ does not have serial number that can be easily read. We therfore 
-# read the serial number of the SD-card and make it part of the hostname. 
-
-export CID_FILE="/sys/block/mmcblk0/device/cid"
-if [ ! -e ${CID_FILE} ] ; then 
-  echo "error: File not found: ${CID_FILE}" 
-  exit 1 
-fi
-export SERIAL=`python -c "cid = '$(cat ${CID_FILE})' ; len=len(cid) ; mid=cid[:2] ; psn=cid[-14:-6] ; print mid+'_'+psn"`
-if [ ! ${#SERIAL} -ge 11 ]; then echo "error: could not create unique identifier" ; exit ; fi
-
-echo waggle_${SERIAL} > /etc hostname
-
 ### for paranoids
 echo > /root/.bash_history
 echo > /home/waggle/.bash_history
+```
 
-
-# MAC address?
-echo > /etc/udev/rules.d/70-persistent-net.rules
-#poweroff or #reboot
-
+init script for first boot:
+```bash
+### hostname
+export USE_MAC=1
+export UNIQUE="undefined"
+if [ ${USE_MAC} == 1 ] ; then
+  export UNIQUE=`ifconfig eth0 | head -n 1 | grep -o "[[:xdigit:]:]\{17\}" | sed 's/://g'`
+  if [ ! ${#UNIQUE} -ge 12 ]; then
+    echo "error: could not extract MAC address"
+    exit
+  fi
+else
+  # use serial number from SD-card
+  # some devices do not have a unique MAC address, they could use this code
+  export CID_FILE="/sys/block/mmcblk0/device/cid"
+  if [ ! -e ${CID_FILE} ] ; then 
+    echo "error: File not found: ${CID_FILE}" 
+    exit 1 
+  fi
+  export UNIQUE=`python -c "cid = '$(cat ${CID_FILE})' ; len=len(cid) ; mid=cid[:2] ; psn=cid[-14:-6] ; print mid+'_'+psn"`
+  if [ ! ${#UNIQUE} -ge 11 ]; then
+    echo "error: could not create unique identifier from SD-card serial number"
+    exit
+  fi
+fi
+echo waggle_${UNIQUE} > /etc/hostname
 
 ```
 
