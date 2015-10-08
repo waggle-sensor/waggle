@@ -12,6 +12,14 @@ chmod +x create_waggle_image.sh
 3) TODO: download initscript
 init script for first boot:
 ```bash
+#!/bin/bash
+
+if [ ! -e /root/first_boot ] ; then
+  exit 0
+fi
+
+set -x
+
 ### hostname
 export USE_MAC=1
 export UNIQUE="undefined"
@@ -40,6 +48,9 @@ echo waggle_${UNIQUE} > /etc/hostname
 # new host keys
 rm /etc/ssh/ssh_host*
 dpkg-reconfigure openssh-server
+
+
+rm -f /root/first_boot
 ```
 
 
