@@ -32,7 +32,7 @@ dpkg --list | grep ^rc | awk -F" " ' { print $2 } ' | xargs apt-get -y purge
 
 Packages we want to install:
 ```bash
-apt-get install htop iotop iftop bwm-ng screen git python-serial python-pip
+apt-get install htop iotop iftop bwm-ng screen git python-serial python-pip monit tree
 ```
 
 # Other image modifications
