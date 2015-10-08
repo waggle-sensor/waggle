@@ -64,6 +64,7 @@ sed -i 's/\(PermitRootLogin\) .*/\1 no/' /etc/ssh/sshd_config
 ### for paranoids
 echo > /root/.bash_history
 echo > /home/waggle/.bash_history
+
 ```
 
 init script for first boot:
@@ -93,6 +94,9 @@ else
 fi
 echo waggle_${UNIQUE} > /etc/hostname
 
+# new host keys
+rm /etc/ssh/ssh_host*
+dpkg-reconfigure openssh-server
 ```
 
 
