@@ -35,7 +35,7 @@ set +e
 
 # Cleaning, upgrading and more cleaning:
 
-rm -rf /usr/local/share/kodi/ /etc/cups /usr/lib/xorg/modules/drivers /var/lib/bluetooth /usr/share/{icons,anthy,python-wheels}
+rm -rf /usr/local/share/kodi/ /etc/cups /usr/lib/xorg/modules/drivers /var/lib/{bluetooth,alsa} /usr/share/{icons,anthy,python-wheels}
 
 
 apt-get clean
@@ -96,5 +96,5 @@ echo > /home/waggle/.bash_history
 touch /root/first_boot
 
 set +x
-echo "Done. You can now poweroff."
+echo "Done. You can now run \"shutdown -h\"."
 
