@@ -38,9 +38,10 @@ df -h
 diskutil list
 ```
 
-Set variable:
+Set DEVICE_NAME variable, but do not include the path "/dev/":
 ```bash
-export DEVICE_NAME="disk2"
+# e.g. for device /dev/disk2
+export DEVICE_NAME="disk2" 
 ```
 
 Unmount device:
@@ -88,15 +89,15 @@ Find IP address of odroid device in your network:
 nmap -sP <yourIP>/24 
 ```
 
-ssh into your ODROID (waggle image!):
+ssh into your ODROID:
 ```bash
-TODO
-```
+# waggle image:
+ssh waggle@<ip>
+#password: waggle
 
-ssh into your ODROID (odroid ubuntu image!):
-```bash
+# stock ubuntu image:
 ssh odroid@<ip>
-# password: odroid
+#password: odroid
 ```
 
 
