@@ -19,7 +19,7 @@
 # PATH should only include /usr/* if it runs after the mountnfs.sh script
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
 DESC="Description of the service"
-NAME= waggle_first_boot
+NAME=waggle_first_boot
 
 SCRIPTNAME=/etc/init.d/$NAME
 
@@ -47,6 +47,7 @@ do_start()
 	#   1 if daemon was already running
 	#   2 if daemon could not be started
 	if [ ! -e /root/first_boot ] ; then
+          echo "waggle_first_boot.sh has nothing to do."
 	  return 0
 	fi
 
