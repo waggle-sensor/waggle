@@ -1,17 +1,21 @@
 
 
-1) Copy ODROID ubuntu image onto SD-card, boot the ODROID and ssh into it as root. Follow these instructions: [copy_image_to_sd_card.md](./copy_image_to_sd_card.md)
+1. Boot the stock odroid ubuntu image
+   1. Copy ODROID ubuntu image onto SD-card, see [copy_image_to_sd_card.md](./copy_image_to_sd_card.md).
 
-2) Download and execute create_waggle_image.sh.
+   2. Boot the ODROID with SD-card.
+   3. ssh into ODROID as root ! Do not ssh as "odroid", an if you do accidentally, reboot again. Otherwise waggls script cannot rename the user
+
+2. Download and execute create_waggle_image.sh.
 ```bash
 wget https://raw.githubusercontent.com/waggle-sensor/waggle/master/nodecontroller/scripts/create_waggle_image.sh
 chmod +x create_waggle_image.sh
 ./create_waggle_image.sh
 ```
 
-3) Call "shutdown -P 0". Stick SD-card in your Laptop/PC.
+3. Execute "shutdown -P 0". Stick SD-card in your Laptop/PC.
 
-4) Shrink image
+4. Shrink image
 
 TODO: e2fsck, resize2fs, fdisk
 
