@@ -19,7 +19,7 @@ export odroid_exists=$(id -u odroid > /dev/null 2>&1; echo $?)
 if [ ${odroid_exists} == 0 ] ; then
   echo "I will kill all processes of the user \"odroid\" now."
   sleep 1
-  killall -u odroid
+  killall -u odroid -9
   sleep 2
 
   set -e
