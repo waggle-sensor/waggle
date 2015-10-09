@@ -17,6 +17,11 @@ set -x
 export odroid_exists=$(id -u odroid > /dev/null 2>&1; echo $?)
 
 if [ ${odroid_exists} == 0 ] ; then
+  echo "I will kill all processes of the user \"odroid\" now."
+  sleep 1
+  killall -u odroid
+  sleep 2
+
   set -e
 
   #This will change the user's login name. It requires you logged in as another user, e.g. root
