@@ -69,18 +69,21 @@ sed -i 's/\(PermitRootLogin\) .*/\1 no/' /etc/ssh/sshd_config
 echo waggle:waggle | chpasswd
 echo root:waggle | chpasswd
 
-### for paranoids
-echo > /root/.bash_history
-echo > /home/waggle/.bash_history
 
 ### deploy waggle_first_boot.sh script
-
 curl https://raw.githubusercontent.com/waggle-sensor/waggle/master/nodecontroller/scripts/waggle_first_boot.sh > /etc/init.d/waggle_first_boot.sh
 chmod 755 /etc/init.d/waggle_first_boot.sh
 chown root:root /etc/init.d/waggle_first_boot.sh
 update-rc.d waggle_first_boot.sh defaults
 
+### for paranoids
+echo > /root/.bash_history
+echo > /home/waggle/.bash_history
+
+
 ### mark image for first boot
 touch /root/first_boot
 
+set +x
+echo "Done. You can now poweroff."
 
