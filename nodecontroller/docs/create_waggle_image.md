@@ -9,13 +9,9 @@ chmod +x create_waggle_image.sh
 ./create_waggle_image.sh
 ```
 
-3) deploy first_boot.sh
-```bash
-wget https://raw.githubusercontent.com/waggle-sensor/waggle/master/nodecontroller/scripts/waggle_first_boot.sh
-chmod +x waggle_first_boot.sh
-```
+3) Call "shutdown -h". Stick SD-card in your Laptop/PC.
 
-# Shrink image
+4) Shrink image
 
 TODO: e2fsck, resize2fs, fdisk
 
