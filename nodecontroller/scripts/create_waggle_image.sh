@@ -18,6 +18,7 @@ export odroid_exists=$(id -u odroid > /dev/null 2>&1; echo $?)
 
 if [ ${odroid_exists} == 0 ] ; then
   set -e
+
   #This will change the user's login name. It requires you logged in as another user, e.g. root
   usermod -l waggle odroid
 
@@ -27,12 +28,28 @@ if [ ${odroid_exists} == 0 ] ; then
   #change home directory
   usermod -m -d /home/waggle/ waggle
 
-  #change group name
-  groupmod -n waggle odroid
   set +e
 fi
 
+# verify waggle user has been created
+id -u waggle > /dev/null 2>&1
+if [ $? -ne 0 ]; then 
+  echo "error: unix user waggle was not created"
+  exit 1 
+fi
 
+
+getent group odroid &> /dev/null 
+if [ $? -eq 0 ]; then 
+  groupmod -n waggle odroid || exit 1 
+fi
+
+# verify waggle group has been created
+getent group waggle &> /dev/null 
+if [ $? -ne 0 ]; then 
+  echo "error: unix group waggle was not created"
+  exit 1 
+fi
 
 set -e
 apt-get update
