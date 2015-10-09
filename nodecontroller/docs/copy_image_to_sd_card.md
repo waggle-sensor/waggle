@@ -89,15 +89,15 @@ Find IP address of odroid device in your network:
 nmap -sP <yourIP>/24 
 ```
 
-ssh into your ODROID (waggle image!):
+ssh into your ODROID:
 ```bash
-TODO
-```
+# waggle image:
+ssh waggle@<ip>
+#password: waggle
 
-ssh into your ODROID (odroid ubuntu image!):
-```bash
+# stock ubuntu image:
 ssh odroid@<ip>
-# password: odroid
+#password: odroid
 ```
 
 
