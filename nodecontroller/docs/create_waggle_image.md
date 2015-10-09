@@ -11,8 +11,8 @@ chmod +x create_waggle_image.sh
 
 3) deploy first_boot.sh
 ```bash
-wget https://raw.githubusercontent.com/waggle-sensor/waggle/master/nodecontroller/scripts/first_boot.sh
-chmod +x first_boot.sh
+wget https://raw.githubusercontent.com/waggle-sensor/waggle/master/nodecontroller/scripts/waggle_first_boot.sh
+chmod +x waggle_first_boot.sh
 ```
 
 # Shrink image
