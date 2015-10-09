@@ -10,6 +10,30 @@
 
 set -x
 
+
+# note: changing username requires that you ssh into the machine as root!
+
+### username
+export odroid_exists=$(id -u odroid > /dev/null 2>&1; echo $?)
+
+if [ ${odroid_exists} == 0 ] ; then
+  set -e
+  #This will change the user's login name. It requires you logged in as another user, e.g. root
+  usermod -l waggle odroid
+
+  # real name
+  usermod -c "waggle user" waggle
+
+  #change home directory
+  usermod -m -d /home/waggle/ waggle
+
+  #change group name
+  groupmod -n waggle odroid
+  set +e
+fi
+
+
+
 set -e
 apt-get update
 
@@ -51,24 +75,7 @@ set -e
 apt-get install -y htop iotop iftop bwm-ng screen git python-serial python-pip monit tree
 set +e
 
-# note: changing username requires that you ssh into the machine as root!
 
-### username
-export odroid_exists=$(id -u odroid > /dev/null 2>&1; echo $?)
-
-if [ ${odroid_exists} == 0 ] ; then
-  #This will change the user's login name. It requires you logged in as another user, e.g. root
-  usermod -l waggle odroid
-
-  # real name
-  usermod -c "waggle user" waggle
-
-  #change home directory
-  usermod -m -d /home/waggle/ waggle
-
-  #change group name
-  groupmod -n waggle odroid
-fi
 
 ### timezone
 echo "Etc/UTC" > /etc/timezone
@@ -96,5 +103,5 @@ echo > /home/waggle/.bash_history
 touch /root/first_boot
 
 set +x
-echo "Done. You can now run \"shutdown -h\"."
+echo "Done. You can now run \"shutdown -P 0\"."
 
