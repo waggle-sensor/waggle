@@ -38,9 +38,10 @@ df -h
 diskutil list
 ```
 
-Set variable:
+Set DEVICE_NAME variable, but do not include the path "/dev/":
 ```bash
-export DEVICE_NAME="disk2"
+# e.g. for device /dev/disk2
+export DEVICE_NAME="disk2" 
 ```
 
 Unmount device:
