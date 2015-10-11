@@ -66,7 +66,8 @@ sudo sync
 
 Eject image:
 ```bash
-OSX: sudo diskutil eject /dev/r${DEVICE_NAME}
+# OSX: 
+sudo diskutil eject /dev/r${DEVICE_NAME}
 ```
 
 Now plug SD-card into your ODROID and boot it.
