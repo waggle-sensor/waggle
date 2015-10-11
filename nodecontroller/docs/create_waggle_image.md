@@ -12,7 +12,7 @@ chmod +x create_waggle_image.sh
 ./create_waggle_image.sh
 ```
 ### 3) Shutdown
-Execute "shutdown -P 0". Stick SD-card in your Laptop/PC.
+Execute "shutdown -h now". Stick SD-card in your Laptop/PC.
 
 ### 4) Shrink image
 
