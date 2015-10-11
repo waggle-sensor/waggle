@@ -56,6 +56,10 @@ if [ $? -ne 0 ]; then
   exit 1 
 fi
 
+# kill user lightdm (display manager running in Ubuntu)
+killall -u lightdm -9
+
+
 set -e
 apt-get update
 
