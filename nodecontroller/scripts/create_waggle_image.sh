@@ -125,5 +125,5 @@ echo > /home/waggle/.bash_history
 touch /root/first_boot
 
 set +x
-echo "Done. You can now run \"shutdown -P 0\"."
+echo "Done. You can now run \"shutdown -h now\"."
 
