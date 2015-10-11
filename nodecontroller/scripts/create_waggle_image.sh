@@ -116,6 +116,12 @@ chmod 755 /etc/init.d/waggle_first_boot.sh
 chown root:root /etc/init.d/waggle_first_boot.sh
 update-rc.d waggle_first_boot.sh defaults
 
+### create report
+echo "image created: " > report.txt
+date >> report.txt
+cat /etc/os-release >> report.txt
+dpkg -l >> report.txt
+
 ### for paranoids
 echo > /root/.bash_history
 echo > /home/waggle/.bash_history
