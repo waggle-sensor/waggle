@@ -63,20 +63,31 @@ partprobe  ${DEVICE}
 resize2fs ${DEVICE}2 (not needed ?)
 
 
-# create diskdump (either locally or directly scp disk dump to remote location)
+# Variant A: create archive on ODROID and push final result to remote location
+# or
+# Variant B: Pull disk dump from ODROID and create image archive on PC 
+
+###  Variant A  ###
+# on ONDROID
+#  create diskdump 
 dd if=/dev/sda of=./newimage.iso bs=1M count=2000
 
-
-# compress image xv or gzip ?
-
-Linux:
-md5sum <file> > <file>.md5sum
-OSX:
-md5 -r <file> > <file>.md5sum
+# compress (xz --keep option to save space)
+xz newimage.iso
+md5sum newimage.iso.xz > newimage.iso.xz.md5sum
+scp report.txt newimage.iso.xz newimage.iso.xz.md5sum <to_somewhere>
 
 
-#On your laptop
-#scp root@192.168.1.13:/root/report.txt .
-#ssh root@192.168.1.13 "dd if=/dev/sda bs=1M count=2000" | dd of="newimage.iso" bs=1m
+###  Variant B  ###
+# on your computer
+scp root@<odroid_ip>:/root/report.txt .
+ssh root@<odroid_ip> "dd if=${DEVICE} bs=1M count=2000" | dd of="newimage.iso" bs=1m
+
+xz --keep newimage.iso
+
+# Linux:
+md5sum newimage.iso > newimage.iso.md5sum
+# OSX:
+md5 -r newimage.iso > newimage.iso.md5sum
 
 ```
