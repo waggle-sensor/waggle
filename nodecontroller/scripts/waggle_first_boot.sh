@@ -57,10 +57,21 @@ do_start()
 	# this script increase the partition size. It is an odroid script.
 	/usr/local/bin/fs_resize.sh 
 
+	if [ ! -e /media/boot/boot.ini ] ; then
+	  echo "error: could not find /media/boot/boot.ini"
+	  return 2
+	fi
+
+	export ODROIDMODEL=`head -n 1 /media/boot/boot.ini | cut -d '-' -f 1`
+
+	if [[ ! ${ODROIDMODEL} =~ ^ODROID ]] ; then
+	  echo "error: could not detect ODROID model"
+	  return 2
+	fi
+
 	### hostname
-	export USE_MAC=1
 	export UNIQUE="undefined"
-	if [ ${USE_MAC} == 1 ] ; then
+	if [ ${ODROIDMODEL}_ == "ODROIDC_" ] ; then
 	  export UNIQUE=`ifconfig eth0 | head -n 1 | grep -o "[[:xdigit:]:]\{17\}" | sed 's/://g'`
 	  if [ ! ${#UNIQUE} -ge 12 ]; then
 	    echo "error: could not extract MAC address"
