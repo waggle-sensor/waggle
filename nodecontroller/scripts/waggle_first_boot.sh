@@ -46,12 +46,16 @@ do_start()
 	#   0 if daemon has been started
 	#   1 if daemon was already running
 	#   2 if daemon could not be started
+
 	if [ ! -e /root/first_boot ] ; then
           echo "waggle_first_boot.sh has nothing to do."
 	  return 0
 	fi
 
 	set -x
+
+	# this script increase the partition size. It is an odroid script.
+	/usr/local/bin/fs_resize.sh 
 
 	### hostname
 	export USE_MAC=1
@@ -81,7 +85,6 @@ do_start()
 	# new host keys
 	rm /etc/ssh/ssh_host*
 	dpkg-reconfigure openssh-server
-
 
 	rm -f /root/first_boot
 	return 0
