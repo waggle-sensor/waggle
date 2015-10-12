@@ -15,7 +15,7 @@ Alternatively, for the odroid image use this:
 export URL="http://odroid.in/ubuntu_14.04lts/"
 export IMAGE="ubuntu-14.04.3lts-lubuntu-odroid-c1-20150811.img" # e.g. for the ODROID-C1 and ODROID-C1+ 
 # or
-export IMAGE=ubuntu-14.04.1lts-lubuntu-odroid-xu3-20150212.img" # e.g. for the ODROID-XU3
+export IMAGE="ubuntu-14.04.1lts-lubuntu-odroid-xu3-20150212.img" # e.g. for the ODROID-XU3
 ```
 To find images for other ODROID models or to find newer images than those listed above, go to http://odroid.in/ubuntu_14.04lts/. When looking for an image there, choose a "ubuntu" image, not "server" or "xubuntu" images. The variable IMAGE above contains the image filename without the url and without the suffix ".xz". This makes it easier to run the following commands, as they can simply be copied into a terminal without much changes.
 
