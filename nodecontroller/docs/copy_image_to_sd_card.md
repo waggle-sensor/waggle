@@ -100,11 +100,11 @@ nmap -sP <yourIP>/24
 ssh into your ODROID:
 ```bash
 # waggle image:
-ssh waggle@<ip>
+ssh waggle@<odroid_ip>
 #password: waggle
 
 # stock ubuntu image:
-ssh odroid@<ip>
+ssh odroid@<odroid_ip>
 #password: odroid
 ```
 
