@@ -55,6 +55,7 @@ do_start()
 	set -x
 
 	# this script increase the partition size. It is an odroid script.
+	chmod +x /usr/local/bin/fs_resize.sh
 	/usr/local/bin/fs_resize.sh 
 
 	if [ ! -e /media/boot/boot.ini ] ; then
