@@ -130,6 +130,8 @@ dpkg -l >> report.txt
 echo > /root/.bash_history
 echo > /home/waggle/.bash_history
 
+### Remove ssh host files. Those will be recreated by the /etc/rc.local script by default.
+rm /etc/ssh/ssh_host*
 
 ### mark image for first boot
 touch /root/first_boot
