@@ -95,8 +95,9 @@ do_start()
 	echo waggle_${UNIQUE} > /etc/hostname
 
 	# new host keys
-	rm /etc/ssh/ssh_host*
-	dpkg-reconfigure openssh-server
+	# Not needed here because they will be recreated by the /etc/rc.local script by default.
+	#rm /etc/ssh/ssh_host*
+	#dpkg-reconfigure openssh-server
 
 	rm -f /root/first_boot
 	return 0
