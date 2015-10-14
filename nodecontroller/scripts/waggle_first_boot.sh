@@ -54,9 +54,8 @@ do_start()
 
 	set -x
 
-	# this script increase the partition size. It is an odroid script.
-	chmod +x /usr/local/bin/fs_resize.sh
-	/usr/local/bin/fs_resize.sh 
+	# this script increases the partition size. It is an odroid script. The user will have to reboot afterwards.
+	source  /usr/local/bin/fs_resize.sh ; resize_p2
 
 	if [ ! -e /media/boot/boot.ini ] ; then
 	  echo "error: could not find /media/boot/boot.ini"
