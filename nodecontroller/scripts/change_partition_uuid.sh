@@ -2,6 +2,7 @@
 
 #These instructions assume there are a eMMC and an SD-card in the ODROID and jumper 1 should be used to decide from which media the ODROID boots. In my case both media had the odroid stock ubuntu image, and thus they had the same UUID’s. I booted with the SD-card and changed the UUID’s of both partitions of the eMMC.
 
+# This script can go into an infinite umount loop. No timeouts implemented yet.
 
 set -e
 set -x
@@ -36,8 +37,8 @@ done
 
 #unmount the other partitions
 set +e
-umount ${OTHER_DEVICE}p1
-umount ${OTHER_DEVICE}p2
+while ! $(umount ${OTHER_DEVICE}p1) ; do sleep 3 ; done
+while ! $(umount ${OTHER_DEVICE}p2) ; do sleep 3 ; done
 set -e
 sleep 2
 
@@ -59,11 +60,13 @@ mkdir -p /media/other/
 mount ${OTHER_DEVICE}p2 /media/other/
 sed -i.bak "s/[^ ]*[ $'\t']*\/[ $'\t']/${NEWUUID_2}\t\/\t/" /media/other/etc/fstab
 # verify: diff /media/other/etc/fstab /media/other/etc/fstab.bak
-umount /media/other/
+set +e
+while ! $(umount /media/other/) ; do sleep 3 ; done
+set -e
 
 #boot.scr on the boot partition of the other device
 mkdir -p /media/other_boot/
-mount  ${OTHER_DEVICE}p1 /media/other_boot/
+mount ${OTHER_DEVICE}p1 /media/other_boot/
 cd /media/other_boot/
 for file in boot.txt boot.ini ; do
   if [ -e ${file} ] ; then
@@ -73,4 +76,6 @@ done
 #verify: diff ./boot.ini ./boot.ini.bak
 # TODO: mkimage may not be needed 
 #mkimage -A arm -T script -C none -n boot -d ./boot.ini boot.scr
-umount /media/other_boot/
+set +e
+while ! $(umount /media/other_boot/) ; do sleep 3 ; done
+set -e
