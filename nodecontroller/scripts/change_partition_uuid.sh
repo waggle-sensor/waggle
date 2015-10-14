@@ -9,7 +9,16 @@ set -x
 apt-get update
 apt-get install -y uuid-runtime
 
-export OTHER_DEVICE="/dev/mmcblk1"
+
+export CURRENT_DEVICE=$(df --output=source  / | grep "^/") ; echo "CURRENT_DEVICE: ${CURRENT_DEVICE}"
+
+if [ ${CURRENT_DEVICE} == "/dev/mmcblk1p2" ] ; then
+  export OTHER_DEVICE="/dev/mmcblk0"
+else
+  export OTHER_DEVICE="/dev/mmcblk1"
+fi
+
+
 
 export OLDUUID_2=`blkid ${OTHER_DEVICE}p2 | grep -o "[0-9a-fA-F-]\{36\}"` ; echo "OLDUUID_2: ${OLDUUID_2}"
 export NEWUUID_2=`uuidgen` ; echo "NEWUUID_2: ${NEWUUID_2}"
@@ -24,8 +33,10 @@ done
 # TODO: mkimage may not be needed 
 #mkimage -A arm -T script -C none -n boot -d ./boot.txt boot.scr
 
+#unmount the other partitions
 set +e
-umount /media/boot
+umount ${OTHER_DEVICE}p1
+umount ${OTHER_DEVICE}p2
 set -e
 sleep 2
 
