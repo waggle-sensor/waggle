@@ -26,10 +26,10 @@ export OLDUUID_2=`blkid ${OTHER_DEVICE}p2 | grep -o "[0-9a-fA-F-]\{36\}"` ; echo
 export NEWUUID_2=`uuidgen` ; echo "NEWUUID_2: ${NEWUUID_2}"
 
 #modify current boot.scr (just make sure it is using UUID instead of device name)
-cd /media/boot
+
 for file in boot.txt boot.ini ; do
   if [ -e ${file} ] ; then
-    sed -i.bak "s/root\=[^ ]*/root=UUID=${OLDUUID_2}/" ${file}
+    sed -i.bak "s/root\=[^ ]*/root=UUID=${OLDUUID_2}/" /media/boot/${file}
   fi
 done
 # TODO: mkimage may not be needed 
@@ -71,15 +71,14 @@ set -e
 #boot.scr on the boot partition of the other device
 mkdir -p /media/other_boot/
 mount ${OTHER_DEVICE}p1 /media/other_boot/
-cd /media/other_boot/
 for file in boot.txt boot.ini ; do
   if [ -e ${file} ] ; then
-    sed -i.bak "s/root\=[^ ]*/root=UUID=${NEWUUID_2}/" ${file}
+    sed -i.bak "s/root\=[^ ]*/root=UUID=${NEWUUID_2}/" /media/other_boot/${file}
   fi
 done
 #verify: diff ./boot.ini ./boot.ini.bak
 # TODO: mkimage may not be needed 
-#mkimage -A arm -T script -C none -n boot -d ./boot.ini boot.scr
+#mkimage -A arm -T script -C none -n boot -d /media/other_boot/boot.ini /media/other_boot/boot.scr
 set +e
 while ! $(umount /media/other_boot/) ; do sleep 3 ; done
 set -e
