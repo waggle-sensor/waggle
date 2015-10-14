@@ -23,6 +23,7 @@ fi
 
 
 export OLDUUID_2=`blkid ${OTHER_DEVICE}p2 | grep -o "[0-9a-fA-F-]\{36\}"` ; echo "OLDUUID_2: ${OLDUUID_2}"
+export NEWUUID_1=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 4 | head -n 1 | tr -d '\n'` ; echo "NEWUUID_1: ${NEWUUID_1}"
 export NEWUUID_2=`uuidgen` ; echo "NEWUUID_2: ${NEWUUID_2}"
 
 #modify current boot.scr (just make sure it is using UUID instead of device name)
@@ -50,7 +51,7 @@ sleep 2
 tune2fs -U ${NEWUUID_2} ${OTHER_DEVICE}p2
 
 # the boot partition uses FAT16. To change the UUID we use dd
-echo -n "abcd" | dd of=${OTHER_DEVICE}p1 bs=1 seek=39 count=4
+echo -n "${NEWUUID_1}" | dd of=${OTHER_DEVICE}p1 bs=1 seek=39 count=4
 # FAT16: (seek=39 count=4)
 # FAT32: (seek=67 count=4)
 # NTFS: (seek=72 count=8)
