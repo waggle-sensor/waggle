@@ -6,6 +6,7 @@
 set -e
 set -x
 
+apt-get update
 apt-get install -y uuid-runtime
 
 export OTHER_DEVICE="/dev/mmcblk1"
