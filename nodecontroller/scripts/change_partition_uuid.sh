@@ -37,8 +37,12 @@ done
 
 #unmount the other partitions
 set +e
-while ! $(umount ${OTHER_DEVICE}p1) ; do sleep 3 ; done
-while ! $(umount ${OTHER_DEVICE}p2) ; do sleep 3 ; done
+if [ $(df -h | grep -c ${OTHER_DEVICE}p1 ) == 1 ] ; then 
+  while ! $(umount ${OTHER_DEVICE}p1) ; do sleep 3 ; done
+fi
+if [ $(df -h | grep -c ${OTHER_DEVICE}p2 ) == 1 ] ; then 
+  while ! $(umount ${OTHER_DEVICE}p2) ; do sleep 3 ; done
+fi
 set -e
 sleep 2
 
