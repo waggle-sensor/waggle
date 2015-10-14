@@ -24,7 +24,8 @@ done
 # TODO: mkimage may not be needed 
 #mkimage -A arm -T script -C none -n boot -d ./boot.txt boot.scr
 
-
+umount ${OTHER_DEVICE}p2
+sleep 2
 
 ###  change UUID on other devices
 tune2fs -U ${NEWUUID_2} ${OTHER_DEVICE}p2
