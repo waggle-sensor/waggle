@@ -6,9 +6,10 @@
 set -e
 set -x
 
-apt-get update
-apt-get install -y uuid-runtime
-
+if ! $(hash uuidgen 2>/dev/null) ; then
+  apt-get update
+  apt-get install -y uuid-runtime
+fi
 
 export CURRENT_DEVICE=$(df --output=source  / | grep "^/") ; echo "CURRENT_DEVICE: ${CURRENT_DEVICE}"
 
