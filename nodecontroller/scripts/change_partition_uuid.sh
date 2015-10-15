@@ -40,7 +40,7 @@ sleep 1
 #modify current boot.scr (just make sure it is using UUID instead of device name)
 
 for file in boot.txt boot.ini ; do
-  if [ -e ${file} ] ; then
+  if [ -e /media/boot/${file} ] ; then
     sed -i.bak "s/root\=[^ ]*/root=UUID=${OLDUUID_2}/" /media/boot/${file}
   fi
 done
@@ -84,7 +84,7 @@ set -e
 mkdir -p /media/other_boot/
 mount ${OTHER_DEVICE}p1 /media/other_boot/
 for file in boot.txt boot.ini ; do
-  if [ -e ${file} ] ; then
+  if [ -e /media/other_boot/${file} ] ; then
     sed -i.bak "s/root\=[^ ]*/root=UUID=${NEWUUID_2}/" /media/other_boot/${file}
   fi
 done
