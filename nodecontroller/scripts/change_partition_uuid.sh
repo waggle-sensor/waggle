@@ -25,7 +25,7 @@ fi
 
 
 export OLDUUID_2=`blkid ${CURRENT_DEVICE}p2 | grep -o "[0-9a-fA-F-]\{36\}"` ; echo "OLDUUID_2: ${OLDUUID_2}"
-export NEWUUID_1=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 4 | head -n 1 | tr -d '\n'` ; echo "NEWUUID_1: ${NEWUUID_1}"
+export NEWUUID_1=`cat /dev/urandom | tr -dc 'A-Z0-9' | fold -w 4 | head -n 1 | tr -d '\n'` ; echo "NEWUUID_1: ${NEWUUID_1}"
 export NEWUUID_2=`uuidgen` ; echo "NEWUUID_2: ${NEWUUID_2}"
 
 
