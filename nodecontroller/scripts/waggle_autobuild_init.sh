@@ -90,8 +90,10 @@ fi
 exec 2> /root/rc.local.log
 exec 1>&2
 set -x
-/root/create_waggle_image.sh
-
+if [ ! -e /root/waggle_started ] ; then
+  touch /root/waggle_started
+  /root/create_waggle_image.sh
+fi
 exit 0
 EOF
 #umount
