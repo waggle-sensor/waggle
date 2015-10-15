@@ -23,7 +23,7 @@ else
 fi
 
 
-
+export OLDUUID_1=`blkid ${CURRENT_DEVICE}p1 | grep -o "[0-9a-fA-F-]\{9\}"` ; echo "OLDUUID_1: ${OLDUUID_1}"
 export OLDUUID_2=`blkid ${CURRENT_DEVICE}p2 | grep -o "[0-9a-fA-F-]\{36\}"` ; echo "OLDUUID_2: ${OLDUUID_2}"
 export NEWUUID_1=`cat /dev/urandom | tr -dc 'A-Z0-9' | fold -w 4 | head -n 1 | tr -d '\n'` ; echo "NEWUUID_1: ${NEWUUID_1}"
 export NEWUUID_2=`uuidgen` ; echo "NEWUUID_2: ${NEWUUID_2}"
@@ -68,14 +68,15 @@ echo -n "${NEWUUID_1}" | dd of=${OTHER_DEVICE}p1 bs=1 seek=39 count=4
 # NTFS: (seek=72 count=8)
 
 # in case /etc/fstab does not use the UUID
-sed -i.bak "s/[^ ]*[ $'\t']*\/[ $'\t']/UUID=${OLDUUID_2}\t\/\t/" /etc/fstab
+sed -i.bak -e "s/[^ ]*[ $'\t']*\/[ $'\t']/UUID=${OLDUUID_2}\t\/\t/" \
+           -e "s/[^ ]*[ $'\t']*\/media\/boot[ $'\t']/UUID=${OLDUUID_1}\t\/media\/boot\t/" /etc/fstab
 # verify: diff /etc/fstab /etc/fstab.bak
 
 # fstab on other device
 mkdir -p /media/other/
 mount ${OTHER_DEVICE}p2 /media/other/
 sed -i.bak -e "s/[^ ]*[ $'\t']*\/[ $'\t']/UUID=${NEWUUID_2}\t\/\t/" \
-           -e "s/[^ ]*[ $'\t']*\/media\/boot[ $'\t']/UUID=${NEWUUID_1}\t\/\t/" /media/other/etc/fstab
+           -e "s/[^ ]*[ $'\t']*\/media\/boot[ $'\t']/UUID=${NEWUUID_1}\t\/media\/boot\t/" /media/other/etc/fstab
 # verify: diff /media/other/etc/fstab /media/other/etc/fstab.bak
 set +e
 while ! $(umount /media/other/) ; do sleep 3 ; done
