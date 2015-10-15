@@ -15,8 +15,10 @@ fi
 export CURRENT_DEVICE=$(df --output=source  / | grep "^/") ; echo "CURRENT_DEVICE: ${CURRENT_DEVICE}"
 
 if [ ${CURRENT_DEVICE} == "/dev/mmcblk1p2" ] ; then
+  export CURRENT_DEVICE="/dev/mmcblk1"
   export OTHER_DEVICE="/dev/mmcblk0"
 else
+  export CURRENT_DEVICE="/dev/mmcblk0"
   export OTHER_DEVICE="/dev/mmcblk1"
 fi
 
@@ -26,6 +28,15 @@ export OLDUUID_2=`blkid ${OTHER_DEVICE}p2 | grep -o "[0-9a-fA-F-]\{36\}"` ; echo
 export NEWUUID_1=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 4 | head -n 1 | tr -d '\n'` ; echo "NEWUUID_1: ${NEWUUID_1}"
 export NEWUUID_2=`uuidgen` ; echo "NEWUUID_2: ${NEWUUID_2}"
 
+
+#modify current boot partition
+if [ $(df -h | grep -c ${CURRENT_DEVICE}p1 ) == 1 ] ; then 
+  while ! $(umount ${CURRENT_DEVICE}p1) ; do sleep 3 ; done
+fi
+sleep 1
+mkdir -p /media/boot/
+mount ${CURRENT_DEVICE}p1 /media/boot/
+sleep 1
 #modify current boot.scr (just make sure it is using UUID instead of device name)
 
 for file in boot.txt boot.ini ; do
