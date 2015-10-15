@@ -74,7 +74,7 @@ sed -i.bak "s/[^ ]*[ $'\t']*\/[ $'\t']/UUID=${OLDUUID_2}\t\/\t/" /etc/fstab
 # fstab on other device
 mkdir -p /media/other/
 mount ${OTHER_DEVICE}p2 /media/other/
-sed -i.bak "s/[^ ]*[ $'\t']*\/[ $'\t']/${NEWUUID_2}\t\/\t/" /media/other/etc/fstab
+sed -i.bak "s/[^ ]*[ $'\t']*\/[ $'\t']/UUID=${NEWUUID_2}\t\/\t/" /media/other/etc/fstab
 # verify: diff /media/other/etc/fstab /media/other/etc/fstab.bak
 set +e
 while ! $(umount /media/other/) ; do sleep 3 ; done
