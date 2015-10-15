@@ -99,6 +99,8 @@ if [ $(df -h | grep -c /dev/${DEVICE_NAME}p2 ) == 1 ] ; then
   while ! $(umount /dev/${DEVICE_NAME}p2) ; do sleep 3 ; done
 fi
 
+mkdir -p /media/waggleboot
+sleep 2
 mount /dev/${DEVICE_NAME}p1 /media/waggleboot
 
 #change resolution:
