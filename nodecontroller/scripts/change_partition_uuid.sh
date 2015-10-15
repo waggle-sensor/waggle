@@ -74,7 +74,8 @@ sed -i.bak "s/[^ ]*[ $'\t']*\/[ $'\t']/UUID=${OLDUUID_2}\t\/\t/" /etc/fstab
 # fstab on other device
 mkdir -p /media/other/
 mount ${OTHER_DEVICE}p2 /media/other/
-sed -i.bak "s/[^ ]*[ $'\t']*\/[ $'\t']/UUID=${NEWUUID_2}\t\/\t/" /media/other/etc/fstab
+sed -i.bak -e "s/[^ ]*[ $'\t']*\/[ $'\t']/UUID=${NEWUUID_2}\t\/\t/" \
+           -e "s/[^ ]*[ $'\t']*\/media\/boot[ $'\t']/UUID=${NEWUUID_1}\t\/\t/" /media/other/etc/fstab
 # verify: diff /media/other/etc/fstab /media/other/etc/fstab.bak
 set +e
 while ! $(umount /media/other/) ; do sleep 3 ; done
@@ -85,7 +86,7 @@ mkdir -p /media/other_boot/
 mount ${OTHER_DEVICE}p1 /media/other_boot/
 for file in boot.txt boot.ini ; do
   if [ -e /media/other_boot/${file} ] ; then
-    sed -i.bak "s/root\=[^ ]*/root=UUID=${NEWUUID_2}/" /media/other_boot/${file}
+    sed -i.bak -e "s/root\=[^ ]*/root=UUID=${NEWUUID_2}/" /media/other_boot/${file}
   fi
 done
 #verify: diff ./boot.ini ./boot.ini.bak
