@@ -28,6 +28,8 @@ export OLDUUID_2=`blkid ${CURRENT_DEVICE}p2 | grep -o "[0-9a-fA-F-]\{36\}"` ; ec
 export NEWUUID_1=`cat /dev/urandom | tr -dc 'A-Z0-9' | fold -w 4 | head -n 1 | tr -d '\n'` ; echo "NEWUUID_1: ${NEWUUID_1}"
 export NEWUUID_2=`uuidgen` ; echo "NEWUUID_2: ${NEWUUID_2}"
 
+# turn ASCII into HEX representtion, eg: "5A51-334D"
+export NEWUUID_1_HEX=`echo -n "${NEWUUID_1}" | od -t x2 | head -n 1 | sed "s/^0000000 \([^ ]*\) \([^ ]*\)/\2-\1/" | tr '[a-z]' '[A-Z]' | tr -d '\n'`
 
 #modify current boot partition
 if [ $(df -h | grep -c ${CURRENT_DEVICE}p1 ) == 1 ] ; then 
@@ -76,7 +78,7 @@ sed -i.bak -e "s/[^ ]*[ $'\t']*\/[ $'\t']/UUID=${OLDUUID_2}\t\/\t/" \
 mkdir -p /media/other/
 mount ${OTHER_DEVICE}p2 /media/other/
 sed -i.bak -e "s/[^ ]*[ $'\t']*\/[ $'\t']/UUID=${NEWUUID_2}\t\/\t/" \
-           -e "s/[^ ]*[ $'\t']*\/media\/boot[ $'\t']/UUID=${NEWUUID_1}\t\/media\/boot\t/" /media/other/etc/fstab
+           -e "s/[^ ]*[ $'\t']*\/media\/boot[ $'\t']/UUID=${NEWUUID_1_HEX}\t\/media\/boot\t/" /media/other/etc/fstab
 # verify: diff /media/other/etc/fstab /media/other/etc/fstab.bak
 set +e
 while ! $(umount /media/other/) ; do sleep 3 ; done
