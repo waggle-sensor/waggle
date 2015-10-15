@@ -68,7 +68,7 @@ echo -n "${NEWUUID_1}" | dd of=${OTHER_DEVICE}p1 bs=1 seek=39 count=4
 # NTFS: (seek=72 count=8)
 
 # in case /etc/fstab does not use the UUID
-sed -i.bak "s/[^ ]*[ $'\t']*\/[ $'\t']/${OLDUUID_2}\t\/\t/" /etc/fstab
+sed -i.bak "s/[^ ]*[ $'\t']*\/[ $'\t']/UUID=${OLDUUID_2}\t\/\t/" /etc/fstab
 # verify: diff /etc/fstab /etc/fstab.bak
 
 # fstab on other device
