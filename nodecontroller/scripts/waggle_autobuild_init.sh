@@ -104,7 +104,7 @@ sleep 2
 mount /dev/${DEVICE_NAME}p1 /media/waggleboot
 
 #change resolution:
-sed -i.bak -e "s/^setenv m/# setenv m/" -e "s/# setenv m \"1440x900p60hz\"/setenv m \"1440x900p60hz\"/" /media/waggleboot/boot.ini
+sed -i.bak -e "s/^setenv m /# setenv m /" -e "s/# setenv m \"1440x900p60hz\"/setenv m \"1440x900p60hz\"/" /media/waggleboot/boot.ini
 
 if [ $(df -h | grep -c /dev/${DEVICE_NAME}p1 ) == 1 ] ; then 
   while ! $(umount /dev/${DEVICE_NAME}p1) ; do sleep 3 ; done
