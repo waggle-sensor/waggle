@@ -17,6 +17,12 @@ else
 fi
 echo "DEVICE_NAME: ${DEVICE_NAME}"
 
+
+if ! $(hash curl 2>/dev/null) ; then
+  apt-get update
+  apt-get install -y curl
+fi
+
 #OTHER_UUID=$(blkid /dev/${DEVICE_NAME}p2 -s UUID | grep -o "[0-9a-zA-Z-]\{36\}")
 
 if [ ! -e ${IMAGE}.xz ] ; then
