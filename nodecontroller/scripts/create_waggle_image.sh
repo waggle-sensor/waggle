@@ -13,51 +13,7 @@ set -x
 
 # note: changing username requires that you ssh into the machine as root!
 
-### username
-export odroid_exists=$(id -u odroid > /dev/null 2>&1; echo $?)
 
-if [ ${odroid_exists} == 0 ] ; then
-  echo "I will kill all processes of the user \"odroid\" now."
-  sleep 1
-  killall -u odroid -9
-  sleep 2
-
-  set -e
-
-  #This will change the user's login name. It requires you logged in as another user, e.g. root
-  usermod -l waggle odroid
-
-  # real name
-  usermod -c "waggle user" waggle
-
-  #change home directory
-  usermod -m -d /home/waggle/ waggle
-
-  set +e
-fi
-
-# verify waggle user has been created
-id -u waggle > /dev/null 2>&1
-if [ $? -ne 0 ]; then 
-  echo "error: unix user waggle was not created"
-  exit 1 
-fi
-
-
-getent group odroid &> /dev/null 
-if [ $? -eq 0 ]; then 
-  groupmod -n waggle odroid || exit 1 
-fi
-
-# verify waggle group has been created
-getent group waggle &> /dev/null 
-if [ $? -ne 0 ]; then 
-  echo "error: unix group waggle was not created"
-  exit 1 
-fi
-
-# kill user lightdm (display manager running in Ubuntu)
-killall -u lightdm -9
 
 
 set -e
@@ -105,6 +61,55 @@ set +e
 
 ### timezone
 echo "Etc/UTC" > /etc/timezone
+
+# kill user lightdm (display manager running in Ubuntu)
+killall -u lightdm -9
+
+### username
+export odroid_exists=$(id -u odroid > /dev/null 2>&1; echo $?)
+
+if [ ${odroid_exists} == 0 ] ; then
+  echo "I will kill all processes of the user \"odroid\" now."
+  sleep 1
+  killall -u odroid -9
+  sleep 2
+
+  set -e
+
+  #This will change the user's login name. It requires you logged in as another user, e.g. root
+  usermod -l waggle odroid
+
+  # real name
+  usermod -c "waggle user" waggle
+
+  #change home directory
+  usermod -m -d /home/waggle/ waggle
+
+  set +e
+fi
+
+# verify waggle user has been created
+id -u waggle > /dev/null 2>&1
+if [ $? -ne 0 ]; then 
+  echo "error: unix user waggle was not created"
+  exit 1 
+fi
+
+
+getent group odroid &> /dev/null 
+if [ $? -eq 0 ]; then 
+  groupmod -n waggle odroid || exit 1 
+fi
+
+# verify waggle group has been created
+getent group waggle &> /dev/null 
+if [ $? -ne 0 ]; then 
+  echo "error: unix group waggle was not created"
+  exit 1 
+fi
+
+
+
 
 ### disallow root access
 sed -i 's/\(PermitRootLogin\) .*/\1 no/' /etc/ssh/sshd_config
