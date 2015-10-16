@@ -113,11 +113,8 @@ if [ $(df -h | grep -c /dev/${DEVICE_NAME}p1 ) == 1 ] ; then
 fi
 
 if [ $(blkid /dev/mmcblk0p2 /dev/mmcblk1p2 | grep -o "UUID=\"[^ ]*\"" | sort -u | wc -l) == 1 ] ; then 
-  echo same uuid 
-  # fix uuid
-  wget https://raw.githubusercontent.com/waggle-sensor/waggle/master/nodecontroller/scripts/change_partition_uuid.sh
-  chmod +x change_partition_uuid.sh
-  ./change_partition_uuid.sh
+  echo "Error: Both partitions (/dev/mmcblk0p2 /dev/mmcblk1p2) have the same UUID. That will not work."  
+  exit 1
 fi
 
 set +x
