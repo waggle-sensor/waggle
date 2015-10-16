@@ -9,13 +9,6 @@
 #######################################
 
 set -x
-
-
-# note: changing username requires that you ssh into the machine as root!
-
-
-
-
 set -e
 apt-get update
 
