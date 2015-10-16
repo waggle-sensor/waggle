@@ -62,7 +62,7 @@ mount /dev/${DEVICE_NAME}p2 /media/waggleroot
 
 curl https://raw.githubusercontent.com/waggle-sensor/waggle/master/nodecontroller/scripts/create_waggle_image.sh > /media/waggleroot/root/create_waggle_image.sh
 chmod +x /media/waggleroot/root/create_waggle_image.sh
-echo 'reboot'  >> /media/waggleroot/root/create_waggle_image.sh
+echo 'shutdown -h now'  >> /media/waggleroot/root/create_waggle_image.sh
 
 
 
