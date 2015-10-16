@@ -118,4 +118,5 @@ if [ $(blkid /dev/mmcblk0p2 /dev/mmcblk1p2 | grep -o "UUID=\"[^ ]*\"" | sort -u 
 fi
 
 set +x
-echo "Reboot now with jumper 1 closed. 30 seconds later you can open it again."
+echo "Restart now with jumper 1 closed. Be sure to take the power away completly, a simple reboot is not enough. 30 seconds after new start you can open the jumper again."
+echo "e.g.: shutdown -h now"
