@@ -76,7 +76,7 @@ e2fsck -f -y ${DEVICE}${DEV_SUFFIX}2
 resize2fs ${DEVICE}${DEV_SUFFIX}2 1824m
 
 # detect start position of second partition
-export START=$(fdisk -l ${DEVICE} | grep "${DEVICE}${DEV_SUFFIX}2" ) | awk '{print $2}'; echo ${START}
+export START=$(fdisk -l ${DEVICE} | grep "${DEVICE}${DEV_SUFFIX}2" | awk '{print $2}') ; echo ${START}
 
 ### fdisk (shrink partition)
 # fdisk: (d)elete partition 2 ; (c)reate new partiton 2 ; specify start posirion and size of new partiton
