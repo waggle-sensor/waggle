@@ -8,6 +8,10 @@
 
 #######################################
 
+export REPORT_FILE="/root/report.txt"
+
+date
+
 set -x
 set -e
 apt-get update
@@ -119,10 +123,10 @@ chown root:root /etc/init.d/waggle_first_boot.sh
 update-rc.d waggle_first_boot.sh defaults
 
 ### create report
-echo "image created: " > report.txt
-date >> report.txt
-cat /etc/os-release >> report.txt
-dpkg -l >> report.txt
+echo "image created: " > ${REPORT_FILE}
+date >> ${REPORT_FILE}
+cat /etc/os-release >> ${REPORT_FILE}
+dpkg -l >> ${REPORT_FILE}
 
 ### for paranoids
 echo > /root/.bash_history
@@ -135,5 +139,6 @@ rm /etc/ssh/ssh_host*
 touch /root/first_boot
 
 set +x
+date
 echo "Done. You can now run \"shutdown -h now\"."
 
