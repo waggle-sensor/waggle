@@ -25,42 +25,71 @@ blkid -c /dev/null
 
 # When the SD-card is connected via USB to the ODROID, the device is probably /dev/sda .
 # When the SD-card is plugged into the SD-card slot (and you booted from eMMC), the devis is probably /dev/mmcblk1 .
+
 export DEVICE=/dev/sda
+
+#####################################
+
+export DEV_SUFFIX="unknown"
+
+if [[ $DEVICE =~ ^"/dev/sd" ]] ; then
+  export DEV_SUFFIX=""
+fi
+if [[ $DEVICE =~ ^"/dev/mmcblk" ]] ; then
+  export DEV_SUFFIX="p"
+fi
+if [[ $DEVICE =~ ^"/dev/disk" ]] ; then
+  export DEV_SUFFIX="s"
+fi
+
+if [ ${DEV_SUFFIX}x == "unknownx" ] ; then
+  echo "error: Device type unknown"
+  exit 1
+fi
+
+# unmount in case it is already mounted (it might be already mounted, but with another mount point)
+if [ $(df -h | grep -c ${DEVICE}${DEV_SUFFIX}2 ) == 1 ] ; then 
+  while ! $(umount ${DEVICE}${DEV_SUFFIX}2) ; do sleep 3 ; done
+fi
 
 
 # extract the report.txt from the new waggle image
 mkdir -p /media/waggle/
-mount ${DEVICE}2 /media/waggle/
+mount ${DEVICE}${DEV_SUFFIX}2 /media/waggle/
 cp /media/waggle/root/report.txt .
-umount /media/waggle/
 
-# just for information: dumpe2fs -h ${DEVICE}2
+if [ $(df -h | grep -c ${DEVICE}${DEV_SUFFIX}2 ) == 1 ] ; then 
+  while ! $(umount ${DEVICE}${DEV_SUFFIX}2) ; do sleep 3 ; done
+fi
+
+
+# just for information: dumpe2fs -h ${DEVICE}${DEV_SUFFIX}2
 
 # verify partition:
-e2fsck -f ${DEVICE}2
+e2fsck -f ${DEVICE}${DEV_SUFFIX}2
 
 # shrink filesystem to 2GB (that does not shrink the partition!)
 # compute size of second partition: 
 #   200MB for the root partition
 #   2024MB-200MB=1824M for the second partition that may be to conservative !)
 # TODO: calculation should ideally be automated !
-resize2fs ${DEVICE}2 1824m
+resize2fs ${DEVICE}${DEV_SUFFIX}2 1824m
 
 # detect start position of second partition
-export START=$(fdisk -l ${DEVICE} | grep "${DEVICE}2" ) | awk '{print $2}'; echo ${START}
+export START=$(fdisk -l ${DEVICE} | grep "${DEVICE}${DEV_SUFFIX}2" ) | awk '{print $2}'; echo ${START}
 
 ### fdisk (shrink partition)
 # fdisk: (d)elete partition 2 ; (c)reate new partiton 2 ; specify start posirion and size of new partiton
 echo -e "d\n2\nn\np\n2\n${START}\n+1824M\nw\n" | fdisk ${DEVICE}
 
 partprobe  ${DEVICE}
-#partprobe  ${DEVICE}2    needed???
+#partprobe  ${DEVICE}${DEV_SUFFIX}2    needed???
 
 ### REBOOT !??!? ####
 # may require reboot before we can do diskdump !?
 # dd should work anyway… no need for kernel to be updated !?
 # plug in again ?
-resize2fs ${DEVICE}2 (not needed ?)
+resize2fs ${DEVICE}${DEV_SUFFIX}2 (not needed ?)
 
 
 # Variant A: create archive on ODROID and push final result to remote location
@@ -70,7 +99,7 @@ resize2fs ${DEVICE}2 (not needed ?)
 ###  Variant A  ###
 # on ONDROID
 #  create diskdump 
-dd if=/dev/sda of=./newimage.iso bs=1M count=2000
+dd if=${DEVICE} of=./newimage.iso bs=1M count=2000
 
 # compress (xz --keep option to save space)
 xz newimage.iso
