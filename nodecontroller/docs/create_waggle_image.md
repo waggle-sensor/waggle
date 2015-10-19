@@ -106,6 +106,9 @@ xz newimage.iso
 md5sum newimage.iso.xz > newimage.iso.xz.md5sum
 scp report.txt newimage.iso.xz newimage.iso.xz.md5sum <to_somewhere>
 
+###  Variant A2  ###
+dd if=${DEVICE} bs=1M count=2000 | xz --stdout - > newimage.iso.xz
+
 
 ###  Variant B  ###
 # on your computer
@@ -115,8 +118,8 @@ ssh root@<odroid_ip> "dd if=${DEVICE} bs=1M count=2000" | dd of="newimage.iso" b
 xz --keep newimage.iso
 
 # Linux:
-md5sum newimage.iso > newimage.iso.md5sum
+md5sum newimage.iso.xz > newimage.iso.xz.md5sum
 # OSX:
-md5 -r newimage.iso > newimage.iso.md5sum
+md5 -r newimage.iso.xz > newimage.iso.xz.md5sum
 
 ```
