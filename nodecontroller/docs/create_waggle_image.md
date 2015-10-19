@@ -80,4 +80,5 @@ Reboot with master-slave boot order !
 ```bash
 wget https://raw.githubusercontent.com/waggle-sensor/waggle/master/nodecontroller/scripts/waggle_autobuild_final.sh
 chmod +x waggle_autobuild_final.sh
+./waggle_autobuild_final.sh
 ```
