@@ -1,5 +1,5 @@
 
-
+# Manually 
 ### 1) Boot the stock odroid ubuntu image
    1. Copy ODROID ubuntu image onto SD-card, see [copy_image_to_sd_card.md](./copy_image_to_sd_card.md).
    2. Boot the ODROID with SD-card.
@@ -16,110 +16,68 @@ Execute "shutdown -h now". Stick SD-card in your Laptop/PC.
 
 ### 4) Shrink image
 
-These instructions assume you shrink the image directly on the ODROID, but you can use the same instruction to shronk the image on an SD-card plugged into your computer.
+Use the steps in this script. (TODO: create separate shrink_image script !)
+https://github.com/waggle-sensor/waggle/blob/master/nodecontroller/scripts/waggle_autobuild_final.sh
 
-After preparing the ubuntu image for waggle, we need to boot from another device (e.g. eMMC) on the ODROID to shrink the filesystem (and the partition) and to make a disk dump (dd).
+
+
+## Auto-build setup
+This approach is used to automatically create the waggle production images.
+
+The waggle image auto-build setup requires a “master” and a “slave” memory device on the odroid. The master device can run a normal ubuntu image and the slave device is used to create the waggle image. Default operation mode is the master device. The master will copy a clean ubuntu image onto the slave and create init scripts on the slave. 
+Then the boot order needs to be changed. This can be done either manually (switching jumper 1) or by using Wagman. In both cases the boot order has to be switched to slave-master and the odroid had to be turned off and on again to let the slave prepare the waggle image. Once the slave has finished, Wagman (or the user) will invoke a reboot and the master memory device takes over control again. The master can make small modifications to the waggle image, shrink the partition and upload the final waggle image. 
+
+#First time starting from the master
+
+The master memory device needs to be prepared a bit. You may need to resize the partition and file system and you may have to change its UUID. The UUID has to be different from the UUID of the slave!
+
+Copy image to memory:
+https://github.com/waggle-sensor/waggle/blob/master/nodecontroller/docs/copy_image_to_sd_card.md
+
+Change its UUID: (Do that before you boot from the master!)
+https://github.com/waggle-sensor/waggle/blob/master/nodecontroller/scripts/change_partition_uuid.sh
+
+
+In case you are not sure from what device you are booting from
 ```bash
-# find device (this step is manual unless you know the device name)
-blkid -c /dev/null
+cat /sys/block/$(df / | grep -o "mmcblk[0-9]")/device/uevent | grep "MMC_TYPE" | cut -d '=' -f 2
+```
 
-# When the SD-card is connected via USB to the ODROID, the device is probably /dev/sda .
-# When the SD-card is plugged into the SD-card slot (and you booted from eMMC), the devis is probably /dev/mmcblk1 .
+Resize filesystem and partition
+```bash
+source /usr/local/bin/fs_resize.sh ; resize_p2
+# or if file not found
+wget https://raw.githubusercontent.com/waggle-sensor/waggle/master/nodecontroller/scripts/resize.sh
+chmod +x resize.sh
+./resize.sh
+```
+and execute this script another time after booting
 
-export DEVICE=/dev/sda
+Change resolution (for the stock ubuntu image)
+```bash
+sed -i.bak -e "s/^setenv m /# setenv m/" -e "s/# setenv m \"1440x900p60hz\"/setenv m \"1440x900p60hz\"/" ./boot.ini
+```
 
-#####################################
+Copy private ssh key to /root/waggle-id_rsa
+```bash
+chmod 600 /root/waggle-id_rsa
+```
 
-export DEV_SUFFIX="unknown"
+# Init step
+```bash
+wget https://raw.githubusercontent.com/waggle-sensor/waggle/master/nodecontroller/scripts/waggle_autobuild_init.sh
+chmod +x waggle_autobuild_init.sh
+./waggle_autobuild_init.sh
+```
 
-if [[ $DEVICE =~ ^"/dev/sd" ]] ; then
-  export DEV_SUFFIX=""
-fi
-if [[ $DEVICE =~ ^"/dev/mmcblk" ]] ; then
-  export DEV_SUFFIX="p"
-fi
-if [[ $DEVICE =~ ^"/dev/disk" ]] ; then
-  export DEV_SUFFIX="s"
-fi
+Reboot with slave-master boot order !
 
-if [ ${DEV_SUFFIX}x == "unknownx" ] ; then
-  echo "error: Device type unknown"
-  exit 1
-fi
+Let slave build waggle image.
 
-# unmount in case it is already mounted (it might be already mounted, but with another mount point)
-if [ $(df -h | grep -c ${DEVICE}${DEV_SUFFIX}2 ) == 1 ] ; then 
-  while ! $(umount ${DEVICE}${DEV_SUFFIX}2) ; do sleep 3 ; done
-fi
+Reboot with master-slave boot order !
 
-
-# extract the report.txt from the new waggle image
-mkdir -p /media/waggle/
-mount ${DEVICE}${DEV_SUFFIX}2 /media/waggle/
-cp /media/waggle/root/report.txt .
-
-if [ $(df -h | grep -c ${DEVICE}${DEV_SUFFIX}2 ) == 1 ] ; then 
-  while ! $(umount ${DEVICE}${DEV_SUFFIX}2) ; do sleep 3 ; done
-fi
-
-
-# just for information: dumpe2fs -h ${DEVICE}${DEV_SUFFIX}2
-
-# verify partition:
-e2fsck -f -y ${DEVICE}${DEV_SUFFIX}2
-
-# shrink filesystem to 2GB (that does not shrink the partition!)
-# compute size of second partition: 
-#   200MB for the root partition
-#   2024MB-200MB=1824M for the second partition that may be to conservative !)
-# TODO: calculation should ideally be automated !
-resize2fs ${DEVICE}${DEV_SUFFIX}2 1824m
-
-# detect start position of second partition
-export START=$(fdisk -l ${DEVICE} | grep "${DEVICE}${DEV_SUFFIX}2" | awk '{print $2}') ; echo ${START}
-
-### fdisk (shrink partition)
-# fdisk: (d)elete partition 2 ; (c)reate new partiton 2 ; specify start posirion and size of new partiton
-echo -e "d\n2\nn\np\n2\n${START}\n+1824M\nw\n" | fdisk ${DEVICE}
-
-partprobe  ${DEVICE}
-#partprobe  ${DEVICE}${DEV_SUFFIX}2    needed???
-
-### REBOOT !??!? ####
-# may require reboot before we can do diskdump !?
-# dd should work anyway… no need for kernel to be updated !?
-# plug in again ?
-resize2fs ${DEVICE}${DEV_SUFFIX}2 (not needed ?)
-
-
-# Variant A: create archive on ODROID and push final result to remote location
-# or
-# Variant B: Pull disk dump from ODROID and create image archive on PC 
-
-###  Variant A  ###
-# on ONDROID
-#  create diskdump 
-dd if=${DEVICE} of=./newimage.iso bs=1M count=2000
-
-# compress (xz --keep option to save space)
-xz newimage.iso
-md5sum newimage.iso.xz > newimage.iso.xz.md5sum
-scp report.txt newimage.iso.xz newimage.iso.xz.md5sum <to_somewhere>
-
-###  Variant A2  ###
-dd if=${DEVICE} bs=1M count=2000 | xz --stdout - > newimage.iso.xz
-
-
-###  Variant B  ###
-# on your computer
-scp root@<odroid_ip>:/root/report.txt .
-ssh root@<odroid_ip> "dd if=${DEVICE} bs=1M count=2000" | dd of="newimage.iso" bs=1m
-
-xz --keep newimage.iso
-
-# Linux:
-md5sum newimage.iso.xz > newimage.iso.xz.md5sum
-# OSX:
-md5 -r newimage.iso.xz > newimage.iso.xz.md5sum
-
+# Final step
+```bash
+wget https://raw.githubusercontent.com/waggle-sensor/waggle/master/nodecontroller/scripts/waggle_autobuild_final.sh
+chmod +x waggle_autobuild_final.sh
 ```
