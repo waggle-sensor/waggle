@@ -149,7 +149,12 @@ dd if=${DEVICE} bs=1M count=${BLOCKS_TO_WRITE} | xz -1 --stdout - > ${NEW_IMAGE}
 if [ -e ./waggle-id_rsa ] ; then
   md5sum ${NEW_IMAGE}.xz > ${NEW_IMAGE}.xz.md5sum 
   scp -o "StrictHostKeyChecking no" -v -i ./waggle-id_rsa ${NEW_IMAGE}.xz ${NEW_IMAGE}.xz.md5sum waggle@terra.mcs.anl.gov:/mcs/www.mcs.anl.gov/research/projects/waggle/downloads
+  
+  if [ -e ${NEW_IMAGE}.report.txt ] ; then 
+    scp -o "StrictHostKeyChecking no" -v -i ./waggle-id_rsa ${NEW_IMAGE}.report.txt waggle@terra.mcs.anl.gov:/mcs/www.mcs.anl.gov/research/projects/waggle/downloads
+  fi
 fi
+
 
 
 ###################################################
