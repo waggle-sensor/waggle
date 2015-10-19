@@ -144,8 +144,9 @@ dd if=${DEVICE} bs=1M count=${BLOCKS_TO_WRITE} | xz -1 --stdout - > ${NEW_IMAGE}
 # xz -1 creates a 560MB file in 18.5 minutes
 
 
-if [ -e ./waggle-id_rsa ] ; then 
- scp -o "StrictHostKeyChecking no" -v -i ./waggle-id_rsa ${NEW_IMAGE}.xz waggle@terra.mcs.anl.gov:/mcs/www.mcs.anl.gov/research/projects/waggle/downloads
+if [ -e ./waggle-id_rsa ] ; then
+  md5sum ${NEW_IMAGE}.xz > ${NEW_IMAGE}.xz.md5sum 
+  scp -o "StrictHostKeyChecking no" -v -i ./waggle-id_rsa ${NEW_IMAGE}.xz ${NEW_IMAGE}.xz.md5sum waggle@terra.mcs.anl.gov:/mcs/www.mcs.anl.gov/research/projects/waggle/downloads
 fi
 
 
