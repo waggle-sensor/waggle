@@ -21,13 +21,13 @@ https://github.com/waggle-sensor/waggle/blob/master/nodecontroller/scripts/waggl
 
 
 
-## Auto-build setup
+# Auto-build setup
 This approach is used to automatically create the waggle production images.
 
 The waggle image auto-build setup requires a “master” and a “slave” memory device on the odroid. The master device can run a normal ubuntu image and the slave device is used to create the waggle image. Default operation mode is the master device. The master will copy a clean ubuntu image onto the slave and create init scripts on the slave. 
 Then the boot order needs to be changed. This can be done either manually (switching jumper 1) or by using Wagman. In both cases the boot order has to be switched to slave-master and the odroid had to be turned off and on again to let the slave prepare the waggle image. Once the slave has finished, Wagman (or the user) will invoke a reboot and the master memory device takes over control again. The master can make small modifications to the waggle image, shrink the partition and upload the final waggle image. 
 
-#First time starting from the master
+### First time starting from the master
 
 The master memory device needs to be prepared a bit. You may need to resize the partition and file system and you may have to change its UUID. The UUID has to be different from the UUID of the slave!
 
@@ -63,7 +63,7 @@ Copy private ssh key to /root/waggle-id_rsa
 chmod 600 /root/waggle-id_rsa
 ```
 
-# Init step
+### Init step
 ```bash
 wget https://raw.githubusercontent.com/waggle-sensor/waggle/master/nodecontroller/scripts/waggle_autobuild_init.sh
 chmod +x waggle_autobuild_init.sh
@@ -76,7 +76,7 @@ Let slave build waggle image.
 
 Reboot with master-slave boot order !
 
-# Final step
+### Final step
 ```bash
 wget https://raw.githubusercontent.com/waggle-sensor/waggle/master/nodecontroller/scripts/waggle_autobuild_final.sh
 chmod +x waggle_autobuild_final.sh
