@@ -64,6 +64,8 @@ chmod 600 /root/waggle-id_rsa
 ```
 
 ### Init step
+This script will download an ubuntu image and write it to the slave memory device. It will also deploy some init scripts so that the waggle images can be build once the slave starts.
+
 ```bash
 wget https://raw.githubusercontent.com/waggle-sensor/waggle/master/nodecontroller/scripts/waggle_autobuild_init.sh
 chmod +x waggle_autobuild_init.sh
@@ -77,6 +79,7 @@ Let slave build waggle image.
 Reboot with master-slave boot order !
 
 ### Final step
+This script will copy some log files out of the new waggle image, do some clean-up, and shrink filesystem and partition, copy the new image into a file, compress and upload it.
 ```bash
 wget https://raw.githubusercontent.com/waggle-sensor/waggle/master/nodecontroller/scripts/waggle_autobuild_final.sh
 chmod +x waggle_autobuild_final.sh
