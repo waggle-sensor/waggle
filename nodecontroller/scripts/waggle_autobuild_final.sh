@@ -141,6 +141,8 @@ export BLOCKS_TO_WRITE=`echo "${COMBINED_SIZE_KB}/1024" | bc` ; echo "BLOCKS_TO_
 export DATE=`date +"%Y%m%d"` ; echo "DATE: ${DATE}"
 export NEW_IMAGE="waggle-odroid-c1-${DATE}.iso" ; echo "NEW_IMAGE: ${NEW_IMAGE}"
 dd if=${DEVICE} bs=1M count=${BLOCKS_TO_WRITE} | xz -1 --stdout - > ${NEW_IMAGE}.xz
+# xz -1 creates a 560MB file in 18.5 minutes
+
 
 if [ -e ./waggle-id_rsa ] ; then 
  scp -o "StrictHostKeyChecking no" -v -i ./waggle-id_rsa ${NEW_IMAGE}.xz waggle@terra.mcs.anl.gov:/mcs/www.mcs.anl.gov/research/projects/waggle/downloads
