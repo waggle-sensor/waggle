@@ -41,7 +41,7 @@ Change its UUID: (Do that before you boot from the master!)
 https://github.com/waggle-sensor/waggle/blob/master/nodecontroller/scripts/change_partition_uuid.sh
 
 
-In case you are not sure from what device you are booting from
+In case you are not sure what device you are booting from
 ```bash
 cat /sys/block/$(df / | grep -o "mmcblk[0-9]")/device/uevent | grep "MMC_TYPE" | cut -d '=' -f 2
 ```
