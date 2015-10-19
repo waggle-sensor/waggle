@@ -66,7 +66,7 @@ fi
 # just for information: dumpe2fs -h ${DEVICE}${DEV_SUFFIX}2
 
 # verify partition:
-e2fsck -f ${DEVICE}${DEV_SUFFIX}2
+e2fsck -f -y ${DEVICE}${DEV_SUFFIX}2
 
 # shrink filesystem to 2GB (that does not shrink the partition!)
 # compute size of second partition: 
