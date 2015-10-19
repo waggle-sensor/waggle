@@ -52,13 +52,15 @@ if [ $(df -h | grep -c ${DEVICE}${DEV_SUFFIX}2 ) == 1 ] ; then
   while ! $(umount ${DEVICE}${DEV_SUFFIX}2) ; do sleep 3 ; done
 fi
 
+export DATE=`date +"%Y%m%d"` ; echo "DATE: ${DATE}"
+export NEW_IMAGE="waggle-odroid-c1-${DATE}.iso" ; echo "NEW_IMAGE: ${NEW_IMAGE}"
 
 # extract the report.txt from the new waggle image
 export WAGGLE_ROOT="/media/waggle/"
 mkdir -p ${WAGGLE_ROOT}
 mount ${DEVICE}${DEV_SUFFIX}2 ${WAGGLE_ROOT}
-cp ${WAGGLE_ROOT}/root/report.txt .
-cp ${WAGGLE_ROOT}/root/rc.local.log ./waggle.rc.local.log
+cp ${WAGGLE_ROOT}/root/report.txt ./${NEW_IMAGE}.report.txt
+cp ${WAGGLE_ROOT}/root/rc.local.log ./${NEW_IMAGE}.rc.local.log
 
 # put original rc.local inplace again
 cat <<EOF > ${WAGGLE_ROOT}/etc/rc.local
@@ -138,8 +140,8 @@ export BLOCKS_TO_WRITE=`echo "${COMBINED_SIZE_KB}/1024" | bc` ; echo "BLOCKS_TO_
 
 
 
-export DATE=`date +"%Y%m%d"` ; echo "DATE: ${DATE}"
-export NEW_IMAGE="waggle-odroid-c1-${DATE}.iso" ; echo "NEW_IMAGE: ${NEW_IMAGE}"
+
+
 dd if=${DEVICE} bs=1M count=${BLOCKS_TO_WRITE} | xz -1 --stdout - > ${NEW_IMAGE}.xz
 # xz -1 creates a 560MB file in 18.5 minutes
 
