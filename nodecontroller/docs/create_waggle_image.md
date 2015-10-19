@@ -1,4 +1,7 @@
 
+Users of waggle should not need to build the waggle image on their own, but if they want to, here are the instructions to do that (see Section "Manually"). Further below there are also instructions on how to use an odroid/wagman-system for automatic (e.g. nightly) waggle image builds. Those instructions are mostly of interest to the waggle team itself.
+
+
 # Manually 
 ### 1) Boot the stock odroid ubuntu image
    1. Copy ODROID ubuntu image onto SD-card, see [copy_image_to_sd_card.md](./copy_image_to_sd_card.md).
