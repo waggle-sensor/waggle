@@ -198,7 +198,7 @@ uint8_t TwoWire::endTransmission(uint8_t sendStop) {
 	TWI_StartWrite(twi, txAddress, 0, 0, txBuffer[0]);
 	if (!TWI_WaitByteSent(twi, XMIT_TIMEOUT))
 		error = 2;	// error, got NACK on address transmit
-	
+
 	if (error == 0) {
 		uint16_t sent = 1;
 		while (sent < txBufferLength) {
@@ -207,7 +207,7 @@ uint8_t TwoWire::endTransmission(uint8_t sendStop) {
 				error = 3;	// error, got NACK during data transmmit
 		}
 	}
-	
+
 	if (error == 0) {
 		TWI_Stop(twi);
 		if (!TWI_WaitTransferComplete(twi, XMIT_TIMEOUT))
@@ -408,3 +408,27 @@ void WIRE1_ISR_HANDLER(void) {
 	Wire1.onService();
 }
 #endif
+
+uint8_t TwoWire::requestFrom(uint8_t address, uint8_t quantity, uint32_t iaddress, uint8_t isize) {
+    if (quantity > BUFFER_LENGTH)
+        quantity = BUFFER_LENGTH;
+
+    // perform blocking read into buffer
+    int readed = 0;
+    TWI_StartRead(twi, address, iaddress, isize);
+    do {
+        // Stop condition must be set during the reception of last byte
+        if (readed + 1 == quantity)
+            TWI_SendSTOPCondition( twi);
+
+        TWI_WaitByteReceived(twi, RECV_TIMEOUT);
+        rxBuffer[readed++] = TWI_ReadByte(twi);
+    } while (readed < quantity);
+    TWI_WaitTransferComplete(twi, RECV_TIMEOUT);
+
+    // set rx buffer iterator vars
+    rxBufferIndex = 0;
+    rxBufferLength = readed;
+
+    return readed;
+}
