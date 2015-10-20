@@ -19,12 +19,12 @@ export IMAGE="ubuntu-14.04.1lts-lubuntu-odroid-xu3-20150212.img" # e.g. for the 
 ```
 To find images for other ODROID models or to find newer images than those listed above, go to http://odroid.in/ubuntu_14.04lts/. When looking for an image there, choose the corresponding "ubuntu" image for your device, not the "server" or the "xubuntu" image. The environment variable IMAGE above contains the image filename without the url and without the suffix ".xz". This makes it easier to run the following commands, as they can simply be copied into a terminal without changes.
 
-Download image:
+Download image (you can also use your browser to download the image):
 ```bash
 wget ${URL}${IMAGE}.xz
 wget ${URL}/${IMAGE}.xz.md5sum
 ```
-Compare md5 checksum:
+Compare md5 checksum (this step is optional but highly recommended):
 ```bash
 md5 ${IMAGE}.xz
 cat ${IMAGE}.xz.md5sum
