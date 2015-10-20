@@ -1,4 +1,5 @@
-# This is the waggle project 
+
+![waggle bannder](./wagview/node_pages/banner.png)
 
 homepage: www.wa8.gl
 
@@ -71,5 +72,5 @@ The directories are organized as follows (in alphabetical order)
 - docs: documentation of the waggle management software / hardware environment
 - manager: code (firmware) loaded onto system management board
 
-(other): a temporary holding place for things that have not yet found
+**other**: a temporary holding place for things that have not yet found
 a home in the structure above.
