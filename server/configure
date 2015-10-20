@@ -8,7 +8,18 @@ read -p "Enter the IP address of the Cassandra server you want to use: " c_ip
 mkdir /etc/waggle/
 echo $c_ip > /etc/waggle/cassandra_ip
 
-dpkg -i packages_o/*.deb
+
+export PLATFORM=`uname -i`
+
+if [ ${PLATFORM} == "armv7l"  ]  ; then
+  echo "Architecture: armv7l"
+  dpkg -i packages_o/*.deb
+elif [ ${PLATFORM} == "x86_64"  ] ; then
+  echo "Architecture: x86_64"
+else
+  echo "Architecture not supported"
+fi
+
 cd packages_o/
 pip install blist
 pip install cassandra-driver
