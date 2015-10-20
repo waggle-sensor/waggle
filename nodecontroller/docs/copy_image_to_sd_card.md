@@ -6,8 +6,8 @@ This document explains how to load an odroid **stock ubuntu image** or our **wag
 
 For our waggle image use this:
 ```bash
-export URL="someurl"
-export IMAGE="waggle.img"  (this will appear soon)
+export URL="http://www.mcs.anl.gov/research/projects/waggle/downloads/"
+export IMAGE="waggle-odroid-c1-VERSION.iso"  # do not include the ".xz" suffix !
 ```
 
 Alternatively, for the odroid image use this: 
