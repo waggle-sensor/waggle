@@ -1,8 +1,7 @@
 
 ![waggle bannder](./wagview/node_pages/banner.png)
 
-homepage: www.wa8.gl
-
+This github repository holds the source code of the Waggle project. The Waggle project webpage can be found here: www.wa8.gl
 
 ## A very high level view of the pieces of this project are:
 
