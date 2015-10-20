@@ -53,7 +53,7 @@ if [ $(df -h | grep -c ${DEVICE}${DEV_SUFFIX}2 ) == 1 ] ; then
 fi
 
 export DATE=`date +"%Y%m%d"` ; echo "DATE: ${DATE}"
-export NEW_IMAGE="waggle-odroid-c1-${DATE}.iso" ; echo "NEW_IMAGE: ${NEW_IMAGE}"
+export NEW_IMAGE="waggle-odroid-c1-${DATE}.img" ; echo "NEW_IMAGE: ${NEW_IMAGE}"
 
 # extract the report.txt from the new waggle image
 export WAGGLE_ROOT="/media/waggle/"
@@ -168,12 +168,12 @@ fi
 ###  Variant A  ###
 # on ONDROID
 #  create diskdump 
-#dd if=${DEVICE} of=./newimage.iso bs=1M count=${BLOCKS_TO_WRITE}
+#dd if=${DEVICE} of=./newimage.img bs=1M count=${BLOCKS_TO_WRITE}
 
 # compress (xz --keep option to save space)
-#xz newimage.iso
-#md5sum newimage.iso.xz > newimage.iso.xz.md5sum
-#scp report.txt newimage.iso.xz newimage.iso.xz.md5sum <to_somewhere>
+#xz newimage.img
+#md5sum newimage.img.xz > newimage.img.xz.md5sum
+#scp report.txt newimage.img.xz newimage.img.xz.md5sum <to_somewhere>
 
 ###  Variant A2  ###
 
@@ -181,9 +181,9 @@ fi
 ###  Variant B  ###
 # on your computer
 #scp root@<odroid_ip>:/root/report.txt .
-#ssh root@<odroid_ip> "dd if=${DEVICE} bs=1M count=${BLOCKS_TO_WRITE}" | dd of="newimage.iso" bs=1m
-#xz --keep newimage.iso
+#ssh root@<odroid_ip> "dd if=${DEVICE} bs=1M count=${BLOCKS_TO_WRITE}" | dd of="newimage.img" bs=1m
+#xz --keep newimage.img
 # Linux:
-#md5sum newimage.iso.xz > newimage.iso.xz.md5sum
+#md5sum newimage.img.xz > newimage.img.xz.md5sum
 # OSX:
-#md5 -r newimage.iso.xz > newimage.iso.xz.md5sum
+#md5 -r newimage.img.xz > newimage.img.xz.md5sum
