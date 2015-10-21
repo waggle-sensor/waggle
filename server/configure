@@ -29,10 +29,11 @@ cd packages_o/
 pip install blist
 pip install cassandra-driver
 
-cd pika-0.9.1/
+cd pika-0.9.14/
 python setup.py install
 # install pika from waggle git repo !
 #pip install pika
+# or specific version if needed: pip install pika==0.9.14
 cd ../..
 
 
