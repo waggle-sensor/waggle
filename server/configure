@@ -28,7 +28,8 @@ fi
 cd packages_o/
 pip install blist
 pip install cassandra-driver
-pip install pika
+# install pika from waggle git repo !
+#pip install pika
 cd ..
 
 
