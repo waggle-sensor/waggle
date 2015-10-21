@@ -5,7 +5,8 @@ RUN apt-get update ; apt-get install -y \
 
 # does not really work: RUN cd / ; git clone https://github.com/waggle-sensor/waggle.git
 
-ADD . /waggle
+ADD ./server /waggle/server
+ADD ./devtools/protocol_common /waggle/devtools/protocol_common
 
 RUN cd /waggle/server && ./configure
 
