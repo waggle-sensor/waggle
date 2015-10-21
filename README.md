@@ -1,5 +1,5 @@
 
-![waggle bannder](./wagview/node_pages/banner.png)
+![waggle banner](./wagview/node_pages/banner.png)
 
 This github repository holds the source code of the Waggle project. The Waggle project webpage can be found here: www.wa8.gl
 
