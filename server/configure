@@ -1,5 +1,5 @@
 #!/bin/bash
-oldDIr=`pwd`
+oldDir=`pwd`
 [ `whoami` = root ] || { sudo "$0" "$@"; exit $?; }
 
 set -e
@@ -10,7 +10,7 @@ read -p "Enter the IP address of the Cassandra server you want to use: " c_ip
 
 set -x
 
-mkdir /etc/waggle/
+mkdir -p /etc/waggle/
 echo $c_ip > /etc/waggle/cassandra_ip
 
 
@@ -39,24 +39,27 @@ cd ../..
 echo 0 > /etc/waggle/hostname # The cloud's hostname is defined as 0
 
 # All of the general configuration files for Waggle are stored here
-mkdir /usr/lib/waggle
+mkdir -p /usr/lib/waggle
 echo Moving waggle server folder to proper place.
 cd ..
 
-# All of the code is moved into the usr/lib/waggle folder
-mv server/ /usr/lib/waggle/
-cp -R devtools/protocol_common/* /usr/lib/waggle/
+# All of the code is copied into the /usr/lib/waggle folder
+cp --recursive server/ /usr/lib/waggle/
+cp --recursive devtools/protocol_common/* /usr/lib/waggle/
 
 # Create a user that all nodes can use to send info to.
 # Feel free to fiddle with rabbitmq if you want to have other users and accounts.
-rabbitmqctl add_user waggle waggle
-rabbitmqctl set_permissions waggle ".*" ".*" ".*"
+if [ $(rabbitmqctl list_users | grep -c waggle) -eq 0 ] ; then 
+  echo "add waggle user"  
+  rabbitmqctl add_user waggle waggle
+  rabbitmqctl set_permissions waggle ".*" ".*" ".*"
+fi
 
 # Set up the SSL files, and generate a new SSL Certificate Authority
 # For the Certificate Authority setup, see waggle/server/SSL/caconfig.sh
 echo Setting up SSL
-mkdir /usr/lib/waggle/SSL
-mv /usr/lib/waggle/server/SSL/* /usr/lib/waggle/SSL
+mkdir -p /usr/lib/waggle/SSL
+cp -r /usr/lib/waggle/server/SSL/* /usr/lib/waggle/SSL
 cd /usr/lib/waggle/SSL/
 source caconfig.sh
 chmod 777 -R /usr/lib/waggle
