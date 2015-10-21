@@ -1,11 +1,11 @@
 FROM ubuntu:14.04
 
-RUN apt-get update ; apt-get install -y git \
+RUN apt-get update ; apt-get install -y \
   rabbitmq-server python-dev python-pip
 
-RUN cd / ; git clone https://github.com/waggle-sensor/waggle.git
-# TODO: replace "git clone" with "ADD" this later
-# e.g. ADD . /beehive
+# does not really work: RUN cd / ; git clone https://github.com/waggle-sensor/waggle.git
+
+ADD . /waggle
 
 RUN cd /waggle/server && ./configure
 
