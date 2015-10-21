@@ -24,22 +24,25 @@ export PLATFORM=`uname -i`
 if [ ${PLATFORM} == "armv7l"  ]  ; then
   echo "Architecture: armv7l"
   dpkg -i packages_o/*.deb
+  
+  cd packages_o/
+  pip install blist
+  pip install cassandra-driver
+
+  cd pika-0.9.14/
+  python setup.py install
+  # install pika from waggle git repo !
+  #pip install pika
+  # or specific version if needed: pip install pika==0.9.14
+  cd ../..
+
 elif [ ${PLATFORM} == "x86_64"  ] ; then
   echo "Architecture: x86_64"
 else
   echo "Architecture not supported"
 fi
 
-cd packages_o/
-pip install blist
-pip install cassandra-driver
 
-cd pika-0.9.14/
-python setup.py install
-# install pika from waggle git repo !
-#pip install pika
-# or specific version if needed: pip install pika==0.9.14
-cd ../..
 
 
 echo 0 > /etc/waggle/hostname # The cloud's hostname is defined as 0
