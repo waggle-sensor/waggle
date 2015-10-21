@@ -6,7 +6,7 @@ cd /usr/lib/waggle/SSL/
 cd waggleca
 
 # Make appropriate folders
-mkdir certs private
+mkdir -p certs private
 chmod 700 private
 echo 01 > serial
 touch index.txt
@@ -22,7 +22,7 @@ openssl x509 -in cacert.pem -out cacert.cer -outform DER
 
 cd .. # in SSL/
 
-mkdir server
+mkdir -p server
 chmod 744 server
 cd server
 
@@ -40,9 +40,9 @@ cd ../server
 openssl pkcs12 -export -out keycert.p12 -in cert.pem -inkey key.pem -passout pass:waggle
 
 cd ..
-# Move files to correct places
-mv rabbitmq.config /etc/rabbitmq/
+# Copy files to correct places
+cp rabbitmq.config /etc/rabbitmq/
 cd ..
-mv SSL /usr/lib/waggle/
+cp -r SSL /usr/lib/waggle/
 
 service rabbitmq-server restart
