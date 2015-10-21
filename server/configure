@@ -28,9 +28,12 @@ fi
 cd packages_o/
 pip install blist
 pip install cassandra-driver
+
+cd pika-0.9.1/
+python setup.py install
 # install pika from waggle git repo !
 #pip install pika
-cd ..
+cd ../..
 
 
 echo 0 > /etc/waggle/hostname # The cloud's hostname is defined as 0
