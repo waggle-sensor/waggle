@@ -23,7 +23,7 @@ fi
 
 if [ ${REQUIRED_CASSANDRA_VERSION}x != "x" ] ; then
   export GOT_CASS_VERSION=$(./cqlsh.py cassandra -e "SELECT release_version FROM system.local" | grep -o "[0-9.]\{3,7\}")
-  if [ ${REQUIRED_CASSANDRA_VERSION}x -ne ${GOT_CASS_VERSION}x ] ; then
+  if [ ${REQUIRED_CASSANDRA_VERSION}x != ${GOT_CASS_VERSION}x ] ; then
     echo "error: Cassandra version ${REQUIRED_CASSANDRA_VERSION} is required. Found ${GOT_CASS_VERSION}."
     exit 1
   fi
