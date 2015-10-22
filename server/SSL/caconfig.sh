@@ -43,6 +43,6 @@ cd ..
 # Copy files to correct places
 cp rabbitmq.config /etc/rabbitmq/
 cd ..
-cp -r SSL /usr/lib/waggle/
+#does not make sense: cp -r SSL /usr/lib/waggle/
 
 service rabbitmq-server restart
