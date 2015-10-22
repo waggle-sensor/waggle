@@ -42,13 +42,11 @@ echo 0 > /etc/waggle/hostname # The cloud's hostname is defined as 0
 # All of the general configuration files for Waggle are stored here
 mkdir -p /usr/lib/waggle
 echo Moving waggle server folder to proper place.
-cd ..
+
 
 # All of the code is copied into the /usr/lib/waggle folder
-cp --recursive server/ /usr/lib/waggle/
-cp --recursive devtools/protocol_common/* /usr/lib/waggle/
-
-
+cp --recursive ../server/ /usr/lib/waggle/
+cp --recursive ../devtools/protocol_common/* /usr/lib/waggle/
 
 
 ./configure_cassandra.sh
