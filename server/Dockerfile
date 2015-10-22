@@ -14,9 +14,11 @@ RUN cd /waggle/server/packages_o/ && \
   pip install cassandra-driver && \
   cd pika-0.9.14/ && \
   python setup.py install
-  
 
+# cqlshlib for the cassandra client
+RUN cd /waggle/server/cassandra-pylib/ && \
+  python ./setup.py install  
 
 ENV CASSANDRA_SERVER cassandra 
-#RUN cd /waggle/server && ./configure
+
 
