@@ -44,7 +44,7 @@ fi
 
 
 
-if [ $(./cqlsh.py ${c_ip} -e "quit;" 2&>1 /dev/null  ; echo $? ) != 0 ] ; then 
+if [ $(./cqlsh.py ${c_ip} -e "quit;" > /dev/null 2>&1 ; echo $? ) != 0 ] ; then 
   echo "error: could not connect to cassandra using address ${c_ip}."
   exit 1
 fi
