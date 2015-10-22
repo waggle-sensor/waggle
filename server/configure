@@ -44,6 +44,13 @@ fi
 
 
 
+if [ $(./cqlsh.py ${c_ip} -e "quit;" 2&>1 /dev/null  ; echo $? ) != 0 ] ; then 
+  echo "error: could not connect to cassandra using address ${c_ip}."
+  exit 1
+fi
+
+# create tables in cassandra
+./cqlsh.py ${c_ip} -f ./waggle_cassandra_setup.cql
 
 echo 0 > /etc/waggle/hostname # The cloud's hostname is defined as 0
 
