@@ -1,9 +1,10 @@
 #!/bin/bash
 
-cd /usr/lib/waggle/SSL/
+
+export SSL_DIR = "/usr/lib/waggle/SSL"
 
 # Begin constructing the Certificate Authority
-cd waggleca
+cd ${SSL_DIR}/waggleca
 
 # Make appropriate folders
 mkdir -p certs private
@@ -20,29 +21,29 @@ openssl x509 -in cacert.pem -out cacert.cer -outform DER
 
 # Make the server certificate
 
-cd .. # in SSL/
+cd ${SSL_DIR} # in SSL/
 
 mkdir -p server
 chmod 744 server
-cd server
+cd ${SSL_DIR}/server
 
 openssl genrsa -out key.pem 2048
 
 openssl req -new -key key.pem -out req.pem -outform PEM \
 	-subj /CN=$(hostname)/O=server/ -nodes
 
-cd ../waggleca
+cd ${SSL_DIR}/waggleca
 
-openssl ca -config openssl.cnf -in ../server/req.pem -out \
-	../server/cert.pem -notext -batch -extensions server_ca_extensions
+openssl ca -config openssl.cnf -in ${SSL_DIR}/server/req.pem -out \
+	${SSL_DIR}/server/cert.pem -notext -batch -extensions server_ca_extensions
 
-cd ../server
+cd ${SSL_DIR}/server
 openssl pkcs12 -export -out keycert.p12 -in cert.pem -inkey key.pem -passout pass:waggle
 
-cd ..
+
 # Copy files to correct places
-cp rabbitmq.config /etc/rabbitmq/
-cd ..
+cp ${SSL_DIR}/rabbitmq.config /etc/rabbitmq/
+
 #does not make sense: cp -r SSL /usr/lib/waggle/
 
 service rabbitmq-server restart
