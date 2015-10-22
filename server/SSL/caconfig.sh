@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-export SSL_DIR = "/usr/lib/waggle/SSL"
+export SSL_DIR="/usr/lib/waggle/SSL"
 
 # Begin constructing the Certificate Authority
 cd ${SSL_DIR}/waggleca
