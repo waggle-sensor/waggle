@@ -12,6 +12,7 @@ ADD ./devtools/protocol_common /waggle/devtools/protocol_common
 RUN cd /waggle/server/packages_o/ && \
   pip install blist && \
   pip install cassandra-driver && \
+  pip install crcmod && \
   cd pika-0.9.14/ && \
   python setup.py install
 
