@@ -49,11 +49,11 @@ cp --recursive ../server/ /usr/lib/waggle/
 cp --recursive ../devtools/protocol_common/* /usr/lib/waggle/
 
 
-./configure_cassandra.sh
+source ./configure_cassandra.sh
 
-./configure_rabbitmq.sh 
+source ./configure_rabbitmq.sh 
 
-./configure_ssl.sh
+source ./configure_ssl.sh
 
 
 
