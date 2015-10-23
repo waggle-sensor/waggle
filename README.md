@@ -73,3 +73,28 @@ The directories are organized as follows (in alphabetical order)
 
 **other**: a temporary holding place for things that have not yet found
 a home in the structure above.
+
+
+## Developer Notes
+
+### git submodules
+To clone the repository with submodules use --recursive
+```bash
+git clone --recursive git@github.com:waggle-sensor/waggle.git
+```
+or get submodule after you cloned without --recursive option:
+```bash
+cd waggle
+git submodule init
+git submodule update
+```
+To update a submodule use: (example: beehive-server)
+```bash
+cd beehive-server/
+git pull origin master
+cd ..
+git add beehive-server
+git commit -m "update submodule" -a
+git push
+```
+Do such an update only if the code in the remote repository is stable and compatible to the other code in this repository. If you need to point to another commit than the latest commit, do a "git checkout ..." after the "git pull" first.
