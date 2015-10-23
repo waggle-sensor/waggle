@@ -10,8 +10,8 @@ RUN apt-get update ; apt-get install -y git \
 
 RUN cd / && \
   git clone https://github.com/waggle-sensor/waggle.git && \
-  cd /waggle && ls -1 | grep -v server | grep -v devtools | xargs rm -rf && \
-  cd /waggle/devtools && ls -1 | grep -v protocol_common | xargs rm -rf
+  cd /waggle && ls -1a | grep -v server | grep -v devtools | xargs rm -rf && \
+  cd /waggle/devtools && ls -1a | grep -v protocol_common | xargs rm -rf
 
 # python modules
 RUN cd /waggle/server/packages_o/ && \
