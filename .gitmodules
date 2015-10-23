@@ -1,0 +1,3 @@
+[submodule "beehive-server"]
+	path = beehive-server
+	url = https://github.com/waggle-sensor/beehive-server.git
