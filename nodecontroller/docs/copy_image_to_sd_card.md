@@ -1,41 +1,49 @@
 
-# Copy ubuntu or waggle image to SD-card
+# Copy waggle image to SD-card (Linux/OSX)
 
-This document explains how to load an odroid **stock ubuntu image** or our **waggle image** onto an SD-card or eMMC. Please note that the image you use has to be specific for your ODROID model (e.g. C1/C1+, XU3, U, X2, X).
+This document explains how to load an an waggle image onto an SD-card or eMMC. These instructions are for Linux/OSX systems. If you need instructions for Windows, please contact us.
 
+## Download
 
-For our waggle image use this:
+First, using a web browser, choose an image for your ODROID model (e.g. C1/C1+, XU3, U, X2, X) from our download page: 
+
+http://www.mcs.anl.gov/research/projects/waggle/downloads/
+
+You do not need to download the image with your browser at this point, just specify the image filename in the variable IMAGE below. The environment variable IMAGE contains the image filename without the url and without the suffix ".xz"! This makes it easier to run other commands later, as they then can simply be copied into the terminal without changes. Now paste these two lines (including your changes to the second line) into your terminal:
+
 ```bash
 export URL="http://www.mcs.anl.gov/research/projects/waggle/downloads/"
-export IMAGE="waggle-odroid-c1-VERSION.iso"  # do not include the ".xz" suffix !
+export IMAGE="waggle-odroid-c1-VERSION.img"  # do not include the ".xz" suffix !
 ```
 
-Alternatively, for the odroid image use this: 
+Alternatively, if you want to use a plain (non-waggle) odroid image: 
 ```bash
 export URL="http://odroid.in/ubuntu_14.04lts/"
 export IMAGE="ubuntu-14.04.3lts-lubuntu-odroid-c1-20150811.img" # e.g. for the ODROID-C1 and ODROID-C1+ 
 # or
 export IMAGE="ubuntu-14.04.1lts-lubuntu-odroid-xu3-20150212.img" # e.g. for the ODROID-XU3
 ```
-To find images for other ODROID models or to find newer images than those listed above, go to http://odroid.in/ubuntu_14.04lts/. When looking for an image there, choose the corresponding "ubuntu" image for your device, not the "server" or the "xubuntu" image. The environment variable IMAGE above contains the image filename without the url and without the suffix ".xz". This makes it easier to run the following commands, as they can simply be copied into a terminal without changes.
+(If you are only looking for a stock Odroid image, choose the corresponding "ubuntu" image for your device, not the "server" or the "xubuntu" image.)
 
-Download image (you can also use your browser to download the image):
+To download your waggle image paste these two lines (without modifications) into your terminal:
 ```bash
 wget ${URL}${IMAGE}.xz
 wget ${URL}/${IMAGE}.xz.md5sum
 ```
-Compare md5 checksum (this step is optional but highly recommended):
+
+After we have downloaded these two files, we want to be sure that the files were correctly downloaded. For this we compare the actual md5sum of the image with the official md5sum. If both md5sum's are identical everything is ok.
 ```bash
 md5 ${IMAGE}.xz
 cat ${IMAGE}.xz.md5sum
 ```
 
-Uncompress:
+Uncompress the image:
 ```bash
 unxz ${IMAGE}.xz
 ```
 
-Detect SD-card device:
+## Write image to memory card
+You can now plug your memory card (SD-card or eMMC) into your computer, either using an USB adapter or using SD-slot adapter. To figure out the correct device file corresponding to your memory card use one of the commands below:
 ```bash
 # Linux
 df -h
@@ -45,13 +53,15 @@ lsblk
 diskutil list
 ```
 
-Set DEVICE_NAME variable, but do not include the path "/dev/":
+Now set the DEVICE_NAME environment variable, but do not include the path "/dev/".
+
+**WARNING: It is critical that you specify the correct device! If you specify the wrong device, you might loose data on you computer !!!!**
 ```bash
 # e.g. for device /dev/disk2
 export DEVICE_NAME="disk2" 
 ```
 
-Unmount device:
+Unmount the device:
 ```bash
 # Linux: 
 umount /dev/${DEVICE_NAME}
