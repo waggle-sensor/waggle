@@ -55,7 +55,7 @@ diskutil list
 
 Now set the DEVICE_NAME environment variable, but do not include the path "/dev/".
 
-**WARNING: It is critical that you specify the correct device! If you specify the wrong device, you might loose data on you computer !!!!**
+**WARNING: It is critical that you specify the correct device! If you specify the wrong device, you might loose data on your computer !!!!**
 ```bash
 # e.g. for device /dev/disk2
 export DEVICE_NAME="disk2" 
