@@ -1,3 +1,6 @@
 [submodule "beehive-server"]
 	path = beehive-server
 	url = https://github.com/waggle-sensor/beehive-server.git
+[submodule "devtools/protocol_common"]
+	path = devtools/protocol_common
+	url = https://github.com/waggle-sensor/waggle-protocol.git
