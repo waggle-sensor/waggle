@@ -69,7 +69,7 @@ umount /dev/${DEVICE_NAME}
 sudo diskutil unmountDisk /dev/${DEVICE_NAME}
 ```
 
-Copy .img-image to media (SD-card or eMMC)
+Copy image file to your memory card (SD-card or eMMC)
 ```bash
 # Linux:
 sudo dd if=${IMAGE} of=/dev/${DEVICE_NAME} bs=1M conv=fsync
@@ -81,15 +81,19 @@ sudo sync
 ```
 
 
-Eject image:
+Eject image (OSX only):
 ```bash
 # OSX: 
 sudo diskutil eject /dev/r${DEVICE_NAME}
 ```
 
-Now plug SD-card into your ODROID and boot it.
+You can now savely disconnect the memory card from your computer.
 
-To ssh into your ODROID you may need to first figure out its IP address. If your computer is in the same internal network as the ODROID and you do not know the IP address, you can follow the steps below. If you have access to your router's admin page, you could also find the IP address there. In case the ODROID is not connected to a private network you might have to attach a monitor and keyboard to the ODROID.
+## SSH connection with ODROID
+
+Now plug the memory card into the ODROID and connect the ODROID with your network by pluggin in an Ethernet cable. Then activate the ODROID by plugging in the power connector. After a few seconds the ODROID's blue LED should start blinking. This indictes that the OS successfully started. 
+
+To ssh into your ODROID you may first have to figure out its IP address. If your computer is in the same internal network as the ODROID and you do not know the IP address, you can follow the steps below. If you have access to your router's admin page, you could also find the IP address there. In case the ODROID is not connected to a private network you might have to attach a monitor and keyboard to the ODROID.
 
 First, get your computer's IP address, e.g.:
 ```text
