@@ -114,7 +114,7 @@ Example output:
 
 Your computer might have more than one IP address assigned. Make sure that for the following step you use the IP address for the local network to which the ODROID also is connected. Possible private IPv4 address spaces: 10.0.0.0 - 10.255.255.255, 172.16.0.0 - 172.31.255.255 and 192.168.0.0 - 192.168.255.255 .
 
-Install nmap:
+To find the actual IP address of the ODROID you can use the tool nmap.
 ```bash
 # Linux:
 apt-get install nmap
@@ -122,15 +122,18 @@ apt-get install nmap
 brew install nmap
 ```
 
-Find IP address of odroid device in your network:
+Use nmap to list all devices in your network:
 ```bash
 nmap -sP <yourIP>/24 
 ```
-If the output does not include hostnames, you might have a hard time to figure out which of the listed devices is your ODROID. You can point nmap to a DNS server. Assuming your IP is 10.10.10.120 and your router is acting as a DNS server with IP address 10.10.10.1, you could run nmap like this:
+If the output does not include hostnames, you might have a hard time to figure out which of the listed devices is your ODROID. (You could disconnect the ODROID from the network and run nmap again and the compare the two lists of devices.) You can also point nmap to a DNS server. Assuming your IP is 10.10.10.120 and your router is acting as a DNS server with IP address 10.10.10.1, you could run nmap like this:
 
 ```bash
 nmap -sP --dns-servers=10.10.10.1 10.10.10.120/24  
 ```
+
+Your ODROID should show up in that list with a hostname containing the name "waggle".
+
 
 Now you should be able to ssh into your ODROID:
 ```bash
@@ -138,8 +141,10 @@ Now you should be able to ssh into your ODROID:
 ssh waggle@<odroid_ip>
 #password: waggle
 
-# stock ubuntu image:
+# if you use the ODROID stock ubuntu image:
 ssh odroid@<odroid_ip>
+# or
+ssh root@<odroid_ip>
 #password: odroid
 ```
 
