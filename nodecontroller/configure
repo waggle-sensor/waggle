@@ -49,41 +49,41 @@ echo $server_ip > /etc/waggle/server_ip
 #cd ./waggle/nodecontroller/nc-wag-os/waggled
 export waggled_dir="./nc-wag-os/waggled"
 
-mv ${waggled_dir}/communications.sh /etc/init.d
+cp ${waggled_dir}/communications.sh /etc/init.d
 #chmod +x /etc/init.d/communications.sh 
 update-rc.d communications.sh defaults 
 
 #move data_cache.sh into the init.d folder and update
 #starts data cache process
-mv ${waggled_dir}/data_cache.sh /etc/init.d
+cp ${waggled_dir}/data_cache.sh /etc/init.d
 #chmod +x /etc/init.d/data_cache.sh 
 update-rc.d data_cache.sh defaults 
 
 #comment this out if nodecontroller and guestnode are separate machines
 #move sensor.sh into the init.d folder and update
 #starts sensor script
-mv ${waggled_dir}/start_sensor.sh /etc/init.d
+cp ${waggled_dir}/start_sensor.sh /etc/init.d
 #chmod +x /etc/init.d/start_sensor.sh 
 update-rc.d start_sensor.sh defaults 
 
 #set up SysMon stuff
 #starts WagMan script at boot
-mv ${waggled_dir}/WagMan_start.sh /etc/init.d
+cp ${waggled_dir}/WagMan_start.sh /etc/init.d
 #chmod +x /etc/init.d/WagMan_start.sh 
 update-rc.d WagMan_start.sh defaults 
 
 #starts set-up for heart beat script at boot
-mv ${waggled_dir}/heartbeat_setup_start.sh /etc/init.d
+cp ${waggled_dir}/heartbeat_setup_start.sh /etc/init.d
 #chmod +x /etc/init.d/heartbeat_setup_start.sh 
 #update-rc.d heartbeat_setup_start.sh defaults 
 
 #starts node controller heart beat at boot
-mv ${waggled_dir}/heartbeat_start.sh /etc/init.d
+cp ${waggled_dir}/heartbeat_start.sh /etc/init.d
 #chmod +x /etc/init.d/heartbeat_start.sh 
 #update-rc.d heartbeat_start.sh defaults 
 
 #creates udev rule to attach SysMon to /dev/arduinoMicro
-mv ${waggled_dir}/99-usb-serial.rules /etc/udev/rules.d
+cp ${waggled_dir}/99-usb-serial.rules /etc/udev/rules.d
 
 #find and set IP address if possible
 cd ${waggled_dir}/
