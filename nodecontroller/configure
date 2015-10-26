@@ -47,7 +47,7 @@ echo $server_ip > /etc/waggle/server_ip
 #move communications.sh into the init.d folder and update
 #starts communication processes
 #cd ./waggle/nodecontroller/nc-wag-os/waggled
-export waggled_dir="./waggle/nodecontroller/nc-wag-os/waggled"
+export waggled_dir="./nc-wag-os/waggled"
 
 mv ${waggled_dir}/communications.sh /etc/init.d
 #chmod +x /etc/init.d/communications.sh 
@@ -92,5 +92,5 @@ python NC_scanner.py
 #cd ${waggled_dir}/WagMan
 #chmod +x heartbeat_setup.sh
 echo "Odroid is now going to reboot."
-reboot
+#reboot
 
