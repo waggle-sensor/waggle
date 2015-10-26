@@ -9,7 +9,7 @@
 # Description:       Enable service provided by daemon.
 ### END INIT INFO
 
-dir="/root/waggle/nodecontroller/nc-wag-os/waggled/Communications"
+dir="/usr/lib/waggle/nodecontroller/nc-wag-os/waggled/Communications"
 cmd="python communications_main.py"
 user=""
 

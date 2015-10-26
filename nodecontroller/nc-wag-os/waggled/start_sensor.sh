@@ -9,7 +9,7 @@
 # Description:       Enable service provided by daemon.
 ### END INIT INFO
 
-dir="/root/waggle/nodecontroller/nc-wag-os/waggled/NC"
+dir="/usr/lib/waggle/nodecontroller/nc-wag-os/waggled/NC"
 cmd="python sensor.py"
 user=""
 

@@ -9,7 +9,7 @@
 # Description:       Enable service provided by daemon.
 ### END INIT INFO
 
-dir="/root/waggle/nodecontroller/nc-wag-os/waggled/WagMan"
+dir="/usr/lib/waggle/nodecontroller/nc-wag-os/waggled/WagMan"
 cmd="./heartbeat"
 user=""
 
