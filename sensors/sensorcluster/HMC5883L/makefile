@@ -1,5 +1,5 @@
-ARD_HOME = /home/rajesh/GIT/waggle/devtools/arduino/compilers/arduino-1.6.5-linux/arduino_64
-TARGET = integrated
+ARD_HOME = /home/rajesh/GIT/github/waggle//devtools/arduino/compilers/arduino-1.6.5-linux/arduino_64
+TARGET = HMC5883L
 PACKAGE = arduino
 ARCH = sam
 BOARD = arduino_due_x
@@ -27,7 +27,7 @@ clean:
 	rm -rf $(BIN_DIR)/*
 	rm -rf $(BUILD_DIR)/*
 
-install: all
+install:
 	$(PRE_FLASH_COMMAND)
 	$(FLASH_BOARD)
 
