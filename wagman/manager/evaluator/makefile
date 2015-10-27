@@ -1,4 +1,4 @@
-ARD_HOME = /home/rajesh/GIT/github/waggle//devtools/arduino/compilers/arduino-1.6.5-linux/arduino_64
+ARD_HOME = /digital/waggle//devtools/arduino/compilers/arduino-1.6.5-linux/arduino_64
 TARGET = evaluator
 PACKAGE = arduino
 ARCH = avr
