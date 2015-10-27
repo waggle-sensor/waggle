@@ -1,2 +1,6 @@
-TARGET=sysmonV1
-PORT=/dev/ttyACM0
+TARGET='wagmanV2'
+#PORT='/dev/ttyACM0'
+#SERIALBAUD=115200
+#TARGET='airsenseV2'
+PORT='/dev/ttyACM0'
+SERIALBAUD=115200
