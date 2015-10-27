@@ -12,6 +12,7 @@ $(TARGET): $(TARGET).ino
 clean:
 	rm -rf $(BIN_DIR)/*
 	rm -rf $(BUILD_DIR)/*
+	rm *~
 
 install: all
 	$(PRE_FLASH_COMMAND)
@@ -19,4 +20,4 @@ install: all
 
 run:    install
 	sleep 2
-	screen /dev/$(PORT) 115200
+	screen $(LINKPORT) $(SERIALBAUD)
