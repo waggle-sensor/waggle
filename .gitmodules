@@ -4,3 +4,6 @@
 [submodule "devtools/protocol_common"]
 	path = devtools/protocol_common
 	url = https://github.com/waggle-sensor/waggle-protocol.git
+[submodule "nodecontroller"]
+	path = nodecontroller
+	url = https://github.com/waggle-sensor/nodecontroller.git
