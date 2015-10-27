@@ -70,7 +70,7 @@
 #define TSYS01_include 0x01
 
 // Aux board
-// #define HMC5883L_include 0x01
+#define HMC5883L_include 0x01
 #define HIH6130_include 0x01
 #define APDS9006020_include 0x01
 #define TSL260RD_include 0x01
@@ -83,6 +83,7 @@
 #define SPV1840LR5HB_2_include 0x01
 
 // Chemsense board
+/*
 #define total_reducing_gases_include 0x01
 #define ethanol_include 0x01
 #define nitrogen_dioxide_include 0x01
@@ -95,6 +96,7 @@
 #define LPS25H_include 0x01
 #define Si1145_include 0x01
 #define chemsense_MAC_ID_include 0x01
+*/
 // #define system_health_include 0x01
 
 

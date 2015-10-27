@@ -11,33 +11,40 @@ if [ ! -d "$DIRECTORY" ]; then
   # Control will enter here if $DIRECTORY exists.
   mkdir $DIRECTORY
 fi
+
 echo "Checking CPU arch..."
 ARCH=$(uname -p)
 echo "Found arch $ARCH"
-echo "Reading build target info from board.info..."
+echo "Removing old makefile."
+rm -r makefile
 
+echo "Reading build target info from board.info..."
 BOARD_INFO=board.info
 
 if [ -f $BOARD_INFO ];
 then
-   BOARD_NAME=$(cat $BOARD_INFO | grep TARGET)
-   PORT_NAME=$(cat $BOARD_INFO | grep PORT)
+    source $BOARD_INFO
 else
    echo "Unable to file board.info file. Configure failed..."
    exit
 fi
 
-if [ -z "$BOARD_NAME" ]; then
-    echo "No board name specified. Configure failed..."
+if [ -z "$TARGET" ]; then
+    echo "No board name specified. TARGET options are wagmanV2 and airsenseV2. Configure failed..."
     exit
 fi
 
-if [ -z "$PORT_NAME" ]; then
-    echo "No port specified. Configure failed..."
+if [ -z "$PORT" ]; then
+    echo "No port specified. Please specify PORT variable. Configure failed..."
     exit
 fi
 
-echo "Setting up Arduino build environment..."
+if [ -z "$SERIALBAUD" ]; then
+    echo "No serial baudrate for communication post firmware flashing specified. Please specify SERIALBAUD variable. Configure failed..."
+    exit
+fi
+
+echo "Setting up Arduino build environment for $TARGET, connected to $PORT, with post firmware install communication at $SERIALBAUD baud..."
 if [ "$ARCH" == "x86_64" ]
 then
   echo "ARD_HOME = $WAGGLE_GIT_ROOT/devtools/arduino/compilers/arduino-1.6.5-linux/arduino_64" > makefile
@@ -51,34 +58,42 @@ if [ -z "${PWD##*/}".ino ]; then
     echo "Warning, no sources file found. A source file of the name ${PWD##*/}.ino is required for building."
 fi
 
-
-if [ "${BOARD_NAME##*=}" == "envsenseV1" ]
-then 
-    echo "PACKAGE = arduino" >> makefile
-    echo "ARCH = avr" >> makefile
-    echo "BOARD = mega" >> makefile
-    echo "TYPE = atmega2560" >> makefile
-    echo "FLASHER_BAUD_RATE = 115200" >> makefile
-    echo "PORT = ${PORT_NAME##*=}" >> makefile
-    echo "BOARD_FLASH = \$(PACKAGE):\$(ARCH):\$(BOARD):cpu=\$(TYPE)" >> makefile
-    echo "BOOT_LOADER_TYPE = wiring" >>  makefile
-    echo "PRE_FLASH_COMMAND = #"  >> makefile
-
-elif [ "${BOARD_NAME##*=}" == "sysmonV1" ]
+if [ "$TARGET" == "wagmanV2" ]
 then
     echo "PACKAGE = arduino" >> makefile
     echo "ARCH = avr" >> makefile
     echo "BOARD = micro" >> makefile
     echo "TYPE = m32u4" >> makefile
     echo "FLASHER_BAUD_RATE = 57600" >> makefile
-    echo "PORT = ${PORT_NAME##*=}" >> makefile
+    echo "PORT = $PORT" >> makefile
     echo "BOARD_FLASH = \$(PACKAGE):\$(ARCH):\$(BOARD)" >> makefile
     echo "BOOT_LOADER_TYPE = avr109" >>  makefile
     echo "PRE_FLASH_COMMAND = stty -F \$(PORT) 1200 hupcl; sleep 2"  >> makefile
+    echo "FLASHER = \$(ARD_HOME)/hardware/tools/avr/bin/avrdude" >> makefile
+    echo "FLASHER_CONFIGS = \$(ARD_HOME)/hardware/tools/avr/etc/avrdude.conf" >> makefile
+    echo "FLASH_BOARD = \$(FLASHER) -C\$(FLASHER_CONFIGS) -v -p\$(TYPE) -c\$(BOOT_LOADER_TYPE) -P\$(PORT) -b\$(FLASHER_BAUD_RATE) -D -Uflash:w:\$(BIN_DIR)/\$(TARGET).cpp.hex:i" >> makefile
+    echo "BUILD_COMPLETE = mv \$(BUILD_DIR)/\$(TARGET).cpp.hex \$(BIN_DIR)" >> makefile
+    echo "LINKPORT = \$(PORT)" >> makefile
+    echo "SERIALBAUD = $SERIALBAUD" >> makefile
+
+elif [ "$TARGET" == "airsenseV2" ]
+then
+    echo "PACKAGE = arduino" >> makefile
+    echo "ARCH = sam" >> makefile
+    echo "BOARD = arduino_due_x" >> makefile
+    echo "TYPE = " >> makefile
+    echo "FLASHER_BAUD_RATE = 115200" >> makefile
+    echo "PORT = ${PORT##*/dev/}" >> makefile
+    echo "BOARD_FLASH = \$(PACKAGE):\$(ARCH):\$(BOARD)" >> makefile
+    echo "BOOT_LOADER_TYPE = wiring" >>  makefile
+    echo "PRE_FLASH_COMMAND = stty -F /dev/\$(PORT) 1200 hupcl; sleep 2"  >> makefile
+    echo "FLASHER = \$(ARD_HOME)/tools/bossac/1.3a-arduino/bossac" >> makefile
+    echo "FLASH_BOARD = \$(FLASHER) -i -d --port=\$(PORT) -U true -e -w -v -b \$(BIN_DIR)/\$(TARGET).cpp.bin -R" >> makefile
+    echo "BUILD_COMPLETE = mv \$(BUILD_DIR)/\$(TARGET).cpp.bin \$(BIN_DIR)" >> makefile
+    echo "LINKPORT = /dev/\$(PORT)" >> makefile
+    echo "SERIALBAUD = $SERIALBAUD" >> makefile
 
 fi
 
 cat MakeFile >> makefile
 echo "Success! Now you can compile and flash the CPU with make and make install."
-
-
