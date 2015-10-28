@@ -1,8 +1,10 @@
 #include <Wire.h>
 extern TwoWire Wire1;
+
+
 #include "config.cpp"
 
-#include "MCP342X.h"
+#include <MCP342X.h>
 MCP342X mcp3428_1;
 MCP342X mcp3428_2;
 
@@ -67,7 +69,7 @@ uint16_t TSYS_coefficents[5];
 #endif
 
 #ifdef TMP421_include
-#include "LibTempTMP421.h"
+#include <LibTempTMP421.h>
 LibTempTMP421 TMP421_Sensor = LibTempTMP421();
 #endif
 
