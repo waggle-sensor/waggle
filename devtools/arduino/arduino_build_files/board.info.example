@@ -1,6 +1,9 @@
-TARGET='wagmanV2'
+#Build settings for Wagman
+#TARGET='wagmanV2'
 #PORT='/dev/ttyACM0'
 #SERIALBAUD=115200
+
+#Build settings for Airsense
 #TARGET='airsenseV2'
-PORT='/dev/ttyACM0'
-SERIALBAUD=115200
+#PORT='/dev/ttyACM0'
+#SERIALBAUD=115200

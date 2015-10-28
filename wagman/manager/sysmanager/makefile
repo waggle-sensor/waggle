@@ -12,7 +12,7 @@ PRE_FLASH_COMMAND = stty -F $(PORT) 1200 hupcl; sleep 2
 FLASHER = $(ARD_HOME)/hardware/tools/avr/bin/avrdude
 FLASHER_CONFIGS = $(ARD_HOME)/hardware/tools/avr/etc/avrdude.conf
 FLASH_BOARD = $(FLASHER) -C$(FLASHER_CONFIGS) -v -p$(TYPE) -c$(BOOT_LOADER_TYPE) -P$(PORT) -b$(FLASHER_BAUD_RATE) -D -Uflash:w:$(BIN_DIR)/$(TARGET).cpp.hex:i
-BUILD_COMPLETE = mv $(BUILD_DIR)/$(TARGET).cpp.hex $(BIN_DIR)
+BUILD_COMPLETE = mv $(BUILD_DIR)/$(TARGET).cpp.hex $(BIN_DIR)/
 LINKPORT = $(PORT)
 SERIALBAUD = 115200
 CC = $(ARD_HOME)/arduino
@@ -36,5 +36,9 @@ install: all
 	$(FLASH_BOARD)
 
 run:    install
+	sleep 2
+	screen $(LINKPORT) $(SERIALBAUD)
+
+connect:
 	sleep 2
 	screen $(LINKPORT) $(SERIALBAUD)

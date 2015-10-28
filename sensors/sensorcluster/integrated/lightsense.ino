@@ -2,7 +2,7 @@ void lightsense_acquire (void)
 {
     #ifdef SERIAL_DEBUG
     SerialUSB.print("\n");
-    SerialUSB.println("Acquiring LightSense Data.");
+    SerialUSB.println("---> Acquiring LightSense Data <---");
     #endif
 
     #ifdef HIH6130_include
