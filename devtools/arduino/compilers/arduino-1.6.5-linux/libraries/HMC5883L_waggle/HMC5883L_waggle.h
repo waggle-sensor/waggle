@@ -17,7 +17,7 @@
 
   Modified Wed Oct 28 15:01:41 CDT 2015:
   Original files obtained from -
-  https://github.com/adafruit/Adafruit_HMC5883_Unified
+  https://github.com/adafruit/HMC5883_Sensor
 
   Modifications  (WG, RxS) -
   1. Added support for using sensor on both Wire1 and Wire buses.
@@ -108,11 +108,11 @@
 
 
 /* Unified sensor driver for the magnetometer */
-class Adafruit_HMC5883_Unified : public Adafruit_Sensor
+class HMC5883_Sensor : public Adafruit_Sensor
 {
   public:
-    Adafruit_HMC5883_Unified(int32_t sensorID = -1, TwoWire * wire = NULL);
-    Adafruit_HMC5883_Unified(TwoWire * wire);
+    HMC5883_Sensor(int32_t sensorID = -1, TwoWire * wire = NULL);
+    HMC5883_Sensor(TwoWire * wire);
 
     bool begin(void);
     void setMagGain(hmc5883MagGain gain);

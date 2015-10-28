@@ -11,7 +11,7 @@ BOOT_LOADER_TYPE = wiring
 PRE_FLASH_COMMAND = stty -F /dev/$(PORT) 1200 hupcl; sleep 2
 FLASHER = $(ARD_HOME)/tools/bossac/1.3a-arduino/bossac
 FLASH_BOARD = $(FLASHER) -i -d --port=$(PORT) -U true -e -w -v -b $(BIN_DIR)/$(TARGET).cpp.bin -R
-BUILD_COMPLETE = mv $(BUILD_DIR)/$(TARGET).cpp.bin $(BIN_DIR)
+BUILD_COMPLETE = mv $(BUILD_DIR)/$(TARGET).cpp.bin $(BIN_DIR)/
 LINKPORT = /dev/$(PORT)
 SERIALBAUD = 115200
 CC = $(ARD_HOME)/arduino

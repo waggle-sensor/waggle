@@ -17,7 +17,7 @@
 
   Modified Wed Oct 28 15:01:41 CDT 2015:
   Original files obtained from -
-  https://github.com/adafruit/Adafruit_HMC5883_Unified
+  https://github.com/adafruit/HMC5883_Sensor
 
   Modifications  (WG, RxS) -
   1. Added support for using sensor on both Wire1 and Wire buses.
@@ -57,7 +57,7 @@ static float _hmc5883_Gauss_LSB_Z  = 980.0F;   // Varies with gain
     @brief  Abstract away platform differences in Arduino wire library
 */
 /**************************************************************************/
-void Adafruit_HMC5883_Unified::write8(byte address, byte reg, byte value)
+void HMC5883_Sensor::write8(byte address, byte reg, byte value)
 {
   _wire->beginTransmission(address);
   #if ARDUINO >= 100
@@ -75,7 +75,7 @@ void Adafruit_HMC5883_Unified::write8(byte address, byte reg, byte value)
     @brief  Abstract away platform differences in Arduino wire library
 */
 /**************************************************************************/
-byte Adafruit_HMC5883_Unified::read8(byte address, byte reg)
+byte HMC5883_Sensor::read8(byte address, byte reg)
 {
   byte value;
 
@@ -102,7 +102,7 @@ byte Adafruit_HMC5883_Unified::read8(byte address, byte reg)
     @brief  Reads the raw data from the sensor
 */
 /**************************************************************************/
-void Adafruit_HMC5883_Unified::read()
+void HMC5883_Sensor::read()
 {
   // Read the magnetometer
   _wire->beginTransmission((byte)HMC5883_ADDRESS_MAG);
@@ -152,7 +152,7 @@ void Adafruit_HMC5883_Unified::read()
     @brief  Instantiates a new Adafruit_HMC5883 class
 */
 /**************************************************************************/
-Adafruit_HMC5883_Unified::Adafruit_HMC5883_Unified(int32_t sensorID, TwoWire * wire) {
+HMC5883_Sensor::HMC5883_Sensor(int32_t sensorID, TwoWire * wire) {
   _sensorID = sensorID;
   if (wire == NULL) {
     _wire = &Wire;
@@ -161,7 +161,7 @@ Adafruit_HMC5883_Unified::Adafruit_HMC5883_Unified(int32_t sensorID, TwoWire * w
   }
 }
 
-Adafruit_HMC5883_Unified::Adafruit_HMC5883_Unified(TwoWire * wire) {
+HMC5883_Sensor::HMC5883_Sensor(TwoWire * wire) {
   _sensorID = -1;
   if (wire == NULL) {
     _wire = &Wire;
@@ -181,7 +181,7 @@ Adafruit_HMC5883_Unified::Adafruit_HMC5883_Unified(TwoWire * wire) {
     @brief  Setups the HW
 */
 /**************************************************************************/
-bool Adafruit_HMC5883_Unified::begin()
+bool HMC5883_Sensor::begin()
 {
   // Enable I2C
   _wire->begin();
@@ -200,7 +200,7 @@ bool Adafruit_HMC5883_Unified::begin()
     @brief  Sets the magnetometer's gain
 */
 /**************************************************************************/
-void Adafruit_HMC5883_Unified::setMagGain(hmc5883MagGain gain)
+void HMC5883_Sensor::setMagGain(hmc5883MagGain gain)
 {
   write8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_CRB_REG_M, (byte)gain);
 
@@ -244,7 +244,7 @@ void Adafruit_HMC5883_Unified::setMagGain(hmc5883MagGain gain)
     @brief  Gets the most recent sensor event
 */
 /**************************************************************************/
-bool Adafruit_HMC5883_Unified::getEvent(sensors_event_t *event) {
+bool HMC5883_Sensor::getEvent(sensors_event_t *event) {
   /* Clear the event */
   memset(event, 0, sizeof(sensors_event_t));
 
@@ -267,7 +267,7 @@ bool Adafruit_HMC5883_Unified::getEvent(sensors_event_t *event) {
     @brief  Gets the sensor_t data
 */
 /**************************************************************************/
-void Adafruit_HMC5883_Unified::getSensor(sensor_t *sensor) {
+void HMC5883_Sensor::getSensor(sensor_t *sensor) {
   /* Clear the sensor_t object */
   memset(sensor, 0, sizeof(sensor_t));
 
