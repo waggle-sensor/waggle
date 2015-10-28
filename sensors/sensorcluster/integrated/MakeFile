@@ -8,10 +8,11 @@ all: $(TARGET)
 $(TARGET): $(TARGET).ino
 	$(CC) --board $(BOARD_FLASH) $(CFLAGS) --pref build.path=$(BUILD_DIR) $(TARGET).ino
 	$(BUILD_COMPLETE)
-	rm -rf $(BUILD_DIR)/*
+	
 clean:
 	rm -rf $(BIN_DIR)/*
 	rm -rf $(BUILD_DIR)/*
+	rm -f *~
 
 install: all
 	$(PRE_FLASH_COMMAND)
@@ -19,4 +20,8 @@ install: all
 
 run:    install
 	sleep 2
-	screen /dev/$(PORT) 115200
+	screen $(LINKPORT) $(SERIALBAUD)
+
+connect:
+	sleep 2
+	screen $(LINKPORT) $(SERIALBAUD)

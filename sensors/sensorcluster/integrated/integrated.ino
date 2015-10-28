@@ -180,36 +180,48 @@ void requestEvent()
 
 void ALL_SENSOR_READ ()
 {
+    #ifdef AIRSENSE_INCLUDE
     airsense_acquire();
-    lightsense_acquire();
-    #ifdef SERIAL_DEBUG
-    SerialUSB.println("Acquiring ChemSense Data.");
     #endif
-    while (Serial3.available() > 0)
-    {
-        Serial3.read();
-    }
-    ChemSensed = 0;
-    Chemsense_locked = 0;
-    LOOPING = millis();
-    while(1)
-    {
-        chemsense_aquire();
-        if (ChemSensed == 1)
+
+    #ifdef LIGHTSENSE_INCLUDE
+    lightsense_acquire();
+    #endif
+
+
+    #ifdef CHEMSENSE_INCLUDE
+
+        #ifdef SERIAL_DEBUG
+        SerialUSB.println("Acquiring ChemSense Data.");
+        #endif
+        while (Serial3.available() > 0)
         {
-            chemsense_pack();
-            break;
+            Serial3.read();
+        }
+        ChemSensed = 0;
+        Chemsense_locked = 0;
+        LOOPING = millis();
+        while(1)
+        {
+            chemsense_aquire();
+            if (ChemSensed == 1)
+            {
+                chemsense_pack();
+                break;
+            }
+
+            if (  millis() - LOOPING > 3000)
+            {
+                #ifdef SERIAL_DEBUG
+                SerialUSB.println("Intel Board Missing.");
+                #endif
+                ChemSensed = 0;
+                break;
+            }
         }
 
-        if (  millis() - LOOPING > 3000)
-        {
-            #ifdef SERIAL_DEBUG
-            SerialUSB.println("Intel Board Missing.");
-            #endif
-            ChemSensed = 0;
-            break;
-        }
-    }
+    #endif
+
     assemble_packet_empty();
     assemble_packet_whole();
 
@@ -238,7 +250,6 @@ void setup()
     SerialUSB.println("Starting...");
     #endif
 
-
     Serial3.begin(115200);
     //     Setup the I2C buffer
     for (byte i=0x00; i<LENGTH_WHOLE; i++)
@@ -259,16 +270,24 @@ void setup()
 }
 /**************************************************************************************/
 
+#ifdef I2C_INTERFACE
 void loop()
 {
-
     if (I2C_READ_COMPLETE == true)
     {
         ALL_SENSOR_READ();
         I2C_READ_COMPLETE = false;
     }
-
     requestEvent();
-
     delay(30000);
 }
+#endif
+
+
+#ifdef USBSERIAL_INTERFACE
+void loop()
+{
+    ALL_SENSOR_READ();
+    delay(3000);
+}
+#endif

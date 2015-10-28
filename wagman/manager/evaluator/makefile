@@ -29,7 +29,7 @@ $(TARGET): $(TARGET).ino
 clean:
 	rm -rf $(BIN_DIR)/*
 	rm -rf $(BUILD_DIR)/*
-	rm *~
+	rm -f *~
 
 install: all
 	$(PRE_FLASH_COMMAND)
