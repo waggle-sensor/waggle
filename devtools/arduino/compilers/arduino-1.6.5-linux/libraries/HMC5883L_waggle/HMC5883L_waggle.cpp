@@ -28,7 +28,7 @@
 
 #include <limits.h>
 
-#include "Adafruit_HMC5883_U.h"
+#include "HMC5883L_waggle.h"
 
 static float _hmc5883_Gauss_LSB_XY = 1100.0F;  // Varies with gain
 static float _hmc5883_Gauss_LSB_Z  = 980.0F;   // Varies with gain
