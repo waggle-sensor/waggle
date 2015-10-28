@@ -1,5 +1,4 @@
 The library was forked from https://github.com/adafruit/Adafruit_HMC5883_Unified, renamed and modified to allow use of I2C Port0 and Port1.
-
 ## Usage:
 ```
 HMC5883_Sensor HMC5883_Magnetometer = HMC5883_Sensor(&Wire1); // Sensor is connected to Wire1 interface
