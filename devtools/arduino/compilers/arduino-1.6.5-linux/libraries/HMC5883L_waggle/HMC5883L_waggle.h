@@ -10,9 +10,21 @@
   please support Adafruit andopen-source hardware by purchasing products
   from Adafruit!
 
-  Written by Kevin Townsend for Adafruit Industries.  
+  Written by Kevin Townsend for Adafruit Industries.
   BSD license, all text above must be included in any redistribution
- ***************************************************************************/
+
+  ###########################################################################
+
+  Modified Wed Oct 28 15:01:41 CDT 2015:
+  Original files obtained from -
+  https://github.com/adafruit/Adafruit_HMC5883_Unified
+
+  Modifications  (WG, RxS) -
+  1. Added support for using sensor on both Wire1 and Wire buses.
+  2. Default output in gauss and not Tesla.
+  3. Changed filenames.
+
+  ***************************************************************************/
 #ifndef __HMC5883_H__
 #define __HMC5883_H__
 
@@ -73,7 +85,7 @@
       HMC5883_MAGGAIN_4_7                        = 0xA0,  // +/- 4.7
       HMC5883_MAGGAIN_5_6                        = 0xC0,  // +/- 5.6
       HMC5883_MAGGAIN_8_1                        = 0xE0   // +/- 8.1
-    } hmc5883MagGain;	
+    } hmc5883MagGain;
 /*=========================================================================*/
 
 /*=========================================================================
@@ -101,7 +113,7 @@ class Adafruit_HMC5883_Unified : public Adafruit_Sensor
   public:
     Adafruit_HMC5883_Unified(int32_t sensorID = -1, TwoWire * wire = NULL);
     Adafruit_HMC5883_Unified(TwoWire * wire);
-    
+
     bool begin(void);
     void setMagGain(hmc5883MagGain gain);
     bool getEvent(sensors_event_t*);
@@ -112,7 +124,7 @@ class Adafruit_HMC5883_Unified : public Adafruit_Sensor
     hmc5883MagData   _magData;     // Last read magnetometer data will be available here
     int32_t          _sensorID;
     TwoWire             *_wire;
-    
+
     void write8(byte address, byte reg, byte value);
     byte read8(byte address, byte reg);
     void read(void);
