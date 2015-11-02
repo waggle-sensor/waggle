@@ -19,9 +19,9 @@ export IMAGE="waggle-odroid-c1-VERSION.img"  # do not include the ".xz" suffix !
 Alternatively, if you want to use a plain (non-waggle) odroid image: 
 ```bash
 export URL="http://odroid.in/ubuntu_14.04lts/"
-export IMAGE="ubuntu-14.04.3lts-lubuntu-odroid-c1-20150811.img" # e.g. for the ODROID-C1 and ODROID-C1+ 
+export IMAGE="ubuntu-14.04.3lts-lubuntu-odroid-c1-20151020.img" # e.g. for the ODROID-C1 and ODROID-C1+ 
 # or
-export IMAGE="ubuntu-14.04.1lts-lubuntu-odroid-xu3-20150212.img" # e.g. for the ODROID-XU3
+export IMAGE="ubuntu-14.04.1lts-lubuntu-odroid-xu3-20151020.img" # e.g. for the ODROID-XU3
 ```
 (If you are only looking for a stock Odroid image, choose the corresponding "ubuntu" image for your device, not the "server" or the "xubuntu" image.)
 
