@@ -33,8 +33,11 @@ wget ${URL}/${IMAGE}.xz.md5sum
 
 After we have downloaded these two files, we want to be sure that the files were correctly downloaded. For this we compare the actual md5sum of the image with the official md5sum. If both md5sum's are identical everything is ok.
 ```bash
-md5 ${IMAGE}.xz
 cat ${IMAGE}.xz.md5sum
+# Linux
+md5sum ${IMAGE}.xz
+# OSX
+md5 -r ${IMAGE}.xz
 ```
 
 Uncompress the image:
