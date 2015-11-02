@@ -80,7 +80,7 @@ sudo sync
 # OSX:
 sudo dd if=${IMAGE} of=/dev/r${DEVICE_NAME} bs=1m
 sudo sync
-# (Use ctrl-T to see progress)
+# (Use ctrl-T to see progress of "dd")
 ```
 
 
