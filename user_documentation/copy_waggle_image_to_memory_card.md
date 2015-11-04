@@ -1,7 +1,7 @@
 
 # Copy waggle image to SD-card (Linux/OSX)
 
-This document explains how to load an an waggle image onto an SD-card or eMMC. These instructions are for Linux/OSX systems. If you need instructions for Windows, please contact us.
+This document explains how to load a waggle image onto an SD-card or eMMC. These instructions are for Linux/OSX systems. If you need instructions for Windows, please contact us.
 
 ## Download
 
