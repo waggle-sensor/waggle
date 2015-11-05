@@ -79,6 +79,9 @@ Instructions how to find the IP address of the node controller in your network c
 ### Wireless adapter
 TODO
 
+### External monitor and keyboard
+If you want, you can use the HDMI connector on the ODROID to connect an external monitor and the USB ports to connect a keyboard. This should not be needed, especially for waggle users, but can be helpful for debugging if you are unable to establish an ssh connection.
+
 ## Configure node controller software
 
 As root user, specify the beehive sever IP address or URL and run the configure script.
