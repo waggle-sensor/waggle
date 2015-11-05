@@ -76,7 +76,7 @@ Both LED's activated:
 ### Ethernet
 The ethernet port on the ODROID currently is reserved for an extension node (or "guest node") and thus has a static IP address assigned. To connect the node controller with your network use the USB network adapter. 
 
-TODO: picture of USB network adapter connected
+<img src="pictures/USB-LAN_adapter_connected.jpg" width="480">
 
 Instructions how to find the IP address of the node controller in your network and to login into the device using ssh can be found here:
 
