@@ -97,6 +97,9 @@ cd /usr/lib/waggle/nodecontroller
 BEEHIVE_HOST=<ip> ./configure
 ```
 
+For more details see the node controller [README.md](../nodecontroller/README.md).
+
+
 ## start/configure sensor?
 TODO: add sensor ?
 
