@@ -67,6 +67,7 @@ Note that the ODROID has two LED's, the red "PWR" that indicates power, and the 
 
 ## Connect to the node controller
 
+### Ethernet
 The ethernet port on the ODROID currently is reserved for an extension node (or "guest node") and thus has a static IP address assigned. To connect the node controller with your network use the USB network adapter. 
 
 TODO: picture of USB network adapter connected
@@ -74,6 +75,9 @@ TODO: picture of USB network adapter connected
 Instructions how to find the IP address of the node controller in your network can be found here:
 
 [./copy_waggle_image_to_memory_card.md#ssh-connection-with-odroid](copy_waggle_image_to_memory_card.md#ssh-connection-with-odroid)
+
+### Wireless adapter
+TODO
 
 ## Configure node controller software
 
