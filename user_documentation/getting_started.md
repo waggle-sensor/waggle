@@ -37,23 +37,52 @@ The following hardware is needed to setup up the waggle node controller.
 
 
 
-## 2) Prepare memory cards
+## Prepare eMMC memory cards
 
-follow think link....
+To use the node controller you need to copy the waggle image (a modified ubuntu) onto an eMMC memory card. Since eMMC's do not have a standardized connector, Hardkernel eMMC's come with an eMMC module reader with a standard microSD card connector. The microSD card connector can then be plugged into a normal microSD/USB adapter which in turn can be plugged into the USB port of a computer:
 
-The memory card slots are on the bottom side of the ODROID:
+<img src="pictures/eMMC_in_USB_adapter.jpg" width="320">
+
+Please follow these instructions to copy the waggle image onto the eMMC memory card: [copy_waggle_image_to_memory_card.md](./copy_waggle_image_to_memory_card.md)
+
+The SD-card does not need a copy of the waggle image. The waggle software on the eMMC will later automatically reconfigure the SD-card.
+
+Once the eMMC memory has copy of the waggle image, both memory cards can be plugged into the ODROID. You can find both memory card slots on the bottom side of the ODROID. 
 
 <img src="pictures/ODROID-C1+_bottom.jpg" width="320">
 
-When both memory cards are plugged into the ODROID it looks like this:
+The final result should look like this:
 
 <img src="pictures/ODROID-C1+_bottom_with_memory.jpg" width="320">
 
-Connect power to start device.
+## Turn on the node controller
 
+The ODROID does not have a power button. Once you plug in the barrel power plug the device will try to boot an OS from the eMMC (or from SD-card if the eMMC is missing).
+
+<img src="pictures/barrel_power_plug.jpg" width="320">
+
+Note that the ODROID has two LED's, the red "PWR" that indicates power, and the blue "ALIVE", which will start to blink once the device has successfully booted.
 
 <img src="pictures/PWR_and_ALIVE_LEDs.jpg" width="320">
 
+## Connect to the node controller
+
+The ethernet port on the ODROID currently is reserved for an extension node (or "guest node") and thus has a static IP address assigned. To connect the node controller with your network use the USB network adapter. 
+
+Instructions how to find the IP address of the node controller in your network can be found here:
+
+[./copy_waggle_image_to_memory_card.md#ssh-connection-with-odroid](copy_waggle_image_to_memory_card.md#ssh-connection-with-odroid)
+
+## Configure node controller software
+
+```bash
+cd /usr/lib/nodecontroller
+..
+```
+
+## start sensor
+
+## view results from server
 
 
 
@@ -62,4 +91,3 @@ Connect power to start device.
 
 
 
-<img src="pictures/eMMC_in_USB_adapter.jpg" width="320">
