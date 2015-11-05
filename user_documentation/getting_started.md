@@ -7,28 +7,33 @@ This guide explains how to set up a nodecontroller and send sensor data to a bee
 ## Hardware requirements
 The following hardware is needed to setup up the waggle node controller.
 
-### ODROID-C1+
-<img src="pictures/ODROID-C1+.jpg" width="320">
+* ODROID-C1+
 
-A low-cost single board computer with an 1.5Ghz quad core ARM processor and 1GB RAM. More technical details can be found on the manufacturer website:
+   <img src="pictures/ODROID-C1+.jpg" width="320">
+   
+   A low-cost single board computer with an 1.5Ghz quad core ARM processor and 1GB RAM. More technical details can be found on the manufacturer website:
+   
+   [ODROID C1+ technical details](http://www.hardkernel.com/main/products/prdt_info.php?g_code=G143703355573&tab_idx=2)
+   
 
-[ODROID C1+ technical details](http://www.hardkernel.com/main/products/prdt_info.php?g_code=G143703355573&tab_idx=2)
+* eMMC memory card and USB adapter
 
+   <img src="pictures/eMMC_and_USB_adapter_pieces.jpg" width="160">
 
-### eMMC memory card and USB adapter
-<img src="pictures/eMMC_and_USB_adapter_pieces.jpg" width="160">
+* micro SD-card
 
-### micro SD-card
-<img src="pictures/SD-card.jpg" width="80">
+   <img src="pictures/SD-card.jpg" width="80">
 
-### USB network adapter
-<img src="pictures/USB-LAN-adapter.jpg" width="320">
+* USB network adapter
 
+   <img src="pictures/USB-LAN-adapter.jpg" width="320">
+   
 
-### Power adapter with barrel plug
-5V 2A DC input
+* Power adapter with barrel plug
 
-<img src="pictures/barrel_power_plug.jpg" width="320">
+   Specification: 5V 2A DC input
+
+   <img src="pictures/barrel_power_plug.jpg" width="320">
 
 
 
