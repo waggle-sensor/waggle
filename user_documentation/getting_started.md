@@ -20,6 +20,8 @@ The following hardware is needed to setup up the waggle node controller.
 
    <img src="pictures/eMMC_and_USB_adapter_pieces.jpg" width="160">
 
+   Since eMMC's do not have a standardized connector, Hardkernel eMMC's come with an eMMC module reader with a standard microSD card connector.
+
 * micro SD-card
 
    <img src="pictures/SD-card.jpg" width="80">
@@ -27,19 +29,18 @@ The following hardware is needed to setup up the waggle node controller.
 * USB network adapter
 
    <img src="pictures/USB-LAN-adapter.jpg" width="320">
-   
+
+   A USB 2.0 to ethernet network adapter.
 
 * Power adapter with barrel plug
 
-   Specification: 5V 2A DC input
-
    <img src="pictures/barrel_power_plug.jpg" width="320">
 
-
+   Specification: 5V 2A DC input
 
 ## Prepare eMMC memory cards
 
-To use the node controller you need to copy the waggle image (a modified ubuntu) onto an eMMC memory card. Since eMMC's do not have a standardized connector, Hardkernel eMMC's come with an eMMC module reader with a standard microSD card connector. The microSD card connector can then be plugged into a normal microSD/USB adapter which in turn can be plugged into the USB port of a computer:
+To use the node controller you need to copy the waggle image (a modified ubuntu) onto an eMMC memory card. To connect the eMMC with your computer, connect the eMMC with the eMMC/microSD adapter and plug that into a common microSD/USB adapter which in turn can be plugged into the USB port of a computer:
 
 <img src="pictures/eMMC_in_USB_adapter.jpg" width="320">
 
