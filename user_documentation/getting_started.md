@@ -62,7 +62,12 @@ The ODROID does not have a power button. Once you plug in the barrel power plug 
 
 <img src="pictures/barrel_power_plug.jpg" width="320">
 
-Note that the ODROID has two LED's, the red "PWR" that indicates power, and the blue "ALIVE", which will start to blink once the device has successfully booted.
+Note that the ODROID has two LED's. The red "PWR" LED indicates that the device has power. The blue "ALIVE" can indicate three different states (copied from the ODROID C1+ user manual):
+* Is on (solid light) when the bootloader is running (Takes a few seconds)
+* Blinks slowly when the kernel is running, like a heartbeat (Normal mode)
+* Blinks quickly when the kernel is in panic mode
+
+Both LED's activated:
 
 <img src="pictures/PWR_and_ALIVE_LEDs.jpg" width="320">
 
@@ -75,7 +80,7 @@ TODO: picture of USB network adapter connected
 
 Instructions how to find the IP address of the node controller in your network can be found here:
 
-[./copy_waggle_image_to_memory_card.md#ssh-connection-with-odroid](copy_waggle_image_to_memory_card.md#ssh-connection-with-odroid)
+[SSH_connection.md](./SSH_connection.md)
 
 ### Wireless adapter
 TODO
