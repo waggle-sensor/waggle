@@ -78,7 +78,7 @@ The ethernet port on the ODROID currently is reserved for an extension node (or 
 
 TODO: picture of USB network adapter connected
 
-Instructions how to find the IP address of the node controller in your network can be found here:
+Instructions how to find the IP address of the node controller in your network and to login into the device using ssh can be found here:
 
 [SSH_connection.md](./SSH_connection.md)
 
