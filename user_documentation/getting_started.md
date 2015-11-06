@@ -16,7 +16,7 @@ The following hardware is needed to setup up the waggle node controller.
    [ODROID C1+ technical details](http://www.hardkernel.com/main/products/prdt_info.php?g_code=G143703355573&tab_idx=2)
    
 
-* eMMC memory card and USB adapter
+* eMMC memory card and USB SD-card adapter
 
    <img src="pictures/eMMC_and_USB_adapter_pieces.jpg" width="160">
 
