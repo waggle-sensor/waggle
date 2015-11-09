@@ -33,7 +33,6 @@ wget ${URL}/${IMAGE}.xz.md5sum
 
 After we have downloaded these two files, we want to be sure that the files were correctly downloaded. For this we compare the actual md5sum of the image with the official md5sum. If both md5sum's are identical everything is ok.
 ```bash
-cat ${IMAGE}.xz.md5sum
 # Linux
 md5sum ${IMAGE}.xz > ${IMAGE}.xz.local_md5sum
 # OSX
