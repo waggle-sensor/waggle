@@ -35,9 +35,11 @@ After we have downloaded these two files, we want to be sure that the files were
 ```bash
 cat ${IMAGE}.xz.md5sum
 # Linux
-md5sum ${IMAGE}.xz
+md5sum ${IMAGE}.xz > ${IMAGE}.xz.local_md5sum
 # OSX
-md5 -r ${IMAGE}.xz
+md5 -r ${IMAGE}.xz > ${IMAGE}.xz.local_md5sum
+
+diff ${IMAGE}.xz.md5sum ${IMAGE}.xz.local_md5sum
 ```
 
 Uncompress the image:
