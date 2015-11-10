@@ -2,14 +2,10 @@
  * Emulates data coming from all sensors on AoT device and assembles them into a packet.
  * Operates as I2C slave that responds to master's data requests.
  *
- * Arduino Mega2560 connections:
- *  GND ---> GND
- *  SDA (Pin 20) ---> Master's SDA
- *  SCL (Pin 21) ---> Master's SCL
  *
- * Author: Daniel Schrader (dschrader@anl.gov)
+ * Author: Daniel Schrader (dschrader@anl.gov), Rajesh Sankaran (r@anl.gov)
  *
- * Last updated: 20 May 2015
+ * Last updated: 9th NOV 2015
  ***************************************************************************************/
 
 
@@ -79,25 +75,16 @@ byte length_data_actual;
 byte crc = 0x00;
 /**************************************************************************************/
 
+#ifdef I2C_SENSOR
 /** I2C request interrupt *************************************************************/
 void requestEvent()
 {
     // Send it!
     Wire.write(packet_whole, packet_whole[0x02]+0x05);
     // Generate fake sensor data
-    generate_data();
-    // Put whole packet together
-    assemble_packet_whole();
-    Serial.print("Request rcvd\n");
-    for(int i = 0; i < packet_whole[0x02]+0x05; i++)
-    {
-      Serial.print(packet_whole[i], HEX);
-      Serial.print(" ");
-    }
-    Serial.print("\n");
 }
 /**************************************************************************************/
-
+#endif
 
 
 /** Arduino: setup ********************************************************************/
@@ -105,7 +92,7 @@ void setup()
 {
     // Let us wait for the processor and the sensors to settle down
     delay(3000);
-    Serial.begin(115200);
+    SerialUSB.begin(115200);
     //     Setup the I2C buffer
     for (byte i=0x00; i<LENGTH_WHOLE; i++)
     {
@@ -116,11 +103,14 @@ void setup()
     packet_whole[0x02] = 0x00;
     packet_whole[0x03] = 0x00;
     packet_whole[0x04] = END_BYTE;
-    Serial.print("This is the emulator...");
+
+    
+    #ifdef I2C_SENSOR
     // Join I2C bus as slave
     Wire.begin(I2C_SLAVE_ADDRESS);
     // Register interrupt
     Wire.onRequest(requestEvent);
+    #endif
 }
 /**************************************************************************************/
 
@@ -129,11 +119,17 @@ void setup()
 /** Arduino: loop *********************************************************************/
 void loop()
 {
-//     // Generate fake sensor data
-//     generate_data();
-//     // Put whole packet together
-//     assemble_packet_whole();
-//     // Simulate sensor data accumulation period
+    // Generate fake sensor data
+    generate_data();
+    // Put whole packet together
+    assemble_packet_whole();
+    // Simulate sensor data accumulation period
+    #ifdef SERIAL_SENSOR
+    for(int i = 0; i < packet_whole[0x02]+0x05; i++)
+    {
+        SerialUSB.write(packet_whole[i]);
+    }
+    #endif
     delay(DELAY_MS);
 }
 /**************************************************************************************/

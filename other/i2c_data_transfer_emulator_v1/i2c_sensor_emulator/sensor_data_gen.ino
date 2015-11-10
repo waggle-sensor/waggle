@@ -25,10 +25,10 @@ void generate_data()
     MAC_ID[6] = 0x02;
     MAC_ID[7] = 0x01;
     #ifdef SERIAL_DEBUG
-    Serial.print("MAC ID: ");
+    SerialUSB.print("MAC ID: ");
     for (int i = 2; i < (LENGTH_FORMAT3 + 2); i++)
-      Serial.print(MAC_ID[i], HEX);
-    Serial.println("");
+      SerialUSB.print(MAC_ID[i], HEX);
+    SerialUSB.println("");
     #endif
     #endif
 
@@ -50,12 +50,12 @@ void generate_data()
     TMP112[2] = packet_format1[0];
     TMP112[3] = packet_format1[1];
     #ifdef SERIAL_DEBUG
-    Serial.print("TMP112: ");
-    Serial.println(value_f);
-    Serial.print("TMP112: ");
-    Serial.print(TMP112[2]);
-    Serial.print(" ");
-    Serial.println(TMP112[3]);
+    SerialUSB.print("TMP112: ");
+    SerialUSB.println(value_f);
+    SerialUSB.print("TMP112: ");
+    SerialUSB.print(TMP112[2]);
+    SerialUSB.print(" ");
+    SerialUSB.println(TMP112[3]);
     #endif
     #endif
 
@@ -77,8 +77,8 @@ void generate_data()
     HTU21D[2] = packet_format1[0];
     HTU21D[3] = packet_format1[1];
     #ifdef SERIAL_DEBUG
-    Serial.print("HTU21D temp: ");
-    Serial.println(value_f);
+    SerialUSB.print("HTU21D temp: ");
+    SerialUSB.println(value_f);
     #endif
 
     // RH (format 1)
@@ -89,8 +89,8 @@ void generate_data()
     HTU21D[4] = packet_format1[0];
     HTU21D[5] = packet_format1[1];
     #ifdef SERIAL_DEBUG
-    Serial.print("HTU21D RH: ");
-    Serial.println(value_f);
+    SerialUSB.print("HTU21D RH: ");
+    SerialUSB.println(value_f);
     #endif
     #endif
 
@@ -109,8 +109,8 @@ void generate_data()
     GP2Y1010AU0F[2] = packet_format2[0];
     GP2Y1010AU0F[3] = packet_format2[1];
     #ifdef SERIAL_DEBUG
-    Serial.print("GP2Y1010AU0F: ");
-    Serial.println(value_i);
+    SerialUSB.print("GP2Y1010AU0F: ");
+    SerialUSB.println(value_i);
     #endif
     #endif
 
@@ -133,8 +133,8 @@ void generate_data()
     BMP180[2] = packet_format1[0];
     BMP180[3] = packet_format1[1];
     #ifdef SERIAL_DEBUG
-    Serial.print("BMP180 temp: ");
-    Serial.println(value_f);
+    SerialUSB.print("BMP180 temp: ");
+    SerialUSB.println(value_f);
     #endif
 
     // Atmospheric pressure (format 6)
@@ -154,8 +154,8 @@ void generate_data()
     BMP180[5] = packet_format6[1];
     BMP180[6] = packet_format6[2];
     #ifdef SERIAL_DEBUG
-    Serial.print("BMP180 pressure: ");
-    Serial.println(value_l);
+    SerialUSB.print("BMP180 pressure: ");
+    SerialUSB.println(value_l);
     #endif
     #endif
 
@@ -174,8 +174,8 @@ void generate_data()
     PR103J2[2] = packet_format2[0];
     PR103J2[3] = packet_format2[1];
     #ifdef SERIAL_DEBUG
-    Serial.print("PR103J2: ");
-    Serial.println(value_i);
+    SerialUSB.print("PR103J2: ");
+    SerialUSB.println(value_i);
     #endif
     #endif
 
@@ -194,8 +194,8 @@ void generate_data()
     TSL250RD_1[2] = packet_format2[0];
     TSL250RD_1[3] = packet_format2[1];
     #ifdef SERIAL_DEBUG
-    Serial.print("TSL250RD: ");
-    Serial.println(value_i);
+    SerialUSB.print("TSL250RD: ");
+    SerialUSB.println(value_i);
     #endif
     #endif
 
@@ -217,8 +217,8 @@ void generate_data()
     MMA8452Q[2] = packet_format1[0];
     MMA8452Q[3] = packet_format1[1];
     #ifdef SERIAL_DEBUG
-    Serial.print("MMA8452Q x: ");
-    Serial.println(value_f);
+    SerialUSB.print("MMA8452Q x: ");
+    SerialUSB.println(value_f);
     #endif
 
     // Accel_y (format 1)
@@ -232,8 +232,8 @@ void generate_data()
     MMA8452Q[4] = packet_format1[0];
     MMA8452Q[5] = packet_format1[1];
     #ifdef SERIAL_DEBUG
-    Serial.print("MMA8452Q y: ");
-    Serial.println(value_f);
+    SerialUSB.print("MMA8452Q y: ");
+    SerialUSB.println(value_f);
     #endif
 
     // Accel_x (format 1)
@@ -247,8 +247,8 @@ void generate_data()
     MMA8452Q[6] = packet_format1[0];
     MMA8452Q[7] = packet_format1[1];
     #ifdef SERIAL_DEBUG
-    Serial.print("MMA8452Q z: ");
-    Serial.println(value_f);
+    SerialUSB.print("MMA8452Q z: ");
+    SerialUSB.println(value_f);
     #endif
 
     // Accel RMS (format 1)
@@ -262,8 +262,8 @@ void generate_data()
     MMA8452Q[8] = packet_format1[0];
     MMA8452Q[9] = packet_format1[1];
     #ifdef SERIAL_DEBUG
-    Serial.print("MMA8452Q rms: ");
-    Serial.println(value_f);
+    SerialUSB.print("MMA8452Q rms: ");
+    SerialUSB.println(value_f);
     #endif
     #endif
 
@@ -282,8 +282,8 @@ void generate_data()
     SPV1840LR5HB_1[2] = packet_format2[0];
     SPV1840LR5HB_1[3] = packet_format2[1];
     #ifdef SERIAL_DEBUG
-    Serial.print("SPV1840LR5HB: ");
-    Serial.println(value_i);
+    SerialUSB.print("SPV1840LR5HB: ");
+    SerialUSB.println(value_i);
     #endif
     #endif
 
@@ -302,8 +302,8 @@ void generate_data()
     TSYS01[2] = packet_format2[0];
     TSYS01[3] = packet_format2[1];
     #ifdef SERIAL_DEBUG
-    Serial.print("TSYS01: ");
-    Serial.println(value_i);
+    SerialUSB.print("TSYS01: ");
+    SerialUSB.println(value_i);
     #endif
     #endif
 
@@ -325,8 +325,8 @@ void generate_data()
     HMC5883L[2] = packet_format4[0];
     HMC5883L[3] = packet_format4[1];
     #ifdef SERIAL_DEBUG
-    Serial.print("HMC5883L x: ");
-    Serial.println(value_f, 3);
+    SerialUSB.print("HMC5883L x: ");
+    SerialUSB.println(value_f, 3);
     #endif
 
     // Magnetic field strength y (format 4)
@@ -340,8 +340,8 @@ void generate_data()
     HMC5883L[4] = packet_format4[0];
     HMC5883L[5] = packet_format4[1];
     #ifdef SERIAL_DEBUG
-    Serial.print("HMC5883L y: ");
-    Serial.println(value_f, 3);
+    SerialUSB.print("HMC5883L y: ");
+    SerialUSB.println(value_f, 3);
     #endif
 
     // Magnetic field strength z (format 4)
@@ -355,8 +355,8 @@ void generate_data()
     HMC5883L[6] = packet_format4[0];
     HMC5883L[7] = packet_format4[1];
     #ifdef SERIAL_DEBUG
-    Serial.print("HMC5883L z: ");
-    Serial.println(value_f, 3);
+    SerialUSB.print("HMC5883L z: ");
+    SerialUSB.println(value_f, 3);
     #endif
     #endif
 
@@ -378,8 +378,8 @@ void generate_data()
     HIH6130[2] = packet_format1[0];
     HIH6130[3] = packet_format1[1];
     #ifdef SERIAL_DEBUG
-    Serial.print("HIH6130 temp: ");
-    Serial.println(value_f);
+    SerialUSB.print("HIH6130 temp: ");
+    SerialUSB.println(value_f);
     #endif
 
     // RH inside transparent box (format 1)
@@ -393,8 +393,8 @@ void generate_data()
     HIH6130[4] = packet_format1[0];
     HIH6130[5] = packet_format1[1];
     #ifdef SERIAL_DEBUG
-    Serial.print("HIH6130 RH: ");
-    Serial.println(value_f);
+    SerialUSB.print("HIH6130 RH: ");
+    SerialUSB.println(value_f);
     #endif
     #endif
 
@@ -413,8 +413,8 @@ void generate_data()
     APDS9006020[2] = packet_format2[0];
     APDS9006020[3] = packet_format2[1];
     #ifdef SERIAL_DEBUG
-    Serial.print("APDS9006020: ");
-    Serial.println(value_i);
+    SerialUSB.print("APDS9006020: ");
+    SerialUSB.println(value_i);
     #endif
     #endif
 
@@ -433,8 +433,8 @@ void generate_data()
     TSL260RD[2] = packet_format2[0];
     TSL260RD[3] = packet_format2[1];
     #ifdef SERIAL_DEBUG
-    Serial.print("TSL260RD: ");
-    Serial.println(value_i);
+    SerialUSB.print("TSL260RD: ");
+    SerialUSB.println(value_i);
     #endif
     #endif
 
@@ -453,8 +453,8 @@ void generate_data()
     TSL250RD_2[2] = packet_format2[0];
     TSL250RD_2[3] = packet_format2[1];
     #ifdef SERIAL_DEBUG
-    Serial.print("TSL250RD: ");
-    Serial.println(value_i);
+    SerialUSB.print("TSL250RD: ");
+    SerialUSB.println(value_i);
     #endif
     #endif
 
@@ -473,8 +473,8 @@ void generate_data()
     MLX75305[2] = packet_format2[0];
     MLX75305[3] = packet_format2[1];
     #ifdef SERIAL_DEBUG
-    Serial.print("MLX75305: ");
-    Serial.println(value_i);
+    SerialUSB.print("MLX75305: ");
+    SerialUSB.println(value_i);
     #endif
     #endif
 
@@ -493,8 +493,8 @@ void generate_data()
     ML8511[2] = packet_format2[0];
     ML8511[3] = packet_format2[1];
     #ifdef SERIAL_DEBUG
-    Serial.print("ML8511: ");
-    Serial.println(value_i);
+    SerialUSB.print("ML8511: ");
+    SerialUSB.println(value_i);
     #endif
     #endif
 
@@ -507,7 +507,7 @@ void generate_data()
     D6T[0] = ID_D6T;
     D6T[1] = (valid << 7) | (LENGTH_FORMAT1 * 17);
     #ifdef SERIAL_DEBUG
-    Serial.print("D6T: ");
+    SerialUSB.print("D6T: ");
     #endif
     // Temp of surrounding objects 1-17 (format 1)
     for (int i = 2; i < LENGTH_FORMAT1 * 18; i += 2)
@@ -522,12 +522,12 @@ void generate_data()
         D6T[i] = packet_format1[0];
         D6T[i + 1] = packet_format1[1];
         #ifdef SERIAL_DEBUG
-        Serial.print(value_f);
-        Serial.print(" ");
+        SerialUSB.print(value_f);
+        SerialUSB.print(" ");
         #endif
     }
     #ifdef SERIAL_DEBUG
-    Serial.println("");
+    SerialUSB.println("");
     #endif
     #endif
 
@@ -549,8 +549,8 @@ void generate_data()
     MLX90614[2] = packet_format1[0];
     MLX90614[3] = packet_format1[1];
     #ifdef SERIAL_DEBUG
-    Serial.print("MLX90614: ");
-    Serial.println(value_f);
+    SerialUSB.print("MLX90614: ");
+    SerialUSB.println(value_f);
     #endif
     #endif
 
@@ -572,8 +572,8 @@ void generate_data()
     TMP421[2] = packet_format1[0];
     TMP421[3] = packet_format1[1];
     #ifdef SERIAL_DEBUG
-    Serial.print("TMP421: ");
-    Serial.println(value_f);
+    SerialUSB.print("TMP421: ");
+    SerialUSB.println(value_f);
     #endif
     #endif
 
@@ -592,8 +592,8 @@ void generate_data()
     SPV1840LR5HB_2[2] = packet_format2[0];
     SPV1840LR5HB_2[3] = packet_format2[1];
     #ifdef SERIAL_DEBUG
-    Serial.print("SPV1840LR5HB: ");
-    Serial.println(value_i);
+    SerialUSB.print("SPV1840LR5HB: ");
+    SerialUSB.println(value_i);
     #endif
     #endif
 
@@ -612,8 +612,8 @@ void generate_data()
     total_reducing_gases[2] = packet_format2[0];
     total_reducing_gases[3] = packet_format2[1];
     #ifdef SERIAL_DEBUG
-    Serial.print("Total reducing gases: ");
-    Serial.println(value_i);
+    SerialUSB.print("Total reducing gases: ");
+    SerialUSB.println(value_i);
     #endif
     #endif
 
@@ -632,8 +632,8 @@ void generate_data()
     ethanol[2] = packet_format2[0];
     ethanol[3] = packet_format2[1];
     #ifdef SERIAL_DEBUG
-    Serial.print("Ethanol: ");
-    Serial.println(value_i);
+    SerialUSB.print("Ethanol: ");
+    SerialUSB.println(value_i);
     #endif
     #endif
 
@@ -652,8 +652,8 @@ void generate_data()
     nitrogen_dioxide[2] = packet_format2[0];
     nitrogen_dioxide[3] = packet_format2[1];
     #ifdef SERIAL_DEBUG
-    Serial.print("Nitrogen dioxide: ");
-    Serial.println(value_i);
+    SerialUSB.print("Nitrogen dioxide: ");
+    SerialUSB.println(value_i);
     #endif
     #endif
 
@@ -672,8 +672,8 @@ void generate_data()
     ozone[2] = packet_format2[0];
     ozone[3] = packet_format2[1];
     #ifdef SERIAL_DEBUG
-    Serial.print("Ozone: ");
-    Serial.println(value_i);
+    SerialUSB.print("Ozone: ");
+    SerialUSB.println(value_i);
     #endif
     #endif
 
@@ -692,8 +692,8 @@ void generate_data()
     hydrogen_sulphide[2] = packet_format2[0];
     hydrogen_sulphide[3] = packet_format2[1];
     #ifdef SERIAL_DEBUG
-    Serial.print("Hydrogen sulphide: ");
-    Serial.println(value_i);
+    SerialUSB.print("Hydrogen sulphide: ");
+    SerialUSB.println(value_i);
     #endif
     #endif
 
@@ -712,8 +712,8 @@ void generate_data()
     total_oxidizing_gases[2] = packet_format2[0];
     total_oxidizing_gases[3] = packet_format2[1];
     #ifdef SERIAL_DEBUG
-    Serial.print("Total oxidizing gases: ");
-    Serial.println(value_i);
+    SerialUSB.print("Total oxidizing gases: ");
+    SerialUSB.println(value_i);
     #endif
     #endif
 
@@ -732,8 +732,8 @@ void generate_data()
     carbon_monoxide[2] = packet_format2[0];
     carbon_monoxide[3] = packet_format2[1];
     #ifdef SERIAL_DEBUG
-    Serial.print("Carbon monoxide: ");
-    Serial.println(value_i);
+    SerialUSB.print("Carbon monoxide: ");
+    SerialUSB.println(value_i);
     #endif
     #endif
 
@@ -752,8 +752,8 @@ void generate_data()
     sulfur_dioxide[2] = packet_format2[0];
     sulfur_dioxide[3] = packet_format2[1];
     #ifdef SERIAL_DEBUG
-    Serial.print("Sulfur dioxide: ");
-    Serial.println(value_i);
+    SerialUSB.print("Sulfur dioxide: ");
+    SerialUSB.println(value_i);
     #endif
     #endif
 
@@ -775,8 +775,8 @@ void generate_data()
     sensirion[2] = packet_format1[0];
     sensirion[3] = packet_format1[1];
     #ifdef SERIAL_DEBUG
-    Serial.print("Sensirion temp: ");
-    Serial.println(value_f);
+    SerialUSB.print("Sensirion temp: ");
+    SerialUSB.println(value_f);
     #endif
 
     // RH (format 1)
@@ -787,8 +787,8 @@ void generate_data()
     sensirion[4] = packet_format1[0];
     sensirion[5] = packet_format1[1];
     #ifdef SERIAL_DEBUG
-    Serial.print("Sensirion RH: ");
-    Serial.println(value_f);
+    SerialUSB.print("Sensirion RH: ");
+    SerialUSB.println(value_f);
     #endif
     #endif
 
@@ -816,8 +816,8 @@ void generate_data()
     bosh[3] = packet_format6[1];
     bosh[4] = packet_format6[2];
     #ifdef SERIAL_DEBUG
-    Serial.print("Bosh: ");
-    Serial.println(value_l);
+    SerialUSB.print("Bosh: ");
+    SerialUSB.println(value_l);
     #endif
     #endif
 
@@ -833,10 +833,10 @@ void generate_data()
     intel_MAC_ID[6] = 0x08;
     intel_MAC_ID[7] = 0x07;
     #ifdef SERIAL_DEBUG
-    Serial.print("Intel MAC ID: ");
+    SerialUSB.print("Intel MAC ID: ");
     for (int i = 2; i < (LENGTH_FORMAT3 + 2); i++)
-      Serial.print(intel_MAC_ID[i], HEX);
-    Serial.println("");
+      SerialUSB.print(intel_MAC_ID[i], HEX);
+    SerialUSB.println("");
     #endif
     #endif
 
@@ -855,8 +855,8 @@ void generate_data()
     #endif
 
     #ifdef SERIAL_DEBUG
-    Serial.println("");
-    Serial.println("");
+    SerialUSB.println("");
+    SerialUSB.println("");
     #endif
 }
 /**************************************************************************************/
