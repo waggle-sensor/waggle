@@ -3,7 +3,7 @@ import threading
 import Queue
 import pyinotify
 from pyinotify import WatchManager, Notifier, ProcessEvent, EventsCodes
-from sw_l1_pluginUSBSerial  import *
+from coresense_pluginUSBSerial  import *
 
 wm = WatchManager()
 mask = pyinotify.IN_DELETE | pyinotify.IN_CREATE  # watched events

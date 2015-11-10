@@ -1,7 +1,7 @@
 import time
 import threading
 import commands
-from sw_l1_InotifyKernel import *
+from coresense_InotifyKernel import *
 
 if __name__ == "__main__":
     commL = communicatorLoader()
