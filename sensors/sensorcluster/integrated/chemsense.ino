@@ -74,8 +74,8 @@ void chemsense_pack (void)
                 count = count + 1;
             }
         }
-//         SerialUSB.println(count);
-//         SerialUSB.println(pidx);
+        SerialUSB.println(count);
+        SerialUSB.println(pidx);
         if ((count == 15) && (pidx == 13))
         {
             unsigned char count = 0, pidx = 0;

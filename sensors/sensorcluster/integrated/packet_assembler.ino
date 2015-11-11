@@ -419,6 +419,7 @@ void assemble_packet_whole()
         #endif
 
     }
+
     #ifdef system_health_include
     // Append health
     for (int i = 0; i < sizeof(sensor_health); i++)
@@ -428,8 +429,11 @@ void assemble_packet_whole()
         packet_whole_index++;
     }
     #endif
+
+
     // Length
     packet_whole[2] = packet_whole_index - 0x03;
+
     // Append CRC8
     packet_whole[packet_whole_index] = CRC_calc(packet_whole_index - 0x03);
     packet_whole[++packet_whole_index] = END_BYTE;

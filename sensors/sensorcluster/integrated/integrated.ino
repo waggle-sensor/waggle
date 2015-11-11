@@ -1,10 +1,11 @@
 #include <Wire.h>
-extern TwoWire Wire1;
+// extern TwoWire Wire1;
 
+TwoWire *wirex=&Wire1;
 
 #include "config.cpp"
 
-#include <MCP342X.h>
+#include <MCP342X_Waggle.h>
 MCP342X mcp3428_1;
 MCP342X mcp3428_2;
 
@@ -69,7 +70,7 @@ uint16_t TSYS_coefficents[5];
 #endif
 
 #ifdef TMP421_include
-#include <LibTempTMP421.h>
+#include <TMP421_Waggle.h>
 LibTempTMP421 TMP421_Sensor = LibTempTMP421();
 #endif
 
@@ -226,16 +227,6 @@ void ALL_SENSOR_READ ()
 
     assemble_packet_empty();
     assemble_packet_whole();
-
-    #ifdef PRINT_BUFFER
-    for(int i = 0; i < packet_whole[0x02]+0x05; i++)
-    {
-        SerialUSB.print(packet_whole[i], DEC);
-        SerialUSB.print(" ");
-    }
-    SerialUSB.print("\n");
-    SerialUSB.flush();
-    #endif
 }
 
 /** Arduino: setup ********************************************************************/
@@ -272,24 +263,29 @@ void setup()
 }
 /**************************************************************************************/
 
-#ifdef I2C_INTERFACE
+
+
+
+
 void loop()
 {
+    ALL_SENSOR_READ();
+    #ifdef USBSERIAL_INTERFACE
+    for(int i = 0; i < packet_whole[0x02]+0x05; i++)
+    {
+        SerialUSB.write(packet_whole[i]);
+    }
+    SerialUSB.flush();
+    #endif
+
+    #ifdef I2C_INTERFACE
     if (I2C_READ_COMPLETE == true)
     {
         ALL_SENSOR_READ();
         I2C_READ_COMPLETE = false;
     }
-    requestEvent();
-    delay(30000);
-}
-#endif
+    #endif
 
-
-#ifdef USBSERIAL_INTERFACE
-void loop()
-{
-    ALL_SENSOR_READ();
     delay(3000);
 }
-#endif
+

@@ -53,20 +53,21 @@
 #define ID_Si1145 0x1F
 #define ID_CHEMSENSE_MAC  0x20
 #define ID_HEALTH  0xFE
+#define MAC_ID_include 0x01
 
 /**************************************************************************************/
 
 // #define AIRSENSE_INCLUDE 0x01
-#define LIGHTSENSE_INCLUDE 0x01
-// #define CHEMSENSE_INCLUDE 0x01
+// #define LIGHTSENSE_INCLUDE 0x01
+#define CHEMSENSE_INCLUDE 0x01
 
-#define MAC_ID_include 0x01
+
 
 
 // AirsenseBoard
 #ifdef AIRSENSE_INCLUDE
     #define TMP112_include 0x01
-    #define HTU21D_include 0x01
+//     #define HTU21D_include 0x01
     // #define GP2Y1010AU0F_include 0x01
     #define BMP180_include 0x01
     #define PR103J2_include 0x01
@@ -78,7 +79,7 @@
 
 // Lightsense board
 #ifdef LIGHTSENSE_INCLUDE
-    #define HMC5883L_include 0x01
+//     #define HMC5883L_include 0x01
     #define HIH6130_include 0x01
     #define APDS9006020_include 0x01
     #define TSL260RD_include 0x01
@@ -107,11 +108,11 @@
     #define chemsense_MAC_ID_include 0x01
 #endif
 
-#define system_health_include 0x01
+// #define system_health_include 0x01
 // #define RANDOMIZE_VALID 0x01
 #define SERIAL_DEBUG 0x01
-// #define PRINT_BUFFER 0x01
+#define PRINT_BUFFER 0x01
 
 
-#define USBSERIAL_INTERFACE 0x01
+// #define USBSERIAL_INTERFACE 0x01
 // #define I2C_INTERFACE 0x01
