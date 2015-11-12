@@ -114,8 +114,10 @@ SerialUSB.println("SPV1840LR5HB_2.");
 #endif
 #endif
 
+#ifdef LIGHTSENSE_INCLUDE
 mcp3428_1.init(MCP342X::L, MCP342X::L);
 mcp3428_2.init(MCP342X::L, MCP342X::F);
+#endif
 
 return;
 }

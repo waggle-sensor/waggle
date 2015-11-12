@@ -1,14 +1,13 @@
-#include <Wire.h>
+#include "/home/rajesh/.arduino15/packages/arduino/hardware/sam/1.6.4/libraries/Wire/Wire.h"
 // extern TwoWire Wire1;
-
 TwoWire *wirex=&Wire1;
-
 #include "config.cpp"
 
+#ifdef LIGHTSENSE_INCLUDE
 #include <MCP342X_Waggle.h>
 MCP342X mcp3428_1;
 MCP342X mcp3428_2;
-
+#endif
 
 
 #ifdef HTU21D_include
@@ -75,10 +74,16 @@ LibTempTMP421 TMP421_Sensor = LibTempTMP421();
 #endif
 
 
-#define CR_ENABLE 0
-#define BUFFER_SIZE_CHEMSENSE 150
-#define PARAM_SIZE_CHEMSENSE 15
-#define DEBUG_chemsense 0
+
+byte formatted_data_buffer[MAX_FMT_SIZE];
+// byte packet_format1[LENGTH_FORMAT1];
+// byte packet_format2[LENGTH_FORMAT2];
+// byte packet_format3[LENGTH_FORMAT3];
+// byte packet_format4[LENGTH_FORMAT4];
+// byte packet_format5[LENGTH_FORMAT5];
+// byte packet_format6[LENGTH_FORMAT6];
+// byte packet_format7[LENGTH_FORMAT7];
+// byte packet_format8[LENGTH_FORMAT8];
 
 // Main board
 byte MAC_ID[LENGTH_FORMAT3 + 2] = {ID_MAC, 134,2,3,4,5,6,7}; // MAC address
@@ -106,18 +111,18 @@ byte TMP421[LENGTH_FORMAT1 + 2]; // temp inside transparent box
 byte SPV1840LR5HB_2[LENGTH_FORMAT2 + 2]; // sound pressure
 
 // chemsense board
-byte total_reducing_gases[LENGTH_FORMAT6 + 2]; // ambient concentration
-byte ethanol[LENGTH_FORMAT6 + 2]; // ambient concentration
-byte nitrogen_dioxide[LENGTH_FORMAT6 + 2]; // ambient concentration
-byte ozone[LENGTH_FORMAT6 + 2]; // ambient concentration
-byte hydrogen_sulphide[LENGTH_FORMAT6 + 2]; // ambient concentration
-byte total_oxidizing_gases[LENGTH_FORMAT6 + 2]; // ambient concentration
-byte carbon_monoxide[LENGTH_FORMAT6 + 2]; // ambient concentration
-byte sulfur_dioxide[LENGTH_FORMAT6 + 2]; // ambient concentration
+byte total_reducing_gases[LENGTH_FORMAT5 + 2]; // ambient concentration
+byte ethanol[LENGTH_FORMAT5 + 2]; // ambient concentration
+byte nitrogen_dioxide[LENGTH_FORMAT5 + 2]; // ambient concentration
+byte ozone[LENGTH_FORMAT5 + 2]; // ambient concentration
+byte hydrogen_sulphide[LENGTH_FORMAT5 + 2]; // ambient concentration
+byte total_oxidizing_gases[LENGTH_FORMAT5 + 2]; // ambient concentration
+byte carbon_monoxide[LENGTH_FORMAT5 + 2]; // ambient concentration
+byte sulfur_dioxide[LENGTH_FORMAT5 + 2]; // ambient concentration
 
-byte SHT25[(LENGTH_FORMAT5 * 2) + 2]; // ambient temp and RH
-byte LPS25H[LENGTH_FORMAT5 + LENGTH_FORMAT6 + 2]; // atmospheric temperature and pressure
-byte Si1145[LENGTH_FORMAT2 + 2]; // UV
+byte SHT25[(LENGTH_FORMAT2 * 2) + 2]; // ambient temp and RH
+byte LPS25H[LENGTH_FORMAT2 + LENGTH_FORMAT4 + 2]; // atmospheric temperature and pressure
+byte Si1145[LENGTH_FORMAT1 + 2]; // UV
 
 byte chemsense_MAC_ID[LENGTH_FORMAT3 + 2] = {0,0,0,0,0,0,0,0}; // MAC address of chemsense board
 
@@ -129,12 +134,7 @@ byte sensor_health[SENSOR_HEALTH_SIZE+2];
 // Data sub-packet
 byte packet_data[LENGTH_DATA];
 // Sub-packets for each format
-byte packet_format1[LENGTH_FORMAT1];
-byte packet_format2[LENGTH_FORMAT2];
-byte packet_format3[LENGTH_FORMAT3];
-byte packet_format4[LENGTH_FORMAT4];
-byte packet_format5[LENGTH_FORMAT5];
-byte packet_format6[LENGTH_FORMAT6];
+
 
 // These lengths are calculated at packet assembly
 byte length_whole_actual;
@@ -249,11 +249,6 @@ void setup()
     {
         packet_whole[i] = 0x00;
     }
-    packet_whole[0x00] = START_BYTE;
-    packet_whole[0x01] = HEADER_RESERVED | HEADER_VERSION;
-    packet_whole[0x02] = 0x00;
-    packet_whole[0x03] = 0x00;
-    packet_whole[0x04] = END_BYTE;
     assemble_packet_empty();
     Wire1.begin();
     Sensors_Setup();
@@ -264,19 +259,20 @@ void setup()
 /**************************************************************************************/
 
 
-
-
-
 void loop()
 {
     ALL_SENSOR_READ();
     #ifdef USBSERIAL_INTERFACE
     for(int i = 0; i < packet_whole[0x02]+0x05; i++)
     {
+//         SerialUSB.print(packet_whole[i]);
+//         SerialUSB.print(' ');
         SerialUSB.write(packet_whole[i]);
     }
+//     SerialUSB.print('\n');
     SerialUSB.flush();
     #endif
+
 
     #ifdef I2C_INTERFACE
     if (I2C_READ_COMPLETE == true)

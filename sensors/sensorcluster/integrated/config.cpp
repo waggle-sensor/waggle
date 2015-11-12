@@ -6,12 +6,22 @@
 
 #define LENGTH_DATA  194
 #define LENGTH_WHOLE  LENGTH_DATA + 5
+
+#define CR_ENABLE 0
+#define BUFFER_SIZE_CHEMSENSE 150
+#define PARAM_SIZE_CHEMSENSE 15
+#define DEBUG_chemsense 0
+
 #define LENGTH_FORMAT1  2
 #define LENGTH_FORMAT2  2
 #define LENGTH_FORMAT3  6
-#define LENGTH_FORMAT4  2
-#define LENGTH_FORMAT5  2
-#define LENGTH_FORMAT6  3
+#define LENGTH_FORMAT4  3
+#define LENGTH_FORMAT5  3
+#define LENGTH_FORMAT6  2
+#define LENGTH_FORMAT7  4
+#define LENGTH_FORMAT8  2
+#define MAX_FMT_SIZE 6
+
 
 #define START_BYTE 0xAA
 #define END_BYTE 0x55
@@ -67,7 +77,7 @@
 // AirsenseBoard
 #ifdef AIRSENSE_INCLUDE
     #define TMP112_include 0x01
-//     #define HTU21D_include 0x01
+    // #define HTU21D_include 0x01
     // #define GP2Y1010AU0F_include 0x01
     #define BMP180_include 0x01
     #define PR103J2_include 0x01
@@ -79,7 +89,7 @@
 
 // Lightsense board
 #ifdef LIGHTSENSE_INCLUDE
-//     #define HMC5883L_include 0x01
+    // #define HMC5883L_include 0x01
     #define HIH6130_include 0x01
     #define APDS9006020_include 0x01
     #define TSL260RD_include 0x01
@@ -110,9 +120,8 @@
 
 // #define system_health_include 0x01
 // #define RANDOMIZE_VALID 0x01
-#define SERIAL_DEBUG 0x01
-#define PRINT_BUFFER 0x01
+// #define SERIAL_DEBUG 0x01
+// #define PRINT_BUFFER 0x01
 
-
-// #define USBSERIAL_INTERFACE 0x01
+#define USBSERIAL_INTERFACE 0x01
 // #define I2C_INTERFACE 0x01

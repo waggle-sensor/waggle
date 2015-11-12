@@ -18,49 +18,70 @@ sensor_list = ["Board MAC","TMP112","HTU21D","GP2Y1010AU0F","BMP180","PR103J2","
 #decoded_output = ['0' for x in range(16)]
 
 def format1 (input):
+    #F1 - unsigned int_16 output, {0-0xffff} - Byte1 Byte2 (16 bit number)
     byte1 = ord(input[0])
     byte2 = ord(input[1])
-    value = (byte1 & 0x7F) + ((byte2 & 0x7F) * 0.01)
-    if byte2 & 0x80 == 0x80:
-        value = value * -1
+    value = (byte1 << 8) | byte2
     return value
 
+
 def format2 (input):
+    #F2 - int_16 output , +-{0-0x7fff} - 1S|7Bits Byte2
     byte1 = ord(input[0])
     byte2 = ord(input[1])
-    value = ((byte1 & 0x7F) << 8 )+ byte2
+    value = ((byte1 & 0x7F) << 8 ) | byte2
+    if byte1 & 0x80 == 0x80:
+        value = value * -1
     return value
 
 def format3 (input):
+    #F3 - hex string, {0-0xffffffffffff} - Byte1 Byte2 Byte3 Byte4 Byte5 Byte6
     return str(hex(ord(input)))[2:]
 
 def format4 (input):
+    #F4 - unsigned long_24 input, {0-0xffffff} - Byte1 Byte2 Byte3
     byte1 = ord(input[0])
     byte2 = ord(input[1])
-    value = ((byte1 & 0x3c) >> 2) + ((((byte1 & 0x03) << 8) + byte2) * 0.001)
-    if byte1 & 0x40 == 0x40:
-        value = value * -1
+    byte3 = ord(input[2])
+    value = (byte1 << 16) | (byte2 << 8) | (byte3)
     return value
 
 def format5 (input):
+    #F5 - long_24 input, +-{0-0x7fffff} - 1S|7Bits Byte2 Byte3
     byte1 = ord(input[0])
     byte2 = ord(input[1])
-    value = ((byte1 & 0x3F) << 8) | (byte2)
-    if byte1 & 0x40 == 0x40:
+    byte3 = ord(input[2])
+    value = ((byte1 & 0x7F) << 16) | (byte2 << 8) | (byte3)
+    if byte1 & 0x80 == 0x80:
         value = value * -1
     return value
 
 def format6 (input):
+    #F6 - float input, +-{0-127}.{0-99} - 1S|7Bit_Int 0|7Bit_Frac{0-99}
     byte1 = ord(input[0])
     byte2 = ord(input[1])
-    byte3 = ord(input[2])
-    value = ((byte1 & 0x3F) << 16 ) | (byte2 << 8) | byte3
-    if (byte1 & 0x40) == 0x40:
+    value = ((byte1 & 0x7F) << 8 ) | (byte2 & 0x7F)
+    if (byte1 & 0x80) == 0x80:
         value = value * -1
     return value
 
-def formatNULL (input):
-    return input
+def format7 (input):
+    #F7 - byte input[4], {0-0xffffffff} - Byte1 Byte2 Byte3 Byte4
+    byte1 = ord(input[0])
+    byte2 = ord(input[1])
+    byte3 = ord(input[0])
+    byte4 = ord(input[1])
+    value = [byte1,byte2,byte3,byte4]
+    return value
+
+def format8 (input):
+    #F8 - float input, +-{0-31}.{0-999} - 1S|5Bit_Int|2MSBit_Frac  8LSBits_Frac
+    byte1 = ord(input[0])
+    byte2 = ord(input[1])
+    value = (byte1 & 0x7c) + ( ( ((byte1 & 0x03) << 8) | byte2 ) * 0.001)
+    if (byte1 & 0x80) == 0x80:
+        value = value * -1
+    return value
 
 def parse_sensor (sensor_id,sensor_data):
     if sensor_id == '0':
@@ -160,61 +181,61 @@ def parse_sensor (sensor_id,sensor_data):
 
     elif sensor_id == '21':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print str(format6(sensor_data) << 1)
-        #decoded_output[14] = str(format6(sensor_data) << 1)
+        print str(format5(sensor_data))
+        #decoded_output[14] = str(str(format5(sensor_data)))
 
     elif sensor_id == '22':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print str(format6(sensor_data) << 1)
-        #decoded_output[15] = str(format6(sensor_data) << 1)+'\n'
+        print str(format5(sensor_data))
+        #decoded_output[15] = str(str(format5(sensor_data)))+'\n'
 
     elif sensor_id == '23':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  format6(sensor_data) << 1
-        #decoded_output[10] = str(format6(sensor_data) << 1)
+        print  str(format5(sensor_data))
+        #decoded_output[10] = str(str(format5(sensor_data)))
 
     elif sensor_id == '24':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  format6(sensor_data) << 1
-        #decoded_output[9] = str(format6(sensor_data) << 1)
+        print  str(format5(sensor_data))
+        #decoded_output[9] = str(str(format5(sensor_data)))
 
     elif sensor_id == '25':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  format6(sensor_data) << 1
-        #decoded_output[8] = str(format6(sensor_data) << 1)
+        print  str(format5(sensor_data))
+        #decoded_output[8] = str(str(format5(sensor_data)))
 
     elif sensor_id == '26':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  format6(sensor_data) << 1
-        #decoded_output[13] = str(format6(sensor_data) << 1)
+        print  str(format5(sensor_data))
+        #decoded_output[13] = str(str(format5(sensor_data)))
 
     elif sensor_id == '27':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  format6(sensor_data) << 1
-        #decoded_output[11] = str(format6(sensor_data) << 1)
+        print  str(format5(sensor_data))
+        #decoded_output[11] = str(str(format5(sensor_data)))
 
     elif sensor_id == '28':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  format6(sensor_data) << 1
-        #decoded_output[12] = str(format6(sensor_data) << 1)
+        print  str(format5(sensor_data))
+        #decoded_output[12] = str(str(format5(sensor_data)))
 
     # <-- gas sensors end here
 
     elif sensor_id == '29':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  format5(sensor_data[0:2]),format5(sensor_data[2:4])
+        print  format2(sensor_data[0:2]),format2(sensor_data[2:4])
         #decoded_output[3] = str(format5(sensor_data[0:2]))
         #decoded_output[4] = str(format5(sensor_data[2:4]))
 
     elif sensor_id == '30':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  format5(sensor_data[0:2]) << 1, format6(sensor_data[2:5]) << 2
+        print  format2(sensor_data[0:2]), format4(sensor_data[2:5])
         #decoded_output[5] = str(format5(sensor_data[0:2]) << 1)
         #decoded_output[7] = str(format6(sensor_data[2:5]) << 2)
 
     elif sensor_id == '31':
         print "Sensor:", sensor_id, sensor_list[int(sensor_id)],'@ ',
-        print  format2(sensor_data) << 1
+        print  format1(sensor_data)
         #decoded_output[6] = str(format2(sensor_data) << 1)
 
     elif sensor_id == '32':
@@ -291,8 +312,6 @@ class usbSerial ( threading.Thread ):
     def marshalData(self,_dataNew):
         self.data.extend(_dataNew)
         bufferLength = len(self.data)
-        print bufferLength
-        print '-------------'
         while self.keepAlive:
 
             try:
@@ -348,22 +367,23 @@ class usbSerial ( threading.Thread ):
                                     #ideally we should be able to throw the whole packet out, but purging just a byte for avoiding corner cases.
                                     del self.data[0]
                                 else:
+                                    print '-------------'
+                                    print time.asctime()
                                     #extract the data bytes alone, exclude preamble, prot version, len, crc and postScript
-                                    extractedData = self.data[_preambleLoc+3:_postscriptLoc-2]
+                                    extractedData = self.data[_preambleLoc+3:_postscriptLoc-1]
                                     consume_ptr = 0x00
                                     self.CoreSenseConf = 0
 
                                     del self.data[:self.data.index(_postScript)+1]
 
                                     while consume_ptr < len(extractedData):
-
                                         This_id = str(ord(extractedData[consume_ptr]))
                                         This_id_msg_size_valid = ord(extractedData [consume_ptr+1])
                                         This_id_msg_size = This_id_msg_size_valid & 0x7F
                                         This_id_msg_valid = (This_id_msg_size_valid & 0x80) >> 7
-                                        This_id_msg = extractedData [consume_ptr+2:consume_ptr+2+This_id_msg_size]
+                                        This_id_msg = extractedData[consume_ptr+2:consume_ptr+2+This_id_msg_size]
+                                        #print (int(This_id)), This_id_msg_valid, This_id_msg_size, This_id_msg
                                         consume_ptr = consume_ptr + 2 + This_id_msg_size
-                                        #print hex(int(This_id)), This_id_msg
                                         if (This_id_msg_valid == 1):
                                             try:
                                                 parse_sensor (This_id, This_id_msg)
