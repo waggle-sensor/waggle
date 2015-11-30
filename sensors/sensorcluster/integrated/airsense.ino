@@ -62,7 +62,7 @@ void airsense_acquire (void)
         format6(Temp_float[0]);
         BMP180[2] = formatted_data_buffer[0];
         BMP180[3] = formatted_data_buffer[1];
-        format6(Temp_long);
+        format5(Temp_long);
         BMP180[4] = formatted_data_buffer[0];
         BMP180[5] = formatted_data_buffer[1];
         BMP180[6] = formatted_data_buffer[2];
