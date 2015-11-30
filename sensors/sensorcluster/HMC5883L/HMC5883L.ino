@@ -1,6 +1,6 @@
 #include <Wire.h>
-#include <Adafruit_Sensor.h>
-#include <HMC5883L_waggle.h>
+#include "./libs/Adafruit_Sensor-master/Adafruit_Sensor.h"
+#include "./libs/HMC5883L_waggle/HMC5883L_waggle.h"
 
 HMC5883_Sensor HMC5883_Magnetometer = HMC5883_Sensor(&Wire1);
 // HMC5883_Sensor HMC5883_Magnetometer = HMC5883_Sensor();

@@ -23,6 +23,33 @@ void lightsense_acquire (void)
     #endif
     #endif
 
+    #ifdef HMC5883L_include
+    sensors_event_t event;
+    HMC5883_Magnetometer.getEvent(&event);
+
+
+    HMC5883L[0] = ID_HMC5883L;
+    HMC5883L[1] = (1 << 7) | (LENGTH_FORMAT8 * 3);
+    format8(event.magnetic.x);
+    HMC5883L[2] = formatted_data_buffer[0];
+    HMC5883L[3] = formatted_data_buffer[1];
+    format8(event.magnetic.y);
+    HMC5883L[4] = formatted_data_buffer[0];
+    HMC5883L[5] = formatted_data_buffer[1];
+    format8(event.magnetic.z);
+    HMC5883L[6] = formatted_data_buffer[0];
+    HMC5883L[7] = formatted_data_buffer[1];
+
+    #ifdef SERIAL_DEBUG
+    SerialUSB.print("HMC5883L X:");
+    SerialUSB.print(event.magnetic.x);
+    SerialUSB.print("HMC5883L Y:");
+    SerialUSB.print(event.magnetic.y);
+    SerialUSB.print("HMC5883L Z:");
+    SerialUSB.print(event.magnetic.z);
+    #endif
+
+    #endif
 
     #ifdef TMP421_include
     Temp_float[0] = TMP421_Sensor.GetTemperature();

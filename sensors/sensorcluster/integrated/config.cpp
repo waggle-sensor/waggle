@@ -89,7 +89,7 @@
 
 // Lightsense board
 #ifdef LIGHTSENSE_INCLUDE
-    // #define HMC5883L_include 0x01
+    #define HMC5883L_include 0x01
     #define HIH6130_include 0x01
     #define APDS9006020_include 0x01
     #define TSL260RD_include 0x01

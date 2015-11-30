@@ -65,6 +65,12 @@ TSYS_KPoly_T;
 uint16_t TSYS_coefficents[5];
 #endif
 
+#ifdef HMC5883L_include
+#include "./libs/HMC5883L_waggle/HMC5883L_waggle.h"
+HMC5883_Sensor HMC5883_Magnetometer = HMC5883_Sensor(&Wire1);
+#endif
+
+
 
 #ifdef HIH6130_include
 #define HIH_ADDRESS 0x27

@@ -88,7 +88,7 @@ def format8 (input):
     #F8 - float input, +-{0-31}.{0-999} - 1S|5Bit_Int|2MSBit_Frac  8LSBits_Frac
     byte1 = ord(input[0])
     byte2 = ord(input[1])
-    value = (byte1 & 0x7c) + ( ( ((byte1 & 0x03) << 8) | byte2 ) * 0.001)
+    value = ((byte1 & 0x7c) >> 2) + ( ( ((byte1 & 0x03) << 8) | byte2 ) * 0.001)
     if (byte1 & 0x80) == 0x80:
         value = value * -1
     return value
@@ -140,7 +140,7 @@ def parse_sensor (sensor_id,sensor_data):
 
     elif sensor_id == '10':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  format4(sensor_data[0:2]),format4(sensor_data[2:4]),format4(sensor_data[4:6])
+        print  format8(sensor_data[0:2]),format8(sensor_data[2:4]),format8(sensor_data[4:6])
 
     elif sensor_id == '11':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
@@ -247,16 +247,17 @@ class usbSerial ( threading.Thread ):
         self.CoreSenseConf = 1
         self.dataLenBit = 0
         self.packetmismatch = 0
+        self.keepAlive = 1
 
     def run (self):
         print time.asctime()
         #Checking if the port is still available for connection
         try:
             self.ser = serial.Serial(self.port,timeout=0)
-            self.keepAlive = 1
         except:
             #port unavalable. Between Inotify spanning the thread and the current
             #read the port has magically disappeared.
+            self.keepAlive = 0
             self.stop()
 
         print "> > >  usbSerial initiated on port"+str(self.port)+" @ "+str(time.asctime())

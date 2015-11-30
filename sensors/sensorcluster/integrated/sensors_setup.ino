@@ -119,5 +119,8 @@ mcp3428_1.init(MCP342X::L, MCP342X::L);
 mcp3428_2.init(MCP342X::L, MCP342X::F);
 #endif
 
+#ifdef HMC5883L_include
+HMC5883_Magnetometer.begin();
+#endif
 return;
 }

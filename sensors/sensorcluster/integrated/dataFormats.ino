@@ -156,7 +156,7 @@ void format8(float input)
     // Extract integer component
     int integer = (int)input;
     // Extract fractional component (and turn it into an integer)
-    int fractional = (input*1000 - integer*1000);
+    int fractional = int((input - integer) * 1000);
 
     // Assemble sub-packet
     formatted_data_buffer[0] = (_negative << 7) | ((integer & 0x1F) << 2) | ((fractional & 0x0300) >> 8);
