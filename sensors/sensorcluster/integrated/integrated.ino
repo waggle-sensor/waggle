@@ -1,23 +1,25 @@
-#include "/home/rajesh/.arduino15/packages/arduino/hardware/sam/1.6.4/libraries/Wire/Wire.h"
+// #include "/home/rajesh/.arduino15/packages/arduino/hardware/sam/1.6.4/libraries/Wire/Wire.h"
+#include <Wire.h>
 // extern TwoWire Wire1;
 TwoWire *wirex=&Wire1;
 #include "config.cpp"
+// #include "dataFormats.cpp"
 
 #ifdef LIGHTSENSE_INCLUDE
-#include <MCP342X_Waggle.h>
+#include "./libs/MCP342X_Waggle/MCP342X_Waggle.h"
 MCP342X mcp3428_1;
 MCP342X mcp3428_2;
 #endif
 
 
 #ifdef HTU21D_include
-#include <HTU21D.h>
+#include "./libs/HTU21D/HTU21D.h"
 HTU21D myHumidity;
 #endif
 
 #ifdef  BMP180_include
-#include <Adafruit_Sensor.h>
-#include <Adafruit_BMP085_U.h>
+#include "./libs/Adafruit_Sensor-master/Adafruit_Sensor.h"
+#include "./libs/Adafruit_BMP085_Unified-master/Adafruit_BMP085_U.h"
 Adafruit_BMP085_Unified bmp = Adafruit_BMP085_Unified(10085);
 sensors_event_t event;
 #endif
@@ -69,46 +71,36 @@ uint16_t TSYS_coefficents[5];
 #endif
 
 #ifdef TMP421_include
-#include <TMP421_Waggle.h>
+#include "./libs/LibTempTMP421/LibTempTMP421.h"
 LibTempTMP421 TMP421_Sensor = LibTempTMP421();
 #endif
 
-
-
 byte formatted_data_buffer[MAX_FMT_SIZE];
-// byte packet_format1[LENGTH_FORMAT1];
-// byte packet_format2[LENGTH_FORMAT2];
-// byte packet_format3[LENGTH_FORMAT3];
-// byte packet_format4[LENGTH_FORMAT4];
-// byte packet_format5[LENGTH_FORMAT5];
-// byte packet_format6[LENGTH_FORMAT6];
-// byte packet_format7[LENGTH_FORMAT7];
-// byte packet_format8[LENGTH_FORMAT8];
 
-// Main board
+// Airsense board
 byte MAC_ID[LENGTH_FORMAT3 + 2] = {ID_MAC, 134,2,3,4,5,6,7}; // MAC address
-byte TMP112[LENGTH_FORMAT1 + 2]; // ambient temp
-byte HTU21D[(LENGTH_FORMAT1 * 2) + 2]; // ambient RH & temp
-byte GP2Y1010AU0F[LENGTH_FORMAT2 + 2]; // dust density
-byte BMP180[LENGTH_FORMAT1 + LENGTH_FORMAT6 + 2]; // atmospheric pressure
-byte PR103J2[LENGTH_FORMAT2 + 2]; // light
-byte TSL250RD_1[LENGTH_FORMAT2 + 2]; // ambient light (400-950nm)
-byte MMA8452Q[(LENGTH_FORMAT1 * 4) + 2]; // 3-axis accel for traffic flow
-byte SPV1840LR5HB_1[LENGTH_FORMAT2 + 2]; // sound pressure
-byte TSYS01[LENGTH_FORMAT2 + 2]; // ambient temp
+byte TMP112[LENGTH_FORMAT6 + 2]; // ambient temp
+byte HTU21D[(LENGTH_FORMAT6 * 2) + 2]; // ambient RH & temp
+// byte GP2Y1010AU0F[LENGTH_FORMAT2 + 2]; // dust density
+byte BMP180[LENGTH_FORMAT5 + LENGTH_FORMAT6 + 2]; // atmospheric pressure
+byte PR103J2[LENGTH_FORMAT1 + 2]; // light
+byte TSL250RD_1[LENGTH_FORMAT1 + 2]; // ambient light (400-950nm)
+byte MMA8452Q[(LENGTH_FORMAT6 * 4) + 2]; // 3-axis accel for traffic flow
+byte SPV1840LR5HB_1[LENGTH_FORMAT1 + 2]; // sound pressure
+byte TSYS01[LENGTH_FORMAT6 + 2]; // ambient temp
 
-// Aux board
-byte HMC5883L[(LENGTH_FORMAT4 * 3) + 2]; // magnetic field strength for traffic flow
-byte HIH6130[(LENGTH_FORMAT1 * 2) + 2]; // temp and RH inside transparent box
-byte APDS9006020[LENGTH_FORMAT2 + 2]; // ambient light inside cavity
-byte TSL260RD[LENGTH_FORMAT2 + 2]; // solar near IR
-byte TSL250RD_2[LENGTH_FORMAT2 + 2]; // solar visible light
-byte MLX75305[LENGTH_FORMAT2 + 2]; // solar visible light
-byte ML8511[LENGTH_FORMAT2 + 2]; // solar UV
-byte D6T[(LENGTH_FORMAT1 * 17) + 2]; // temp of surrounding objects
+// Lightsense board
+byte HMC5883L[(LENGTH_FORMAT8 * 3) + 2]; // magnetic field strength for traffic flow
+byte HIH6130[(LENGTH_FORMAT6 * 2) + 2]; // temp and RH inside transparent box
+byte APDS9006020[LENGTH_FORMAT1 + 2]; // ambient light inside cavity
+byte TSL260RD[LENGTH_FORMAT1 + 2]; // solar near IR
+byte TSL250RD_2[LENGTH_FORMAT1 + 2]; // solar visible light
+byte MLX75305[LENGTH_FORMAT1 + 2]; // solar visible light
+byte ML8511[LENGTH_FORMAT1 + 2]; // solar UV
+byte D6T[(LENGTH_FORMAT6 * 17) + 2]; // temp of surrounding objects
 byte MLX90614[LENGTH_FORMAT1 + 2]; // temp of pavement
-byte TMP421[LENGTH_FORMAT1 + 2]; // temp inside transparent box
-byte SPV1840LR5HB_2[LENGTH_FORMAT2 + 2]; // sound pressure
+byte TMP421[LENGTH_FORMAT6 + 2]; // temp inside transparent box
+byte SPV1840LR5HB_2[LENGTH_FORMAT1 + 2]; // sound pressure
 
 // chemsense board
 byte total_reducing_gases[LENGTH_FORMAT5 + 2]; // ambient concentration
@@ -164,6 +156,17 @@ unsigned long LOOPING;
 // CRC-8
 byte crc = 0x00;
 byte I2C_READ_COMPLETE = true;
+/**************************************************************************************/
+
+/** Assemble empty packet *************************************************************/
+void assemble_packet_empty()
+{
+    packet_whole[0x00] = START_BYTE;
+    packet_whole[0x01] = HEADER_RESERVED | HEADER_VERSION;
+    packet_whole[0x02] = 0x00;
+    packet_whole[0x03] = 0x00;
+    packet_whole[0x04] = END_BYTE;
+}
 /**************************************************************************************/
 
 

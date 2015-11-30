@@ -77,7 +77,7 @@
 // AirsenseBoard
 #ifdef AIRSENSE_INCLUDE
     #define TMP112_include 0x01
-    // #define HTU21D_include 0x01
+    #define HTU21D_include 0x01
     // #define GP2Y1010AU0F_include 0x01
     #define BMP180_include 0x01
     #define PR103J2_include 0x01

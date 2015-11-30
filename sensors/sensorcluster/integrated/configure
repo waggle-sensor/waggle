@@ -89,7 +89,7 @@ then
     echo "PRE_FLASH_COMMAND = stty -F /dev/\$(PORT) 1200 hupcl; sleep 2"  >> makefile
     echo "FLASHER = \$(ARD_HOME)/tools/bossac/1.3a-arduino/bossac" >> makefile
     echo "FLASH_BOARD = \$(FLASHER) -i -d --port=\$(PORT) -U true -e -w -v -b \$(BIN_DIR)/\$(TARGET).cpp.bin -R" >> makefile
-    echo "BUILD_COMPLETE = mv \$(BUILD_DIR)/\$(TARGET).cpp.bin \$(BIN_DIR)" >> makefile
+    echo "BUILD_COMPLETE = mv \$(BUILD_DIR)/\$(TARGET).cpp.bin \$(BIN_DIR)/" >> makefile
     echo "LINKPORT = /dev/\$(PORT)" >> makefile
     echo "SERIALBAUD = $SERIALBAUD" >> makefile
 

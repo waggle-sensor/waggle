@@ -1,5 +1,3 @@
-
-
 void chemsense_parse_value (byte pidx)
 {
     param_value = 0;
