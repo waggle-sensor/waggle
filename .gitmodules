@@ -7,3 +7,6 @@
 [submodule "nodecontroller"]
 	path = nodecontroller
 	url = https://github.com/waggle-sensor/nodecontroller.git
+[submodule "guestnodes"]
+	path = guestnodes
+	url = https://github.com/waggle-sensor/guestnodes.git
