@@ -84,7 +84,7 @@ LibTempTMP421 TMP421_Sensor = LibTempTMP421();
 byte formatted_data_buffer[MAX_FMT_SIZE];
 
 // Airsense board
-byte MAC_ID[LENGTH_FORMAT3 + 2] = {ID_MAC, 134,2,3,4,5,6,7}; // MAC address
+byte MAC_ID[LENGTH_FORMAT3 + 2] = {ID_MAC, 134,3,1,8,1,0,1}; // MAC address
 byte TMP112[LENGTH_FORMAT6 + 2]; // ambient temp
 byte HTU21D[(LENGTH_FORMAT6 * 2) + 2]; // ambient RH & temp
 // byte GP2Y1010AU0F[LENGTH_FORMAT2 + 2]; // dust density
@@ -148,6 +148,8 @@ unsigned char attenuate = 0;
 byte valid;
 
 
+byte packet_seq_number = 0x00;
+
 float Temp_float[3];
 byte Temp_byte[5];
 uint16_t Temp_uint16;
@@ -164,31 +166,23 @@ byte crc = 0x00;
 byte I2C_READ_COMPLETE = true;
 /**************************************************************************************/
 
-/** Assemble empty packet *************************************************************/
-void assemble_packet_empty()
-{
-    packet_whole[0x00] = START_BYTE;
-    packet_whole[0x01] = HEADER_RESERVED | HEADER_VERSION;
-    packet_whole[0x02] = 0x00;
-    packet_whole[0x03] = 0x00;
-    packet_whole[0x04] = END_BYTE;
-}
-/**************************************************************************************/
-
-
-
+#ifdef I2C_INTERFACE
 /** I2C request interrupt *************************************************************/
 void requestEvent()
 {
-//     Wire.write(packet_whole, 0x10);
-//     Wire.write(packet_whole, 150);
+    #ifdef I2C_INTERFACE_CONST_SIZE
+    Wire.write(packet_whole, I2C_PACKET_SIZE);
+    #else
     char bytes_to_send;
     bytes_to_send = packet_whole[0x02] +0x05;
     Wire.write(packet_whole, bytes_to_send );
+    #endif
+
     I2C_READ_COMPLETE = true;
     assemble_packet_empty();
 }
 /**************************************************************************************/
+#endif
 
 void ALL_SENSOR_READ ()
 {
@@ -259,27 +253,32 @@ void setup()
         packet_whole[i] = 0x00;
     }
     assemble_packet_empty();
-    Wire1.begin();
+
+
     Sensors_Setup();
     ALL_SENSOR_READ ();
+
+    #ifdef I2C_INTERFACE
+    Wire1.begin();
+    I2C_READ_COMPLETE = false;
     Wire.begin(I2C_SLAVE_ADDRESS);
     Wire.onRequest(requestEvent);
+    #endif
 }
 /**************************************************************************************/
 
 
 void loop()
 {
-    ALL_SENSOR_READ();
+
     #ifdef USBSERIAL_INTERFACE
+    ALL_SENSOR_READ();
     for(int i = 0; i < packet_whole[0x02]+0x05; i++)
     {
-//         SerialUSB.print(packet_whole[i]);
-//         SerialUSB.print(' ');
         SerialUSB.write(packet_whole[i]);
     }
-//     SerialUSB.print('\n');
     SerialUSB.flush();
+    delay(3000);
     #endif
 
 
@@ -291,6 +290,6 @@ void loop()
     }
     #endif
 
-    delay(3000);
+    delay(1);
 }
 
