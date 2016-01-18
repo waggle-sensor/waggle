@@ -1,3 +1,15 @@
+/** Assemble empty packet *************************************************************/
+void assemble_packet_empty()
+{
+    packet_whole[0x00] = START_BYTE;
+    packet_whole[0x01] = ((packet_seq_number & 0x0f) << 4) | HEADER_VERSION;
+    packet_whole[0x02] = 0x00;
+    packet_whole[0x03] = 0x00;
+    packet_whole[0x04] = END_BYTE;
+}
+/**************************************************************************************/
+
+
 /** Assemble whole packet *************************************************************/
 void assemble_packet_whole()
 {
@@ -420,7 +432,9 @@ void assemble_packet_whole()
 
 
     // Length
-    packet_whole[2] = packet_whole_index - 0x03;
+    packet_whole[0x02] = packet_whole_index - 0x03;
+    packet_seq_number++;
+    packet_whole[0x01] = ((packet_seq_number & 0x0f) << 4) | HEADER_VERSION;
 
     // Append CRC8
     packet_whole[packet_whole_index] = CRC_calc(packet_whole_index - 0x03);

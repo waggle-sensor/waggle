@@ -4,7 +4,7 @@ TARGET = integrated
 PACKAGE = arduino
 ARCH = sam
 BOARD = arduino_due_x
-TYPE = 
+TYPE =
 FLASHER_BAUD_RATE = 115200
 PORT = ttyACM0
 BOARD_FLASH = $(PACKAGE):$(ARCH):$(BOARD)
@@ -20,14 +20,13 @@ BUILD_DIR = ./build
 BIN_DIR = ./bin
 CFLAGS  = --verbose-build --verify
 
-all: $(TARGET)
+all:	clean	$(TARGET)
 
 $(TARGET): $(TARGET).ino
 	$(CC) --board $(BOARD_FLASH) $(CFLAGS) --pref build.path=$(BUILD_DIR) $(TARGET).ino
 	$(BUILD_COMPLETE)
-	
+
 clean:
-	rm -rf $(BIN_DIR)/*
 	rm -rf $(BUILD_DIR)/*
 	rm -f *~
 

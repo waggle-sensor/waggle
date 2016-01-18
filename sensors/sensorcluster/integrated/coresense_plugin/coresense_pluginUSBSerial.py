@@ -319,13 +319,17 @@ class usbSerial ( threading.Thread ):
                 #not enough data for a legal packet, we have to wait...
                 break
             else:
-                if (ord(self.data[_preambleLoc+_protVerFieldDelta]) <> 0):
+                if ((ord(self.data[_preambleLoc+_protVerFieldDelta]) & 0x0f) <> 0):
+
                     #we have a packet of version we do not understand - either wrong version or
                     #we have a wrong byte as the header. We will delete a byte and try header lock again.
                     del self.data[0]
 
                 else:
+                    _msg_seq_num = (ord(self.data[_preambleLoc+_protVerFieldDelta]) & 0xf0) >> 4
+
                     #it is protocol version 0, and we can parse that data, using this script.
+
                     _postscriptLoc = ord(self.data[_preambleLoc+_datLenFieldDelta]) + _msgPSDelta + _datLenFieldDelta
                     if (_postscriptLoc > _maxPacketSize):
                         #the packet size if huge, it is unlikely that we have cuaght the header, so consume a
@@ -333,7 +337,7 @@ class usbSerial ( threading.Thread ):
                         del self.data[0]
 
                     else:
-                        if (_postscriptLoc > bufferLength+1):
+                        if (_postscriptLoc > bufferLength+2):
                         #We do not have full packet in the buffer, cannot process.
                             break
                         else:
@@ -360,7 +364,7 @@ class usbSerial ( threading.Thread ):
                                     del self.data[0]
                                 else:
                                     print '-------------'
-                                    print time.asctime()
+                                    print time.asctime(), _msg_seq_num, _postscriptLoc
                                     #extract the data bytes alone, exclude preamble, prot version, len, crc and postScript
                                     extractedData = self.data[_preambleLoc+3:_postscriptLoc-1]
                                     consume_ptr = 0x00

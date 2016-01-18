@@ -1,4 +1,4 @@
-ARD_HOME = /digital/github/waggle/devtools/arduino/compilers/arduino-1.6.5-linux/arduino_64
+ARD_HOME = /home/rajesh/Desktop/arduino-1.6.6
 TARGET = sysmanager
 PACKAGE = arduino
 ARCH = avr
@@ -11,21 +11,22 @@ BOOT_LOADER_TYPE = avr109
 PRE_FLASH_COMMAND = stty -F $(PORT) 1200 hupcl; sleep 2
 FLASHER = $(ARD_HOME)/hardware/tools/avr/bin/avrdude
 FLASHER_CONFIGS = $(ARD_HOME)/hardware/tools/avr/etc/avrdude.conf
-FLASH_BOARD = $(FLASHER) -C$(FLASHER_CONFIGS) -v -p$(TYPE) -c$(BOOT_LOADER_TYPE) -P$(PORT) -b$(FLASHER_BAUD_RATE) -D -Uflash:w:$(BIN_DIR)/$(TARGET).cpp.hex:i
-BUILD_COMPLETE = mv $(BUILD_DIR)/$(TARGET).cpp.hex $(BIN_DIR)/
+FLASH_BOARD = $(FLASHER) -C$(FLASHER_CONFIGS) -v -p$(TYPE) -c$(BOOT_LOADER_TYPE) -P$(PORT) -b$(FLASHER_BAUD_RATE) -D -Uflash:w:$(BIN_DIR)/$(TARGET).ino.hex:i
+BUILD_COMPLETE = mv $(BUILD_DIR)/$(TARGET).ino.hex $(BIN_DIR)/
 LINKPORT = $(PORT)
-SERIALBAUD = 115200
+SERIALBAUD = 57600
 CC = $(ARD_HOME)/arduino
 BUILD_DIR = ./build
 BIN_DIR = ./bin
 CFLAGS  = --verbose-build --verify
 
-all: $(TARGET)
+all:	clean	$(TARGET)
+
 
 $(TARGET): $(TARGET).ino
 	$(CC) --board $(BOARD_FLASH) $(CFLAGS) --pref build.path=$(BUILD_DIR) $(TARGET).ino
 	$(BUILD_COMPLETE)
-	
+
 clean:
 	rm -rf $(BIN_DIR)/*
 	rm -rf $(BUILD_DIR)/*

@@ -1,0 +1,10 @@
+{
+  "builtInLibrariesFolders": "/home/rajesh/Desktop/arduino-1.6.6_nightly/libraries",
+  "customBuildProperties": "build.path=./build,build.warn_data_percentage=75",
+  "fqbn": "arduino:avr:micro",
+  "hardwareFolders": "/home/rajesh/Desktop/arduino-1.6.6_nightly/hardware,/home/rajesh/.arduino15/packages",
+  "otherLibrariesFolders": "/home/rajesh/Arduino/libraries",
+  "runtime.ide.version": "10607",
+  "sketchLocation": "/media/rajesh/Bharadwaja/github/waggle/wagman/manager/evaluator/evaluator.ino",
+  "toolsFolders": "/home/rajesh/Desktop/arduino-1.6.6_nightly/tools-builder,/home/rajesh/Desktop/arduino-1.6.6_nightly/hardware/tools/avr,/home/rajesh/.arduino15/packages"
+}
