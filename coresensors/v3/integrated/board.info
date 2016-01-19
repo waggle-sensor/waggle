@@ -1,0 +1,9 @@
+#Build settings for Wagman
+#TARGET='wagmanV3'
+#PORT='/dev/ttyACM0'
+#SERIALBAUD=115200
+
+#Build settings for Airsense
+TARGET='airsenseV3'
+PORT='/dev/ttyACM0'
+SERIALBAUD=115200

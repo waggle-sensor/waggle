@@ -1,2 +1,2 @@
 #!/bin/bash
-avrdude -c avrisp2 -P usb -p m32u4 -U flash:w:Caterina-Micro.hex:i
+avrdude -C./avrdude.conf -v -patmega32u4 -cstk500v2 -Pusb -Uflash:w:./Caterina-Micro.hex:i -Ulock:w:0x2F:m

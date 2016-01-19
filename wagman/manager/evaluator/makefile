@@ -1,4 +1,4 @@
-ARD_HOME = /home/rajesh/Desktop/arduino-1.6.6
+ARD_HOME = /home/rajesh/WaggleGIT/arduino-1.6.7
 TARGET = evaluator
 PACKAGE = arduino
 ARCH = avr
@@ -25,13 +25,13 @@ all: $(TARGET)
 $(TARGET): $(TARGET).ino
 	$(CC) --board $(BOARD_FLASH) $(CFLAGS) --pref build.path=$(BUILD_DIR) $(TARGET).ino
 	$(BUILD_COMPLETE)
-	
+
 clean:
 	rm -rf $(BIN_DIR)/*
 	rm -rf $(BUILD_DIR)/*
 	rm -f *~
 
-install: all
+install:
 	$(PRE_FLASH_COMMAND)
 	$(FLASH_BOARD)
 
