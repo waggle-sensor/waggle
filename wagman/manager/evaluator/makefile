@@ -19,6 +19,8 @@ CC = $(ARD_HOME)/arduino
 BUILD_DIR = ./build
 BIN_DIR = ./bin
 CFLAGS  = --verbose-build --verify
+BOOT_LOADER = $(FLASHER) -C$(ARD_HOME)/hardware/tools/avr/etc/avrdude.conf -v -patmega32u4 -cstk500v2 -Pusb -Uflash:w:$(ARD_HOME)/hardware/arduino/avr/bootloaders/caterina/Caterina-Micro.hex:i -Ulock:w:0x2F:m
+
 
 all: clean	$(TARGET)
 
@@ -30,7 +32,7 @@ clean:
 	rm -rf $(BIN_DIR)/*
 	rm -rf $(BUILD_DIR)/*
 	rm -f *~
-	
+
 
 install:	clean	all
 	$(PRE_FLASH_COMMAND)
@@ -40,13 +42,22 @@ run:    install
 	sleep 2
 	screen $(LINKPORT) $(SERIALBAUD)
 
-full:
+initialize:
 	./timeset.sh
 	make install
-	sleep 1
+	sleep 2
 	echo "" > rtc_conf.cpp
-	make install
+	make run
 
 connect:
 	sleep 2
 	screen $(LINKPORT) $(SERIALBAUD)
+
+## Does not seem to work for some reason :(.
+# new:
+# 	$(BOOT_LOADER)
+# 	sleep 6
+# 	make initialize
+
+
+

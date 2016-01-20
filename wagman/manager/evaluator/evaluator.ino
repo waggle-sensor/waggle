@@ -9,6 +9,9 @@
 #include "./libs/MCP79412RTC/MCP79412RTC.h"    //http://github.com/JChristensen/MCP79412RTC
 #include "./libs/Time/Time.h"
 
+// There is a noise when power is connected - relay gets activated. Test with LED.
+// Missed R37 in BOM
+// Check Temp Controlled Power Circuit
 
 
 MCP342X mcp3428_1;
@@ -18,6 +21,7 @@ HTU21D myHumidity;
 void setup()
 {
     delay(1000);    //Initial boot up settling delay
+    delay(4000);
     set_up_pinmodes();
     delay(2000);
     Serial.begin(115200);
@@ -40,13 +44,13 @@ void setup()
 
 void loop()
 {
-
     hih4030_report();
     lightsensor_report();
     thermistor_report();
     RTC_report();
     currentusage_report();
     htu21D_report();
+    boot_pow_check();
     Serial.println("");
     delay(1900);
 }
