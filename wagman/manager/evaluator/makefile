@@ -8,7 +8,7 @@ FLASHER_BAUD_RATE = 57600
 PORT = /dev/ttyACM0
 BOARD_FLASH = $(PACKAGE):$(ARCH):$(BOARD)
 BOOT_LOADER_TYPE = avr109
-PRE_FLASH_COMMAND = stty -F $(PORT) 1200 hupcl; sleep 1
+PRE_FLASH_COMMAND = stty -F $(PORT) 1200 hupcl; sleep 2
 FLASHER = $(ARD_HOME)/hardware/tools/avr/bin/avrdude
 FLASHER_CONFIGS = $(ARD_HOME)/hardware/tools/avr/etc/avrdude.conf
 FLASH_BOARD = $(FLASHER) -C$(FLASHER_CONFIGS) -v -p$(TYPE) -c$(BOOT_LOADER_TYPE) -P$(PORT) -b$(FLASHER_BAUD_RATE) -D -Uflash:w:$(BIN_DIR)/$(TARGET).ino.hex:i
@@ -20,7 +20,7 @@ BUILD_DIR = ./build
 BIN_DIR = ./bin
 CFLAGS  = --verbose-build --verify
 
-all: $(TARGET)
+all: clean	$(TARGET)
 
 $(TARGET): $(TARGET).ino
 	$(CC) --board $(BOARD_FLASH) $(CFLAGS) --pref build.path=$(BUILD_DIR) $(TARGET).ino
@@ -30,14 +30,22 @@ clean:
 	rm -rf $(BIN_DIR)/*
 	rm -rf $(BUILD_DIR)/*
 	rm -f *~
+	
 
-install:
+install:	clean	all
 	$(PRE_FLASH_COMMAND)
 	$(FLASH_BOARD)
 
 run:    install
 	sleep 2
 	screen $(LINKPORT) $(SERIALBAUD)
+
+full:
+	./timeset.sh
+	make install
+	sleep 1
+	echo "" > rtc_conf.cpp
+	make install
 
 connect:
 	sleep 2
