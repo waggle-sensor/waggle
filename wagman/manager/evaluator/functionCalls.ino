@@ -171,13 +171,13 @@ void turnON_POW1 ()
     digitalWrite(PIN_NC_POW_State_Latch, LOW);
     //Setting state to ON
     digitalWrite(PIN_NC_POW_State, HIGH);
-    delay(1);
+    delay(2);
     // giving raising clock edge
     digitalWrite(PIN_NC_POW_State_Latch, HIGH);
-    delay(1);
+    delay(2);
     // lowering clock edge
     digitalWrite(PIN_NC_POW_State_Latch, LOW);
-    delay(1);
+    delay(2);
     return;
 }
 
@@ -207,13 +207,13 @@ void turnOFF_POW1 () {
     digitalWrite(PIN_NC_POW_State_Latch, LOW);
     //Setting state to ON
     digitalWrite(PIN_NC_POW_State, LOW);
-    delay(1);
+    delay(2);
     // giving raising clock edge
     digitalWrite(PIN_NC_POW_State_Latch, HIGH);
-    delay(1);
+    delay(2);
     // lowering clock edge
     digitalWrite(PIN_NC_POW_State_Latch, LOW);
-    delay(5);
+    delay(2);
     return;
 }
 

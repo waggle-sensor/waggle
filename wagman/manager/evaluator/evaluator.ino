@@ -9,9 +9,10 @@
 #include "./libs/MCP79412RTC/MCP79412RTC.h"    //http://github.com/JChristensen/MCP79412RTC
 #include "./libs/Time/Time.h"
 
-// There is a noise when power is connected - relay gets activated. Test with LED.
-// Missed R37 in BOM
-// Check Temp Controlled Power Circuit
+
+// ***This is a PCB bug, There is a line that connects K2 to GND - need to fix this.
+// ***Missed R37 in BOM
+// Check Temp Controlled Power Circuit - something funny here. 
 
 
 MCP342X mcp3428_1;
@@ -21,12 +22,11 @@ HTU21D myHumidity;
 void setup()
 {
     delay(1000);    //Initial boot up settling delay
-    delay(4000);
     set_up_pinmodes();
+    power_off_all();
     delay(2000);
     Serial.begin(115200);
     Wire.begin();
-
     #ifdef SET_RTC_TIME
     RTC.set(CURRENT_TIME);
     Serial.println("Setting Wagman RTC Time to system time, will reflash in 2 seconds.");
