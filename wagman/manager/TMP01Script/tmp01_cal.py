@@ -1,12 +1,12 @@
 #Set these values
 
-#th = 55 #upper temperature in C
-#tl = -30 #lower temperature in C
-#th = 5 #hysterisis temperature in C
-
-th = 20 #upper temperature in C
-tl = 0 #lower temperature in C
+th = 55 #upper temperature in C
+tl = -30 #lower temperature in C
 th = 5 #hysterisis temperature in C
+
+#th = 20 #upper temperature in C
+#tl = 0 #lower temperature in C
+#th = 5 #hysterisis temperature in C
 
 
 vr = 2.5

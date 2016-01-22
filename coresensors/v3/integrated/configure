@@ -58,7 +58,7 @@ if [ -z "${PWD##*/}".ino ]; then
     echo "Warning, no sources file found. A source file of the name ${PWD##*/}.ino is required for building."
 fi
 
-if [ "$TARGET" == "wagmanV3" ]
+if [ "$TARGET" == "wagmanV2" ]
 then
     echo "PACKAGE = arduino" >> makefile
     echo "ARCH = avr" >> makefile
@@ -76,7 +76,7 @@ then
     echo "LINKPORT = \$(PORT)" >> makefile
     echo "SERIALBAUD = $SERIALBAUD" >> makefile
 
-elif [ "$TARGET" == "airsenseV3" ]
+elif [ "$TARGET" == "airsenseV2" ]
 then
     echo "PACKAGE = arduino" >> makefile
     echo "ARCH = sam" >> makefile
@@ -87,9 +87,9 @@ then
     echo "BOARD_FLASH = \$(PACKAGE):\$(ARCH):\$(BOARD)" >> makefile
     echo "BOOT_LOADER_TYPE = wiring" >>  makefile
     echo "PRE_FLASH_COMMAND = stty -F /dev/\$(PORT) 1200 hupcl; sleep 2"  >> makefile
-    echo "FLASHER = \$(ARD_HOME)/tools/bossac/1.3a-arduino/bossac" >> makefile
-    echo "FLASH_BOARD = \$(FLASHER) -i -d --port=\$(PORT) -U true -e -w -v -b \$(BIN_DIR)/\$(TARGET).cpp.bin -R" >> makefile
-    echo "BUILD_COMPLETE = mv \$(BUILD_DIR)/\$(TARGET).cpp.bin \$(BIN_DIR)/" >> makefile
+    echo "FLASHER = \$(ARD_HOME)/tools/bossac/1.6.1-arduino/bossac" >> makefile
+    echo "FLASH_BOARD = \$(FLASHER) -i -d --port=\$(PORT) -U true -e -w -v -b \$(BIN_DIR)/\$(TARGET).ino.bin -R" >> makefile
+    echo "BUILD_COMPLETE = mv \$(BUILD_DIR)/\$(TARGET).ino.bin \$(BIN_DIR)/" >> makefile
     echo "LINKPORT = /dev/\$(PORT)" >> makefile
     echo "SERIALBAUD = $SERIALBAUD" >> makefile
 
