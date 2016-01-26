@@ -98,12 +98,12 @@ float LibTempTMP421::GetTemperature(void) {
  **********************************************************/
 uint8_t LibTempTMP421::getRegisterValue(void) {
 
-    Wire1.requestFrom(TMP421_ADDRESS, 1);
-    while(Wire1.available() <= 0) {
+    Wire.requestFrom(TMP421_ADDRESS, 1);
+    while(Wire.available() <= 0) {
       ; //wait
     }
 
-    return Wire1.read();
+    return Wire.read();
 }
 
 /**********************************************************
@@ -115,9 +115,9 @@ uint8_t LibTempTMP421::getRegisterValue(void) {
 void LibTempTMP421::setPtrLoc(uint8_t ptrLoc) {
 
     //Set the pointer location
-    Wire1.beginTransmission(TMP421_ADDRESS);   //begin
-    Wire1.write(ptrLoc);             //send the pointer location
-    Wire1.endTransmission();         //end
+    Wire.beginTransmission(TMP421_ADDRESS);   //begin
+    Wire.write(ptrLoc);             //send the pointer location
+    Wire.endTransmission();         //end
     delay(8);
 }
 

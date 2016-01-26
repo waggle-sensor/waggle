@@ -5,6 +5,22 @@ void airsense_acquire (void)
     SerialUSB.println("Acquiring AirSense Data.");
     #endif
 
+    #ifdef SPV1840LR5HB_include
+    SPV1840LR5HB[0] = ID_SPV1840LR5HB;
+    SPV1840LR5HB[1] = (1 << 7) | LENGTH_FORMAT1;
+    Temp_uint16 = analogRead(PIN_RAW_MIC);
+    format1(Temp_uint16);
+    SPV1840LR5HB[2] = formatted_data_buffer[0];
+    SPV1840LR5HB[3] = formatted_data_buffer[1];
+
+    #ifdef SERIAL_DEBUG
+    SerialUSB.print("SPV1840LR5HB: ");
+    SerialUSB.println(Temp_uint16);
+    #endif
+    #endif
+
+
+
     #ifdef TMP112_include
     TMP112_read();
 
@@ -164,38 +180,22 @@ void airsense_acquire (void)
     #endif
     #endif
 
-
-    #ifdef SPV1840LR5HB_1_include
-    long SPV_1_AMPV[100];
-    double SPV_1_AMPV_AVG = 0;
-
-    for(int i = 0; i < 100; i++)
-    {
-        SPV_1_AMPV[i] = 512 - analogRead(SPV_1_AMP);
-        if (SPV_1_AMPV[i] < 0)
-        {
-            SPV_1_AMPV[i] = SPV_1_AMPV[i] * -1;
-        }
-        delay(1);
-    }
-
-    for(int i = 0; i < 100; i++)
-    {
-        SPV_1_AMPV_AVG = ((SPV_1_AMPV_AVG * i) + SPV_1_AMPV[i]) / (i+1);
-    }
-
-    SPV1840LR5HB_1[0] = ID_SPV1840LR5HB_1;
-    SPV1840LR5HB_1[1] = (1 << 7) | LENGTH_FORMAT1;
-
-    format1(int(SPV_1_AMPV_AVG * 10));
-
-    SPV1840LR5HB_1[2] = formatted_data_buffer[0];
-    SPV1840LR5HB_1[3] = formatted_data_buffer[1];
+    #ifdef HIH4030_include
+    HIH4030[0] = ID_HIH4030;
+    HIH4030[1] = (1 << 7) | LENGTH_FORMAT1;
+    Temp_uint16 = analogRead(PIN_HIH4030);
+    format1(Temp_uint16);
+    HIH4030[2] = formatted_data_buffer[0];
+    HIH4030[3] = formatted_data_buffer[1];
     #ifdef SERIAL_DEBUG
-    Serial.print("SPV1840LR5HB: ");
-    Serial.println(Temp_uint16);
+    SerialUSB.print("HIH4030: ");
+    SerialUSB.println(Temp_uint16);
     #endif
+
     #endif
+
+
+
 
 
 

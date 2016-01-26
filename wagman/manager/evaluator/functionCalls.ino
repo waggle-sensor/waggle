@@ -147,7 +147,7 @@ void htu21D_report()
     Serial.print("C");
     Serial.print(" Humidity:");
     Serial.print(htu21d_humd, 1);
-    Serial.println("%");
+    Serial.print("%");
     delay(10);
     return;
 }
@@ -155,7 +155,7 @@ void htu21D_report()
 void hih4030_report()
 {
     Serial.print("HIH4030 Humidity Sensor reading (0-1024):");
-    Serial.println(analogRead(PIN_HIH4030_Sensor));
+    Serial.print(analogRead(PIN_HIH4030_Sensor));
     return;
 }
 
@@ -217,6 +217,23 @@ void turnOFF_POW1 () {
     return;
 }
 
+void WagID_print()
+{
+    byte k;
+    RTC.idRead(WagID);
+    Serial.print("Board ID:");
+    for (k = 0; k<0x08; k++)
+    {
+        Serial.print(WagID[k],HEX);
+        if (k<0x07)
+        {
+        Serial.print(":");
+        }
+    }
+    Serial.println("");
+}
+
+
 void turnOFF_POW2()
 {
     digitalWrite(PIN_POW_2, LOW);
@@ -239,11 +256,46 @@ void turnOFF_POW5()
     return;
 }
 
-void RTC_report()
+
+void HBT_output_pulsetest (void)
 {
-    Serial.print("Time in seconds reported by RTC:");
-    Serial.println(RTC.get());
-    return;
+    //switching to output mode.
+    pinMode(PIN_HBT1, OUTPUT);   // Heartbeat 1
+    pinMode(PIN_HBT2, OUTPUT);   // Heartbeat 2
+    pinMode(PIN_HBT3, OUTPUT);   // Heartbeat 3
+    pinMode(PIN_HBT4, OUTPUT);   // Heartbeat 4
+    pinMode(PIN_HBT5, OUTPUT);   // Heartbeat 5
+
+    Serial.println("The Heartbeat pins will be pulsed 3 times.");
+    for (byte i = 0x00; i<0x03; i++)
+    {
+        Serial.println("Setting HBT Pins to high.");
+        digitalWrite(PIN_HBT1,HIGH);
+        digitalWrite(PIN_HBT2,HIGH);
+        digitalWrite(PIN_HBT3,HIGH);
+        digitalWrite(PIN_HBT4,HIGH);
+        digitalWrite(PIN_HBT5,HIGH);
+        delay(1000);
+        Serial.println("Setting HBT Pins to Low.");
+        digitalWrite(PIN_HBT1,LOW);
+        digitalWrite(PIN_HBT2,LOW);
+        digitalWrite(PIN_HBT3,LOW);
+        digitalWrite(PIN_HBT4,LOW);
+        digitalWrite(PIN_HBT5,LOW);
+        delay(1000);
+
+
+    }
+
+
+
+    //switching back to input mode.
+    pinMode(PIN_HBT1, INPUT);   // Heartbeat 1
+    pinMode(PIN_HBT2, INPUT);   // Heartbeat 2
+    pinMode(PIN_HBT3, INPUT);   // Heartbeat 3
+    pinMode(PIN_HBT4, INPUT);   // Heartbeat 4
+    pinMode(PIN_HBT5, INPUT);   // Heartbeat 5
+
 }
 
 void thermistor_report()
@@ -261,7 +313,7 @@ void thermistor_report()
     Serial.print(mcp3428_1.readADC()>>5);
     Serial.print(',');
     mcp3428_1.selectChannel(MCP342X::CHANNEL_3, MCP342X::GAIN_1);
-    Serial.println(mcp3428_1.readADC()>>5);
+    Serial.print(mcp3428_1.readADC()>>5);
     return;
 }
 
@@ -323,6 +375,14 @@ int read_current(int addr)
     unsigned int milliamps = ((csb << 8) | lsb) * MILLIAMPS_PER_STEP;
     return milliamps;
 }
+
+void RTC_time_report (void)
+{
+    Serial.print("Time:");
+    Serial.print(RTC.get());
+    return;
+}
+
 
 void currentusage_report(void)
 {

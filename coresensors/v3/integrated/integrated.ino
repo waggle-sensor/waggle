@@ -1,6 +1,7 @@
 // #include "/home/rajesh/.arduino15/packages/arduino/hardware/sam/1.6.4/libraries/Wire/Wire.h"
 #include <Wire.h>
 extern TwoWire Wire1;
+#include <OneWire.h>
 #include "config.cpp"
 
 #ifdef LIGHTSENSE_INCLUDE
@@ -8,6 +9,7 @@ extern TwoWire Wire1;
 MCP342X mcp3428_1;
 MCP342X mcp3428_2;
 #endif
+
 
 
 #ifdef HTU21D_include
@@ -82,16 +84,18 @@ LibTempTMP421 TMP421_Sensor = LibTempTMP421();
 byte formatted_data_buffer[MAX_FMT_SIZE];
 
 // Airsense board
-byte MAC_ID[LENGTH_FORMAT3 + 2] = {ID_MAC, 134,3,1,8,1,0,1}; // MAC address
-byte TMP112[LENGTH_FORMAT6 + 2]; // ambient temp
-byte HTU21D[(LENGTH_FORMAT6 * 2) + 2]; // ambient RH & temp
-// byte GP2Y1010AU0F[LENGTH_FORMAT2 + 2]; // dust density
+byte MAC_ID[LENGTH_FORMAT3 + 2] = {ID_MAC, 134,0,0,0,0,0,0}; // MAC address
+
 byte BMP180[LENGTH_FORMAT5 + LENGTH_FORMAT6 + 2]; // atmospheric pressure
+byte TMP112[LENGTH_FORMAT6 + 2]; // ambient temp
+byte TSYS01[LENGTH_FORMAT6 + 2]; // ambient temp
+byte HTU21D[(LENGTH_FORMAT6 * 2) + 2]; // ambient RH & temp
+byte MMA8452Q[(LENGTH_FORMAT6 * 4) + 2]; // 3-axis accel for traffic flow
 byte PR103J2[LENGTH_FORMAT1 + 2]; // light
 byte TSL250RD_1[LENGTH_FORMAT1 + 2]; // ambient light (400-950nm)
-byte MMA8452Q[(LENGTH_FORMAT6 * 4) + 2]; // 3-axis accel for traffic flow
-byte SPV1840LR5HB_1[LENGTH_FORMAT1 + 2]; // sound pressure
-byte TSYS01[LENGTH_FORMAT6 + 2]; // ambient temp
+byte SPV1840LR5HB[LENGTH_FORMAT1 + 2]; // sound pressure
+byte HIH4030[LENGTH_FORMAT1 + 2]; // humidity
+
 
 // Lightsense board
 byte HMC5883L[(LENGTH_FORMAT8 * 3) + 2]; // magnetic field strength for traffic flow
@@ -104,7 +108,6 @@ byte ML8511[LENGTH_FORMAT1 + 2]; // solar UV
 byte D6T[(LENGTH_FORMAT6 * 17) + 2]; // temp of surrounding objects
 byte MLX90614[LENGTH_FORMAT1 + 2]; // temp of pavement
 byte TMP421[LENGTH_FORMAT6 + 2]; // temp inside transparent box
-byte SPV1840LR5HB_2[LENGTH_FORMAT1 + 2]; // sound pressure
 
 // chemsense board
 byte total_reducing_gases[LENGTH_FORMAT5 + 2]; // ambient concentration
@@ -122,7 +125,7 @@ byte Si1145[LENGTH_FORMAT1 + 2]; // UV
 
 byte chemsense_MAC_ID[LENGTH_FORMAT3 + 2] = {0,0,0,0,0,0,0,0}; // MAC address of chemsense board
 
-
+byte test_seq;
 
 // Whole packet
 byte packet_whole[LENGTH_WHOLE];
@@ -131,6 +134,7 @@ byte sensor_health[SENSOR_HEALTH_SIZE+2];
 byte packet_data[LENGTH_DATA];
 // Sub-packets for each format
 
+OneWire ds2401(PIN_DS2401);  //DS2401 PIN
 
 // These lengths are calculated at packet assembly
 byte length_whole_actual;
@@ -148,8 +152,9 @@ byte valid;
 
 byte packet_seq_number = 0x00;
 
+
 float Temp_float[3];
-byte Temp_byte[5];
+byte Temp_byte[8];
 uint16_t Temp_uint16;
 long Temp_long;
 int Temp_int[3];
@@ -234,17 +239,18 @@ void ALL_SENSOR_READ ()
 void setup()
 {
     // Let us wait for the processor and the sensors to settle down
-    delay(6000);
 
+    delay(2000);
     Wire.begin();
+    delay(2000);
 
-    #ifdef PRINT_BUFFER
     SerialUSB.begin(115200);
-    #endif
 
     #ifdef SERIAL_DEBUG
     SerialUSB.println("Starting...");
     #endif
+
+    initializeSensorBoard();
 
     Serial3.begin(115200);
     //     Setup the I2C buffer
@@ -253,16 +259,17 @@ void setup()
         packet_whole[i] = 0x00;
     }
     assemble_packet_empty();
-
-
     Sensors_Setup();
-    ALL_SENSOR_READ ();
 
     #ifdef I2C_INTERFACE
     I2C_READ_COMPLETE = false;
     Wire1.begin(I2C_SLAVE_ADDRESS);
     Wire1.onRequest(requestEvent);
     #endif
+
+    digitalWrite(PIN_CHEMSENSE_POW, LOW);
+
+
 }
 /**************************************************************************************/
 
@@ -270,32 +277,36 @@ void setup()
 void loop()
 {
 
-    #ifdef USBSERIAL_INTERFACE
-        ALL_SENSOR_READ();
-        for(int i = 0; i < packet_whole[0x02]+0x05; i++)
-        {
-            SerialUSB.write(packet_whole[i]);
-        }
-        SerialUSB.flush();
-        delay(3000);
-    #else
+//     #ifdef USBSERIAL_INTERFACE
+//         ALL_SENSOR_READ();
+//         for(int i = 0; i < packet_whole[0x02]+0x05; i++)
+//         {
+//             SerialUSB.write(packet_whole[i]);
+//         }
+//         SerialUSB.flush();
+//         delay(3000);
+//     #else
+//
+//     #ifdef SERIAL_DEBUG
+//         ALL_SENSOR_READ();
+//         delay(3000);
+//     #endif
+//
+//     #endif
+//
+//
+//     #ifdef I2C_INTERFACE
+//     if (I2C_READ_COMPLETE == true)
+//     {
+//         ALL_SENSOR_READ();
+//         I2C_READ_COMPLETE = false;
+//     }
+//     #endif
 
-    #ifdef SERIAL_DEBUG
-        ALL_SENSOR_READ();
-        delay(3000);
-    #endif
-
-    #endif
-
-
-    #ifdef I2C_INTERFACE
-    if (I2C_READ_COMPLETE == true)
-    {
-        ALL_SENSOR_READ();
-        I2C_READ_COMPLETE = false;
-    }
-    #endif
-
-    delay(1);
+    testnew();
 }
+
+
+
+
 

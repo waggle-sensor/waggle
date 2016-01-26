@@ -36,9 +36,8 @@ install:	clean	all
 	$(FLASH_BOARD)
 
 run:    install
-	sleep 2
+	sleep 1
 	screen $(LINKPORT) $(SERIALBAUD)
 
 connect:
-	sleep 2
 	screen $(LINKPORT) $(SERIALBAUD)

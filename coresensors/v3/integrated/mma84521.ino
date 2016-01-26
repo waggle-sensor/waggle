@@ -65,7 +65,7 @@ void MMA8452Active()
 // Read bytesToRead sequentially, starting at addressToRead into the dest byte array
 void MMA8452readRegisters(byte addressToRead, int bytesToRead, byte * dest)
 {
-    Wire.requestFrom((uint8_t) MMA8452_ADDRESS, (uint8_t) bytesToRead, (uint32_t) addressToRead, (uint8_t) 1);
+    Wire.requestFrom((uint8_t) MMA8452_ADDRESS, (uint8_t) bytesToRead, (uint32_t) addressToRead, (uint8_t) 1, TRUE);
     while(Wire.available() < bytesToRead); //Hang out until we get the # of bytes we expect
     for(int x = 0 ; x < bytesToRead ; x++)
         dest[x] = Wire.read();
@@ -74,7 +74,7 @@ void MMA8452readRegisters(byte addressToRead, int bytesToRead, byte * dest)
 // Read a single byte from addressToRead and return it as a byte
 byte MMA8452readRegister(byte addressToRead)
 {
-    Wire.requestFrom((uint8_t) MMA8452_ADDRESS, (uint8_t) 1, (uint32_t) addressToRead, (uint8_t) 1);
+    Wire.requestFrom((uint8_t) MMA8452_ADDRESS, (uint8_t) 1, (uint32_t) addressToRead, (uint8_t) 1, TRUE);
     while(!Wire.available()) ; //Wait for the data to come back
     return Wire.read(); //Return this one byte
 }

@@ -43,9 +43,9 @@ void lightsense_acquire (void)
     #ifdef SERIAL_DEBUG
     SerialUSB.print("HMC5883L X:");
     SerialUSB.print(event.magnetic.x);
-    SerialUSB.print("HMC5883L Y:");
+    SerialUSB.print(", Y:");
     SerialUSB.print(event.magnetic.y);
-    SerialUSB.print("HMC5883L Z:");
+    SerialUSB.print(", Z:");
     SerialUSB.println(event.magnetic.z);
     #endif
 

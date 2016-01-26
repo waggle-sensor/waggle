@@ -24,15 +24,15 @@
 // #define POST    // enables power on self test to prevent sensors hanging up
 // //
 // // I2C devices
-#define MMA8452 6
-#define MLX90614_ADD 9
+// #define MMA8452 6
+// #define MLX90614_ADD 9
 // #define IR_D6T_44L_06_ADD 14
-#define BMP180_ADD 2
+// #define BMP180_ADD 2
 // #define TMP102_ADD 4
-#define TMP421_ADD 13
-#define HIH6130_ADD 7
-#define HTU21D_ADD 18
-#define HMC5883_ADD 19
+// #define TMP421_ADD 13
+// #define HIH6130_ADD 7
+// #define HTU21D_ADD 18
+// #define HMC5883_ADD 19
 
 // Single Wire devices
 // #define RHT03_ADD 3
@@ -50,8 +50,8 @@
 // #define SHT75_1_sclkPin 9   // SHT15_1 serial clock
 
 // 1-wire devices
-// #define DS18B20_ADD 8
-// #define DS18B20_1_Pin 7
+#define DS18B20_ADD 8
+#define DS18B20_1_Pin 7
 
 // Analog Inputs
 // #define GA1A1S201WP_ADD 10

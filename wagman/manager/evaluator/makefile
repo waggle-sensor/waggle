@@ -50,7 +50,6 @@ initialize:
 	make run
 
 connect:
-	sleep 2
 	screen $(LINKPORT) $(SERIALBAUD)
 
 ## Does not seem to work for some reason :(.

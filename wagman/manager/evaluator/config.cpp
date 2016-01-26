@@ -33,9 +33,10 @@
 // Current Sensors
 #define ADDR_CURRENT_SYS 0x60
 #define ADDR_CURRENT_POW1 0x62
-#define ADDR_CURRENT_POW2 0x63
-#define ADDR_CURRENT_POW3 0x68
-#define ADDR_CURRENT_POW4 0x6A
+#define ADDR_CURRENT_POW2 0x68
+#define ADDR_CURRENT_POW3 0x6A
+#define ADDR_CURRENT_POW4 0x63
+#define ADDR_CURRENT_POW3 0x6A
 #define ADDR_CURRENT_POW5 0x6B
 // Resolution of current sensors (with 8A range) (mA)
 #define MILLIAMPS_PER_STEP 16
