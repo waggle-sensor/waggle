@@ -1,7 +1,9 @@
+Issue Tracker - 
+
 Light Sense:
 
     Layout -
-        1. USB port does fit - please fix.
+        1. USB port does not fit - please fix.
         2. Increase the trace widths for power on the board.
 
     Finishing -
@@ -12,10 +14,17 @@ Airsense:
     Layout -
         1. F2 is of the wrong size.
         2. You can remove the funnyness around the T3 section.
-        3. Increase tracewidths for power - all over the place.
+        3. Increase trace-widths for power - all over the place.
         4. Change the power splitter circuit we have now.
         5. Fix the voltage divider around HIH4030
-        6. Check if we have the right fuses - may be we need more as the Chemsense sponges off of the Airsense.
+        6. Check if we have the right fuses - may be we need higher as the
+            Chemsense gets power off of the Airsense.
         7. Remove the USB lines from ESDA2
-        8. Change the HBT line to 5V instead of 3.3 it is now in.
+        8. Change the HBT line to 5V instead of 3.3V it is now in.
         9. Fix the power for the EEPROM.
+        10. Change Mic RAW Location to before the Capacitor.
+
+    Finishing -
+
+        1. Change resistors for HIH4030 - Curves need changing the resistors. R1
+            + R2 should be greater than 39 kΩ.
