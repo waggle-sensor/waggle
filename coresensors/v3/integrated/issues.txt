@@ -1,4 +1,4 @@
-Issue Tracker - 
+Issue Tracker -
 
 Light Sense:
 
@@ -12,17 +12,17 @@ Light Sense:
 Airsense:
 
     Layout -
-        1. F2 is of the wrong size.
-        2. You can remove the funnyness around the T3 section.
-        3. Increase trace-widths for power - all over the place.
-        4. Change the power splitter circuit we have now.
-        5. Fix the voltage divider around HIH4030
-        6. Check if we have the right fuses - may be we need higher as the
-            Chemsense gets power off of the Airsense.
-        7. Remove the USB lines from ESDA2
-        8. Change the HBT line to 5V instead of 3.3V it is now in.
-        9. Fix the power for the EEPROM.
-        10. Change Mic RAW Location to before the Capacitor.
+        1. Check the UART link with Chemsense. 
+        2. Simplify T3 section.
+        3. Increase trace-widths for incoming power.
+        4. Fix - power convergence error spotted in last rev.
+        5. Fix - Stray short around MOSFET.
+        6. Fix - Remove the USB lines from ESDA2.
+        7. Fix - HBT line to 5V instead of 3.3V.
+        8. Fix - EEPROM Power.
+        9. Fix - Remove Capacitor in the Mic circuit.
+
+
 
     Finishing -
 

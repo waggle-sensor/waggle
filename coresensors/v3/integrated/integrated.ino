@@ -267,7 +267,7 @@ void setup()
     Wire1.onRequest(requestEvent);
     #endif
 
-    digitalWrite(PIN_CHEMSENSE_POW, LOW);
+    
 
 
 }

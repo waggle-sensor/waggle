@@ -84,7 +84,7 @@
 #define MAC_ID_include 0x01
 #define AIRSENSE_INCLUDE 0x01
 #define LIGHTSENSE_INCLUDE 0x01
-// #define CHEMSENSE_INCLUDE 0x01
+#define CHEMSENSE_INCLUDE 0x01
 
 
 

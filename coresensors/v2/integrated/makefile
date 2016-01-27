@@ -1,5 +1,5 @@
 #ARD_HOME = /digital/github/waggle/devtools/arduino/compilers/arduino-1.6.5-linux/arduino_64
-ARD_HOME = /home/rajesh/Desktop/arduino-1.6.6
+ARD_HOME = /home/rajesh/WaggleGIT/arduino-1.6.7
 TARGET = integrated
 PACKAGE = arduino
 ARCH = sam
@@ -10,7 +10,7 @@ PORT = ttyACM0
 BOARD_FLASH = $(PACKAGE):$(ARCH):$(BOARD)
 BOOT_LOADER_TYPE = wiring
 PRE_FLASH_COMMAND = stty -F /dev/$(PORT) 1200 hupcl; sleep 2
-FLASHER = $(ARD_HOME)/tools/bossac/1.6.1-arduino/bossac
+FLASHER = $(ARD_HOME)/Atmel_SAM/packages/arduino/tools/bossac/1.6.1-arduino/bossac
 FLASH_BOARD = $(FLASHER) -i -d --port=$(PORT) -U true -e -w -v -b $(BIN_DIR)/$(TARGET).ino.bin -R
 BUILD_COMPLETE = mv $(BUILD_DIR)/$(TARGET).ino.bin $(BIN_DIR)/
 LINKPORT = /dev/$(PORT)
@@ -29,15 +29,15 @@ $(TARGET): $(TARGET).ino
 clean:
 	rm -rf $(BUILD_DIR)/*
 	rm -f *~
+	rm -rf $(BIN_DIR)/*
 
-install:
+install:	clean	all
 	$(PRE_FLASH_COMMAND)
 	$(FLASH_BOARD)
 
 run:    install
-	sleep 2
+	sleep 1
 	screen $(LINKPORT) $(SERIALBAUD)
 
 connect:
-	sleep 2
 	screen $(LINKPORT) $(SERIALBAUD)
