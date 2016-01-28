@@ -68,7 +68,7 @@ void lightsense_acquire (void)
     mcp3428_2.selectChannel(MCP342X::CHANNEL_0, MCP342X::GAIN_1);
     format1(mcp3428_2.readADC());
     APDS9006020[0] = ID_APDS9006020;
-    APDS9006020[1] = (valid << 7) | LENGTH_FORMAT1;
+    APDS9006020[1] = (1 << 7) | LENGTH_FORMAT1;
     APDS9006020[2] = formatted_data_buffer[0];
     APDS9006020[3] = formatted_data_buffer[1];
     #ifdef SERIAL_DEBUG
@@ -120,7 +120,7 @@ void lightsense_acquire (void)
     mcp3428_1.selectChannel(MCP342X::CHANNEL_2, MCP342X::GAIN_1);
     format1(mcp3428_1.readADC());
     ML8511[0] = ID_ML8511;
-    ML8511[1] = (valid << 7) | LENGTH_FORMAT1;
+    ML8511[1] = (1 << 7) | LENGTH_FORMAT1;
     ML8511[2] = formatted_data_buffer[0];
     ML8511[3] = formatted_data_buffer[1];
     #ifdef SERIAL_DEBUG

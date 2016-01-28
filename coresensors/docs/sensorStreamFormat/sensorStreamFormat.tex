@@ -1,0 +1,47 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{fancyhdr}
+\usepackage{geometry}
+\usepackage{array}
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+\usepackage{multirow}
+\usepackage{morefloats}
+\usepackage{float}
+\usepackage{soul}
+\usepackage{color}
+\usepackage{seqsplit}
+\usepackage{gensymb}
+
+
+\restylefloat{table}
+
+\fontfamily{cmss}\selectfont
+
+\geometry{top = 1in, bottom = 1in, left = 0.5in, right = 0.5in}
+
+\setlength\parindent{0pt}
+
+\pagestyle{fancy}
+\renewcommand{\footrulewidth}{1pt}
+\lhead{Waggle Sensor Array}
+\chead{Interface Control Document for Sensor Boards V2 and V3}
+\rhead{Version 3}
+\lfoot{Daniel Schrader}
+\rfoot{dschrader@anl.gov}
+
+\setlength{\tabcolsep}{10pt}
+\renewcommand{\arraystretch}{1.4}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+"This Document needs to be updated."
+
+\input{packetStructure.tex}
+\input{dataPacketExposed.tex}
+\input{sensorDataUnits.tex}
+% \input{dataPacketExample.tex}
+\end{document}

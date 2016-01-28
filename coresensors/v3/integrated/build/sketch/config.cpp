@@ -32,12 +32,12 @@
 #define ID_MAC  0x00
 #define ID_TMP112  0x01
 #define ID_HTU21D  0x02
-#define ID_GP2Y1010AU0F  0x03
+#define ID_HIH4030  0x03
 #define ID_BMP180  0x04
 #define ID_PR103J2  0x05
 #define ID_TSL250RD_1  0x06
 #define ID_MMA8452Q  0x07
-#define ID_SPV1840LR5HB_1  0x08
+#define ID_SPV1840LR5HB  0x08
 #define ID_TSYS01  0x09
 #define ID_HMC5883L  0x0A
 #define ID_HIH6130  0x0B
@@ -49,7 +49,6 @@
 #define ID_D6T  0x11
 #define ID_MLX90614  0x12
 #define ID_TMP421  0x13
-#define ID_SPV1840LR5HB_2  0x14
 #define ID_TOTAL_REDUCING_GASES  0x15
 #define ID_ETHANOL  0x16
 #define ID_NITROGEN_DIOXIDE  0x17
@@ -63,13 +62,29 @@
 #define ID_Si1145 0x1F
 #define ID_CHEMSENSE_MAC  0x20
 #define ID_HEALTH  0xFE
-#define MAC_ID_include 0x01
+
+
+
+#define EEPROM_ADDRESS      0x50    //Address of 24LC256 EEPROM
+#define PIN_CHEMSENSE_POW   47
+#define PIN_DS2401          48
+#define PIN_CHEMSENSE_RST   49
+#define PIN_CHEMSENSE_HBT   50
+
+#define PIN_HBT             8
+#define PIN_GP2Y_OUT        A7
+#define PIN_GP2Y_IN         A4
+#define PIN_SPV_AMP         A5
+#define PIN_SVP_SPL         A6
+#define PIN_RAW_MIC         A9
+#define PIN_HIH4030         A10
+
 
 /**************************************************************************************/
-
+#define MAC_ID_include 0x01
 #define AIRSENSE_INCLUDE 0x01
 #define LIGHTSENSE_INCLUDE 0x01
-// #define CHEMSENSE_INCLUDE 0x01
+#define CHEMSENSE_INCLUDE 0x01
 
 
 
@@ -82,8 +97,9 @@
     #define PR103J2_include 0x01
     #define TSL250RD_1_include 0x01
     #define MMA8452Q_include 0x01
-//     #define SPV1840LR5HB_1_include 0x01
+    #define SPV1840LR5HB_include 0x01
     #define TSYS01_include 0x01
+    #define HIH4030_include 0x01
 #endif
 
 // Lightsense board
@@ -95,10 +111,9 @@
     #define TSL250RD_2_include 0x01
     #define MLX75305_include 0x01
     #define ML8511_include 0x01
-//     #define D6T_include 0x01
-//     #define MLX90614_include 0x01
     #define TMP421_include 0x01
-//     #define SPV1840LR5HB_2_include 0x01
+ // #define MLX90614_include 0x01
+ // #define D6T_include 0x01
 #endif
 
 // Chemsense board
@@ -120,8 +135,9 @@
 // #define system_health_include 0x01
 // #define RANDOMIZE_VALID 0x01
 #define SERIAL_DEBUG 0x01
+// #define PRINT_BUFFER 0x01
 
-#define USBSERIAL_INTERFACE 0x01
+// #define USBSERIAL_INTERFACE 0x01
 // #define I2C_INTERFACE 0x01
 // #define I2C_PACKET_SIZE 163
 // #define I2C_INTERFACE_CONST_SIZE 0x01

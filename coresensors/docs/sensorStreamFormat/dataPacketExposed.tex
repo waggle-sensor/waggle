@@ -1,0 +1,333 @@
+\section{Data Sub-Packet} \label{section:dataSub}
+
+The data sub-packet consists of 32 "chunks" (30 sensors and 2 MAC addresses).  Each "chunk" follows one of seven formats.\\
+
+%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Data Formats}
+
+\begin{table}[H]
+    \centering
+    {\rowcolors{2}{black!12}{black!2}
+    \begin{tabular}{|c c c c c c c|}
+        \hline
+        \textbf{Format} & \textbf{Byte 0} & \textbf{Byte 1} & \textbf{Byte 2} & \textbf{Byte 3} & \textbf{Byte 4} & \textbf{Byte 5}\\
+        \hline
+        \hline
+        1 & (1 << 7) | 7-bit int & (neg << 7) | 7-bit frac. & - & - & - & -\\
+        2 & 7 MSb & LSB & - & - & - & -\\
+        3 & Addr5 & Addr4 & Addr3 & Addr2 & Addr1 & Addr0\\
+        4 &
+        \multirow{1}{8em}{(1 << 7) | (neg << 6) | (4-bit int << 2) | 2 MSb of frac.}
+        & 8 LSb of frac. & - & - & - & -\\[4ex]
+        5 & (neg << 6) | 6 MSb & 8 LSb & - & - & - & -\\
+        6 &
+        \multirow{1}{9em}{(1 << 7) | (neg << 6) | 6 MSb}
+        & Middle 8 bits & 8 LSb & - & - & -\\[2ex]
+        7 & First 8 "chunks" & 8 "chunks" & 8 "chunks" & Last 8 "chunks" & - & -\\
+        \hline
+    \end{tabular}
+    }
+    \caption{Data formats}
+    \label{table:overall}
+\end{table}
+
+This version of the Waggle protocol does not use standard representations for floating point numbers.  Instead, the location of the decimal point is pre-determined (between the integer and fractional components, if applicable).\\
+
+The most significant bit in byte 0 of formats 1, 4, and 6 means the data is already converted.  Formats 2 and 5 contain raw data.\\
+
+Formats 1, 4, 5, and 6 contain a "negative" bit.  If this bit is 1, the value is negative.
+
+%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Data "Chunks"}
+
+The \textit{length} in each data "chunk" represents the number of bytes of sensor data.  The total "chunk" length is \textit{length} + 2.
+
+\begin{table}[H]
+    \centering
+    {\rowcolors{2}{black!15}{black!8}
+    \begin{tabular}{|c c c c|}
+        \hline
+        \textbf{Field} & \textbf{ID} & \textbf{Validity | Length} & \textbf{Data}\\
+        \hline
+        \hline
+        Main MAC address & 0x00 & (1 << 7) | 0x06 & Table \ref{table:sensor1}\\
+        TMP112 & 0x01 & (0/1 << 7) | 0x02 & Table \ref{table:sensor2}\\
+        HTU21D & 0x02 & (0/1 << 7) | 0x04 & Table \ref{table:sensor3}\\
+        GP2Y1010AU0F & 0x03 & (0/1 << 7) | 0x02 & Table \ref{table:sensor4}\\
+        BMP180 & 0x04 & (0/1 << 7) | 0x05 & Table \ref{table:sensor5}\\
+        PR103J2 & 0x05 & (0/1 << 7) | 0x02 & Table \ref{table:sensor6}\\
+        TSL250RD & 0x06 & (0/1 << 7) | 0x02 & Table \ref{table:sensor6}\\
+        MMA8452Q & 0x07 & (0/1 << 7) | 0x08 & Table \ref{table:sensor7}\\
+        SPV1840LR5H-B & 0x08 & (0/1 << 7) | 0x02 & Table \ref{table:sensor8}\\
+        TSYS01 & 0x09 & (0/1 << 7) | 0x02 & Table \ref{table:sensor9}\\
+        HMC5883L & 0x0A & (0/1 << 7) | 0x06 & Table \ref{table:sensor10}\\
+        HIH6130 & 0x0B & (0/1 << 7) | 0x04 & Table \ref{table:sensor3}\\
+        APDS-9006-020 & 0x0C & (0/1 << 7) | 0x02 & Table \ref{table:sensor6}\\
+        TSL260RD & 0x0D & (0/1 << 7) | 0x02 & Table \ref{table:sensor6}\\
+        TSL250RD & 0x0E & (0/1 << 7) | 0x02 & Table \ref{table:sensor6}\\
+        MLX75305 & 0x0F & (0/1 << 7) | 0x02 & Table \ref{table:sensor6}\\
+        ML8511 & 0x10 & (0/1 << 7) | 0x02 & Table \ref{table:sensor6}\\
+        D6T & 0x11 & (0/1 << 7) | 0x22 & Table \ref{table:sensor11}\\
+        MLX90614 & 0x12 & (0/1 << 7) | 0x02 & Table \ref{table:sensor2}\\
+        TMP421 & 0x13 & (0/1 << 7) | 0x02 & Table \ref{table:sensor2}\\
+        SPV1840LR5H-B & 0x14 & (0/1 << 7) | 0x02 & Table \ref{table:sensor8}\\
+        Total reducing gases & 0x15 & (0/1 << 7) | 0x02 & Table \ref{table:sensor12}\\
+        Ethanol & 0x16 & (0/1 << 7) | 0x02 & Table \ref{table:sensor12}\\
+        Nitrogen dioxide & 0x17 & (0/1 << 7) | 0x02 & Table \ref{table:sensor12}\\
+        Ozone & 0x18 & (0/1 << 7) | 0x02 & Table \ref{table:sensor12}\\
+        Hydrogen sulphide & 0x19 & (0/1 << 7) | 0x02 & Table \ref{table:sensor12}\\
+        Total oxidizing gases & 0x1A & (0/1 << 7) | 0x02 & Table \ref{table:sensor12}\\
+        Carbon monoxide & 0x1B & (0/1 << 7) | 0x02 & Table \ref{table:sensor12}\\
+        Sulfur dioxide & 0x1C & (0/1 << 7) | 0x02 & Table \ref{table:sensor12}\\
+        Sensirion & 0x1D & (0/1 << 7) | 0x04 & Table \ref{table:sensor3}\\
+        Bosh & 0x1E & (0/1 << 7) | 0x03 & Table \ref{table:sensor13}\\
+        Intel MAC address & 0x1F & (1 << 7) | 0x06 & Table \ref{table:sensor1}\\
+        Sensor status (health) & 0xFE & (1 << 7) | 0x04 & Table \ref{table:sensor14}\\
+        \hline
+    \end{tabular}
+    }
+    \caption{Data sub-packet structure (each row is a "chunk")}
+    \label{table:dataChunk}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    {\rowcolors{2}{black!12}{black!2}
+    \begin{tabular}{|c c c c c c|}
+        \hline
+        \textbf{Byte 0} & \textbf{Byte 1} & \textbf{Byte 2} & \textbf{Byte 3} & \textbf{Byte 4} & \textbf{Byte 5}\\
+        \hline
+        \hline
+        Address 5 & Address 4 & Address 3 & Address 2 & Address 1 & Address 0\\
+        \multicolumn{6}{|c|}{Format 3}\\
+        \hline
+    \end{tabular}
+    }
+    \caption{MAC address}
+    \label{table:sensor1}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    {\rowcolors{2}{black!12}{black!2}
+    \begin{tabular}{|c c|}
+        \hline
+        \textbf{Byte 0} & \textbf{Byte 1}\\
+        \hline
+        \hline
+        \multicolumn{2}{|c|}{Temperature}\\
+        \multicolumn{2}{|c|}{Format 1}\\
+        \hline
+    \end{tabular}
+    }
+    \caption{Sensor data}
+    \label{table:sensor2}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    {\rowcolors{2}{black!12}{black!2}
+    \begin{tabular}{|c c c c|}
+        \hline
+        \textbf{Byte 0} & \textbf{Byte 1} & \textbf{Byte 2} & \textbf{Byte 3}\\
+        \hline
+        \hline
+        \multicolumn{2}{|c|}{Temperature} & \multicolumn{2}{|c|}{Humidity}\\
+        \multicolumn{2}{|c|}{Format 1} & \multicolumn{2}{|c|}{Format 1}\\
+        \hline
+    \end{tabular}
+    }
+    \caption{Sensor data}
+    \label{table:sensor3}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    {\rowcolors{2}{black!12}{black!2}
+    \begin{tabular}{|c c|}
+        \hline
+        \textbf{Byte 0} & \textbf{Byte 1}\\
+        \hline
+        \hline
+        \multicolumn{2}{|c|}{Dust}\\
+        \multicolumn{2}{|c|}{Format 2}\\
+        \hline
+    \end{tabular}
+    }
+    \caption{Sensor data}
+    \label{table:sensor4}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    {\rowcolors{2}{black!12}{black!2}
+    \begin{tabular}{|c c c c c|}
+        \hline
+        \textbf{Byte 0} & \textbf{Byte 1} & \textbf{Byte 2} & \textbf{Byte 3} & \textbf{Byte 4}\\
+        \hline
+        \hline
+        \multicolumn{2}{|c|}{Temperature} & \multicolumn{3}{|c|}{Atmospheric pressure}\\
+        \multicolumn{2}{|c|}{Format 1} & \multicolumn{3}{|c|}{Format 6}\\
+        \hline
+    \end{tabular}
+    }
+    \caption{Sensor data}
+    \label{table:sensor5}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    {\rowcolors{2}{black!12}{black!2}
+    \begin{tabular}{|c c|}
+        \hline
+        \textbf{Byte 0} & \textbf{Byte 1}\\
+        \hline
+        \hline
+        \multicolumn{2}{|c|}{Light}\\
+        \multicolumn{2}{|c|}{Format 2}\\
+        \hline
+    \end{tabular}
+    }
+    \caption{Sensor data}
+    \label{table:sensor6}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    {\rowcolors{2}{black!12}{black!2}
+    \begin{tabular}{|c c c c c c c c|}
+        \hline
+        \textbf{Byte 0} & \textbf{Byte 1}  & \textbf{Byte 2} & \textbf{Byte 3} & \textbf{Byte 4} & \textbf{Byte 5} & \textbf{Byte 6} & \textbf{Byte 7}\\
+        \hline
+        \hline
+        \multicolumn{2}{|c|}{Acceleration X} & \multicolumn{2}{|c|}{Acceleration Y}  & \multicolumn{2}{|c|}{Acceleration Z} & \multicolumn{2}{|c|}{RMS}\\
+        \multicolumn{2}{|c|}{Format 1} & \multicolumn{2}{|c|}{Format 1}  & \multicolumn{2}{|c|}{Format 1} & \multicolumn{2}{|c|}{Format 1}\\
+        \hline
+    \end{tabular}
+    }
+    \caption{Sensor data}
+    \label{table:sensor7}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    {\rowcolors{2}{black!12}{black!2}
+    \begin{tabular}{|c c|}
+        \hline
+        \textbf{Byte 0} & \textbf{Byte 1}\\
+        \hline
+        \hline
+        \multicolumn{2}{|c|}{Sound pressure}\\
+        \multicolumn{2}{|c|}{Format 2}\\
+        \hline
+    \end{tabular}
+    }
+    \caption{Sensor data}
+    \label{table:sensor8}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    {\rowcolors{2}{black!12}{black!2}
+    \begin{tabular}{|c c|}
+        \hline
+        \textbf{Byte 0} & \textbf{Byte 1}\\
+        \hline
+        \hline
+        \multicolumn{2}{|c|}{Temperature}\\
+        \multicolumn{2}{|c|}{Format 2}\\
+        \hline
+    \end{tabular}
+    }
+    \caption{Sensor data}
+    \label{table:sensor9}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    {\rowcolors{2}{black!12}{black!2}
+    \begin{tabular}{|c c c c c c|}
+        \hline
+        \textbf{Byte 0} & \textbf{Byte 1}  & \textbf{Byte 2} & \textbf{Byte 3} & \textbf{Byte 4} & \textbf{Byte 5}\\
+        \hline
+        \hline
+        \multicolumn{2}{|c|}{Magnetic X} & \multicolumn{2}{|c|}{Magnetic Y}  & \multicolumn{2}{|c|}{Magnetic Z}\\
+        \multicolumn{2}{|c|}{Format 4} & \multicolumn{2}{|c|}{Format 4}  & \multicolumn{2}{|c|}{Format 4}\\
+        \hline
+    \end{tabular}
+    }
+    \caption{Sensor data}
+    \label{table:sensor10}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    {\rowcolors{2}{black!12}{black!2}
+    \begin{tabular}{|c c c c c|}
+        \hline
+        \textbf{Byte 0} & \textbf{Byte 1} & \textbf{...} & \textbf{Byte 32} & \textbf{Byte 33}\\
+        \hline
+        \hline
+        \multicolumn{2}{|c|}{Temperature} & Temperature & \multicolumn{2}{|c|}{Temperature}\\
+        \multicolumn{2}{|c|}{Format 1} & Format 1 & \multicolumn{2}{|c|}{Format 1}\\
+        \hline
+    \end{tabular}
+    }
+    \caption{Sensor data}
+    \label{table:sensor11}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    {\rowcolors{2}{black!12}{black!2}
+    \begin{tabular}{|c c|}
+        \hline
+        \textbf{Byte 0} & \textbf{Byte 1}\\
+        \hline
+        \hline
+        \multicolumn{2}{|c|}{Gas concentration}\\
+        \multicolumn{2}{|c|}{Format 2}\\
+        \hline
+    \end{tabular}
+    }
+    \caption{Sensor data}
+    \label{table:sensor12}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    {\rowcolors{2}{black!12}{black!2}
+    \begin{tabular}{|c c c|}
+        \hline
+        \textbf{Byte 0} & \textbf{Byte 1} & \textbf{Byte 2}\\
+        \hline
+        \hline
+        \multicolumn{3}{|c|}{Atmospheric pressure}\\
+        \multicolumn{3}{|c|}{Format 6}\\
+        \hline
+    \end{tabular}
+    }
+    \caption{Sensor data}
+    \label{table:sensor13}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    {\rowcolors{2}{black!12}{black!2}
+    \begin{tabular}{|c c c c|}
+        \hline
+        \textbf{Byte 0} & \textbf{Byte 1} & \textbf{Byte 2}  & \textbf{Byte 3}\\
+        \hline
+        \hline
+        \multicolumn{4}{|c|}{Health status (1 bit per "chunk")}\\
+        \multicolumn{4}{|c|}{Format 7}\\
+        \hline
+    \end{tabular}
+    }
+    \caption{Sensor status (health)}
+    \label{table:sensor14}
+\end{table}
+
+%%%%%%%%%%%%%%%%%%%%

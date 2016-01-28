@@ -24,7 +24,6 @@ Adafruit_BMP085_Unified bmp = Adafruit_BMP085_Unified(10085);
 sensors_event_t event;
 #endif
 
-
 #ifdef  PR103J2_include
 #define A2D_PRJ103J2 0
 #endif
@@ -84,7 +83,7 @@ LibTempTMP421 TMP421_Sensor = LibTempTMP421();
 byte formatted_data_buffer[MAX_FMT_SIZE];
 
 // Airsense board
-byte MAC_ID[LENGTH_FORMAT3 + 2] = {ID_MAC, 134,3,1,8,1,0,1}; // MAC address
+byte MAC_ID[LENGTH_FORMAT3 + 2] = {ID_MAC, 134,3,1,8,1,0,6}; // MAC address
 byte TMP112[LENGTH_FORMAT6 + 2]; // ambient temp
 byte HTU21D[(LENGTH_FORMAT6 * 2) + 2]; // ambient RH & temp
 // byte GP2Y1010AU0F[LENGTH_FORMAT2 + 2]; // dust density
@@ -236,9 +235,16 @@ void ALL_SENSOR_READ ()
 void setup()
 {
     // Let us wait for the processor and the sensors to settle down
-    delay(6000);
+    delay(1000);
+    Wire1.begin();
+    delay(1000);
+    #ifdef I2C_INTERFACE
+    I2C_READ_COMPLETE = false;
+    Wire.begin(I2C_SLAVE_ADDRESS);
+    Wire.onRequest(requestEvent);
+    #endif
 
-    #ifdef PRINT_BUFFER
+    #ifdef USBSERIAL_INTERFACE
     SerialUSB.begin(115200);
     #endif
 
@@ -252,18 +258,11 @@ void setup()
     {
         packet_whole[i] = 0x00;
     }
+
     assemble_packet_empty();
-
-
     Sensors_Setup();
-    ALL_SENSOR_READ ();
+    delay(1000);
 
-    #ifdef I2C_INTERFACE
-    Wire1.begin();
-    I2C_READ_COMPLETE = false;
-    Wire.begin(I2C_SLAVE_ADDRESS);
-    Wire.onRequest(requestEvent);
-    #endif
 }
 /**************************************************************************************/
 
@@ -290,6 +289,6 @@ void loop()
     }
     #endif
 
-    delay(1);
+    delay(1000);
 }
 

@@ -192,8 +192,8 @@ void airsense_acquire (void)
     SPV1840LR5HB_1[2] = formatted_data_buffer[0];
     SPV1840LR5HB_1[3] = formatted_data_buffer[1];
     #ifdef SERIAL_DEBUG
-    Serial.print("SPV1840LR5HB: ");
-    Serial.println(Temp_uint16);
+    SerialUSB.print("SPV1840LR5HB: ");
+    SerialUSB.println(Temp_uint16);
     #endif
     #endif
 

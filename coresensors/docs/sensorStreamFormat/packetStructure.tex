@@ -1,0 +1,30 @@
+%%%%%%%%%%%%%%%%%%%%
+
+\section{Overall Packet Structure} \label{section:overall}
+
+The structure of the packet (and the data sub-packet) relies on byte positions and known values, rather than delimiters.
+
+\begin{table}[H]
+    \centering
+    {\rowcolors{2}{black!12}{black!2}
+    \begin{tabular}{|c c c c|}
+        \hline
+        \textbf{Field} & \textbf{Value} & \textbf{Byte Position} & \textbf{Length}\\
+        \hline
+        \hline
+        Start & 0xAA & 0 & 1\\
+        Protocol version & 0x00 & 1 & 1\\
+        Length of data (not whole packet) &  & 2 & 1\\
+        Data &  & 3 & 194\\
+        CRC of data (not whole packet) &  & 197 & 1\\
+        End & 0x55 & 198 & 1\\
+        \hline
+    \end{tabular}
+    }
+    \caption{Overall packet structure}
+    \label{table:overall}
+\end{table}
+
+\textbf{Important: } If the \textit{length of data} is 0, the packet immediately ends, meaning the \textit{data, CRC,} and \textit{end} fields do not exist.
+
+%%%%%%%%%%%%%%%%%%%%

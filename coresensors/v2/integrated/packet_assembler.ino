@@ -191,8 +191,8 @@ void assemble_packet_whole()
         packet_whole_index++;
     }
     #endif
-    #ifdef ML8511_include
 
+    #ifdef ML8511_include
     // Append ML8511
     for (int i = 0; i < sizeof(ML8511); i++)
     {
@@ -202,8 +202,8 @@ void assemble_packet_whole()
         packet_whole_index++;
     }
     #endif
-    #ifdef D6T_include
 
+    #ifdef D6T_include
     // Append D6T
     for (int i = 0; i < sizeof(D6T); i++)
     {

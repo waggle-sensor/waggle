@@ -1,0 +1,49 @@
+\section{Sensor Data Units : Raw and Processed} \label{section:overall}
+
+\begin{table}[H]
+    \centering
+    {\rowcolors{2}{black!12}{black!2}
+    \begin{tabular}{|c c c c c|}
+        \hline
+        \textbf{Field} & \textbf{ID} & \textbf{Validity | Length} & \textbf{Data} & \textbf{Units}\\
+        \hline
+        \hline
+        Main MAC address & 0x00 & (1 << 7) | 0x06 & Table \ref{table:sensor1} & MAC Address: Raw 6 Bytes \\
+        TMP112 & 0x01 & (0/1 << 7) | 0x02 & Table \ref{table:sensor2} & Temperature: \degree C \\
+        HTU21D & 0x02 & (0/1 << 7) | 0x04 & Table \ref{table:sensor3} & Temperature: \degree C \\
+        GP2Y1010AU0F & 0x03 & (0/1 << 7) | 0x02 & Table \ref{table:sensor4} & Dust: Raw \\
+        BMP180 & 0x04 & (0/1 << 7) | 0x05 & Table \ref{table:sensor5} & Temperature: \degree C, Pressure: hPa \\
+        PR103J2 & 0x05 & (0/1 << 7) | 0x02 & Table \ref{table:sensor6} & UNITSHERE \\
+        TSL250RD & 0x06 & (0/1 << 7) | 0x02 & Table \ref{table:sensor6} & UNITSHERE \\
+        MMA8452Q & 0x07 & (0/1 << 7) | 0x08 & Table \ref{table:sensor7} & UNITSHERE \\
+        SPV1840LR5H-B & 0x08 & (0/1 << 7) | 0x02 & Table \ref{table:sensor8} & UNITSHERE \\
+        TSYS01 & 0x09 & (0/1 << 7) | 0x02 & Table \ref{table:sensor9} & UNITSHERE \\
+        HMC5883L & 0x0A & (0/1 << 7) | 0x06 & Table \ref{table:sensor10} & UNITSHERE \\
+        HIH6130 & 0x0B & (0/1 << 7) | 0x04 & Table \ref{table:sensor3} & UNITSHERE \\
+        APDS-9006-020 & 0x0C & (0/1 << 7) | 0x02 & Table \ref{table:sensor6} & UNITSHERE \\
+        TSL260RD & 0x0D & (0/1 << 7) | 0x02 & Table \ref{table:sensor6} & UNITSHERE \\
+        TSL250RD & 0x0E & (0/1 << 7) | 0x02 & Table \ref{table:sensor6} & UNITSHERE \\
+        MLX75305 & 0x0F & (0/1 << 7) | 0x02 & Table \ref{table:sensor6} & UNITSHERE \\
+        ML8511 & 0x10 & (0/1 << 7) | 0x02 & Table \ref{table:sensor6} & UNITSHERE \\
+        D6T & 0x11 & (0/1 << 7) | 0x22 & Table \ref{table:sensor11} & UNITSHERE \\
+        MLX90614 & 0x12 & (0/1 << 7) | 0x02 & Table \ref{table:sensor2} & UNITSHERE \\
+        TMP421 & 0x13 & (0/1 << 7) | 0x02 & Table \ref{table:sensor2} & UNITSHERE \\
+        SPV1840LR5H-B & 0x14 & (0/1 << 7) | 0x02 & Table \ref{table:sensor8} & UNITSHERE \\
+        Total reducing gases & 0x15 & (0/1 << 7) | 0x02 & Table \ref{table:sensor12} & UNITSHERE \\
+        Ethanol & 0x16 & (0/1 << 7) | 0x02 & Table \ref{table:sensor12} & UNITSHERE \\
+        Nitrogen dioxide & 0x17 & (0/1 << 7) | 0x02 & Table \ref{table:sensor12} & UNITSHERE \\
+        Ozone & 0x18 & (0/1 << 7) | 0x02 & Table \ref{table:sensor12} & UNITSHERE \\
+        Hydrogen sulphide & 0x19 & (0/1 << 7) | 0x02 & Table \ref{table:sensor12} & UNITSHERE \\
+        Total oxidizing gases & 0x1A & (0/1 << 7) | 0x02 & Table \ref{table:sensor12} & UNITSHERE \\
+        Carbon monoxide & 0x1B & (0/1 << 7) | 0x02 & Table \ref{table:sensor12} & UNITSHERE \\
+        Sulfur dioxide & 0x1C & (0/1 << 7) | 0x02 & Table \ref{table:sensor12} & UNITSHERE \\
+        Sensirion & 0x1D & (0/1 << 7) | 0x04 & Table \ref{table:sensor3} & UNITSHERE \\
+        Bosh & 0x1E & (0/1 << 7) | 0x03 & Table \ref{table:sensor13} & UNITSHERE \\
+        Intel MAC address & 0x1F & (1 << 7) | 0x06 & Table \ref{table:sensor1} & UNITSHERE \\
+        Sensor status (health) & 0xFE & (1 << 7) | 0x04 & Table \ref{table:sensor14} & UNITSHERE \\
+        \hline
+    \end{tabular}
+    }
+    \caption{Data sub-packet structure (each row is a "chunk")}
+    \label{table:dataChunk}
+\end{table}

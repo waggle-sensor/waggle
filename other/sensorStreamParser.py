@@ -22,6 +22,16 @@ __lenFmt6 = 2
 __lenFmt7 = 4
 __lenFmt8 = 3
 
+lastSeq = 0
+currentSeq = 0
+repeatInt = 0.01
+data = []
+CoreSenseConf = 1
+dataLenBit = 0
+packetmismatch = 0
+keepAlive = 1
+
+
 sensor_list = ["Board MAC","TMP112","HTU21D","GP2Y1010AU0F","BMP180","PR103J2","TSL250RD","MMA8452Q","SPV1840LR5H-B","TSYS01","HMC5883L","HIH6130","APDS-9006-020","TSL260RD","TSL250RD","MLX75305","ML8511","D6T","MLX90614","TMP421","SPV1840LR5H-B","Total reducing gases","Ethanol (C2H5-OH)","Nitrogen Di-oxide (NO2)","Ozone (03)","Hydrogen Sulphide (H2S)","Total Oxidizing gases","Carbon Monoxide (C0)","Sulfur Dioxide (SO2)","SHT25","LPS25H","Si1145","Intel MAC"]
 
 #decoded_output = ['0' for x in range(16)]
@@ -236,162 +246,130 @@ def parse_sensor (sensor_id,sensor_data):
             data = data + str(format3(sensor_data[i]))
         print  data
 
-class usbSerial ( threading.Thread ):
-    def __init__ ( self,port):
-        self.port = port
-        threading.Thread.__init__ ( self )
-        self.lastSeq = 0
-        self.currentSeq = 0
-        self.repeatInt = 0.01
-        self.data = []
-        self.CoreSenseConf = 1
-        self.dataLenBit = 0
-        self.packetmismatch = 0
-        self.keepAlive = 1
 
-    def run (self):
-        print time.asctime()
-        #Checking if the port is still available for connection
-        try:
-            self.ser = serial.Serial(self.port,timeout=0)
-        except:
-            #port unavalable. Between Inotify spanning the thread and the current
-            #read the port has magically disappeared.
-            self.keepAlive = 0
-            self.stop()
+def marshalData(_data):
 
-        print "> > >  usbSerial initiated on port"+str(self.port)+" @ "+str(time.asctime())
-        self.counter = 0
+    try:
+        raw_date = _data.split(' ')[0]
+        raw_data = _data.split(' ')[1]
+    except:
+        return
+
+    raw_parse_index = 0
+    data = []
+
+    while raw_parse_index < len(raw_data) - 1:
+        if ord(raw_data[raw_parse_index]) > 96:
+            value = (ord(raw_data[raw_parse_index]) - 87) << 4
+        else :
+            value = (ord(raw_data[raw_parse_index]) - 48) << 4
+        if ord(raw_data[raw_parse_index+1]) > 96:
+            value = value + (ord(raw_data[raw_parse_index+1]) - 87)
+        else:
+            value = value + (ord(raw_data[raw_parse_index+1]) - 48)
 
         try:
-            self.ser.flushInput()
-            self.ser.flushOutput()
+            data.append(chr(value))
         except:
-            self.stop()
+            return
 
-        while self.keepAlive:
-            time.sleep(self.repeatInt)
-            streamData = ''
-            try:
-                self.counter = self.counter + 1
-                if self.ser.inWaiting() > 0:
-                    streamData = self.ser.read(self.ser.inWaiting())
-                    self.counter = 0
-            except:
-                print "Serial port connection lost."
-                self.stop()
-
-            if streamData <> '':
-                self.marshalData(streamData)
-
-            if (self.counter > 100000 or self.packetmismatch > 10) and (self.CoreSenseConf):
-                print "not blade - error - " + str(self.counter) + " and " + str(self.packetmismatch)
-                self.stop()
-
-        print "< < <  usbSerial exit - port"+str(self.port)+" @ "+str(time.asctime())
-        print ""
+        raw_parse_index = raw_parse_index + 2
 
 
-    def stop (self):
-        self.keepAlive = False
-        try :
-            self.ser.close()
-        except:
-            pass
+    try:
+        #lock header
+        del data[:data.index(_preamble)]
+        _preambleLoc = 0
+        bufferLength = len(data)
+
+    except:
+        #no header found, we ended up purging the data
+        return
+
+    if (len(data) < 4):
+        #not enough data for a legal packet, we have to wait...
+        return
+
+    else:
+        if ((ord(data[_preambleLoc+_protVerFieldDelta]) & 0x0f) <> 0):
+
+            #we have a packet of version we do not understand - either wrong version or
+            #we have a wrong byte as the header. We will delete a byte and try header lock again.
+            return
+
+        else:
+
+            _msg_seq_num = (ord(data[_preambleLoc+_protVerFieldDelta]) & 0xf0) >> 4
+
+            #it is protocol version 0, and we can parse that data, using this script.
+
+            _postscriptLoc = ord(data[_preambleLoc+_datLenFieldDelta]) + _msgPSDelta + _datLenFieldDelta
+            print _msg_seq_num, _postscriptLoc, data, len(data)
 
 
-    def marshalData(self,_dataNew):
-        self.data.extend(_dataNew)
-        bufferLength = len(self.data)
-        while self.keepAlive:
 
-            try:
-                #lock header
-                del self.data[:self.data.index(_preamble)]
-                _preambleLoc = 0
-                bufferLength = len(self.data)
-            except:
-                #no header found, we ended up purging the data
-                del self.data[:bufferLength]
-                break
+            if (_postscriptLoc > _maxPacketSize):
+                #the packet size if huge, it is unlikely that we have cuaght the header, so consume a
+                #byte.
 
-            if (len(self.data) < 4):
-                #not enough data for a legal packet, we have to wait...
-                break
+                return
+
             else:
-                if ((ord(self.data[_preambleLoc+_protVerFieldDelta]) & 0x0f) <> 0):
-
-                    #we have a packet of version we do not understand - either wrong version or
-                    #we have a wrong byte as the header. We will delete a byte and try header lock again.
-                    del self.data[0]
-
+                if (_postscriptLoc > bufferLength+2):
+                #We do not have full packet in the buffer, cannot process.
+                    return
                 else:
-                    _msg_seq_num = (ord(self.data[_preambleLoc+_protVerFieldDelta]) & 0xf0) >> 4
-
-                    #it is protocol version 0, and we can parse that data, using this script.
-
-                    _postscriptLoc = ord(self.data[_preambleLoc+_datLenFieldDelta]) + _msgPSDelta + _datLenFieldDelta
-                    if (_postscriptLoc > _maxPacketSize):
-                        #the packet size if huge, it is unlikely that we have cuaght the header, so consume a
-                        #byte.
-                        del self.data[0]
-
+                    if data[_postscriptLoc] <> _postScript:
+                        #we probably have not locked to the header, consume and retry locking to header
+                        return
                     else:
-                        if (_postscriptLoc > bufferLength+2):
-                        #We do not have full packet in the buffer, cannot process.
-                            break
-                        else:
-                            if self.data[_postscriptLoc] <> _postScript:
-                                #we probably have not locked to the header, consume and retry locking to header
-                                del self.data[0]
-                            else:
-                                #we may have a valid packet
-                                _packetCRC = 0
-                                packetmismatch = 0
+                        #we may have a valid packet
+                        _packetCRC = 0
+                        packetmismatch = 0
 
-                                for i in range(_preambleLoc + _datLenFieldDelta + 0x01, _postscriptLoc):
-                                    print ord(self.data[i]),
-                                    _packetCRC = ord(self.data[i]) ^ _packetCRC
-                                    for j in range(8):
-                                        if (_packetCRC & 0x01):
-                                            _packetCRC = (_packetCRC >> 0x01) ^ 0x8C
-                                        else:
-                                            _packetCRC =  _packetCRC >> 0x01
-                                print ''
-
-                                if _packetCRC <> 0x00:
-                                    #bad packet or we probably have not locked to the header, consume and retry locking to header
-                                    #ideally we should be able to throw the whole packet out, but purging just a byte for avoiding corner cases.
-                                    del self.data[0]
-
-
+                        for i in range(_preambleLoc + _datLenFieldDelta + 0x01, _postscriptLoc):
+                            print ord(data[i]),
+                            _packetCRC = ord(data[i]) ^ _packetCRC
+                            for j in range(8):
+                                if (_packetCRC & 0x01):
+                                    _packetCRC = (_packetCRC >> 0x01) ^ 0x8C
                                 else:
+                                    _packetCRC =  _packetCRC >> 0x01
+                        print ''
+                        if _packetCRC <> 0x00:
+                            #bad packet or we probably have not locked to the header, consume and retry locking to header
+                            #ideally we should be able to throw the whole packet out, but purging just a byte for avoiding corner cases.
+                            del data[0]
+                        else:
+                            print '-------------'
+                            print time.asctime(), _msg_seq_num, _postscriptLoc
+                            #extract the data bytes alone, exclude preamble, prot version, len, crc and postScript
+                            extractedData = data[_preambleLoc+3:_postscriptLoc-1]
+                            consume_ptr = 0x00
+                            CoreSenseConf = 0
 
-                                    #we know it is a valid packet as the CRC was correct.s
-                                    print '-------------'
-                                    print time.asctime(), _msg_seq_num, _postscriptLoc
-                                    #extract the data bytes alone, exclude preamble, prot version, len, crc and postScript
-                                    extractedData = self.data[_preambleLoc+3:_postscriptLoc-1]
-                                    fullPaket = self.data[_preambleLoc:_postscriptLoc+1]
-                                    print fullPaket
-                                    consume_ptr = 0x00
-                                    self.CoreSenseConf = 0
+                            del data[:data.index(_postScript)+1]
 
-                                    del self.data[:self.data.index(_postScript)+1]
+                            while consume_ptr < len(extractedData):
+                                This_id = str(ord(extractedData[consume_ptr]))
+                                This_id_msg_size_valid = ord(extractedData [consume_ptr+1])
+                                This_id_msg_size = This_id_msg_size_valid & 0x7F
+                                This_id_msg_valid = (This_id_msg_size_valid & 0x80) >> 7
+                                This_id_msg = extractedData[consume_ptr+2:consume_ptr+2+This_id_msg_size]
+                                #print (int(This_id)), This_id_msg_valid, This_id_msg_size, This_id_msg
+                                consume_ptr = consume_ptr + 2 + This_id_msg_size
+                                if (This_id_msg_valid == 1):
+                                    try:
+                                        parse_sensor (This_id, This_id_msg)
+                                        pass
+                                    except:
+                                        pass
+                                else:
+                                    pass
 
-                                    while consume_ptr < len(extractedData):
-                                        This_id = str(ord(extractedData[consume_ptr]))
-                                        This_id_msg_size_valid = ord(extractedData [consume_ptr+1])
-                                        This_id_msg_size = This_id_msg_size_valid & 0x7F
-                                        This_id_msg_valid = (This_id_msg_size_valid & 0x80) >> 7
-                                        This_id_msg = extractedData[consume_ptr+2:consume_ptr+2+This_id_msg_size]
-                                        #print (int(This_id)), This_id_msg_valid, This_id_msg_size, This_id_msg
-                                        consume_ptr = consume_ptr + 2 + This_id_msg_size
-                                        if (This_id_msg_valid == 1):
-                                            try:
-                                                parse_sensor (This_id, This_id_msg)
-                                                pass
-                                            except:
-                                                pass
-                                        else:
-                                            pass
+
+input_file = open('/tmp/sensor_output.txt', 'r')
+line = ' '
+while line <> '':
+    line = input_file.readline()
+    marshalData(line)

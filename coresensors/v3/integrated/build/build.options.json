@@ -1,0 +1,10 @@
+{
+  "builtInLibrariesFolders": "/media/rajesh/Bharadwaja/github/arduino-1.6.7/libraries",
+  "customBuildProperties": "build.path=./build,build.warn_data_percentage=75",
+  "fqbn": "arduino:sam:arduino_due_x",
+  "hardwareFolders": "/media/rajesh/Bharadwaja/github/arduino-1.6.7/hardware,/home/rajesh/.arduino15/packages",
+  "otherLibrariesFolders": "/home/rajesh/Arduino/libraries",
+  "runtime.ide.version": "10607",
+  "sketchLocation": "/media/rajesh/Bharadwaja/github/waggle/coresensors/v3/integrated/integrated.ino",
+  "toolsFolders": "/media/rajesh/Bharadwaja/github/arduino-1.6.7/tools-builder,/media/rajesh/Bharadwaja/github/arduino-1.6.7/hardware/tools/avr,/home/rajesh/.arduino15/packages"
+}
