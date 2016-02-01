@@ -1,0 +1,17 @@
+- Arduino Micro uses Caterina bootloader
+-- /opt/arduino-1.6.4/hardware/arduino/avr/bootloaders/caterina/
+
+- need LUFA-111009 libraries to compile new bootloader
+-- mkdir "LUFA-111009" in /opt/arduino-1.6.4/hardware/arduino/avr/bootloaders/caterina/
+-- LUFA-111009 dir should have LUFA files/folders in it (Bootloaders, Demos, LUFA, etc.)
+-- open /opt/arduino-1.6.4/hardware/arduino/avr/bootloaders/caterina/Makefile
+--- change "LUFA_PATH = ..." to "LUFA_PATH = LUFA-111009"
+
+- delete "Caterina-Micro.hex"
+
+- in terminal: make Caterina
+
+- error during make
+-- /usr/lib/gcc/avr/4.8.2/../../../avr/bin/ld: address 0x7028 of Caterina section `.text' is not within region `text'
+-- I suspect this is because my toolchain is different than the one the Arduino folks use.  When it compiles, it makes the file slightly larger than the file compiled by Arduino folks, which encroaches on the bootloader space.  Such a thing makes the compiler frown.
+-- conclusions: screw the bootloader
