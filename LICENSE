@@ -1,13 +1,13 @@
 WAGGLE SOFTWARE LICENSE: 
 
-Original Waggle software is distributed under a standard 3-clause BSD
-license (see: http://opensource.org/licenses/BSD-3-Clause).
+Original Waggle software is distributed under a 3-clause BSD license
+(see below)
 
 Waggle hardware designs are distributed under a Creative Commons
 license for non-commercial use.  Specifically, a "CC BY-NC-SA"
 (http://creativecommons.org/licenses/by-nc-sa/4.0/). Waggle hardware
 designs and the associated license are kept in a different GIT
-repository and LICENSE file.
+repository and LICENSE file.  
 
 Some customized software components within the Waggle software
 environment are derived from existing open source software components.
