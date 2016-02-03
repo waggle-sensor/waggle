@@ -256,25 +256,12 @@ def marshalData(_data):
         return
 
     raw_parse_index = 0
+    print raw_date
     data = []
 
-    while raw_parse_index < len(raw_data) - 1:
-        if ord(raw_data[raw_parse_index]) > 96:
-            value = (ord(raw_data[raw_parse_index]) - 87) << 4
-        else :
-            value = (ord(raw_data[raw_parse_index]) - 48) << 4
-        if ord(raw_data[raw_parse_index+1]) > 96:
-            value = value + (ord(raw_data[raw_parse_index+1]) - 87)
-        else:
-            value = value + (ord(raw_data[raw_parse_index+1]) - 48)
-
-        try:
-            data.append(chr(value))
-        except:
-            return
-
-        raw_parse_index = raw_parse_index + 2
-
+    for i in range(len(raw_data)/2):
+        value = str(raw_data[2*i])+str(raw_data[(2*i)+1])
+        data.append(chr(int(value, 16)))
 
     try:
         #lock header
@@ -298,20 +285,23 @@ def marshalData(_data):
             return
 
         else:
-
             _msg_seq_num = (ord(data[_preambleLoc+_protVerFieldDelta]) & 0xf0) >> 4
-
             #it is protocol version 0, and we can parse that data, using this script.
 
             _postscriptLoc = ord(data[_preambleLoc+_datLenFieldDelta]) + _msgPSDelta + _datLenFieldDelta
-            print _msg_seq_num, _postscriptLoc, data, len(data)
 
-
+            if (_postscriptLoc > len(data)):
+                #the packet size if huge, it is unlikely that we have cuaght the header, so consume a
+                #byte.
+                print "Insufficient packet size"
+                print
+                print
+                return
 
             if (_postscriptLoc > _maxPacketSize):
                 #the packet size if huge, it is unlikely that we have cuaght the header, so consume a
                 #byte.
-
+                print "---"
                 return
 
             else:
@@ -368,7 +358,7 @@ def marshalData(_data):
                                     pass
 
 
-input_file = open('/tmp/sensor_output.txt', 'r')
+input_file = open('./sensor_output.txt', 'r')
 line = ' '
 while line <> '':
     line = input_file.readline()
