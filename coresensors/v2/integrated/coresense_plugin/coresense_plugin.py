@@ -188,22 +188,22 @@ sensor_table = {
 }
 
 
-def unpack_sensor_data(sensor_format, sensor_data):
-    result = []
-
+def sensor_format_blocks(formats):
     start = 0
 
-    for fmt in sensor_format:
+    for fmt in formats:
         if fmt.length < 0:
-            end = len(sensor_data)
+            yield start, -1
+            break
         else:
-            end = start + fmt.length
+            yield start, start + fmt.length
+            start += fmt.length
 
-        result.append(fmt(sensor_data[start:end]))
 
-        start = end
-
-    return result
+def unpack_sensor_data(sensor_format, sensor_data):
+    return [fmt(sensor_data[start:end])
+            for fmt, (start, end) in zip(sensor_format,
+                                         sensor_format_blocks(sensor_format))]
 
 
 def parse_sensor(sensor_id, sensor_data):
