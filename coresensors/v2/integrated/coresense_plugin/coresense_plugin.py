@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-import threading
-import serial
-import sys
 import time
+import datetime
 from serial import Serial
 
 
@@ -236,21 +234,17 @@ def parse_sensor(sensor_id, sensor_data):
     if sensor_id not in sensor_table:
         raise UnknownSensorError(sensor_id=sensor_id)
 
-    sensor_name, sensor_format = sensor_table[sensor_id]
+    ident, sensor_format = sensor_table[sensor_id]
     values = unpack_sensor_data(sensor_format, sensor_data)
 
-    print('@ {} (0x{:02X})'.format(sensor_name, sensor_id))
-
-    for (name, _), value in zip(sensor_format, values):
-        print('- {}: {}'.format(name, value))
-
-    print('')
+    return ident, [(name, value)
+                   for (name, _), value in zip(sensor_format, values)]
 
 
-class usbSerial(threading.Thread):
+class coresense_reader(object):
+
     def __init__(self, port):
         self.port = port
-        threading.Thread.__init__(self)
         self.lastSeq = 0
         self.currentSeq = 0
         self.repeatInt = 0.01
@@ -260,46 +254,34 @@ class usbSerial(threading.Thread):
         self.packetmismatch = 0
         self.keepAlive = 1
 
-    def run(self):
-        try:
-            self.ser = serial.Serial(self.port, timeout=0)
-        except:
-            self.keepAlive = 0
-            self.stop()
-
-        self.counter = 0
+    def __iter__(self):
+        self.ser = Serial(self.port, timeout=0)
 
         try:
             self.ser.flushInput()
             self.ser.flushOutput()
-        except:
-            self.stop()
 
-        while self.keepAlive:
-            time.sleep(self.repeatInt)
-            streamData = ''
-            try:
-                self.counter = self.counter + 1
-                if self.ser.inWaiting() > 0:
-                    streamData = self.ser.read(self.ser.inWaiting())
-                    self.counter = 0
-            except:
-                print("Serial port connection lost.")
-                self.stop()
+            self.counter = 0
 
-            if streamData != '':
-                self.marshalData(streamData)
+            while True:
+                time.sleep(self.repeatInt)
+                streamData = ''
+                try:
+                    self.counter = self.counter + 1
+                    if self.ser.inWaiting() > 0:
+                        streamData = self.ser.read(self.ser.inWaiting())
+                        self.counter = 0
+                except:
+                    raise StopIteration('Serial port connection lost.')
 
-            if (self.counter > 100000 or self.packetmismatch > 10) and (self.CoreSenseConf):
-                print("not blade - error - " + str(self.counter) + " and " + str(self.packetmismatch))
-                self.stop()
+                if len(streamData) > 0:
+                    for data in self.marshalData(streamData):
+                        yield data
 
-    def stop(self):
-        self.keepAlive = False
-        try:
+                if self.counter > 100000 or self.packetmismatch > 10:
+                    raise StopIteration('Too many bad packets. Are you using the correct sensor?')
+        finally:
             self.ser.close()
-        except:
-            pass
 
     def marshalData(self, _dataNew):
         self.data.extend(_dataNew)
@@ -370,9 +352,11 @@ class usbSerial(threading.Thread):
 
                                     print('-------------')
 
+                                    timestamp = datetime.datetime.now()
+
                                     while consume_ptr < len(extractedData):
                                         This_id = ord(extractedData[consume_ptr])
-                                        This_id_msg_size_valid = ord(extractedData [consume_ptr+1])
+                                        This_id_msg_size_valid = ord(extractedData[consume_ptr+1])
                                         This_id_msg_size = This_id_msg_size_valid & 0x7F
                                         This_id_msg_valid = (This_id_msg_size_valid & 0x80) >> 7
                                         This_id_msg = extractedData[consume_ptr+2:consume_ptr+2+This_id_msg_size]
@@ -381,8 +365,7 @@ class usbSerial(threading.Thread):
 
                                         if (This_id_msg_valid == 1):
                                             try:
-                                                parse_sensor (This_id, This_id_msg)
-                                                pass
+                                                yield (timestamp,) + parse_sensor(This_id, This_id_msg)
                                             except Exception as e:
                                                 print(e)
                                         else:
@@ -390,5 +373,8 @@ class usbSerial(threading.Thread):
 
 
 if __name__ == '__main__':
-    reader = usbSerial('/dev/ttyACM0')
-    reader.run()
+    for ts, ident, values in coresense_reader('/dev/tty.usbmodem1421'):
+        print('@ {} {}'.format(ident, ts))
+        for name, value in values:
+            print('- {}: {}'.format(name, value))
+        print('')
