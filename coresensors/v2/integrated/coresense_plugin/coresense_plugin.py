@@ -244,7 +244,7 @@ def parse_sensor(sensor_id, sensor_data):
     for (name, _), value in zip(sensor_format, values):
         print('- {}: {}'.format(name, value))
 
-    print
+    print('\n')
 
 
 class usbSerial(threading.Thread):
@@ -284,14 +284,14 @@ class usbSerial(threading.Thread):
                     streamData = self.ser.read(self.ser.inWaiting())
                     self.counter = 0
             except:
-                print "Serial port connection lost."
+                print("Serial port connection lost.")
                 self.stop()
 
             if streamData != '':
                 self.marshalData(streamData)
 
             if (self.counter > 100000 or self.packetmismatch > 10) and (self.CoreSenseConf):
-                print "not blade - error - " + str(self.counter) + " and " + str(self.packetmismatch)
+                print("not blade - error - " + str(self.counter) + " and " + str(self.packetmismatch))
                 self.stop()
 
     def stop(self):
@@ -368,7 +368,7 @@ class usbSerial(threading.Thread):
 
                                     del self.data[:self.data.index(_postScript) + 1]
 
-                                    print '-------------'
+                                    print('-------------')
 
                                     while consume_ptr < len(extractedData):
                                         This_id = ord(extractedData[consume_ptr])
@@ -384,7 +384,7 @@ class usbSerial(threading.Thread):
                                                 parse_sensor (This_id, This_id_msg)
                                                 pass
                                             except Exception as e:
-                                                print e
+                                                print(e)
                                         else:
                                             pass
 
