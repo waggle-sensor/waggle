@@ -244,7 +244,7 @@ def parse_sensor(sensor_id, sensor_data):
     for (name, _), value in zip(sensor_format, values):
         print('- {}: {}'.format(name, value))
 
-    print('\n')
+    print('')
 
 
 class usbSerial(threading.Thread):
@@ -390,5 +390,5 @@ class usbSerial(threading.Thread):
 
 
 if __name__ == '__main__':
-    reader = usbSerial('/dev/tty.usbmodem1421')
+    reader = usbSerial('/dev/ttyACM0')
     reader.run()
