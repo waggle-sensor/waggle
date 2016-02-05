@@ -158,39 +158,39 @@ def sensor17(input):
 sensor17.length = -1
 
 sensor_table = {
-    '0':  ('Board MAC', [string3]),
-    '1':  ('TMP112', [format6]),
-    '2':  ('HTU21D', [format6, format6]),
-    '3':  ('GP2Y1010AU0F', [format5]),
-    '4':  ('BMP180', [format6, format5]),
-    '5':  ('PR103J2', [format1]),
-    '6':  ('TSL250RD', [format1]),
-    '7':  ('MMA8452Q', [format6, format6, format6, format6]),
-    '8':  ('SPV1840LR5H-B', [format1]),
-    '9':  ('TSYS01', [format6]),
-    '10': ('HMC5883L', [format8, format8, format8]),
-    '11': ('HIH6130', [format6, format6]),
-    '12': ('APDS-9006-020', [format1]),
-    '13': ('TSL260RD', [format1]),
-    '14': ('TSL250RD', [format1]),
-    '15': ('MLX75305', [format1]),
-    '16': ('ML8511', [format1]),
-    '17': ('D6T', [sensor17]),
-    '18': ('MLX90614', [format6]),
-    '19': ('TMP421', [format6]),
-    '20': ('SPV1840LR5H-B', [format1]),
-    '21': ('Total reducing gases', [format5str]),
-    '22': ('Ethanol (C2H5-OH)', [format5str]),
-    '23': ('Nitrogen Di-oxide (NO2)', [format5str]),
-    '24': ('Ozone (03)', [format5str]),
-    '25': ('Hydrogen Sulphide (H2S)', [format5str]),
-    '26': ('Total Oxidizing gases', [format5str]),
-    '27': ('Carbon Monoxide (C0)', [format5str]),
-    '28': ('Sulfur Dioxide (SO2)', [format5str]),
-    '29': ('SHT25', [format2, format2]),
-    '30': ('LPS25H', [format2, format4]),
-    '31': ('Si1145', [format1]),
-    '32': ('Intel MAC', [string3]),
+    0x00: ('Board MAC', [string3]),
+    0x01: ('TMP112', [format6]),
+    0x02: ('HTU21D', [format6, format6]),
+    0x03: ('GP2Y1010AU0F', [format5]),
+    0x04: ('BMP180', [format6, format5]),
+    0x05: ('PR103J2', [format1]),
+    0x06: ('TSL250RD', [format1]),
+    0x07: ('MMA8452Q', [format6, format6, format6, format6]),
+    0x08: ('SPV1840LR5H-B', [format1]),
+    0x09: ('TSYS01', [format6]),
+    0x0A: ('HMC5883L', [format8, format8, format8]),
+    0x0B: ('HIH6130', [format6, format6]),
+    0x0C: ('APDS-9006-020', [format1]),
+    0x0D: ('TSL260RD', [format1]),
+    0x0E: ('TSL250RD', [format1]),
+    0x0F: ('MLX75305', [format1]),
+    0x10: ('ML8511', [format1]),
+    0x11: ('D6T', [sensor17]),
+    0x12: ('MLX90614', [format6]),
+    0x13: ('TMP421', [format6]),
+    0x14: ('SPV1840LR5H-B', [format1]),
+    0x15: ('Total reducing gases', [format5str]),
+    0x16: ('Ethanol (C2H5-OH)', [format5str]),
+    0x17: ('Nitrogen Di-oxide (NO2)', [format5str]),
+    0x18: ('Ozone (03)', [format5str]),
+    0x19: ('Hydrogen Sulphide (H2S)', [format5str]),
+    0x1A: ('Total Oxidizing gases', [format5str]),
+    0x1B: ('Carbon Monoxide (C0)', [format5str]),
+    0x1C: ('Sulfur Dioxide (SO2)', [format5str]),
+    0x1D: ('SHT25', [format2, format2]),
+    0x1E: ('LPS25H', [format2, format4]),
+    0x1F: ('Si1145', [format1]),
+    0x20: ('Intel MAC', [string3]),
 }
 
 
@@ -361,7 +361,7 @@ class usbSerial ( threading.Thread ):
                                     del self.data[:self.data.index(_postScript)+1]
 
                                     while consume_ptr < len(extractedData):
-                                        This_id = str(ord(extractedData[consume_ptr]))
+                                        This_id = ord(extractedData[consume_ptr])
                                         This_id_msg_size_valid = ord(extractedData [consume_ptr+1])
                                         This_id_msg_size = This_id_msg_size_valid & 0x7F
                                         This_id_msg_valid = (This_id_msg_size_valid & 0x80) >> 7
