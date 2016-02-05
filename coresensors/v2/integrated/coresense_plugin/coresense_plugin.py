@@ -158,46 +158,57 @@ def sensor17(input):
 sensor17.length = -1
 
 sensor_table = {
-    0x00: ('Board MAC', [string3]),
-    0x01: ('TMP112', [format6]),
-    0x02: ('HTU21D', [format6, format6]),
-    0x03: ('GP2Y1010AU0F', [format5]),
-    0x04: ('BMP180', [format6, format5]),
-    0x05: ('PR103J2', [format1]),
-    0x06: ('TSL250RD', [format1]),
-    0x07: ('MMA8452Q', [format6, format6, format6, format6]),
-    0x08: ('SPV1840LR5H-B', [format1]),
-    0x09: ('TSYS01', [format6]),
-    0x0A: ('HMC5883L', [format8, format8, format8]),
-    0x0B: ('HIH6130', [format6, format6]),
-    0x0C: ('APDS-9006-020', [format1]),
-    0x0D: ('TSL260RD', [format1]),
-    0x0E: ('TSL250RD', [format1]),
-    0x0F: ('MLX75305', [format1]),
-    0x10: ('ML8511', [format1]),
-    0x11: ('D6T', [sensor17]),
-    0x12: ('MLX90614', [format6]),
-    0x13: ('TMP421', [format6]),
-    0x14: ('SPV1840LR5H-B', [format1]),
-    0x15: ('Total reducing gases', [format5str]),
-    0x16: ('Ethanol (C2H5-OH)', [format5str]),
-    0x17: ('Nitrogen Di-oxide (NO2)', [format5str]),
-    0x18: ('Ozone (03)', [format5str]),
-    0x19: ('Hydrogen Sulphide (H2S)', [format5str]),
-    0x1A: ('Total Oxidizing gases', [format5str]),
-    0x1B: ('Carbon Monoxide (C0)', [format5str]),
-    0x1C: ('Sulfur Dioxide (SO2)', [format5str]),
-    0x1D: ('SHT25', [format2, format2]),
-    0x1E: ('LPS25H', [format2, format4]),
-    0x1F: ('Si1145', [format1]),
-    0x20: ('Intel MAC', [string3]),
+    0x00: ('Board MAC', [('MAC Address', string3)]),
+    0x01: ('TMP112', [('Temperature', format6)]),
+    0x02: ('HTU21D', [('Temperature', format6),
+                      ('Humidity', format6)]),
+    0x03: ('GP2Y1010AU0F', [('Dust', format5)]),
+    0x04: ('BMP180', [('Temperature', format6),
+                      ('Atm Pressure', format5)]),
+    0x05: ('PR103J2', [('Light', format1)]),
+    0x06: ('TSL250RD', [('Light', format1)]),
+    0x07: ('MMA8452Q', [('Accel X', format6),
+                        ('Accel Y', format6),
+                        ('Accel Z', format6),
+                        ('RMS', format6)]),
+    0x08: ('SPV1840LR5H-B', [('Sound Pressure', format1)]),
+    0x09: ('TSYS01', [('Temperature', format6)]),
+    0x0A: ('HMC5883L', [('B Field X', format8),
+                        ('B Field Y', format8),
+                        ('B Field Z', format8)]),
+    0x0B: ('HIH6130', [('Temperature', format6),
+                       ('Humidity', format6)]),
+    0x0C: ('APDS-9006-020', [('Light', format1)]),
+    0x0D: ('TSL260RD', [('Light', format1)]),
+    0x0E: ('TSL250RD', [('Light', format1)]),
+    0x0F: ('MLX75305', [('Light', format1)]),
+    0x10: ('ML8511', [('Light', format1)]),
+    0x11: ('D6T', [('Temperatures', sensor17)]),
+    0x12: ('MLX90614', [('Temperature', format6)]),
+    0x13: ('TMP421', [('Temperature', format6)]),
+    0x14: ('SPV1840LR5H-B', [('Sound Pressure', format1)]),
+    0x15: ('Total reducing gases', [('Concentration', format5str)]),
+    0x16: ('Ethanol (C2H5-OH)', [('Concentration', format5str)]),
+    0x17: ('Nitrogen Di-oxide (NO2)', [('Concentration', format5str)]),
+    0x18: ('Ozone (03)', [('Concentration', format5str)]),
+    0x19: ('Hydrogen Sulphide (H2S)', [('Concentration', format5str)]),
+    0x1A: ('Total Oxidizing gases', [('Concentration', format5str)]),
+    0x1B: ('Carbon Monoxide (C0)', [('Concentration', format5str)]),
+    0x1C: ('Sulfur Dioxide (SO2)', [('Concentration', format5str)]),
+    0x1D: ('SHT25', [('Temperature', format2),
+                     ('Humidity', format2)]),
+    0x1E: ('LPS25H', [('???', format2),
+                      ('???', format4)]),
+    0x1F: ('Si1145', [('???', format1)]),
+    0x20: ('Intel MAC', [('MAC Address', string3)]),
+    0xFE: ('Sensor Health', [('Status', format7)]),
 }
 
 
 def sensor_format_blocks(formats):
     start = 0
 
-    for fmt in formats:
+    for _, fmt in formats:
         if fmt.length < 0:
             yield start, -1
             break
@@ -208,8 +219,8 @@ def sensor_format_blocks(formats):
 
 def unpack_sensor_data(sensor_format, sensor_data):
     return [fmt(sensor_data[start:end])
-            for fmt, (start, end) in zip(sensor_format,
-                                         sensor_format_blocks(sensor_format))]
+            for (_, fmt), (start, end) in zip(sensor_format,
+                                              sensor_format_blocks(sensor_format))]
 
 
 def parse_sensor(sensor_id, sensor_data):
@@ -219,10 +230,10 @@ def parse_sensor(sensor_id, sensor_data):
     sensor_name, sensor_format = sensor_table[sensor_id]
     values = unpack_sensor_data(sensor_format, sensor_data)
 
-    print 'Sensor:', sensor_id, sensor_name, '@ ',
+    print '@ {} ({})'.format(sensor_name, sensor_id)
 
-    for value in values:
-        print value,
+    for (name, _), value in zip(sensor_format, values):
+        print '- {}: {}'.format(name, value)
     print
 
 
@@ -378,5 +389,6 @@ class usbSerial ( threading.Thread ):
                                             pass
 
 
-reader = usbSerial('/dev/tty.usbmodem1421')
-reader.run()
+if __name__ == '__main__':
+    reader = usbSerial('/dev/tty.usbmodem1421')
+    reader.run()
