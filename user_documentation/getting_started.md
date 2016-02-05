@@ -90,7 +90,13 @@ If you want, you can use the HDMI connector on the ODROID to connect an external
 
 ## Configure node controller software
 
-_Security note_: The waggle images come with default password "waggle" for both root and user "waggle". To avoid unsolicited access to the node, please change the passwords using the linux command <pre>passwd</pre>.
+_Security note_: The waggle images come with default password "waggle" for both root and user "waggle". To avoid unsolicited access to the node, please change the passwords using the linux command "passwd":
+
+```bash
+passwd root
+passwd waggle
+passwd <user> # in case you are not using the waggle image
+```
 
 As root user, specify the beehive sever IP address or URL and run the configure script.
 
