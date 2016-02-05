@@ -40,7 +40,9 @@ _maxPacketSize = 256
 
 
 def format1(input):
-    # F1 - unsigned int_16 output, {0-0xffff} - Byte1 Byte2 (16 bit number)
+    """
+    unsigned 16-bit integer
+    """
     byte1 = ord(input[0])
     byte2 = ord(input[1])
     value = (byte1 << 8) | byte2
@@ -50,26 +52,30 @@ format1.length = 2
 
 
 def format2(input):
-    # F2 - int_16 output , +-{0-0x7fff} - 1S|7Bits Byte2
+    """
+    signed 16-bit integer
+    """
     byte1 = ord(input[0])
     byte2 = ord(input[1])
     value = ((byte1 & 0x7F) << 8) | byte2
-    if byte1 & 0x80 != 0:
-        value = value * -1
-    return value
+    return value if byte1 & 0x80 == 0 else -value
 
 format2.length = 2
 
 
 def format3(input):
-    # F3 - hex string, {0-0xffffffffffff} - Byte1 Byte2 Byte3 Byte4 Byte5 Byte6
-    return str(hex(ord(input)))[2:]
+    """
+    hex string
+    """
+    return str(hex(ord(input)))[2:]  # explain [2:]?
 
 format3.length = 6
 
 
 def format4(input):
-    # F4 - unsigned long_24 input, {0-0xffffff} - Byte1 Byte2 Byte3
+    """
+    unsigned 24-bit integer
+    """
     byte1 = ord(input[0])
     byte2 = ord(input[1])
     byte3 = ord(input[2])
@@ -80,14 +86,14 @@ format4.length = 3
 
 
 def format5(input):
-    # F5 - long_24 input, +-{0-0x7fffff} - 1S|7Bits Byte2 Byte3
+    """
+    signed 24-bit integer
+    """
     byte1 = ord(input[0])
     byte2 = ord(input[1])
     byte3 = ord(input[2])
     value = ((byte1 & 0x7F) << 16) | (byte2 << 8) | (byte3)
-    if byte1 & 0x80 != 0:
-        value = value * -1
-    return value
+    return value if byte1 & 0x80 == 0 else -value
 
 format5.length = 3
 
@@ -207,17 +213,17 @@ def unpack_sensor_data(sensor_format, sensor_data):
 
 
 def parse_sensor(sensor_id, sensor_data):
-    if sensor_id in sensor_table:
-        sensor_name, sensor_format = sensor_table[sensor_id]
-        values = unpack_sensor_data(sensor_format, sensor_data)
-
-        print 'Sensor:', sensor_id, sensor_name, '@ ',
-
-        for value in values:
-            print value,
-        print
-    else:
+    if sensor_id not in sensor_table:
         raise UnknownSensorError(sensor_id=sensor_id)
+
+    sensor_name, sensor_format = sensor_table[sensor_id]
+    values = unpack_sensor_data(sensor_format, sensor_data)
+
+    print 'Sensor:', sensor_id, sensor_name, '@ ',
+
+    for value in values:
+        print value,
+    print
 
 
 class usbSerial ( threading.Thread ):
