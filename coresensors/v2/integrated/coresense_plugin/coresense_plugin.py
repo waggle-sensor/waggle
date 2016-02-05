@@ -157,6 +157,7 @@ def sensor17(input):
 
 sensor17.length = -1
 
+
 sensor_table = {
     0x00: ('Board MAC', [('MAC Address', string3)]),
     0x01: ('TMP112', [('Temperature', format6)]),
@@ -210,7 +211,7 @@ def sensor_format_blocks(formats):
 
     for _, fmt in formats:
         if fmt.length < 0:
-            yield start, -1
+            yield start, None
             break
         else:
             yield start, start + fmt.length
@@ -237,10 +238,10 @@ def parse_sensor(sensor_id, sensor_data):
     print
 
 
-class usbSerial ( threading.Thread ):
-    def __init__ ( self,port):
+class usbSerial(threading.Thread):
+    def __init__(self, port):
         self.port = port
-        threading.Thread.__init__ ( self )
+        threading.Thread.__init__(self)
         self.lastSeq = 0
         self.currentSeq = 0
         self.repeatInt = 0.01
@@ -250,18 +251,13 @@ class usbSerial ( threading.Thread ):
         self.packetmismatch = 0
         self.keepAlive = 1
 
-    def run (self):
-        # print time.asctime()
-        #Checking if the port is still available for connection
+    def run(self):
         try:
-            self.ser = serial.Serial(self.port,timeout=0)
+            self.ser = serial.Serial(self.port, timeout=0)
         except:
-            #port unavalable. Between Inotify spanning the thread and the current
-            #read the port has magically disappeared.
             self.keepAlive = 0
             self.stop()
 
-        # print "> > >  usbSerial initiated on port"+str(self.port)+" @ "+str(time.asctime())
         self.counter = 0
 
         try:
@@ -289,41 +285,36 @@ class usbSerial ( threading.Thread ):
                 print "not blade - error - " + str(self.counter) + " and " + str(self.packetmismatch)
                 self.stop()
 
-        # print "< < <  usbSerial exit - port"+str(self.port)+" @ "+str(time.asctime())
-        print ""
-
-
-    def stop (self):
+    def stop(self):
         self.keepAlive = False
-        try :
+        try:
             self.ser.close()
         except:
             pass
 
-
-    def marshalData(self,_dataNew):
+    def marshalData(self, _dataNew):
         self.data.extend(_dataNew)
         bufferLength = len(self.data)
         while self.keepAlive:
 
             try:
-                #lock header
+                # lock header
                 del self.data[:self.data.index(_preamble)]
                 _preambleLoc = 0
                 bufferLength = len(self.data)
             except:
-                #no header found, we ended up purging the data
+                # no header found, we ended up purging the data
                 del self.data[:bufferLength]
                 break
 
             if (len(self.data) < 4):
-                #not enough data for a legal packet, we have to wait...
+                # not enough data for a legal packet, we have to wait...
                 break
             else:
                 if ((ord(self.data[_preambleLoc+_protVerFieldDelta]) & 0x0f) != 0):
 
-                    #we have a packet of version we do not understand - either wrong version or
-                    #we have a wrong byte as the header. We will delete a byte and try header lock again.
+                    # we have a packet of version we do not understand - either wrong version or
+                    # we have a wrong byte as the header. We will delete a byte and try header lock again.
                     del self.data[0]
 
                 else:
@@ -339,7 +330,7 @@ class usbSerial ( threading.Thread ):
 
                     else:
                         if (_postscriptLoc > bufferLength+2):
-                        #We do not have full packet in the buffer, cannot process.
+                        # We do not have full packet in the buffer, cannot process.
                             break
                         else:
                             if self.data[_postscriptLoc] != _postScript:
@@ -356,20 +347,19 @@ class usbSerial ( threading.Thread ):
                                     # ideally we should be able to throw the whole packet out, but purging just a byte for avoiding corner cases.
                                     del self.data[0]
 
-
                                 else:
 
-                                    # we know it is a valid packet as the CRC was correct.s
-                                    print '-------------'
                                     # print time.asctime(), _msg_seq_num, _postscriptLoc
-                                    #extract the data bytes alone, exclude preamble, prot version, len, crc and postScript
+                                    # extract the data bytes alone, exclude preamble, prot version, len, crc and postScript
                                     extractedData = self.data[_preambleLoc+3:_postscriptLoc-1]
                                     fullPaket = self.data[_preambleLoc:_postscriptLoc+1]
                                     # print fullPaket
                                     consume_ptr = 0x00
                                     self.CoreSenseConf = 0
 
-                                    del self.data[:self.data.index(_postScript)+1]
+                                    del self.data[:self.data.index(_postScript) + 1]
+
+                                    print '-------------'
 
                                     while consume_ptr < len(extractedData):
                                         This_id = ord(extractedData[consume_ptr])
@@ -377,8 +367,9 @@ class usbSerial ( threading.Thread ):
                                         This_id_msg_size = This_id_msg_size_valid & 0x7F
                                         This_id_msg_valid = (This_id_msg_size_valid & 0x80) >> 7
                                         This_id_msg = extractedData[consume_ptr+2:consume_ptr+2+This_id_msg_size]
-                                        # print (int(This_id)), This_id_msg_valid, This_id_msg_size, This_id_msg
+
                                         consume_ptr = consume_ptr + 2 + This_id_msg_size
+
                                         if (This_id_msg_valid == 1):
                                             try:
                                                 parse_sensor (This_id, This_id_msg)
