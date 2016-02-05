@@ -206,22 +206,30 @@ sensor_table = {
 }
 
 
-def sensor_format_blocks(formats):
+def sensor_format_slices(formats):
+    """
+    Yields the sensor data slices start:end for a list of sensor data formats.
+
+    For example, if fmt1 has length 3 and fmt2 has length 4, then this
+    function will yield slices 0:3 and 3:7.
+
+    It also allows for a `tail` slices when a negative length is reached. In
+    this case, the format will be applied to the tail of the sensor data.
+    """
     start = 0
 
-    for _, fmt in formats:
+    for name, fmt in formats:
         if fmt.length < 0:
-            yield start, None
+            yield name, fmt, start, None
             break
         else:
-            yield start, start + fmt.length
+            yield name, fmt, start, start + fmt.length
             start += fmt.length
 
 
 def unpack_sensor_data(sensor_format, sensor_data):
     return [fmt(sensor_data[start:end])
-            for (_, fmt), (start, end) in zip(sensor_format,
-                                              sensor_format_blocks(sensor_format))]
+            for name, fmt, start, end in sensor_format_slices(sensor_format)]
 
 
 def parse_sensor(sensor_id, sensor_data):
@@ -231,10 +239,11 @@ def parse_sensor(sensor_id, sensor_data):
     sensor_name, sensor_format = sensor_table[sensor_id]
     values = unpack_sensor_data(sensor_format, sensor_data)
 
-    print '@ {} ({})'.format(sensor_name, sensor_id)
+    print('@ {} (0x{:02X})'.format(sensor_name, sensor_id))
 
     for (name, _), value in zip(sensor_format, values):
-        print '- {}: {}'.format(name, value)
+        print('- {}: {}'.format(name, value))
+
     print
 
 
