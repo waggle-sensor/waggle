@@ -38,107 +38,118 @@ _msgCRCFieldDelta = 0x01
 _msgPSDelta = 0x02
 _maxPacketSize = 256
 
-#decoded_output = ['0' for x in range(16)]
 
-def format1 (input):
-    #F1 - unsigned int_16 output, {0-0xffff} - Byte1 Byte2 (16 bit number)
+def format1(input):
+    # F1 - unsigned int_16 output, {0-0xffff} - Byte1 Byte2 (16 bit number)
     byte1 = ord(input[0])
     byte2 = ord(input[1])
     value = (byte1 << 8) | byte2
     return value
 
+format1.length = 2
 
-def format2 (input):
-    #F2 - int_16 output , +-{0-0x7fff} - 1S|7Bits Byte2
+
+def format2(input):
+    # F2 - int_16 output , +-{0-0x7fff} - 1S|7Bits Byte2
     byte1 = ord(input[0])
     byte2 = ord(input[1])
-    value = ((byte1 & 0x7F) << 8 ) | byte2
-    if byte1 & 0x80 == 0x80:
+    value = ((byte1 & 0x7F) << 8) | byte2
+    if byte1 & 0x80 != 0:
         value = value * -1
     return value
+
+format2.length = 2
+
 
 def format3(input):
     # F3 - hex string, {0-0xffffffffffff} - Byte1 Byte2 Byte3 Byte4 Byte5 Byte6
     return str(hex(ord(input)))[2:]
 
-def format4 (input):
-    #F4 - unsigned long_24 input, {0-0xffffff} - Byte1 Byte2 Byte3
+format3.length = 6
+
+
+def format4(input):
+    # F4 - unsigned long_24 input, {0-0xffffff} - Byte1 Byte2 Byte3
     byte1 = ord(input[0])
     byte2 = ord(input[1])
     byte3 = ord(input[2])
     value = (byte1 << 16) | (byte2 << 8) | (byte3)
     return value
 
-def format5 (input):
-    #F5 - long_24 input, +-{0-0x7fffff} - 1S|7Bits Byte2 Byte3
+format4.length = 3
+
+
+def format5(input):
+    # F5 - long_24 input, +-{0-0x7fffff} - 1S|7Bits Byte2 Byte3
     byte1 = ord(input[0])
     byte2 = ord(input[1])
     byte3 = ord(input[2])
     value = ((byte1 & 0x7F) << 16) | (byte2 << 8) | (byte3)
-    if byte1 & 0x80 == 0x80:
+    if byte1 & 0x80 != 0:
         value = value * -1
     return value
+
+format5.length = 3
 
 
 def format5str(input):
     return str(format5str)
 
+format5str.length = format5.length
 
-def format6 (input):
-    #F6 - float input, +-{0-127}.{0-99} - 1S|7Bit_Int 0|7Bit_Frac{0-99}
+
+def format6(input):
+    # F6 - float input, +-{0-127}.{0-99} - 1S|7Bit_Int 0|7Bit_Frac{0-99}
     byte1 = ord(input[0])
     byte2 = ord(input[1])
-    #have to be careful here, we do not want three decimal placed here.
+    # have to be careful here, we do not want three decimal placed here.
     value = (byte1 & 0x7F) + (((byte2 & 0x7F) % 100) * 0.01)
     if (byte1 & 0x80) == 0x80:
         value = value * -1
     return value
 
-def format7 (input):
-    #F7 - byte input[4], {0-0xffffffff} - Byte1 Byte2 Byte3 Byte4
+format6.length = 2
+
+
+def format7(input):
+    # F7 - byte input[4], {0-0xffffffff} - Byte1 Byte2 Byte3 Byte4
     byte1 = ord(input[0])
     byte2 = ord(input[1])
     byte3 = ord(input[0])
     byte4 = ord(input[1])
-    value = [byte1,byte2,byte3,byte4]
-    return value
+    return [byte1, byte2, byte3, byte4]
+
+format7.length = 4
 
 
 def format8(input):
-    # F8 - float input, +-{0-31}.{0-999} - 1S|5Bit_Int|2MSBit_Frac  8LSBits_Frac
+    # F8 - float input, +-{0-31}.{0-999} - 1S|5Bit_Int|2MSBit_Frac 8LSBits_Frac
     byte1 = ord(input[0])
     byte2 = ord(input[1])
-    value = ((byte1 & 0x7c) >> 2) + ( ( ((byte1 & 0x03) << 8) | byte2 ) * 0.001)
+    value = ((byte1 & 0x7c) >> 2) + ((((byte1 & 0x03) << 8) | byte2) * 0.001)
     if byte1 & 0x80 != 0:
         value = value * -1
     return value
+
+format8.length = 2
 
 
 def string3(input):
     return ''.join([str(format3(byte)) for byte in input])
 
+string3.length = -1
+
 
 def string6(input):
     return ''.join([str(format6(byte)) for byte in input])
+
+string6.length = -1
 
 
 def sensor17(input):
     return string6(input[::2])
 
-
-format_length = {
-    format1: 2,
-    format2: 2,
-    format3: 6,
-    format4: 3,
-    format5: 3,
-    format6: 2,
-    format7: 4,
-    format8: 2,
-    string3: -1,
-    string6: -1,
-    sensor17: -1,
-}
+sensor17.length = -1
 
 sensor_table = {
     '0':  ('Board MAC', [string3]),
@@ -183,12 +194,10 @@ def unpack_sensor_data(sensor_format, sensor_data):
     start = 0
 
     for fmt in sensor_format:
-        length = format_length[fmt]
-
-        if length < 0:
+        if fmt.length < 0:
             end = len(sensor_data)
         else:
-            end = start + length
+            end = start + fmt.length
 
         result.append(fmt(sensor_data[start:end]))
 
