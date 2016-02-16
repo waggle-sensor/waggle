@@ -1,0 +1,1204 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="990"
+   height="765"
+   id="svg3428"
+   version="1.1"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="AoTWiringDiagram.svg"
+   inkscape:export-filename="/home/rajesh/GIT/github/projman/contracts/pdt/design_documents/2016_FEB/AoTWiringDiagram.png"
+   inkscape:export-xdpi="300"
+   inkscape:export-ydpi="300">
+  <defs
+     id="defs3430" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="435.25127"
+     inkscape:cy="444.7066"
+     inkscape:document-units="px"
+     inkscape:current-layer="g5238"
+     showgrid="false"
+     units="in"
+     inkscape:window-width="1910"
+     inkscape:window-height="1051"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata3433">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-287.3597)">
+    <text
+       xml:space="preserve"
+       style="font-size:14px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+       x="765"
+       y="970.07397"
+       id="text4929"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4931"
+         x="765"
+         y="970.07397" /></text>
+    <g
+       id="g5238"
+       transform="matrix(0.88577632,0,0,0.88577632,9.109602,96.214581)">
+      <rect
+         style="opacity:0.29752066;fill:#00ffff;fill-opacity:1;stroke:#fffd00;stroke-width:0.00459338;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         id="rect4049"
+         width="35.191097"
+         height="79.970474"
+         x="78.774971"
+         y="615.52924"
+         ry="1.9698139" />
+      <rect
+         style="opacity:0.22314052;fill:#ffff00;fill-opacity:1;stroke:#fffd00;stroke-width:0.00656916;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         id="rect4851"
+         width="648.51483"
+         height="320.67841"
+         x="9.7142868"
+         y="714.60297"
+         ry="3.4159312" />
+      <path
+         style="opacity:0.22314052;fill:#000000;fill-opacity:1;stroke:#fffd00;stroke-width:0.01476378;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         d="m 663.53944,262.04736 c -0.0507,0 -0.10307,0.0205 -0.12527,0.0627 l -651.628539,0 c -0.167843,0 -0.313161,0.112 -0.313161,0.28184 l 0,340.5329 263.96468,0 c 1.89243,0 3.41347,1.55237 3.41347,3.44478 l 0,87.99868 402.13197,0 c 0.16785,0 0.31316,-0.17464 0.31316,-0.34448 l 0,-243.54648 274.01721,0 c 0.0732,0 0.12526,-0.0512 0.12526,-0.12528 l 0,-188.17934 c 0,-0.0741 -0.052,-0.12527 -0.12526,-0.12527 l -291.77352,0 z"
+         id="rect4841"
+         inkscape:connector-curvature="0" />
+      <rect
+         style="opacity:0.22314052;fill:#ffccaa;fill-opacity:1;stroke:#fffd00;stroke-width:0.00639951;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         id="rect4839"
+         width="292.04666"
+         height="186.26228"
+         x="735.26874"
+         y="495.02768"
+         ry="0.13210006" />
+      <rect
+         style="fill:#536c67;fill-opacity:1;stroke:#fffd00;stroke-width:0.01202572;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         id="rect3515"
+         width="308.75922"
+         height="178.17935"
+         x="331.55768"
+         y="491.90991"
+         ry="13.223985" />
+      <g
+         id="g3583"
+         transform="matrix(1.00212,0,0,1.00212,20.782803,-30.762142)">
+        <rect
+           ry="8.1135921"
+           y="356.3624"
+           x="95.636765"
+           height="89.90358"
+           width="181.82745"
+           id="rect3529"
+           style="fill:#536c67;fill-opacity:1;stroke:#fffd00;stroke-width:0.00655527;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+        <text
+           sodipodi:linespacing="125%"
+           id="text3533"
+           y="408.77377"
+           x="100.85246"
+           style="font-size:22.36787796px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+           xml:space="preserve"><tspan
+             y="408.77377"
+             x="100.85246"
+             id="tspan3535"
+             sodipodi:role="line">Node Controller C1+</tspan></text>
+      </g>
+      <g
+         id="g3578"
+         transform="matrix(1.00212,0,0,1.00212,20.800018,-31.477945)">
+        <rect
+           style="fill:#536c67;fill-opacity:1;stroke:#fffd00;stroke-width:0.00655527;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+           id="rect3527"
+           width="181.82745"
+           height="89.90358"
+           x="294.18088"
+           y="357.07669"
+           ry="8.1135921" />
+        <text
+           xml:space="preserve"
+           style="font-size:22.36787796px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+           x="310.13818"
+           y="409.48807"
+           id="text3537"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan3539"
+             x="310.13818"
+             y="409.48807">Guest Module XU4</tspan></text>
+      </g>
+      <g
+         id="g3573"
+         transform="matrix(1.00212,0,0,1.00212,36.739943,-32.316306)">
+        <rect
+           ry="8.1135921"
+           y="357.91327"
+           x="479.08908"
+           height="89.90358"
+           width="181.82745"
+           id="rect3511"
+           style="fill:#536c67;fill-opacity:1;stroke:#fffd00;stroke-width:0.00655527;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+        <text
+           sodipodi:linespacing="125%"
+           id="text3541"
+           y="408.77377"
+           x="522.9953"
+           style="font-size:22.36787796px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+           xml:space="preserve"><tspan
+             y="408.77377"
+             x="522.9953"
+             id="tspan3543"
+             sodipodi:role="line">Light Sense</tspan></text>
+      </g>
+      <g
+         id="g3568"
+         transform="matrix(1.00212,0,0,1.00212,14.009085,-28.614745)">
+        <rect
+           style="fill:#536c67;fill-opacity:1;stroke:#fffd00;stroke-width:0.00655527;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+           id="rect3531"
+           width="181.82745"
+           height="89.90358"
+           x="704.83942"
+           y="354.21954"
+           ry="8.1135921" />
+        <text
+           xml:space="preserve"
+           style="font-size:22.36787796px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+           x="728.70959"
+           y="406.63092"
+           id="text3545"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan3547"
+             x="728.70959"
+             y="406.63092">Camera-Internal</tspan></text>
+      </g>
+      <text
+         xml:space="preserve"
+         style="font-size:22.41529846px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+         x="442.19598"
+         y="588.60767"
+         id="text3549"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan3551"
+           x="442.19598"
+           y="588.60767">Wagman</tspan></text>
+      <g
+         id="g3563"
+         transform="matrix(1.00212,0,0,1.00212,-16.770314,-95.899941)">
+        <rect
+           transform="matrix(0,1,-1,0,0,0)"
+           ry="9.2019329"
+           y="-990.54059"
+           x="636.80957"
+           height="190.8942"
+           width="95.094894"
+           id="rect3525"
+           style="fill:#536c67;fill-opacity:1;stroke:#fffd00;stroke-width:0.00457117;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+        <text
+           xml:space="preserve"
+           style="font-size:22.36787796px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+           x="838.70959"
+           y="691.63092"
+           id="text3553"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan3555"
+             x="838.70959"
+             y="691.63092">Power AC/DC</tspan></text>
+      </g>
+      <path
+         style="fill:#ff6600;fill-opacity:1;stroke:#fffd00;stroke-width:0.00511248;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         d="m 250.4781,412.4593 c -0.12822,0 -0.21923,0.12232 -0.21923,0.25055 l 0,149.00271 0,2.63057 0,0.094 c 0,0.0747 0.0506,0.12528 0.12528,0.12528 l 0.094,0 2.53662,0 85.71257,0 c 0.0747,0 0.12526,-0.0506 0.12526,-0.12528 l 0,-2.72452 c 0,-0.0747 -0.0506,-0.12526 -0.12526,-0.12526 l -85.49335,0 0,-148.87745 c 0,-0.12822 -0.091,-0.25054 -0.21922,-0.25054 l -2.53662,0 z"
+         id="rect3607"
+         inkscape:connector-curvature="0" />
+      <rect
+         ry="0.13209996"
+         y="412.71933"
+         x="409.3978"
+         height="86.815102"
+         width="2.9860644"
+         id="rect3622"
+         style="fill:#ff0000;fill-opacity:1;stroke:#fffd00;stroke-width:0.00386316;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <path
+         style="fill:#008000;fill-opacity:1;stroke:#fffd00;stroke-width:0.0024154;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         d="m 274.57596,412.74117 c -0.0285,0 -0.0312,0.034 -0.0312,0.0627 l 0,31.3789 0,2.44266 0,0.25053 c 0,0.0732 0.0521,0.15658 0.12527,0.15658 l 83.67703,0 0,52.17287 c 0,0.0464 0.0477,0.0627 0.0938,0.0627 l 2.81846,0 c 0.0463,0 0.0938,-0.0163 0.0938,-0.0627 l 0,-52.32945 0,-2.69319 c 0,-0.0732 -0.052,-0.15659 -0.12526,-0.15659 l -83.70834,0 0,-31.22231 c 0,-0.0285 -0.0341,-0.0627 -0.0627,-0.0627 l -2.8811,0 z"
+         id="rect3644"
+         inkscape:connector-curvature="0" />
+      <rect
+         style="fill:#008000;fill-opacity:1;stroke:#fffd00;stroke-width:0.00386316;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         id="rect3658"
+         width="2.9860644"
+         height="86.815102"
+         x="414.77817"
+         y="412.71933"
+         ry="0.13209996" />
+      <path
+         style="fill:#800080;fill-opacity:1;stroke:#fffd00;stroke-width:0.00634093;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         d="m 424.19827,406.52514 c -2.23636,0 -4.03979,1.79472 -4.03979,4.00849 0,1.6949 1.06611,3.14041 2.56792,3.72662 l 0,85.14889 c 0,0.0732 0.052,0.12526 0.12527,0.12526 l 2.72451,0 c 0.0732,0 0.12526,-0.052 0.12526,-0.12526 l 0,-85.14889 c 1.50181,-0.58621 2.56794,-2.03172 2.56794,-3.72662 0,-2.21377 -1.83476,-4.00849 -4.07111,-4.00849 z"
+         id="path3660"
+         inkscape:connector-curvature="0" />
+      <path
+         style="fill:#800080;fill-opacity:1;stroke:#fffd00;stroke-width:0.00386316;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         d="m 283.64204,407.57413 c -2.21375,0 -4.00849,1.79437 -4.00849,4.00847 0,1.68495 1.0329,3.13354 2.5053,3.72664 l 0,26.14908 c 0,0.0242 0.0384,0.0312 0.0627,0.0312 0.002,0.003 0.0295,-0.003 0.0312,0 0.0233,0.0375 0.0464,0.0939 0.0938,0.0939 l 83.67703,0 0,57.59059 c 0,0.0509 0.0431,0.0939 0.0938,0.0939 l 2.81847,0 c 0.0509,0 0.094,-0.043 0.094,-0.0939 l 0,-57.74716 0,-2.72452 c 0,-0.0732 -0.052,-0.12527 -0.12526,-0.12527 l -83.73965,0 0,-23.26797 c 1.47238,-0.59311 2.5053,-2.0417 2.5053,-3.72665 0,-2.2141 -1.79475,-4.00846 -4.00849,-4.00846 z"
+         id="rect3679"
+         inkscape:connector-curvature="0" />
+      <path
+         style="fill:#800080;fill-opacity:1;stroke:#fffd00;stroke-width:0.00292085;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         d="m 740.91245,611.08493 c -1.69492,0 -3.14043,1.06612 -3.72665,2.56793 l -52.26682,0 -32.88206,0 -16.56631,0 c -0.0417,0 -0.0938,0.0209 -0.0938,0.0627 l 0,2.84977 c 0,0.0417 0.052,0.0627 0.0938,0.0627 l 16.56631,0 32.88206,0 52.26682,0 c 0.58622,1.50182 2.03173,2.56793 3.72665,2.56793 2.21377,0 4.00846,-1.83475 4.00846,-4.07111 0,-2.23636 -1.79469,-4.03979 -4.00846,-4.03979 z"
+         id="rect3709"
+         inkscape:connector-curvature="0" />
+      <g
+         id="g3729"
+         transform="matrix(1.00212,0,0,1.00212,14.009085,-28.614745)">
+        <rect
+           style="fill:#ff6600;fill-opacity:1;stroke:#fffd00;stroke-width:0.00798058;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+           id="rect3624"
+           width="2.9756143"
+           height="371.7915"
+           x="317.57205"
+           y="-790.52881"
+           ry="0.565727"
+           transform="matrix(0,1,-1,0,0,0)" />
+        <rect
+           transform="scale(-1,-1)"
+           ry="0.059039332"
+           y="-356.37097"
+           x="-421.72028"
+           height="38.800201"
+           width="2.9810233"
+           id="rect3725"
+           style="fill:#ff6600;fill-opacity:1;stroke:#fffd00;stroke-width:0.00258046;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+        <rect
+           style="fill:#ff6600;fill-opacity:1;stroke:#fffd00;stroke-width:0.00258046;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+           id="rect3727"
+           width="2.9810233"
+           height="38.800201"
+           x="-790.52881"
+           y="-356.37225"
+           ry="0.059039332"
+           transform="scale(-1,-1)" />
+      </g>
+      <g
+         id="g3745"
+         transform="matrix(1.00212,0,0,1.00212,14.009085,-28.614745)">
+        <rect
+           transform="matrix(0,1,-1,0,0,0)"
+           ry="0.565727"
+           y="-574.35614"
+           x="302.41977"
+           height="371.7915"
+           width="2.9756143"
+           id="rect3736"
+           style="fill:#ff6600;fill-opacity:1;stroke:#fffd00;stroke-width:0.00798058;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+        <rect
+           style="fill:#ff6600;fill-opacity:1;stroke:#fffd00;stroke-width:0.00306394;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+           id="rect3738"
+           width="2.9805393"
+           height="54.710678"
+           x="-205.54739"
+           y="-357.12888"
+           ry="0.0832491"
+           transform="scale(-1,-1)" />
+        <rect
+           transform="scale(-1,-1)"
+           ry="0.084038354"
+           y="-357.64883"
+           x="-574.3559"
+           height="55.229366"
+           width="2.980525"
+           id="rect3740"
+           style="fill:#ff6600;fill-opacity:1;stroke:#fffd00;stroke-width:0.00307843;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      </g>
+      <rect
+         ry="0.23179567"
+         y="-788.31396"
+         x="589.60956"
+         height="152.33438"
+         width="2.9847221"
+         id="rect3750"
+         style="fill:#ff0000;fill-opacity:1;stroke:#fffd00;stroke-width:0.00511619;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         transform="matrix(0,1,-1,0,0,0)" />
+      <rect
+         transform="matrix(0,1,-1,0,0,0)"
+         style="fill:#000000;fill-opacity:1;stroke:#fffd00;stroke-width:0.00511619;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         id="rect3752"
+         width="2.9847221"
+         height="152.33438"
+         x="583.5968"
+         y="-788.31396"
+         ry="0.23179567" />
+      <path
+         id="path3754"
+         d="m 268.26573,412.99616 c -0.0332,0 -0.0627,0.0295 -0.0627,0.0627 l 0,36.67133 0,2.44267 0,0.28184 c 0,0.0732 0.052,0.12526 0.12526,0.12526 l 83.70834,0 0,46.91174 c 0,0.0418 0.0209,0.0627 0.0627,0.0627 l 2.84978,0 c 0.0417,0 0.0627,-0.0209 0.0627,-0.0627 l 0,-47.037 0,-2.72451 c 0,-0.0732 -0.052,-0.12527 -0.12526,-0.12527 l -83.70834,0 0,-36.54606 c 0,-0.0331 -0.0295,-0.0627 -0.0627,-0.0627 l -2.84977,0 z"
+         style="fill:#ff0000;fill-opacity:1;stroke:#fffd00;stroke-width:0.00259765;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         inkscape:connector-curvature="0" />
+      <path
+         style="fill:#000000;fill-opacity:1;stroke:#fffd00;stroke-width:0.00279723;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         d="m 261.68036,412.99169 c -0.0383,0 -0.0938,0.0242 -0.0938,0.0627 l 0,45.34593 0,0.28184 c 0,0.0732 0.0834,0.15658 0.15658,0.15658 l 83.67702,0 0,41.18087 c 0,0.037 0.0257,0.0627 0.0627,0.0627 l 2.88108,0 c 0.037,0 0.0627,-0.0257 0.0627,-0.0627 l 0,-41.33745 0,-2.41134 0,-0.28185 c 0,-0.0732 -0.0834,-0.15659 -0.15659,-0.15659 l -83.67701,0 0,-42.77799 c 0,-0.0383 -0.0243,-0.0627 -0.0627,-0.0627 l -2.84978,0 z"
+         id="rect3758"
+         inkscape:connector-curvature="0" />
+      <rect
+         style="fill:#000000;fill-opacity:1;stroke:#fffd00;stroke-width:0.00386316;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         id="rect3768"
+         width="2.9860644"
+         height="86.815102"
+         x="403.38507"
+         y="412.71933"
+         ry="0.13209996" />
+      <g
+         id="g3986"
+         transform="matrix(1.00212,0,0,1.00212,46.076925,-28.614745)">
+        <rect
+           ry="0.13182048"
+           y="438.97183"
+           x="516.27051"
+           height="86.631439"
+           width="2.9797471"
+           id="rect3715"
+           style="fill:#ff0000;fill-opacity:1;stroke:#fffd00;stroke-width:0.00385499;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+        <rect
+           style="fill:#008000;fill-opacity:1;stroke:#fffd00;stroke-width:0.00385499;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+           id="rect3717"
+           width="2.9797471"
+           height="86.631439"
+           x="521.81018"
+           y="438.97183"
+           ry="0.13182048" />
+        <rect
+           ry="0.13182048"
+           y="438.97183"
+           x="527.34985"
+           height="86.631439"
+           width="2.9797471"
+           id="rect3721"
+           style="fill:#ffccaa;fill-opacity:1;stroke:#fffd00;stroke-width:0.00385499;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+        <rect
+           style="fill:#000000;fill-opacity:1;stroke:#fffd00;stroke-width:0.00385499;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+           id="rect3770"
+           width="2.9797471"
+           height="86.631439"
+           x="510.7308"
+           y="438.97183"
+           ry="0.13182048" />
+      </g>
+      <g
+         transform="matrix(0.61928765,0,0,0.61928765,-33.398474,241.81846)"
+         id="g3789">
+        <g
+           id="g3797"
+           transform="translate(23.701852,-3.2692209)">
+          <rect
+             ry="8.1135921"
+             y="356.52075"
+             x="68.730865"
+             height="89.90358"
+             width="181.82745"
+             id="rect3791"
+             style="fill:#536c67;fill-opacity:1;stroke:#fffd00;stroke-width:0.00655527;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+          <text
+             sodipodi:linespacing="125%"
+             id="text3793"
+             y="408.77377"
+             x="100.85246"
+             style="font-size:22.36787796px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+             xml:space="preserve"><tspan
+               y="408.77377"
+               x="100.85246"
+               id="tspan3795"
+               sodipodi:role="line">CAT6USBBKT1</tspan></text>
+        </g>
+      </g>
+      <rect
+         ry="0.078033768"
+         y="412.91418"
+         x="127.32436"
+         height="51.283207"
+         width="2.9868562"
+         id="rect3609"
+         style="fill:#ff6600;fill-opacity:1;stroke:#fffd00;stroke-width:0.00296956;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <path
+         style="fill:#ff6600;fill-opacity:1;stroke:#fffd00;stroke-width:0.00519002;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         d="m 74.261553,308.64594 c -0.132149,0 -0.25053,0.0871 -0.25053,0.21921 l 0,0.15658 0,2.19214 0,153.95068 c 0,0.13216 0.118381,0.21924 0.25053,0.21924 l 2.5053,0 c 0.132148,0 0.219214,-0.0871 0.219214,-0.21924 l 0,-153.54356 258.421693,0 0,18.22606 c 0,0.0179 0.0135,0.0312 0.0312,0.0312 l 2.91241,0 c 0.0179,0 0.0312,-0.0135 0.0312,-0.0312 l 0,-18.63318 0,-2.19214 0,-0.34447 c 0,-0.018 -0.0135,-0.0312 -0.0312,-0.0312 l -0.3758,0 -261.208842,0 -2.34872,0 -0.156581,0 z"
+         id="rect3611"
+         inkscape:connector-curvature="0" />
+      <path
+         style="fill:#ff6600;fill-opacity:1;stroke:#fffd00;stroke-width:0.00528747;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         d="m 66.43249,301.63111 c -0.237234,0 -0.438428,0.16987 -0.438428,0.40711 l 0,0.81422 0,1.31527 0,160.90291 c 0,0.13716 0.113373,0.25052 0.250531,0.25052 l 2.473983,0 c 0.137159,0 0.25053,-0.11336 0.25053,-0.25052 l 0,-160.46448 275.457744,0 0,25.20959 c 0,0.023 0.008,0.0312 0.0313,0.0312 l 2.9124,0 c 0.023,0 0.0312,-0.008 0.0312,-0.0312 l 0,-25.55406 c 0.006,-0.0279 0.0312,-0.0643 0.0312,-0.0939 l 0,-2.12949 c 0,-0.23724 -0.2012,-0.40712 -0.43844,-0.40712 l -280.562283,0 z"
+         id="rect3813"
+         inkscape:connector-curvature="0" />
+      <g
+         id="g4026"
+         transform="matrix(1.00212,0,0,1.00212,14.009085,-28.614745)">
+        <rect
+           ry="5.0140176"
+           y="782.117"
+           x="11.834379"
+           height="55.558392"
+           width="112.36528"
+           id="rect3847"
+           style="fill:#536c67;fill-opacity:1;stroke:#fffd00;stroke-width:0.00405101;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+        <text
+           sodipodi:linespacing="125%"
+           id="text3849"
+           y="814.4082"
+           x="31.684805"
+           style="font-size:13.82284641px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+           xml:space="preserve"><tspan
+             y="814.4082"
+             x="31.684805"
+             id="tspan3851"
+             sodipodi:role="line">CAT6USBBKT2</tspan></text>
+      </g>
+      <g
+         id="g4037"
+         transform="matrix(1.00212,0,0,1.00212,10.26903,-30.046339)">
+        <path
+           transform="translate(12.329932,292.60009)"
+           d="m 234.3554,593.77911 c 0,15.62098 -12.77637,28.28428 -28.53681,28.28428 -15.76045,0 -28.53681,-12.6633 -28.53681,-28.28428 0,-15.62097 12.77636,-28.28427 28.53681,-28.28427 15.76044,0 28.53681,12.6633 28.53681,28.28427 z"
+           sodipodi:ry="28.284271"
+           sodipodi:rx="28.53681"
+           sodipodi:cy="593.77911"
+           sodipodi:cx="205.81859"
+           id="path4004"
+           style="fill:#536c67;fill-opacity:1;stroke:#fffd00;stroke-width:0.00655527;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+           sodipodi:type="arc" />
+        <text
+           xml:space="preserve"
+           style="font-size:20.40089607px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+           x="202.50418"
+           y="893.04834"
+           id="text4006"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan4008"
+             x="202.50418"
+             y="893.04834">MIC</tspan></text>
+      </g>
+      <rect
+         ry="0.37918052"
+         y="510.11084"
+         x="88.027138"
+         height="249.19458"
+         width="2.9832802"
+         id="rect3853"
+         style="fill:#0000ff;fill-opacity:1;stroke:#fffd00;stroke-width:0.00654203;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <rect
+         style="fill:#0000ff;fill-opacity:1;stroke:#fffd00;stroke-width:0.00654203;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         id="rect3855"
+         width="2.9832802"
+         height="249.19458"
+         x="95.052162"
+         y="510.11084"
+         ry="0.37918052" />
+      <g
+         id="g3920"
+         transform="matrix(1.00212,0,0,1.00212,234.10935,6.1019489)">
+        <rect
+           style="fill:#536c67;fill-opacity:1;stroke:#fffd00;stroke-width:0.00457117;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+           id="rect3861"
+           width="95.094894"
+           height="190.8942"
+           x="916.97351"
+           y="-407.69763"
+           ry="9.2019329"
+           transform="matrix(0,1,-1,0,0,0)" />
+        <text
+           sodipodi:linespacing="125%"
+           id="text3863"
+           y="971.98053"
+           x="265.5434"
+           style="font-size:22.36787796px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+           xml:space="preserve"><tspan
+             y="971.98053"
+             x="265.5434"
+             id="tspan3865"
+             sodipodi:role="line">Chemsense</tspan></text>
+      </g>
+      <g
+         id="g3900"
+         transform="matrix(1.00212,0,0,1.00212,-80.937565,-106.69798)">
+        <rect
+           transform="matrix(0,1,-1,0,0,0)"
+           ry="9.2019329"
+           y="-597.39752"
+           x="915.96338"
+           height="190.8942"
+           width="95.094894"
+           id="rect3869"
+           style="fill:#536c67;fill-opacity:1;stroke:#fffd00;stroke-width:0.00457117;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+        <text
+           xml:space="preserve"
+           style="font-size:22.36787796px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+           x="466.56375"
+           y="970.9704"
+           id="text3871"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan3873"
+             x="466.56375"
+             y="970.9704">Airsense</tspan></text>
+      </g>
+      <g
+         id="g3912"
+         transform="matrix(1.00212,0,0,1.00212,-386.39345,7.2881657)">
+        <rect
+           style="fill:#536c67;fill-opacity:1;stroke:#fffd00;stroke-width:0.00457117;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+           id="rect3877"
+           width="95.094894"
+           height="190.8942"
+           x="916.50409"
+           y="-818.24097"
+           ry="9.2019329"
+           transform="matrix(0,1,-1,0,0,0)" />
+        <text
+           sodipodi:linespacing="125%"
+           id="text3879"
+           y="969.96027"
+           x="667.58411"
+           style="font-size:22.36787796px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+           xml:space="preserve"><tspan
+             y="969.96027"
+             x="667.58411"
+             id="tspan3881"
+             sodipodi:role="line">WAN Adapter</tspan></text>
+      </g>
+      <g
+         id="g3928"
+         transform="matrix(1.00212,0,0,1.00212,4.6193978,5.7945167)">
+        <rect
+           transform="matrix(0,1,-1,0,0,0)"
+           ry="9.2019329"
+           y="-217.09692"
+           x="917.99457"
+           height="190.8942"
+           width="95.094894"
+           id="rect3885"
+           style="fill:#536c67;fill-opacity:1;stroke:#fffd00;stroke-width:0.00457117;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+        <text
+           xml:space="preserve"
+           style="font-size:22.36787796px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+           x="62.502735"
+           y="972.99072"
+           id="text3887"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan3889"
+             x="62.502735"
+             y="972.99072">Camera-Shield</tspan></text>
+      </g>
+      <path
+         style="fill:#0000ff;fill-opacity:1;stroke:#fffd00;stroke-width:0.00614831;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         d="m 552.42938,410.79955 c -0.02,0 -0.0312,0.0114 -0.0312,0.0312 l 0,20.794 -243.73438,0 -2.69319,0 c -0.0822,0 -0.15658,0.0742 -0.15658,0.15657 l 0,0.0938 c -0.0192,0.0456 -0.0312,0.0727 -0.0312,0.12528 l 0,2.22344 c 0,0.0526 0.0121,0.1111 0.0312,0.15659 l 0,91.97584 -203.3051,0 c -0.1742,0 -0.31317,0.13896 -0.31317,0.31315 -0.003,0.0207 0,0.0407 0,0.0627 l 0,2.28609 0,217.11556 0,0.15659 c 0,0.24053 0.19789,0.43842 0.43842,0.43842 l 281.97153,0 0,70.21103 c 0,0.0601 0.0652,0.12527 0.12527,0.12527 l 2.75583,0 c 0.0601,0 0.12525,-0.0652 0.12525,-0.12527 l 0,-70.99394 c 0,-0.039 -0.0319,-0.0749 -0.0627,-0.094 l 0,-1.65975 c 0,-0.24055 -0.19789,-0.43843 -0.43842,-0.43843 l -281.90889,0 0,-214.42237 203.33641,0 c 0.17419,0 0.31317,-0.13898 0.31317,-0.31317 l 0,-2.34871 c 0,-0.0615 -0.0324,-0.10827 -0.0627,-0.15659 l 0,-91.88188 246.17705,0 c 0.0526,0 0.1111,-0.0121 0.15658,-0.0312 l 0.21922,0 c 0.0201,0 0.0627,-0.0114 0.0627,-0.0312 l 0,-23.73771 c 0,-0.0201 -0.0425,-0.0312 -0.0627,-0.0312 l -2.91241,0 z"
+         id="rect3951"
+         inkscape:connector-curvature="0" />
+      <rect
+         transform="scale(-1,-1)"
+         ry="0.041642334"
+         y="-929.81708"
+         x="-492.32187"
+         height="27.367029"
+         width="2.9877596"
+         id="rect3994"
+         style="fill:#0000ff;fill-opacity:1;stroke:#fffd00;stroke-width:0.00216962;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <rect
+         transform="scale(-1,-1)"
+         ry="0.079278566"
+         y="-859.74506"
+         x="-122.02291"
+         height="52.101273"
+         width="2.9869356"
+         id="rect3996"
+         style="fill:#ff6600;fill-opacity:1;stroke:#fffd00;stroke-width:0.00299319;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <rect
+         style="fill:#ff6600;fill-opacity:1;stroke:#fffd00;stroke-width:0.00461331;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         id="rect3626"
+         width="2.9853127"
+         height="123.83449"
+         x="-88.766685"
+         y="-931.57098"
+         ry="0.18842955"
+         transform="scale(-1,-1)" />
+      <path
+         style="fill:#ff6600;fill-opacity:1;stroke:#fffd00;stroke-width:0.00419898;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         d="m 95.744502,807.92093 c -0.08642,0 -0.156584,0.0701 -0.156584,0.15658 l 0,99.71094 0,2.44266 0,0.12527 c 0,0.0865 0.0701,0.15659 0.156584,0.15659 l 0.125257,0 2.536618,0 174.149673,0 0,18.00684 c 0,0.0177 0.0136,0.0312 0.0312,0.0312 l 2.94373,0 c 0.0177,0 0.0312,-0.0136 0.0312,-0.0312 l 0,-20.95057 c 0,-0.0177 -0.0136,-0.0312 -0.0312,-0.0312 l -0.46976,0 -176.498385,0 0,-99.46041 c 0,-0.0865 -0.07014,-0.15659 -0.156578,-0.15659 l -2.661877,0 z"
+         id="rect3998"
+         inkscape:connector-curvature="0" />
+      <rect
+         style="fill:#ff6600;fill-opacity:1;stroke:#fffd00;stroke-width:0.00375532;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         id="rect4031"
+         width="2.9861724"
+         height="82.032661"
+         x="-859.70178"
+         y="119.11912"
+         ry="0.12482289"
+         transform="matrix(0,-1,1,0,0,0)" />
+      <rect
+         transform="matrix(0,1,-1,0,0,0)"
+         style="fill:#00ccff;fill-opacity:1;stroke:#fffd00;stroke-width:0.00386316;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         id="rect3707"
+         width="2.9860644"
+         height="86.815102"
+         x="584.25983"
+         y="-1056.4843"
+         ry="0.13209996" />
+      <rect
+         ry="0.13209996"
+         y="-1056.4843"
+         x="589.9505"
+         height="86.815102"
+         width="2.9860644"
+         id="rect4830"
+         style="fill:#ccaaff;fill-opacity:1;stroke:#fffd00;stroke-width:0.00386316;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         transform="matrix(0,1,-1,0,0,0)" />
+      <rect
+         transform="matrix(0,1,-1,0,0,0)"
+         style="fill:#99ff55;fill-opacity:1;stroke:#fffd00;stroke-width:0.00386316;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         id="rect4832"
+         width="2.9860644"
+         height="86.815102"
+         x="595.64111"
+         y="-1056.4843"
+         ry="0.13209996" />
+      <path
+         style="fill:#800080;fill-opacity:1;stroke:#fffd00;stroke-width:0.00634093;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         d="m 245.63866,574.7575 c 0,-2.23636 1.7947,-4.0398 4.00847,-4.0398 1.69491,0 3.14043,1.06612 3.72665,2.56794 l 85.14888,0 c 0.0732,0 0.12527,0.0522 0.12527,0.12526 l 0,2.72451 c 0,0.0732 -0.052,0.12528 -0.12527,0.12528 l -85.14888,0 c -0.58622,1.50179 -2.03174,2.56792 -3.72665,2.56792 -2.21377,0 -4.00847,-1.83474 -4.00847,-4.07111 z"
+         id="path3778"
+         inkscape:connector-curvature="0" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path4857"
+         d="m 245.63866,585.63966 c 0,-2.23636 1.7947,-4.03979 4.00847,-4.03979 1.69491,0 3.14043,1.06612 3.72665,2.56793 l 85.14888,0 c 0.0732,0 0.12527,0.052 0.12527,0.12527 l 0,2.72452 c 0,0.0732 -0.052,0.12525 -0.12527,0.12525 l -85.14888,0 c -0.58622,1.5018 -2.03174,2.56794 -3.72665,2.56794 -2.21377,0 -4.00847,-1.83476 -4.00847,-4.07112 z"
+         style="fill:#800080;fill-opacity:1;stroke:#fffd00;stroke-width:0.00634093;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <text
+         xml:space="preserve"
+         style="font-size:36.07632446px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+         x="536.35284"
+         y="762.77948"
+         id="text4859"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan4861"
+           x="536.35284"
+           y="762.77948">SHIELD</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text4863"
+         y="298.13773"
+         x="821.54681"
+         style="font-size:32.39828873px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+         xml:space="preserve"><tspan
+           y="298.13773"
+           x="821.54681"
+           id="tspan4865"
+           sodipodi:role="line">NEMA-BIG</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:32.39828873px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+         x="802.31317"
+         y="527.62323"
+         id="text4867"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan4869"
+           x="802.31317"
+           y="527.62323">NEMA-SMALL</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:14.02968025px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+         x="117.76921"
+         y="662.05634"
+         id="text4871"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan4873"
+           x="117.76921"
+           y="662.05634">Conduit</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:14.02968025px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+         x="762.87286"
+         y="743.87158"
+         id="text4898"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan4900"
+           x="762.87286"
+           y="743.87158">USB</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:14.02968025px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+         x="763.24963"
+         y="761.3952"
+         id="text4902"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan4904"
+           x="763.24963"
+           y="761.3952">CAT6</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:14.02968025px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+         x="763.23596"
+         y="778.89142"
+         id="text4906"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan4908"
+           x="763.23596"
+           y="778.89142">5V POW</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:14.02968025px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+         x="763.26337"
+         y="796.38763"
+         id="text4910"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan4912"
+           x="763.26337"
+           y="796.38763">GND</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:14.02968025px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+         x="762.87286"
+         y="813.89764"
+         id="text4914"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan4916"
+           x="762.87286"
+           y="813.89764">RST</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:14.02968025px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+         x="762.87286"
+         y="831.2088"
+         id="text4918"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan4920"
+           x="762.87286"
+           y="831.2088">HBT</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text4925"
+         y="478.00656"
+         x="1374.9319"
+         style="font-size:25.49916077px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+         xml:space="preserve"
+         transform="scale(0.55618968,1.7979478)"><tspan
+           y="478.00656"
+           x="1374.9319"
+           id="tspan4927"
+           sodipodi:role="line">~</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text4933"
+         y="884.88416"
+         x="762.87286"
+         style="font-size:14.02968025px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+         xml:space="preserve"><tspan
+           y="884.88416"
+           x="762.87286"
+           id="tspan4935"
+           sodipodi:role="line">Neutral</tspan></text>
+      <image
+         y="855.01257"
+         x="763.83875"
+         id="image5034"
+         xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB9AAAAvgCAYAAABZ4qmgAAAABHNCSVQICAgIfAhkiAAAIABJREFU eJzs2bERgDAQxECZ/nvGNZDwhtmt4OJTAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAADyzpgcAAADAS+7pAR/nQwAAAOD3rukBAAAAAAAAAHACAR0A AAAAAAAAEtABAAAAAAAAoBLQAQAAAAAAAKAS0AEAAAAAAACgEtABAAAAAAAAoBLQAQAAAAAAAKAS 0AEAAAAAAACgEtABAAAAAAAAoBLQAQAAAAAAAKAS0AEAAAAAAACgEtABAAAAAAAAoBLQAQAAAAAA AKAS0AEAAAAAAACgEtABAAAAAAAAoBLQAQAAAAAAAKAS0AEAAAAAAACgEtABAAAAAAAAoBLQAQAA AAAAAKAS0AEAAAAAAACgEtABAAAAAAAAoBLQAQAAAAAAAKAS0AEAAAAAAACgEtABAAAAAAAAoBLQ AQAAAAAAAKAS0AEAAAAAAACgEtABAAAAAAAAoBLQAQAAAAAAAKAS0AEAAAAAAACgEtABAAAAAAAA oBLQAQAAAAAAAKAS0AEAAAAAAACgEtABAAAAAAAAoBLQAQAAAAAAAKAS0AEAAAAAAACgEtABAAAA AAAAoBLQAQAAAAAAAKAS0AEAAAAAAACgEtABAAAAAAAAoBLQAQAAAAAAAKAS0AEAAAAAAACgEtAB AAAAAAAAoBLQAQAAAAAAAKAS0AEAAAAAAACgEtABAAAAAAAAoBLQAQAAAAAAAKAS0AEAAAAAAACg EtABAAAAAAAAoBLQAQAAAAAAAKAS0AEAAAAAAACgEtABAAAAAAAAoBLQAQAAAAAAAKAS0AEAAAAA AACgEtABAAAAAAAAoBLQAQAAAAAAAKAS0AEAAAAAAACgEtABAAAAAAAAoBLQAQAAAAAAAKAS0AEA AAAAAACgEtABAAAAAAAAoBLQAQAAAAAAAKAS0AEAAAAAAACgEtABAAAAAAAAoBLQAQAAAAAAAKAS 0AEAAAAAAACgEtABAAAAAAAAoBLQAQAAAAAAAKAS0AEAAAAAAACgEtABAAAAAAAAoBLQAQAAAAAA AKAS0AEAAAAAAACgEtABAAAAAAAAoBLQAQAAAAAAAKAS0AEAAAAAAACgEtABAAAAAAAAoBLQAQAA AAAAAKAS0AEAAAAAAACgEtABAAAAAAAAoBLQAQAAAAAAAKAS0AEAAAAAAACgEtABAAAAAAAAoBLQ AQAAAAAAAKAS0AEAAAAAAACgEtABAAAAAAAAoBLQAQAAAAAAAKAS0AEAAAAAAACgEtABAAAAAAAA oBLQAQAAAAAAAKAS0AEAAAAAAACgEtABAAAAAAAAoBLQAQAAAAAAAKAS0AEAAAAAAACgEtABAAAA AAAAoBLQAQAAAAAAAKAS0AEAAAAAAACgEtABAAAAAAAAoBLQAQAAAAAAAKAS0AEAAAAAAACgEtAB AAAAAAAAoBLQAQAAAAAAAKAS0AEAAAAAAACgEtABAAAAAAAAoBLQAQAAAAAAAKAS0AEAAAAAAACg EtABAAAAAAAAoBLQAQAAAAAAAKAS0AEAAAAAAACgEtABAAAAAAAAoBLQAQAAAAAAAKAS0AEAAAAA AACgEtABAAAAAAAAoBLQAQAAAAAAAKAS0AEAAAAAAACgEtABAAAAAAAAoBLQAQAAAAAAAKAS0AEA AAAAAACgEtABAAAAAAAAoBLQAQAAAAAAAKAS0AEAAAAAAACgEtABAAAAAAAAoBLQAQAAAAAAAKAS 0AEAAAAAAACgEtABAAAAAAAAoBLQAQAAAAAAAKAS0AEAAAAAAACgEtABAAAAAAAAoBLQAQAAAAAA AKAS0AEAAAAAAACgEtABAAAAAAAAoBLQAQAAAAAAAKAS0AEAAAAAAACgEtABAAAAAAAAoBLQAQAA AAAAAKAS0AEAAAAAAACgEtABAAAAAAAAoBLQAQAAAAAAAKAS0AEAAAAAAACgEtABAAAAAAAAoBLQ AQAAAAAAAKAS0AEAAAAAAACgEtABAAAAAAAAoBLQAQAAAAAAAKAS0AEAAAAAAACgEtABAAAAAAAA oBLQAQAAAAAAAKAS0AEAAAAAAACgEtABAAAAAAAAoBLQAQAAAAAAAKAS0AEAAAAAAACgEtABAAAA AAAAoBLQAQAAAAAAAKAS0AEAAAAAAACgEtABAACAzZ4dCAAAAAAI2p96kdIIAAAAqAQ6AAAAAAAA AFQCHQAAAAAAAAAqgQ4AAAAAAAAAlUAHAAAAAAAAgEqgAwAAAAAAAEAl0AEAAAAAAACgEugAAAAA AAAAUAl0AAAAAAAAAKgEOgAAAAAAAABUAh0AAAAAAAAAKoEOAAAAAAAAAJVABwAAAAAAAIBKoAMA AAAAAABAJdABAAAAAAAAoBLoAAAAAAAAAFAJdAAAAAAAAACoBDoAAAAAAAAAVAIdAAAAAAAAACqB DgAAAAAAAACVQAcAAAAAAACASqADAAAAAAAAQCXQAQAAAAAAAKAS6AAAAAAAAABQCXQAAAAAAAAA qAQ6AAAAAAAAAFQCHQAAAAAAAAAqgQ4AAAAAAAAAlUAHAAAAAAAAgEqgAwAAAAAAAEAl0AEAAAAA AACgEugAAAAAAAAAUAl0AAAAAAAAAKgEOgAAAAAAAABUAh0AAAAAAAAAKoEOAAAAAAAAAJVABwAA AAAAAIBKoAMAAAAAAABAJdABAAAAAAAAoBLoAAAAAAAAAFAJdAAAAAAAAACoBDoAAAAAAAAAVAId AAAAAAAAACqBDgAAAAAAAACVQAcAAAAAAACASqADAAAAAAAAQCXQAQAAAAAAAKAS6AAAAAAAAABQ CXQAAAAAAAAAqAQ6AAAAAAAAAFQCHQAAAAAAAAAqgQ4AAAAAAAAAlUAHAAAAAAAAgEqgAwAAAAAA AEAl0AEAAAAAAACgEugAAAAAAAAAUAl0AAAAAAAAAKgEOgAAAAAAAABUAh0AAAAAAAAAKoEOAAAA AAAAAJVABwAAAAAAAIBKoAMAAAAAAABAJdABAAAAAAAAoBLoAAAAAAAAAFAJdAAAAAAAAACoBDoA AAAAAAAAVAIdAAAAAAAAACqBDgAAAAAAAACVQAcAAAAAAACASqADAAAAAAAAQCXQAQAAAAAAAKAS 6AAAAAAAAABQCXQAAAAAAAAAqAQ6AAAAAAAAAFQCHQAAAAAAAAAqgQ4AAAAAAAAAlUAHAAAAAAAA gEqgAwAAAAAAAEAl0AEAAAAAAACgEugAAAAAAAAAUAl0AAAAAAAAAKgEOgAAAAAAAABUAh0AAAAA AAAAKoEOAAAAAAAAAJVABwAAAAAAAIBKoAMAAAAAAABAJdABAAAAAAAAoBLoAAAAAAAAAFAJdAAA AAAAAACoBDoAAAAAAAAAVAIdAAAAAAAAACqBDgAAAAAAAACVQAcAAAAAAACASqADAAAAAAAAQCXQ AQAAAAAAAKAS6AAAAAAAAABQCXQAAAAAAAAAqAQ6AAAAAAAAAFQCHQAAAAAAAAAqgQ4AAAAAAAAA lUAHAAAAAAAAgEqgAwAAAAAAAEAl0AEAAAAAAACgEugAAAAAAAAAUAl0AAAAAAAAAKgEOgAAAAAA AABUAh0AAAAAAAAAKoEOAAAAAAAAAJVABwAAAAAAAIBKoAMAAAAAAABAJdABAAAAAAAAoBLoAAAA AAAAAFAJdAAAAAAAAACoBDoAAAAAAAAAVAIdAAAAAAAAACqBDgAAAAAAAACVQAcAAAAAAACASqAD AAAAAAAAQCXQAQAAAAAAAKAS6AAAAAAAAABQCXQAAAAAAAAAqAQ6AAAAAAAAAFQCHQAAAAAAAAAq gQ4AAAAAAAAAlUAHAAAAAAAAgEqgAwAAAAAAAEAl0AEAAAAAAACgEugAAAAAAAAAUAl0AAAAAAAA AKgEOgAAAAAAAABUAh0AAAAAAAAAKoEOAAAAAAAAAJVABwAAAAAAAIBKoAMAAAAAAABAJdABAAAA AAAAoBLoAAAAAAAAAFAJdAAAAAAAAACoBDoAAAAAAAAAVAIdAAAAAAAAACqBDgAAAAAAAACVQAcA AAAAAACASqADAAAAAAAAQCXQAQAAAAAAAKAS6AAAAAAAAABQCXQAAAAAAAAAqAQ6AAAAAAAAAFQC HQAAAAAAAAAqgQ4AAAAAAAAAlUAHAAAAAAAAgEqgAwAAAAAAAEAl0AEAAAAAAACgEugAAAAAAAAA UAl0AAAAAAAAAKgEOgAAAAAAAABUAh0AAAAAAAAAKoEOAAAAAAAAAJVABwAAAAAAAIBKoAMAAAAA AABAJdABAAAAAAAAoBLoAAAAAAAAAFAJdAAAAAAAAACoBDoAAAAAAAAAVAIdAAAAAAAAACqBDgAA AAAAAACVQAcAAAAAAACASqADAAAAAAAAQCXQAQAAAAAAAKAS6AAAAAAAAABQCXQAAAAAAAAAqAQ6 AAAAAAAAAFQCHQAAAAAAAAAqgQ4AAAAAAAAAlUAHAAAAAAAAgEqgAwAAAAAAAEAl0AEAAAAAAACg EugAAAAAAAAAUAl0AAAAAAAAAKgEOgAAAAAAAABUAh0AAAAAAAAAKoEOAAAAAAAAAJVABwAAAAAA AIBKoAMAAAAAAABAJdABAAAAAAAAoBLoAAAAAAAAAFAJdAAAAAAAAACoBDoAAAAAAAAAVAIdAAAA AAAAACqBDgAAAAAAAACVQAcAAAAAAACASqADAAAAAAAAQCXQAQAAAAAAAKAS6AAAAAAAAABQCXQA AAAAAAAAqAQ6AAAAAAAAAFQCHQAAAAAAAAAqgQ4AAAAAAAAAlUAHAAAAAAAAgEqgAwAAAAAAAEAl 0AEAAAAAAACgEugAAAAAAAAAUAl0AAAAAAAAAKgEOgAAAAAAAABUAh0AAAAAAAAAKoEOAAAAAAAA AJVABwAAAAAAAIBKoAMAAAAAAABAJdABAAAAAAAAoBLoAAAAAAAAAFAJdAAAAAAAAACoBDoAAAAA AAAAVAIdAAAAAAAAACqBDgAAAAAAAACVQAcAAAAAAACASqADAAAAAAAAQCXQAQAAAAAAAKAS6AAA AAAAAABQCXQAAAAAAAAAqAQ6AAAAAAAAAFQCHQAAAAAAAAAqgQ4AAAAAAAAAlUAHAAAAAAAAgEqg AwAAAAAAAEAl0AEAAAAAAACgEugAAAAAAAAAUAl0AAAAAAAAAKgEOgAAAAAAAABUAh0AAAAAAAAA KoEOAAAAAAAAAJVABwAAAAAAAIBKoAMAAAAAAABAJdABAAAAAAAAoBLoAAAAAAAAAFAJdAAAAAAA AACoBDoAAAAAAAAAVAIdAAAAAAAAACqBDgAAAAAAAACVQAcAAAAAAACASqADAAAAAAAAQCXQAQAA AAAAAKAS6AAAAAAAAABQCXQAAAAAAAAAqAQ6AAAAAAAAAFQCHQAAAAAAAAAqgQ4AAAAAAAAAlUAH AAAAAAAAgEqgAwAAAAAAAEAl0AEAAAAAAACgEugAAAAAAAAAUAl0AAAAAAAAAKgEOgAAAAAAAABU Ah0AAAAAAAAAKoEOAAAAAAAAAJVABwAAAAAAAIBKoAMAAAAAAABAJdABAAAAAAAAoBLoAAAAAAAA AFAJdAAAAAAAAACoBDoAAAAAAAAAVAIdAAAAAAAAACqBDgAAAAAAAACVQAcAAAAAAACASqADAAAA AAAAQCXQAQAAAAAAAKAS6AAAAAAAAABQCXQAAAAAAAAAqAQ6AAAAAAAAAFQCHQAAAAAAAAAqgQ4A AAAAAAAAlUAHAAAAAAAAgEqgAwAAAAAAAEAl0AEAAAAAAACgEugAAAAAAAAAUAl0AAAAAAAAAKgE OgAAAAAAAABUAh0AAAAAAAAAKoEOAAAAAAAAAJVABwAAAAAAAIBKoAMAAAAAAABAJdABAAAAAAAA oBLoAAAAAAAAAFAJdAAAAAAAAACoBDoAAAAAAAAAVAIdAAAAAAAAACqBDgAAAAAAAACVQAcAAAAA AACASqADAAAAAAAAQCXQAQAAAAAAAKAS6AAAAAAAAABQCXQAAAAAAAAAqAQ6AAAAAAAAAFQCHQAA AAAAAAAqgQ4AAAAAAAAAlUAHAAAAAAAAgEqgAwAAAAAAAEAl0AEAAAAAAACgEugAAAAAAAAAUAl0 AAAAAAAAAKgEOgAAAAAAAABUAh0AAAAAAAAAKoEOAAAAAAAAAJVABwAAAAAAAIBKoAMAAAAAAABA JdABAAAAAAAAoBLoAAAAAAAAAFAJdAAAAAAAAACoBDoAAAAAAAAAVAIdAAAAAAAAACqBDgAAAAAA AACVQAcAAAAAAACASqADAAAAAAAAQCXQAQAAAAAAAKAS6AAAAAAAAABQCXQAAAAAAAAAqAQ6AAAA AAAAAFQCHQAAAAAAAAAqgQ4AAAAAAAAAlUAHAAAAAAAAgEqgAwAAAAAAAEAl0AEAAAAAAACgEugA AAAAAAAAUAl0AAAAAAAAAKgEOgAAAAAAAABUAh0AAAAAAAAAKoEOAAAAAAAAAJVABwAAAAAAAIBK oAMAAAAAAABAJdABAAAAAAAAoBLoAAAAAAAAAFAJdAAAAAAAAACoBDoAAAAAAAAAVAIdAAAAAAAA ACqBDgAAAAAAAACVQAcAAAAAAACASqADAAAAAAAAQCXQAQAAAAAAAKAS6AAAAAAAAABQCXQAAAAA AAAAqAQ6AAAAAAAAAFQCHQAAAAAAAAAqgQ4AAAAAAAAAlUAHAAAAAAAAgEqgAwAAAAAAAEAl0AEA AAAAAACgEugAAAAAAAAAUAl0AAAAAAAAAKgEOgAAAAAAAABUAh0AAAAAAAAAKoEOAAAAAAAAAJVA BwAAAAAAAIBKoAMAAAAAAABAJdABAAAAAAAAoBLoAAAAAAAAAFAJdAAAAAAAAACoBDoAAAAAAAAA VAIdAAAAAAAAACqBDgAAAAAAAACVQAcAAAAAAACASqADAAAAAAAAQCXQAQAAAAAAAKAS6AAAAAAA AABQCXQAAAAAAAAAqAQ6AAAAAAAAAFQCHQAAAAAAAAAqgQ4AAAAAAAAAlUAHAAAAAAAAgEqgAwAA AAAAAEAl0AEAAAAAAACgEugAAAAAAAAAUAl0AAAAAAAAAKgEOgAAAAAAAABUAh0AAAAAAAAAKoEO AAAAAAAAAJVABwAAAAAAAIBKoAMAAAAAAABAJdABAAAAAAAAoBLoAAAAAAAAAFAJdAAAAAAAAACo BDoAAAAAAAAAVAIdAAAAAAAAACqBDgAAAAAAAACVQAcAAAAAAACASqADAAAAAAAAQCXQAQAAAAAA AKAS6AAAAAAAAABQCXQAAAAAAAAAqAQ6AAAAAAAAAFQCHQAAAAAAAAD3zDGbAAAgAElEQVQqgQ4A AAAAAAAAlUAHAAAAAAAAgEqgAwAAAAAAAEAl0AEAAAAAAACgEugAAAAAAAAAUAl0AAAAAAAAAKgE OgAAAAAAAABUAh0AAAAAAAAAKoEOAAAAAAAAAJVABwAAAAAAAIBKoAMAAAAAAABAJdABAAAAAAAA oBLoAAAAAAAAAFAJdAAAAAAAAACoBDoAAAAAAAAAVAIdAAAAAAAAACqBDgAAAAAAAACVQAcAAAAA AACASqADAAAAAAAAQCXQAQAAAAAAAKAS6AAAAAAAAABQCXQAAAAAAAAAqAQ6AAAAAAAAAFQCHQAA AAAAAAAqgQ4AAAAAAAAAlUAHAAAAAAAAgEqgAwAAAAAAAEAl0AEAAAAAAACgEugAAAAAAAAAUAl0 AAAAAAAAAKgEOgAAAAAAAABUAh0AAAAAAAAAKoEOAAAAAAAAAJVABwAAAAAAAIBKoAMAAAAAAABA JdABAAAAAAAAoBLoAAAAAAAAAFAJdAAAAAAAAACoBDoAAAAAAAAAVAIdAAAAAAAAACqBDgAAAAAA AACVQAcAAAAAAACASqADAAAAAAAAQCXQAQAAAAAAAKAS6AAAAAAAAABQCXQAAAAAAAAAqAQ6AAAA AAAAAFQCHQAAAAAAAAAqgQ4AAAAAAAAAlUAHAAAAAAAAgEqgAwAAAAAAAEAl0AEAAAAAAACgEugA AAAAAAAAUAl0AAAAAAAAAKgEOgAAAAAAAABUAh0AAAAAAAAAKoEOAAAAAAAAAJVABwAAAAAAAIBK oAMAAAAAAABAJdABAAAAAAAAoBLoAAAAAAAAAFAJdAAAAAAAAACoBDoAAAAAAAAAVAIdAAAAAAAA ACqBDgAAAAAAAACVQAcAAAAAAACASqADAAAAAAAAQCXQAQAAAAAAAKAS6AAAAAAAAABQCXQAAAAA AAAAqAQ6AAAAAAAAAFQCHQAAAAAAAAAqgQ4AAAAAAAAAlUAHAAAAAAAAgEqgAwAAAAAAAEAl0AEA AAAAAACgEugAAAAAAAAAUAl0AAAAAAAAAKgEOgAAAAAAAABUAh0AAAAAAAAAKoEOAAAAAAAAAJVA BwAAAAAAAIBKoAMAAAAAAABAJdABAAAAAAAAoBLoAAAAAAAAAFAJdAAAAAAAAACoBDoAAAAAAAAA VAIdAAAAAAAAACqBDgAAAAAAAACVQAcAAAAAAACASqADAAAAAAAAQCXQAQAAAAAAAKAS6AAAAAAA AABQCXQAAAAAAAAAqAQ6AAAAAAAAAFQCHQAAZs8OBAAAAAAE7U+9SGkEAAAAAFAJdAAAAAAAAACo BDoAAAAAAAAAVAIdAAAAAAAAACqBDgAAAAAAAACVQAcAAAAAAACASqADAAAAAAAAQCXQAQAAAAAA AKAS6AAAAAAAAABQCXQAAAAAAAAAqAQ6AAAAAAAAAFQCHQAAAAAAAAAqgQ4AAAAAAAAAlUAHAAAA AAAAgEqgAwAAAAAAAEAl0AEAAAAAAACgEugAAAAAAAAAUAl0AAAAAAAAAKgEOgAAAAAAAABUAh0A AAAAAAAAKoEOAAAAAAAAAJVABwAAAAAAAIBKoAMAAAAAAABAJdABAAAAAAAAoBLoAAAAAAAAAFAJ dAAAAAAAAACoBDoAAAAAAAAAVAIdAAAAAAAAACqBDgAAAAAAAACVQAcAAAAAAACASqADAAAAAAAA QCXQAQAAAAAAAKAS6AAAAAAAAABQCXQAAAAAAAAAqAQ6AAAAAAAAAFQCHQAAAAAAAAAqgQ4AAAAA AAAAlUAHAAAAAAAAgEqgAwAAAAAAAEAl0AEAAAAAAACgEugAAAAAAAAAUAl0AAAAAAAAAKgEOgAA AAAAAABUAh0AAAAAAAAAKoEOAAAAAAAAAJVABwAAAAAAAIBKoAMAAAAAAABAJdABAAAAAAAAoBLo AAAAAAAAAFAJdAAAAAAAAACoBDoAAAAAAAAAVAIdAAAAAAAAACqBDgAAAAAAAACVQAcAAAAAAACA SqADAAAAAAAAQCXQAQAAAAAAAKAS6AAAAAAAAABQCXQAAAAAAAAAqAQ6AAAAAAAAAFQCHQAAAAAA AAAqgQ4AAAAAAAAAlUAHAAAAAAAAgEqgAwAAAAAAAEAl0AEAAAAAAACgEugAAAAAAAAAUAl0AAAA AAAAAKgEOgAAAAAAAABUAh0AAAAAAAAAKoEOAAAAAAAAAJVABwAAAAAAAIBKoAMAAAAAAABAJdAB AAAAAAAAoBLoAAAAAAAAAFAJdAAAAAAAAACoBDoAAAAAAAAAVAIdAAAAAAAAACqBDgAAAAAAAACV QAcAAAAAAACASqADAAAAAAAAQCXQAQAAAAAAAKAS6AAAAAAAAABQCXQAAAAAAAAAqAQ6AAAAAAAA AFQCHQAAAAAAAAAqgQ4AAAAAAAAAlUAHAAAAAAAAgEqgAwAAAAAAAEAl0AEAAAAAAACgEugAAAAA AAAAUAl0AAAAAAAAAKgEOgAAAAAAAABUAh0AAAAAAAAAKoEOAAAAAAAAAJVABwAAAAAAAIBKoAMA AAAAAABAJdABAAAAAAAAoBLoAAAAAAAAAFAJdAAAAAAAAACoBDoAAAAAAAAAVAIdAAAAAAAAACqB DgAAAAAAAACVQAcAAAAAAACASqADAAAAAAAAQCXQAQAAAAAAAKAS6AAAAAAAAABQCXQAAAAAAAAA qAQ6AAAAAAAAAFQCHQAAAAAAAAAqgQ4AAAAAAAAAlUAHAAAAAAAAgEqgAwAAAAAAAEAl0AEAAAAA AACgEugAAAAAAAAAUAl0AAAAAAAAAKgEOgAAAAAAAABUAh0AAAAAAAAAKoEOAAAAAAAAAJVABwAA AAAAAIBKoAMAAAAAAABAJdABAAAAAAAAoBLoAAAAAAAAAFAJdAAAAAAAAACoBDoAAAAAAAAAVAId AAAAAAAAACqBDgAAAAAAAACVQAcAAAAAAACASqADAAAAAAAAQCXQAQAAAAAAAKAS6AAAAAAAAABQ CXQAAAAAAAAAqAQ6AAAAAAAAAFQCHQAAAAAAAAAqgQ4AAAAAAAAAlUAHAAAAAAAAgEqgAwAAAAAA AEAl0AEAAAAAAACgEugAAAAAAAAAUAl0AAAAAAAAAKgEOgAAAAAAAABUAh0AAAAAAAAAKoEOAAAA AAAAAJVABwAAAAAAAIBKoAMAAAAAAABAJdABAAAAAAAAoBLoAAAAAAAAAFAJdAAAAAAAAACoBDoA AAAAAAAAVAIdAAAAAAAAACqBDgAAAAAAAACVQAcAAAAAAACASqADAAAAAAAAQCXQAQAAAAAAAKAS 6AAAAAAAAABQCXQAAAAAAAAAqAQ6AAAAAAAAAFQCHQAAAAAAAAAqgQ4AAAAAAAAAlUAHAAAAAAAA gEqgAwAAAAAAAEAl0AEAAAAAAACgEugAAAAAAAAAUAl0AAAAAAAAAKgEOgAAAAAAAABUAh0AAAAA AAAAKoEOAAAAAAAAAJVABwAAAAAAAIBKoAMAAAAAAABAJdABAAAAAAAAoBLoAAAAAAAAAFAJdAAA AAAAAACoBDoAAAAAAAAAVAIdAAAAAAAAACqBDgAAAAAAAACVQAcAAAAAAACASqADAAAAAAAAQCXQ AQAAAAAAAKAS6AAAAAAAAABQCXQAAAAAAAAAqAQ6AAAAAAAAAFQCHQAAAAAAAAAqgQ4AAAAAAAAA lUAHAAAAAAAAgEqgAwAAAAAAAEAl0AEAAAAAAACgEugAAAAAAAAAUAl0AAAAAAAAAKgEOgAAAAAA AABUAh0AAAAAAAAAKoEOAAAAAAAAAJVABwAAAAAAAIBKoAMAAAAAAABAJdABAAAAAAAAoBLoAAAA AAAAAFAJdAAAAAAAAACoBDoAAAAAAAAAVAIdAAAAAAAAACqBDgAAAAAAAACVQAcAAAAAAACASqAD AAAAAAAAQCXQAQAAAAAAAKAS6AAAAAAAAABQCXQAAAAAAAAAqAQ6AAAAAAAAAFQCHQAAAAAAAAAq gQ4AAAAAAAAAlUAHAAAAAAAAgEqgAwAAAAAAAEAl0AEAAAAAAACgEugAAAAAAAAAUAl0AAAAAAAA AKgEOgAAAAAAAABUAh0AAAAAAAAAKoEOAAAAAAAAAJVABwAAAAAAAIBKoAMAAAAAAABAJdABAAAA AAAAoBLoAAAAAAAAAFAJdAAAAAAAAACoBDoAAAAAAAAAVAIdAAAAAAAAACqBDgAAAAAAAACVQAcA AAAAAACASqADAAAAAAAAQCXQAQAAAAAAAKAS6AAAAAAAAABQCXQAAAAAAAAAqAQ6AAAAAAAAAFQC HQAAAAAAAAAqgQ4AAAAAAAAAlUAHAAAAAAAAgEqgAwAAAAAAAEAl0AEAAAAAAACgEugAAAAAAAAA UAl0AAAAAAAAAKgEOgAAAAAAAABUAh0AAAAAAAAAKoEOAAAAAAAAAJVABwAAAAAAAIBKoAMAAAAA AABAJdABAAAAAAAAoBLoAAAAAAAAAFAJdAAAAAAAAACoBDoAAAAAAAAAVAIdAAAAAAAAACqBDgAA AAAAAACVQAcAAAAAAACASqADAAAAAAAAQCXQAQAAAAAAAKAS6AAAAAAAAABQCXQAAAAAAAAAqAQ6 AAAAAAAAAFQCHQAAAAAAAAAqgQ4AAAAAAAAAlUAHAAAAAAAAgEqgAwAAAAAAAEAl0AEAAAAAAACg EugAAAAAAAAAUAl0AAAAAAAAAKgEOgAAAAAAAABUAh0AAAAAAAAAKoEOAAAAAAAAAJVABwAAAAAA AIBKoAMAAAAAAABAJdABAAAAAAAAoBLoAAAAAAAAAFAJdAAAAAAAAACoBDoAAAAAAAAAVAIdAAAA AAAAACqBDgAAAAAAAACVQAcAAAAAAACASqADAAAAAAAAQCXQAQAAAAAAAKAS6AAAAAAAAABQCXQA AAAAAAAAqAQ6AAAAAAAAAFQCHQAAAAAAAAAqgQ4AAAAAAAAAlUAHAAAAAAAAgEqgAwAAAAAAAEAl 0AEAAAAAAACgEugAAAAAAAAAUAl0AAAAAAAAAKgEOgAAAAAAAABUAh0AAAAAAAAAKoEOAAAAAAAA AJVABwAAAAAAAIBKoAMAAAAAAABAJdABAAAAAAAAoBLoAAAAAAAAAFAJdAAAAAAAAACoBDoAAAAA AAAAVAIdAAAAAAAAACqBDgAAAAAAAACVQAcAAAAAAACASqADAAAAAAAAQCXQAQAAAAAAAKAS6AAA AAAAAABQCXQAAAAAAAAAqAQ6AAAAAAAAAFQCHQAAAAAAAAAqgQ4AAAAAAAAAlUAHAAAAAAAAgEqg AwAAAAAAAEAl0AEAAAAAAACgEugAAAAAAAAAUAl0AAAAAAAAAKgEOgAAAAAAAABUAh0AAAAAAAAA KoEOAAAAAAAAAJVABwAAAAAAAIBKoAMAAAAAAABAJdABAAAAAAAAoBLoAAAAAAAAAFAJdAAAAAAA AACoBDoAAAAAAAAAVAIdAAAAAAAAACqBDgAAAAAAAACVQAcAAAAAAACASqADAAAAAAAAQCXQAQAA AAAAAKAS6AAAAAAAAABQCXQAAAAAAAAAqAQ6AAAAAAAAAFQCHQAAAAAAAAAqgQ4AAAAAAAAAlUAH AAAAAAAAgEqgAwAAAAAAAEAl0AEAAAAAAACgEugAAAAAAAAAUAl0AAAAAAAAAKgEOgAAAAAAAABU Ah0AAAAAAAAAKoEOAAAAAAAAAJVABwAAAAAAAIBKoAMAAAAAAABAJdABAAAAAAAAoBLoAAAAAAAA AFAJdAAAAAAAAACoBDoAAAAAAAAAVAIdAAAAAAAAACqBDgAAAAAAAACVQAcAAAAAAACASqADAAAA AAAAQCXQAQAAAAAAAKAS6AAAAAAAAABQCXQAAAAAAAAAqAQ6AAAAAAAAAFQCHQAAAAAAAAAqgQ4A AAAAAAAAlUAHAAAAAAAAgEqgAwAAAAAAAEAl0AEAAAAAAACgEugAAAAAAAAAUAl0AAAAAAAAAKgE OgAAAAAAAABUAh0AAAAAAAAAKoEOAAAAAAAAAJVABwAAAAAAAIBKoAMAAAAAAABAJdABAAAAAAAA oBLoAAAAAAAAAFAJdAAAAAAAAACoBDoAAAAAAAAAVAIdAAAAAAAAACqBDgAAAAAAAACVQAcAAAAA AACASqADAAAAAAAAQCXQAQAAAAAAAKAS6AAAAAAAAABQCXQAAAAAAAAAqAQ6AAAAAAAAAFQCHQAA AAAAAAAqgQ4AAAAAAAAAlUAHAAAAAAAAgEqgAwAAAAAAAEAl0AEAAAAAAACgEugAAAAAAAAAUAl0 AAAAAAAAAKgEOgAAAAAAAABUAh0AAAAAAAAAKoEOAAAAAAAAAJVABwAAAAAAAIBKoAMAAAAAAABA JdABAAAAAAAAoBLoAAAAAAAAAFAJdAAAAAAAAACoBDoAAAAAAAAAVAIdAAAAAAAAACqBDgAAAAAA AACVQAcAAAAAAACASqADAAAAAAAAQCXQAQAAAAAAAKAS6AAAAAAAAABQCXQAAAAAAAAAqAQ6AAAA AAAAAFQCHQAAAAAAAAAqgQ4AAAAAAAAAlUAHAAAAAAAAgEqgAwAAAAAAAEAl0AEAAAAAAACgEugA AAAAAAAAUAl0AAAAAAAAAKgEOgAAAAAAAABUAh0AAAAAAAAAKoEOAAAAAAAAAJVABwAAAAAAAIBK oAMAAAAAAABAJdABAAAAAAAAoBLoAAAAAAAAAFAJdAAAAAAAAACoBDoAAAAAAAAAVAIdAAAAAAAA ACqBDgAAAAAAAACVQAcAAAAAAACASqADAAAAAAAAQCXQAQAAAAAAAKAS6AAAAAAAAABQCXQAAAAA AAAAqAQ6AAAAAAAAAFQCHQAAAAAAAAAqgQ4AAAAAAAAAlUAHAAAAAAAAgEqgAwAAAAAAAEAl0AEA AAAAAACgEugAAAAAAAAAUAl0AAAAAAAAAKgEOgAAAAAAAABUAh0AAAAAAAAAKoEOAAAAAAAAAJVA BwAAAAAAAIBKoAMAAAAAAABAJdABAAAAAAAAoBLoAAAAAAAAAFAJdAAAAAAAAACoBDoAAAAAAAAA VAIdAAAAAAAAACqBDgAAAAAAAACVQAcAAAAAAACASqADAAAAAAAAQCXQAQAAAAAAAKAS6AAAAAAA AABQCXQAAAAAAAAAqAQ6AAAAAAAAAFQCHQAAAAAAAAAqgQ4AAAAAAAAAlUAHAAAAAAAAgEqgAwAA AAAAAEAl0AEAAAAAAACgEugAAAAAAAAAUAl0AAAAAAAAAKgEOgAAAAAAAABUAh0AAAAAAAAAKoEO AAAAAAAAAJVABwAAAAAAAIBKoAMAAAAAAABAJdABAAAAAAAAoBLoAAAAAAAAAFAJdAAAAAAAAACo BDoAAAAAAAAAVAIdAAAAAAAAACqBDgAAAAAAAACVQAcAAAAAAACASqADAAAAAAAAQCXQAQAAAAAA AKAS6AAAAAAAAABQCXQAAAAAAAAAqAQ6AAAAAAAAAFQCHQAAAAAAAAAqgQ4AAAAAAAAAlUAHAAAA AAAAgEqgAwAAAAAAAEAl0AEAAAAAAACgEugAAAAAAAAAUAl0AAAAAAAAAKgEOgAAAAAAAABUAh0A AAAAAAAAKoEOAAAAAAAAAJVABwAAAAAAAIBKoAMAAAAAAABAJdABAAAAAAAAoBLoAAAAAAAAAFAJ dAAAAAAAAACoBDoAs2/HNgCAQAzEjv2HhhUokJ7CniD9KQAAAAAAAFQCOgAAAAAAAABUAjoAAAAA AAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoA AAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABU AjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAA AABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAA AAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQC OgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAA AFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAA AAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6 AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAA VAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAA AAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoA AAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABU AjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAA AABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAA AAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQC OgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAA AFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAA AAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6 AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAA VAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAA AAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoA AAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABU AjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAA AABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAA AAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQC OgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAA AFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAA AAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6 AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAA VAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAA AAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoA AAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABU AjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAA AABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAA AAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQC OgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAA AFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAA AAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6 AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAA VAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAA AAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoA AAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABU AjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAMbHJLMAACAASURBVAAAVAI6AAAA AAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6 AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAA VAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAA AAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoA AAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABU AjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAA AABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAA AAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQC OgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAA AFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAA AAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6 AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAA VAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAA AAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoA AAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABU AjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAA AABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAA AAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQC OgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAA AFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAA AAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6 AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAA VAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAA AAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoA AAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABU AjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAA AABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAA AAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQC OgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAA AFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAA AAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6 AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAA VAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAA AAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoA AAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUtaYHXNjTAwAAAAAAAAB44utG7YEOAAAAAAAAAAno AAAAAAAAAFAJ6AAAAAAAAABQCegAAAAAAAAAUAnoAAAAAAAAAFAJ6AAAAAAAAABQCegAAAAAAAAA UAnoAAAAAAAAAFAJ6AAAAAAAAABQCegAAAAAAAAAUAnoAAAAAAAAAFAJ6AAAAAAAAABQCegAAAAA AAAAUAnoAAAAAAAAAFAJ6AAAAAAAAABQCegAAAAAAAAAUAnoAAAAAAAAAFAJ6AAAAAAAAABQCegA AAAAAAAAUAnoAAAAAAAAAFAJ6AAAAAAAAABQCegAAAAAAAAAUAnoAAAAAAAAAFAJ6AAAAAAAAABQ CegAAAAAAAAAUAnoAAAAAAAAAFAJ6AAAAAAAAABQCegAAAAAAAAAUAnoAAAAAAAAAFAJ6AAAAAAA AABQCegAAAAAAAAAUAnoAAAAAAAAAFAJ6AAAAAAAAABQCegAAAAAAAAAUAnoAAAAAAAAAFAJ6AAA AAAAAABQCegAAAAAAAAAUAnoAAAAAAAAAFCHPTu2ARAIYiC40H/PT45ECPcSMxU49iagAwAAAAAA AEAloAMAAAAAAABAJaADAAAAAAAAQCWgAwAAAAAAAEAloAMAAAAAAABAJaADAAAAAAAAQCWgAwAA AAAAAEAloAMAAAAAAABAJaADAAAAAAAAQCWgAwAAAAAAAEAloAMAAAAAAABAJaADAAAAAAAAQCWg AwAAAAAAAEAloAMAAAAAAABAJaADAAAAAAAAQCWgAwAAAAAAAEAloAMAAAAAAABAJaADAAAAAAAA QCWgAwAAAAAAAEAloAMAAAAAAABAJaADAAAAAAAAQCWgAwAAAAAAAEAloAMAAAAAAABAJaADAAAA AAAAQCWgAwAAAAAAAEAloAMAAAAAAABAJaADAAAAAAAAQCWgAwAAAAAAAEAloAMAAAAAAABAJaAD AAAAAAAAQCWgAwAAAAAAAEAloAMAAAAAAABAJaADAAAAAAAAQCWgAwAAAAAAAEAloAMAAAAAAABA JaADAAAAAAAAQCWgAwAAAAAAAEAloAMAAAAAAABAJaADAAAAAAAAQCWgAwAAAAAAAEAloAMAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD9wTA8A4NGaHgAA AAAAvEajAdjQOT0AAAAAAAAAAHYgoAMAAAAAAABAAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAA AABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAA AAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQC OgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAA AFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAA AAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6 AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAA VAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAA AAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoA AAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABU AjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAA AABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAA AAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQC OgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAAAFQCOgAAAAAAAABUAjoAAAAAAAAAVAI6AAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwA8f0AAAAuFnTAwAA +JSPEgCAbZzTAwAAAAAAAABgBwI6AAAAAAAAACSgAwAAAAAAAEAloAMAAAAAAABAJaADAAAAAAAA QCWgAwAAAAAAAEAloAMAAAAAAABAJaADAAAAAAAAQCWgAwAAAAAAAEAloAMAAAAAAABAJaADAAAA AAAAQCWgAwAAAAAAAEAloAMAAAAAAABAJaADAAAAAAAAQCWgAwAAAAAAAEAloAMAAAAAAABAJaAD AAAAAAAAQCWgAwAAAAAAAEAloAMAAAAAAABAJaADAAAAAAAAQCWgAwAAAAAAAEAloAMAAAAAAABA JaADAAAAAAAAQCWgAwAAAAAAAEAloAMAAAAAAABAJaADAAAAAAAAQCWgAwAAAAAAAEAloAMAAAAA AABAJaADAAAAAAAAQCWgAwAAAAAAAEAloAMAAAAAAABAJaADAAAAAAAAQCWgAwAAAAAAAEAloAMA AAAAAABAJaADAAAAAAAAQCWgAwAAAAAAAEAloAMAAAAAAABAJaADAAAAAAAAQCWgAwAAAAAAAEAl oAMAAAAAAABAJaADAAAAAAAAQCWgAwAAAAAAAEAloAMAAAAAAABAJaADAAAAAAAAQCWgAwAAAAAA AEAloAMAAAAAAABAJaADAAAAAAAAQCWgAwAAAAAAAEAloAMAAAAAAABAJaADAAAAAAAAQCWgAwAA AAAAAEAloAMAAAAAAABAJaADAAAAAAAAQCWgAwAAAAAAAEAloAMAAAAAAABAJaADAAAAAAAAQCWg AwAAAAAAAEAloAMAAAAAAABAJaADAAAAAAAAQCWgAwAAAAAAAEAloAMAAAAAAABAJaADAAAAAAAA QCWgAwAAAAAAAEAloAMAAAAAAABAJaADAAAAAAAAQCWgAwAAAAAAAEAloAMAAAAAAABAJaADAAAA AAAAQCWgA3CxZwcCAAAAAIL2p16kNAIAAAAAAKAS6AAAAAAAAABQCXQAAAAAAAAAqAQ6AAAAAAAA AFQCHQAAAAAAAAAqgQ4AAAAAAAAAlUAHAAAAAAAAgEqgAwAAAAAAAEAl0AEAAAAAAACgEugAAAAA AAAAUAl0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOI3N5wAADBBJREFUAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgNuDQwIAAAAAQf9fe8MAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGwEK8ESDUy6 b50AAAAASUVORK5CYII= "
+         height="18.388035"
+         width="12.097391" />
+      <rect
+         style="fill:#008000;fill-opacity:1;stroke:#fffd00;stroke-width:0.00296955;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         id="rect3839"
+         width="2.9868562"
+         height="51.283207"
+         x="827.04047"
+         y="-753.63074"
+         ry="0.078033768"
+         transform="matrix(0,1,-1,0,0,0)" />
+      <rect
+         transform="matrix(0,1,-1,0,0,0)"
+         ry="0.078033768"
+         y="-753.63074"
+         x="862.00732"
+         height="51.283207"
+         width="2.9868562"
+         id="rect4875"
+         style="fill:#ccaaff;fill-opacity:1;stroke:#fffd00;stroke-width:0.00296955;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <rect
+         style="fill:#00ccff;fill-opacity:1;stroke:#fffd00;stroke-width:0.00296955;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         id="rect4888"
+         width="2.9868562"
+         height="51.283207"
+         x="844.52393"
+         y="-753.63074"
+         ry="0.078033768"
+         transform="matrix(0,1,-1,0,0,0)" />
+      <rect
+         transform="matrix(0,1,-1,0,0,0)"
+         ry="0.078033768"
+         y="-753.63074"
+         x="809.55707"
+         height="51.283207"
+         width="2.9868562"
+         id="rect4890"
+         style="fill:#ffccaa;fill-opacity:1;stroke:#fffd00;stroke-width:0.00296955;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <rect
+         style="fill:#000000;fill-opacity:1;stroke:#fffd00;stroke-width:0.00296955;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         id="rect4892"
+         width="2.9868562"
+         height="51.283207"
+         x="792.07361"
+         y="-753.63074"
+         ry="0.078033768"
+         transform="matrix(0,1,-1,0,0,0)" />
+      <rect
+         transform="matrix(0,1,-1,0,0,0)"
+         ry="0.078033768"
+         y="-753.63074"
+         x="774.59015"
+         height="51.283207"
+         width="2.9868562"
+         id="rect4894"
+         style="fill:#ff0000;fill-opacity:1;stroke:#fffd00;stroke-width:0.00296955;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <rect
+         style="fill:#0000ff;fill-opacity:1;stroke:#fffd00;stroke-width:0.00296955;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         id="rect4896"
+         width="2.9868562"
+         height="51.283207"
+         x="757.10681"
+         y="-753.63074"
+         ry="0.078033768"
+         transform="matrix(0,1,-1,0,0,0)" />
+      <rect
+         transform="matrix(0,1,-1,0,0,0)"
+         ry="0.078033768"
+         y="-753.63074"
+         x="879.49078"
+         height="51.283207"
+         width="2.9868562"
+         id="rect5056"
+         style="fill:#99ff55;fill-opacity:1;stroke:#fffd00;stroke-width:0.00296955;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <rect
+         style="fill:#ff6600;fill-opacity:1;stroke:#fffd00;stroke-width:0.00296955;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         id="rect5058"
+         width="2.9868562"
+         height="51.283207"
+         x="739.62329"
+         y="-753.63074"
+         ry="0.078033768"
+         transform="matrix(0,1,-1,0,0,0)" />
+      <g
+         id="g5103"
+         transform="matrix(1.00212,0,0,1.00212,-8.20034,-105.28457)">
+        <rect
+           style="fill:#800080;fill-opacity:1;stroke:#fffd00;stroke-width:0.00296327;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+           id="rect5097"
+           width="2.9805374"
+           height="51.174713"
+           x="823.12048"
+           y="-760.21942"
+           ry="0.077868678"
+           transform="matrix(0,1,-1,0,0,0)" />
+        <text
+           sodipodi:linespacing="125%"
+           id="text5099"
+           y="829.05505"
+           x="767.71594"
+           style="font-size:14px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+           xml:space="preserve"><tspan
+             y="829.05505"
+             x="767.71594"
+             id="tspan5101"
+             sodipodi:role="line">Thermistor</tspan></text>
+      </g>
+      <text
+         xml:space="preserve"
+         style="font-size:14.02968025px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+         x="-403.17734"
+         y="62.608471"
+         id="text5108"
+         sodipodi:linespacing="125%"
+         transform="matrix(0,-1,1,0,0,0)"><tspan
+           sodipodi:role="line"
+           id="tspan5110"
+           x="-403.17734"
+           y="62.608471">Micro-USB</tspan></text>
+      <text
+         transform="matrix(0,-1,1,0,0,0)"
+         sodipodi:linespacing="125%"
+         id="text5112"
+         y="88.928116"
+         x="-402.16501"
+         style="font-size:14.02968025px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+         xml:space="preserve"><tspan
+           y="88.928116"
+           x="-402.16501"
+           id="tspan5114"
+           sodipodi:role="line">Micro-USB</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:14.02968025px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+         x="-452.77972"
+         y="142.07356"
+         id="text5116"
+         sodipodi:linespacing="125%"
+         transform="matrix(0,-1,1,0,0,0)"><tspan
+           sodipodi:role="line"
+           id="tspan5118"
+           x="-452.77972"
+           y="142.07356">Micro</tspan><tspan
+           sodipodi:role="line"
+           x="-452.77972"
+           y="159.61066"
+           id="tspan5200">USB</tspan></text>
+      <text
+         transform="matrix(0,-1,1,0,0,0)"
+         sodipodi:linespacing="125%"
+         id="text5120"
+         y="247.35213"
+         x="-492.25919"
+         style="font-size:14.02968025px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+         xml:space="preserve"><tspan
+           y="247.35213"
+           x="-492.25919"
+           id="tspan5122"
+           sodipodi:role="line">Micro</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:14.02968025px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+         x="360.45786"
+         y="289.53201"
+         id="text5124"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan5126"
+           x="360.45786"
+           y="289.53201">Micro-USB</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:14.02968025px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+         x="-883.75317"
+         y="82.128784"
+         id="text5128"
+         sodipodi:linespacing="125%"
+         transform="matrix(0,-1,1,0,0,0)"><tspan
+           sodipodi:role="line"
+           id="tspan5130"
+           x="-883.75317"
+           y="82.128784">COTS</tspan></text>
+      <text
+         transform="matrix(0,-1,1,0,0,0)"
+         sodipodi:linespacing="125%"
+         id="text5132"
+         y="109.68707"
+         x="-882.32159"
+         style="font-size:14.02968025px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+         xml:space="preserve"><tspan
+           y="109.68707"
+           x="-882.32159"
+           id="tspan5134"
+           sodipodi:role="line">COTS</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:14.02968025px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+         x="-848.32104"
+         y="134.02426"
+         id="text5136"
+         sodipodi:linespacing="125%"
+         transform="matrix(0,-1,1,0,0,0)"><tspan
+           sodipodi:role="line"
+           id="tspan5138"
+           x="-848.32104"
+           y="134.02426">COTS</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text5140"
+         y="305.5708"
+         x="615.01447"
+         style="font-size:14.02968025px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+         xml:space="preserve"><tspan
+           y="305.5708"
+           x="615.01447"
+           id="tspan5142"
+           sodipodi:role="line">COTS</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:18.26931px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+         x="1030.6627"
+         y="617.10742"
+         id="text5144"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan5146"
+           x="1030.6627"
+           y="617.10742">AC Input</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:14.02968025px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#800000;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+         x="-450.76086"
+         y="123.74172"
+         id="text5188"
+         sodipodi:linespacing="125%"
+         transform="matrix(0,-1,1,0,0,0)"><tspan
+           sodipodi:role="line"
+           id="tspan5190"
+           x="-450.76086"
+           y="123.74172">WAN</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text5192"
+         y="324.45618"
+         x="349.94385"
+         style="font-size:14.02968025px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#800000;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+         xml:space="preserve"><tspan
+           y="324.45618"
+           x="349.94385"
+           id="tspan5194"
+           sodipodi:role="line">Camera</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:14.02968025px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#800000;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+         x="311.13779"
+         y="324.45618"
+         id="text5196"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan5198"
+           x="311.13779"
+           y="324.45618">MIC</tspan></text>
+      <g
+         id="g5206"
+         transform="matrix(1.00212,0,0,1.00212,14.009085,-28.614745)">
+        <text
+           sodipodi:linespacing="125%"
+           id="text5148"
+           y="604.30487"
+           x="207.66449"
+           style="font-size:14px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+           xml:space="preserve"><tspan
+             y="604.30487"
+             x="207.66449"
+             id="tspan5150"
+             sodipodi:role="line">Top</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-size:14px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+           x="189.83636"
+           y="618.24664"
+           id="text5152"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan5154"
+             x="189.83636"
+             y="618.24664">Bottom</tspan></text>
+        <text
+           sodipodi:linespacing="125%"
+           id="text5202"
+           y="592.30457"
+           x="167.71252"
+           style="font-size:14px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+           xml:space="preserve"><tspan
+             y="592.30457"
+             x="167.71252"
+             id="tspan5204"
+             sodipodi:role="line">NEMA Body</tspan></text>
+      </g>
+      <text
+         sodipodi:linespacing="125%"
+         id="text5214"
+         y="952.96179"
+         x="688.68036"
+         style="font-size:68.67746735px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+         xml:space="preserve"><tspan
+           y="952.96179"
+           x="688.68036"
+           id="tspan5216"
+           sodipodi:role="line">AoT Wiring </tspan><tspan
+           id="tspan5218"
+           y="1038.8087"
+           x="688.68036"
+           sodipodi:role="line" /></text>
+      <g
+         transform="matrix(1.00212,0,0,1.00212,-0.02059389,-4.5638597)"
+         id="g5232">
+        <text
+           xml:space="preserve"
+           style="font-size:14px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+           x="900.20691"
+           y="1013.24"
+           id="text5220"
+           sodipodi:linespacing="125%"
+           inkscape:export-xdpi="300"
+           inkscape:export-ydpi="300"><tspan
+             sodipodi:role="line"
+             id="tspan5222"
+             x="900.20691"
+             y="1013.24">V0.3</tspan></text>
+        <text
+           sodipodi:linespacing="125%"
+           id="text5224"
+           y="1013.5"
+           x="684.43311"
+           style="font-size:68.53218079px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+           xml:space="preserve"><tspan
+             id="tspan5228"
+             y="1013.5"
+             x="684.43311"
+             sodipodi:role="line">Diagram</tspan></text>
+      </g>
+      <rect
+         transform="matrix(0,1,-1,0,0,0)"
+         ry="0.03268116"
+         y="-318.12369"
+         x="370.50565"
+         height="21.477814"
+         width="2.9879045"
+         id="rect3572"
+         style="fill:#0000ff;fill-opacity:1;stroke:#fffd00;stroke-width:0.00192209;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <text
+         xml:space="preserve"
+         style="font-size:14px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:BellCent Add BT;-inkscape-font-specification:BellCent Add BT Bold"
+         x="138.57143"
+         y="418.57144"
+         id="text3574"
+         sodipodi:linespacing="125%"
+         transform="matrix(1.1289532,0,0,1.1289532,-10.284314,215.79389)"><tspan
+           sodipodi:role="line"
+           id="tspan3576"
+           x="138.57143"
+           y="418.57144" /></text>
+    </g>
+  </g>
+</svg>

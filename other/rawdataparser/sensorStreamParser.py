@@ -262,6 +262,8 @@ def marshalData(_data):
     for i in range(len(raw_data)/2):
         value = str(raw_data[2*i])+str(raw_data[(2*i)+1])
         data.append(chr(int(value, 16)))
+    print raw_data
+    #print data
 
     try:
         #lock header
@@ -293,15 +295,13 @@ def marshalData(_data):
             if (_postscriptLoc > len(data)):
                 #the packet size if huge, it is unlikely that we have cuaght the header, so consume a
                 #byte.
-                print "Insufficient packet size"
-                print
-                print
+                print "The expected postscript location is " + str( _postscriptLoc) + ", whereas the length of data is " + str( len(data))
+                print "Postscript location beyond packet boundary."
                 return
 
             if (_postscriptLoc > _maxPacketSize):
                 #the packet size if huge, it is unlikely that we have cuaght the header, so consume a
                 #byte.
-                print "---"
                 return
 
             else:
@@ -318,20 +318,18 @@ def marshalData(_data):
                         packetmismatch = 0
 
                         for i in range(_preambleLoc + _datLenFieldDelta + 0x01, _postscriptLoc):
-                            print ord(data[i]),
+                            #print ord(data[i]),
                             _packetCRC = ord(data[i]) ^ _packetCRC
                             for j in range(8):
                                 if (_packetCRC & 0x01):
                                     _packetCRC = (_packetCRC >> 0x01) ^ 0x8C
                                 else:
                                     _packetCRC =  _packetCRC >> 0x01
-                        print ''
                         if _packetCRC <> 0x00:
                             #bad packet or we probably have not locked to the header, consume and retry locking to header
                             #ideally we should be able to throw the whole packet out, but purging just a byte for avoiding corner cases.
                             del data[0]
                         else:
-                            print '-------------'
                             print time.asctime(), _msg_seq_num, _postscriptLoc
                             #extract the data bytes alone, exclude preamble, prot version, len, crc and postScript
                             extractedData = data[_preambleLoc+3:_postscriptLoc-1]
@@ -363,3 +361,4 @@ line = ' '
 while line <> '':
     line = input_file.readline()
     marshalData(line)
+    print "______________________"
