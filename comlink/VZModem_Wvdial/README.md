@@ -15,7 +15,7 @@ This is accomplished using the 75-wwan-net.rules file.
  3. Copy wvdial.conf to */etc/*
  4. reload udevrules -*$udevadm control --reload-rules*
 
-After the above steps, plugin the modem and the system should attempt to get 
+After the above steps, connect the modem and the system should attempt to get 
 network connection ___30-35 seconds___  after the modem is plugged in.
 
 A successful network connection will showup when *ifconfig* is issued under 
