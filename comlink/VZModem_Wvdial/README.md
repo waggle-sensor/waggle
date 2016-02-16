@@ -1,4 +1,4 @@
-#Using "wvdial" to connect to WWAN using Point-to-Point Protocol:#
+##Using "wvdial" to connect to WWAN using Point-to-Point Protocol:##
 
 
 The connection to Internet is accomplished through wvdial. wvdial uses a 
