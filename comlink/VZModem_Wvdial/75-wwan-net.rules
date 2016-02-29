@@ -1,3 +1,0 @@
-SUBSYSTEM!="usb", ACTION!="add", GOTO="rules_end"
-SUBSYSTEM=="tty", KERNEL=="ttyACM[0-9]*", ATTRS{idVendor}=="106c", ATTRS{idProduct}=="3718", SYMLINK+="vzwwan%n", RUN+="/usr/bin/wvwaggle.sh"
-LABEL="rules_end"
