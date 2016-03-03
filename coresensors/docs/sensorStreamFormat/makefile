@@ -1,8 +1,9 @@
 filename=sensorStreamFormat
 
-pdf:
+pdf:	clean
 	pdflatex ${filename}.tex
-	pdflatex ${filename}.tex
+	pdflatex ${filename}.tex > /dev/null
+	pdflatex ${filename}.tex > /dev/null
 
 read: pdf
 	evince ${filename}.pdf &

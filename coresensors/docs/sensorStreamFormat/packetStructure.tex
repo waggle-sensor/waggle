@@ -1,30 +1,155 @@
-%%%%%%%%%%%%%%%%%%%%
+\section{Data Transmission} \label{section:overall}
 
-\section{Overall Packet Structure} \label{section:overall}
+The data from the sensor boards is sent as a formatted unit of data --- a transmission
+packet. A transmission packet is composed of several data sub-packets, each
+of which carries information pertaining to the parameter listed in the sub-packet.
+The transmission packet format and the data sub-packets are described here.
 
-The structure of the packet (and the data sub-packet) relies on byte positions and known values, rather than delimiters.
+\subsection{Transmission Packet}
+A transmission packet can be broken down into 6 segments.
+The structure of the transmission packet (and the data sub-packet) relies on
+byte positions and predefined values for some segments. The first segment
+is the start byte or
+the preamble. The preamble is followed by the packet sequence number and protocol
+version, each of which are 4 bits long and are together packed into a single byte.
+Next, a one byte field that reports the length of the data which follows it
+immediately. The data segment is
+followed by a single CRC byte, and finally the packet ends with a one byte
+postscript. The table below lists the packet and the static values, if any,
+for each of the segments.
 
 \begin{table}[H]
     \centering
-    {\rowcolors{2}{black!12}{black!2}
-    \begin{tabular}{|c c c c|}
+    {\rowcolors{2}{black!8}{black!2}
+    \begin{tabular}{|c|c|c|c|}
         \hline
-        \textbf{Field} & \textbf{Value} & \textbf{Byte Position} & \textbf{Length}\\
+        \textbf{Field} & \textbf{Value} & \textbf{Segment} & \textbf{Length}\\
         \hline
         \hline
-        Start & 0xAA & 0 & 1\\
-        Protocol version & 0x00 & 1 & 1\\
-        Length of data (not whole packet) &  & 2 & 1\\
-        Data &  & 3 & 194\\
-        CRC of data (not whole packet) &  & 197 & 1\\
-        End & 0x55 & 198 & 1\\
+        Preamble & 0xAA & 1 & 1 Byte\\
+        Packet Sequence Number & Variable & 2 & 1 Nibble\\
+        Protocol version & 0x00 & 2 & 1 Nibble\\
+        Length of data (not whole packet) & 0x9D & 3 & 1 Byte\\
+        Data & \dots & 4 & 157 Bytes\\
+        CRC of data (not whole packet) & Variable & 5 & 1 Byte\\
+        Postscript & 0x55 & 6 & 1 Byte\\
         \hline
     \end{tabular}
     }
-    \caption{Overall packet structure}
-    \label{table:overall}
+    \caption{Transmission Packet Segments}
+    \label{table:packsegments}
 \end{table}
 
-\textbf{Important: } If the \textit{length of data} is 0, the packet immediately ends, meaning the \textit{data, CRC,} and \textit{end} fields do not exist.
+The table below illustrates how the segments are organized in a transmission
+packet.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Preamble} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Seq. Number | Prot. Ver.} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Data Length} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Data} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{CRC} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Postscript}\\
+\noalign{\hrule height 2pt}
+Byte 0 & Byte 1 & Byte 2 & up to 255 Bytes & Penultimate Byte & Final Byte \\
+\hline
+\end{tabular}
+\caption{Transmission Packet structure}
+    \label{table:packstruct}
+\end{table}
+
+\subsection{Data Packer CRC} \label{ssec:crc-calc}
+
+To validate the data transmitted from the sensor board, a CRC value for the data is
+calculated and transmitted as part of the data packet. The Maxim 1-Wire
+CRC polynomial is used for calculating the CRC.  On receiving the data packet, the CRC
+of the data packet is recalculated and compared with the value transmitted as part of
+the packet. If the two CRC values match, the transmission is error-free.
+The equivalent polynomial function of the CRC is:
+\newline
+\newline
+$CRC = x^8 + x^5 + x^4 + 1. $
+\newline
+\newline
+Further description of the Maxim 1-Wire CRC is available in Maxim Application Note 27. Below are
+the Python and C implementations of the CRC calculator. The CRC implementations below take a
+data byte and the previous CRC as inputs, and return the new CRC as return value.
+\newline
+\newline
+\textbf{Python Code:}
+\begin{mdframed}
+\begin{lstlisting}
+def calc_crc (data_byte,CRC_Value)
+    CRC_Value = ord(data_byte) ^ CRC_Value
+    for j in range(8):
+    if (CRC_Value  & 0x01):
+        CRC_Value  = (CRC_Value  >> 0x01) ^ 0x8C
+    else:
+        CRC_Value  =  CRC_Value  >> 0x01
+return CRC_Value
+\end{lstlisting}
+\end{mdframed}
+
+\vskip 0.1in
+\textbf{C Code:}
+\begin{mdframed}
+\begin{lstlisting}
+unsigned char  CRC_CALC (unsigned char data, unsigned char crc)
+{
+        unsigned char i;
+        crc ^= data;
+        for (i=0x00; i < 0x08; i++)
+        {
+                if (crc & 0x01)
+                        crc = (crc >> 0x01) ^ 0x8C;
+                else
+                        crc =  crc >> 0x01;
+        }
+
+        return(crc);
+}
+\end{lstlisting}
+\end{mdframed}
+
+
+\subsection{Data Sub-packets} \label{ssec:sub-pack}
+
+The data segment of the transmission packet is further broken down into many
+sub-packets. The sub-packet starts with a source identifier. A one bit
+validity field and seven bits ``length of the sub-packet'' field
+are packed together as the next byte. The length field counts the number of
+bytes following it which make up the sub-packet. The table below shows the organization
+of a sub-packet. The validity bit is set to 0 if the sensor represented in the sub-packet
+is dead, disabled, unconnected, unresponsive or if data could not be collected
+from the sensor in the time window. Instead of recreating the full packet in
+the buffer, sans the particular sub-packet, the sensor segment is marked as invalid.
+If the field is set to 1, it indicates a valid measurement/reading. The seven bits length
+field restricts the size of the sub-packet to 127 bytes.
+
+
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Source ID} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{1-bit Validity [0: invalid, 1: valid]| 7-bits Length} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Data} \\
+\noalign{\hrule height 2pt}
+Byte 0 & Byte 1 & up to 127 Bytes \\
+\hline
+\end{tabular}
+\end{table}
+
+
+
 
 %%%%%%%%%%%%%%%%%%%%

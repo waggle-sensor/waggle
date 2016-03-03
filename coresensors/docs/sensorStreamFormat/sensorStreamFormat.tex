@@ -13,6 +13,28 @@
 \usepackage{color}
 \usepackage{seqsplit}
 \usepackage{gensymb}
+\usepackage{siunitx}
+\usepackage{graphicx}
+\usepackage{pdfpages}
+\usepackage[framemethod=TikZ]{mdframed}
+\setcounter{secnumdepth}{3}
+
+\usepackage[procnames]{listings}
+\usepackage{color}
+
+\definecolor{keywords}{RGB}{255,0,90}
+\definecolor{comments}{RGB}{0,0,113}
+\definecolor{red}{RGB}{160,0,0}
+\definecolor{green}{RGB}{0,150,0}
+
+\lstset{language=Python,
+        basicstyle=\ttfamily\small,
+        keywordstyle=\color{keywords},
+        commentstyle=\color{comments},
+        stringstyle=\color{red},
+        showstringspaces=false,
+        identifierstyle=\color{green},
+        procnamekeys={def,class}}
 
 
 \restylefloat{table}
@@ -26,10 +48,10 @@
 \pagestyle{fancy}
 \renewcommand{\footrulewidth}{1pt}
 \lhead{Waggle Sensor Array}
-\chead{Interface Control Document for Sensor Boards V2 and V3}
-\rhead{Version 3}
-\lfoot{Daniel Schrader}
-\rfoot{dschrader@anl.gov}
+\chead{Interface and Data Format Specification}
+\rhead{Version 0.3 alpha 3}
+\lfoot{Waggle Group}
+\rfoot{rajesh@anl.gov}
 
 \setlength{\tabcolsep}{10pt}
 \renewcommand{\arraystretch}{1.4}
@@ -37,11 +59,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
-
-"This Document needs to be updated."
-
+\input{interfacedia.tex}
 \input{packetStructure.tex}
 \input{dataPacketExposed.tex}
-\input{sensorDataUnits.tex}
-% \input{dataPacketExample.tex}
+\input{SensorData.tex}
 \end{document}

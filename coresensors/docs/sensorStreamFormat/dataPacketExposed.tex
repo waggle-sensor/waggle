@@ -1,30 +1,36 @@
-\section{Data Sub-Packet} \label{section:dataSub}
-
-The data sub-packet consists of 32 "chunks" (30 sensors and 2 MAC addresses).  Each "chunk" follows one of seven formats.\\
+% \section{Data Sub-Packet} \label{section:dataSub}
+%
+% The data sub-packet consists of 32 "chunks" (30 sensors and 2 MAC addresses).  Each "chunk" follows one of seven formats.\\
 
 %%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Data Formats}
 
-\subsection{Data Formats}
+The data sent in each sub-packet is encoded in one or more formats. Currently
+we define eight formats for various types of data including integers, bytes,
+and floating point numbers. The numerical range of these representations is
+restricted to within the bounds of values that we expect from the various sensors
+and other sources. Thus the encoding schemes are specifically designed to
+effectively and efficiently encode the values expected in the sensor streams.
+The eight formats, and the encoding schemes are listed below.
 
 \begin{table}[H]
     \centering
-    {\rowcolors{2}{black!12}{black!2}
-    \begin{tabular}{|c c c c c c c|}
+    {\rowcolors{2}{black!8}{black!2}
+    \begin{tabular}{|c|c|c|c|}
         \hline
-        \textbf{Format} & \textbf{Byte 0} & \textbf{Byte 1} & \textbf{Byte 2} & \textbf{Byte 3} & \textbf{Byte 4} & \textbf{Byte 5}\\
+        \textbf{Format} & \textbf{Number of Bytes Used} & \textbf{Value Represented} & \textbf{Value Range} \\
+%          & \textbf{Encoding}
         \hline
         \hline
-        1 & (1 << 7) | 7-bit int & (neg << 7) | 7-bit frac. & - & - & - & -\\
-        2 & 7 MSb & LSB & - & - & - & -\\
-        3 & Addr5 & Addr4 & Addr3 & Addr2 & Addr1 & Addr0\\
-        4 &
-        \multirow{1}{8em}{(1 << 7) | (neg << 6) | (4-bit int << 2) | 2 MSb of frac.}
-        & 8 LSb of frac. & - & - & - & -\\[4ex]
-        5 & (neg << 6) | 6 MSb & 8 LSb & - & - & - & -\\
-        6 &
-        \multirow{1}{9em}{(1 << 7) | (neg << 6) | 6 MSb}
-        & Middle 8 bits & 8 LSb & - & - & -\\[2ex]
-        7 & First 8 "chunks" & 8 "chunks" & 8 "chunks" & Last 8 "chunks" & - & -\\
+        1 & 2 & unsigned int\_16 input & 0 -- 65535 \\ %& MSByte LSByte\\
+        2 & 2 & int\_16 input & $\pm$\{0 -- 32767\} \\%& [1Sign|7-MSBits] LSByte \\
+        3 & 6 & byte input[6] & 0x00 -- 0xffffffffffff \\%& MSByte1 MSByte2 MSByte3 MSByte4 MSByte5 LSByte \\
+        4 & 3 & unsigned long\_24 input & 0 -- 16777215 \\%& MSByte1 MSByte2 LSByte \\
+        5 & 3 & long\_24 input & $\pm$\{0 -- 8388607\} \\%& [1Sign|7-MSBits] MSByte2 LByte \\
+        6 & 2 & float input & $\pm$\{0 -- 127.99\} \\%& [1Sign|7Bits\_Int] [0|7Bits\_Frac]\\
+        7 & 4 & byte input[4] & 0x00 -- 0xffffffff \\%& MSByte1 MSByte2 LSByte2 LSByte\\
+        8 & 2 & float input & $\pm$\{0 -- 31.999\} \\%& [1Sign|5Bits\_Int|2MSBits\_Frac]  8LSBits\_Frac\\
         \hline
     \end{tabular}
     }
@@ -32,302 +38,225 @@ The data sub-packet consists of 32 "chunks" (30 sensors and 2 MAC addresses).  E
     \label{table:overall}
 \end{table}
 
-This version of the Waggle protocol does not use standard representations for floating point numbers.  Instead, the location of the decimal point is pre-determined (between the integer and fractional components, if applicable).\\
-
-The most significant bit in byte 0 of formats 1, 4, and 6 means the data is already converted.  Formats 2 and 5 contain raw data.\\
-
-Formats 1, 4, 5, and 6 contain a "negative" bit.  If this bit is 1, the value is negative.
-
 %%%%%%%%%%%%%%%%%%%%
 
-\subsection{Data "Chunks"}
+\subsection{Format 1}
 
-The \textit{length} in each data "chunk" represents the number of bytes of sensor data.  The total "chunk" length is \textit{length} + 2.
-
-\begin{table}[H]
-    \centering
-    {\rowcolors{2}{black!15}{black!8}
-    \begin{tabular}{|c c c c|}
-        \hline
-        \textbf{Field} & \textbf{ID} & \textbf{Validity | Length} & \textbf{Data}\\
-        \hline
-        \hline
-        Main MAC address & 0x00 & (1 << 7) | 0x06 & Table \ref{table:sensor1}\\
-        TMP112 & 0x01 & (0/1 << 7) | 0x02 & Table \ref{table:sensor2}\\
-        HTU21D & 0x02 & (0/1 << 7) | 0x04 & Table \ref{table:sensor3}\\
-        GP2Y1010AU0F & 0x03 & (0/1 << 7) | 0x02 & Table \ref{table:sensor4}\\
-        BMP180 & 0x04 & (0/1 << 7) | 0x05 & Table \ref{table:sensor5}\\
-        PR103J2 & 0x05 & (0/1 << 7) | 0x02 & Table \ref{table:sensor6}\\
-        TSL250RD & 0x06 & (0/1 << 7) | 0x02 & Table \ref{table:sensor6}\\
-        MMA8452Q & 0x07 & (0/1 << 7) | 0x08 & Table \ref{table:sensor7}\\
-        SPV1840LR5H-B & 0x08 & (0/1 << 7) | 0x02 & Table \ref{table:sensor8}\\
-        TSYS01 & 0x09 & (0/1 << 7) | 0x02 & Table \ref{table:sensor9}\\
-        HMC5883L & 0x0A & (0/1 << 7) | 0x06 & Table \ref{table:sensor10}\\
-        HIH6130 & 0x0B & (0/1 << 7) | 0x04 & Table \ref{table:sensor3}\\
-        APDS-9006-020 & 0x0C & (0/1 << 7) | 0x02 & Table \ref{table:sensor6}\\
-        TSL260RD & 0x0D & (0/1 << 7) | 0x02 & Table \ref{table:sensor6}\\
-        TSL250RD & 0x0E & (0/1 << 7) | 0x02 & Table \ref{table:sensor6}\\
-        MLX75305 & 0x0F & (0/1 << 7) | 0x02 & Table \ref{table:sensor6}\\
-        ML8511 & 0x10 & (0/1 << 7) | 0x02 & Table \ref{table:sensor6}\\
-        D6T & 0x11 & (0/1 << 7) | 0x22 & Table \ref{table:sensor11}\\
-        MLX90614 & 0x12 & (0/1 << 7) | 0x02 & Table \ref{table:sensor2}\\
-        TMP421 & 0x13 & (0/1 << 7) | 0x02 & Table \ref{table:sensor2}\\
-        SPV1840LR5H-B & 0x14 & (0/1 << 7) | 0x02 & Table \ref{table:sensor8}\\
-        Total reducing gases & 0x15 & (0/1 << 7) | 0x02 & Table \ref{table:sensor12}\\
-        Ethanol & 0x16 & (0/1 << 7) | 0x02 & Table \ref{table:sensor12}\\
-        Nitrogen dioxide & 0x17 & (0/1 << 7) | 0x02 & Table \ref{table:sensor12}\\
-        Ozone & 0x18 & (0/1 << 7) | 0x02 & Table \ref{table:sensor12}\\
-        Hydrogen sulphide & 0x19 & (0/1 << 7) | 0x02 & Table \ref{table:sensor12}\\
-        Total oxidizing gases & 0x1A & (0/1 << 7) | 0x02 & Table \ref{table:sensor12}\\
-        Carbon monoxide & 0x1B & (0/1 << 7) | 0x02 & Table \ref{table:sensor12}\\
-        Sulfur dioxide & 0x1C & (0/1 << 7) | 0x02 & Table \ref{table:sensor12}\\
-        Sensirion & 0x1D & (0/1 << 7) | 0x04 & Table \ref{table:sensor3}\\
-        Bosh & 0x1E & (0/1 << 7) | 0x03 & Table \ref{table:sensor13}\\
-        Intel MAC address & 0x1F & (1 << 7) | 0x06 & Table \ref{table:sensor1}\\
-        Sensor status (health) & 0xFE & (1 << 7) | 0x04 & Table \ref{table:sensor14}\\
-        \hline
-    \end{tabular}
-    }
-    \caption{Data sub-packet structure (each row is a "chunk")}
-    \label{table:dataChunk}
-\end{table}
+This 2 byte format is used to transmit an integer between 0 and 65535. The
+number is split and serialized as follows --\\
 
 \begin{table}[H]
-    \centering
-    {\rowcolors{2}{black!12}{black!2}
-    \begin{tabular}{|c c c c c c|}
-        \hline
-        \textbf{Byte 0} & \textbf{Byte 1} & \textbf{Byte 2} & \textbf{Byte 3} & \textbf{Byte 4} & \textbf{Byte 5}\\
-        \hline
-        \hline
-        Address 5 & Address 4 & Address 3 & Address 2 & Address 1 & Address 0\\
-        \multicolumn{6}{|c|}{Format 3}\\
-        \hline
-    \end{tabular}
-    }
-    \caption{MAC address}
-    \label{table:sensor1}
+\centering
+\begin{tabular}{|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{8 Most Significant Bits} &
+  \multicolumn{1}{!{\vrule width 1pt}c!{\vrule width 2pt}}{8 Least Significant Bits} \\
+\noalign{\hrule height 2pt}
+Byte 0 & Byte 1 \\
+\hline
+\end{tabular}
 \end{table}
+
+
+\subsection{Format 2}
+This 2 byte format is used to transmit an integer between -32767 and 32767. The
+number is split and serialized as follows --\\
 
 \begin{table}[H]
-    \centering
-    {\rowcolors{2}{black!12}{black!2}
-    \begin{tabular}{|c c|}
-        \hline
-        \textbf{Byte 0} & \textbf{Byte 1}\\
-        \hline
-        \hline
-        \multicolumn{2}{|c|}{Temperature}\\
-        \multicolumn{2}{|c|}{Format 1}\\
-        \hline
-    \end{tabular}
-    }
-    \caption{Sensor data}
-    \label{table:sensor2}
+\centering
+\begin{tabular}{|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Sign Bit | 7 Most Significant Bits} &
+  \multicolumn{1}{!{\vrule width 1pt}c!{\vrule width 2pt}}{8 Least Significant Bits} \\
+\noalign{\hrule height 2pt}
+Byte 0 & Byte 1 \\
+\hline
+\end{tabular}
 \end{table}
+
+The Sign Bit which is the most significant bit in Byte 0 is set as follows ---
 
 \begin{table}[H]
-    \centering
-    {\rowcolors{2}{black!12}{black!2}
-    \begin{tabular}{|c c c c|}
-        \hline
-        \textbf{Byte 0} & \textbf{Byte 1} & \textbf{Byte 2} & \textbf{Byte 3}\\
-        \hline
-        \hline
-        \multicolumn{2}{|c|}{Temperature} & \multicolumn{2}{|c|}{Humidity}\\
-        \multicolumn{2}{|c|}{Format 1} & \multicolumn{2}{|c|}{Format 1}\\
-        \hline
-    \end{tabular}
-    }
-    \caption{Sensor data}
-    \label{table:sensor3}
+\centering
+\begin{tabular}{|c|c|}
+\hline
+Positive Integer & 0 \\
+\hline
+Negative Integer & 1 \\
+\hline
+\end{tabular}
 \end{table}
+
+
+
+\subsection{Format 3}
+
+This 6 byte format is used to transmit an array of 6 bytes. The array is serialized as follows --\\
 
 \begin{table}[H]
-    \centering
-    {\rowcolors{2}{black!12}{black!2}
-    \begin{tabular}{|c c|}
-        \hline
-        \textbf{Byte 0} & \textbf{Byte 1}\\
-        \hline
-        \hline
-        \multicolumn{2}{|c|}{Dust}\\
-        \multicolumn{2}{|c|}{Format 2}\\
-        \hline
-    \end{tabular}
-    }
-    \caption{Sensor data}
-    \label{table:sensor4}
+\centering
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Array[0]} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Array[1]} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Array[2]} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Array[3]} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Array[4]} &
+\multicolumn{1}{!{\vrule width 1pt}c!{\vrule width 2pt}}{Array[5]} \\
+\noalign{\hrule height 2pt}
+Byte 0 & Byte 1 & Byte 2 & Byte 3 & Byte 4 & Byte 5 \\
+\hline
+\end{tabular}
 \end{table}
+
+\subsection{Format 4}
+
+This 3 byte format is used to transmit an integer between 0 and 16777215. The
+number is split and serialized as follows --\\
 
 \begin{table}[H]
-    \centering
-    {\rowcolors{2}{black!12}{black!2}
-    \begin{tabular}{|c c c c c|}
-        \hline
-        \textbf{Byte 0} & \textbf{Byte 1} & \textbf{Byte 2} & \textbf{Byte 3} & \textbf{Byte 4}\\
-        \hline
-        \hline
-        \multicolumn{2}{|c|}{Temperature} & \multicolumn{3}{|c|}{Atmospheric pressure}\\
-        \multicolumn{2}{|c|}{Format 1} & \multicolumn{3}{|c|}{Format 6}\\
-        \hline
-    \end{tabular}
-    }
-    \caption{Sensor data}
-    \label{table:sensor5}
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{8 Most Significant Bits} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Bits 15 -- 8 } &
+  \multicolumn{1}{!{\vrule width 1pt}c!{\vrule width 2pt}}{8 Least Significant Bits} \\
+\noalign{\hrule height 2pt}
+Byte 0 & Byte 1 & Byte 2\\
+\hline
+\end{tabular}
 \end{table}
+
+\subsection{Format 5}
+
+This 3 byte format is used to transmit an integer between -8388607 and 8388607. The
+number is split and serialized as follows --\\
 
 \begin{table}[H]
-    \centering
-    {\rowcolors{2}{black!12}{black!2}
-    \begin{tabular}{|c c|}
-        \hline
-        \textbf{Byte 0} & \textbf{Byte 1}\\
-        \hline
-        \hline
-        \multicolumn{2}{|c|}{Light}\\
-        \multicolumn{2}{|c|}{Format 2}\\
-        \hline
-    \end{tabular}
-    }
-    \caption{Sensor data}
-    \label{table:sensor6}
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Sign Bit | 7 Most Significant Bits} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Bits 15 -- 8 } &
+  \multicolumn{1}{!{\vrule width 1pt}c!{\vrule width 2pt}}{8 Least Significant Bits} \\
+\noalign{\hrule height 2pt}
+Byte 0 & Byte 1 & Byte 2\\
+\hline
+\end{tabular}
 \end{table}
+
+The Sign Bit which is the most significant bit in Byte 0 is set as follows ---
 
 \begin{table}[H]
-    \centering
-    {\rowcolors{2}{black!12}{black!2}
-    \begin{tabular}{|c c c c c c c c|}
-        \hline
-        \textbf{Byte 0} & \textbf{Byte 1}  & \textbf{Byte 2} & \textbf{Byte 3} & \textbf{Byte 4} & \textbf{Byte 5} & \textbf{Byte 6} & \textbf{Byte 7}\\
-        \hline
-        \hline
-        \multicolumn{2}{|c|}{Acceleration X} & \multicolumn{2}{|c|}{Acceleration Y}  & \multicolumn{2}{|c|}{Acceleration Z} & \multicolumn{2}{|c|}{RMS}\\
-        \multicolumn{2}{|c|}{Format 1} & \multicolumn{2}{|c|}{Format 1}  & \multicolumn{2}{|c|}{Format 1} & \multicolumn{2}{|c|}{Format 1}\\
-        \hline
-    \end{tabular}
-    }
-    \caption{Sensor data}
-    \label{table:sensor7}
+\centering
+\begin{tabular}{|c|c|}
+\hline
+Positive Integer & 0 \\
+\hline
+Negative Integer & 1 \\
+\hline
+\end{tabular}
 \end{table}
+
+
+
+\subsection{Format 6}
+
+This 2 byte format is used to transmit a floating point number between
+-127.99 and 127.99. Only 2 fractional places are allowed in this format and
+the number is serialized as follows --\\
 
 \begin{table}[H]
-    \centering
-    {\rowcolors{2}{black!12}{black!2}
-    \begin{tabular}{|c c|}
-        \hline
-        \textbf{Byte 0} & \textbf{Byte 1}\\
-        \hline
-        \hline
-        \multicolumn{2}{|c|}{Sound pressure}\\
-        \multicolumn{2}{|c|}{Format 2}\\
-        \hline
-    \end{tabular}
-    }
-    \caption{Sensor data}
-    \label{table:sensor8}
+\centering
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Sign Bit| 7 bit representation of Integer part} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{ 0 | 7 bit representation of the Fractional part} \\
+\noalign{\hrule height 2pt}
+Byte 0 & Byte 1\\
+\hline
+\end{tabular}
 \end{table}
+
+As shown above, the leading bit of the Byte 1 is always set to 0, and
+the Sign Bit which is the most significant bit of Byte 0 is set as follows ---
 
 \begin{table}[H]
-    \centering
-    {\rowcolors{2}{black!12}{black!2}
-    \begin{tabular}{|c c|}
-        \hline
-        \textbf{Byte 0} & \textbf{Byte 1}\\
-        \hline
-        \hline
-        \multicolumn{2}{|c|}{Temperature}\\
-        \multicolumn{2}{|c|}{Format 2}\\
-        \hline
-    \end{tabular}
-    }
-    \caption{Sensor data}
-    \label{table:sensor9}
+\centering
+\begin{tabular}{|c|c|}
+\hline
+Positive Number & 0 \\
+\hline
+Negative Number & 1 \\
+\hline
+\end{tabular}
 \end{table}
+
+
+\subsection{Format 7}
+
+This 4 byte format is used to transmit an array of 4 bytes. The array is serialized as follows --\\
 
 \begin{table}[H]
-    \centering
-    {\rowcolors{2}{black!12}{black!2}
-    \begin{tabular}{|c c c c c c|}
-        \hline
-        \textbf{Byte 0} & \textbf{Byte 1}  & \textbf{Byte 2} & \textbf{Byte 3} & \textbf{Byte 4} & \textbf{Byte 5}\\
-        \hline
-        \hline
-        \multicolumn{2}{|c|}{Magnetic X} & \multicolumn{2}{|c|}{Magnetic Y}  & \multicolumn{2}{|c|}{Magnetic Z}\\
-        \multicolumn{2}{|c|}{Format 4} & \multicolumn{2}{|c|}{Format 4}  & \multicolumn{2}{|c|}{Format 4}\\
-        \hline
-    \end{tabular}
-    }
-    \caption{Sensor data}
-    \label{table:sensor10}
+\centering
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Array[0]} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Array[1]} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Array[2]} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Array[3]}\\
+\noalign{\hrule height 2pt}
+Byte 0 & Byte 1 & Byte 2 & Byte 3 \\
+\hline
+\end{tabular}
 \end{table}
+
+
+\subsection{Format 8}
+
+This 2 byte format is used to transmit a floating point number between
+-31.999 and 31.99. Only 3 fractional places are allowed in this format and
+the number is serialized as follows --\\
 
 \begin{table}[H]
-    \centering
-    {\rowcolors{2}{black!12}{black!2}
-    \begin{tabular}{|c c c c c|}
-        \hline
-        \textbf{Byte 0} & \textbf{Byte 1} & \textbf{...} & \textbf{Byte 32} & \textbf{Byte 33}\\
-        \hline
-        \hline
-        \multicolumn{2}{|c|}{Temperature} & Temperature & \multicolumn{2}{|c|}{Temperature}\\
-        \multicolumn{2}{|c|}{Format 1} & Format 1 & \multicolumn{2}{|c|}{Format 1}\\
-        \hline
-    \end{tabular}
-    }
-    \caption{Sensor data}
-    \label{table:sensor11}
+\centering
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Sign Bit| 5 bit representation of Integer | 2 most significant bits of fraction} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{ 8 least significant bits of the fraction} \\
+\noalign{\hrule height 2pt}
+Byte 0 & Byte 1\\
+\hline
+\end{tabular}
 \end{table}
+
+As shown above, the format uses 5 bits for representing the integer part and 10 bits to represent the
+fractional part. The Sign Bit which is the most significant bit of Byte 0 is set as follows ---
 
 \begin{table}[H]
-    \centering
-    {\rowcolors{2}{black!12}{black!2}
-    \begin{tabular}{|c c|}
-        \hline
-        \textbf{Byte 0} & \textbf{Byte 1}\\
-        \hline
-        \hline
-        \multicolumn{2}{|c|}{Gas concentration}\\
-        \multicolumn{2}{|c|}{Format 2}\\
-        \hline
-    \end{tabular}
-    }
-    \caption{Sensor data}
-    \label{table:sensor12}
+\centering
+\begin{tabular}{|c|c|}
+\hline
+Positive Number & 0 \\
+\hline
+Negative Number & 1 \\
+\hline
+\end{tabular}
 \end{table}
 
-\begin{table}[H]
-    \centering
-    {\rowcolors{2}{black!12}{black!2}
-    \begin{tabular}{|c c c|}
-        \hline
-        \textbf{Byte 0} & \textbf{Byte 1} & \textbf{Byte 2}\\
-        \hline
-        \hline
-        \multicolumn{3}{|c|}{Atmospheric pressure}\\
-        \multicolumn{3}{|c|}{Format 6}\\
-        \hline
-    \end{tabular}
-    }
-    \caption{Sensor data}
-    \label{table:sensor13}
-\end{table}
-
-\begin{table}[H]
-    \centering
-    {\rowcolors{2}{black!12}{black!2}
-    \begin{tabular}{|c c c c|}
-        \hline
-        \textbf{Byte 0} & \textbf{Byte 1} & \textbf{Byte 2}  & \textbf{Byte 3}\\
-        \hline
-        \hline
-        \multicolumn{4}{|c|}{Health status (1 bit per "chunk")}\\
-        \multicolumn{4}{|c|}{Format 7}\\
-        \hline
-    \end{tabular}
-    }
-    \caption{Sensor status (health)}
-    \label{table:sensor14}
-\end{table}
-
-%%%%%%%%%%%%%%%%%%%%

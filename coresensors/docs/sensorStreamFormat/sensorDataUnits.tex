@@ -1,49 +1,49 @@
-\section{Sensor Data Units : Raw and Processed} \label{section:overall}
+\section{Sensor Data Units : Raw and Processed} \label{section:parameterUnits}
 
 \begin{table}[H]
     \centering
-    {\rowcolors{2}{black!12}{black!2}
-    \begin{tabular}{|c c c c c|}
+    {\rowcolors{2}{black!8}{black!2}
+    \begin{tabular}{|l l l l|}
         \hline
-        \textbf{Field} & \textbf{ID} & \textbf{Validity | Length} & \textbf{Data} & \textbf{Units}\\
+        \textbf{Sensor/Parameter} & \textbf{Raw Units} & \textbf{Processed Units} & \textbf{Comments}\\
         \hline
         \hline
-        Main MAC address & 0x00 & (1 << 7) | 0x06 & Table \ref{table:sensor1} & MAC Address: Raw 6 Bytes \\
-        TMP112 & 0x01 & (0/1 << 7) | 0x02 & Table \ref{table:sensor2} & Temperature: \degree C \\
-        HTU21D & 0x02 & (0/1 << 7) | 0x04 & Table \ref{table:sensor3} & Temperature: \degree C \\
-        GP2Y1010AU0F & 0x03 & (0/1 << 7) | 0x02 & Table \ref{table:sensor4} & Dust: Raw \\
-        BMP180 & 0x04 & (0/1 << 7) | 0x05 & Table \ref{table:sensor5} & Temperature: \degree C, Pressure: hPa \\
-        PR103J2 & 0x05 & (0/1 << 7) | 0x02 & Table \ref{table:sensor6} & UNITSHERE \\
-        TSL250RD & 0x06 & (0/1 << 7) | 0x02 & Table \ref{table:sensor6} & UNITSHERE \\
-        MMA8452Q & 0x07 & (0/1 << 7) | 0x08 & Table \ref{table:sensor7} & UNITSHERE \\
-        SPV1840LR5H-B & 0x08 & (0/1 << 7) | 0x02 & Table \ref{table:sensor8} & UNITSHERE \\
-        TSYS01 & 0x09 & (0/1 << 7) | 0x02 & Table \ref{table:sensor9} & UNITSHERE \\
-        HMC5883L & 0x0A & (0/1 << 7) | 0x06 & Table \ref{table:sensor10} & UNITSHERE \\
-        HIH6130 & 0x0B & (0/1 << 7) | 0x04 & Table \ref{table:sensor3} & UNITSHERE \\
-        APDS-9006-020 & 0x0C & (0/1 << 7) | 0x02 & Table \ref{table:sensor6} & UNITSHERE \\
-        TSL260RD & 0x0D & (0/1 << 7) | 0x02 & Table \ref{table:sensor6} & UNITSHERE \\
-        TSL250RD & 0x0E & (0/1 << 7) | 0x02 & Table \ref{table:sensor6} & UNITSHERE \\
-        MLX75305 & 0x0F & (0/1 << 7) | 0x02 & Table \ref{table:sensor6} & UNITSHERE \\
-        ML8511 & 0x10 & (0/1 << 7) | 0x02 & Table \ref{table:sensor6} & UNITSHERE \\
-        D6T & 0x11 & (0/1 << 7) | 0x22 & Table \ref{table:sensor11} & UNITSHERE \\
-        MLX90614 & 0x12 & (0/1 << 7) | 0x02 & Table \ref{table:sensor2} & UNITSHERE \\
-        TMP421 & 0x13 & (0/1 << 7) | 0x02 & Table \ref{table:sensor2} & UNITSHERE \\
-        SPV1840LR5H-B & 0x14 & (0/1 << 7) | 0x02 & Table \ref{table:sensor8} & UNITSHERE \\
-        Total reducing gases & 0x15 & (0/1 << 7) | 0x02 & Table \ref{table:sensor12} & UNITSHERE \\
-        Ethanol & 0x16 & (0/1 << 7) | 0x02 & Table \ref{table:sensor12} & UNITSHERE \\
-        Nitrogen dioxide & 0x17 & (0/1 << 7) | 0x02 & Table \ref{table:sensor12} & UNITSHERE \\
-        Ozone & 0x18 & (0/1 << 7) | 0x02 & Table \ref{table:sensor12} & UNITSHERE \\
-        Hydrogen sulphide & 0x19 & (0/1 << 7) | 0x02 & Table \ref{table:sensor12} & UNITSHERE \\
-        Total oxidizing gases & 0x1A & (0/1 << 7) | 0x02 & Table \ref{table:sensor12} & UNITSHERE \\
-        Carbon monoxide & 0x1B & (0/1 << 7) | 0x02 & Table \ref{table:sensor12} & UNITSHERE \\
-        Sulfur dioxide & 0x1C & (0/1 << 7) | 0x02 & Table \ref{table:sensor12} & UNITSHERE \\
-        Sensirion & 0x1D & (0/1 << 7) | 0x04 & Table \ref{table:sensor3} & UNITSHERE \\
-        Bosh & 0x1E & (0/1 << 7) | 0x03 & Table \ref{table:sensor13} & UNITSHERE \\
-        Intel MAC address & 0x1F & (1 << 7) | 0x06 & Table \ref{table:sensor1} & UNITSHERE \\
-        Sensor status (health) & 0xFE & (1 << 7) | 0x04 & Table \ref{table:sensor14} & UNITSHERE \\
+        Main MAC address & No Units & No Units & 6 Octets in hex notation separated by `:'\\
+        TMP112 & \degree C & \degree C & \\
+        HTU21D & \degree C, RH \% & \degree C, RH \% & \\
+        GP2Y1010AU0F & integer & ppm & \\
+        BMP180 & \degree C, hPa & \degree C, hPa & \\
+        PR103J2 & integer & \degree C & \\
+        TSL250RD & integer & w/m\textsuperscript{2} & **finalize after discussion with EVS** \\
+        MMA8452Q & g,g,g,g & g,g,g,g & \\
+        SPV1840LR5H-B & integer & dB & \\
+        TSYS01 & \degree C & \degree C & \\
+        HMC5883L & \si\micro T,\si\micro T,\si\micro T & \si\micro T,\si\micro T,\si\micro T & \\
+        HIH6130 & \degree C, RH \% & \degree C, RH \% & \\
+        APDS-9006-020 & integer & w/m\textsuperscript{2} & **finalize after discussion with EVS**\\
+        TSL260RD & integer & w/m\textsuperscript{2} & **finalize after discussion with EVS** \\
+        TSL250RD & integer & w/m\textsuperscript{2} & **finalize after discussion with EVS** \\
+        MLX75305 & integer & w/m\textsuperscript{2} & **finalize after discussion with EVS** \\
+        ML8511 & integer & w/m\textsuperscript{2} & **finalize after discussion with EVS** \\
+        D6T & \textit{Seventeen} \degree C values & \textit{Seventeen} \degree C values & \\
+        MLX90614 & \degree F & \degree C & \\
+        TMP421 & \degree C & \degree C & \\
+        SPV1840LR5H-B & integer & dB & \\
+        Total reducing gases & integer & concentration & **finalize after discussion with EVS**\\
+        Ethanol & integer & ppm & Quadratic equation with calibrated weights \\
+        Nitrogen dioxide & integer & ppm & Quadratic equation with calibrated weights\\
+        Ozone & integer & ppm & Quadratic equation with calibrated weights\\
+        Hydrogen sulphide & integer & ppm & Quadratic equation with calibrated weights\\
+        Total oxidizing gases & integer & concentration & **finalize after discussion with EVS**\\
+        Carbon monoxide & integer & ppm & Quadratic equation with calibrated weights\\
+        Sulfur dioxide & integer & ppm & Quadratic equation with calibrated weights\\
+        Sensirion & \degree C, RH \% & \degree C, RH \% & \\
+        Bosh & hPa& hPa & \\
+        Intel MAC address & No Units & No Units & 6 Octets in hex notation separated by `:'\\
+        Sensor status (health) & No Units & No Units & 4 bytes of sensor health data\\
         \hline
     \end{tabular}
     }
-    \caption{Data sub-packet structure (each row is a "chunk")}
-    \label{table:dataChunk}
+    \caption{Sensor and Parameter units both in raw and processed format.}
+    \label{table:parameterUnits}
 \end{table}
