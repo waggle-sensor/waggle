@@ -413,3 +413,103 @@ void currentusage_report(void)
     Serial.println(read_current(ADDR_CURRENT_POW5));
     return;
 }
+
+void xu4_boot_selector_test()
+{
+
+    Serial.println("XU4 boot selector test - please check the continuity between PIN 1 and 2 of J4.");
+    Serial.println("The board will alternate the modes for next 5 seconds and you should hear beeps.");
+    delay(5000);
+    boot_gm_usd();
+    delay(1000);
+    Serial.print("beep..");
+    boot_gm_emmc();
+    delay(1000);
+    boot_gm_usd();
+    delay(1000);
+    Serial.print("beep..");
+    boot_gm_emmc();
+    delay(1000);
+    boot_gm_usd();
+    delay(1000);
+    Serial.print("beep..");
+    boot_gm_emmc();
+    delay(1000);
+    boot_gm_usd();
+    delay(1000);
+    Serial.print("beep..");
+    boot_gm_emmc();
+    delay(1000);
+    boot_gm_usd();
+    delay(1000);
+    Serial.print("beep..");
+    boot_gm_emmc();
+    delay(1000);
+    Serial.println("");
+    Serial.println("Now check continuity between PINS 2 and 3 of J4.");
+    delay(5000);
+    Serial.print("beep..");
+    boot_gm_usd();
+    delay(1000);
+    boot_gm_emmc();
+    delay(1000);
+    Serial.print("beep..");
+    boot_gm_usd();
+    delay(1000);
+    boot_gm_emmc();
+    delay(1000);
+    Serial.print("beep..");
+    boot_gm_usd();
+    delay(1000);
+    boot_gm_emmc();
+    delay(1000);
+    Serial.print("beep..");
+    boot_gm_usd();
+    delay(1000);
+    boot_gm_emmc();
+    delay(1000);
+    Serial.print("beep..");
+    boot_gm_usd();
+    delay(1000);
+    boot_gm_emmc();
+    delay(1000);
+    Serial.println("");
+    Serial.println("XU4 bootpin J4 test complete.");
+    return;
+
+}
+
+
+void c1p_boot_selector_test()
+{
+    Serial.println("Please set the multimeter in continuity check with beeper ON mode.");
+    Serial.println("C1P boot selector test - please check the continuity between the two pins of JP9. The board will alternate the modes for next 5 seconds and you should hear beeps.");
+    delay(2000);
+    Serial.print("beep..");
+    boot_nc_usd();
+    delay(1000);
+    boot_nc_emmc();
+    delay(1000);
+    Serial.print("beep..");
+    boot_nc_usd();
+    delay(1000);
+    boot_nc_emmc();
+    delay(1000);
+    Serial.print("beep..");
+    boot_nc_usd();
+    delay(1000);
+    boot_nc_emmc();
+    delay(1000);
+    Serial.print("beep..");
+    boot_nc_usd();
+    delay(1000);
+    boot_nc_emmc();
+    delay(1000);
+    Serial.print("beep..");
+    boot_nc_usd();
+    delay(1000);
+    boot_nc_emmc();
+    delay(1000);
+    Serial.println("C1+ bootpin JP9 test complete.");
+    return;
+}

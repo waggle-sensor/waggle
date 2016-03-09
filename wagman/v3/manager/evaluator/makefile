@@ -15,12 +15,11 @@ FLASH_BOARD = $(FLASHER) -C$(FLASHER_CONFIGS) -v -p$(TYPE) -c$(BOOT_LOADER_TYPE)
 BUILD_COMPLETE = mv $(BUILD_DIR)/$(TARGET).ino.hex $(BIN_DIR)/
 LINKPORT = $(PORT)
 SERIALBAUD = 115200
+BOOT_LOADER = $(FLASHER) -C$(ARD_HOME)/hardware/tools/avr/etc/avrdude.conf -v -patmega32u4 -cstk500v2 -Pusb -Uflash:w:$(ARD_HOME)/hardware/arduino/avr/bootloaders/caterina/Caterina-Micro.hex:i -Ulock:w:0x2F:m
 CC = $(ARD_HOME)/arduino
 BUILD_DIR = ./build
 BIN_DIR = ./bin
 CFLAGS  = --verbose-build --verify
-BOOT_LOADER = $(FLASHER) -C$(ARD_HOME)/hardware/tools/avr/etc/avrdude.conf -v -patmega32u4 -cstk500v2 -Pusb -Uflash:w:$(ARD_HOME)/hardware/arduino/avr/bootloaders/caterina/Caterina-Micro.hex:i -Ulock:w:0x2F:m
-
 
 all: clean	$(TARGET)
 
@@ -57,11 +56,10 @@ initialize:
 connect:
 	screen $(LINKPORT) $(SERIALBAUD)
 
+
 ## Does not seem to work for some reason :(.
 # new:
-# 	$(BOOT_LOADER)
-# 	sleep 6
-# 	make initialize
-
-
+#   $(BOOT_LOADER)
+#   sleep 6
+#   make initialize
 

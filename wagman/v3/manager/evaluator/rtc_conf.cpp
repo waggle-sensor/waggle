@@ -1,2 +1,1 @@
-#define CURRENT_TIME 1457550006
-#define SET_RTC_TIME
+
