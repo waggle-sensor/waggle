@@ -8,6 +8,9 @@
 //     MCP3428 A/D Chip - Via I2C.
 
 
+
+#define SERIAL_COMMS_RATE 115200
+
 // Analog PINs assignment
 
 #define WAGMAN_V3 0x01

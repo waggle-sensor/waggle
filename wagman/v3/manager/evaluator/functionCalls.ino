@@ -1,3 +1,4 @@
+
 void set_up_pinmodes ()
 {
     //Setup PIN modes
@@ -79,35 +80,43 @@ void power_off_all ()
 
 void boot_pow_check()
 {
-    Serial.println("NC and GM set to eEMMC mode.");
-    boot_nc_emmc();
-    boot_gm_emmc();
-    analogWrite(PIN_Debug_L,0xff);
-    analogWrite(PIN_Debug_L1,0x00);
-    Serial.println("Powering ON all Boards.");
-    power_on_all();
-    delay(500);
+//     Serial.println("NC and GM set to eEMMC mode.");
+//     boot_nc_emmc();
+//     boot_gm_emmc();
+//     analogWrite(PIN_Debug_L,0xff);
+//     analogWrite(PIN_Debug_L1,0x00);
+
+    Serial.println("We will power ON all ports one by one. You should hear 5 seperate clicks, and see the current usage increase.");
+    currentusage_report();
+
+    Serial.print("Click 1 ");
+    turnON_POW1();
+    delay(2000);
+
+    Serial.print("Click 2 ");
+    turnON_POW2();
+    delay(2000);
+
+    Serial.print("Click 3 ");
+    turnON_POW3();
+    delay(2000);
+
+    Serial.print("Click 4 ");
+    turnON_POW4();
+    delay(2000);
+
+    Serial.println("Click 5");
+    turnON_POW5();
+    delay(2000);
+
     currentusage_report();
     delay(2000);
-    Serial.println("Powering OFF all Boards.");
+
+    Serial.println("Powering off all relays. The current usage reported now should all be under 120.");
     power_off_all();
-    delay(500);
+    delay(1000);
     currentusage_report();
     delay(1000);
-    Serial.println("NC and GM set to uSD mode.");
-    boot_nc_usd();
-    boot_gm_usd();
-    analogWrite(PIN_Debug_L,0x00);
-    analogWrite(PIN_Debug_L1,0xff);
-    Serial.println("Powering ON all Boards.");
-    power_on_all();
-    delay(500);
-    currentusage_report();
-    delay(2000);
-    Serial.println("Powering OFF all Boards.");
-    power_off_all();
-    delay(500);
-    currentusage_report();
     return;
 }
 
@@ -116,7 +125,7 @@ void test_debugLeds ()
 
 {
 
-    Serial.println("Testing Debug LEDs - They should pulse now for 5 seconds...");
+    Serial.print("Testing Debug LEDs - They should pulse now for 5 seconds...");
     for (byte j = 0x00; j < 0x07; j++)
     {
         for (byte i = 0x00; i < 0xff; i++)
@@ -132,7 +141,6 @@ void test_debugLeds ()
             delay(2);
         }
     }
-
     Serial.println("LED pulsing finished.");
     return;
 }
@@ -147,7 +155,7 @@ void htu21D_report()
     Serial.print("C");
     Serial.print(" Humidity:");
     Serial.print(htu21d_humd, 1);
-    Serial.print("%");
+    Serial.println("%");
     delay(10);
     return;
 }
@@ -155,7 +163,7 @@ void htu21D_report()
 void hih4030_report()
 {
     Serial.print("HIH4030 Humidity Sensor reading (0-1024):");
-    Serial.print(analogRead(PIN_HIH4030_Sensor));
+    Serial.println(analogRead(PIN_HIH4030_Sensor));
     return;
 }
 
@@ -221,13 +229,13 @@ void WagID_print()
 {
     byte k;
     RTC.idRead(WagID);
-    Serial.print("Board ID:");
+    Serial.print("Unique Board ID # ");
     for (k = 0; k<0x08; k++)
     {
         Serial.print(WagID[k],HEX);
         if (k<0x07)
         {
-        Serial.print(":");
+            Serial.print(":");
         }
     }
     Serial.println("");
@@ -313,7 +321,7 @@ void thermistor_report()
     Serial.print(mcp3428_1.readADC()>>5);
     Serial.print(',');
     mcp3428_1.selectChannel(MCP342X::CHANNEL_3, MCP342X::GAIN_1);
-    Serial.print(mcp3428_1.readADC()>>5);
+    Serial.println(mcp3428_1.readADC()>>5);
     return;
 }
 
@@ -378,8 +386,8 @@ int read_current(int addr)
 
 void RTC_time_report (void)
 {
-    Serial.print("Time:");
-    Serial.print(RTC.get());
+    Serial.print("Current time since epoch: ");
+    Serial.println(RTC.get());
     return;
 }
 
