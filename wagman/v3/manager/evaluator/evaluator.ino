@@ -69,6 +69,17 @@ void loop()
     RTC_time_report();
     Serial.println("");
 
+    Serial.print(question_no++); Serial.print(". ");
+    thermistor_report();
+    Serial.println("");
+
+    Serial.print(question_no++); Serial.print(". ");
+    currentusage_report();
+    Serial.println("Now, we will turn the on-board relays ON and see if the current sensors pick them up.");
+    power_on_all();
+    currentusage_report();
+    Serial.println("");
+    power_off_all();
 
     Serial.print(question_no++); Serial.print(". ");
     hih4030_report();
@@ -89,7 +100,7 @@ void loop()
     lightsensor_report();
     Serial.println("For the next 10 seconds, please cover the lighsensor with you thumb.");
     Serial.print("Counting down...");
-    for (loop_count = 10; loop_count > 0; loop_count--)
+    for (loop_count = 11; loop_count > 0; loop_count--)
     {
         Serial.print(loop_count-1);
         Serial.print(" ");
@@ -103,18 +114,6 @@ void loop()
     Serial.print("Light Sensor reading (0-1024):");
     Serial.println(temp);
     Serial.println("");
-
-    Serial.print(question_no++); Serial.print(". ");
-    thermistor_report();
-    Serial.println("");
-
-    Serial.print(question_no++); Serial.print(". ");
-    currentusage_report();
-    Serial.println("Now, we will turn the on-board relays ON and see if the current sensors pick them up.");
-    power_on_all();
-    currentusage_report();
-    Serial.println("");
-    power_off_all();
 
     Serial.print(question_no++); Serial.print(". ");
     htu21D_report();
@@ -142,6 +141,11 @@ void loop()
     Serial.println("");
     xu4_boot_selector_test();
     Serial.println("");
+
+    Serial.print(question_no++); Serial.print(". ");
+    Serial.println("Heartbeat test:");
+    heartbeat_test();
+    Serial.println(" ");
     Serial.println("------End of board test------");
 
     while(1)

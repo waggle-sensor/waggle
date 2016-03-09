@@ -306,6 +306,62 @@ void HBT_output_pulsetest (void)
 
 }
 
+void heartbeat_test()
+{
+    Serial.println("Reading heartbeat values for PORT1:");
+
+    for (loop_count = 0; loop_count < 10; loop_count++)
+    {
+        Serial.print(digitalRead(PIN_HBT1));
+        Serial.print(" ");
+        delay(500);
+    }
+    Serial.println("");
+    Serial.println("Reading heartbeat values for PORT2:");
+
+    for (loop_count = 0; loop_count < 10; loop_count++)
+    {
+        Serial.print(digitalRead(PIN_HBT2));
+        Serial.print(" ");
+        delay(500);
+    }
+
+    Serial.println("");
+    Serial.println("Reading heartbeat values for PORT3:");
+
+
+    for (loop_count = 0; loop_count < 10; loop_count++)
+    {
+        Serial.print(digitalRead(PIN_HBT3));
+        Serial.print(" ");
+        delay(500);
+    }
+
+    Serial.println("");
+    Serial.println("Reading heartbeat values for PORT4:");
+
+
+
+    for (loop_count = 0; loop_count < 10; loop_count++)
+    {
+        Serial.print(digitalRead(PIN_HBT4));
+        Serial.print(" ");
+        delay(500);
+    }
+
+    Serial.println("");
+    Serial.println("Reading heartbeat values for PORT5:");
+
+
+    for (loop_count = 0; loop_count < 10; loop_count++)
+    {
+        Serial.print(digitalRead(PIN_HBT5));
+        Serial.print(" ");
+        delay(500);
+    }
+
+}
+
 void thermistor_report()
 {
     Serial.print("Thermistor Values:");
