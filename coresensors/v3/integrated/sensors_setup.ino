@@ -63,7 +63,6 @@ void writeEEPROM (unsigned int memory_address, byte data_byte )
     Wire.write((int)(memory_address >> 8));   // MSB
     Wire.write((int)(memory_address & 0xFF)); // LSB
     Wire.write(data_byte);
-    SerialUSB.println(data_byte, HEX);
     Wire.endTransmission();
     delay(5);
 }
@@ -76,15 +75,12 @@ byte readEEPROM (unsigned int memory_address )
     Wire.write((int)(memory_address >> 8));   // MSB
     Wire.write((int)(memory_address & 0xFF)); // LSB
     Wire.endTransmission();
-
     Wire.requestFrom(EEPROM_ADDRESS,1);
 
     if (Wire.available())
     {
         recv_data = Wire.read();
-        SerialUSB.println(recv_data, HEX);
     }
-
     return recv_data;
 }
 

@@ -1,17 +1,9 @@
 void testnew ()
 {
-    //     writeEEPROM(0x0a, 0x56);
-    //     SerialUSB.println(readEEPROM(0x0a), HEX);
-//     SerialUSB.print("Sound Pressure: ");
-//     SerialUSB.print(analogRead(PIN_SPV_AMP));
-//     delay(100);
-//     SerialUSB.print(" ");
-//     SerialUSB.print(analogRead(PIN_SVP_SPL));
-//     delay(100);
-//     SerialUSB.print(" ");
-//     SerialUSB.print(analogRead(PIN_RAW_MIC));
-//     delay(100);
-//     SerialUSB.println("");
+//     writeEEPROM(0x0a, 0x56);
+//     SerialUSB.println(readEEPROM(0x0a), HEX);
+//     writeEEPROM(0x0a, 0x65);
+//     SerialUSB.println(readEEPROM(0x0a), HEX);
 
     SerialUSB.println("*********************");
     SerialUSB.println(test_seq++);
@@ -29,9 +21,12 @@ void testnew ()
     #ifdef SERIAL_DEBUG
     SerialUSB.println("Acquiring ChemSense Data.");
     #endif
-    while (Serial3.available() > 0)
+    while(1)
     {
-        Serial3.read();
+        while (Serial3.available() > 0)
+        {
+            SerialUSB.print(Serial3.read(), HEX);
+        }
     }
     ChemSensed = 0;
     Chemsense_locked = 0;
@@ -57,6 +52,6 @@ void testnew ()
 
     #endif
     SerialUSB.println("*********************");
-    delay(100);
+    delay(5000);
 
 }

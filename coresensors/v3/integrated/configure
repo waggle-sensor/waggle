@@ -44,12 +44,18 @@ if [ -z "$SERIALBAUD" ]; then
     exit
 fi
 
+
+if [ -z "$ARDUINO_DIR" ]; then
+    echo "No Arduino root directory specified. Please specify ARDUINO_DIR variable. Configure failed..."
+    exit
+fi
+
 echo "Setting up Arduino build environment for $TARGET, connected to $PORT, with post firmware install communication at $SERIALBAUD baud..."
 if [ "$ARCH" == "x86_64" ]
 then
-  echo "ARD_HOME = $WAGGLE_GIT_ROOT/devtools/arduino/compilers/arduino-1.6.5-linux/arduino_64" > makefile
+  echo "ARD_HOME = $ARDUINO_DIR" > makefile
 else
-  echo "ARD_HOME = $WAGGLE_GIT_ROOT/devtools/arduino/compilers/arduino-1.6.5-linux/arduino_32" > makefile
+  echo "ARD_HOME = $ARDUINO_DIR" > makefile
 fi
 echo "Creating makefile..."
 echo "TARGET = ${PWD##*/}" >> makefile
@@ -68,13 +74,33 @@ then
     echo "PORT = $PORT" >> makefile
     echo "BOARD_FLASH = \$(PACKAGE):\$(ARCH):\$(BOARD)" >> makefile
     echo "BOOT_LOADER_TYPE = avr109" >>  makefile
-    echo "PRE_FLASH_COMMAND = stty -F \$(PORT) 1200 hupcl; sleep 2"  >> makefile
+    echo "PRE_FLASH_COMMAND = stty -F \$(PORT) 1200 hupcl; sleep 3"  >> makefile
     echo "FLASHER = \$(ARD_HOME)/hardware/tools/avr/bin/avrdude" >> makefile
     echo "FLASHER_CONFIGS = \$(ARD_HOME)/hardware/tools/avr/etc/avrdude.conf" >> makefile
-    echo "FLASH_BOARD = \$(FLASHER) -C\$(FLASHER_CONFIGS) -v -p\$(TYPE) -c\$(BOOT_LOADER_TYPE) -P\$(PORT) -b\$(FLASHER_BAUD_RATE) -D -Uflash:w:\$(BIN_DIR)/\$(TARGET).cpp.hex:i" >> makefile
-    echo "BUILD_COMPLETE = mv \$(BUILD_DIR)/\$(TARGET).cpp.hex \$(BIN_DIR)/" >> makefile
+    echo "FLASH_BOARD = \$(FLASHER) -C\$(FLASHER_CONFIGS) -v -p\$(TYPE) -c\$(BOOT_LOADER_TYPE) -P\$(PORT) -b\$(FLASHER_BAUD_RATE) -D -Uflash:w:\$(BIN_DIR)/\$(TARGET).ino.hex:i" >> makefile
+    echo "BUILD_COMPLETE = mv \$(BUILD_DIR)/\$(TARGET).ino.hex \$(BIN_DIR)/" >> makefile
     echo "LINKPORT = \$(PORT)" >> makefile
     echo "SERIALBAUD = $SERIALBAUD" >> makefile
+    echo "BOOT_LOADER = \$(FLASHER) -C\$(ARD_HOME)/hardware/tools/avr/etc/avrdude.conf -v -patmega32u4 -cstk500v2 -Pusb -Uflash:w:\$(ARD_HOME)/hardware/arduino/avr/bootloaders/caterina/Caterina-Micro.hex:i -Ulock:w:0x2F:m" >> makefile
+
+elif [ "$TARGET" == "wagmanV3" ]
+then
+    echo "PACKAGE = arduino" >> makefile
+    echo "ARCH = avr" >> makefile
+    echo "BOARD = micro" >> makefile
+    echo "TYPE = m32u4" >> makefile
+    echo "FLASHER_BAUD_RATE = 57600" >> makefile
+    echo "PORT = $PORT" >> makefile
+    echo "BOARD_FLASH = \$(PACKAGE):\$(ARCH):\$(BOARD)" >> makefile
+    echo "BOOT_LOADER_TYPE = avr109" >>  makefile
+    echo "PRE_FLASH_COMMAND = stty -F \$(PORT) 1200 hupcl; sleep 3"  >> makefile
+    echo "FLASHER = \$(ARD_HOME)/hardware/tools/avr/bin/avrdude" >> makefile
+    echo "FLASHER_CONFIGS = \$(ARD_HOME)/hardware/tools/avr/etc/avrdude.conf" >> makefile
+    echo "FLASH_BOARD = \$(FLASHER) -C\$(FLASHER_CONFIGS) -v -p\$(TYPE) -c\$(BOOT_LOADER_TYPE) -P\$(PORT) -b\$(FLASHER_BAUD_RATE) -D -Uflash:w:\$(BIN_DIR)/\$(TARGET).ino.hex:i" >> makefile
+    echo "BUILD_COMPLETE = mv \$(BUILD_DIR)/\$(TARGET).ino.hex \$(BIN_DIR)/" >> makefile
+    echo "LINKPORT = \$(PORT)" >> makefile
+    echo "SERIALBAUD = $SERIALBAUD" >> makefile
+    echo "BOOT_LOADER = \$(FLASHER) -C\$(ARD_HOME)/hardware/tools/avr/etc/avrdude.conf -v -patmega32u4 -cstk500v2 -Pusb -Uflash:w:\$(ARD_HOME)/hardware/arduino/avr/bootloaders/caterina/Caterina-Micro.hex:i -Ulock:w:0x2F:m" >> makefile
 
 elif [ "$TARGET" == "airsenseV2" ]
 then
@@ -87,7 +113,24 @@ then
     echo "BOARD_FLASH = \$(PACKAGE):\$(ARCH):\$(BOARD)" >> makefile
     echo "BOOT_LOADER_TYPE = wiring" >>  makefile
     echo "PRE_FLASH_COMMAND = stty -F /dev/\$(PORT) 1200 hupcl; sleep 2"  >> makefile
-    echo "FLASHER = \$(ARD_HOME)/tools/bossac/1.6.1-arduino/bossac" >> makefile
+    echo "FLASHER = \$(ARD_HOME)/Atmel_SAM/packages/arduino/tools/bossac/1.6.1-arduino/bossac" >> makefile
+    echo "FLASH_BOARD = \$(FLASHER) -i -d --port=\$(PORT) -U true -e -w -v -b \$(BIN_DIR)/\$(TARGET).ino.bin -R" >> makefile
+    echo "BUILD_COMPLETE = mv \$(BUILD_DIR)/\$(TARGET).ino.bin \$(BIN_DIR)/" >> makefile
+    echo "LINKPORT = /dev/\$(PORT)" >> makefile
+    echo "SERIALBAUD = $SERIALBAUD" >> makefile
+
+elif [ "$TARGET" == "airsenseV3" ]
+then
+    echo "PACKAGE = arduino" >> makefile
+    echo "ARCH = sam" >> makefile
+    echo "BOARD = arduino_due_x" >> makefile
+    echo "TYPE = " >> makefile
+    echo "FLASHER_BAUD_RATE = 115200" >> makefile
+    echo "PORT = ${PORT##*/dev/}" >> makefile
+    echo "BOARD_FLASH = \$(PACKAGE):\$(ARCH):\$(BOARD)" >> makefile
+    echo "BOOT_LOADER_TYPE = wiring" >>  makefile
+    echo "PRE_FLASH_COMMAND = stty -F /dev/\$(PORT) 1200 hupcl; sleep 2"  >> makefile
+    echo "FLASHER = \$(ARD_HOME)/Atmel_SAM/packages/arduino/tools/bossac/1.6.1-arduino/bossac" >> makefile
     echo "FLASH_BOARD = \$(FLASHER) -i -d --port=\$(PORT) -U true -e -w -v -b \$(BIN_DIR)/\$(TARGET).ino.bin -R" >> makefile
     echo "BUILD_COMPLETE = mv \$(BUILD_DIR)/\$(TARGET).ino.bin \$(BIN_DIR)/" >> makefile
     echo "LINKPORT = /dev/\$(PORT)" >> makefile
@@ -97,3 +140,4 @@ fi
 
 cat MakeFile >> makefile
 echo "Success! Now you can compile and flash the CPU with make and make install."
+

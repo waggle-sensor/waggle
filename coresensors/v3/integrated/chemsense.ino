@@ -29,6 +29,7 @@ void chemsense_aquire (void)
 
         //read a byte of data from serial buffer
         inByte = Serial3.read();
+        SerialUSB.write(inByte);
 
         //check if we have locked to carriage return - end of previous line.
         if (inByte == '\r')

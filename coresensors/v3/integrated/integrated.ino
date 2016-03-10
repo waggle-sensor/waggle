@@ -245,6 +245,7 @@ void setup()
     delay(2000);
 
     SerialUSB.begin(115200);
+    Serial3.begin(19200);
 
     #ifdef SERIAL_DEBUG
     SerialUSB.println("Starting...");
@@ -252,7 +253,6 @@ void setup()
 
     initializeSensorBoard();
 
-    Serial3.begin(115200);
     //     Setup the I2C buffer
     for (byte i=0x00; i<LENGTH_WHOLE; i++)
     {
@@ -260,14 +260,14 @@ void setup()
     }
     assemble_packet_empty();
     Sensors_Setup();
-
+    digitalWrite(PIN_CHEMSENSE_POW, LOW);
     #ifdef I2C_INTERFACE
     I2C_READ_COMPLETE = false;
     Wire1.begin(I2C_SLAVE_ADDRESS);
     Wire1.onRequest(requestEvent);
     #endif
 
-    
+
 
 
 }
