@@ -34,6 +34,11 @@ This test involves a XU4, C1+ and Wagman, with the following logic programmed in
     4. Notify completion of stress test.
     5. Shutdown
 
+For step by step setup procedure to have the devices setup for the test, follow README files in the Wagman and Odroid sub-folders.
+
+## Electrical Connection
+
+
 ### Events Timeline
 * T = 0      : Wagman Boots
 * Boot + 35s : Wagman turns off all the ports (if in on state earlier), including C1+
@@ -64,3 +69,8 @@ __{current cycle}__
 </br>
 __{start of next cycle}__
 * 140.221.10.98 - - [14/Mar/2016:11:34:00 -0500] "GET /startingstress/node?=C1P36890 HTTP/1.1" 404 453 "-" "curl/7.35.0"
+
+###Success Criteria
+
+The test is considered successful if the setup can perform the above test multiple (10-12) number of times without issues.
+
