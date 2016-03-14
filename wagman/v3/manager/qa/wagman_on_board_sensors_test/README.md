@@ -45,11 +45,11 @@ For step-by-step procedure, follow README nodes in the sub-folders.
 
 ## Test Log
 
-This test is evaluated and scored on the {Wagman sensor test document}.
+This test is evaluated and scored on the __Wagman sensor test document__.
 
 ###Example Events Verification
 
 ###Success Criteria
 
-The test is considered PASSED if all the sub-tests in {Wagman sensor test document} pass.
+The test is considered PASSED if all the sub-tests in __Wagman sensor test document__ pass.
 
