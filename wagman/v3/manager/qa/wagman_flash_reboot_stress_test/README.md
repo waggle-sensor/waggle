@@ -1,10 +1,11 @@
 # Test Scope and Coverage
 
-This test evaluates the following aspects of Wagman system design.
-1. Ability to sustain Odroid XU4 and C1+ under full CPU load (and hence current utilization).
-2. Ability to boot XU4 when C1+ is drawing maximum current.
-3. Ability to flash Wagman from C1+.
-4. Repeatability and predictability of the above.
+This test evaluates the following aspects of Wagman system design. </br>
+1. Ability to sustain Odroid XU4 and C1+ under full CPU load (and hence current utilization).</br>
+2. Ability to boot XU4 when C1+ is drawing maximum current.</br>
+3. Ability to flash Wagman from C1+.</br>
+4. Repeatability and predictability of the above.</br>
+</br>
 
 # Test Setup Procedure
 
