@@ -9,16 +9,16 @@ This test evaluates the following aspects of Wagman system design. </br>
 
 # Test Setup Procedure
 
-This test involves a XU4, C1+ and Wagman, with the following logic programmed into each of them.
+This test involves a XU4, C1+ and Wagman, with the following logic programmed into each of them -
 
-* Wagman: Firmware.
+* Wagman: 
     1. Boot up.
     2. Turn off any ports that are on. There is a small delay here to allow the C1+ to gracefully shutdown after re-flashing the Wagman.
     3. Power on C1+.
     4. Power on XU4.
     5. Wait in infinite loop, flashing leds.
 
-* C1+: init.d script which executes a shell script
+* C1+:
     1. Start startup.sh shell script on booting using init.d stress-test script.
     2. Notify of start of stress test.
     3. Perform CPU and Disk I/O stress test for 180 seconds.
@@ -27,7 +27,7 @@ This test involves a XU4, C1+ and Wagman, with the following logic programmed in
     6. On successful flashing, shutdown.
     7. If flashing is unsuccessful, stay on.
 
-* XU4: init.d script which executes a shell script
+* XU4:
     1. Start startup.sh shell script on booting using init.d stress-test script.
     2. Notify of start of stress test.
     3. Perform CPU and Disk I/O stress test for 180 seconds.
@@ -38,8 +38,24 @@ For step by step setup procedure to have the devices setup for the test, follow 
 
 ## Electrical Connection
 
+After setting up the 3 devices, follow the procedure below to start the test (for orientation details, follow Wagman
+electrical hookup guide {incomplete})-
 
-### Events Timeline
+* Connect C1+ power pigtail to Port 1 (J9) of Wagman
+* Connect XU4 power pigtail to Port 2 (J5) of Wagman
+* Connect a USB-Ethernet dongle to bottom-right USB port of C1+ and connect to Internet
+* Connect a USB-Ethernet dongle to bottom port of the stacked USB connector of the XU4
+* Connect barrel power connectors originating from Wagman to XU4 and C1+
+* Connect one end of the micro-USB cable to J3 of Wagman and the other end to one of the remaining 3 ports of the C1+
+* Connect the two USB-Ethernet dongles to network.
+* Connect DC power cables to Wagman's J10 port.
+* Power on Wagman.
+
+At this point in time, the test has begun and the stress, reflash, reboot loop should continue indefinitely.
+
+
+
+## Test Events Timeline
 * T = 0      : Wagman Boots
 * Boot + 35s : Wagman turns off all the ports (if in on state earlier), including C1+
 * Boot + X1s : Wagman boots C1+
