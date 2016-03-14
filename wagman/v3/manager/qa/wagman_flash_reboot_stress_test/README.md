@@ -1,11 +1,41 @@
 # Test Scope and Coverage
 
+This test evaluates the following aspects of Wagman system design.
+1. Ability to sustain Odroid XU4 and C1+ under full CPU load (and hence current utilization).
+2. Ability to boot XU4 when C1+ is drawing maximum current.
+3. Ability to flash Wagman from C1+.
+4. Repeatability and predictability of the above.
+
 # Test Setup Procedure
 
+This test involves a XU4, C1+ and Wagman, with the following logic programmed into each of them.
+
+* Wagman: Firmware.
+    1. Boot up.
+    2. Turn off any ports that are on. There is a small delay here to allow the C1+ to gracefully shutdown after re-flashing the Wagman.
+    3. Power on C1+.
+    4. Power on XU4.
+    5. Wait in infinite loop, flashing leds.
+
+* C1+: init.d script which executes a shell script
+    1. Start startup.sh shell script on booting using init.d stress-test script.
+    2. Notify of start of stress test.
+    3. Perform CPU and Disk I/O stress test for 180 seconds.
+    4. Notify completion of stress test.
+    5. Re-flash the wagman with the same firmware.
+    6. On successful flashing, shutdown.
+    7. If flashing is unsuccessful, stay on.
+
+* XU4: init.d script which executes a shell script
+    1. Start startup.sh shell script on booting using init.d stress-test script.
+    2. Notify of start of stress test.
+    3. Perform CPU and Disk I/O stress test for 180 seconds.
+    4. Notify completion of stress test.
+    5. Shutdown
 
 ### Events Timeline
 * T = 0      : Wagman Boots
-* Boot + 35s : Wagman turns off all the ports, including C1+
+* Boot + 35s : Wagman turns off all the ports (if in on state earlier), including C1+
 * Boot + X1s : Wagman boots C1+
 * Boot + X2s : C1+ starts stress
 * Boot + X3s : Wagman boots XU4
@@ -13,9 +43,9 @@
 * Boot + X5s : C1+ finishes stress
 * Boot + X6s : XU4 finishes stress
 * Boot + X7s : XU4 shutsdown
-* Boot + X8s : C1+ starts Wagman reflash
+* Boot + X8s : C1+ starts Wagman re-flash
 * Boot + X10s : Wagman reboots
-* Boot + X11s : C1+ shutsdown (if reflash successful, else stays powered on.)
+* Boot + X11s : C1+ shutsdown (if re-flash successful, else stays powered on.)
 * Boot + X12s : Wagman turns off all the ports, including C1+
 
 
