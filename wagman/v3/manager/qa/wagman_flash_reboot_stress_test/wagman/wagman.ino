@@ -22,14 +22,22 @@ int temp;
 
 void setup()
 {
-    delay(1000);
+    delay(500);
     set_up_pinmodes();
     delay(1000);
     Serial.begin(115200);
     Wire.begin();
-    delay(1000);
+    delay(1500);
     mcp3428_1.init(MCP342X::H, MCP342X::H);
     myHumidity.begin();
+}
+
+
+
+
+void loop()
+
+{
     test_debugLeds();
     delay(25000);
     analogWrite(PIN_Debug_L,0x00);
@@ -39,18 +47,11 @@ void setup()
     analogWrite(PIN_Debug_L,0xff);
     analogWrite(PIN_Debug_L1,0xff);
     delay(1000);
-}
-
-
-
-
-void loop()
-
-{
     analogWrite(PIN_Debug_L,0x00);
     analogWrite(PIN_Debug_L1,0x00);
-    delay(2000);
+    delay(1000);
     test_debugLeds();
+    delay(1000);
     analogWrite(PIN_Debug_L,0xff);
     analogWrite(PIN_Debug_L1,0xff);
     delay(2000);
@@ -66,16 +67,16 @@ void loop()
     delay(2000);
     while(1)
     {
-        delay(100);
+        delay(100); // OFF OFF
         analogWrite(PIN_Debug_L,0x00);
         analogWrite(PIN_Debug_L1,0x00);
-        delay(100);
+        delay(100); // OFF ON
         analogWrite(PIN_Debug_L,0x00);
         analogWrite(PIN_Debug_L1,0xff);
-        delay(100);
+        delay(100); // ON ON
         analogWrite(PIN_Debug_L,0xff);
         analogWrite(PIN_Debug_L1,0xff);
-        delay(100);
+        delay(100); // ON OFF
         analogWrite(PIN_Debug_L,0xff);
         analogWrite(PIN_Debug_L1,0x00);
     }

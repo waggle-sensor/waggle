@@ -186,28 +186,33 @@ void turnON_POW1 ()
     // lowering clock edge
     digitalWrite(PIN_NC_POW_State_Latch, LOW);
     delay(2);
+    delay(10);
     return;
 }
 
 void turnON_POW2()
 {
     digitalWrite(PIN_POW_2, HIGH);
+    delay(10);
     return;
 }
 
 void turnON_POW3()
 {
     digitalWrite(PIN_POW_3, HIGH);
+    delay(10);
     return;
 }
 void turnON_POW4()
 {
     digitalWrite(PIN_POW_4, HIGH);
+    delay(10);
     return;
 }
 void turnON_POW5()
 {
     digitalWrite(PIN_POW_5, HIGH);
+    delay(10);
     return;
 }
 
