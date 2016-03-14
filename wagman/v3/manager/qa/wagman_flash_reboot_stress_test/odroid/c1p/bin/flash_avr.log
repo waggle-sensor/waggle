@@ -1,0 +1,13 @@
+
+avrdude: Version 6.0.1, compiled on Oct 21 2013 at 15:55:32
+         Copyright (c) 2000-2005 Brian Dean, http://www.bdmicro.com/
+         Copyright (c) 2007-2009 Joerg Wunsch
+
+         System wide configuration file is "./avrdude.conf"
+         User configuration file is "/home/rajesh/.avrduderc"
+
+         Using Port                    : /dev/waggle_sysmon
+         Using Programmer              : avr109
+         Overriding Baud Rate          : 57600
+avrdude: ser_open(): can't open device "/dev/waggle_sysmon": No such file or directory
+avrdude: butterfly_recv(): programmer is not responding
