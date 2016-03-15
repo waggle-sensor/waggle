@@ -1,3 +1,259 @@
+#include <Arduino.h>
+#line 1
+#line 1 "/media/rajesh/Bharadwaja/github/waggle/wagman/v3/manager/qa/wagman_on_board_sensors_test/wagman/wagman.ino"
+#include "config.cpp"
+#include "rtc_conf.cpp"
+
+#include <Wire.h>
+#include <avr/wdt.h>
+
+#include "./libs/MCP342X/MCP342X.h"
+#include "./libs/HTU21D/HTU21D.h"
+#include "./libs/MCP79412RTC/MCP79412RTC.h"    //http://github.com/JChristensen/MCP79412RTC
+#include "./libs/Time/Time.h"
+
+
+MCP342X mcp3428_1;
+unsigned char WagID[8];
+float htu21d_humd, htu21d_temp;
+HTU21D myHumidity;
+unsigned char TIME_DURATION = 100;
+
+int loop_count = 0;
+int question_no = 1;
+int temp;
+
+#line 23 "/media/rajesh/Bharadwaja/github/waggle/wagman/v3/manager/qa/wagman_on_board_sensors_test/wagman/wagman.ino"
+void setup();
+#line 57 "/media/rajesh/Bharadwaja/github/waggle/wagman/v3/manager/qa/wagman_on_board_sensors_test/wagman/wagman.ino"
+void loop();
+#line 2 "/media/rajesh/Bharadwaja/github/waggle/wagman/v3/manager/qa/wagman_on_board_sensors_test/wagman/functionCalls.ino"
+void set_up_pinmodes();
+#line 29 "/media/rajesh/Bharadwaja/github/waggle/wagman/v3/manager/qa/wagman_on_board_sensors_test/wagman/functionCalls.ino"
+void boot_nc_emmc();
+#line 35 "/media/rajesh/Bharadwaja/github/waggle/wagman/v3/manager/qa/wagman_on_board_sensors_test/wagman/functionCalls.ino"
+void boot_gm_emmc();
+#line 41 "/media/rajesh/Bharadwaja/github/waggle/wagman/v3/manager/qa/wagman_on_board_sensors_test/wagman/functionCalls.ino"
+void boot_nc_usd();
+#line 47 "/media/rajesh/Bharadwaja/github/waggle/wagman/v3/manager/qa/wagman_on_board_sensors_test/wagman/functionCalls.ino"
+void boot_gm_usd();
+#line 53 "/media/rajesh/Bharadwaja/github/waggle/wagman/v3/manager/qa/wagman_on_board_sensors_test/wagman/functionCalls.ino"
+void power_on_all();
+#line 67 "/media/rajesh/Bharadwaja/github/waggle/wagman/v3/manager/qa/wagman_on_board_sensors_test/wagman/functionCalls.ino"
+void power_off_all();
+#line 81 "/media/rajesh/Bharadwaja/github/waggle/wagman/v3/manager/qa/wagman_on_board_sensors_test/wagman/functionCalls.ino"
+void boot_pow_check();
+#line 124 "/media/rajesh/Bharadwaja/github/waggle/wagman/v3/manager/qa/wagman_on_board_sensors_test/wagman/functionCalls.ino"
+void test_debugLeds();
+#line 148 "/media/rajesh/Bharadwaja/github/waggle/wagman/v3/manager/qa/wagman_on_board_sensors_test/wagman/functionCalls.ino"
+void htu21D_report();
+#line 163 "/media/rajesh/Bharadwaja/github/waggle/wagman/v3/manager/qa/wagman_on_board_sensors_test/wagman/functionCalls.ino"
+void hih4030_report();
+#line 170 "/media/rajesh/Bharadwaja/github/waggle/wagman/v3/manager/qa/wagman_on_board_sensors_test/wagman/functionCalls.ino"
+void lightsensor_report();
+#line 177 "/media/rajesh/Bharadwaja/github/waggle/wagman/v3/manager/qa/wagman_on_board_sensors_test/wagman/functionCalls.ino"
+void turnON_POW1();
+#line 193 "/media/rajesh/Bharadwaja/github/waggle/wagman/v3/manager/qa/wagman_on_board_sensors_test/wagman/functionCalls.ino"
+void turnON_POW2();
+#line 200 "/media/rajesh/Bharadwaja/github/waggle/wagman/v3/manager/qa/wagman_on_board_sensors_test/wagman/functionCalls.ino"
+void turnON_POW3();
+#line 206 "/media/rajesh/Bharadwaja/github/waggle/wagman/v3/manager/qa/wagman_on_board_sensors_test/wagman/functionCalls.ino"
+void turnON_POW4();
+#line 212 "/media/rajesh/Bharadwaja/github/waggle/wagman/v3/manager/qa/wagman_on_board_sensors_test/wagman/functionCalls.ino"
+void turnON_POW5();
+#line 219 "/media/rajesh/Bharadwaja/github/waggle/wagman/v3/manager/qa/wagman_on_board_sensors_test/wagman/functionCalls.ino"
+void turnOFF_POW1();
+#line 233 "/media/rajesh/Bharadwaja/github/waggle/wagman/v3/manager/qa/wagman_on_board_sensors_test/wagman/functionCalls.ino"
+void WagID_print();
+#line 250 "/media/rajesh/Bharadwaja/github/waggle/wagman/v3/manager/qa/wagman_on_board_sensors_test/wagman/functionCalls.ino"
+void turnOFF_POW2();
+#line 256 "/media/rajesh/Bharadwaja/github/waggle/wagman/v3/manager/qa/wagman_on_board_sensors_test/wagman/functionCalls.ino"
+void turnOFF_POW3();
+#line 261 "/media/rajesh/Bharadwaja/github/waggle/wagman/v3/manager/qa/wagman_on_board_sensors_test/wagman/functionCalls.ino"
+void turnOFF_POW4();
+#line 266 "/media/rajesh/Bharadwaja/github/waggle/wagman/v3/manager/qa/wagman_on_board_sensors_test/wagman/functionCalls.ino"
+void turnOFF_POW5();
+#line 273 "/media/rajesh/Bharadwaja/github/waggle/wagman/v3/manager/qa/wagman_on_board_sensors_test/wagman/functionCalls.ino"
+void HBT_output_pulsetest(void);
+#line 314 "/media/rajesh/Bharadwaja/github/waggle/wagman/v3/manager/qa/wagman_on_board_sensors_test/wagman/functionCalls.ino"
+void heartbeat_test();
+#line 370 "/media/rajesh/Bharadwaja/github/waggle/wagman/v3/manager/qa/wagman_on_board_sensors_test/wagman/functionCalls.ino"
+void thermistor_report();
+#line 389 "/media/rajesh/Bharadwaja/github/waggle/wagman/v3/manager/qa/wagman_on_board_sensors_test/wagman/functionCalls.ino"
+void hbt_read();
+#line 409 "/media/rajesh/Bharadwaja/github/waggle/wagman/v3/manager/qa/wagman_on_board_sensors_test/wagman/functionCalls.ino"
+int read_current(int addr);
+#line 448 "/media/rajesh/Bharadwaja/github/waggle/wagman/v3/manager/qa/wagman_on_board_sensors_test/wagman/functionCalls.ino"
+void RTC_time_report(void);
+#line 456 "/media/rajesh/Bharadwaja/github/waggle/wagman/v3/manager/qa/wagman_on_board_sensors_test/wagman/functionCalls.ino"
+void currentusage_report(void);
+#line 478 "/media/rajesh/Bharadwaja/github/waggle/wagman/v3/manager/qa/wagman_on_board_sensors_test/wagman/functionCalls.ino"
+void xu4_boot_selector_test();
+#line 545 "/media/rajesh/Bharadwaja/github/waggle/wagman/v3/manager/qa/wagman_on_board_sensors_test/wagman/functionCalls.ino"
+void c1p_boot_selector_test();
+#line 23
+void setup()
+{
+    delay(1000);
+    set_up_pinmodes();
+    delay(1000);
+    Serial.begin(115200);
+    Wire.begin();
+    delay(1000);
+    mcp3428_1.init(MCP342X::H, MCP342X::H);
+    myHumidity.begin();
+
+    #ifdef SET_RTC_TIME
+    RTC.set(CURRENT_TIME);
+    while(1)
+    {
+        delay(100);
+        analogWrite(PIN_Debug_L,0x00);
+        analogWrite(PIN_Debug_L1,0x00);
+        delay(100);
+        analogWrite(PIN_Debug_L,0x00);
+        analogWrite(PIN_Debug_L1,0xff);
+        delay(100);
+        analogWrite(PIN_Debug_L,0xff);
+        analogWrite(PIN_Debug_L1,0xff);
+        delay(100);
+        analogWrite(PIN_Debug_L,0xff);
+        analogWrite(PIN_Debug_L1,0x00);
+    };
+    #endif
+}
+
+
+
+
+void loop()
+
+{
+    Serial.println("------Wagman board test------");
+
+    Serial.print(question_no++); Serial.print(". ");
+
+    Serial.println("Powering up Wagman, please verify that the power LED is ON...");
+    delay(5000);
+    Serial.println("");
+
+    Serial.print(question_no++); Serial.print(". ");
+    WagID_print ();
+    delay(5000);
+    Serial.println("");
+
+    Serial.print(question_no++); Serial.print(". ");
+    test_debugLeds ();
+    delay(5000);
+    Serial.println("");
+
+    Serial.print(question_no++); Serial.print(". ");
+    RTC_time_report();
+    Serial.println("Waiting for second and printing time again...");
+    delay(970);
+    RTC_time_report();
+    Serial.println("");
+    delay(5000);
+
+    Serial.print(question_no++); Serial.print(". ");
+    thermistor_report();
+    Serial.println("");
+    delay(5000);
+
+    Serial.print(question_no++); Serial.print(". ");
+    currentusage_report();
+    Serial.println("Now, we will turn the on-board relays ON and see if the current sensors pick them up.");
+    power_on_all();
+    currentusage_report();
+    Serial.println("");
+    power_off_all();
+    delay(5000);
+
+    Serial.print(question_no++); Serial.print(". ");
+    hih4030_report();
+    Serial.println("For the next 10 seconds, please touch the HIH4030 sensor with your finger.");
+    Serial.print("Counting down...");
+    delay(5000);
+    for (loop_count = 11; loop_count > 0; loop_count--)
+    {
+        Serial.print(loop_count-1);
+        Serial.print(" ");
+        delay(990);
+    }
+    Serial.print("\n");
+    delay(500);
+    hih4030_report();
+    Serial.println("");
+    delay(5000);
+
+    Serial.print(question_no++); Serial.print(". ");
+    lightsensor_report();
+    Serial.println("For the next 10 seconds, please cover the lighsensor with you thumb.");
+    Serial.print("Counting down...");
+    delay(5000);
+    for (loop_count = 11; loop_count > 0; loop_count--)
+    {
+        Serial.print(loop_count-1);
+        Serial.print(" ");
+        delay(990);
+        if (loop_count == 4)
+        {
+            temp=analogRead(PIN_Light_Sensor);
+        }
+    }
+    Serial.print("\n");
+    Serial.print("Light Sensor reading (0-1024):");
+    Serial.println(temp);
+    Serial.println("");
+    delay(5000);
+
+    Serial.print(question_no++); Serial.print(". ");
+    htu21D_report();
+    Serial.println("For the next 10 seconds, please touch the HTU21D sensor with your finger.");
+    Serial.print("Counting down...");
+    delay(5000);
+    for (loop_count = 11; loop_count > 0; loop_count--)
+    {
+        Serial.print(loop_count-1);
+        Serial.print(" ");
+        delay(990);
+    }
+    Serial.print("\n");
+    delay(500);
+    htu21D_report();
+    Serial.print("\n");
+    delay(5000);
+
+    Serial.print(question_no++); Serial.print(". ");
+    boot_pow_check();
+    Serial.println("");
+    delay(5000);
+
+    Serial.print(question_no++); Serial.print(". ");
+    Serial.println("Boot selector tests:");
+    Serial.println("");
+    c1p_boot_selector_test();
+    Serial.println("");
+    delay(5000);
+    xu4_boot_selector_test();
+    Serial.println("");
+    delay(5000);
+
+    Serial.print(question_no++); Serial.print(". ");
+    Serial.println("Heartbeat test:");
+    heartbeat_test();
+    Serial.println(" ");
+    Serial.println("------End of board test------");
+
+    while(1)
+    {
+        delay(1);
+    }
+}
+
+
+
+#line 1 "/media/rajesh/Bharadwaja/github/waggle/wagman/v3/manager/qa/wagman_on_board_sensors_test/wagman/functionCalls.ino"
 
 void set_up_pinmodes ()
 {
@@ -576,3 +832,4 @@ void c1p_boot_selector_test()
     Serial.println("C1+ bootpin JP9 test complete.");
     return;
 }
+

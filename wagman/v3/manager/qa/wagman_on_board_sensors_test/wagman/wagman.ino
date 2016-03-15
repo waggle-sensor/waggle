@@ -67,10 +67,12 @@ void loop()
 
     Serial.print(question_no++); Serial.print(". ");
     WagID_print ();
+    delay(5000);
     Serial.println("");
 
     Serial.print(question_no++); Serial.print(". ");
     test_debugLeds ();
+    delay(5000);
     Serial.println("");
 
     Serial.print(question_no++); Serial.print(". ");
@@ -79,24 +81,27 @@ void loop()
     delay(970);
     RTC_time_report();
     Serial.println("");
+    delay(5000);
 
     Serial.print(question_no++); Serial.print(". ");
     thermistor_report();
     Serial.println("");
+    delay(5000);
 
     Serial.print(question_no++); Serial.print(". ");
     currentusage_report();
     Serial.println("Now, we will turn the on-board relays ON and see if the current sensors pick them up.");
-
     power_on_all();
     currentusage_report();
     Serial.println("");
     power_off_all();
+    delay(5000);
 
     Serial.print(question_no++); Serial.print(". ");
     hih4030_report();
     Serial.println("For the next 10 seconds, please touch the HIH4030 sensor with your finger.");
     Serial.print("Counting down...");
+    delay(5000);
     for (loop_count = 11; loop_count > 0; loop_count--)
     {
         Serial.print(loop_count-1);
@@ -107,11 +112,13 @@ void loop()
     delay(500);
     hih4030_report();
     Serial.println("");
+    delay(5000);
 
     Serial.print(question_no++); Serial.print(". ");
     lightsensor_report();
     Serial.println("For the next 10 seconds, please cover the lighsensor with you thumb.");
     Serial.print("Counting down...");
+    delay(5000);
     for (loop_count = 11; loop_count > 0; loop_count--)
     {
         Serial.print(loop_count-1);
@@ -126,11 +133,13 @@ void loop()
     Serial.print("Light Sensor reading (0-1024):");
     Serial.println(temp);
     Serial.println("");
+    delay(5000);
 
     Serial.print(question_no++); Serial.print(". ");
     htu21D_report();
     Serial.println("For the next 10 seconds, please touch the HTU21D sensor with your finger.");
     Serial.print("Counting down...");
+    delay(5000);
     for (loop_count = 11; loop_count > 0; loop_count--)
     {
         Serial.print(loop_count-1);
@@ -141,18 +150,22 @@ void loop()
     delay(500);
     htu21D_report();
     Serial.print("\n");
+    delay(5000);
 
     Serial.print(question_no++); Serial.print(". ");
     boot_pow_check();
     Serial.println("");
+    delay(5000);
 
     Serial.print(question_no++); Serial.print(". ");
     Serial.println("Boot selector tests:");
     Serial.println("");
     c1p_boot_selector_test();
     Serial.println("");
+    delay(5000);
     xu4_boot_selector_test();
     Serial.println("");
+    delay(5000);
 
     Serial.print(question_no++); Serial.print(". ");
     Serial.println("Heartbeat test:");
