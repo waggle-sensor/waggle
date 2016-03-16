@@ -62,22 +62,22 @@ void loop()
     Serial.print(question_no++); Serial.print(". ");
     RTC_time_report();
 
-    Serial.println("Waiting for second and printing time again...");
+    Serial.println("Waiting for a second and printing time again...");
     delay(970);
     RTC_time_report();
     Serial.println("");
 
-    Serial.println("Waiting for second and printing time again...");
+    Serial.println("Waiting for a second and printing time again...");
     delay(970);
     RTC_time_report();
     Serial.println("");
 
-    Serial.println("Waiting for second and printing time again...");
+    Serial.println("Waiting for a second and printing time again...");
     delay(970);
     RTC_time_report();
     Serial.println("");
 
-    Serial.println("Waiting for second and printing time again...");
+    Serial.println("Waiting for a second and printing time again...");
     delay(970);
     RTC_time_report();
     Serial.println("");

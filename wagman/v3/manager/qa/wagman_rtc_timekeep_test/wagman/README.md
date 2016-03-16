@@ -1,6 +1,6 @@
 ## Testing Procedure
 
-__This test sets the Wagman clock based on the time of the QA computer. It is essential
+__This test sets the Wagman clock based on the clock of the QA computer. It is essential
 that the QA computer has correct time set on it__
 
 *  Initialize the Wagman RTC by issuing command *make initialize*
