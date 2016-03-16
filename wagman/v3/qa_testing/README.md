@@ -66,7 +66,7 @@ goals of the tests- </br>
 *   Airsense and Lightsense V3.1 boards.
 *   Odroid C1P and XU4 barrel power pigtails
 *   Jumper wire kit, male to male (Digikey 1471-1232-ND)
-*   12 inches each of 18 gauge wire with red and black insulation.
+*   12 inches each of 18 gauge wire with red (Digikey A461626R-100-ND) and black (Digikey A461626B-100-ND) insulation.
 *   QA computer (With Arduino 1.6.7 installed and configured to work with Waggle code base, udev rules for Waggle hardware installed etc.)
 
 # Wagman Production QA Testing and Coverage
@@ -85,7 +85,7 @@ taken off the PCB assembly line -</br>
 *   Wagman board under test
 *   5V DC Waggle Power Supply (Digikey 102-1934-ND)
 *   Multimeter capable of continuity check with beep on continuity enabled
-*   12 inches each of 18 gauge wire with red and black insulation.
+*   12 inches each of 18 gauge wire with red (Digikey A461626R-100-ND) and black (Digikey A461626B-100-ND) insulation.
 *   QA computer (With Arduino 1.6.7 installed and configured to work with Waggle code base, udev rules for Waggle hardware installed etc.)
 
 
