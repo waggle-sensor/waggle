@@ -1,7 +1,7 @@
 # Test Scope and Coverage
 
 This test evaluates the following aspects of Wagman system design. </br>
-1. Wagman's ability to keep time when power is disconnected. </br>
+1. Wagman's ability to keep time when the main 5V power is disconnected. </br>
 </br>
 
 # Test Setup Procedure
