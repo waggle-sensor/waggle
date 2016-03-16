@@ -39,12 +39,14 @@ This test evaluates the following aspects of Wagman system design. </br>
     __Please make sure only the Wagman under test is connected to the QA computer. No other Wagman or
     Arduino Micro/derivatives can be connected at this time.__
 
-*   Initialize the Wagman by issuing the command *make initialize* in the Wagman subfolder
+*   Initialize the Wagman by issuing the command *make run* in the Wagman subfolder
     and follow the on-screen prompts.
+
+    __To exit the screen session created for the test, press Control+a, followed by k and y.__
 
 ## Test Log
 This test is evaluated and scored on the __Wagman sensor test document__.
 
 # Success Criteria
-The test is considered __PASSED__ if all the sub-tests in the Initialization test (Wagman sensor test document)
+The test is considered __PASSED__ if all the sub-tests in the Initialization Test (Wagman sensor test document)
 pass.

@@ -18,5 +18,7 @@
     __Please make sure only the Wagman under test is connected to the QA computer. No other Wagman or
     Arduino Micro/derivatives can be connected at this time.__
 
-*   Initialize the Wagman by issuing the command *make initialize* in the Wagman subfolder
+*   Initialize the Wagman by issuing the command *make run* in the Wagman subfolder
     and follow the on-screen prompts.
+
+    __To exit the screen session created for the test, press Control+a, followed by k and y.__
