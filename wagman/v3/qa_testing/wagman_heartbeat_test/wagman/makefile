@@ -59,9 +59,6 @@ connect:
 	screen $(LINKPORT) $(SERIALBAUD)
 
 
-## Does not seem to work for some reason :(.
-# new:
-#   $(BOOT_LOADER)
-#   sleep 6
-#   make initialize
-
+test:	reset
+	sleep 7
+	connect
