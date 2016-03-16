@@ -26,30 +26,6 @@ void set_up_pinmodes ()
     return;
 }
 
-void boot_nc_emmc()
-{
-    digitalWrite(PIN_BootSelect_NC, HIGH);
-    return;
-}
-
-void boot_gm_emmc()
-{
-    digitalWrite(PIN_BootSelect_GM, HIGH);
-    return;
-}
-
-void boot_nc_usd()
-{
-    digitalWrite(PIN_BootSelect_NC, LOW);
-    return;
-}
-
-void boot_gm_usd()
-{
-    digitalWrite(PIN_BootSelect_GM, LOW);
-    return;
-}
-
 void power_on_all ()
 {
     turnON_POW1();
@@ -80,11 +56,6 @@ void power_off_all ()
 
 void boot_pow_check()
 {
-//     Serial.println("NC and GM set to eEMMC mode.");
-//     boot_nc_emmc();
-//     boot_gm_emmc();
-//     analogWrite(PIN_Debug_L,0xff);
-//     analogWrite(PIN_Debug_L1,0x00);
 
     Serial.println("We will power ON all ports one by one. You should hear 5 seperate clicks, and see the current usage increase.");
     currentusage_report();
@@ -120,59 +91,6 @@ void boot_pow_check()
     return;
 }
 
-
-void test_debugLeds ()
-
-{
-
-//     Serial.print("Testing Debug LEDs - They should pulse now for 5 seconds...");
-    for (byte j = 0x00; j < 0x07; j++)
-    {
-        for (byte i = 0x00; i < 0xff; i++)
-        {
-            analogWrite(PIN_Debug_L,i);
-            analogWrite(PIN_Debug_L1,i);
-            delay(2);
-        }
-        for (byte i = 0xff; i > 0x00; i--)
-        {
-            analogWrite(PIN_Debug_L,i);
-            analogWrite(PIN_Debug_L1,i);
-            delay(2);
-        }
-    }
-//     Serial.println("LED pulsing finished.");
-    return;
-}
-
-void htu21D_report()
-{
-    htu21d_humd = myHumidity.readHumidity();
-    htu21d_temp = myHumidity.readTemperature();
-    Serial.print("HTU21 Sensor: ");
-    Serial.print(" Temperature:");
-    Serial.print(htu21d_temp, 1);
-    Serial.print("C");
-    Serial.print(" Humidity:");
-    Serial.print(htu21d_humd, 1);
-    Serial.println("%");
-    delay(10);
-    return;
-}
-
-void hih4030_report()
-{
-    Serial.print("HIH4030 Humidity Sensor reading (0-1024):");
-    Serial.println(analogRead(PIN_HIH4030_Sensor));
-    return;
-}
-
-void lightsensor_report()
-{
-    Serial.print("Light Sensor reading (0-1024):");
-    Serial.println(analogRead(PIN_Light_Sensor));
-    return;
-}
 
 void turnON_POW1 ()
 {
@@ -265,103 +183,6 @@ void turnOFF_POW5()
 }
 
 
-void HBT_output_pulsetest (void)
-{
-    //switching to output mode.
-    pinMode(PIN_HBT1, OUTPUT);   // Heartbeat 1
-    pinMode(PIN_HBT2, OUTPUT);   // Heartbeat 2
-    pinMode(PIN_HBT3, OUTPUT);   // Heartbeat 3
-    pinMode(PIN_HBT4, OUTPUT);   // Heartbeat 4
-    pinMode(PIN_HBT5, OUTPUT);   // Heartbeat 5
-
-    Serial.println("The Heartbeat pins will be pulsed 3 times.");
-    for (byte i = 0x00; i<0x03; i++)
-    {
-        Serial.println("Setting HBT Pins to high.");
-        digitalWrite(PIN_HBT1,HIGH);
-        digitalWrite(PIN_HBT2,HIGH);
-        digitalWrite(PIN_HBT3,HIGH);
-        digitalWrite(PIN_HBT4,HIGH);
-        digitalWrite(PIN_HBT5,HIGH);
-        delay(1000);
-        Serial.println("Setting HBT Pins to Low.");
-        digitalWrite(PIN_HBT1,LOW);
-        digitalWrite(PIN_HBT2,LOW);
-        digitalWrite(PIN_HBT3,LOW);
-        digitalWrite(PIN_HBT4,LOW);
-        digitalWrite(PIN_HBT5,LOW);
-        delay(1000);
-
-
-    }
-
-
-
-    //switching back to input mode.
-    pinMode(PIN_HBT1, INPUT);   // Heartbeat 1
-    pinMode(PIN_HBT2, INPUT);   // Heartbeat 2
-    pinMode(PIN_HBT3, INPUT);   // Heartbeat 3
-    pinMode(PIN_HBT4, INPUT);   // Heartbeat 4
-    pinMode(PIN_HBT5, INPUT);   // Heartbeat 5
-
-}
-
-void heartbeat_test()
-{
-    Serial.println("Reading heartbeat values for PORT1:");
-
-    for (loop_count = 0; loop_count < 10; loop_count++)
-    {
-        Serial.print(digitalRead(PIN_HBT1));
-        Serial.print(" ");
-        delay(500);
-    }
-    Serial.println("");
-    Serial.println("Reading heartbeat values for PORT2:");
-
-    for (loop_count = 0; loop_count < 10; loop_count++)
-    {
-        Serial.print(digitalRead(PIN_HBT2));
-        Serial.print(" ");
-        delay(500);
-    }
-
-    Serial.println("");
-    Serial.println("Reading heartbeat values for PORT3:");
-
-
-    for (loop_count = 0; loop_count < 10; loop_count++)
-    {
-        Serial.print(digitalRead(PIN_HBT3));
-        Serial.print(" ");
-        delay(500);
-    }
-
-    Serial.println("");
-    Serial.println("Reading heartbeat values for PORT4:");
-
-
-
-    for (loop_count = 0; loop_count < 10; loop_count++)
-    {
-        Serial.print(digitalRead(PIN_HBT4));
-        Serial.print(" ");
-        delay(500);
-    }
-
-    Serial.println("");
-    Serial.println("Reading heartbeat values for PORT5:");
-
-
-    for (loop_count = 0; loop_count < 10; loop_count++)
-    {
-        Serial.print(digitalRead(PIN_HBT5));
-        Serial.print(" ");
-        delay(500);
-    }
-
-}
-
 void thermistor_report()
 {
     Serial.print("Thermistor Values:");
@@ -378,25 +199,6 @@ void thermistor_report()
     Serial.print(',');
     mcp3428_1.selectChannel(MCP342X::CHANNEL_3, MCP342X::GAIN_1);
     Serial.println(mcp3428_1.readADC()>>5);
-    return;
-}
-
-void hbt_read()
-{
-    Serial.print(digitalRead(PIN_HBT1));
-    Serial.print(',');
-    delay(1);
-    Serial.print(digitalRead(PIN_HBT2));
-    Serial.print(',');
-    delay(1);
-    Serial.print(digitalRead(PIN_HBT3));
-    Serial.print(',');
-    delay(1);
-    Serial.print(digitalRead(PIN_HBT4));
-    Serial.print(',');
-    delay(1);
-    Serial.println(digitalRead(PIN_HBT5));
-    delay(1);
     return;
 }
 
@@ -440,14 +242,6 @@ int read_current(int addr)
     return milliamps;
 }
 
-void RTC_time_report (void)
-{
-    Serial.print("Current time since epoch: ");
-    Serial.println(RTC.get());
-    return;
-}
-
-
 void currentusage_report(void)
 {
     Serial.print("Current consumption:");
@@ -467,105 +261,5 @@ void currentusage_report(void)
     Serial.print(',');
     delay(5);
     Serial.println(read_current(ADDR_CURRENT_POW5));
-    return;
-}
-
-void xu4_boot_selector_test()
-{
-
-    Serial.println("XU4 boot selector test - please check the continuity between PIN 1 and 2 of J4.");
-    Serial.println("The board will alternate the modes for next 5 seconds and you should hear beeps.");
-    delay(5000);
-    boot_gm_usd();
-    delay(1000);
-    Serial.print("beep..");
-    boot_gm_emmc();
-    delay(1000);
-    boot_gm_usd();
-    delay(1000);
-    Serial.print("beep..");
-    boot_gm_emmc();
-    delay(1000);
-    boot_gm_usd();
-    delay(1000);
-    Serial.print("beep..");
-    boot_gm_emmc();
-    delay(1000);
-    boot_gm_usd();
-    delay(1000);
-    Serial.print("beep..");
-    boot_gm_emmc();
-    delay(1000);
-    boot_gm_usd();
-    delay(1000);
-    Serial.print("beep..");
-    boot_gm_emmc();
-    delay(1000);
-    Serial.println("");
-    Serial.println("Now check continuity between PINS 2 and 3 of J4.");
-    delay(5000);
-    Serial.print("beep..");
-    boot_gm_usd();
-    delay(1000);
-    boot_gm_emmc();
-    delay(1000);
-    Serial.print("beep..");
-    boot_gm_usd();
-    delay(1000);
-    boot_gm_emmc();
-    delay(1000);
-    Serial.print("beep..");
-    boot_gm_usd();
-    delay(1000);
-    boot_gm_emmc();
-    delay(1000);
-    Serial.print("beep..");
-    boot_gm_usd();
-    delay(1000);
-    boot_gm_emmc();
-    delay(1000);
-    Serial.print("beep..");
-    boot_gm_usd();
-    delay(1000);
-    boot_gm_emmc();
-    delay(1000);
-    Serial.println("");
-    Serial.println("XU4 bootpin J4 test complete.");
-    return;
-
-}
-
-
-void c1p_boot_selector_test()
-{
-    Serial.println("Please set the multimeter in continuity check with beeper ON mode.");
-    Serial.println("C1P boot selector test - please check the continuity between the two pins of JP9. The board will alternate the modes for next 5 seconds and you should hear beeps.");
-    delay(2000);
-    Serial.print("beep..");
-    boot_nc_usd();
-    delay(1000);
-    boot_nc_emmc();
-    delay(1000);
-    Serial.print("beep..");
-    boot_nc_usd();
-    delay(1000);
-    boot_nc_emmc();
-    delay(1000);
-    Serial.print("beep..");
-    boot_nc_usd();
-    delay(1000);
-    boot_nc_emmc();
-    delay(1000);
-    Serial.print("beep..");
-    boot_nc_usd();
-    delay(1000);
-    boot_nc_emmc();
-    delay(1000);
-    Serial.print("beep..");
-    boot_nc_usd();
-    delay(1000);
-    boot_nc_emmc();
-    delay(1000);
-    Serial.println("C1+ bootpin JP9 test complete.");
     return;
 }
