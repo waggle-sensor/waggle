@@ -11,10 +11,13 @@ This test evaluates the following aspects of Wagman system design. </br>
 * Phase 2: Wagman is loaded with firmware that tests the RTC clock.
 
 ## Electrical Connection
-*  Insert CR 3020 battery into Wagman.
+*  Insert CR 3020 battery into Wagman. </br>
+<img src="./resources/coin_cell_battery_debug_LED.jpg" width="320">
 *  Connect micro-USB cable between Wagman's J3 and QA computer.
-*  Connect 5V DC power to Wagman using J10. Follow __Wagman Connection Guide__ for polarity details.
+*  Connect 5V DC power to Wagman using J10. Red is +5V and Black is ground. </br>
+<img src="./resources/power_connect.jpg" width="320">
 
+__Please make sure only the Wagman under test is connected to the QA computer. No other Wagman or Arduino Micro/derivatives can be connected at this time.__
 ## Testing Procedure
 *  Initialize the Wagman RTC by issuing command *make initialize* in the Wagman subfolder.
 *  After initializing the board, unplug USB and Power to Wagman.
