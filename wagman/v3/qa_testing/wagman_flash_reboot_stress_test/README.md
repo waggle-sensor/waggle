@@ -88,8 +88,9 @@ __{start of next cycle}__
 
 ###Success Criteria
 
-The test was successfully performed multiple number of times, and each time the process loop ran for several hours and with more than 20 loops consistently. A thermal image of the test is included below.</br>
-
+The test was successfully performed multiple number of times, and each time the process loop ran for several hours and with more than 20 loops consistently. A thermal image of the test is included below.
+</br>
+</br>
 <img src="./resources/NormalFullLoadTest.jpg" width="640">
 
 The test was conducted at an ambient temperature of 70-80F, no forced air movement was used and the thermal camera 
