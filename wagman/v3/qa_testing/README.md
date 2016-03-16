@@ -56,6 +56,13 @@ goals of the tests- </br>
 
 # Wagman Production QA Testing and Coverage
 
+For the production QA test, the following tests are proposed to be performed when the board is 
+taken off the PCB assembly line -</br>
+
+1.  wagman_init_test 
+2.  wagman_rtc_timekeep_test
+3.  wagman_environ_sensors_test
+
 # Wagman Design Verification Score Sheet
 
 ## Success Criteria
