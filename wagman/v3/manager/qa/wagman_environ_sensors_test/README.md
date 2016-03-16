@@ -2,10 +2,14 @@
 
 This test evaluates the following aspects of Wagman system design. </br>
 *   The proper wiring of on-board sensors.
-    -   HTU21D
-    -   HIH4030
-    -   Five Thermistors, four of which are sampled using MCP3428 A/D converter
-    -   Optoresistor
+    -   HTU21D</br>
+    <img src="./resources/HTU21.jpg" width="320">
+    -   HIH4030</br>
+    <img src="./resources/HIH4030.jpg" width="320">
+    -   Five Thermistors, four of which are sampled using MCP3428 A/D converter</br>
+    <img src="./resources/Thermistor.jpg" width="320">    
+    -   Optoresistor</br>
+    <img src="./resources/LightSensor.jpg" width="320">    
 *    The functioning of the on-board sensors.
 </br>
 
@@ -15,6 +19,8 @@ This test evaluates the following aspects of Wagman system design. </br>
 * Wagman is loaded with firmware and the sensor test is conducted.
 
 ## Electrical Connection
+*  Connect the two leads of the thermistors to PINS 5 and 6 of J5, J6, J7, J8 and J9 as shown below.
+<img src="./resources/Thermistor_wiring.jpg" width="320">    
 *  Connect micro-USB cable between Wagman's J3 and QA computer.
 *  Connect 5V DC power to Wagman.
 
