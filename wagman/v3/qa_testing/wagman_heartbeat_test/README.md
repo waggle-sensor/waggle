@@ -29,7 +29,7 @@ as the node controller, and J6 port is specifically designed for a XU4 board.
     <img src="./resources/RJ45AirtoLight.jpg" width="320"><img src="./resources/RJ45_Light.jpg" width="209">
     -   Connect a micro USB cable between Lightsense and QA computer.
     -   Connect the 4 wires between Lightsense and Wagman's Port 3 (J6). </br>
-    <img src="./resources/power_connect.jpg" width="320">
+    <img src="./resources/Waggle_Banner_860x220.png" width="320">
     -   Set the mode slide switch on Lightsense toward the left (closer to R1 label on the board).</br>
     <img src="./resources/PowerSlideSwitchLight.jpg" width="320">
     -   Make one of the following conections -
