@@ -3,7 +3,7 @@
 This test evaluates the following aspects of Wagman system design. </br>
 *   The ability to connect the appropriate boot-pins of the XU4 toward
     changing the primary boot-up media. </br>
-<img src="./resources/C1PBootSwitch.jpg" width="320">
+<img src="./resources/XU4_Boot_select.jpg" width="320">
 *   Default boot media must be uSD, which is achieved by connecting pins 1 and 2 of the boot selector port (J4).
 </br>
 
