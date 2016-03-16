@@ -35,8 +35,16 @@ __Please make sure only the Wagman under test is connected to the QA computer. N
 __To exit the screen session created for the test, press Control+a, followed by k and y.__
 
 ## Test Log
-This test is evaluated and scored on the __Wagman sensor test document__. This test pushes Wagman to 125% of the design
-requirements, drawing 12.5 watts on each of the five output channels.
+This test pushes Wagman to 125% of the design requirements, drawing 12.5 watts on each of the five output channels.
 
 # Success Criteria
-The test is considered __PASSED__ if the subtests of the Wagman Power and Thermal Envelope Test pass.
+The test was performed and a thermal image of the test is included below.</br>
+<img src="./resources/Overloadtest.jpg" width="640">
+</br>
+
+The test was conducted for several hours and the system was stable. The test was conducted at a ambient temperature of 
+78F, no forced air movement and the thermal camera (used for the image above) does not sense beyond 302F. All temperatures 
+are in degree F in the above image.
+
+
+
