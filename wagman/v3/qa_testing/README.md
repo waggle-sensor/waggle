@@ -10,8 +10,8 @@ components and such), the board is powered-ON and put through a series of tests 
 # Wagman Design Verification Testing and Coverage
 
 The goal of these tests are to verify that the Wagman has the necessary circuitry and design features that
-will enable it to perform all the functionalities outlined in the board design phase.
-*To Do: V3 Board Design Requirements, refer to GITHub issues and such*
+will enable it to perform all the functionalities outlined in the board design phase. </br>
+*To Do: V3 Board Design Requirements, refer to GITHub issues and such* </br>
 The following are the list of Unit Tests performed for Design Validation in order, along with the
 goals of the tests- </br>
 
