@@ -64,7 +64,7 @@ taken off the PCB assembly line -</br>
 3.  wagman_environ_sensors_test
 4.  wagman_c1p_bootswitch_test
 5.  wagman_xu4_bootswitch_test
-6.  wagman_power_thermal_envelope_test *only a sub-part of the test that verifies the relay functionality*.
+6.  wagman_power_thermal_envelope_test (*only the first sub-part of the test that verifies the relay functionality*).
 
 # Wagman Design Verification Score Sheet
 
