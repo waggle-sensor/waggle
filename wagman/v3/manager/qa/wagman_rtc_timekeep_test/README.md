@@ -14,8 +14,7 @@ This test evaluates the following aspects of Wagman system design. </br>
 *  Insert CR 3020 battery into Wagman. The +ve of the battery should face up, and -ve should press against the board.</br>
 <img src="./resources/coin_cell_battery_debug_LED.jpg" width="320">
 *  Connect micro-USB cable between Wagman's J3 and QA computer.
-*  Connect 5V DC power to Wagman using J10. Red is +5V and Black is ground. </br>
-<img src="./resources/power_connect.jpg" width="320">
+*  Connect 5V DC power to Wagman.
 
 __Please make sure only the Wagman under test is connected to the QA computer. No other Wagman or Arduino Micro/derivatives can be connected at this time.__
 ## Testing Procedure
@@ -23,6 +22,7 @@ __Please make sure only the Wagman under test is connected to the QA computer. N
 *  After initializing the board, unplug USB and Power to Wagman.
 *  After 30 seconds, power the Wagman back up and plug the USB cable into it.
 *  Continue with the test by issuing the command *make test* and follow the on-screen prompts.
+__To exit the screen session created for the test, press Control+a, followed by k and y.__
 
 ## Test Log
 This test is evaluated and scored on the __Wagman sensor test document__.

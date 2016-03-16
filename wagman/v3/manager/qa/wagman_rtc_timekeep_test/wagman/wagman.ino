@@ -4,21 +4,12 @@
 #include <Wire.h>
 #include <avr/wdt.h>
 
-#include "./libs/MCP342X/MCP342X.h"
-#include "./libs/HTU21D/HTU21D.h"
 #include "./libs/MCP79412RTC/MCP79412RTC.h"    //http://github.com/JChristensen/MCP79412RTC
 #include "./libs/Time/Time.h"
 
 
-MCP342X mcp3428_1;
 unsigned char WagID[8];
-float htu21d_humd, htu21d_temp;
-HTU21D myHumidity;
-unsigned char TIME_DURATION = 100;
-
-int loop_count = 0;
 int question_no = 1;
-int temp;
 
 void setup()
 {
@@ -28,8 +19,6 @@ void setup()
     Serial.begin(115200);
     Wire.begin();
     delay(1000);
-    mcp3428_1.init(MCP342X::H, MCP342X::H);
-    myHumidity.begin();
 
     #ifdef SET_RTC_TIME
     RTC.set(CURRENT_TIME);
@@ -57,7 +46,9 @@ void setup()
 void loop()
 
 {
-    Serial.println("------Wagman RTC timekeep test------");
+    Serial.println("------Wagman RTC Timekeep Test------");
+    WagID_print ();
+    Serial.println("");
 
     Serial.print(question_no++); Serial.print(". ");
     RTC_time_report();

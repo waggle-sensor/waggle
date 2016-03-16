@@ -42,17 +42,19 @@ program:
 
 reset:
 	$(PRE_FLASH_COMMAND)
+	sleep 7
 
 run:    install
 	sleep 2
 	screen $(LINKPORT) $(SERIALBAUD)
 
 initialize:
+	chmod +x ./timeset.sh
 	./timeset.sh
 	make install
 	sleep 2
 	echo "" > rtc_conf.cpp
-	make run
+	make install
 
 connect:
 	screen $(LINKPORT) $(SERIALBAUD)
