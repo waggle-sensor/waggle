@@ -23,9 +23,11 @@ to signify continuity is required.*
 __Please make sure only the Wagman under test is connected to the QA computer. No other Wagman or Arduino Micro/derivatives can be connected at this time.__
 
 ## Testing Procedure
-*   On an unpowered Wagman that is not connected to the QA computer, check the continuity between pins 1 and 2 of J4.
-    Next check the continuity between pins 2 and 3 of J4.
-*   Connect the Wagman to QA computer and power it ON.
+*   On an unpowered Wagman that is not connected to the QA computer, check the continuity between pins 1 and 2 of J4. </br>
+<img src="./resources/PIN12_XU4BP.jpg" width="320">
+*   Next check the continuity between pins 2 and 3 of J4.</br>
+<img src="./resources/PIN23_XU4_BP.jpg" width="320">
+*   Connect the Wagman to QA computer and power it ON.</br>
 *   Start the second phase of the test by issuing the command *make run* in the Wagman subfolder
     and follow the on-screen prompts.
 
