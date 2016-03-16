@@ -38,7 +38,9 @@ __To exit the screen session created for the test, press Control+a, followed by 
 This test pushes Wagman to 125% of the design requirements, drawing 12.5 watts on each of the five output channels.
 
 # Success Criteria
-The test was performed and a thermal image of the test is included below.</br>
+The test was performed and a thermal image of the test is included below.
+</br>
+</br>
 <img src="./resources/Overloadtest.jpg" width="640">
 </br>
 
