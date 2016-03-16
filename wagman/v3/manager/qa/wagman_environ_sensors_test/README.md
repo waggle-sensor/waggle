@@ -1,13 +1,12 @@
 # Test Scope and Coverage
 
 This test evaluates the following aspects of Wagman system design. </br>
-1. The proper wiring of on-board sensors.</br>
-* HTU21D </br>
-* HIH4030 </br>
-* Five Thermistors, four of which are sampled using MCP3428 A/D converter </br>
-* Optoresistor
-
-2. The functioning of the on-board sensors.</br>
+*   The proper wiring of on-board sensors.
+    -   HTU21D
+    -   HIH4030
+    -   Five Thermistors, four of which are sampled using MCP3428 A/D converter
+    -   Optoresistor
+*    The functioning of the on-board sensors.
 </br>
 
 # Test Setup Procedure

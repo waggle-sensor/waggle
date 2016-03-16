@@ -36,8 +36,7 @@ void setup()
 void loop()
 
 {
-    Serial.println("------Wagman Sensors Test------");
-
+    Serial.println("------Wagman Environmental Sensors Test------");
     WagID_print ();
     Serial.println("");
 
