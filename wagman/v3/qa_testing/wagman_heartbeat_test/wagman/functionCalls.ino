@@ -25,6 +25,11 @@ void set_up_pinmodes ()
     return;
 }
 
+void turnON_POW3()
+{
+    digitalWrite(PIN_POW_3, HIGH);
+    return;
+}
 
 void WagID_print()
 {

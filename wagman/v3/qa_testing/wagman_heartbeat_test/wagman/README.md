@@ -1,3 +1,6 @@
 ## Testing Procedure
-*  Start the test by issuing the command *make run* and follow the on-screen prompts.
-__To exit the screen session created for the test, press Control+a, followed by k and y.__
+__Only the Coresense boards are powered by Wagman during the test.__</br>
+__The Odroids XU4 and C1P have to be powered on independently.__</br>
+*  In the Wagman folder - First issue the command *make install*.
+~~*  On completing the above, change to the coresense folder, and issue command *make install*~~
+*  On completing the above, change back to the Wagman folder and issue the command *make test*
