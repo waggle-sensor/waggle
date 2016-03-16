@@ -45,7 +45,7 @@ void loop()
     Serial.println("Wagman sustained power delivery and temperature sensing test -");
     delay(2000);
     Serial.println("Turning ON all ports and will begin reporting current usage and thermistor values every 10 seconds...");
-    turn_on_all();
+    power_on_all();
     Serial.println("");
     delay(3000);
     while(1)
