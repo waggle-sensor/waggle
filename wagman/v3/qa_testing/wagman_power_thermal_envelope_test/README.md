@@ -42,8 +42,8 @@ The test was performed and a thermal image of the test is included below.</br>
 <img src="./resources/Overloadtest.jpg" width="640">
 </br>
 
-The test was conducted for several hours and the system was stable. The test was conducted at an ambient temperature of 
-78F, no forced air movement was used and the thermal camera (used for the image above) does not sense beyond 302F. All temperatures 
+The test was conducted for several hours and the system was stable. The test was conducted at an ambient temperature of 70-80F, 
+no forced air movement was used and the thermal camera (used for the image above) does not sense beyond 302F. All temperatures 
 are in degree F in the above image.
 
 
