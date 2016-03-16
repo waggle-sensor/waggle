@@ -18,11 +18,13 @@ as the node controller, and J6 port is specifically designed for a XU4 board.
 
 ## Electrical Connection
 *   Connect the various heartbeat lines as follows -
-    -   Connect heartbeat and ground from C1+ to heartbeat and ground pin of J9 (PORT1).
-    -   Connect heartbeat and ground from XU4 to heartbeat and ground pin of J5 (PORT2).
+    -   Connect heartbeat and ground from C1+ to heartbeat (pin 3) and ground pin (pin 4) of J9 (PORT1).
+    -   Connect heartbeat and ground from XU4 to heartbeat (pin 3) and ground pin (pin 4) of J5 (PORT2).
     -   Connect heartbeat and ground from LightSense to heartbeat and ground pin of J6 (PORT3).
-    -   Set a wave-generator to output square waves with a time period of 2 seconds and a 50%
-        duty cycle. Connect the wave output and ground to J7 and J8.
+    -   Make one of the following conections -
+        -   Set a wave-generator to output square waves with a time period of 2 seconds and a 50%
+            duty cycle. Connect the wave output and ground to J7 and J8.
+        -   Connect pin 1 of J7 to heartbeat pin (pin 3) of J7, and similarly pin 1 of J8 to heartbeat pin (pin 3) of J8.
 *   Connect micro-USB cable between Wagman's J3 and QA computer.
 *   Connect 5V DC power to Wagman.
 

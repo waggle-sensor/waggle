@@ -45,6 +45,7 @@ void WagID_print()
 
 void hbt_read()
 {
+    Serial.print("Heartbeat Values (ports 1-5): ");
     Serial.print(digitalRead(PIN_HBT1));
     Serial.print(',');
     delay(5);
@@ -59,5 +60,27 @@ void hbt_read()
     delay(5);
     Serial.println(digitalRead(PIN_HBT5));
     delay(5);
+    return;
+}
+
+void turnON_POW4()
+{
+    digitalWrite(PIN_POW_4, HIGH);
+    return;
+}
+void turnON_POW5()
+{
+    digitalWrite(PIN_POW_5, HIGH);
+    return;
+}
+
+void turnOFF_POW4()
+{
+    digitalWrite(PIN_POW_4, LOW);
+    return;
+}
+void turnOFF_POW5()
+{
+    digitalWrite(PIN_POW_5, LOW);
     return;
 }

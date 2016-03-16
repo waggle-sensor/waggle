@@ -38,8 +38,20 @@ void loop()
     Serial.println(" ");
     while(1)
     {
+        turnON_POW5(); // Simulating heartbeat for Port 4 and 5 for testing in the absence of Function Generator.
+        turnON_POW4();
+        delay(370);
         hbt_read();
         delay(470);
+        hbt_read();
+        delay(100);
+        turnOFF_POW5();
+        turnOFF_POW4();
+        delay(370);
+        hbt_read();
+        delay(470);
+        hbt_read();
+        delay(100);
     }
 }
 
