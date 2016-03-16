@@ -26,6 +26,7 @@ all: clean	$(TARGET)
 $(TARGET): $(TARGET).ino
 	$(CC) --board $(BOARD_FLASH) $(CFLAGS) --pref build.path=$(BUILD_DIR) $(TARGET).ino
 	$(BUILD_COMPLETE)
+	make clean
 
 clean:
 	rm -rf $(BUILD_DIR)/*
