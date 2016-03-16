@@ -22,10 +22,10 @@ This test evaluates the following aspects of Wagman system design. </br>
 *  Connect 5V DC power to Wagman.
 *  Connect five 2 ohm resistors (20 watt dissipation) to the five output ports (J5, J6, J7, J8 and J9)
     between +5V (pin 2) and GND (pin 4).
-*  Connect the two leads of the thermistors to PINS 5 and 6 of J5, J6, J7, J8 and J9 as shown below.
+*  Connect the two leads of the thermistors to PINS 5 and 6 of J5, J6, J7, J8 and J9 as shown below.</br>
 <img src="./resources/Thermistor_wiring.jpg" width="320">
 *  Secure the five thermistor bulbs to the five resistor loads such that the bulbs are heated by the
-    resistors. The thermistor bubls can be secured using heat resistant tape.
+    resistors. The thermistor bulbs can be secured using heat resistant tape.</br>
 <img src="./resources/Thermistor.jpg" width="320">
 
 __Please make sure only the Wagman under test is connected to the QA computer. No other Wagman or Arduino Micro/derivatives can be connected at this time.__
