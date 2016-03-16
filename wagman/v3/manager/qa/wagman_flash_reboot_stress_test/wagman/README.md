@@ -9,5 +9,8 @@ logic is as follows - </br>
 * Power on XU4.
 * Wait in infinite loop, flashing L and L1 debug LEDs.
 
+__Please make sure only the Wagman under test is connected to the C1+ SBC. No other Wagman or
+    Arduino Micro/derivatives can be connected at this time.__
+
 
 
