@@ -26,7 +26,7 @@ as the node controller, and J6 port is specifically designed for a XU4 board.
     <img src="./resources/XU4_HBT_PINS.jpg" width="320">
     -   Connect Lightsense to Airsense using CAT6 cable between Lightsense's RJ45 jack and Airsense's RJ45 jack
         labeled __Light__.  </br>
-    <img src="./resources/RJ45AirtoLight.jpg" width="320"><img src="./resources/RJ45_Light.jpg" width="320">
+    <img src="./resources/RJ45AirtoLight.jpg" width="320"><img src="./resources/RJ45_Light.jpg" width="209">
     -   Connect a micro USB cable between Lightsense and QA computer.
     -   Connect the 4 wires between Lightsense and Wagman's Port 3 (J6). </br>
     <img src="./resources/power_connect.jpg" width="320">
