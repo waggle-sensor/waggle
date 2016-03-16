@@ -24,7 +24,8 @@ __Please make sure only the Wagman under test is connected to the QA computer. N
 
 ## Testing Procedure
 *   On an unpowered Wagman that is not connected to the QA computer, check the continuity between the two
-    pins of JP9.
+    pins of JP9.</br>
+ 	<img src="./resources/C1P_BootSelect.jpg" width="320">
 *   Connect the Wagman to QA computer and power it ON.
 *   Start the second phase of the test by issuing the command *make run* in the Wagman subfolder
     and follow the on-screen prompts.
