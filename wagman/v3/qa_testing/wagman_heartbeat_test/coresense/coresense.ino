@@ -4,6 +4,8 @@ void setup()
 {
     // Let us wait for the processor and the sensors to settle down
     delay(1000);
+    pinMode(HBEAT_PIN, OUTPUT);
+    delay(1000);
 }
 
 

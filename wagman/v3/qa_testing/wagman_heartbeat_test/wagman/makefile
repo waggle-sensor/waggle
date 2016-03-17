@@ -61,4 +61,4 @@ connect:
 
 test:	reset
 	sleep 7
-	connect
+	make connect
