@@ -20,6 +20,7 @@ BIN_DIR = ./bin
 CFLAGS  = --verbose-build --verify
 
 all: clean	$(TARGET)
+	make clean
 
 $(TARGET): $(TARGET).ino
 	$(CC) --board $(BOARD_FLASH) $(CFLAGS) --pref build.path=$(BUILD_DIR) $(TARGET).ino

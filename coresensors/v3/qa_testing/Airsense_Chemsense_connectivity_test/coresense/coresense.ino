@@ -8,6 +8,8 @@ extern TwoWire Wire1;
 byte MAC_ID[LENGTH_FORMAT3 + 2] = {ID_MAC, 134,0,0,0,0,0,0}; // MAC address
 OneWire ds2401(PIN_DS2401);  //DS2401 PIN
 byte Temp_byte[8];
+unsigned char Temp_uchar[4] = {'F','A','I','L'};
+
 
 
 void initializecoresense(void)
@@ -19,6 +21,8 @@ void initializecoresense(void)
     pinMode(PIN_RAW_MIC,INPUT);
     pinMode(PIN_HIH4030,INPUT);
     pinMode(PIN_CHEMSENSE_POW, OUTPUT);
+    pinMode(PIN_CHEMSENSE_HBT, INPUT);
+    pinMode(PIN_CHEMSENSE_RST, OUTPUT);
 
     if (ds2401.reset() == TRUE)
     {
@@ -55,15 +59,16 @@ void setup()
 {
     delay(2000);
     Wire.begin();
-    delay(2000);
     SerialUSB.begin(115200);
+    Serial3.begin(19200);
+    delay(2000);
     initializecoresense();
 }
 
 
 void loop()
 {
-    SerialUSB.println(">>>>>> Core Sense Testing - Airsense-Lightsense Connectivity Test <<<<<<");
+    SerialUSB.println(">>>>>> Core Sense Testing - Airsense-Chemsense Connectivity Test <<<<<<");
     SerialUSB.println(" ");
     SerialUSB.print("Unique Board ID - ");
     for (byte i=2; i<8; i++)
@@ -81,25 +86,54 @@ void loop()
     }
     SerialUSB.println(" ");
     delay(2000);
-    SerialUSB.print("1. Airsense-Lightsense Connectivity Test : ");
-    if (Wire.requestFrom(0x27,1) == 0x01) // we are checking if we can read the HIH6130 chip present on the Lightsense board from the Airsense.
+
+    SerialUSB.print("1. Airsense-Chemsense Serial Connectivity Test : ");
+    Serial3.write("P");
+    delay(100);
+    Temp_uchar[0] = Serial3.read();
+    Serial3.write("A");
+    delay(100);
+    Temp_uchar[1] = Serial3.read();
+    Serial3.write("S");
+    delay(100);
+    Temp_uchar[2] = Serial3.read();
+    Serial3.write("S");
+    delay(100);
+    Temp_uchar[3] = Serial3.read();
+    for (byte i=0; i<4; i++)
     {
-        SerialUSB.println("PASS.");
+        SerialUSB.write(Temp_uchar[i]);
+    }
+    SerialUSB.println(" ");
+    delay(1000);
+    SerialUSB.print("2. Airsense-Chemsense Heartbeat and Reset Test : ");
+
+    digitalWrite(PIN_CHEMSENSE_RST, HIGH);
+    delay(100);
+    if (digitalRead(PIN_CHEMSENSE_HBT) == 1)
+    {
+        delay(100);
+        digitalWrite(PIN_CHEMSENSE_RST, LOW);
+        delay(100);
+        if (digitalRead(PIN_CHEMSENSE_HBT) == 0)
+        {
+            SerialUSB.println("PASS");
+            SerialUSB.println(" ");
+            SerialUSB.println(">>>>>> Test Finished <<<<<<");
+            while (1)
+            {
+                delay(100);
+            }
+        }
     }
 
-    else
-    {
-        SerialUSB.println("FAIL.");
-    }
-
+    SerialUSB.println("FAIL");
     SerialUSB.println(" ");
     SerialUSB.println(">>>>>> Test Finished <<<<<<");
-
     while (1)
     {
         delay(100);
     }
-
 }
 
 
