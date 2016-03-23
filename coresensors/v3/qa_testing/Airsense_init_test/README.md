@@ -34,6 +34,9 @@ This test evaluates the following aspects of Airsense system design. </br>
     <img src="./resources/Wagman_LightSense.jpg" width="256"><img src="./resources/Light_sense_Wagman_connection.jpg" width="320">
     -   Set the mode slide switch on Lightsense toward the left (closer to R1 label on the board).</br>
     <img src="./resources/PowerSlideSwitchLight.jpg" width="320">
+    -   Connect micro-USB cable between Wagman's J3 and QA computer.
+    -   Connect 5V DC power to Wagman.
+
 
 * Setup 3: Airsense and Lightsense powered over EXT RJ-45 Port in Airsense. 
     -   Connect Lightsense to Airsense using CAT6 cable between Lightsense's RJ45 jack and Airsense's RJ45 jack
