@@ -1,6 +1,4 @@
 ## Testing Procedure
-__Only the Coresense boards are powered by Wagman during the test.__</br>
-__The Odroids XU4 and C1P have to be powered on independently.__</br>
-~~*  In the Wagman folder - First issue the command *make install*.~~
-*  On completing the above, change to the coresense folder, and issue command *make install*
-~~*  On completing the above, change back to the Wagman folder and issue the command *make test*~~
+*  In the coresense folder, and issue command *make run*
+_Please make sure only the Airsense-Lightsense pair under test is connected to the QA computer. No other similar Coresense devices or Arduino Due/derivatives can be connected at this time.__
+__To exit the screen session created for the test, press Control+a, followed by k and y.__

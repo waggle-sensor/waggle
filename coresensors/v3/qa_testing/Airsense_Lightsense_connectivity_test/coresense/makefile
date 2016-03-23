@@ -46,3 +46,5 @@ run:    install
 connect:
 	sleep 2
 	screen $(LINKPORT) $(SERIALBAUD)
+
+test:	program connect

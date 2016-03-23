@@ -1,3 +1,6 @@
+#include <Arduino.h>
+#line 1
+#line 1 "/media/rajesh/Bharadwaja/github/waggle/coresensors/v3/qa_testing/Airsense_Lightsense_connectivity_test/coresense/coresense.ino"
 #include <Wire.h>
 extern TwoWire Wire1;
 #include <OneWire.h>
@@ -10,6 +13,13 @@ OneWire ds2401(PIN_DS2401);  //DS2401 PIN
 byte Temp_byte[8];
 
 
+#line 13 "/media/rajesh/Bharadwaja/github/waggle/coresensors/v3/qa_testing/Airsense_Lightsense_connectivity_test/coresense/coresense.ino"
+void initializecoresense(void);
+#line 54 "/media/rajesh/Bharadwaja/github/waggle/coresensors/v3/qa_testing/Airsense_Lightsense_connectivity_test/coresense/coresense.ino"
+void setup();
+#line 64 "/media/rajesh/Bharadwaja/github/waggle/coresensors/v3/qa_testing/Airsense_Lightsense_connectivity_test/coresense/coresense.ino"
+void loop();
+#line 13
 void initializecoresense(void)
 {
     byte i;
@@ -101,6 +111,7 @@ void loop()
     }
 
 }
+
 
 
 
