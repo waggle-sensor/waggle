@@ -45,8 +45,9 @@ This test evaluates the following aspects of Airsense system design. </br>
     -   Set the mode slide switch on Lightsense toward the left (closer to R1 label on the board).</br>
     <img src="./resources/PowerSlideSwitchLight.jpg" width="320">
     -   Connect a micro USB cable between Lightsense and QA computer.
-    -   Connect AEXT breakout connector to EXT port of Airsense. 
-    -   Connect 5V power supply to the barrel jack of the AEXT breakout. 
+    -   Connect the AEXT test adapter to the EXT RJ-45 of Airsense using a CAT6 cable. 
+    <img src="./resources/achem_connected.jpg" width="320">
+    -   Connect USB plug of the AEXT breakout board to a USB power source. 
 
 **In the above setups, use pre-tested and verified Lightsense and Wagman boards if available.**
 
