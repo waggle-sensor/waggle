@@ -51,7 +51,7 @@ The following Tests are performed in sequence for Design Validation - </br>
     - SPI communication between Airsense and OPC-N2
 
 8. Airsense_External_connectivity_test
-    -  I2C communication through EXT RJ-45 Jack. 
+    -  I2C communication through EXT RJ-45 Jack.
 
 ## Tools and Equipment Required:
 *   Airsense and Lightsense V3.1 boards to be tested.
