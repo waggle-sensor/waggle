@@ -94,7 +94,7 @@ void loop()
     SerialUSB.println(" ");
     SerialUSB.println("1. Power-ON : PASS");
     SerialUSB.println(" ");
-    SerialUSB.println("2. Atmel Power @ Communication: PASS ");
+    SerialUSB.println("2. Atmel Power & Communication: PASS ");
     SerialUSB.println(" ");
     SerialUSB.print("3. I2C Bus Test : ");
 
