@@ -10,3 +10,6 @@
 *   Setup 3:
     -   Complete electrical connections.
     -   Perform test by issuing command *make run* in the coresense directory.
+
+## Example Output
+ <img src="../resources/TestOutput.jpg" width="640">
