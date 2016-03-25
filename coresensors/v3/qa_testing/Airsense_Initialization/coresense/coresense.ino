@@ -8,7 +8,7 @@ extern TwoWire Wire1;
 byte MAC_ID[LENGTH_FORMAT3 + 2] = {ID_MAC, 134,0,0,0,0,0,0}; // MAC address
 OneWire ds2401(PIN_DS2401);  //DS2401 PIN
 byte Temp_byte[8];
-
+byte pass_flag = 1;
 
 void initializecoresense(void)
 {
@@ -90,9 +90,42 @@ void setup()
 
 void loop()
 {
-    SerialUSB.println(">>>>>> Core Sense Testing - Airsense Init Test <<<<<<");
+    SerialUSB.println(">>>>>> Core Sense Testing - Airsense Initialization <<<<<<");
     SerialUSB.println(" ");
-    SerialUSB.print("1. Unique Board ID - ");
+    SerialUSB.println("1. Power-ON : PASS");
+    SerialUSB.println(" ");
+    SerialUSB.println("2. Atmel Power @ Communication: PASS ");
+    SerialUSB.println(" ");
+    SerialUSB.print("3. I2C Bus Test : ");
+
+    for (byte i=0; i<LENGTH_FORMAT3; i++)
+    {
+        writeEEPROM (i,MAC_ID[i+2]);
+    }
+
+    delay(100);
+
+    for (byte i=0; i<LENGTH_FORMAT3; i++)
+    {
+        if (readEEPROM(i) != MAC_ID[i+2])
+        {
+            pass_flag = 0;
+            break;
+        }
+    }
+
+    if (pass_flag == 1)
+    {
+        SerialUSB.println("PASS");
+    }
+    else
+    {
+        SerialUSB.println("FAIL");
+    }
+    SerialUSB.println(" ");
+
+    SerialUSB.print("4. Unique Board ID - ");
+
     for (byte i=2; i<8; i++)
     {
         SerialUSB.print(MAC_ID[i],HEX);
@@ -108,27 +141,7 @@ void loop()
     }
     SerialUSB.println(" ");
     delay(2000);
-    SerialUSB.println("2. Internal I2C Communication Test : ");
-    for (byte i=0; i<LENGTH_FORMAT3; i++)
-    {
-        writeEEPROM (i,MAC_ID[i+2]);
-    }
-    SerialUSB.println(" ");
-    delay(100);
-    SerialUSB.print("Printing UID from EEPROM - ");
-    for (byte i=0; i<LENGTH_FORMAT3; i++)
-    {
-        SerialUSB.print(readEEPROM (i), HEX);
-        if (i < 5)
-        {
-            SerialUSB.print(":");
-        }
-        else
-        {
-            SerialUSB.print("\n");
-        }
-    }
-    SerialUSB.println(" ");
+
     SerialUSB.println(">>>>>> Test Finished <<<<<<");
 
     while (1)
