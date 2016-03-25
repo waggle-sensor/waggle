@@ -1,0 +1,11 @@
+#Build settings for Wagman
+TARGET='wagmanV3'
+PORT='/dev/waggle_sysmon'
+SERIALBAUD=115200
+ARDUINO_DIR='/home/rajesh/WaggleGIT/arduino-1.6.7'
+
+#Build settings for Airsense
+#TARGET='airsenseV3'
+#PORT='/dev/waggle_sysmon'
+#SERIALBAUD=115200
+#ARDUINO_DIR='/home/rajesh/WaggleGIT/arduino-1.6.7'
