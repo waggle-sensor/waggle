@@ -15,15 +15,14 @@ import datetime
 
 
 context = zmq.Context()
-socket = context.socket(zmq.PUB)
-socket.bind('tcp://*:12345')
+pub = context.socket(zmq.PUB)
+pub.bind('tcp://*:12345')
 
-conn = coresense.Connection('/dev/ttyACM0')
-
-while True:
-    message = conn.recv()
-    datetime_string = str(datetime.datetime.now())
-    for entry in message.entries:
-        value_string = ','.join('{}:{}'.format(k, v) for k, v in entry.values)
-        string = ','.join([entry.sensor, datetime_string, value_string])
-        socket.send_string(string)
+with coresense.create_connection('/dev/ttyACM0') as conn:
+    while True:
+        message = conn.recv()
+        datetime_string = str(datetime.datetime.now())
+        for entry in message.entries:
+            value_string = ','.join('{}:{}'.format(k, v) for k, v in entry.values)
+            string = ','.join([entry.sensor, datetime_string, value_string])
+            pub.send_string(string)
