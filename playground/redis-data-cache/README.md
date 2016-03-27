@@ -11,7 +11,7 @@ be configured if the defaults aren't good enough.
 
 2. The script stage-sensor-data.py basically checks in on how much data is in the
 cache. When it's surpassed a certain window, it compresses the window and adds
-pushes it back into Redis in a separated staging queue. Using LMZA/XZ, this was
+pushes it back into Redis in a separate staging queue. Using LMZA/XZ, this was
 dropping the data size down to about 0.05 times the original data size for the
 kind of sensor data I was collecting. Not bad! :) Additionally, even if you
 aggressively do this compression, you won't need to do it more than every 5-10
