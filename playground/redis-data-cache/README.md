@@ -2,7 +2,7 @@ I'd heard some good things about Redis and used it a little bit before. I though
 it'd be interesting to write a short example of something possibly relevant to our
 own work.
 
-In about an hour or so, along with zeromq for messaging, I was able to get this
+In about an hour, with Redis for storage and zeromq for messaging, I was able to get this
 staged data cache running. It serves a few purposes:
 
 1. It acts as a persistant data cache. You can queue items up and it automatically
