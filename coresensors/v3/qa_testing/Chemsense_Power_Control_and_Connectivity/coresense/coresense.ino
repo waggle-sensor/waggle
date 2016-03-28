@@ -20,6 +20,8 @@ void initializecoresense(void)
     pinMode(PIN_RAW_MIC,INPUT);
     pinMode(PIN_HIH4030,INPUT);
     pinMode(PIN_CHEMSENSE_POW, OUTPUT);
+    pinMode(PIN_CHEMSENSE_HBT, INPUT);
+    pinMode(PIN_CHEMSENSE_RST, OUTPUT);
 
     if (ds2401.reset() == TRUE)
     {
@@ -58,6 +60,7 @@ void setup()
     Wire.begin();
     delay(2000);
     SerialUSB.begin(115200);
+    Serial3.begin(115200);
     initializecoresense();
 }
 
