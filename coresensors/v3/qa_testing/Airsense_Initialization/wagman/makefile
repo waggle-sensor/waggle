@@ -40,7 +40,7 @@ install:	clean	all
 program:
 	$(PRE_FLASH_COMMAND)
 	$(FLASH_BOARD)
-
+	
 reset:
 	$(PRE_FLASH_COMMAND)
 
@@ -56,9 +56,7 @@ initialize:
 	make run
 
 connect:
+	sleep 2
 	screen $(LINKPORT) $(SERIALBAUD)
 
-
-test:	reset
-	sleep 7
-	make connect
+test:	program

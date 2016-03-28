@@ -31,61 +31,9 @@ void turnON_POW3()
     return;
 }
 
-void WagID_print()
+void turnOFF_POW3()
 {
-    byte k;
-    RTC.idRead(WagID);
-    Serial.print("Unique Board ID # ");
-    for (k = 0; k<0x08; k++)
-    {
-        Serial.print(WagID[k],HEX);
-        if (k<0x07)
-        {
-            Serial.print(":");
-        }
-    }
-    Serial.println("");
-}
-
-
-void hbt_read()
-{
-    Serial.print("Heartbeat Values (ports 1-5): ");
-    Serial.print(digitalRead(PIN_HBT1));
-    Serial.print(',');
-    delay(5);
-    Serial.print(digitalRead(PIN_HBT2));
-    Serial.print(',');
-    delay(5);
-    Serial.print(digitalRead(PIN_HBT3));
-    Serial.print(',');
-    delay(5);
-    Serial.print(digitalRead(PIN_HBT4));
-    Serial.print(',');
-    delay(5);
-    Serial.println(digitalRead(PIN_HBT5));
-    delay(5);
+    digitalWrite(PIN_POW_3, LOW);
     return;
 }
 
-void turnON_POW4()
-{
-    digitalWrite(PIN_POW_4, HIGH);
-    return;
-}
-void turnON_POW5()
-{
-    digitalWrite(PIN_POW_5, HIGH);
-    return;
-}
-
-void turnOFF_POW4()
-{
-    digitalWrite(PIN_POW_4, LOW);
-    return;
-}
-void turnOFF_POW5()
-{
-    digitalWrite(PIN_POW_5, LOW);
-    return;
-}

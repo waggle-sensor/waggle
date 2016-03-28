@@ -17,8 +17,8 @@ by the *Advanced Sensors Group at Intel* and the testing for the *OPC-N2 is perf
 
 # Design Verification Testing and Coverage
 
-The goals of these tests are to verify that the sensor boards has the necessary circuitry and
-design features that will enable it to perform all the functionalities outlined in the board design
+The goals of these tests are to verify that the sensor boards have the necessary circuitry and
+design features that will enable them to perform all the functionalities outlined in the board design
 phase. The following Tests are performed in sequence for Design Validation - </br>
 
 1.  Airsense Initialization
