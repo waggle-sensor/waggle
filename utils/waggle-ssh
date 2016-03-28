@@ -1,0 +1,4 @@
+#!/bin/sh
+node=$1
+shift
+ssh -o "UserKnownHostsFile /dev/null" -o "LogLevel QUIET" -o "StrictHostKeyChecking no" waggle@localhost -p $(waggle-node-port $node) $@

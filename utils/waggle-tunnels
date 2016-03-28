@@ -1,0 +1,3 @@
+#!/bin/sh
+awk '{ n = split(FILENAME, a, /\//); print a[n], $1, a[3] }' /home/waggle*/.ssh/tunnels/* | sort
+
