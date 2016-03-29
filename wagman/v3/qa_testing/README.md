@@ -1,6 +1,3 @@
-*__To be finished__*
-
-
 # Wagman QA Tests and Scope
 
 The QA test for Wagman is accomplished through a series of pre-power-ON and post-power-ON tests. After
@@ -10,51 +7,50 @@ components and such), the board is powered-ON and put through a series of tests 
 # Wagman Design Verification Testing and Coverage
 
 The goal of these tests are to verify that the Wagman has the necessary circuitry and design features that
-will enable it to perform all the functionalities outlined in the board design phase. </br>
-*To Do: V3 Board Design Requirements, refer to GITHub issues and such* </br>
+will enable it to perform all the functionalities outlined in the board design phase.
 The following are the list of Unit Tests performed for Design Validation in order, along with the
 goals of the tests- </br>
 
-1.  wagman_init_test
-  - Wagman power-on.
-  - Wagman Atmel chip power-on and communication - including boot loader flashing and USB communication.
-  - Proper functioning of on-board I2C communication bus.
-  - Wagman's ability to read its unique ID.
-  - Wagman's ability to provide visual feedback to tester using two LEDs whose brightness levels can be controlled.
+1.  Wagman Initialization
+    - Wagman power-on.
+    - Wagman Atmel chip power-on and communication - including boot loader flashing and USB communication.
+    - Proper functioning of on-board I2C communication bus.
+    - Wagman's ability to read its unique ID.
+    - Wagman's ability to provide visual feedback to tester using two LEDs whose brightness levels can be controlled.
 
-2.  wagman_rtc_timekeep_test
-  - Proper functioning of the RTC circuitry.
-  - Wagman's ability to keep time when the main 5V power is disconnected.
+2.  Wagman RTC
+    - Proper functioning of the RTC circuitry.
+    - Wagman's ability to keep time when the main 5V power is disconnected.
 
-3.  wagman_environ_sensors_test
-  - The proper wiring of on-board sensors: HTU21D, HIH4030, Five Thermistors, and Optoresistor
-  - The functioning of the on-board sensors.
+3.  Wagman Sensors
+    - The proper wiring of on-board sensors: HTU21D, HIH4030, Five Thermistors, and Optoresistor
+    - The functioning of the on-board sensors.
 
-4.  wagman_c1p_bootswitch_test
-  - The ability to connect the boot-pins of the C1+ or isolate them toward changing the primary boot-up media.
-  - Default boot media must be uSD, which is achieved by connecting the bootpins (JP9).
+4.  Wagman C1P Bootswitch
+    - The ability to connect the boot-pins of the C1+ or isolate them toward changing the primary boot-up media.
+    - Default boot media must be uSD, which is achieved by connecting the bootpins (JP9).
 
-5.  wagman_xu4_bootswitch_test
-  - The ability to connect the appropriate boot-pins of the XU4 toward changing the primary boot-up media.
-  - Default boot media must be uSD, which is achieved by connecting pins 1 and 2 of the boot selector port (J4).
+5.  Wagman XU4 BootSwitch
+    - The ability to connect the appropriate boot-pins of the XU4 toward changing the primary boot-up media.
+    - Default boot media must be uSD, which is achieved by connecting pins 1 and 2 of the boot selector port (J4).
 
-6.  wagman_heartbeat_test
-  -  Wagman's ability to sense heartbeats from five devices connected to it.
+6.  Wagman Heartbeat
+    -  Wagman's ability to sense heartbeats from five devices connected to it.
 
-7.  wagman_power_thermal_envelope_test
-  - Ability to turn on and off five 5V DC power channels.
-  - Ability to sense on-board power consumption.
-  - Ability to supply a minimum of 2A of current through each of the five ports.
-  - Ability to source 10A of current from AC/DC converter.
-  - Ability to sense power consumed by devices connected to the five power outputs.
-  - Ability to sustain peak power distribution over several tens of minutes without catastrophic failure.
-  - Ability to sense heating and temperature change of the various devices connected to the power outputs.
+7.  Wagman Power and Thermal Envelope
+    - Ability to turn on and off five 5V DC power channels.
+    - Ability to sense on-board power consumption.
+    - Ability to supply a minimum of 2A of current through each of the five ports.
+    - Ability to source 10A of current from AC/DC converter.
+    - Ability to sense power consumed by devices connected to the five power outputs.
+    - Ability to sustain peak power distribution over several tens of minutes without catastrophic failure.
+    - Ability to sense heating and temperature change of the various devices connected to the power outputs.
 
-8.  wagman_flash_reboot_stress_test
-  - Ability to sustain Odroid XU4 and C1+ under full CPU load (and hence current utilization).
-  - Ability to boot XU4 when C1+ is drawing maximum current.
-  - Ability to flash Wagman from C1+.
-  - Repeatability and predictability of the above.
+8.  Wagman Stress Flash and Reboot
+    - Ability to sustain Odroid XU4 and C1+ under full CPU load (and hence current utilization).
+    - Ability to boot XU4 when C1+ is drawing maximum current.
+    - Ability to flash Wagman from C1+.
+    - Repeatability and predictability of the above.
 
 ## Tools and Equipment Required:
 *   Wagman board under test
@@ -76,12 +72,11 @@ goals of the tests- </br>
 For the production QA test, the following tests are proposed to be performed when the board is
 taken off the PCB assembly line -</br>
 
-1.  wagman_init_test
-2.  wagman_rtc_timekeep_test
-3.  wagman_environ_sensors_test
-4.  wagman_c1p_bootswitch_test
-5.  wagman_xu4_bootswitch_test
-6.  wagman_power_thermal_envelope_test (*only the first sub-part of the test that verifies the relay functionality*).
+1.  Wagman Initialization
+2.  Wagman RTC
+3.  Wagman Sensors and Relays
+4.  Wagman C1P Bootswitch
+5.  Wagman XU4 BootSwitch
 
 ## Tools and Equipment Required:
 *   Wagman board under test
@@ -89,12 +84,3 @@ taken off the PCB assembly line -</br>
 *   Multimeter capable of continuity check with beep on continuity enabled
 *   12 inches each of 18 gauge wire with red (Digikey A461626R-100-ND) and black (Digikey A461626B-100-ND) insulation.
 *   QA computer (With Arduino 1.6.7 installed and configured to work with Waggle code base, udev rules for Waggle hardware installed etc.)
-
-
-# Wagman Design Verification Score Sheet
-
-## Success Criteria
-
-# Wagman Production QA Testing Score Sheet
-
-## Success Criteria

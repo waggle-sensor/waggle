@@ -1,0 +1,85 @@
+
+avrdude: Version 6.0.1, compiled on Apr 14 2015 at 19:04:16
+         Copyright (c) 2000-2005 Brian Dean, http://www.bdmicro.com/
+         Copyright (c) 2007-2009 Joerg Wunsch
+
+         System wide configuration file is "/home/rajesh/WaggleGIT/arduino-1.6.7/hardware/tools/avr/etc/avrdude.conf"
+         User configuration file is "/home/rajesh/.avrduderc"
+         User configuration file does not exist or is not a regular file, skipping
+
+         Using Port                    : /dev/waggle_sysmon
+         Using Programmer              : avr109
+         Overriding Baud Rate          : 57600
+         AVR Part                      : ATmega32U4
+         Chip Erase delay              : 9000 us
+         PAGEL                         : PD7
+         BS2                           : PA0
+         RESET disposition             : dedicated
+         RETRY pulse                   : SCK
+         serial program mode           : yes
+         parallel program mode         : yes
+         Timeout                       : 200
+         StabDelay                     : 100
+         CmdexeDelay                   : 25
+         SyncLoops                     : 32
+         ByteDelay                     : 0
+         PollIndex                     : 3
+         PollValue                     : 0x53
+         Memory Detail                 :
+
+                                  Block Poll               Page                       Polled
+           Memory Type Mode Delay Size  Indx Paged  Size   Size #Pages MinW  MaxW   ReadBack
+           ----------- ---- ----- ----- ---- ------ ------ ---- ------ ----- ----- ---------
+           eeprom        65    20     4    0 no       1024    4      0  9000  9000 0x00 0x00
+           flash         65     6   128    0 yes     32768  128    256  4500  4500 0x00 0x00
+           lfuse          0     0     0    0 no          1    0      0  9000  9000 0x00 0x00
+           hfuse          0     0     0    0 no          1    0      0  9000  9000 0x00 0x00
+           efuse          0     0     0    0 no          1    0      0  9000  9000 0x00 0x00
+           lock           0     0     0    0 no          1    0      0  9000  9000 0x00 0x00
+           calibration    0     0     0    0 no          1    0      0     0     0 0x00 0x00
+           signature      0     0     0    0 no          3    0      0     0     0 0x00 0x00
+
+         Programmer Type : butterfly
+         Description     : Atmel AppNote AVR109 Boot Loader
+
+Connecting to programmer: .
+Found programmer: Id = "CATERIN"; type = S
+    Software Version = 1.0; No Hardware Version given.
+Programmer supports auto addr increment.
+Programmer supports buffered memory access with buffersize=128 bytes.
+
+Programmer supports the following devices:
+    Device code: 0x44
+
+avrdude: devcode selected: 0x44
+avrdude: AVR device initialized and ready to accept instructions
+
+Reading | ################################################## | 100% 0.00s
+
+avrdude: Device signature = 0x1e9587
+avrdude: safemode: lfuse reads as FF
+avrdude: safemode: hfuse reads as D8
+avrdude: safemode: efuse reads as CB
+avrdude: reading input file "./bin/wagman.ino.hex"
+avrdude: writing flash (11404 bytes):
+
+Writing | ################################################## | 100% 0.86s
+
+avrdude: 11404 bytes of flash written
+avrdude: verifying flash memory against ./bin/wagman.ino.hex:
+avrdude: load data flash data from input file ./bin/wagman.ino.hex:
+avrdude: input file ./bin/wagman.ino.hex contains 11404 bytes
+avrdude: reading on-chip flash data:
+
+Reading | ################################################## | 100% 0.09s
+
+avrdude: verifying ...
+avrdude: 11404 bytes of flash verified
+
+avrdude: safemode: lfuse reads as FF
+avrdude: safemode: hfuse reads as D8
+avrdude: safemode: efuse reads as CB
+avrdude: safemode: Fuses OK (H:CB, E:D8, L:FF)
+
+avrdude done.  Thank you.
+
