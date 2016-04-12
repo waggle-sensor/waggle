@@ -11,7 +11,7 @@ pointing out to the various capabilities, sensors and connectors on board.
 The WagMan V3.1 board has a set of on-board sensors that include
   * HT21D - Digital Temperature and Humidity Sensor
   * HIH4030 - Analog Humidity Sensor
-  * ACS764 Current Sensors
+  * ACS764 Current Sensors, one sensing WagMan's utilization and five sensing utilizationg by other connected devices
   * Thermistors for sensing temperature of connected devices
   * An Opto-resistor to provide a measure of brightness in the vicinity of the WagMan. 
 
@@ -21,11 +21,12 @@ In addition to the above sensors, the WagMan can keep time using a real-time clo
 which also provides the WagMan with a 6-byte unique ID. 
 
 ## Power Distribution, Control and Metering
-There are 5 current sensed switched output ports on the WagMan numbered Port 1 to 5 with the following features
-
+There are 5 ports on the WagMan numbered Port 1 to 5 with the following features
   * Each port has one 5V power output, one Thermistor input (2 pins) and one heartbeat input. An optional 
   reset pin can be used to reset a device (by toggling the line) powered by an external source. The reset 
   feature and 5V power cannot be used at the same time on a port. 
+  * The power output of a port can be turned On or Off by the WagMan.
+  * The current consumed from each port can be sensed by the WagMan, accurate to 16mA. 
   * Port 1 is uniquely configured to maintain power state across Atmel 32U4 resets. This port is reserved for the 
   Node Controller.
   * The 5 output ports, Port 1 to Port 5, are uniquely configured on V3.1 board as follows 
