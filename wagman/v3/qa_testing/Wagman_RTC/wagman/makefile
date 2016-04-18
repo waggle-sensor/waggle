@@ -57,9 +57,20 @@ initialize: clean
 	mv $(BIN_DIR)/$(TARGET).ino.hex $(BIN_DIR)/$(TARGET)_test.ino.hex
 	make clean
 
+program:
+	$(PRE_FLASH_COMMAND)
+	$(FLASHER) -l flash_avr.log -C$(FLASHER_CONFIGS) -v -p$(TYPE) -c$(BOOT_LOADER_TYPE) -P$(PORT) -b$(FLASHER_BAUD_RATE) -D -Uflash:w:$(BIN_DIR)/$(TARGET)_RTC_set.ino.hex:i
+	sleep 8
+	$(PRE_FLASH_COMMAND)
+	$(FLASHER) -l flash_avr.log -C$(FLASHER_CONFIGS) -v -p$(TYPE) -c$(BOOT_LOADER_TYPE) -P$(PORT) -b$(FLASHER_BAUD_RATE) -D -Uflash:w:$(BIN_DIR)/$(TARGET)_test.ino.hex:i
+	sleep 3
 
 connect:
 	sleep 3
 	screen $(LINKPORT) $(SERIALBAUD)
 
-test:	connect
+test:
+	$(PRE_FLASH_COMMAND)
+	sleep 8
+	screen $(LINKPORT) $(SERIALBAUD)
+

@@ -25,16 +25,16 @@ void setup()
     RTC.set(CURRENT_TIME);
     while(1)
     {
-        delay(100);
+        delay(1000);
         analogWrite(PIN_Debug_L,0x00);
         analogWrite(PIN_Debug_L1,0x00);
-        delay(100);
+        delay(1000);
         analogWrite(PIN_Debug_L,0x00);
         analogWrite(PIN_Debug_L1,0xff);
-        delay(100);
+        delay(1000);
         analogWrite(PIN_Debug_L,0xff);
         analogWrite(PIN_Debug_L1,0xff);
-        delay(100);
+        delay(1000);
         analogWrite(PIN_Debug_L,0xff);
         analogWrite(PIN_Debug_L1,0x00);
     };
@@ -67,7 +67,7 @@ void loop()
 
     while(1)
     {
-        delay(1);
+        delay(10);
     }
 }
 
