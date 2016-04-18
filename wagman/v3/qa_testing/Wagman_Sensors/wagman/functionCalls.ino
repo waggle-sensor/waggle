@@ -88,3 +88,139 @@ void thermistor_report()
     Serial.println(mcp3428_1.readADC()>>5);
     return;
 }
+
+void power_on_all ()
+{
+    turnON_POW1();
+    delay(200);
+    turnON_POW2();
+    delay(200);
+    turnON_POW3();
+    delay(200);
+    turnON_POW4();
+    delay(200);
+    turnON_POW5();
+    return;
+}
+
+void power_off_all ()
+{
+    turnOFF_POW1();
+    delay(200);
+    turnOFF_POW2();
+    delay(200);
+    turnOFF_POW3();
+    delay(200);
+    turnOFF_POW4();
+    delay(200);
+    turnOFF_POW5();
+    return;
+}
+
+void boot_pow_check()
+{
+
+    Serial.println("We will power ON all ports one by one. You should hear 5 seperate clicks.");
+
+    Serial.print("Click 1 ");
+    turnON_POW1();
+    delay(2000);
+
+    Serial.print("Click 2 ");
+    turnON_POW2();
+    delay(2000);
+
+    Serial.print("Click 3 ");
+    turnON_POW3();
+    delay(2000);
+
+    Serial.print("Click 4 ");
+    turnON_POW4();
+    delay(2000);
+
+    Serial.println("Click 5");
+    turnON_POW5();
+    delay(2000);
+    Serial.println("Powering off all relays.");
+    power_off_all();
+    delay(1000);
+    return;
+}
+
+
+void turnON_POW1 ()
+{
+    digitalWrite(PIN_NC_POW_State_Latch, LOW);
+    //Setting state to ON
+    digitalWrite(PIN_NC_POW_State, HIGH);
+    delay(2);
+    // giving raising clock edge
+    digitalWrite(PIN_NC_POW_State_Latch, HIGH);
+    delay(2);
+    // lowering clock edge
+    digitalWrite(PIN_NC_POW_State_Latch, LOW);
+    delay(2);
+    return;
+}
+
+void turnON_POW2()
+{
+    digitalWrite(PIN_POW_2, HIGH);
+    return;
+}
+
+void turnON_POW3()
+{
+    digitalWrite(PIN_POW_3, HIGH);
+    return;
+}
+void turnON_POW4()
+{
+    digitalWrite(PIN_POW_4, HIGH);
+    return;
+}
+void turnON_POW5()
+{
+    digitalWrite(PIN_POW_5, HIGH);
+    return;
+}
+
+void turnOFF_POW1 () {
+    digitalWrite(PIN_NC_POW_State_Latch, LOW);
+    //Setting state to ON
+    digitalWrite(PIN_NC_POW_State, LOW);
+    delay(2);
+    // giving raising clock edge
+    digitalWrite(PIN_NC_POW_State_Latch, HIGH);
+    delay(2);
+    // lowering clock edge
+    digitalWrite(PIN_NC_POW_State_Latch, LOW);
+    delay(2);
+    return;
+}
+
+void turnOFF_POW2()
+{
+    digitalWrite(PIN_POW_2, LOW);
+    return;
+}
+
+void turnOFF_POW3()
+{
+    digitalWrite(PIN_POW_3, LOW);
+    return;
+}
+void turnOFF_POW4()
+{
+    digitalWrite(PIN_POW_4, LOW);
+    return;
+}
+void turnOFF_POW5()
+{
+    digitalWrite(PIN_POW_5, LOW);
+    return;
+}
+
+
+
+

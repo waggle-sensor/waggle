@@ -23,6 +23,7 @@ void setup()
     delay(1000);
     set_up_pinmodes();
     delay(1000);
+    power_off_all();
     Serial.begin(115200);
     Wire.begin();
     delay(1000);
@@ -96,6 +97,11 @@ void loop()
     delay(500);
     htu21D_report();
     Serial.print("\n");
+
+    Serial.print(question_no++); Serial.print(". ");
+    boot_pow_check();
+    Serial.println("");
+
 
     Serial.println("------End of board test------");
 

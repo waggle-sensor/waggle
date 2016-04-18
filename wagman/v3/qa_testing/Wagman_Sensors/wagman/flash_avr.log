@@ -5,7 +5,6 @@ avrdude: Version 6.0.1, compiled on Apr 14 2015 at 19:04:16
 
          System wide configuration file is "/home/rajesh/WaggleGIT/arduino-1.6.7/hardware/tools/avr/etc/avrdude.conf"
          User configuration file is "/home/rajesh/.avrduderc"
-         User configuration file does not exist or is not a regular file, skipping
 
          Using Port                    : /dev/waggle_sysmon
          Using Programmer              : avr109
@@ -61,20 +60,20 @@ avrdude: safemode: lfuse reads as FF
 avrdude: safemode: hfuse reads as D8
 avrdude: safemode: efuse reads as CB
 avrdude: reading input file "./bin/wagman.ino.hex"
-avrdude: writing flash (11404 bytes):
+avrdude: writing flash (12060 bytes):
 
-Writing | ################################################## | 100% 0.86s
+Writing | ################################################## | 100% 0.92s
 
-avrdude: 11404 bytes of flash written
+avrdude: 12060 bytes of flash written
 avrdude: verifying flash memory against ./bin/wagman.ino.hex:
 avrdude: load data flash data from input file ./bin/wagman.ino.hex:
-avrdude: input file ./bin/wagman.ino.hex contains 11404 bytes
+avrdude: input file ./bin/wagman.ino.hex contains 12060 bytes
 avrdude: reading on-chip flash data:
 
 Reading | ################################################## | 100% 0.09s
 
 avrdude: verifying ...
-avrdude: 11404 bytes of flash verified
+avrdude: 12060 bytes of flash verified
 
 avrdude: safemode: lfuse reads as FF
 avrdude: safemode: hfuse reads as D8
