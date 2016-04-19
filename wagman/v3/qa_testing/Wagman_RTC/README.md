@@ -19,7 +19,7 @@ This test evaluates the following aspects of Wagman system design. </br>
 
 __Please make sure only the Wagman under test is connected to the QA computer. No other Wagman or Arduino Micro/derivatives can be connected at this time.__
 ## Testing Procedure
-*  Initialize the Wagman RTC by issuing command *make initialize* in the Wagman subfolder.
+*  Initialize the Wagman RTC by issuing command *make program* in the Wagman subfolder.
 *  After initializing the board, unplug USB and Power to Wagman.
 *  After 30 seconds, power the Wagman back up and plug the USB cable into it.
 *  Continue with the test by issuing the command *make test* and follow the on-screen prompts.
