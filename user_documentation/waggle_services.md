@@ -35,7 +35,14 @@ Use the command "waggle-services" to stop or start waggle services. This script 
 
 Example:
 ```bash
-waggle-services list
+> waggle-service list
++------------------+--------+---------+
+| name             | goal   | state   |
+|------------------+--------+---------|
+| waggle-epoch     | start  | running |
+| waggle-init      | start  | running |
+| waggle-heartbeat | start  | running |
++------------------+--------+---------+
 ```
 
 
