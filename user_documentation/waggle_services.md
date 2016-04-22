@@ -34,7 +34,7 @@ Does something.
 Use the command "waggle-services" to stop or start waggle services. This script is located in the waggle_image git repository
 
 Example:
-```bash
+```text
 > waggle-service list
 +------------------+--------+---------+
 | name             | goal   | state   |
