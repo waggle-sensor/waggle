@@ -12,8 +12,11 @@ http://www.mcs.anl.gov/research/projects/waggle/downloads/
 You do not need to download the image with your browser at this point, just specify the image filename in the variable IMAGE below. The environment variable IMAGE contains the image filename without the url and without the suffix ".xz"! This makes it easier to run other commands later, as they then can simply be copied into the terminal without changes. Now paste these two lines (including your changes to the second line) into your terminal:
 
 ```bash
-export URL="http://www.mcs.anl.gov/research/projects/waggle/downloads/waggle_images/nodecontroller/odroid-c1/"
-export IMAGE="waggle-nodecontroller-odroid-c1-VERSION.img"  # do not include the ".xz" suffix !
+export URL="http://www.mcs.anl.gov/research/projects/waggle/downloads/waggle_images/nodecontroller/ODROID_MODEL" # for nodecontroller
+export IMAGE="waggle-nodecontroller-MODEL-VERSION.img"  # do not include the ".xz" suffix !
+# or
+export URL="http://www.mcs.anl.gov/research/projects/waggle/downloads/waggle_images/extension_node/ODROID_MODEL" # for extensionnode
+export IMAGE="waggle-guestnode-MODEL-VERSION.img"  # do not include the ".xz" suffix !
 ```
 
 Alternatively, if you want to use a plain (non-waggle) odroid image: 
@@ -27,7 +30,7 @@ export IMAGE="ubuntu-14.04.1lts-lubuntu-odroid-xu3-20151020.img" # e.g. for the 
 
 To download your waggle image paste these two lines (without modifications) into your terminal:
 ```bash
-wget ${URL}${IMAGE}.xz
+wget ${URL}/${IMAGE}.xz
 wget ${URL}/${IMAGE}.xz.md5sum
 ```
 
@@ -57,18 +60,22 @@ lsblk
 diskutil list
 ```
 
-Now set the DEVICE_NAME environment variable, but do not include the path "/dev/".
+Now set the DEVICE_NAME environment variable, but do not include the path "/dev/". If the device comes with more than one partition, use device name without the partition number.
 
 **WARNING: It is critical that you specify the correct device! If you specify the wrong device, you might loose data on your computer !!!!**
 ```bash
 # e.g. for device /dev/disk2
-export DEVICE_NAME="disk2" 
+export DEVICE_NAME="disk2"
+# e.g. for device /dev/sdc with multiple partitions such as /dev/sdc1 and /dev/sdc2
+export DEVICE_NAME="sdc"
 ```
 
-Unmount the device:
+Unmount the device (unmount partitions if it has):
 ```bash
 # Linux: 
 umount /dev/${DEVICE_NAME}
+# or
+umount /dev/${DEVICE_NAME}PARTITION_NUMBER # e.g. umount /dev/${DEVICE_NAME}1 for /dev/sdc1
 # OSX:
 sudo diskutil unmountDisk /dev/${DEVICE_NAME}
 ```
@@ -91,5 +98,5 @@ Eject image (OSX only):
 sudo diskutil eject /dev/r${DEVICE_NAME}
 ```
 
-You can now savely disconnect the memory card from your computer.
+You can now safely disconnect the memory card from your computer.
 
