@@ -60,7 +60,7 @@ lsblk
 diskutil list
 ```
 
-Now set the DEVICE_NAME environment variable, but do not include the path "/dev/". If the device comes with more than one partition, use device name without the partition number.
+Now set the DEVICE_NAME environment variable, but do not include the path "/dev/".
 
 **WARNING: It is critical that you specify the correct device! If you specify the wrong device, you might loose data on your computer !!!!**
 ```bash
@@ -70,12 +70,10 @@ export DEVICE_NAME="disk2"
 export DEVICE_NAME="sdc"
 ```
 
-Unmount the device (unmount partitions if it has):
+Unmount the device:
 ```bash
 # Linux: 
-umount /dev/${DEVICE_NAME}
-# or
-umount /dev/${DEVICE_NAME}PARTITION_NUMBER # e.g. umount /dev/${DEVICE_NAME}1 for /dev/sdc1
+umount /dev/${DEVICE_NAME}?
 # OSX:
 sudo diskutil unmountDisk /dev/${DEVICE_NAME}
 ```
