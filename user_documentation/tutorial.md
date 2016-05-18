@@ -5,47 +5,61 @@ This explains how to set up a waggle node that includes wagman, nodecontroller, 
 A waggle node consists of following parts:
 
 ### Wagman
- * Wagman
- * Power adapter
- * MicroUSB-USB cable
+ * Wagman </br>
+<img src="../wagman/v3/resources/Wagman.jpg" width=500/>
+ * Power adapter </br>
+<img src="./pictures/Wagman_power_adapter.JPG" width=300/>
+ * MicroUSB-USB cable </br>
+<img src="./pictures/Wagman_microUSB_cable.JPG" width=200/>
 
 ### Nodecontroller
- * Odroid-C1+
- * Power cable
- * Micro SD card
- * eMMC card
- * Lan cable
- * Ethernet-USB adapter
- * Heart-beat cable
+ * Odroid-C1+ </br>
+<img src="./pictures/ODROID-C1+.jpg" width=300/>
+ * Power cable </br>
+<img src="./pictures/Nodecontroller_power_cable.JPG" width=200/>
+ * Micro SD card </br>
+<img src="./pictures/SD-card.jpg" width=150/>
+ * eMMC card </br>
+<img src="./pictures/eMMC_and_USB_adapter_pieces.jpg" width=200/>
+ * Lan cable </br>
+<img src="./pictures/lan_cables.JPG" width=150/>
+ * Ethernet-USB adapter </br>
+<img src="./pictures/USB-LAN-adapter.jpg" width=200/>
+ * Heart-beat cable </br>
+<img src="./pictures/Nodecontroller_heartbeat_cable.JPG" width=150/>
  
 ### Extension_node
- * Odroid-XU4
- * Power cable
- * Micro SD card
- * eMMC card
- * Heart-beat cable
-
-### Miscellaneous
- * Micro SD-USB adapter
+ * Odroid-XU4 </br>
+<img src="./pictures/Extension_node.JPG" width=300/>
+ * Power cable </br>
+<img src="./pictures/Extension_node_power_connector.JPG" width=300/>
+ * Micro SD card </br>
+<img src="./pictures/SD-card.jpg" width=150/>
+ * eMMC card </br>
+<img src="./pictures/eMMC_and_USB_adapter_pieces.jpg" width=200/>
+ * Heart-beat cable </br>
+<img src="./pictures/Extension_node_heartbeat_cable.JPG" width=300 />
 
 ## Overall diagram
 System diagram is depicted below. 
 
 ## Instructions on assembling
-1) Connect nodecontroller's power and heart-beat cable to Wagman board. Those cables must be plugged in PORT 1 (Refer to [Wagman] (https://raw.githubusercontent.com/waggle-sensor/waggle/master/wagman/v3/resources/WagmanAnnotated.jpg)).
-
-And then, put the power cable to nodecontroller and the heart-beat cable to PIN 3 of nodecontroller.
-
-2) Connect extension_node's power cable and heart-beat cable to Wagman board. Those cables must be plugged in PORT 2 (Refer to [Wagman] (https://raw.githubusercontent.com/waggle-sensor/waggle/master/wagman/v3/resources/WagmanAnnotated.jpg)).
-
+1) Connect nodecontroller's power and heart-beat cable to Wagman board. Those cables must be plugged in PORT 1 (Refer to [Wagman] (https://raw.githubusercontent.com/waggle-sensor/waggle/master/wagman/v3/resources/WagmanAnnotated.jpg)). </br>
+<img src="./pictures/Wire_nodecontroller_power_cable.png" width=250/><img src="./pictures/Wire_nodecontroller_heartbeat.JPG" width=400/> </br>
+And then, put the power cable to nodecontroller and the heart-beat cable to PIN 3 of nodecontroller. </br>
+<img src="./pictures/Wire_nodecontroller_heartbeat2.png" width=500/> </br>
+2) Connect extension_node's power cable and heart-beat cable to Wagman board. Those cables must be plugged in PORT 2 (Refer to [Wagman] (https://raw.githubusercontent.com/waggle-sensor/waggle/master/wagman/v3/resources/WagmanAnnotated.jpg)). </br>
+<img src="./pictures/Wire_extension_node_power_cable.png" width=300/><img src="./pictures/Wire_extension_node_heartbeat.JPG" width=350/> </br>
 And then, put the power cable to extension_node and the heart-beat cable to PIN 3 of extension_node.
+<img src="./pictures/Wire_extension_heartbeat2.png" width=500/> </br>
+3) Connect lan cable to extension_node with nodecontroller. </br>
+<img src="./pictures/Wire_lan_cable.JPG" width=400 /> </br>
 
-3) Connect lan cable to extension_node with nodecontroller.
+4) Connect Ethernet-USB adapter to nodecontroller. </br>
+<img src="./pictures/Wire_lan_cable_beehive.JPG" width=400 /> </br>
 
-4) Connect Ethernet-USB adapter to nodecontroller.
-
-5) Connect power adapter to Wagman.
-
+5) Connect power adapter to Wagman. </br>
+<img src="./pictures/Wagman_power_cable.JPG" width=400 /> </br>
 ## Install softwares
 
 ### Wagman firmware installation
