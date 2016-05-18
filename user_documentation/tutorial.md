@@ -75,10 +75,16 @@ cd wagman_init
 
 ### Nodecontroller and extension_node firmware installation
 
-**WARNING: before procceding the following steps, plug off wagman's the power adapter.
+**WARNING: before procceding the following steps, plug off wagman's power adapter.
 
 Follow the instruction [here] (https://github.com/waggle-sensor/waggle/blob/master/user_documentation/copy_waggle_image_to_memory_card.md) to upload the latest version of both nodecontroller and extension_node firmware. As a result, you will have two micro SD cards for both devices, respectively.
 
-Insert each micro SD card on the designated device (nodecontroller firmware for nodecontroller and extension_node firmware for extension_node). eMMC card should also be inserted on each board.
+Insert each micro SD card on the designated device (nodecontroller firmware for nodecontroller and extension_node firmware for extension_node). eMMC card should also be inserted on both devices.
 
 ## Waggle boot-ups
+
+Plug on wagman's power adapter. After a few seconds, 'ALIVE' LED of both nodecontroller and extension_node will be blinking. At the first time of booting the two devices will be rebooting automatically. After re-booting, you should be able to connect to nodecontroller:
+[SSH connection.md] (./SSH_connection.md)
+
+And then, follow the instruction:
+[Configure nodecontroller] (./getting_started.md#configure-node-controller-software)
