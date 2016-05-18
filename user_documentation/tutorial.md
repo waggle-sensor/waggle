@@ -63,7 +63,7 @@ And then, put the power cable to extension_node and the heart-beat cable to PIN 
 ## Install softwares
 
 ### Wagman firmware installation
-In order to manage nodecontroller and extension_node, Wagman has to run its management program. Download the latest firmware [here] (black:) to your computer.
+In order to manage nodecontroller and extension_node, wagman has to run its management program. Download the latest firmware [here] (black:) to your computer.
 
 Unzip the firmware:
 
@@ -78,7 +78,7 @@ Install avrdude to upload the firmware:
 sudo apt-get install avrdude
 ```
 
-Connect microUSB-USB cable to Wagman with the computer.
+Connect microUSB-USB cable to wagman with the computer.
 
 Run install.sh:
 
@@ -97,7 +97,7 @@ Insert each micro SD card on the designated device (nodecontroller firmware for 
 
 ## Waggle boot-ups
 
-Plug on wagman's power adapter. After a few seconds, 'ALIVE' LED of both nodecontroller and extension_node will be blinking. At the first time of booting the two devices will be rebooting automatically. After re-booting, you should be able to connect to nodecontroller:
+Plug on wagman's power adapter. Within several seconds, 'ALIVE' LED of both nodecontroller and extension_node will be blinking. At the first time of booting the two devices will be rebooting automatically. After re-booting, you should be able to connect to nodecontroller:
 [SSH connection.md] (./SSH_connection.md)
 
 And then, follow the instruction:
