@@ -79,7 +79,8 @@ Install avrdude to upload the firmware:
 sudo apt-get install avrdude
 ```
 
-Connect microUSB-USB cable to wagman with the computer.
+Connect microUSB-USB cable to wagman with the computer. </br>
+<img src="./pictures/Wire_wagman_firmware_update.JPG" width=400 /> </br>
 
 Run install.sh:
 
@@ -98,8 +99,8 @@ Insert each micro SD card on the designated device (nodecontroller firmware for 
 
 ## Waggle boot-ups
 
-Plug on wagman's power adapter. Within several seconds, 'ALIVE' LED of both nodecontroller and extension_node will be blinking. At the first time of booting the two devices will be rebooting automatically. After re-booting, you should be able to connect to nodecontroller:
-[SSH connection.md](./SSH_connection.md)
+Plug on wagman's power adapter. Within several seconds, 'ALIVE' LED of nodecontroller will be blinking. At the first time of booting the two devices will be rebooting automatically. If nodecontroller is succesfully booted and wagman confirms it, then wagman will power up extension_node using the same method. Please wait until 'ALIVE' LEDs of both devices are blinking. And then, you should be able to connect to nodecontroller:
+[SSH connection.md](./SSH_connection.md).
 
-And then, follow the instruction:
+Follow the instruction:
 [Configure nodecontroller](./getting_started.md#configure-node-controller-software)
