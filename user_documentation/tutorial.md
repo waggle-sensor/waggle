@@ -64,7 +64,7 @@ And then, put the power cable to extension_node and the heart-beat cable to PIN 
 ## Install softwares
 
 ### Wagman firmware installation
-In order to manage nodecontroller and extension_node, wagman has to run its management program. Download the latest firmware [here] (black:) to your computer.
+In order to manage nodecontroller and extension_node, wagman has to run its management program. Download the latest firmware [here] (http://www.mcs.anl.gov/research/projects/waggle/downloads/Wagman/wagman_init_20150517.zip) to your computer.
 
 Unzip the firmware:
 
