@@ -41,7 +41,8 @@ A waggle node consists of following parts:
 <img src="./pictures/Extension_node_heartbeat_cable.JPG" width=300 />
 
 ## Overall diagram
-System diagram is depicted below. 
+System diagram is depicted below. The solid lines are the cables that should properly be connected with the devices. Please follow  the instructions below in order to build a waggle node.</br>
+<img src="./pictures/diagram.png" width=500 /> </br>
 
 ## Instructions on assembling
 1) Connect nodecontroller's power and heart-beat cable to Wagman board. Those cables must be plugged in PORT 1 (Refer to [Wagman] (https://raw.githubusercontent.com/waggle-sensor/waggle/master/wagman/v3/resources/WagmanAnnotated.jpg)). </br>
