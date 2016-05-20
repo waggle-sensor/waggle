@@ -102,13 +102,60 @@ As root user, specify the beehive sever IP address or URL and run the configure 
 
 ```bash
 cd /usr/lib/waggle/nodecontroller
-BEEHIVE_HOST=<ip> ./configure
+BEEHIVE_HOST=<ip>
+./configure
 ```
 
 For more details see the node controller [README.md](../nodecontroller/README.md).
 
 
 ## start/configure sensor?
+Once the configuration is done in nodecontroller, rebooting is recommended, as root user.
+
+```bash
+reboot
+```
+
+After the rebooting, log into nodecontroller using ssh again.
+
+Manage service:
+
+```bash
+waggle-service list
+```
+
+You should see the list of status of waggle services, looks similar like:
+
+```bash
++---------------------------+--------+-----------+
+| name                      | goal   | state     |
+|---------------------------+--------+-----------|
+| waggle-epoch              | start  | running   |
+| waggle-reverse_ssh_tunnel | start  | post-stop |
+| waggle-init               | start  | post-stop |
+| waggle-communications     | stop   | waiting   |
+| waggle-heartbeat          | start  | running   |
+| waggle-wagman             | start  | running   |
+| waggle-data_cache         | stop   | waiting   |
++---------------------------+--------+-----------+
+```
+
+According to the list shown, nodecontroller is working in terms of maintenance. However, communication modules to beehive server have not been started.
+
+Now, you will use ssh again to access extension_node from nodecontroller (make sure that nodecontroller and extension_node are connected via lan cable.
+
+```bash
+ssh waggle@extensionnode
+```
+Once logged in, configure extension_node using root user:
+
+```bash
+cd /usr/lib/waggle/plugin_manager
+./configure
+```
+
+
+
 TODO: add sensor ?
 
 ## view results from server
