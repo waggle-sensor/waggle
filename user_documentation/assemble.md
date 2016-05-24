@@ -15,3 +15,5 @@ And then, put the power cable to extension_node and the heart-beat cable to PIN 
 
 5) Connect power adapter to Wagman. </br>
 <img src="./pictures/Wagman_power_cable.JPG" width=400 /> </br>
+
+Next step: [Install firmwares](./install-firmwares.md)
