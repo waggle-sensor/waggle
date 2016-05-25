@@ -1,0 +1,3 @@
+<h2 id="burning-bootloader-on-to-wagman">Burning Bootloader on to Wagman:</h2>
+<p>To burn the Arduino Micro Caterina bootloader on the Wagman,<br />you will need an AVR ICSP programmer. This instruction has<br />been tested to work with an AVRISP mkII programmer on<br />Ubuntu 14.04 system with avrdude version 6.0.1.<br />(<a href="http://www.atmel.com/tools/AVRISPMKII.aspx">http://www.atmel.com/tools/AVRISPMKII.aspx</a>).</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">avrdude</span> -c avrisp2 -P usb -p m32u4 -U flash:w:Caterina-Micro.hex:i</code></pre>

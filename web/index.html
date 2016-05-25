@@ -1,0 +1,76 @@
+<p><img src="../././wagview/node_pages/banner.png" alt="waggle banner" /></p>
+<p>This github repository holds the source code of the Waggle project. The Waggle project webpage can be found here: www.wa8.gl</p>
+<h2 id="a-very-high-level-view-of-the-pieces-of-this-project-are">A very high level view of the pieces of this project are:</h2>
+<ol>
+<li><p><strong>A Node Controller.</strong> This is the Linux-based brain for a sensor<br />node. Currently, we are using a hardkernel.com ODROID single-board<br />computer to be the Node Controller. In addition to a mostly stock<br />Linux, the Node Controller has waggle's communication libraries, extra<br />resilience features, and support for in-situ processing</p></li>
+<li><p><strong>The WagMan system management board</strong> for managing a sensor node.<br />This is the failsafe for the node. It can power-cycle components,<br />detect when the waggle node is too hot, etc.</p></li>
+<li><p><strong>The Waggle Sensor Board</strong> (EnvSense)</p></li>
+<li><p><strong>The Cloud-based software</strong> (Beehive)</p></li>
+</ol>
+<h2 id="directories">Directories</h2>
+<p>The directories are organized as follows (in alphabetical order)</p>
+<p><strong>beehive</strong>: the software run on the cloud server</p>
+<ul>
+<li>docs: documentation of the cloud server<br /></li>
+<li>msging: the cloud-side of the message layer<br /></li>
+<li>wag-view: A nice front end for browsing the data<br /></li>
+<li>wag-db: the backend storage scripts</li>
+</ul>
+<p><strong>build</strong>: all of the pieces are built (compiled, configured) and installed into this directory</p>
+<p><strong>comlink</strong>: the communication link (wifi router, etc)</p>
+<p><strong>devtools</strong>: tools needed to build and install waggle</p>
+<p><strong>docs</strong>: waggle-wide documentation. This directory is the result of building all the docs found in the subdirectories</p>
+<p><strong>guestnode</strong>: All the software that lives on the guestnodes (ODROID)</p>
+<ul>
+<li>docs: documentation of guestnodes<br /></li>
+<li>nc-baseos: The core Linux OS distro from which we start<br /></li>
+<li>nc-wag-os: The guestnode software stack, including the basic OS<br /></li>
+<li>waggled: The command controller and client console<br /></li>
+<li>resilience: tools and scripts, such as heartbeat for deep-space operation<br /></li>
+<li>personalization: scripts and config files for personalizing a node<br /></li>
+<li>externs: external packages added to make the basic Waggle OS better<br /></li>
+<li>in-situ: audio and image computing done inside the guestnode</li>
+</ul>
+<p><strong>nodecontroller</strong>: All the software that lives on the Node Controller (ODROID)</p>
+<ul>
+<li>docs: documentation of node controller<br /></li>
+<li>nc-baseos: The core Linux OS distro from which we start<br /></li>
+<li>nc-wag-os: The Node Controller software stack, including the basic OS<br /></li>
+<li>waggled: The command controller and client console<br /></li>
+<li>msging: The remote messaging service to the cloud<br /></li>
+<li>resilience: tools and scripts, such as heartbeat for deep-space operation<br /></li>
+<li>personalization: scripts and config files for personalizing a node<br /></li>
+<li>externs: external packages added to make the basic Waggle OS better</li>
+</ul>
+<p><strong>sensors</strong>: all of the code to interact with and read data from sensors</p>
+<ul>
+<li>envsense: the core environmental sensing board<br /></li>
+<li>docs: documentation of the envsense software / hardware environment, and sensors<br /></li>
+<li>reader: code (firmware) running on the envsense board<br /></li>
+<li>anemometer: an experiemental anemometer<br /></li>
+<li>docs: documentation of the system<br /></li>
+<li>reader: code to read and generate a value</li>
+</ul>
+<p><strong>testing</strong>: the waggle testing framework</p>
+<p><strong>wagman</strong>: waggle system management board software</p>
+<ul>
+<li>docs: documentation of the waggle management software / hardware environment<br /></li>
+<li>manager: code (firmware) loaded onto system management board</li>
+</ul>
+<p><strong>other</strong>: a temporary holding place for things that have not yet found<br />a home in the structure above.</p>
+<h2 id="developer-notes">Developer Notes</h2>
+<h3 id="git-submodules">git submodules</h3>
+<p>To clone the repository with submodules use --recursive</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">git</span> clone --recursive git@github.com:waggle-sensor/waggle.git</code></pre>
+<p>or get submodule after you cloned without --recursive option:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">cd</span> waggle
+<span class="kw">git</span> submodule init
+<span class="kw">git</span> submodule update</code></pre>
+<p>To update a submodule use: (example: beehive-server)</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">cd</span> beehive-server/
+<span class="kw">git</span> pull origin master
+<span class="kw">cd</span> ..
+<span class="kw">git</span> add beehive-server
+<span class="kw">git</span> commit -m <span class="st">&quot;update submodule&quot;</span> -a
+<span class="kw">git</span> push</code></pre>
+<p>Do such an update only if the code in the remote repository is stable and compatible to the other code in this repository. If you need to point to another commit than the latest commit, do a &quot;git checkout ...&quot; after the &quot;git pull&quot; first.</p>

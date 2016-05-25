@@ -1,0 +1,43 @@
+<p>Users of waggle should not need to build the waggle image on their own, but if they want to, here are the instructions to do that (see Section &quot;Manually&quot;). Further below there are also instructions on how to do automatic (e.g. nightly) waggle image builds. Those instructions are mostly of interest to the waggle team itself.</p>
+<h1 id="manually">Manually</h1>
+<h3 id="boot-the-stock-odroid-ubuntu-image">1) Boot the stock odroid ubuntu image</h3>
+<ol>
+<li>Copy ODROID ubuntu image onto SD-card, see <a href="https://github.com/waggle-sensor/waggle/blob/master/user_documentation/copy_waggle_image_to_memory_card.md">copy_waggle_image_to_memory_card.md</a>.<br /></li>
+<li>Boot the ODROID with SD-card.<br /></li>
+<li>ssh into ODROID as root ! Do not ssh as &quot;odroid&quot;, and if you do accidentally, reboot! Otherwise the waggle script cannot rename the default user.</li>
+</ol>
+<h3 id="download-and-execute-create_waggle_image.sh.">2) Download and execute create_waggle_image.sh.</h3>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">wget</span> https://raw.githubusercontent.com/waggle-sensor/waggle/master/nodecontroller/scripts/create_waggle_image.sh
+<span class="kw">chmod</span> +x create_waggle_image.sh
+<span class="kw">./create_waggle_image.sh</span></code></pre>
+<h3 id="shutdown">3) Shutdown</h3>
+<p>Execute &quot;shutdown -h now&quot;. Stick SD-card in your Laptop/PC.</p>
+<h3 id="shrink-image">4) Shrink image</h3>
+<p>Use the steps in this script. (TODO: create separate shrink_image script !)<br /><a href="https://github.com/waggle-sensor/waggle/blob/master/nodecontroller/scripts/waggle_autobuild_final.sh">https://github.com/waggle-sensor/waggle/blob/master/nodecontroller/scripts/waggle_autobuild_final.sh</a></p>
+<h1 id="auto-build-setup">Auto-build setup</h1>
+<p>This approach is used to automatically create the waggle production images.</p>
+<p>The waggle image auto-build setup requires a “master” and a “slave” memory device on the odroid. The master device can run a normal ubuntu image and the slave device (e.g. a USB stick) is used to create the waggle image. Default operation mode is the master device. The master will copy a clean ubuntu image onto the slave and create init scripts on the slave. Then the boot partition of the master will be modified to boot into the root partition of the slave.</p>
+<h3 id="first-time-starting-from-the-master">First time starting from the master</h3>
+<p>You may have to resize filesystem and partition of the master first to have enough space to store the disk images:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">source</span> /usr/local/bin/fs_resize.sh <span class="kw">;</span> <span class="kw">resize_p2</span>
+<span class="co"># or if file not found</span>
+<span class="kw">wget</span> https://raw.githubusercontent.com/waggle-sensor/waggle/master/nodecontroller/scripts/resize.sh
+<span class="kw">chmod</span> +x resize.sh
+<span class="kw">./resize.sh</span></code></pre>
+<p>In case you are not sure what device you just booted from</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">cat</span> /sys/block/<span class="ot">$(</span><span class="kw">df</span> / <span class="kw">|</span> <span class="kw">grep</span> -o <span class="st">&quot;mmcblk[0-9]&quot;</span><span class="ot">)</span>/device/uevent <span class="kw">|</span> <span class="kw">grep</span> <span class="st">&quot;MMC_TYPE&quot;</span> <span class="kw">|</span> <span class="kw">cut</span> -d <span class="st">&#39;=&#39;</span> -f 2</code></pre>
+<p>In case you use a monitor with the ODROID and you have to change resolution (e.g. for the stock ubuntu image)</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sed</span> -i.bak -e <span class="st">&quot;s/^setenv m /# setenv m/&quot;</span> -e <span class="st">&quot;s/# setenv m </span><span class="dt">\&quot;</span><span class="st">1440x900p60hz</span><span class="dt">\&quot;</span><span class="st">/setenv m </span><span class="dt">\&quot;</span><span class="st">1440x900p60hz</span><span class="dt">\&quot;</span><span class="st">/&quot;</span> ./boot.ini</code></pre>
+<p>Clone the nodecontroller repository:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">git</span> clone https://github.com/waggle-sensor/nodecontroller.git</code></pre>
+<p>Only for the waggle team: Copy private ssh key to /root/waggle-id_rsa and set correct permissions. The script will automatically upload the new waggle image to our download server.</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">chmod</span> 600 /root/waggle-id_rsa</code></pre>
+<h3 id="init-step">Init step</h3>
+<p>This script will download an ubuntu image, write it to the slave memory device and modify the boot partition of the master device. It will also deploy some init scripts so that the waggle images can be build once the slave starts. Run the script without arguments to get a list of available devices.</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">cd</span> nodecontroller/scripts
+<span class="kw">./waggle_autobuild_init.sh</span> <span class="kw">&lt;</span>device<span class="kw">&gt;</span></code></pre>
+<p>Reboot to let the slave create the waggle image. It will automaticall reboot the master afterwards.</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">reboot</span> <span class="kw">;</span> <span class="kw">exit</span></code></pre>
+<h3 id="final-step">Final step</h3>
+<p>This script will copy some log files out of the new waggle image, do some clean-up, and shrink filesystem and partition, copy the new image into a file amd compress it. (Note for waggle team members: if you copied the waggle-id_rsa, this script will also upload the image to the waggle download server.)</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">./waggle_autobuild_final.sh</span> <span class="kw">&lt;</span>device<span class="kw">&gt;</span></code></pre>

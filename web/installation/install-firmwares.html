@@ -1,0 +1,17 @@
+<h1 id="install-softwares">Install softwares</h1>
+<h2 id="wagman-firmware-installation">Wagman firmware installation</h2>
+<p>In order to manage nodecontroller and extension_node, wagman has to run its management program. Download the latest firmware <a href="http://www.mcs.anl.gov/research/projects/waggle/downloads/Wagman/wagman_init_20150517.zip">here</a> to your computer.</p>
+<p>Unzip the firmware:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">unzip</span> <span class="kw">&lt;</span>file-name<span class="kw">&gt;</span>
+<span class="co"># if you do not have unzip, install it using sudo apt-get install unzip</span></code></pre>
+<p>Install avrdude to upload the firmware:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> apt-get install avrdude</code></pre>
+<p>Connect microUSB-USB cable to wagman with the computer. </br><br /><img src="../../user_documentation/./pictures/Wire_wagman_firmware_update.JPG" width=400 /> </br></p>
+<p>Run install.sh:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">cd</span> wagman_init
+<span class="kw">./install.sh</span></code></pre>
+<h2 id="nodecontroller-and-extension_node-firmware-installation">Nodecontroller and extension_node firmware installation</h2>
+<p>**WARNING: before procceding the following steps, pull out wagman's power adapter plug.</p>
+<p>Follow the instruction <a href="https://github.com/waggle-sensor/waggle/blob/master/user_documentation/copy_waggle_image_to_memory_card.md">here</a> to upload the latest version of both nodecontroller and extension_node firmware. As a result, you will have two micro SD cards for both devices, respectively.</p>
+<p>Insert each micro SD card on the designated device (nodecontroller firmware for nodecontroller and extension_node firmware for extension_node). eMMC card should also be inserted on both devices.</p>
+<p>Next step: <a href="./waggle-boot-ups.md">Waggle boot-ups</a></p>
