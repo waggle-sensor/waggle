@@ -1,0 +1,2 @@
+
+This directory contains resources (e.g. documentation, scripts) for testing of a waggle node and its components. Individual testing components can be located at the corresponding git location of that component.
