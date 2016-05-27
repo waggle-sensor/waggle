@@ -1,8 +1,8 @@
 wagview/wagview.html:wagview/README.md
 cmu/nodecontroller/waggle_services.html:user_documentation/waggle_services.md
 cmu/nodecontroller/createImage.html:nodecontroller/docs/create_waggle_image.md
-cmu/nodecontroller/communications/communication-architecture.html:nodecontroller/docs/README
-cmu/nodecontroller/waggle-os.html:nodecontroller/nc-wag-os/README.md
+cmu/nodecontroller/communications/communication-architecture.html:nodecontroller/docs/README.md
+cmu/nodecontroller/waggle-scripts.html:nodecontroller/nc-wag-os/waggled/README.md
 cmu/nodecontroller/nodecontroller.html:nodecontroller/README.md
 cmu/nodecontroller/scripts/nodecontroller-scripts.html:nodecontroller/scripts/README.md
 cmu/wagman/bootloader/bootloader.html:wagman/v3/bootloader/README.md
@@ -19,12 +19,12 @@ getting-started/copy_waggle_image_to_memory_card.html:user_documentation/copy_wa
 getting-started/configure-nodecontroller.html:user_documentation/getting_started.md
 getting-started/waggle-boot-ups.html:user_documentation/waggle-boot-ups.md
 getting-started/ssh_connection.html:user_documentation/SSH_connection.md
-index.html:README.md
+index.html:index.md
 payloads/sensors/packet-description.html:coresensors/docs/sensorStreamFormat/README.md
 payloads/sensors/sensors.html:coresensors/v3/integrated/README.md
 payloads/sensors/sensors-lib.html:coresensors/v3/integrated/libs/README.md
 payloads/camera/camera_processing.html:guestnodes/opencl/README.md
-payloads/app_processor/plugins.html:guestnodes/scripts/plugins/README.md
+payloads/app_processor/plugins.html:guestnodes/plugins/README.md
 payloads/app_processor/createImage.html:nodecontroller/docs/create_waggle_image.md
 payloads/app_processor/waggle-protocol.html:guestnodes/waggle_protocol/README.md
 payloads/app_processor/app_processor.html:guestnodes/README.md

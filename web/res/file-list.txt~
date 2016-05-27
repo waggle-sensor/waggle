@@ -19,7 +19,7 @@ getting-started/copy_waggle_image_to_memory_card.html:user_documentation/copy_wa
 getting-started/configure-nodecontroller.html:user_documentation/getting_started.md
 getting-started/waggle-boot-ups.html:user_documentation/waggle-boot-ups.md
 getting-started/ssh_connection.html:user_documentation/SSH_connection.md
-index.html:./README.md
+index.html:README.md
 payloads/sensors/packet-description.html:coresensors/docs/sensorStreamFormat/README.md
 payloads/sensors/sensors.html:coresensors/v3/integrated/README.md
 payloads/sensors/sensors-lib.html:coresensors/v3/integrated/libs/README.md

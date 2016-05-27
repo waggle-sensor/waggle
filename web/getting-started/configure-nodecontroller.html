@@ -30,7 +30,7 @@
 <h2 id="prepare-emmc-memory-cards">Prepare eMMC memory cards</h2>
 <p>To use the node controller you need to copy the waggle image (a modified ubuntu) onto an eMMC memory card. To connect the eMMC with your computer, connect the eMMC with the eMMC/microSD adapter and plug that into a common microSD/USB adapter which in turn can be plugged into the USB port of a computer:</p>
 <p><img src="../../user_documentation/pictures/eMMC_in_USB_adapter.jpg" width="320"></p>
-<p>Please follow these instructions to copy the waggle image onto the eMMC memory card: <a href="./copy_waggle_image_to_memory_card.md">copy_waggle_image_to_memory_card.md</a></p>
+<p>Please follow these instructions to copy the waggle image onto the eMMC memory card: <a href="../getting-started/copy_waggle_image_to_memory_card.html">copy_waggle_image_to_memory_card.md</a></p>
 <p>The SD-card does not need a copy of the waggle image. The waggle software on the eMMC will later automatically reconfigure the SD-card.</p>
 <p>Once the eMMC memory has copy of the waggle image, both memory cards can be plugged into the ODROID. You can find both memory card slots on the bottom side of the ODROID.</p>
 <p><img src="../../user_documentation/pictures/ODROID-C1+_bottom.jpg" width="320"></p>
@@ -52,7 +52,7 @@
 <p>The ethernet port on the ODROID currently is reserved for an extension node (or &quot;guest node&quot;) and thus has a static IP address assigned. To connect the node controller with your network use the USB network adapter.</p>
 <p><img src="../../user_documentation/pictures/USB-LAN_adapter_connected.jpg" width="480"></p>
 <p>Instructions how to find the IP address of the node controller in your network and to login into the device using ssh can be found here:</p>
-<p><a href="./SSH_connection.md">SSH_connection.md</a></p>
+<p><a href="../getting-started/ssh_connection.html">SSH_connection.md</a></p>
 <h3 id="wireless-adapter">Wireless adapter</h3>
 <p>TODO</p>
 <h3 id="external-monitor-and-keyboard">External monitor and keyboard</h3>
@@ -66,7 +66,7 @@
 <pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">cd</span> /usr/lib/waggle/nodecontroller
 <span class="ot">BEEHIVE_HOST=</span><span class="kw">&lt;ip&gt;</span>
 <span class="kw">./configure</span></code></pre>
-<p>For more details see the node controller <a href="../nodecontroller/README.md">README.md</a>.</p>
+<p>For more details see the node controller <a href="../cmu/nodecontroller/nodecontroller.html">README.md</a>.</p>
 <h2 id="startconfigure-sensor">start/configure sensor?</h2>
 <p>Once the configuration is done in nodecontroller, rebooting is recommended, as root user.</p>
 <pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">reboot</span></code></pre>
