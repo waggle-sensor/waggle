@@ -1,0 +1,1 @@
+![waggle banner](./wagview/node_pages/banner.png)
