@@ -31,37 +31,37 @@ You can explore the following sub categories to be familarized yourself with Wag
 * [Waggle service](./user_documentation/waggle_services.md) </br>
     Services that provide various functionality for nodecontroller.
 
-* [Waggle scripts](./nodecontroller/nc-wag-os/waggled/README.md) </br>
+* [Waggle scripts](https://github.com/waggle-sensor/nodecontroller/blob/master/nc-wag-os/waggled/README.md) </br>
     Details of executable scripts.
 
-* [Communication](./nodecontroller/docs/README.md) </br>
-    Communication to beehive server and its [protocol](./guestnodes/waggle_protocol/README.md).
+* [Communication](https://github.com/waggle-sensor/nodecontroller/blob/master/docs/README.md) </br>
+    Communication to beehive server and its [protocol](https://github.com/waggle-sensor/waggle_protocol/blob/master/README.md).
 
 ## Payload
-* [App processor](./guestnodes/README.md) </br>
+* [App processor](https://github.com/waggle-sensor/plugin_manager/blob/master/README.md) </br>
     App processor that interacts with connected sensors.
 
 * [Sensor communication](./coresensors/docs/sensorStreamFormat/README.md) </br>
     Definitions of communication between app processor and core sensors.
 
-* [Plugins](./guestnodes/plugins/README.md) </br>
+* [Plugins](https://github.com/waggle-sensor/plugin_manager/blob/master/plugins/README.md) </br>
     Extend plugins as additional sensors attached to Waggle node.
 
 ## Beehive server
-* [Introduction](./beehive-server/README.md) </br>
+* [Introduction](https://github.com/waggle-sensor/beehive-server/blob/master/README.md) </br>
     Structures and configuration of the server.
 
-* [Data storage](./beehive-server/beehive-cassandra/README.md) </br>
+* [Data storage](https://github.com/waggle-sensor/beehive-server/blob/master/beehive-cassandra/README.md) </br>
     A place where all the data collected from Waggle nodes stored.
 
-* [Messaging](./beehive-server/beehive-rabbitmq/README.md) </br>
+* [Messaging](https://github.com/waggle-sensor/beehive-server/blob/master/beehive-rabbitmq/README.md) </br>
     Messaging protocol between Beehive server and Waggle nodes.
 
 ## Developers
-* [How to create a waggle image](./nodecontroller/docs/create_waggle_image.md) </br>
+* [How to create a waggle image](https://github.com/waggle-sensor/nodecontroller/blob/master/docs/create_waggle_image.md) </br>
     Instructions on how to create a Waggle image.
 
-* [Nodecontroller configuration](./nodecontroller/README.md) </br>
+* [Nodecontroller configuration](https://github.com/waggle-sensor/nodecontroller/blob/master/README.md) </br>
     Step by step configuration of nodecontroller.
 
 * [Tools](./devtools/README.md)
