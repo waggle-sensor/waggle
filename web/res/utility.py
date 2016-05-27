@@ -25,7 +25,7 @@ if __name__ == "__main__":
 		print "ERROR"
 		exit(1)
 
-	#print dic
+	print dic
 
 	content = ""
 	try:
@@ -37,7 +37,7 @@ if __name__ == "__main__":
 	'''
 	2. Find my path from the root
 	'''
-	dir_path = sys.argv[2]
+	dir_path = sys.argv[2] + '/'
 	# for key in dic:
 	# 	if key[1].find(from_file) != -1:
 
@@ -59,14 +59,18 @@ if __name__ == "__main__":
 		if 'http' not in link and 'HTTP' not in link:
 			for key in dic:
 				comp = key[0].replace(dir_path, "")
-				#print comp
+				print dir_path,
+				print key[0],
+				print comp
+				if depth == 0:
+					print comp
 				if link.find(comp) != -1:
 					newlink = ""
 					for i in range(depth):
 						newlink += "../"
 					newlink += key[1]
 					content = content.replace(link, newlink)
-					
+					#print newlink
 					break
 
 	try:

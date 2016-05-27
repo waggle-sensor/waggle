@@ -8,11 +8,11 @@
 <span class="kw">cd</span> plugin_manager
 <span class="kw">./configure</span></code></pre>
 <h2 id="monitoring">Monitoring</h2>
-<p>The plugin manager will be executed by supervisord. To see if the plugin manager is running:</p>
+<p>The plugin manager will be executed by supervised. To see if the plugin manager is running:</p>
 <pre><code>supervisorctl status</code></pre>
 <p>The log files can be viewed like this:</p>
 <pre><code>tail -f /var/log/waggle/plugin_manager.log</code></pre>
 <h2 id="managing-plugins">Managing plugins</h2>
 <pre><code>cd /usr/lib/waggle/plugin_manager
 ./waggle_plugins.py</code></pre>
-<p>This script can be used to list, start and stop plugins ond the command line. It can also be used to view the messages that are beeing send by the plugins to the nodecontroller.</p>
+<p>This script can be used to list, start and stop plugins and the command line. It can also be used to view the messages that are beeing send by the plugins to the nodecontroller.</p>
