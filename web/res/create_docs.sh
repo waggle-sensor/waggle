@@ -24,20 +24,20 @@ for i in ${!OUT_FILES[@]} ; do
   to=${OUT_FILES[$i]}
   name_to=$(basename ${to} ".html")
   dir_to=$(dirname ${to})
-  
-  echo "--- making a document ${to} <- ${from}"
-  mkdir -p ${dir_to}
-  pandoc -f markdown_github -t html ${ROOT_DIR}${from} -o ./${to}
 
-  #echo "--- --- changing image links..."
   cnt=($(echo ${to} | awk -F/ '{ print NF - 1 }'))
   dir_from=$(dirname ${from})
   gotoroot=""
   for ((i=0;i<cnt;i++)); do
     gotoroot+="../"
   done
-  gotoroot+="../"
+  
+  echo "--- making a document ${to} <- ${from}"
+  mkdir -p ${dir_to}
+  pandoc -f markdown_github -t html -c ${gotoroot}${RES_DIR}style.css ${ROOT_DIR}${from} -o ./${to}
 
+  #echo "--- --- changing image links..."
+  gotoroot+="../"
   path_link=${gotoroot}${dir_from}/
   sed -i 's,<img src=",<img src="'"${path_link}"',g' ${to}
 
