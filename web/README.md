@@ -21,5 +21,5 @@ make clean
 ## Deverloper notes
 
 * pandoc uses style.css under __'res'__ folder, which has MIT license.
-* Relative links for other web pages (shown only in the file list) or images are re-routed using the path of html files while absolute links are untouched.
+* Relative links for other web pages (shown only in the file list) or images are re-routed using the path of html files while absolute links remain untouched.
 * Further information about compilation can be found at [Pandoc](http://pandoc.org)
