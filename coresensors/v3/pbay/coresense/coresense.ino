@@ -248,7 +248,7 @@ void Carrier()
         Hex_form1();
 		
         Si1145[0] = ID_Si1145;
-		Si1145[1] = (valid << 7) | LENGTH_FORMAT1;
+	Si1145[1] = (valid << 7) | LENGTH_FORMAT1;
         Si1145[2] = formatted_data_buffer[0];
         Si1145[3] = formatted_data_buffer[1];
         
