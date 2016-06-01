@@ -69,7 +69,7 @@
 #define ID_SO2_H2S_ADC_TEMP	0x24
 #define ID_CO_LMP_TEMP	0x25
 #define ID_THREE_ACCEL_AND_VIB	0x26
-#define ID_THREE_MAG_AND_ORIENTATION	0x27
+#define ID_THREE_GYRO_AND_ORIENTATION	0x27
 #define ID_HEALTH  0xFE
 
 
@@ -143,7 +143,7 @@
 
 // #define system_health_include 0x01
 // #define RANDOMIZE_VALID 0x01
-// #define SERIAL_DEBUG 0x01
+ #define SERIAL_DEBUG 0x01
 // #define PRINT_BUFFER 0x01
 
 #define USBSERIAL_INTERFACE 0x01
