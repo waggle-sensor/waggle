@@ -56,7 +56,7 @@ void initializeSensorBoard()
 }
 
 
-
+/*
 void writeEEPROM (unsigned int memory_address, byte data_byte )
 {
     Wire.beginTransmission(EEPROM_ADDRESS);
@@ -83,7 +83,7 @@ byte readEEPROM (unsigned int memory_address )
     }
     return recv_data;
 }
-
+*/
 
 
 
