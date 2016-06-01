@@ -1,0 +1,32 @@
+#!/bin/bash
+
+
+#
+# This script checks the result file of /run/stress.log
+# on success, it will execute print_mac.sh script, which prints the barcode label
+#
+
+set -e
+
+
+if [ ! -e /run/stress.log ] ; then
+  echo "/run/stress.log not found."
+  exit 1
+fi
+
+
+
+RESULT=$(cat /run/stress.log)
+
+if [ "${RESULT}x" == "successx" ] ; then
+  echo "success, printing label"
+
+  # print label !!
+  [% SCRIPT %]
+
+  echo 0
+fi 
+
+
+# print error label
+
