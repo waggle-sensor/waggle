@@ -15,3 +15,4 @@ fi
 
 sed -e 's:\[location\]:'${CURRENT_DIR}'/:' stress-test.conf_tmpl > /etc/init/stress-test.conf
 
+./install-stress-ng.sh
