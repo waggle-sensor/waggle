@@ -35,7 +35,7 @@ fi
 
 
 
-stress-ng --cpu ${CPU_COUNT} --io 2 --vm 1 --vm-bytes 500M --timeout 180s --metrics-brief
+/usr/local/bin/stress-ng --cpu ${CPU_COUNT} --io 2 --vm 1 --vm-bytes 500M --timeout 180s --metrics-brief
 STRESS_RESULT=$?
 
 if [ ${STRESS_RESULT} -ne 0 ] ; then
