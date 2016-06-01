@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+  </style>
+  <link rel="stylesheet" href=".././res/style.css" type="text/css" />
+</head>
+<body>
+<h1 id="copy-waggle-image-to-sd-card-linuxosx">Copy waggle image to SD-card (Linux/OSX)</h1>
+<p>This document explains how to load a waggle image onto an SD-card or eMMC. These instructions are for Linux/OSX systems. If you need instructions for Windows, please contact us.</p>
+<h2 id="download">Download</h2>
+<p>First, using a web browser, choose an image for your ODROID model (e.g. C1/C1+, XU3, U, X2, X) from our download page:</p>
+<p><a href="http://www.mcs.anl.gov/research/projects/waggle/downloads/">http://www.mcs.anl.gov/research/projects/waggle/downloads/</a></p>
+<p>You do not need to download the image with your browser at this point, just specify the image filename in the variable IMAGE below. The environment variable IMAGE contains the image filename without the url and without the suffix &quot;.xz&quot;! This makes it easier to run other commands later, as they then can simply be copied into the terminal without changes. Now paste these two lines (including your changes to the second line) into your terminal:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">export</span> <span class="ot">URL=</span><span class="st">&quot;http://www.mcs.anl.gov/research/projects/waggle/downloads/waggle_images/nodecontroller/ODROID_MODEL&quot;</span> <span class="co"># for nodecontroller</span>
+<span class="kw">export</span> <span class="ot">IMAGE=</span><span class="st">&quot;waggle-nodecontroller-MODEL-VERSION.img&quot;</span>  <span class="co"># do not include the &quot;.xz&quot; suffix !</span>
+<span class="co"># or</span>
+<span class="kw">export</span> <span class="ot">URL=</span><span class="st">&quot;http://www.mcs.anl.gov/research/projects/waggle/downloads/waggle_images/extension_node/ODROID_MODEL&quot;</span> <span class="co"># for extensionnode</span>
+<span class="kw">export</span> <span class="ot">IMAGE=</span><span class="st">&quot;waggle-guestnode-MODEL-VERSION.img&quot;</span>  <span class="co"># do not include the &quot;.xz&quot; suffix !</span></code></pre>
+<p>Alternatively, if you want to use a plain (non-waggle) odroid image:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">export</span> <span class="ot">URL=</span><span class="st">&quot;http://odroid.in/ubuntu_14.04lts/&quot;</span>
+<span class="kw">export</span> <span class="ot">IMAGE=</span><span class="st">&quot;ubuntu-14.04.3lts-lubuntu-odroid-c1-20151020.img&quot;</span> <span class="co"># e.g. for the ODROID-C1 and ODROID-C1+ </span>
+<span class="co"># or</span>
+<span class="kw">export</span> <span class="ot">IMAGE=</span><span class="st">&quot;ubuntu-14.04.1lts-lubuntu-odroid-xu3-20151020.img&quot;</span> <span class="co"># e.g. for the ODROID-XU3</span></code></pre>
+<p>(If you are only looking for a stock Odroid image, choose the corresponding &quot;ubuntu&quot; image for your device, not the &quot;server&quot; or the &quot;xubuntu&quot; image.)</p>
+<p>To download your waggle image paste these two lines (without modifications) into your terminal:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">wget</span> <span class="ot">${URL}</span>/<span class="ot">${IMAGE}</span>.xz
+<span class="kw">wget</span> <span class="ot">${URL}</span>/<span class="ot">${IMAGE}</span>.xz.md5sum</code></pre>
+<p>After we have downloaded these two files, we want to be sure that the files were correctly downloaded. For this we compare the actual md5sum of the image with the official md5sum. If both md5sum's are identical everything is ok.</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="co"># Linux</span>
+<span class="kw">md5sum</span> <span class="ot">${IMAGE}</span>.xz <span class="kw">&gt;</span> <span class="ot">${IMAGE}</span>.xz.local_md5sum
+<span class="co"># OSX</span>
+<span class="kw">md5</span> -r <span class="ot">${IMAGE}</span>.xz <span class="kw">&gt;</span> <span class="ot">${IMAGE}</span>.xz.local_md5sum
+
+<span class="kw">diff</span> <span class="ot">${IMAGE}</span>.xz.md5sum <span class="ot">${IMAGE}</span>.xz.local_md5sum</code></pre>
+<p>Uncompress the image:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">unxz</span> <span class="ot">${IMAGE}</span>.xz</code></pre>
+<h2 id="write-image-to-memory-card">Write image to memory card</h2>
+<p>You can now plug your memory card (SD-card or eMMC) into your computer, either using an USB adapter or using SD-slot adapter. To figure out the correct device file corresponding to your memory card use one of the commands below:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="co"># Linux</span>
+<span class="kw">df</span> -h
+<span class="co"># or</span>
+<span class="kw">lsblk</span>
+<span class="co"># OSX</span>
+<span class="kw">diskutil</span> list</code></pre>
+<p>Now set the DEVICE_NAME environment variable, but do not include the path &quot;/dev/&quot;.</p>
+<p><strong>WARNING: It is critical that you specify the correct device! If you specify the wrong device, you might loose data on your computer !!!!</strong></p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="co"># e.g. for device /dev/disk2</span>
+<span class="kw">export</span> <span class="ot">DEVICE_NAME=</span><span class="st">&quot;disk2&quot;</span>
+<span class="co"># e.g. for device /dev/sdc with multiple partitions such as /dev/sdc1 and /dev/sdc2</span>
+<span class="kw">export</span> <span class="ot">DEVICE_NAME=</span><span class="st">&quot;sdc&quot;</span></code></pre>
+<p>Unmount the device:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="co"># Linux: </span>
+<span class="kw">umount</span> /dev/<span class="ot">${DEVICE_NAME}</span>?
+<span class="co"># OSX:</span>
+<span class="kw">sudo</span> diskutil unmountDisk /dev/<span class="ot">${DEVICE_NAME}</span></code></pre>
+<p>Copy image file to your memory card (SD-card or eMMC)</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="co"># Linux:</span>
+<span class="kw">sudo</span> dd if=<span class="ot">${IMAGE}</span> of=/dev/<span class="ot">${DEVICE_NAME}</span> bs=1M conv=fsync
+<span class="kw">sudo</span> sync
+<span class="co"># OSX:</span>
+<span class="kw">sudo</span> dd if=<span class="ot">${IMAGE}</span> of=/dev/r<span class="ot">${DEVICE_NAME}</span> bs=1m
+<span class="kw">sudo</span> sync
+<span class="co"># (Use ctrl-T to see progress of &quot;dd&quot;)</span></code></pre>
+<p>Eject image (OSX only):</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="co"># OSX: </span>
+<span class="kw">sudo</span> diskutil eject /dev/r<span class="ot">${DEVICE_NAME}</span></code></pre>
+<p>You can now safely disconnect the memory card from your computer.</p>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+  </style>
+  <link rel="stylesheet" href="../.././res/style.css" type="text/css" />
+</head>
+<body>
+<h3 id="cassandra">Cassandra</h3>
+<p>Be sure that environment variable $DATA is defined.</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">[</span> <span class="ot">!</span> <span class="ot">-z</span> <span class="st">&quot;</span><span class="ot">$DATA</span><span class="st">&quot;</span><span class="kw"> ]</span> <span class="kw">&amp;&amp;</span> <span class="kw">\</span>
+<span class="kw">docker</span> run -d \
+<span class="kw">--name</span> beehive-cassandra \
+<span class="kw">--net</span> beehive \
+<span class="kw">-v</span> <span class="ot">${DATA}</span>/cassandra/:/var/lib/cassandra/ \
+<span class="kw">--ulimit</span> memlock=-1 \
+<span class="kw">--ulimit</span> nofile=100000 \
+<span class="kw">--ulimit</span> nproc=32768 \
+<span class="kw">--cap-add</span> IPC_LOCK \
+<span class="kw">cassandra</span>:3.2 -R</code></pre>
+<p>For simple testing without much data you can omit option &quot;-v&quot; above. Without &quot;-v&quot; Cassandra data is not stored persistently and data is lost when the container is removed. Add port mapping &quot;-p 7000:7000&quot; if the beehive server does not run on the same host as the cassandra database.</p>
+<p>Installation instructions for Cassandra without Docker:</p>
+<p><a href="http://docs.datastax.com/en/cassandra/2.0/cassandra/install/installDeb_t.html">http://docs.datastax.com/en/cassandra/2.0/cassandra/install/installDeb_t.html</a></p>
+<h4 id="notes">Notes</h4>
+<p>To directly connect to cassandra:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">docker</span> run -it --net beehive --rm cassandra:3.2 cqlsh beehive-cassandra</code></pre>
+<p>To view database, e.g.:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">use</span> waggle<span class="kw">;</span>
+<span class="kw">DESCRIBE</span> TABLES<span class="kw">;</span>
+<span class="kw">SELECT</span> * FROM nodes<span class="kw">;</span>
+<span class="kw">SELECT</span> * FROM sensor_data<span class="kw">;</span></code></pre>
+<h4 id="troubleshooting">Troubleshooting</h4>
+<p>In case of multiple corrupt commit log files, files can be deleted in a more automated way using a bash loop. Start the cassandra container using --entrypoint=/bin/bash to get a terminal.</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="ot">BAD_FILE=</span><span class="st">&#39;x&#39;</span>
+<span class="kw">while [</span> <span class="st">&quot;</span><span class="ot">${BAD_FILE}</span><span class="st">x&quot;</span> <span class="ot">!=</span> <span class="st">&#39;x&#39;</span><span class="kw"> ]</span> ; <span class="kw">do</span> 
+  <span class="kw">export</span> <span class="ot">BAD_FILE=$(</span><span class="kw">cassandra</span> -f -R <span class="kw">|</span> <span class="kw">grep</span> CommitLogReplayException <span class="kw">|</span> <span class="kw">grep</span> -o <span class="st">&quot;/var/lib/cassandra/commitlog/CommitLog-6-[0-9]*.log&quot;</span><span class="ot">)</span>
+  <span class="kw">echo</span> <span class="st">&quot;delete </span><span class="ot">${BAD_FILE}</span><span class="st">&quot;</span>
+  <span class="kw">rm</span> -f <span class="ot">${BAD_FILE}</span>
+<span class="kw">done</span></code></pre>
+</body>
+</html>

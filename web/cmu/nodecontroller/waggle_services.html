@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="../.././res/style.css" type="text/css" />
+</head>
+<body>
+<p>Waggle services on the waggle node are currently executed by upstart. Upstart scripts can be found in the corresponding git repositories in the upstart directory. The configure scripts in the corresponding git repositories copy the upstart scripts in the /etc/init/ directory.</p>
+<p>List of waggle services</p>
+<pre class="text"><code>- waggle-init 
+    - waggle-data_cache
+    - waggle-communications              
+    - waggle-plugin_manager
+- waggle-heartbeat
+- waggle-epoch
+- waggle-reverse_ssh_tunnel
+- waggle-wagman</code></pre>
+<h4 id="waggle-init">waggle-init</h4>
+<p>increases filesystem, creates recovery files, provisons empty/broken memory cards. Only once this has completeted, data_cache, communications and plugin_manager will be started.</p>
+<h4 id="waggle-heartbeat">waggle-heartbeat</h4>
+<p>Sends a heartbeat on GPIO pins to be read by the WagMan hardware.</p>
+<h4 id="waggle-epoch">waggle-epoch</h4>
+<p>Get date from beehive server.</p>
+<h4 id="waggle-reverse_ssh_tunnel">waggle-reverse_ssh_tunnel</h4>
+<p>Creates a reverse ssh tunnel to beehive.</p>
+<h4 id="waggle-wagman">waggle-wagman</h4>
+<p>Does something.</p>
+<h2 id="waggle-services-command">waggle-services command</h2>
+<p>Use the command &quot;waggle-services&quot; to stop or start waggle services. This script is located in the waggle_image git repository</p>
+<p>Example:</p>
+<pre class="text"><code>&gt; waggle-service list
++------------------+--------+---------+
+| name             | goal   | state   |
+|------------------+--------+---------|
+| waggle-epoch     | start  | running |
+| waggle-init      | start  | running |
+| waggle-heartbeat | start  | running |
++------------------+--------+---------+</code></pre>
+<p>Note that waggle plugins are handled by the waggle plugin_manager.</p>
+</body>
+</html>

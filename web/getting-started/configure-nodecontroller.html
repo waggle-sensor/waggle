@@ -1,0 +1,128 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+  </style>
+  <link rel="stylesheet" href=".././res/style.css" type="text/css" />
+</head>
+<body>
+<h1 id="getting-started-guide">Getting started guide</h1>
+<p>This guide explains how to set up a nodecontroller and send sensor data to a beehive server.</p>
+<h2 id="hardware-requirements">Hardware requirements</h2>
+<p>The following hardware is needed to setup up the waggle node controller.</p>
+<ul>
+<li>ODROID-C1+</li>
+</ul>
+<p><img src="../../user_documentation/pictures/ODROID-C1+.jpg" width="320"></p>
+<p>A low-cost single board computer with an 1.5Ghz quad core ARM processor and 1GB RAM. More technical details can be found on the manufacturer website:</p>
+<p><a href="http://www.hardkernel.com/main/products/prdt_info.php?g_code=G143703355573&amp;tab_idx=2">ODROID C1+ technical details</a></p>
+<ul>
+<li>eMMC memory card and USB SD-card adapter</li>
+</ul>
+<p><img src="../../user_documentation/pictures/eMMC_and_USB_adapter_pieces.jpg" width="160"></p>
+<p>Since eMMC's do not have a standardized connector, Hardkernel eMMC's come with an eMMC module reader with a standard microSD card connector.</p>
+<ul>
+<li>micro SD-card</li>
+</ul>
+<p><img src="../../user_documentation/pictures/SD-card.jpg" width="80"></p>
+<ul>
+<li>USB network adapter</li>
+</ul>
+<p><img src="../../user_documentation/pictures/USB-LAN-adapter.jpg" width="320"></p>
+<p>A USB 2.0 to ethernet network adapter.</p>
+<ul>
+<li>Power adapter with barrel plug</li>
+</ul>
+<p><img src="../../user_documentation/pictures/barrel_power_plug.jpg" width="320"></p>
+<p>Specification: 5V 2A DC input</p>
+<h2 id="prepare-emmc-memory-cards">Prepare eMMC memory cards</h2>
+<p>To use the node controller you need to copy the waggle image (a modified ubuntu) onto an eMMC memory card. To connect the eMMC with your computer, connect the eMMC with the eMMC/microSD adapter and plug that into a common microSD/USB adapter which in turn can be plugged into the USB port of a computer:</p>
+<p><img src="../../user_documentation/pictures/eMMC_in_USB_adapter.jpg" width="320"></p>
+<p>Please follow these instructions to copy the waggle image onto the eMMC memory card: <a href="../getting-started/copy_waggle_image_to_memory_card.html">copy_waggle_image_to_memory_card.md</a></p>
+<p>The SD-card does not need a copy of the waggle image. The waggle software on the eMMC will later automatically reconfigure the SD-card.</p>
+<p>Once the eMMC memory has copy of the waggle image, both memory cards can be plugged into the ODROID. You can find both memory card slots on the bottom side of the ODROID.</p>
+<p><img src="../../user_documentation/pictures/ODROID-C1+_bottom.jpg" width="320"></p>
+<p>The final result should look like this:</p>
+<p><img src="../../user_documentation/pictures/ODROID-C1+_bottom_with_memory.jpg" width="320"></p>
+<h2 id="turn-on-the-node-controller">Turn on the node controller</h2>
+<p>The ODROID does not have a power button. Once you plug in the barrel power plug the device will try to boot an OS from the eMMC (or from SD-card if the eMMC is missing).</p>
+<p><img src="../../user_documentation/pictures/barrel_power_plug.jpg" width="320"></p>
+<p>Note that the ODROID has two LED's. The red &quot;PWR&quot; LED indicates that the device has power. The blue &quot;ALIVE&quot; can indicate three different states (copied from the ODROID C1+ user manual):</p>
+<ul>
+<li>Is on (solid light) when the bootloader is running (Takes a few seconds)<br /></li>
+<li>Blinks slowly when the kernel is running, like a heartbeat (Normal mode)<br /></li>
+<li>Blinks quickly when the kernel is in panic mode</li>
+</ul>
+<p>Both LED's activated:</p>
+<p><img src="../../user_documentation/pictures/PWR_and_ALIVE_LEDs.jpg" width="320"></p>
+<h2 id="connect-to-the-node-controller">Connect to the node controller</h2>
+<h3 id="ethernet">Ethernet</h3>
+<p>The ethernet port on the ODROID currently is reserved for an extension node (or &quot;guest node&quot;) and thus has a static IP address assigned. To connect the node controller with your network use the USB network adapter.</p>
+<p><img src="../../user_documentation/pictures/USB-LAN_adapter_connected.jpg" width="480"></p>
+<p>Instructions how to find the IP address of the node controller in your network and to login into the device using ssh can be found here:</p>
+<p><a href="../getting-started/ssh_connection.html">SSH_connection.md</a></p>
+<h3 id="wireless-adapter">Wireless adapter</h3>
+<p>TODO</p>
+<h3 id="external-monitor-and-keyboard">External monitor and keyboard</h3>
+<p>If you want, you can use the HDMI connector on the ODROID to connect an external monitor and the USB ports to connect a keyboard. This should not be needed, especially for waggle users, but can be helpful for debugging if you are unable to establish an ssh connection.</p>
+<h2 id="configure-node-controller-software">Configure node controller software</h2>
+<p><em>Security note</em>: The waggle images come with default password &quot;waggle&quot; for both root and user &quot;waggle&quot;. To avoid unsolicited access to the node, please change the passwords using the linux command &quot;passwd&quot;:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">passwd</span> root
+<span class="kw">passwd</span> waggle
+<span class="kw">passwd</span> <span class="kw">&lt;</span>user<span class="kw">&gt;</span> <span class="co"># in case you are not using the waggle image</span></code></pre>
+<p>As root user, specify the beehive sever IP address or URL and run the configure script.</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">cd</span> /usr/lib/waggle/nodecontroller
+<span class="ot">BEEHIVE_HOST=</span><span class="kw">&lt;ip&gt;</span>
+<span class="kw">./configure</span></code></pre>
+<p>For more details see the node controller <a href="../cmu/nodecontroller/nodecontroller.html">README.md</a>.</p>
+<h2 id="startconfigure-sensor">start/configure sensor?</h2>
+<p>Once the configuration is done in nodecontroller, rebooting is recommended, as root user.</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">reboot</span></code></pre>
+<p>After the rebooting, log into nodecontroller using ssh again.</p>
+<p>Manage service:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">waggle-service</span> list</code></pre>
+<p>You should see the list of status of waggle services, looks similar like:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">+---------------------------+--------+-----------+</span>
+<span class="kw">|</span> <span class="kw">name</span>                      <span class="kw">|</span> <span class="kw">goal</span>   <span class="kw">|</span> <span class="kw">state</span>     <span class="kw">|</span>
+<span class="kw">|---------------------------+--------+-----------|</span>
+<span class="kw">|</span> <span class="kw">waggle-epoch</span>              <span class="kw">|</span> <span class="kw">start</span>  <span class="kw">|</span> <span class="kw">running</span>   <span class="kw">|</span>
+<span class="kw">|</span> <span class="kw">waggle-reverse_ssh_tunnel</span> <span class="kw">|</span> <span class="kw">start</span>  <span class="kw">|</span> <span class="kw">post-stop</span> <span class="kw">|</span>
+<span class="kw">|</span> <span class="kw">waggle-init</span>               <span class="kw">|</span> <span class="kw">start</span>  <span class="kw">|</span> <span class="kw">post-stop</span> <span class="kw">|</span>
+<span class="kw">|</span> <span class="kw">waggle-communications</span>     <span class="kw">|</span> <span class="kw">stop</span>   <span class="kw">|</span> <span class="kw">waiting</span>   <span class="kw">|</span>
+<span class="kw">|</span> <span class="kw">waggle-heartbeat</span>          <span class="kw">|</span> <span class="kw">start</span>  <span class="kw">|</span> <span class="kw">running</span>   <span class="kw">|</span>
+<span class="kw">|</span> <span class="kw">waggle-wagman</span>             <span class="kw">|</span> <span class="kw">start</span>  <span class="kw">|</span> <span class="kw">running</span>   <span class="kw">|</span>
+<span class="kw">|</span> <span class="kw">waggle-data_cache</span>         <span class="kw">|</span> <span class="kw">stop</span>   <span class="kw">|</span> <span class="kw">waiting</span>   <span class="kw">|</span>
+<span class="kw">+---------------------------+--------+-----------+</span></code></pre>
+<p>According to the list shown, nodecontroller is working in terms of maintenance. However, communication modules to beehive server have not been started.</p>
+<p>Now, you will use ssh again to access extension_node from nodecontroller (make sure that nodecontroller and extension_node are connected via lan cable.</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">ssh</span> waggle@extensionnode</code></pre>
+<p>Once logged in, configure extension_node using root user:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">cd</span> /usr/lib/waggle/plugin_manager
+<span class="kw">./configure</span></code></pre>
+<p>TODO: add sensor ?</p>
+<h2 id="view-results-from-server">view results from server</h2>
+<p>TODO: results from our server or user server ?</p>
+</body>
+</html>

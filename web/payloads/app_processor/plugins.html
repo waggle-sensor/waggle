@@ -1,0 +1,18 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="../.././res/style.css" type="text/css" />
+</head>
+<body>
+<p>Plugin system based on Super Simple Python Plugins<br />from <a href="https://github.com/samwyse/sspp">https://github.com/samwyse/sspp</a></p>
+<p>To create a Python plugin, simply create a .py file in the plugins folder.<br />The plugin should define a callable object named &quot;register&quot; that will be<br />invoked when the plugin is loaded. This object should take three arguments:<br />self, name, and man. It should then initialize man[name] = 1. This is a<br />controller so the plugin manager can tell the plugin to stop or pause.<br />A man[name] value of 0 should result in your plugin ending, while a man[name]<br />value of -1 should result in your plugin doing nothing until it receives<br />another signal.</p>
+<p>To run plugins, run the plugin_manager.py script outside the plugins folder<br />and follow the instructions printed.</p>
+<p>The <strong>init</strong>.py file within the plugin folder turns the directory into a module,<br />and automatically loads any python files in the plugins folder into the<br /><strong>all</strong> list variable. From there, you can do anything you want with the<br />plugins. By default, when you open plugin_manager.py, it will automatically run<br />all of the plugins listed in the whitelist.txt file, which can be manipulated<br />from within the manager. The blacklist.txt file can also be manipulated from<br />the manager, and any plugin listed within is disallowed from being run by the<br />manager.</p>
+<p>The run_plugins_multi.py script only tries to invoke the &quot;register&quot; object in each<br />of the plugins in the <strong>all</strong> list variable in sequence, but can be<br />changed to perform different functions instead or in addition to this.<br />It will run all of the called plugins as a separate process, and can start<br />or stop plugins individually or all at once.</p>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="../.././res/style.css" type="text/css" />
+</head>
+<body>
+<h1 id="wagman-layout-and-features">WagMan Layout and Features</h1>
+<p>The WagMan V3.1 board is capable of managing upto 5 devices through power control, power monitoring,<br />heart-beat monitoring and device temperature monitoring. The figure below shows a WagMan with annotations<br />pointing out the various capabilities, sensors and connectors on board.</p>
+<p><img src="../../../wagman/v3/./resources/WagmanAnnotated.jpg" width="800"></p>
+<h2 id="onboard-sensors">Onboard Sensors</h2>
+<p>The WagMan V3.1 board has a set of on-board sensors that include</p>
+<ul>
+<li>HT21D - Digital Temperature and Humidity Sensor<br /></li>
+<li>HIH4030 - Analog Humidity Sensor<br /></li>
+<li>ACS764 Current Sensors, one sensing WagMan's utilization and five sensing utilizationg by other connected devices<br /></li>
+<li>Thermistors for sensing temperature of connected devices<br /></li>
+<li>An Opto-resistor to provide a measure of brightness in the vicinity of the WagMan.</li>
+</ul>
+<h2 id="time-keeping-and-unique-id">Time Keeping and Unique ID</h2>
+<p>In addition to the above sensors, the WagMan can keep time using a real-time clock chip - MCP79412,<br />which also provides the WagMan with a 6-byte unique ID.</p>
+<h2 id="power-distribution-control-and-metering">Power Distribution, Control and Metering</h2>
+<p>There are 5 ports on the WagMan numbered Port 1 to 5 with the following features</p>
+<ul>
+<li>Each port has one 5V power output, one Thermistor input (2 pins) and one heart-beat input. An optional<br /> reset pin can be used to reset a device (by toggling the line) powered by an external source. The reset<br /> feature and 5V power cannot be used at the same time on a port.<br /></li>
+<li>The power output of a port can be turned On or Off by the WagMan.<br /></li>
+<li>The current consumed from each port can be sensed by the WagMan, accurate to 16mA.<br /></li>
+<li>The 5 output ports, Port 1 to Port 5, are uniquely configured on V3.1 board as follows<br /></li>
+<li>Port 1: Reserved for a C1+ based Node-Controller. The heart-beat line is designed to accomodate 3.3V logic.<br /> It is uniquely configured to maintain power state across Atmel 32U4 resets so that the WagMan can reprogrammed by the Node-Controller in the field.<br /></li>
+<li>Port 2: Reserved for a XU4 based Guest Module. The heart-beat line is designed to accomodate 1.8V logic.<br /></li>
+<li>Port 3,4,5: Can be connected to any device that takes 5V power, consumes less than 2.5A of current and can support 5V logic for heart-beat and reset lines.</li>
+</ul>
+<h2 id="odroid-specific-features">Odroid Specific Features</h2>
+<p>The WagMan is configured to be able to support boot media switch on two connected Odroid single board computers as follows</p>
+<ul>
+<li><strong>C1+ Boot Switch</strong>: This is a two pin connector that is bridged in the default state to choose uSD as the default boot<br /> media of the C1+ Node-Controller. The two pins can be disconnected by the Atmel 32U4 Processor to choose the eMMC boot media.<br /></li>
+<li><strong>XU4 Boot Switch</strong>: This is a three pin connector where the center pin (PIN 2) can be bridged to either the right (PIN 1)<br /> or left (PIN 3) pins. The default state bridges PIN 1 and PIN 2, with PIN 3 isolated to choose uSD boot media on the connected XU4, and the<br /> Atmel 32U4 processor can bridge PIN 2 and PIN 3, isolating PIN 1 to choose eMMC boot media.</li>
+</ul>
+<h2 id="feedback-leds">Feedback LEDs</h2>
+<p>The WagMan board has 5 status LEDs with the following features</p>
+<ul>
+<li>A On LED stays on if the board is receiving 5V DC power.<br /></li>
+<li>RX LED that blinks to signify input of data through the USB port to the board.<br /></li>
+<li>TX LED that blinks to signify output of data from the board through the USB port.<br /></li>
+<li>LEDs L and L1 - These can be brightness controlled (connected to PWM port) by the Atmel 32U4 to provide state information.</li>
+</ul>
+<h2 id="inputs-and-outputs">Inputs and Outputs</h2>
+<p>The WagMan board has several power and communication Inputs and Outputs as listed below</p>
+<ul>
+<li>Power<br /></li>
+<li>Power Input - 5V, 10A max.<br /></li>
+<li><p>5 Power Outputs - 5V, 2.5A max.</p></li>
+<li>Communication<br /></li>
+<li>USB Interface - USB CDC communication port to connect to Node-Controller<br /></li>
+<li><p>ISP Interface - For loading Bootloader on Atmel 32U4 using AVRISP MkII programmer. Post boot-loader flashing phase, the SRE V1 board is connected to this port for enabling Atmel 32U4 reset by Node-Controller.</p></li>
+<li>Health Status<br /></li>
+<li><p>Heart-beat inputs - five ports that can sense a heart-beat signal represented by toggle between GND and Logic high.</p></li>
+<li>Sensor<br /></li>
+<li><p>Thermistor inputs - five inputs to sense temperature</p></li>
+<li>Control<br /></li>
+<li><p>Reset outputs - five lines for devices that can be reset by toggling the line. The lines operate at 5V logic and cannot be used simultaneously with power delivery from a port.</p></li>
+</ul>
+</body>
+</html>
