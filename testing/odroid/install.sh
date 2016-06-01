@@ -30,4 +30,8 @@ cd label_printing/
 sed -e "s:\[% SCRIPT %\]:`pwd`/print_status.sh:" label_printing/75-Dymo-LabelWriter-450.rules_template > /etc/udev/rules.d/75-Dymo-LabelWriter-450.rules
 
 
+sed -e "s:\[% SCRIPT %\]:`pwd`/label_printing/print_mac.sh:" print_status.sh_tmpl > print_status.sh
+
+
+
 ### TODO: write print_status.sh
