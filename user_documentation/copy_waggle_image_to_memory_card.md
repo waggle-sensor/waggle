@@ -98,3 +98,5 @@ sudo diskutil eject /dev/r${DEVICE_NAME}
 
 You can now safely disconnect the memory card from your computer.
 
+#should probably add a link here
+
