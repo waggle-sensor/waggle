@@ -24,6 +24,7 @@ git clone https://github.com/waggle-sensor/label_printing.git
 cd label_printing/
 ./install.sh
 
+cd ${CURRENT_DIR}
 
 # reconfigure udev rules
 
