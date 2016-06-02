@@ -19714,413 +19714,9 @@ uint32_t USBD_Connected(void);
 # 2 "/home/spark/repos/waggle/coresensors/v3/pbay/coresense/build/sketch/coresense.ino.cpp" 2
 # 1 "/home/spark/repos/waggle/coresensors/v3/pbay/coresense/build/sketch/coresense.ino.cpp"
 # 1 "/home/spark/repos/waggle/coresensors/v3/pbay/coresense/coresense.ino"
-# 1 "/home/spark/.arduino15/packages/arduino/hardware/sam/1.6.7/libraries/Wire/src/Wire.h" 1
-/*
- * TwoWire.h - TWI/I2C library for Arduino Due
- * Copyright (c) 2011 Cristian Maglie <c.maglie@arduino.cc>
- * All rights reserved.
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- */
-
-
-
-
-// Include Atmel CMSIS driver
-# 1 "/home/spark/.arduino15/packages/arduino/hardware/sam/1.6.7/system/libsam/include/twi.h" 1
-/* ----------------------------------------------------------------------------
- *         SAM Software Package License
- * ----------------------------------------------------------------------------
- * Copyright (c) 2011-2012, Atmel Corporation
- *
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following condition is met:
- *
- * - Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the disclaimer below.
- *
- * Atmel's name may not be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * DISCLAIMER: THIS SOFTWARE IS PROVIDED BY ATMEL "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT ARE
- * DISCLAIMED. IN NO EVENT SHALL ATMEL BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
- * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * ----------------------------------------------------------------------------
- */
-
-/**
- * \file
- *
- * Interface for configuration the Two Wire Interface (TWI) peripheral.
- *
- */
-# 26 "/home/spark/.arduino15/packages/arduino/hardware/sam/1.6.7/libraries/Wire/src/Wire.h" 2
-
-# 1 "/home/spark/.arduino15/packages/arduino/hardware/sam/1.6.7/cores/arduino/Stream.h" 1
-/*
-  Stream.h - base class for character-based streams.
-  Copyright (c) 2010 David A. Mellis.  All right reserved.
-
-  This library is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 2.1 of the License, or (at your option) any later version.
-
-  This library is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
-
-  You should have received a copy of the GNU Lesser General Public
-  License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
-  parsing functions based on TextFinder library by Michael Margolis
-*/
-# 28 "/home/spark/.arduino15/packages/arduino/hardware/sam/1.6.7/libraries/Wire/src/Wire.h" 2
-# 1 "/home/spark/.arduino15/packages/arduino/hardware/sam/1.6.7/variants/arduino_due_x/variant.h" 1
-/*
-  Copyright (c) 2011 Arduino.  All right reserved.
-
-  This library is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 2.1 of the License, or (at your option) any later version.
-
-  This library is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-  See the GNU Lesser General Public License for more details.
-
-  You should have received a copy of the GNU Lesser General Public
-  License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-*/
-# 29 "/home/spark/.arduino15/packages/arduino/hardware/sam/1.6.7/libraries/Wire/src/Wire.h" 2
-
-
-
- // WIRE_HAS_END means Wire has end()
-
-
-class TwoWire : public Stream {
-public:
- TwoWire(Twi *twi, void(*begin_cb)(void), void(*end_cb)(void));
- void begin();
- void begin(uint8_t);
- void begin(int);
- void end();
- void setClock(uint32_t);
- void beginTransmission(uint8_t);
- void beginTransmission(int);
- uint8_t endTransmission(void);
-    uint8_t endTransmission(uint8_t);
- uint8_t requestFrom(uint8_t, uint8_t);
-    uint8_t requestFrom(uint8_t, uint8_t, uint8_t);
- uint8_t requestFrom(uint8_t, uint8_t, uint32_t, uint8_t, uint8_t);
- uint8_t requestFrom(int, int);
-    uint8_t requestFrom(int, int, int);
- virtual size_t write(uint8_t);
- virtual size_t write(const uint8_t *, size_t);
- virtual int available(void);
- virtual int read(void);
- virtual int peek(void);
- virtual void flush(void);
- void onReceive(void(*)(int));
- void onRequest(void(*)(void));
-
-    inline size_t write(unsigned long n) { return write((uint8_t)n); }
-    inline size_t write(long n) { return write((uint8_t)n); }
-    inline size_t write(unsigned int n) { return write((uint8_t)n); }
-    inline size_t write(int n) { return write((uint8_t)n); }
-    using Print::write;
-
- void onService(void);
-
-private:
- // RX Buffer
- uint8_t rxBuffer[32];
- uint8_t rxBufferIndex;
- uint8_t rxBufferLength;
-
- // TX Buffer
- uint8_t txAddress;
- uint8_t txBuffer[32];
- uint8_t txBufferLength;
-
- // Service buffer
- uint8_t srvBuffer[32];
- uint8_t srvBufferIndex;
- uint8_t srvBufferLength;
-
- // Callback user functions
- void (*onRequestCallback)(void);
- void (*onReceiveCallback)(int);
-
- // Called before initialization
- void (*onBeginCallback)(void);
-
- // Called after deinitialization
- void (*onEndCallback)(void);
-
- // TWI instance
- Twi *twi;
-
- // TWI state
- enum TwoWireStatus {
-  UNINITIALIZED,
-  MASTER_IDLE,
-  MASTER_SEND,
-  MASTER_RECV,
-  SLAVE_IDLE,
-  SLAVE_RECV,
-  SLAVE_SEND
- };
- TwoWireStatus status;
-
- // TWI clock frequency
- static const uint32_t TWI_CLOCK = 100000;
- uint32_t twiClock;
-
- // Timeouts (
- static const uint32_t RECV_TIMEOUT = 100000;
- static const uint32_t XMIT_TIMEOUT = 100000;
-};
-
-
-extern TwoWire Wire;
-
-
-extern TwoWire Wire1;
-# 2 "/home/spark/repos/waggle/coresensors/v3/pbay/coresense/coresense.ino" 2
-extern TwoWire Wire1;
-# 1 "/home/spark/Arduino/libraries/OneWire/OneWire.h" 1
-
-
-
-# 1 "/home/spark/repos/arduino-1.6.7/Atmel_SAM/packages/arduino/tools/arm-none-eabi-gcc/4.8.3-2014q1/arm-none-eabi/include/inttypes.h" 1 3
-/*
- * Copyright (c) 2004, 2005 by
- * Ralf Corsepius, Ulm/Germany. All rights reserved.
- *
- * Permission to use, copy, modify, and distribute this software
- * is freely granted, provided that this notice is preserved.
- */
-
-/**
- *  @file  inttypes.h
- */
-# 5 "/home/spark/Arduino/libraries/OneWire/OneWire.h" 2
-
-
-# 1 "/home/spark/.arduino15/packages/arduino/hardware/sam/1.6.7/cores/arduino/Arduino.h" 1
-/*
-  Arduino.h - Main include file for the Arduino SDK
-  Copyright (c) 2005-2013 Arduino Team.  All right reserved.
-
-  This library is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 2.1 of the License, or (at your option) any later version.
-
-  This library is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
-
-  You should have received a copy of the GNU Lesser General Public
-  License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-*/
-# 8 "/home/spark/Arduino/libraries/OneWire/OneWire.h" 2
-
-
-
-
-
-// You can exclude certain features from OneWire.  In theory, this
-// might save some space.  In practice, the compiler automatically
-// removes unused code (technically, the linker, using -fdata-sections
-// and -ffunction-sections when compiling, and Wl,--gc-sections
-// when linking), so most of these will not result in any code size
-// reduction.  Well, unless you try to use the missing features
-// and redesign your program to not need them!  ONEWIRE_CRC8_TABLE
-// is the exception, because it selects a fast but large algorithm
-// or a small but slow algorithm.
-
-// you can exclude onewire_search by defining that to 0
-
-
-
-
-// You can exclude CRC checks altogether by defining this to 0
-
-
-
-
-// Select the table-lookup method of computing the 8-bit CRC
-// by setting this to 1.  The lookup table enlarges code size by
-// about 250 bytes.  It does NOT consume RAM (but did in very
-// old versions of OneWire).  If you disable this, a slower
-// but very compact algorithm is used.
-
-
-
-
-// You can allow 16-bit CRC checks by defining this to 1
-// (Note that ONEWIRE_CRC must also be 1.)
-
-
-
-
-
-
-
-// Platform specific I/O definitions
-# 76 "/home/spark/Arduino/libraries/OneWire/OneWire.h"
-// Arduino 1.5.1 may have a bug in delayMicroseconds() on Arduino Due.
-// http://arduino.cc/forum/index.php/topic,141030.msg1076268.html#msg1076268
-// If you have trouble with OneWire on Arduino Due, please check the
-// status of delayMicroseconds() before reporting a bug in OneWire!
-# 112 "/home/spark/Arduino/libraries/OneWire/OneWire.h"
-class OneWire
-{
-  private:
-    uint32_t bitmask;
-    volatile uint32_t *baseReg;
-
-
-    // global search state
-    unsigned char ROM_NO[8];
-    uint8_t LastDiscrepancy;
-    uint8_t LastFamilyDiscrepancy;
-    uint8_t LastDeviceFlag;
-
-
-  public:
-    OneWire( uint8_t pin);
-
-    // Perform a 1-Wire reset cycle. Returns 1 if a device responds
-    // with a presence pulse.  Returns 0 if there is no device or the
-    // bus is shorted or otherwise held low for more than 250uS
-    uint8_t reset(void);
-
-    // Issue a 1-Wire rom select command, you do the reset first.
-    void select(const uint8_t rom[8]);
-
-    // Issue a 1-Wire rom skip command, to address all on bus.
-    void skip(void);
-
-    // Write a byte. If 'power' is one then the wire is held high at
-    // the end for parasitically powered devices. You are responsible
-    // for eventually depowering it by calling depower() or doing
-    // another read or write.
-    void write(uint8_t v, uint8_t power = 0);
-
-    void write_bytes(const uint8_t *buf, uint16_t count, bool power = 0);
-
-    // Read a byte.
-    uint8_t read(void);
-
-    void read_bytes(uint8_t *buf, uint16_t count);
-
-    // Write a bit. The bus is always left powered at the end, see
-    // note in write() about that.
-    void write_bit(uint8_t v);
-
-    // Read a bit.
-    uint8_t read_bit(void);
-
-    // Stop forcing power onto the bus. You only need to do this if
-    // you used the 'power' flag to write() or used a write_bit() call
-    // and aren't about to do another read or write. You would rather
-    // not leave this powered if you don't have to, just in case
-    // someone shorts your bus.
-    void depower(void);
-
-
-    // Clear the search state so that if will start from the beginning again.
-    void reset_search();
-
-    // Setup the search to find the device type 'family_code' on the next call
-    // to search(*newAddr) if it is present.
-    void target_search(uint8_t family_code);
-
-    // Look for the next device. Returns 1 if a new address has been
-    // returned. A zero might mean that the bus is shorted, there are
-    // no devices, or you have already retrieved all of them.  It
-    // might be a good idea to check the CRC to make sure you didn't
-    // get garbage.  The order is deterministic. You will always get
-    // the same devices in the same order.
-    uint8_t search(uint8_t *newAddr);
-
-
-
-    // Compute a Dallas Semiconductor 8 bit CRC, these are used in the
-    // ROM and scratchpad registers.
-    static uint8_t crc8(const uint8_t *addr, uint8_t len);
-
-
-    // Compute the 1-Wire CRC16 and compare it against the received CRC.
-    // Example usage (reading a DS2408):
-    //    // Put everything in a buffer so we can compute the CRC easily.
-    //    uint8_t buf[13];
-    //    buf[0] = 0xF0;    // Read PIO Registers
-    //    buf[1] = 0x88;    // LSB address
-    //    buf[2] = 0x00;    // MSB address
-    //    WriteBytes(net, buf, 3);    // Write 3 cmd bytes
-    //    ReadBytes(net, buf+3, 10);  // Read 6 data bytes, 2 0xFF, 2 CRC16
-    //    if (!CheckCRC16(buf, 11, &buf[11])) {
-    //        // Handle error.
-    //    }     
-    //          
-    // @param input - Array of bytes to checksum.
-    // @param len - How many bytes to use.
-    // @param inverted_crc - The two CRC16 bytes in the received data.
-    //                       This should just point into the received data,
-    //                       *not* at a 16-bit integer.
-    // @param crc - The crc starting value (optional)
-    // @return True, iff the CRC matches.
-    static bool check_crc16(const uint8_t* input, uint16_t len, const uint8_t* inverted_crc, uint16_t crc = 0);
-
-    // Compute a Dallas Semiconductor 16 bit CRC.  This is required to check
-    // the integrity of data received from many 1-Wire devices.  Note that the
-    // CRC computed here is *not* what you'll get from the 1-Wire network,
-    // for two reasons:
-    //   1) The CRC is transmitted bitwise inverted.
-    //   2) Depending on the endian-ness of your processor, the binary
-    //      representation of the two-byte return value may have a different
-    //      byte order than the two bytes you get from 1-Wire.
-    // @param input - Array of bytes to checksum.
-    // @param len - How many bytes to use.
-    // @param crc - The crc starting value (optional)
-    // @return The CRC16, as defined by Dallas Semiconductor.
-    static uint16_t crc16(const uint8_t* input, uint16_t len, uint16_t crc = 0);
-
-
-};
-# 4 "/home/spark/repos/waggle/coresensors/v3/pbay/coresense/coresense.ino" 2
+//#include <Wire.h>
+//extern TwoWire Wire1;
+//#include <OneWire.h>
 # 1 "/home/spark/repos/waggle/coresensors/v3/pbay/coresense/build/sketch/config.cpp" 1
 
 /** Constants *************************************************************************/
@@ -20193,7 +19789,7 @@ byte three_gyro_and_orientation[(2 * 3) + 3 + 2];
 
 void setup()
 {
-    Wire.begin();
+    //Wire.begin();
  Serial3.begin(19200); //getData, communicate with the sensor
  while(!Serial3) {;}
  SerialUSB.begin(115200); //sendData, communicate with computer
@@ -20389,7 +19985,7 @@ void Carrier()
         Hex_form1();
 
         Si1145[0] = 0x1F;
-  Si1145[1] = (valid << 7) | 2;
+ Si1145[1] = (valid << 7) | 2;
         Si1145[2] = formatted_data_buffer[0];
         Si1145[3] = formatted_data_buffer[1];
 
@@ -21081,11 +20677,11 @@ void initializeSensorBoard()
 }
 
 
-
+/*
 void writeEEPROM (unsigned int memory_address, byte data_byte )
 {
-    Wire.beginTransmission(0x50 /*Address of 24LC256 EEPROM*/);
-    Wire.write((int)(memory_address >> 8)); // MSB
+    Wire.beginTransmission(EEPROM_ADDRESS);
+    Wire.write((int)(memory_address >> 8));   // MSB
     Wire.write((int)(memory_address & 0xFF)); // LSB
     Wire.write(data_byte);
     Wire.endTransmission();
@@ -21096,11 +20692,11 @@ byte readEEPROM (unsigned int memory_address )
 {
     byte recv_data = 0xff;
 
-    Wire.beginTransmission(0x50 /*Address of 24LC256 EEPROM*/);
-    Wire.write((int)(memory_address >> 8)); // MSB
+    Wire.beginTransmission(EEPROM_ADDRESS);
+    Wire.write((int)(memory_address >> 8));   // MSB
     Wire.write((int)(memory_address & 0xFF)); // LSB
     Wire.endTransmission();
-    Wire.requestFrom(0x50 /*Address of 24LC256 EEPROM*/,1);
+    Wire.requestFrom(EEPROM_ADDRESS,1);
 
     if (Wire.available())
     {
@@ -21108,7 +20704,7 @@ byte readEEPROM (unsigned int memory_address )
     }
     return recv_data;
 }
-
+*/
 
 
 

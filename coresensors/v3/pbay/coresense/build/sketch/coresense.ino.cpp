@@ -1,9 +1,9 @@
 #include <Arduino.h>
 #line 1
 #line 1 "/home/spark/repos/waggle/coresensors/v3/pbay/coresense/coresense.ino"
-#include <Wire.h>
-extern TwoWire Wire1;
-#include <OneWire.h>
+//#include <Wire.h>
+//extern TwoWire Wire1;
+//#include <OneWire.h>
 #include "config.cpp"
 
 #define MAX_FMT_SIZE 6
@@ -87,16 +87,12 @@ void format7(byte *input);
 void format8(float input);
 #line 1 "/home/spark/repos/waggle/coresensors/v3/pbay/coresense/sensors_setup.ino"
 void initializeSensorBoard();
-#line 60 "/home/spark/repos/waggle/coresensors/v3/pbay/coresense/sensors_setup.ino"
-void writeEEPROM(unsigned int memory_address, byte data_byte );
-#line 70 "/home/spark/repos/waggle/coresensors/v3/pbay/coresense/sensors_setup.ino"
-byte readEEPROM(unsigned int memory_address );
 #line 91 "/home/spark/repos/waggle/coresensors/v3/pbay/coresense/sensors_setup.ino"
 void Sensors_Setup(void);
 #line 53
 void setup()
 {
-    Wire.begin();
+    //Wire.begin();
 	Serial3.begin(19200);       //getData, communicate with the sensor
 	while(!Serial3) {;}
 	SerialUSB.begin(115200);    //sendData, communicate with computer
@@ -292,7 +288,7 @@ void Carrier()
         Hex_form1();
 		
         Si1145[0] = ID_Si1145;
-		Si1145[1] = (valid << 7) | LENGTH_FORMAT1;
+	Si1145[1] = (valid << 7) | LENGTH_FORMAT1;
         Si1145[2] = formatted_data_buffer[0];
         Si1145[3] = formatted_data_buffer[1];
         
@@ -988,7 +984,7 @@ void initializeSensorBoard()
 }
 
 
-
+/*
 void writeEEPROM (unsigned int memory_address, byte data_byte )
 {
     Wire.beginTransmission(EEPROM_ADDRESS);
@@ -1015,7 +1011,7 @@ byte readEEPROM (unsigned int memory_address )
     }
     return recv_data;
 }
-
+*/
 
 
 

@@ -2,6 +2,14 @@
 These instructions explain how to create a waggle image that can stress-test the ODROID, and print a barcode label upon success.
 
 
+Disable waggle services:
+```bash
+waggle-service stop waggle-init
+ls -1 /etc/init/waggle-* | grep -v epoch | xargs -i rm {}
+```
+
+
+
 Install files:
 
 ```bash

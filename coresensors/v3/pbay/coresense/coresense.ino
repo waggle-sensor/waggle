@@ -1,6 +1,6 @@
-#include <Wire.h>
-extern TwoWire Wire1;
-#include <OneWire.h>
+//#include <Wire.h>
+//extern TwoWire Wire1;
+//#include <OneWire.h>
 #include "config.cpp"
 
 #define MAX_FMT_SIZE 6
@@ -52,7 +52,7 @@ byte three_gyro_and_orientation[(LENGTH_FORMAT2 * 3) + LENGTH_FORMAT4 + 2];
 
 void setup()
 {
-    Wire.begin();
+    //Wire.begin();
 	Serial3.begin(19200);       //getData, communicate with the sensor
 	while(!Serial3) {;}
 	SerialUSB.begin(115200);    //sendData, communicate with computer
