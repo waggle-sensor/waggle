@@ -31,7 +31,7 @@ You can explore the following sub categories to be familarized yourself with Wag
 * [Waggle service](./user_documentation/waggle_services.md) </br>
     Services that provide various functionality for nodecontroller.
 
-* [Waggle scripts](.nodecontroller/nc-wag-os/waggled/README.md) </br>
+* [Waggle scripts](./nodecontroller/nc-wag-os/waggled/README.md) </br>
     Details of executable scripts.
 
 * [Communication](./nodecontroller/docs/README.md) </br>
