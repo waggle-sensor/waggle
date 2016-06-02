@@ -20,8 +20,14 @@ sed -e 's:\[location\]:'${CURRENT_DIR}'/:' stress-test.conf_tmpl > /etc/init/str
 
 # install label_printing
 
-git clone https://github.com/waggle-sensor/label_printing.git
-cd label_printing/
+if [ -e label_printing ] ; then
+  cd label_printing
+  git pull
+else
+  git clone https://github.com/waggle-sensor/label_printing.git
+  cd label_printing/
+fi
+
 ./install.sh
 
 cd ${CURRENT_DIR}
