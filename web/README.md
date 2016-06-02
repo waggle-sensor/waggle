@@ -1,6 +1,6 @@
 # Documentation for web publishing
 
-Web pages that describe about Waggle are necessary in order to provide information of the latest stable version of Waggle to users. Github markdown files placed in our github repositories are used to generate such web pages. This means that contents of the web pages come from the corresponding markdown files. This allows us to maintain our web site by just editing the markdown files and compiling them to make updated web pages.
+Web pages that describe about Waggle are necessary in order to provide information of the latest stable version of Waggle to users. Github markdown files placed in our github repositories are used to generate such web pages. This means that contents of the web pages come from the corresponding markdown files. This allows developers to maintain their web site by just editing the markdown files and compiling them to make updated web pages.
 
 ## Generate html files
 
@@ -18,8 +18,23 @@ To clean all generated html files under this web folder use:
 make clean
 ```
 
+In order to publish the generated html files along with the images, set up a variable called __'INSTALL_URL'__. The variable must contain remote address of the destination and location where all the files will be transferred. An example of the correct URL would be:
+
+```bash
+export INSTALL_URL=remote_user_name@remote_address:where/html/files/go # in linux
+```
+
+After the variable is set use:
+
+```bash
+make install
+```
+This process requires you to put the password for 'remote_user_name'. Now the web directory (waggle_web as default) is in the remote address under the path set in INSTALL_URL variable.
+
+
 ## Deverloper notes
 
 * pandoc uses style.css under __'res'__ folder, which has MIT license.
+* All images that have relative links and used in the markdown files will be copied into __'ROOT_WEB_DIR/Img'__.
 * Relative links for other web pages (shown only in the file list) or images are re-routed using the path of html files while absolute links remain untouched.
 * Further information about compilation can be found at [Pandoc](http://pandoc.org)

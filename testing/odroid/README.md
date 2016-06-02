@@ -15,7 +15,7 @@ Install files:
 ```bash
 mkdir -p /root/stress-test ; cd /root/stress-test
 
-for file in install.sh install-stress-ng.sh stress-test.conf_tmpl stress-test.sh ; do
+for file in install.sh install-stress-ng.sh stress-test.conf_tmpl stress-test.sh print_status.sh_tmpl ; do
   rm -f ${file}
   wget "https://raw.githubusercontent.com/waggle-sensor/waggle/master/testing/odroid/${file}"
 done
