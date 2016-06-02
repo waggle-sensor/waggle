@@ -1,0 +1,10 @@
+start on (local-filesystems)
+stop on runlevel[016]
+
+task
+
+post-stop exec sleep 5
+
+chdir [location]
+
+exec [location]stress-test.sh

@@ -11,3 +11,4 @@ wget http://kernel.ubuntu.com/~cking/tarballs/stress-ng/stress-ng-${VERSION}.tar
 tar xvzf stress-ng-${VERSION}.tar.gz
 cd stress-ng-${VERSION}
 make
+cp stress-ng /usr/local/bin/
