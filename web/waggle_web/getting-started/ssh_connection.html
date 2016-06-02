@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+  </style>
+  <link rel="stylesheet" href="../Img/style.css" type="text/css" />
+</head>
+<body>
+<h1 id="ssh-connection-to-the-node-controller">SSH connection to the node controller</h1>
+<p>To ssh into your ODROID you may first have to figure out its IP address. If your computer is in the same internal network as the ODROID and you do not know the IP address, you can follow the steps below. If you have access to your router's admin page, you could also find the IP address there. In case the ODROID is not connected to a private network you might have to attach a monitor and keyboard to the ODROID.</p>
+<p>First, get your computer's IP address, e.g.:</p>
+<pre class="text"><code>ifconfig -a</code></pre>
+<p>or more specific:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="co"># Linux</span>
+<span class="kw">ifconfig</span> -a <span class="kw">|</span> <span class="kw">grep</span> -o <span class="st">&quot;inet addr:[0-9\.]\+&quot;</span> <span class="kw">|</span> <span class="kw">grep</span> -v 127.0.0.1 <span class="kw">|</span> <span class="kw">grep</span> -o <span class="st">&quot;[0-9\.]\+&quot;</span>
+<span class="co"># OSX</span>
+<span class="kw">ifconfig</span> -a <span class="kw">|</span> <span class="kw">grep</span> -o <span class="st">&quot;inet [0-9\.]\+&quot;</span> <span class="kw">|</span> <span class="kw">grep</span> -v 127.0.0.1 <span class="kw">|</span> <span class="kw">grep</span> -o <span class="st">&quot;[0-9\.]\+&quot;</span></code></pre>
+<p>Example output:</p>
+<pre class="text"><code>130.202.135.120   # public IP, do not use with nmap
+10.10.10.120      # IP in private network, use that !</code></pre>
+<p>Your computer might have more than one IP address assigned. Make sure that for the following step you use the IP address for the local network to which the ODROID also is connected. Possible private IPv4 address spaces: 10.0.0.0 - 10.255.255.255, 172.16.0.0 - 172.31.255.255 and 192.168.0.0 - 192.168.255.255 .</p>
+<p>To find the actual IP address of the ODROID you can use the tool nmap.</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="co"># Linux:</span>
+<span class="kw">apt-get</span> install nmap
+<span class="co"># OSX:</span>
+<span class="kw">brew</span> install nmap</code></pre>
+<p>Use nmap to list all devices in your network:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">nmap</span> -sP <span class="kw">&lt;</span>yourIP<span class="kw">&gt;</span>/24 </code></pre>
+<p>If the output does not include hostnames, you might have a hard time to figure out which of the listed devices is your ODROID. (You could disconnect the ODROID from the network and run nmap again and the compare the two lists of devices.) You can also point nmap to a DNS server. Assuming your IP is 10.10.10.120 and your router is acting as a DNS server with IP address 10.10.10.1, you could run nmap like this:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">nmap</span> -sP --dns-servers=10.10.10.1 10.10.10.120/24  </code></pre>
+<p>Your ODROID should show up in that list with a hostname containing the name &quot;waggle&quot;.</p>
+<p>Now you should be able to ssh into your ODROID:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="co"># waggle image:</span>
+<span class="kw">ssh</span> waggle@<span class="kw">&lt;</span>odroid_ip<span class="kw">&gt;</span>
+<span class="co">#password: waggle</span>
+
+<span class="co"># if you use the ODROID stock ubuntu image:</span>
+<span class="kw">ssh</span> odroid@<span class="kw">&lt;</span>odroid_ip<span class="kw">&gt;</span>
+<span class="co"># or</span>
+<span class="kw">ssh</span> root@<span class="kw">&lt;</span>odroid_ip<span class="kw">&gt;</span>
+<span class="co">#password: odroid</span></code></pre>
+</body>
+</html>
