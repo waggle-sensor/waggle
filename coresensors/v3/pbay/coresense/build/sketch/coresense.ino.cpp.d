@@ -135,7 +135,4 @@
  /home/spark/.arduino15/packages/arduino/hardware/sam/1.6.7/cores/arduino/USB/USBAPI.h \
  /home/spark/.arduino15/packages/arduino/hardware/sam/1.6.7/cores/arduino/RingBuffer.h \
  /home/spark/.arduino15/packages/arduino/hardware/sam/1.6.7/cores/arduino/Stream.h \
- /home/spark/.arduino15/packages/arduino/hardware/sam/1.6.7/libraries/Wire/src/Wire.h \
- /home/spark/.arduino15/packages/arduino/hardware/sam/1.6.7/system/libsam/include/twi.h \
- /home/spark/Arduino/libraries/OneWire/OneWire.h \
  /home/spark/repos/waggle/coresensors/v3/pbay/coresense/build/sketch/config.cpp
