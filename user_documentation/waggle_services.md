@@ -44,7 +44,12 @@ Example:
 | waggle-heartbeat | start  | running |
 +------------------+--------+---------+
 ```
-
+or
+```text
+> waggle-service stop waggle-epoch
+State:  waiting
+(Goal: stop)
+```
 
 Note that waggle plugins are handled by the waggle plugin_manager.
 
