@@ -80,7 +80,10 @@ for i in ${!OUT_FILES[@]} ; do
       done
     fi
   done
-  echo "done"
+
+  echo -n "... generating source codes..."
+  $(python ${RES_DIR}utility.py ./${INSTALL_DIR}${to} "dummy_arg")
   
+  echo "done"
 done
 
