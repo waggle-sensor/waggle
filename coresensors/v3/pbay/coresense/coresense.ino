@@ -490,7 +490,7 @@ void Carrier()
         SO2_H2S_ADC_temp[1] = (valid << 7) | LENGTH_FORMAT2;
         SO2_H2S_ADC_temp[2] = formatted_data_buffer[0];
         SO2_H2S_ADC_temp[3] = formatted_data_buffer[1];
-        
+    
 #ifdef SERIAL_DEBUG
         // to check output
         for (int j = 0; j < LENGTH_FORMAT2; j++)
@@ -662,7 +662,7 @@ void Carrier()
 #ifdef SERIAL_DEBUG
     SerialUSB.print("\r\n");
 #endif
-
+    
     flag_KEY = false;
     key_id = 0;
     val_id = 0;

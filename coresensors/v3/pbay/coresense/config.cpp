@@ -143,7 +143,7 @@
 
 // #define system_health_include 0x01
 // #define RANDOMIZE_VALID 0x01
- #define SERIAL_DEBUG 0x01
+//#define SERIAL_DEBUG 0x01
 // #define PRINT_BUFFER 0x01
 
 #define USBSERIAL_INTERFACE 0x01
