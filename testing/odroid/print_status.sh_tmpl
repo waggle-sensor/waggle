@@ -27,7 +27,10 @@ if [ "${RESULT}x" == "successx" ] ; then
   echo 0
 fi 
 
+if [ "${RESULT}x" == "errorx" ] ; then
+  # print error label
+  [% SCRIPT %] ERROR
 
-# print error label
-[% SCRIPT %] ERROR
+  echo 0
+fi
 
