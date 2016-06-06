@@ -3,6 +3,7 @@ These instructions explain how to create a waggle image that can stress-test the
 
 ## Create stress-test image 
 
+Take a waggle image and modify it accordingly:
 
 Disable waggle services:
 ```bash
