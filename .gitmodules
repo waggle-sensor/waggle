@@ -13,3 +13,6 @@
 [submodule "wagman"]
 	path = wagman
 	url = https://github.com/waggle-sensor/wagman
+[submodule "devtools/waggle-protocol"]
+	path = devtools/waggle-protocol
+	url = https://github.com/waggle-sensor/waggle-protocol.git
