@@ -30,3 +30,4 @@ fi
 
 # print error label
 [% SCRIPT %] ERROR
+
