@@ -1,5 +1,5 @@
 
-These instructions explain how to create a waggle image that can stress-test the ODROID, and print a barcode label upon success.
+These instructions explain how to create a waggle image that can stress-test the ODROID (e.g. after replacing the heatsink), and print a barcode label upon success.
 
 ## Create stress-test image 
 
