@@ -31,6 +31,17 @@ make install
 ```
 This process requires you to put the password for 'remote_user_name'. Now the web directory (waggle_web as default) is in the remote address under the path set in INSTALL_URL variable.
 
+## Linking python scripts to html files
+
+If an html file needs technical support such as code snippets, the corresponding md file includes a special tag which specifies the code snippet generated from Sphinx. Below is an example of the tag.
+
+```
+<!-- EXTERNAL LINK TO CODE
+"html/guestNode/GN_registration.html"
+-->
+```
+
+GN_registration.html includes code snippet and supporting explanation. The file must exist before __'make docs'__. The path assumes that it starts from __'waggle/docs/_build'__ such that the GN_Registration.html file exists under waggle/docs/_build/html/guestNode.
 
 ## Deverloper notes
 
