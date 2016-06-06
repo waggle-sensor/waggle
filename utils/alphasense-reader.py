@@ -8,6 +8,12 @@ Example:
 Suppose that the Alphasense is device /dev/ttyACM0. You can simple run:
 
 python alphasense.py /dev/ttyACM0
+
+USB-ISS Reference:
+https://www.robot-electronics.co.uk/htm/usb_iss_tech.htm
+
+Alphasense Reference:
+waggle-sensor/waggle/docs/alphasense-opc-n2/
 '''
 from serial import Serial
 from time import sleep
@@ -138,7 +144,7 @@ try:
         bindata = read_histogram(device)
 
         for size, count in bindata:
-            print('{}\t{}'.format(round(size, 3), count))
+            print('{: 3.4f} {:>6}'.format(size, count))
         print()
 
         sleep(10)
