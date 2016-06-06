@@ -1,6 +1,8 @@
 
 These instructions explain how to create a waggle image that can stress-test the ODROID, and print a barcode label upon success.
 
+## Create stress-test image 
+
 
 Disable waggle services:
 ```bash
@@ -25,3 +27,7 @@ chmod +x install.sh install-stress-ng.sh stress-test.sh
 ./install.sh
 
 ```
+
+## QA testing instructions
+
+[QA_testing_instructions.md](./QA_testing_instructions.md)
