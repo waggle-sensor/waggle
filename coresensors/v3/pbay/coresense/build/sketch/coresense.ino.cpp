@@ -1,10 +1,14 @@
+#include <Arduino.h>
+#line 1
+#line 1 "/home/spark/wgl_csense/coresense/coresense.ino"
 // #include <Wire.h>
 // extern TwoWire Wire1;
 // #include <OneWire.h>
-// #include "config.cpp"
+#include <DueTimer.h>
+#include "config.cpp"
 
-// #define MAX_FMT_SIZE 6
-// byte formatted_data_buffer[MAX_FMT_SIZE];
+#define MAX_FMT_SIZE 6
+byte formatted_data_buffer[MAX_FMT_SIZE];
 
 char one;
 char KEY[3];
@@ -13,8 +17,10 @@ char VAL[12];
 int key_id = 0;
 int val_id = 0;
 
+int valid = 1;
+
 bool flag_KEY = false;
-/* reference: buffer length of each format
+//reference: buffer length of each format
 #define LENGTH_FORMAT1  2
 #define LENGTH_FORMAT2  2
 #define LENGTH_FORMAT3  6
@@ -23,40 +29,78 @@ bool flag_KEY = false;
 #define LENGTH_FORMAT6  2
 #define LENGTH_FORMAT7  4
 #define LENGTH_FORMAT8  2
-*/
+
 
 //chemsense board: static array for each sensor data
-// byte chemsense_MAC_ID[LENGTH_FORMAT3 + 2] = {0,0,0,0,0,0,0,0}; // MAC address of chemsense board
-// 
-// byte SHT25[LENGTH_FORMAT2 + LENGTH_FORMAT1 + 2]; // ambient temp and RH
-// byte LPS25H[LENGTH_FORMAT2 + LENGTH_FORMAT4 + 2]; // atmospheric temperature and pressure
-// byte Si1145[(LENGTH_FORMAT1 * 3) + 2]; // UV
-// 
-// byte total_reducing_gases[LENGTH_FORMAT5 + 2]; // ambient concentration
-// byte total_oxidizing_gases[LENGTH_FORMAT5 + 2]; // ambient concentration
-// byte sulfur_dioxide[LENGTH_FORMAT5 + 2]; // ambient concentration
-// byte hydrogen_sulphide[LENGTH_FORMAT5 + 2]; // ambient concentration
-// byte ozone[LENGTH_FORMAT5 + 2]; // ambient concentration
-// byte nitrogen_dioxide[LENGTH_FORMAT5 + 2]; // ambient concentration
-// byte carbon_monoxide[LENGTH_FORMAT5 + 2]; // ambient concentration
-// 
-// byte CO_ADC_temp[LENGTH_FORMAT2 + 2];
-// byte IAQ_IRR_ADC_temp[LENGTH_FORMAT2 + 2];
-// byte O3_NO2_ADC_temp[LENGTH_FORMAT2 + 2];
-// byte SO2_H2S_ADC_temp[LENGTH_FORMAT2 + 2];
-// byte CO_LMP_temp[LENGTH_FORMAT2 + 2];
-// 
-// byte three_accel_and_vib[(LENGTH_FORMAT2 * 3) + LENGTH_FORMAT4 + 2];
-// byte three_gyro_and_orientation[(LENGTH_FORMAT2 * 3) + LENGTH_FORMAT4 + 2];
+byte chemsense_MAC_ID[LENGTH_FORMAT3 + 2] = {0,0,0,0,0,0,0,0}; // MAC address of chemsense board
+ 
+byte SHT25[LENGTH_FORMAT2 + LENGTH_FORMAT1 + 2]; // ambient temp and RH
+byte LPS25H[LENGTH_FORMAT2 + LENGTH_FORMAT4 + 2]; // atmospheric temperature and pressure
+byte Si1145[(LENGTH_FORMAT1 * 3) + 2]; // UV
 
-/*
+byte total_reducing_gases[LENGTH_FORMAT5 + 2]; // ambient concentration
+byte total_oxidizing_gases[LENGTH_FORMAT5 + 2]; // ambient concentration
+byte sulfur_dioxide[LENGTH_FORMAT5 + 2]; // ambient concentration
+byte hydrogen_sulphide[LENGTH_FORMAT5 + 2]; // ambient concentration
+byte ozone[LENGTH_FORMAT5 + 2]; // ambient concentration
+byte nitrogen_dioxide[LENGTH_FORMAT5 + 2]; // ambient concentration
+byte carbon_monoxide[LENGTH_FORMAT5 + 2]; // ambient concentration
+
+byte CO_ADC_temp[LENGTH_FORMAT2 + 2];
+byte IAQ_IRR_ADC_temp[LENGTH_FORMAT2 + 2];
+byte O3_NO2_ADC_temp[LENGTH_FORMAT2 + 2];
+byte SO2_H2S_ADC_temp[LENGTH_FORMAT2 + 2];
+byte CO_LMP_temp[LENGTH_FORMAT2 + 2];
+
+byte three_accel_and_vib[(LENGTH_FORMAT2 * 3) + LENGTH_FORMAT4 + 2];
+byte three_gyro_and_orientation[(LENGTH_FORMAT2 * 3) + LENGTH_FORMAT4 + 2];
+
+#line 55 "/home/spark/wgl_csense/coresense/coresense.ino"
+void setup();
+#line 76 "/home/spark/wgl_csense/coresense/coresense.ino"
+void handler();
+#line 81 "/home/spark/wgl_csense/coresense/coresense.ino"
+void loop();
+#line 153 "/home/spark/wgl_csense/coresense/coresense.ino"
+void Carrier();
+#line 711 "/home/spark/wgl_csense/coresense/coresense.ino"
+void Hex_BAD();
+#line 731 "/home/spark/wgl_csense/coresense/coresense.ino"
+void Hex_form1();
+#line 738 "/home/spark/wgl_csense/coresense/coresense.ino"
+void Int_form2();
+#line 745 "/home/spark/wgl_csense/coresense/coresense.ino"
+void Int_form4();
+#line 752 "/home/spark/wgl_csense/coresense/coresense.ino"
+void Int_form5();
+#line 14 "/home/spark/wgl_csense/coresense/dataFormats.ino"
+void format1(unsigned int input);
+#line 26 "/home/spark/wgl_csense/coresense/dataFormats.ino"
+void format2(int input);
+#line 48 "/home/spark/wgl_csense/coresense/dataFormats.ino"
+void format3(byte *input);
+#line 62 "/home/spark/wgl_csense/coresense/dataFormats.ino"
+void format4(unsigned long input);
+#line 75 "/home/spark/wgl_csense/coresense/dataFormats.ino"
+void format5(long input);
+#line 101 "/home/spark/wgl_csense/coresense/dataFormats.ino"
+void format6(float input);
+#line 129 "/home/spark/wgl_csense/coresense/dataFormats.ino"
+void format7(byte *input);
+#line 141 "/home/spark/wgl_csense/coresense/dataFormats.ino"
+void format8(float input);
+#line 1 "/home/spark/wgl_csense/coresense/sensors_setup.ino"
+void initializeSensorBoard();
+#line 64 "/home/spark/wgl_csense/coresense/sensors_setup.ino"
+void Sensors_Setup(void);
+#line 55
 void setup()
 {
-    Wire.begin();
-	Serial3.begin(19200);       //getData, communicate with the sensor
-	while(!Serial3) {;}
-	SerialUSB.begin(115200);    //sendData, communicate with computer
+ //   Wire.begin();
+	SerialUSB.begin(115200);       //getData, communicate with the sensor
 	while(!SerialUSB) {;}
+	Serial3.begin(19200);    //sendData, communicate with computer
+	while(!Serial3) {;}
 
     initializeSensorBoard();
 	
@@ -65,78 +109,87 @@ void setup()
     
      //turn OFF chemsense.
     //digitalWrite(PIN_CHEMSENSE_POW, HIGH);
-    
-}
-*/
 
-void chemsense_acquire()
+	Serial.println("Get started");
+
+    //Timer3.attachInterrupt(handler).setPeriod(1000).start();    
+}
+
+void handler()
+{
+    Serial.println("asdlfkjowieltkjlshkldkajhskgouiqywjekltaslkdbfmznbckvxlkbgoaiuyerwb");
+}
+
+void loop()
 {
     //print whatever get from Serial3
-//    // read from port 1, send to port 0:
-//   if (Serial3.available()) {
-//     int inByte = Serial3.read();
-//     SerialUSB.write(inByte);
-//   }
-// 
-//   // read from port 0, send to port 1:
-//   if (SerialUSB.available()) {
-//     int inByte = SerialUSB.read();
-//     Serial3.write(inByte);
-//   }
+    // read from port 1, send to port 0:
+    if (Serial3.available()) 
+    {
+        int inByte = Serial3.read();
+        SerialUSB.write(inByte);
+    }
+
+    // read from port 0, send to port 1:
+    if (SerialUSB.available()) 
+    {
+        int inByte = SerialUSB.read();
+        Serial3.write(inByte);
+    }
 
     // write data what needs to be
-    while (Serial3.available() > 0) 
-    {
-        one = Serial3.read();     //read the incoming byte
-
-        switch(one)
-        {
-            case 48 ... 57: // numbers
-            case 65 ... 90: // Upper case letter
-            case 97 ... 122: // Lower case letter
-            case '-': //negative sign
-            {
-                if (!flag_KEY)
-                {
-                    KEY[key_id] = one;
-                    key_id++;
-                    KEY[key_id] = '\0';
-                }
-                else
-                {
-                    VAL[val_id] = one;
-                    val_id++;
-                    VAL[val_id] = '\0';
-                }
-                break;
-            } 
-            case '=':
-            {
-                flag_KEY = true;
-                break;
-            }
-            case ' ':
-            {
-                Carrier();
-                flag_KEY = false;
-                key_id = 0;
-                val_id = 0;
-                break;
-            }
-            case '\r':
-            {
-                Carrier();
-                flag_KEY = false;
-                key_id = 0;
-                val_id = 0;
-                break;
-            }
-            default:
-            break;
-        }
-    }
-    
-    
+//     while (Serial3.available() > 0) 
+//     {
+//         one = Serial3.read();     //read the incoming byte
+// 
+//         switch(one)
+//         {
+//             case 48 ... 57: // numbers
+//             case 65 ... 90: // Upper case letter
+//             case 97 ... 122: // Lower case letter
+//             case '-': //negative sign
+//             {
+//                 if (!flag_KEY)
+//                 {
+//                     KEY[key_id] = one;
+//                     key_id++;
+//                     KEY[key_id] = '\0';
+//                 }
+//                 else
+//                 {
+//                     VAL[val_id] = one;
+//                     val_id++;
+//                     VAL[val_id] = '\0';
+//                 }
+//                 break;
+//             } 
+//             case '=':
+//             {
+//                 flag_KEY = true;
+//                 break;
+//             }
+//             case ' ':
+//             {
+//                 Carrier();
+//                 flag_KEY = false;
+//                 key_id = 0;
+//                 val_id = 0;
+//                 break;
+//             }
+//             case '\r':
+//             {
+//                 Carrier();
+//                 flag_KEY = false;
+//                 key_id = 0;
+//                 val_id = 0;
+//                 break;
+//             }
+//             default:
+//             break;
+//         }
+//     }
+//     
+//     
 }
 
 void Carrier()
@@ -527,7 +580,7 @@ void Carrier()
     {
         Int_form2();
         
-        three_accel_and_vib[0] = 0x26; //ID_THREE_ACCEL_AND_VIB;
+        three_accel_and_vib[0] = ID_THREE_ACCEL_AND_VIB;
         three_accel_and_vib[1] = (valid << 7) | LENGTH_FORMAT2;
         three_accel_and_vib[2] = formatted_data_buffer[0];
         three_accel_and_vib[3] = formatted_data_buffer[1];
@@ -579,7 +632,6 @@ void Carrier()
     {
         Int_form4();
         
-        three_accel_and_vib[0] = ID_THREE_ACCEL_AND_VIB;
         three_accel_and_vib[1] = (valid << 7) | (LENGTH_FORMAT2 * 3 + LENGTH_FORMAT4);
         three_accel_and_vib[8] = formatted_data_buffer[0];
         three_accel_and_vib[9] = formatted_data_buffer[1];
@@ -746,4 +798,353 @@ void Int_form5()
     format5(form5);
 }
 
+
+
+#line 1 "/home/spark/wgl_csense/coresense/dataFormats.ino"
+// Packet formatters -
+// F1 - unsigned int_16 input, {0-0xffff} - Byte1 Byte2 (16 bit number)
+// F2 - int_16 input , +-{0-0x7fff} - 1S|7Bits Byte2
+// F3 - byte input[6], {0-0xffffffffffff} - Byte1 Byte2 Byte3 Byte4 Byte5 Byte6
+// F4 - unsigned long_24 input, {0-0xffffff} - Byte1 Byte2 Byte3
+// F5 - long_24 input, +-{0-0x7fffff} - 1S|7Bits Byte2 Byte3
+// F6 - float input, +-{0-127}.{0-99} - 1S|7Bit_Int 0|7Bit_Frac{0-99}
+// F7 - byte input[4], {0-0xffffffff} - Byte1 Byte2 Byte3 Byte4
+// F8 - float input, +-{0-31}.{0-999} - 1S|5Bit_Int|2MSBit_Frac  8LSBits_Frac
+
+
+/** Format 1 assembler ****************************************************************/
+// F1 - {0-0xffff} - Byte1 Byte2 (16 bit number)
+void format1(unsigned int input)
+{
+    // Assemble sub-packet
+    formatted_data_buffer[0] = (input & 0xff00) >> 8;
+    formatted_data_buffer[1] = input & 0xff;
+}
+/**************************************************************************************/
+
+
+
+/** Format 2 assembler ****************************************************************/
+// F2 - +-{0-0x7fff} - 1S|7Bits Byte2
+void format2(int input)
+{
+
+    byte _negative;
+    // Input negative?
+    if (input < 0) {
+        _negative = 1;
+    }
+    else {
+        _negative = 0;
+    }
+    // Get abs. value of input
+    input = abs(input);
+    // Assemble sub-packet
+    formatted_data_buffer[0] = (_negative << 7) | ((input & 0x7f00) >> 8);
+    formatted_data_buffer[1] = input & 0xff;
+}
+/**************************************************************************************/
+
+
+/** Format 3 assembler ****************************************************************/
+// F3 - {0-0xffffffffffff} - Byte1 Byte2 Byte3 Byte4 Byte5 Byte6
+void format3(byte *input)
+{
+    // Assemble sub-packet
+    formatted_data_buffer[0] = input[0];
+    formatted_data_buffer[1] = input[1];
+    formatted_data_buffer[2] = input[2];
+    formatted_data_buffer[3] = input[3];
+    formatted_data_buffer[4] = input[4];
+    formatted_data_buffer[5] = input[5];
+}
+/**************************************************************************************/
+
+/** Format 4 assembler ****************************************************************/
+// F4 - {0-0xffffff} - Byte1 Byte2 Byte3
+void format4(unsigned long input)
+{
+    // Assemble sub-packet
+    formatted_data_buffer[0] = (input & 0xff0000) >> 16;
+    formatted_data_buffer[1] = (input & 0xff00) >> 8;
+    formatted_data_buffer[2] = (input & 0xff);
+}
+/**************************************************************************************/
+
+
+
+/** Format 5 assembler ****************************************************************/
+// F5 - +-{0-0x7fffff} - 1S|7Bits Byte2 Byte3
+void format5(long input)
+{
+    // Flag to store pos/neg info
+    byte _negative;
+
+    // Input negative?
+    if (input < 0) {
+        _negative = 1;
+    }
+    else {
+        _negative = 0;
+    }
+
+    // Get abs. value of input
+    input = abs(input);
+    // Assemble sub-packet
+    formatted_data_buffer[0] = (_negative << 7) | ((input & 0x7f0000) >> 16);
+    formatted_data_buffer[1] = (input & 0xff00) >> 8;
+    formatted_data_buffer[2] = (input & 0xff);
+}
+/**************************************************************************************/
+
+
+/** Format 6 assembler ****************************************************************/
+// F6 - +-{0-127}.{0-99} - 1S|7Bit_Int 0|7Bit_Frac{0-99}
+
+void format6(float input)
+{
+    // Flag to store pos/neg info
+    byte _negative;
+
+    // Input negative?
+    if (input < 0) {
+        _negative = 1;
+    }
+    else {
+        _negative = 0;
+    }
+
+    // Get abs. value of input
+    input = abs(input);
+    // Extract integer component
+    unsigned int integer = (int)input;
+    // Extract fractional component (and turn it into an integer)
+    unsigned int fractional = ((int)(input*100) - integer*100);
+
+    // Assemble sub-packet
+    formatted_data_buffer[0] = (_negative << 7) | integer;
+    formatted_data_buffer[1] = (fractional & 0x7F);
+}
+/**************************************************************************************/
+
+/** Format 7 assembler ****************************************************************/
+// F7 - {0-0xffffffff} - Byte1 Byte2 Byte3 Byte4
+void format7(byte *input)
+{
+    // Assemble sub-packet
+    formatted_data_buffer[0] = input[0];
+    formatted_data_buffer[1] = input[1];
+    formatted_data_buffer[2] = input[2];
+    formatted_data_buffer[3] = input[3];
+}
+/**************************************************************************************/
+
+/** Format 8 assembler ****************************************************************/
+// F8 - +-{0-31}.{0-999} - 1S|5Bit_Int|2MSBit_Frac  8LSBits_Frac
+void format8(float input)
+{
+    // Flag to store pos/neg info
+    byte _negative;
+
+    // Input negative?
+    if (input < 0) {
+        _negative = 1;
+    }
+    else {
+        _negative = 0;
+    }
+
+    // Get abs. value of input
+    input = abs(input);
+    // Extract integer component
+    int integer = (int)input;
+    // Extract fractional component (and turn it into an integer)
+    int fractional = int((input - integer) * 1000);
+
+    // Assemble sub-packet
+    formatted_data_buffer[0] = (_negative << 7) | ((integer & 0x1F) << 2) | ((fractional & 0x0300) >> 8);
+    formatted_data_buffer[1] = (fractional & 0x00FF);;
+}
+/**************************************************************************************/
+
+#line 1 "/home/spark/wgl_csense/coresense/sensors_setup.ino"
+void initializeSensorBoard()
+{
+    byte i;
+
+    pinMode(PIN_SPV_AMP,INPUT);         // MODE ON?????????? WHERE????????????? HOW???????????? WHEN???????????
+    pinMode(PIN_SVP_SPL,INPUT);
+    pinMode(PIN_RAW_MIC,INPUT);
+    pinMode(PIN_HIH4030,INPUT);
+    pinMode(PIN_CHEMSENSE_POW, OUTPUT); // ON/OFF sensor, OUTPUT:LOW = ON
+/*
+    if (ds2401.reset() == TRUE)
+    {
+        ds2401.write(0x33);
+        for (i = 0; i < 8; i++)
+            Temp_byte[i] = ds2401.read();
+
+        if (OneWire::crc8(Temp_byte, 8) == 0)
+        {
+            for (i=1; i<7; i++)
+                MAC_ID[i + 1] = Temp_byte[i];
+        }
+
+        else { MAC_ID[3] = 0xff; }
+    }
+    else { MAC_ID[3] = 0xaa; } //Nothing is connected in the bus
+
+    #ifdef SERIAL_DEBUG
+    for (i=0; i<8; i++)
+    {
+        SerialUSB.print(MAC_ID[i],HEX);
+
+        if (i < 7) { SerialUSB.print(":"); }
+        else { SerialUSB.print("\n"); }
+    }
+    #endif
+}
+
+void writeEEPROM (unsigned int memory_address, byte data_byte )
+{
+    Wire.beginTransmission(EEPROM_ADDRESS);
+    Wire.write((int)(memory_address >> 8));   // MSB
+    Wire.write((int)(memory_address & 0xFF)); // LSB
+    Wire.write(data_byte);
+    Wire.endTransmission();
+    delay(5);
+}
+
+byte readEEPROM (unsigned int memory_address )
+{
+    byte recv_data = 0xff;
+
+    Wire.beginTransmission(EEPROM_ADDRESS);
+    Wire.write((int)(memory_address >> 8));   // MSB
+    Wire.write((int)(memory_address & 0xFF)); // LSB
+    Wire.endTransmission();
+    Wire.requestFrom(EEPROM_ADDRESS,1);
+
+    if (Wire.available())
+        recv_data = Wire.read();
+    
+    return recv_data;*/
+}
+
+void Sensors_Setup(void)
+{
+#ifdef SERIAL_DEBUG
+    SerialUSB.println("Setting up sensors...");
+#endif
+    
+#ifdef TMP112_include
+    TMP112_CONFIG();
+#ifdef SERIAL_DEBUG
+    SerialUSB.println("TMP112.");
+#endif
+#endif
+
+#ifdef HTU21D_include
+#ifdef SERIAL_DEBUG
+    SerialUSB.println("HTU21.");
+#endif
+#endif
+
+#ifdef  BMP180_include
+    bmp.begin();
+#ifdef SERIAL_DEBUG
+    SerialUSB.println("BMP180.");
+#endif
+#endif
+
+#ifdef  PR103J2_include
+#ifdef SERIAL_DEBUG
+    SerialUSB.println("PR103J2.");
+#endif
+#endif
+
+#ifdef TSL250RD_1_include
+#ifdef SERIAL_DEBUG
+    SerialUSB.println("TSL250RD_1.");
+#endif
+#endif
+
+#ifdef MMA8452Q_include
+    MMA8452_CONFIG(); //Test and intialize the MMA8452
+#ifdef SERIAL_DEBUG
+    SerialUSB.println("MMA8452Q.");
+#endif
+#endif
+
+#ifdef TSYS01_include
+#ifdef SERIAL_DEBUG
+    SerialUSB.println("TSYS01.");
+#endif
+    TSYS01_CONFIG();
+#endif
+
+#ifdef HIH6130_include
+#ifdef SERIAL_DEBUG
+    SerialUSB.println("HIH6130.");
+#endif
+#endif
+
+#ifdef TMP421_include
+#ifdef SERIAL_DEBUG
+    SerialUSB.println("TMP421.");
+#endif
+#endif
+
+#ifdef APDS9006020_include
+#ifdef SERIAL_DEBUG
+    SerialUSB.println("APDS9006020.");
+#endif
+#endif
+
+#ifdef TSL260RD_include
+#ifdef SERIAL_DEBUG
+    SerialUSB.println("TSL260RD.");
+#endif
+#endif
+
+#ifdef TSL250RD_2_include
+#ifdef SERIAL_DEBUG
+    SerialUSB.println("TSL250RD_2.");
+#endif
+#endif
+
+#ifdef MLX75305_include
+#ifdef SERIAL_DEBUG
+    SerialUSB.println("MLX75305.");
+#endif
+#endif
+
+#ifdef ML8511_include
+#ifdef SERIAL_DEBUG
+    SerialUSB.println("ML8511.");
+#endif
+#endif
+
+#ifdef SPV1840LR5HB_1_include
+#ifdef SERIAL_DEBUG
+    SerialUSB.println("SPV1840LR5HB_1.");
+#endif
+#endif
+
+#ifdef SPV1840LR5HB_2_include
+#ifdef SERIAL_DEBUG
+    SerialUSB.println("SPV1840LR5HB_2.");
+#endif
+#endif
+
+#ifdef LIGHTSENSE_INCLUDE
+    mcp3428_1.init(MCP342X::L, MCP342X::L);
+    mcp3428_2.init(MCP342X::L, MCP342X::F);
+#endif
+
+#ifdef HMC5883L_include
+    HMC5883_Magnetometer.begin();
+#endif
+    return;
+}
 

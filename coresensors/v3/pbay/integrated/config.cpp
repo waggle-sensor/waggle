@@ -25,7 +25,7 @@
 // ******************************************************** ARE USED IN AIR/LIGHT/CHEM/DATAFORMAT/ETC
 
 // Packet header *************************************** ARE USED IN PACK ASSEMBLER
-#define LENGTH_DATA  170
+#define LENGTH_DATA  250
 #define LENGTH_WHOLE  LENGTH_DATA + 5
 
 #define START_BYTE 0xAA
@@ -154,7 +154,7 @@
 
 //#define system_health_include 0x01
 //#define RANDOMIZE_VALID 0x01
-//#define SERIAL_DEBUG 0x01
+#define SERIAL_DEBUG 0x01
 //#define PRINT_BUFFER 0x01
 
 #define USBSERIAL_INTERFACE 0x01

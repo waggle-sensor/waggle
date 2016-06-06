@@ -1,4 +1,5 @@
 #include <Wire.h>
+#include <DueTimer.h>
 extern TwoWire Wire1;
 #include <OneWire.h>
 #include "config.cpp"
@@ -92,7 +93,7 @@ byte MMA8452Q[(LENGTH_FORMAT6 * 4) + 2]; // 3-axis accel for traffic flow
 byte PR103J2[LENGTH_FORMAT1 + 2]; // light
 byte TSL250RD_1[LENGTH_FORMAT1 + 2]; // ambient light (400-950nm)
 byte SPV1840LR5HB[LENGTH_FORMAT1 + 2]; // sound pressure
-byte HIH4030[LENGTH_FORMAT1 + 2]; // humidity
+byte HIH4030[LENGTH_FORMAT1 + 2]; // humidity **************************************************does not exist in packet_assembler.ino
 
 // Lightsense board
 byte HMC5883L[(LENGTH_FORMAT8 * 3) + 2]; // magnetic field strength for traffic flow
@@ -169,13 +170,17 @@ long Temp_long;         //air
 int Temp_int[3];        //HIH
 byte Temp_byte[8];      //sensor setup, HIH
 
+bool TIMER = false;
+
+//int a;
+
 //char inByte;            //raw data output, chemsense
 //char ChemSensed = 0;
 //char Chemsense_locked = 0;
 //unsigned long LOOPING;
 
 // CRC-8
-byte crc = 0x00;
+//byte crc = 0x00;
 byte I2C_READ_COMPLETE = true;
 /**************************************************************************************/
 
@@ -261,7 +266,7 @@ void setup()
     #ifdef SERIAL_DEBUG
     SerialUSB.println("Starting...");
     #endif
-
+    
     initializeSensorBoard();
 
     //     Setup the I2C buffer
@@ -281,27 +286,47 @@ void setup()
     Wire1.begin(I2C_SLAVE_ADDRESS);
     Wire1.onRequest(requestEvent);
     #endif
+    
+    //a = 0;
+    
+    Timer3.attachInterrupt(handler).setPeriod(1000000 * 30).start();
+}
+
+void handler()
+{
+    //a++;
+    //SerialUSB.println(a * 30);
+    TIMER = true;
+    
+
 }
 /**************************************************************************************/
 
 
 void loop()
 {
-//   delay(1000);
-//    SerialUSB.println("integrated, start");
-#ifdef AIRSENSE_INCLUDE
-    airsense_acquire();
-#endif
+    #ifdef CHEMSENSE_INCLUDE
+    chemsense_acquire();
+    #endif
 
-#ifdef LIGHTSENSE_INCLUDE
+    if (TIMER)
+    {
+    #ifdef AIRSENSE_INCLUDE
+    airsense_acquire();
+    #endif
+
+    #ifdef LIGHTSENSE_INCLUDE
     lightsense_acquire();
     #endif
 
+    assemble_packet_empty();
+    assemble_packet_whole();
 
-#ifdef CHEMSENSE_INCLUDE
-    chemsense_acquire();
-#endif
+    SerialUSB.write(packet_whole, packet_whole_index + 1);      // To print Postscript
+    SerialUSB.print("\n");
     
+    TIMER = false;
+    }
     /*
         #ifdef SERIAL_DEBUG
         SerialUSB.println("Acquiring ChemSense Data.");
@@ -331,12 +356,17 @@ void loop()
                 break;
             }
         }*/
+    //delay(4000);
+//     assemble_packet_empty();
+//     assemble_packet_whole();
 
-    assemble_packet_empty();
-    assemble_packet_whole();
-
-    SerialUSB.println("Printing: ");
-    SerialUSB.write(packet_whole, packet_whole_index);
+    //SerialUSB.println("Printing: ");
+//     SerialUSB.write(packet_whole_index);
+//     SerialUSB.print("\t");
+//    SerialUSB.write(packet_whole, packet_whole_index + 1);      // To print Postscript
+//    SerialUSB.print("\n");
+//    SerialUSB.write(packet_whole[packet_whole_index]);
+//     SerialUSB.print("\n");
 
 /*    
     #ifdef USBSERIAL_INTERFACE

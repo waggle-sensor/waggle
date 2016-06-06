@@ -1,6 +1,7 @@
-//#include <Wire.h>
-//extern TwoWire Wire1;
-//#include <OneWire.h>
+// #include <Wire.h>
+// extern TwoWire Wire1;
+// #include <OneWire.h>
+#include <DueTimer.h>
 #include "config.cpp"
 
 #define MAX_FMT_SIZE 6
@@ -13,8 +14,10 @@ char VAL[12];
 int key_id = 0;
 int val_id = 0;
 
+int valid = 1;
+
 bool flag_KEY = false;
-/*
+//reference: buffer length of each format
 #define LENGTH_FORMAT1  2
 #define LENGTH_FORMAT2  2
 #define LENGTH_FORMAT3  6
@@ -23,11 +26,11 @@ bool flag_KEY = false;
 #define LENGTH_FORMAT6  2
 #define LENGTH_FORMAT7  4
 #define LENGTH_FORMAT8  2
-*/
 
-//chemsense board
+
+//chemsense board: static array for each sensor data
 byte chemsense_MAC_ID[LENGTH_FORMAT3 + 2] = {0,0,0,0,0,0,0,0}; // MAC address of chemsense board
-
+ 
 byte SHT25[LENGTH_FORMAT2 + LENGTH_FORMAT1 + 2]; // ambient temp and RH
 byte LPS25H[LENGTH_FORMAT2 + LENGTH_FORMAT4 + 2]; // atmospheric temperature and pressure
 byte Si1145[(LENGTH_FORMAT1 * 3) + 2]; // UV
@@ -49,14 +52,13 @@ byte CO_LMP_temp[LENGTH_FORMAT2 + 2];
 byte three_accel_and_vib[(LENGTH_FORMAT2 * 3) + LENGTH_FORMAT4 + 2];
 byte three_gyro_and_orientation[(LENGTH_FORMAT2 * 3) + LENGTH_FORMAT4 + 2];
 
-
 void setup()
 {
-    //Wire.begin();
-	Serial3.begin(19200);       //getData, communicate with the sensor
-	while(!Serial3) {;}
-	SerialUSB.begin(115200);    //sendData, communicate with computer
+ //   Wire.begin();
+	SerialUSB.begin(115200);       //getData, communicate with the sensor
 	while(!SerialUSB) {;}
+	Serial3.begin(19200);    //sendData, communicate with computer
+	while(!Serial3) {;}
 
     initializeSensorBoard();
 	
@@ -65,79 +67,93 @@ void setup()
     
      //turn OFF chemsense.
     //digitalWrite(PIN_CHEMSENSE_POW, HIGH);
-    
+
+	Serial.println("Get started");
+
+    //Timer3.attachInterrupt(handler).setPeriod(1000).start();    
+}
+
+void handler()
+{
+    Serial.println("asdlfkjowieltkjlshkldkajhskgouiqywjekltaslkdbfmznbckvxlkbgoaiuyerwb");
 }
 
 void loop()
 {
-//    // read from port 1, send to port 0:
-//   if (Serial3.available()) {
-//     int inByte = Serial3.read();
-//     SerialUSB.write(inByte);
-//   }
-// 
-//   // read from port 0, send to port 1:
-//   if (SerialUSB.available()) {
-//     int inByte = SerialUSB.read();
-//     Serial3.write(inByte);
-//   }
-//   
-    while (Serial3.available() > 0) 
+    //print whatever get from Serial3
+    // read from port 1, send to port 0:
+    if (Serial3.available()) 
     {
-        one = Serial3.read();     //read the incoming byte
-
-        switch(one)
-        {
-            case 48 ... 57: // numbers
-            case 65 ... 90: // Upper case letter
-            case 97 ... 122: // Lower case letter
-            case '-': //negative sign
-            {
-                if (!flag_KEY)
-                {
-                    KEY[key_id] = one;
-                    key_id++;
-                    KEY[key_id] = '\0';
-                }
-                else
-                {
-                    VAL[val_id] = one;
-                    val_id++;
-                    VAL[val_id] = '\0';
-                }
-                break;
-            } 
-            case '=':
-            {
-                flag_KEY = true;
-                break;
-            }
-            case ' ':
-            {
-                Carrier();
-                flag_KEY = false;
-                key_id = 0;
-                val_id = 0;
-                break;
-            }
-            case '\r':
-            {
-                Carrier();
-                flag_KEY = false;
-                key_id = 0;
-                val_id = 0;
-                break;
-            }
-            default:
-            break;
-        }
+        int inByte = Serial3.read();
+        SerialUSB.write(inByte);
     }
-    
-    
+
+    // read from port 0, send to port 1:
+    if (SerialUSB.available()) 
+    {
+        int inByte = SerialUSB.read();
+        Serial3.write(inByte);
+    }
+
+    // write data what needs to be
+//     while (Serial3.available() > 0) 
+//     {
+//         one = Serial3.read();     //read the incoming byte
+// 
+//         switch(one)
+//         {
+//             case 48 ... 57: // numbers
+//             case 65 ... 90: // Upper case letter
+//             case 97 ... 122: // Lower case letter
+//             case '-': //negative sign
+//             {
+//                 if (!flag_KEY)
+//                 {
+//                     KEY[key_id] = one;
+//                     key_id++;
+//                     KEY[key_id] = '\0';
+//                 }
+//                 else
+//                 {
+//                     VAL[val_id] = one;
+//                     val_id++;
+//                     VAL[val_id] = '\0';
+//                 }
+//                 break;
+//             } 
+//             case '=':
+//             {
+//                 flag_KEY = true;
+//                 break;
+//             }
+//             case ' ':
+//             {
+//                 Carrier();
+//                 flag_KEY = false;
+//                 key_id = 0;
+//                 val_id = 0;
+//                 break;
+//             }
+//             case '\r':
+//             {
+//                 Carrier();
+//                 flag_KEY = false;
+//                 key_id = 0;
+//                 val_id = 0;
+//                 break;
+//             }
+//             default:
+//             break;
+//         }
+//     }
+//     
+//     
 }
 
 void Carrier()
 {
+    // transform the data format as it defined
+    
 	if (!flag_KEY)
 		return;
     
@@ -149,7 +165,7 @@ void Carrier()
     SerialUSB.print(" ");
 #endif
     
-    int valid = 1;
+//    int valid = 1;
     
 	if (strncmp(KEY, "BAD", 3) == 0) 
 	{
@@ -246,9 +262,9 @@ void Carrier()
 	else if (strncmp(KEY, "SUV", 3) == 0)  // wait SVL and SIR
 	{
         Hex_form1();
-		
+        
         Si1145[0] = ID_Si1145;
-	Si1145[1] = (valid << 7) | LENGTH_FORMAT1;
+        Si1145[1] = (valid << 7) | LENGTH_FORMAT1;
         Si1145[2] = formatted_data_buffer[0];
         Si1145[3] = formatted_data_buffer[1];
         
@@ -490,7 +506,7 @@ void Carrier()
         SO2_H2S_ADC_temp[1] = (valid << 7) | LENGTH_FORMAT2;
         SO2_H2S_ADC_temp[2] = formatted_data_buffer[0];
         SO2_H2S_ADC_temp[3] = formatted_data_buffer[1];
-    
+        
 #ifdef SERIAL_DEBUG
         // to check output
         for (int j = 0; j < LENGTH_FORMAT2; j++)
@@ -663,11 +679,35 @@ void Carrier()
     SerialUSB.print("\r\n");
 #endif
     
+//     SerialUSB.write(chemsense_MAC_ID, LENGTH_FORMAT3 + 2);
+//     SerialUSB.write(SHT25, LENGTH_FORMAT2 + LENGTH_FORMAT1 + 2);
+//     SerialUSB.write(LPS25H, LENGTH_FORMAT2 + LENGTH_FORMAT4 + 2);
+//     SerialUSB.write(Si1145, (LENGTH_FORMAT1 * 3) + 2);
+//     
+//     SerialUSB.write(total_reducing_gases, LENGTH_FORMAT5 + 2);
+//     SerialUSB.write(total_oxidizing_gases, LENGTH_FORMAT5 + 2);
+//     SerialUSB.write(sulfur_dioxide, LENGTH_FORMAT5 + 2);
+//     SerialUSB.write(hydrogen_sulphide, LENGTH_FORMAT5 + 2);
+//     SerialUSB.write(ozone, LENGTH_FORMAT5 + 2);
+//     SerialUSB.write(nitrogen_dioxide, LENGTH_FORMAT5 + 2);
+//     SerialUSB.write(carbon_monoxide, LENGTH_FORMAT5 + 2);
+//     
+//     SerialUSB.write(CO_ADC_temp, LENGTH_FORMAT2 + 2);
+//     SerialUSB.write(IAQ_IRR_ADC_temp, LENGTH_FORMAT2 + 2);
+//     SerialUSB.write(O3_NO2_ADC_temp, LENGTH_FORMAT2 + 2);
+//     SerialUSB.write(SO2_H2S_ADC_temp, LENGTH_FORMAT2 + 2);
+//     SerialUSB.write(CO_LMP_temp, LENGTH_FORMAT2 + 2);
+//     
+//     SerialUSB.write(three_accel_and_vib, (LENGTH_FORMAT2 * 3) + LENGTH_FORMAT4 + 2);
+//     SerialUSB.write(three_gyro_and_orientation, (LENGTH_FORMAT2 * 3) + LENGTH_FORMAT4 + 2);
+//     SerialUSB.print("\n");
+
     flag_KEY = false;
     key_id = 0;
     val_id = 0;
 }
 
+// formatting data
 void Hex_BAD()          // format3
 {
     //SerialUSB.println(VAL);

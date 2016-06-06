@@ -1,0 +1,5 @@
+successfully get a line of data,
+and parse a line of characters by space, equal sign,
+and change numbers into integer by using toInt() function.
+
+Previous versions are: coresense_ori, _ch1, _ch2
