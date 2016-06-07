@@ -150,6 +150,14 @@
     #define LPS25H_include 0x01
     #define Si1145_include 0x01
     #define chemsense_MAC_ID_include 0x01
+    
+    #define CO_ADC_temp_include 0x01
+    #define IAQ_IRR_ADC_temp_include 0x01
+    #define O3_NO2_ADC_temp_include 0x01
+    #define SO2_H2S_ADC_temp_include 0x01
+    #define CO_LMP_temp_include 0x01
+    #define three_accel_and_vib_include 0x01
+    #define three_gyro_and_orientation_include 0x01
 #endif // *********************************** THESE VARIABLES ARE NOT USED FOR NOW
 
 //#define system_health_include 0x01
@@ -160,6 +168,6 @@
 #define USBSERIAL_INTERFACE 0x01
 
 #define I2C_INTERFACE 0x01
-#define I2C_PACKET_SIZE 163
 #define I2C_INTERFACE_CONST_SIZE 0x01
+#define I2C_PACKET_SIZE 163
 #define I2C_SLAVE_ADDRESS 0x03

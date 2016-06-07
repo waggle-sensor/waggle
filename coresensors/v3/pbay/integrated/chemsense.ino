@@ -83,7 +83,6 @@ void chemsense_acquire()
 //     int inByte = SerialUSB.read();
 //     Serial3.write(inByte);
 //   }
-
     // write data what needs to be
     while (Serial3.available() > 0) 
     {
@@ -527,7 +526,7 @@ void Carrier()
     {
         Int_form2();
         
-        three_accel_and_vib[0] = 0x26; //ID_THREE_ACCEL_AND_VIB;
+        three_accel_and_vib[0] = ID_THREE_ACCEL_AND_VIB;
         three_accel_and_vib[1] = (valid << 7) | LENGTH_FORMAT2;
         three_accel_and_vib[2] = formatted_data_buffer[0];
         three_accel_and_vib[3] = formatted_data_buffer[1];
@@ -545,6 +544,7 @@ void Carrier()
     {
         Int_form2();
         
+        three_accel_and_vib[0] = ID_THREE_ACCEL_AND_VIB;
         three_accel_and_vib[1] = (valid << 7) | (LENGTH_FORMAT2 * 2);
         three_accel_and_vib[4] = formatted_data_buffer[0];
         three_accel_and_vib[5] = formatted_data_buffer[1];
@@ -562,6 +562,7 @@ void Carrier()
     {
         Int_form2();
         
+        three_accel_and_vib[0] = ID_THREE_ACCEL_AND_VIB;
         three_accel_and_vib[1] = (valid << 7) | (LENGTH_FORMAT2 * 3);
         three_accel_and_vib[6] = formatted_data_buffer[0];
         three_accel_and_vib[7] = formatted_data_buffer[1];
