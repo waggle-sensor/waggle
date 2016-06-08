@@ -129,13 +129,16 @@ class Alphasense(object):
 
         bincounts = struct.unpack_from('<16B', response, offset=0)
 
+        checksum = struct.unpack_from('<H', response, offset=48)[0]
+
+        if sum(bincounts) & 0xFF != checksum:
+            raise RuntimeError('Alphasense data has bad checksum.')
+
         mtof = [x / 3 for x in struct.unpack_from('<4B', response, offset=32)]
 
         sample_flow_rate = struct.unpack_from('<I', response, offset=36)[0]
 
         pmvalues = struct.unpack_from('<fff', response, offset=50)
-
-        checksum = struct.unpack_from('<H', response, offset=48)[0]
 
         return {
             'bins': bincounts,
@@ -144,7 +147,6 @@ class Alphasense(object):
             'pm1': pmvalues[0],
             'pm2.5': pmvalues[1],
             'pm10': pmvalues[2],
-            'error': sum(bincounts) & 0xFF != checksum,
         }
 
 
@@ -171,6 +173,8 @@ if __name__ == '__main__':
             for pm in ['pm1', 'pm2.5', 'pm10']:
                 print('{} {}'.format(pm, data[pm]))
             print()
+
+            print(data)
 
             sleep(10)
     finally:
