@@ -132,8 +132,8 @@
     #define MLX75305_include 0x01
     #define ML8511_include 0x01
     #define TMP421_include 0x01
-    #define MLX90614_include 0x01
-    #define D6T_include 0x01
+//     #define MLX90614_include 0x01
+//     #define D6T_include 0x01
 #endif
 
 // Chemsense board ************************** THESE VARIABLES ARE NOT USED FOR NOW
@@ -162,7 +162,7 @@
 
 //#define system_health_include 0x01
 //#define RANDOMIZE_VALID 0x01
-#define SERIAL_DEBUG 0x01
+// #define SERIAL_DEBUG 0x01
 //#define PRINT_BUFFER 0x01
 
 #define USBSERIAL_INTERFACE 0x01
