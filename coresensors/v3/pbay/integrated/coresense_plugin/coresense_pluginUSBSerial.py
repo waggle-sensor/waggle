@@ -167,12 +167,12 @@ def parse_sensor (sensor_id,sensor_data):
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
         print  format1(sensor_data)
 #"D6T" has been removed
-    #elif sensor_id == '17':
-        #print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        #data = ''
-        #for i in xrange(len(sensor_data)/2):
-            #data = data + str(format6(sensor_data[2*i:2*(i+1)])) + ' '
-        #print  data
+    elif sensor_id == '17':
+        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
+        data = ''
+        for i in xrange(len(sensor_data)/2):
+            data = data + str(format6(sensor_data[2*i:2*(i+1)])) + ' '
+        print  data
 #"MLX90614" "MLX90614"
     elif sensor_id == '18':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
@@ -224,11 +224,11 @@ def parse_sensor (sensor_id,sensor_data):
 #"LPS25H" "LPS25H"
     elif sensor_id == '30':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  format2(sensor_data[0:2]), format4(sensor_data[2:5])
+        print  format2(sensor_data[0:2]),format4(sensor_data[2:5])
 #"Si1145" "Si1145"
     elif sensor_id == '31':
         print "Sensor:", sensor_id, sensor_list[int(sensor_id)],'@ ',
-        print  format1(sensor_data)
+        print  hex(format1(sensor_data[0:2])),hex(format2(sensor_data[2:4])),hex(format2(sensor_data[4:6]))
 #"Intel MAC" "Intel MAC"
     elif sensor_id == '32': # sensor id 0x20
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
@@ -379,7 +379,7 @@ class usbSerial ( threading.Thread ):
                                 packetmismatch = 0
 
                                 for i in range(_preambleLoc + _datLenFieldDelta + 0x01, _postscriptLoc):
-                                    print ord(self.data[i]),
+                                    #print ord(self.data[i]),
                                     _packetCRC = ord(self.data[i]) ^ _packetCRC
                                     for j in range(8):
                                         if (_packetCRC & 0x01):
@@ -392,7 +392,7 @@ class usbSerial ( threading.Thread ):
                                     #ideally we should be able to throw the whole packet out, but purging just a byte for avoiding corner cases.
                                     del self.data[0]
                                 else:
-                                    print self.data
+                                    #print self.data
                                     print '-------------'
                                     print time.asctime(), _msg_seq_num, _postscriptLoc
                                     #extract the data bytes alone, exclude preamble, prot version, len, crc and postScript
@@ -409,7 +409,7 @@ class usbSerial ( threading.Thread ):
                                         This_id_msg_valid = (This_id_msg_size_valid & 0x80) >> 7
                                         This_id_msg = extractedData[consume_ptr+2:consume_ptr+2+This_id_msg_size]
                                         
-                                        print (int(This_id)), This_id_msg_valid, This_id_msg_size, This_id_msg
+                                        #print (int(This_id)), This_id_msg_valid, This_id_msg_size, This_id_msg
                                         
                                         consume_ptr = consume_ptr + 2 + This_id_msg_size
                                         if (This_id_msg_valid == 1):
