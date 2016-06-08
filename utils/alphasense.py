@@ -53,12 +53,23 @@ def iss_spi_transfer_data(serial, data):
 
 
 def lininterp(a, b, n):
+    assert isinstance(n, int) and n > 1
     return tuple(a + i * (b - a) / (n - 1) for i in range(n))
 
 
 class Alphasense(object):
 
     bin_sizes = lininterp(0.38, 17.0, 16)
+    bin_units = {
+        'bins': 'particle / second',
+        'mtof': 'second',
+        'sample flow rate': 'sample / second',
+        'pm1': 'microgram / meter^3',
+        'pm2.5': 'microgram / meter^3',
+        'pm10': 'microgram / meter^3',
+        'temperature': 'celcius',
+        'pressure': 'pascal',
+    }
 
     def __init__(self, port):
         self.serial = Serial(port)
@@ -140,7 +151,13 @@ class Alphasense(object):
 
         pmvalues = struct.unpack_from('<fff', response, offset=50)
 
-        return {
+        # Alphasense seems to randomly decide if it's going to send temperature
+        # or pressure. I'm just checking if temperature is sensible and using
+        # that value when it is.
+        pressure = struct.unpack_from('<I', response, offset=40)[0]
+        temperature = pressure / 10
+
+        data = {
             'bins': bincounts,
             'mtof': mtof,
             'sample flow rate': sample_flow_rate,
@@ -148,6 +165,13 @@ class Alphasense(object):
             'pm2.5': pmvalues[1],
             'pm10': pmvalues[2],
         }
+
+        if temperature > 200:
+            data['pressure'] = pressure
+        else:
+            data['temperature'] = temperature
+
+        return data
 
 
 if __name__ == '__main__':
