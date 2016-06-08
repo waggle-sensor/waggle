@@ -21,6 +21,9 @@ INSTALL_IMG_DIR=${INSTALL_DIR}Img/
 
 mkdir -p ${INSTALL_IMG_DIR}
 cp ${RES_DIR}style.css ${INSTALL_IMG_DIR}style.css
+cp ${RES_DIR}doxygen.css ${INSTALL_IMG_DIR}doxygen.css
+
+date > doxygen_log.txt
 
 echo "--- Web documents generating..."
 for i in ${!OUT_FILES[@]} ; do
@@ -30,21 +33,22 @@ for i in ${!OUT_FILES[@]} ; do
   name_to=$(basename ${to} ".html")
   dir_to=$(dirname ${to})
 
+  # Make a path to go back to the root
   cnt=($(echo ${to} | awk -F/ '{ print NF - 1 }'))
-  dir_from=$(dirname ${from})
   gotoroot=""
   for ((i=0;i<cnt;i++)); do
     gotoroot+="../"
   done
   
-  echo -n "--- making a document ${to} <- ${from}"
+  echo "  making a document ${name_to}.html <- ${from}"
   mkdir -p ${INSTALL_DIR}${dir_to}
-  #echo "${gotoroot}"
-  pandoc -f markdown_github -t html -c ${gotoroot}Img/style.css ${ROOT_DIR}${from} -o ${INSTALL_DIR}${to}
+  # Convert .md to .html with .css files
+  pandoc -f markdown_github -t html -c ${gotoroot}Img/style.css -c ${gotoroot}Img/doxygen.css  ${ROOT_DIR}${from} -o ${INSTALL_DIR}${to}
 
-  echo -n "... changing image links..."
+  echo "    ... changing image links..."
+  # 
   img_links=($(grep 'img src=[a-zA-Z0-9]*' ./${INSTALL_DIR}${to} | awk -F "\"" '{print $2}'))
-  #sed 's,href [a-zA-Z0-9]\"' ${to}
+  
   for j in ${!img_links[@]}; do
     if [ "${img_links[$j]/"http"}" = "${img_links[$j]}" ]; then
       curr_link=${img_links[$j]}
@@ -60,7 +64,7 @@ for i in ${!OUT_FILES[@]} ; do
   #path_link=${gotoroot}${dir_from}/
   #sed -i 's,<img src=",<img src="'"${path_link}"',g' ${to}
 
-  echo -n "... changing page links..."
+  echo "    ... changing page links..."
   page_links=($(python ${RES_DIR}utility.py ./${INSTALL_DIR}${to} | tr -d "[',']"))
   #page_links=($(grep 'a href=[a-zA-Z0-9]*' ./${INSTALL_DIR}${to} | awk -F "\"" '{print $2}'))
   for j in ${!page_links[@]}; do
@@ -81,9 +85,34 @@ for i in ${!OUT_FILES[@]} ; do
     fi
   done
 
-  echo -n "... generating source codes..."
-  $(python ${RES_DIR}utility.py ./${INSTALL_DIR}${to} "dummy_arg")
+  echo -n "    ... generating source codes..."
+  code_links=($(grep '<!-- EXTERNAL LINK' ./${INSTALL_DIR}${to} | awk -F "\"" '{print $2}'))
+  code_files=""
+  for j in ${!code_links[@]}; do
+    code_links[$j]=${ROOT_DIR}${dir_from}/${code_links[$j]}
+    code_file_name=$(basename ${code_links[$j]})
+    code_files="${code_files} ${code_file_name}"
+  done
+  cp -f ${RES_DIR}Doxfile ${RES_DIR}Doxyfile
+  echo "INPUT = ${code_links[@]}" >> ${RES_DIR}Doxyfile
+  #cat ${RES_DIR}Doxyfile
+  doxygen ${RES_DIR}Doxyfile >> doxygen_log.txt
+
+  code_files=$(echo ${code_files//_/__})
+  echo ${code_files}
+
+
+
+  cp tmp/{${code_files// /,}} ${INSTALL_DIR}${dir_to}
+  #code_htmls=($())
+  
+  #$(python ${RES_DIR}utility.py ./${INSTALL_DIR}${to} ${INSTALL_DIR}${dir_to} ${code_links[@]})
   
   echo "done"
 done
+
+echo "--- Cleaning up files..."
+#rm -rf tmp
+
+echo "--- Web documents generation done!!"
 

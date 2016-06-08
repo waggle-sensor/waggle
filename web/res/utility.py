@@ -27,13 +27,13 @@ def links(link):
 		ret.append(link)
 	return ret
 
-def convert(input_file):
+def convert(input_file, input_file_path, codes_files):
 	'''
 	This converts the external links from the code into
-	actual source codes generated from Sphinx
+	actual source codes generated from Doxygen
 	'''
 	FILE_PREFIX="../docs/_build/"
-	KEY_TO_FIND="<div role=\"main\" class=\"document\">"
+	KEY_TO_FIND="<div id=\"doc-content\" "
 	KEY_TO_FIND_LEN = len(KEY_TO_FIND)
 
 	try:
@@ -82,4 +82,4 @@ if __name__ == '__main__':
 	if len(sys.argv) < 3:
 		print links(sys.argv[1])
 	else:
-		convert(sys.argv[1])
+		convert(sys.argv[1], sys.argv[2], sys.argv[3])

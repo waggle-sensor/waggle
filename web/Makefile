@@ -2,7 +2,13 @@ RES_FOLDER	= 'res'
 TARGET_FILE	= 'file-list.txt'
 CHECK_DIR = waggle_web
 
-.PHONY: docs install clean
+.PHONY: help docs install clean
+
+help:
+	@echo "Please use \`make <target>' where <target> is one of"
+	@echo "  docs       to make html files from the markdown files"
+	@echo "  install    to upload generated html files to remote server"
+	@echo "  clean      to clear all generated html files"
 
 docs:
 	$(RES_FOLDER)/create_docs.sh $(RES_FOLDER)/$(TARGET_FILE)
