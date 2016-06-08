@@ -15,7 +15,7 @@ And then, put the power cable to nodecontroller and the heart-beat cable to PIN 
 
 <img src="./pictures/Wire_extension_node_heartbeat.JPG" width=350/> </br>
 
-And then, put the power cable to extension_node and the heart-beat cable to PIN 3 of extension_node.
+And then, put the power cable to extension_node and the heart-beat cable to PIN 4 of extension_node.
 
 <img src="./pictures/Wire_extension_heartbeat2.png" width=500/> </br>
 
