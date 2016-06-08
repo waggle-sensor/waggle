@@ -1,3 +1,5 @@
+byte packet_seq_number = 0x00;
+
 /** Assemble empty packet *************************************************************/
 void assemble_packet_empty()
 {
@@ -18,7 +20,8 @@ void assemble_packet_whole()
 #ifdef SERIAL_DEBUG
     SerialUSB.println("Packing.");
 #endif
-    
+
+#ifdef AIRSENSE_INCLUDE
 #ifdef MAC_ID_include    // Append MAC_ID
     for (int i = 0; i < sizeof(MAC_ID); i++)
     {
@@ -120,7 +123,9 @@ void assemble_packet_whole()
     TSYS01[1] = (chg_valid << 7) | LENGTH_FORMAT6;
     }
 #endif
+#endif
 
+#ifdef LIGHTSENSE_INCLUDE
 #ifdef HMC5883L_include    // Append HMC5883L
     for (int i = 0; i < sizeof(HMC5883L); i++)
     {
@@ -231,100 +236,153 @@ void assemble_packet_whole()
     }
     SPV1840LR5HB[1] = (chg_valid << 7) | LENGTH_FORMAT1;
 #endif
+#endif
 
 #ifdef CHEMSENSE_INCLUDE
+#ifdef chemsense_MAC_ID_include
     for (int i = 0; i < sizeof(chemsense_MAC_ID); i++)
     {
         packet_whole[packet_whole_index] = chemsense_MAC_ID[i];
         packet_whole_index++;
     }
+#endif
+
+#ifdef SHT25_include
     for (int i = 0; i < sizeof(SHT25); i++)
     {
         packet_whole[packet_whole_index] = SHT25[i];
         packet_whole_index++;
     }
+#endif
 
+#ifdef LPS25H_include
     for (int i = 0; i < sizeof(LPS25H); i++)
     {
         packet_whole[packet_whole_index] = LPS25H[i];
         packet_whole_index++;
     }
+#endif
+
+#ifdef Si1145_include
     for (int i = 0; i < sizeof(Si1145); i++)
     {
         packet_whole[packet_whole_index] = Si1145[i];
         packet_whole_index++;
     }
+#endif
+
+#ifdef total_reducing_gases_include
     for (int i = 0; i < sizeof(total_reducing_gases); i++)
     {
         packet_whole[packet_whole_index] = total_reducing_gases[i];
         packet_whole_index++;
     }
+#endif
+
+#ifdef total_oxidizing_gases_include
     for (int i = 0; i < sizeof(total_oxidizing_gases); i++)
     {
         packet_whole[packet_whole_index] = total_oxidizing_gases[i];
         packet_whole_index++;
     }
+#endif
+
+#ifdef sulfur_dioxide_include
     for (int i = 0; i < sizeof(sulfur_dioxide); i++)
     {
         packet_whole[packet_whole_index] = sulfur_dioxide[i];
         packet_whole_index++;
     }
+#endif
+
+#ifdef hydrogen_sulphide_include
     for (int i = 0; i < sizeof(hydrogen_sulphide); i++)
     {
         packet_whole[packet_whole_index] = hydrogen_sulphide[i];
         packet_whole_index++;
     }
+#endif
+
+#ifdef ozone_include
     for (int i = 0; i < sizeof(ozone); i++)
     {
         packet_whole[packet_whole_index] = ozone[i];
         packet_whole_index++;
     }
+#endif
+
+#ifdef nitrogen_dioxide_include
     for (int i = 0; i < sizeof(nitrogen_dioxide); i++)
     {
         packet_whole[packet_whole_index] = nitrogen_dioxide[i];
         packet_whole_index++;
     }
+#endif
+
+#ifdef carbon_monoxide_include
     for (int i = 0; i < sizeof(carbon_monoxide); i++)
     {
         packet_whole[packet_whole_index] = carbon_monoxide[i];
         packet_whole_index++;
     }
+#endif
+
+#ifdef CO_ADC_temp_include
     for (int i = 0; i < sizeof(CO_ADC_temp); i++)
     {
         packet_whole[packet_whole_index] = CO_ADC_temp[i];
         packet_whole_index++;
     }
+#endif
+
+#ifdef IAQ_IRR_ADC_temp_include
     for (int i = 0; i < sizeof(IAQ_IRR_ADC_temp); i++)
     {
         packet_whole[packet_whole_index] = IAQ_IRR_ADC_temp[i];
         packet_whole_index++;
     }
+#endif
+
+#ifdef O3_NO2_ADC_temp_include
     for (int i = 0; i < sizeof(O3_NO2_ADC_temp); i++)
     {
         packet_whole[packet_whole_index] = O3_NO2_ADC_temp[i];
         packet_whole_index++;
     }
+#endif
+
+#ifdef SO2_H2S_ADC_temp_include
     for (int i = 0; i < sizeof(SO2_H2S_ADC_temp); i++)
     {
         packet_whole[packet_whole_index] = SO2_H2S_ADC_temp[i];
         packet_whole_index++;
     }
+#endif
+
+#ifdef CO_LMP_temp_include
     for (int i = 0; i < sizeof(CO_LMP_temp); i++)
     {
         packet_whole[packet_whole_index] = CO_LMP_temp[i];
         packet_whole_index++;
     }
+#endif
+
+#ifdef three_accel_and_vib_include
     for (int i = 0; i < sizeof(three_accel_and_vib); i++)
     {
         packet_whole[packet_whole_index] = three_accel_and_vib[i];
         packet_whole_index++;
     }
+#endif
+
+#ifdef three_gyro_and_orientation_include
     for (int i = 0; i < sizeof(three_gyro_and_orientation); i++)
     {
         packet_whole[packet_whole_index] = three_gyro_and_orientation[i];
         packet_whole_index++;
     }
-    
+#endif
+#endif
 //     SerialUSB.write("\r\n\t");
 //     SerialUSB.write(chemsense_MAC_ID, sizeof(chemsense_MAC_ID));
 //     SerialUSB.write(SHT25, sizeof(SHT25));
@@ -371,7 +429,7 @@ void assemble_packet_whole()
 // 
 //     three_accel_and_vib[1] = (chg_valid << 7) | ((LENGTH_FORMAT2 * 3) + LENGTH_FORMAT4);
 //     three_gyro_and_orientation[1] = (chg_valid << 7) | ((LENGTH_FORMAT2 * 3) + LENGTH_FORMAT4);
-#endif
+
     
 /*
     if (ChemSensed == 1)
