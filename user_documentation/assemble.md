@@ -1,9 +1,9 @@
 # Instructions on assembling
 1) Connect nodecontroller's power and heart-beat cable to Wagman board. Those cables must be plugged in PORT 1 (Refer to [Wagman](https://raw.githubusercontent.com/waggle-sensor/waggle/master/wagman/v3/resources/WagmanAnnotated.jpg)). </br>
 
-<img src="./pictures/Wire_nodecontroller_power_cable.png" width=250/>
+<img src="./pictures/Wire_nodecontroller_power_cable.png" width=300/>
 
-<img src="./pictures/Wire_nodecontroller_heartbeat.JPG" width=400/> </br>
+<img src="./pictures/Wire_nodecontroller_to_wagman.png" width=400/> </br>
 
 And then, put the power cable to nodecontroller and the heart-beat cable to PIN 3 of nodecontroller. </br>
 
@@ -13,7 +13,7 @@ And then, put the power cable to nodecontroller and the heart-beat cable to PIN 
 
 <img src="./pictures/Wire_extension_node_power_cable.png" width=300/>
 
-<img src="./pictures/Wire_extension_node_heartbeat.JPG" width=350/> </br>
+<img src="./pictures/Wire_app_processor_to_wagman.png" width=400/> </br>
 
 And then, put the power cable to extension_node and the heart-beat cable to PIN 4 of extension_node.
 
