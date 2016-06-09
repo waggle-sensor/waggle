@@ -5,7 +5,6 @@ extern TwoWire Wire1;
 #include "config.cpp"
 
 // Air/Lightsense ******************************************************** INCLUDING SENSORS ON AIR/LIGHTSENSE
-#ifdef AIRSENSE_INCLUDE
 #ifdef LIGHTSENSE_INCLUDE
     #include "./libs/MCP342X/MCP342X.h"
     MCP342X mcp3428_1;
@@ -63,7 +62,6 @@ HTU21D myHumidity;
     TSYS_KPoly_T;
     uint16_t TSYS_coefficents[5];
 #endif
-#endif
 
 #ifdef LIGHTSENSE_INCLUDE
 #ifdef HMC5883L_include
@@ -99,18 +97,8 @@ byte TSL250RD_1[LENGTH_FORMAT1 + 2]; // ambient light (400-950nm)
 byte SPV1840LR5HB[LENGTH_FORMAT1 + 2]; // sound pressure
 byte HIH4030[LENGTH_FORMAT1 + 2]; // humidity **************************************************does not exist in packet_assembler.ino
 
-// Lightsense board
-byte HMC5883L[(LENGTH_FORMAT8 * 3) + 2]; // magnetic field strength for traffic flow
-byte HIH6130[(LENGTH_FORMAT6 * 2) + 2]; // temp and RH inside transparent box
-byte APDS9006020[LENGTH_FORMAT1 + 2]; // ambient light inside cavity
-byte TSL260RD[LENGTH_FORMAT1 + 2]; // solar near IR
-byte TSL250RD_2[LENGTH_FORMAT1 + 2]; // solar visible light
-byte MLX75305[LENGTH_FORMAT1 + 2]; // solar visible light
-byte ML8511[LENGTH_FORMAT1 + 2]; // solar UV
-byte D6T[(LENGTH_FORMAT6 * 17) + 2]; // temp of surrounding objects
-byte MLX90614[LENGTH_FORMAT1 + 2]; // temp of pavement
-byte TMP421[LENGTH_FORMAT6 + 2]; // temp inside transparent box
 
+#ifdef CHEMSENSE_INCLUDE
 //chemsense board
 byte chemsense_MAC_ID[LENGTH_FORMAT3 + 2] = {0,0,0,0,0,0,0,0}; // MAC address of chemsense board
 
@@ -134,6 +122,20 @@ byte CO_LMP_temp[LENGTH_FORMAT2 + 2];
 
 byte three_accel_and_vib[(LENGTH_FORMAT2 * 3) + LENGTH_FORMAT4 + 2];
 byte three_gyro_and_orientation[(LENGTH_FORMAT2 * 3) + LENGTH_FORMAT4 + 2];
+#endif
+
+
+// Lightsense board
+byte HMC5883L[(LENGTH_FORMAT8 * 3) + 2]; // magnetic field strength for traffic flow
+byte HIH6130[(LENGTH_FORMAT6 * 2) + 2]; // temp and RH inside transparent box
+byte APDS9006020[LENGTH_FORMAT1 + 2]; // ambient light inside cavity
+byte TSL260RD[LENGTH_FORMAT1 + 2]; // solar near IR
+byte TSL250RD_2[LENGTH_FORMAT1 + 2]; // solar visible light
+byte MLX75305[LENGTH_FORMAT1 + 2]; // solar visible light
+byte ML8511[LENGTH_FORMAT1 + 2]; // solar UV
+byte D6T[(LENGTH_FORMAT6 * 17) + 2]; // temp of surrounding objects
+byte MLX90614[LENGTH_FORMAT1 + 2]; // temp of pavement
+byte TMP421[LENGTH_FORMAT6 + 2]; // temp inside transparent box
 
 // Whole packet
 byte packet_whole[LENGTH_WHOLE];
@@ -199,7 +201,7 @@ void setup()
     Wire1.onRequest(requestEvent);
     #endif
     
-    Timer3.attachInterrupt(handler).setPeriod(1000000 * 15).start(); // print super-packet every 30 secs
+    Timer3.attachInterrupt(handler).setPeriod(1000000 * 5).start(); // print super-packet every 30 secs
 }
 
 void handler()

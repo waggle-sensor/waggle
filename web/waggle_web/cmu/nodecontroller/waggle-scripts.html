@@ -7,69 +7,17 @@
   <title></title>
   <style type="text/css">code{white-space: pre;}</style>
   <link rel="stylesheet" href="../../Img/style.css" type="text/css" />
+  <link rel="stylesheet" href="../../Img/doxygen.css" type="text/css" />
 </head>
 <body>
 <h2 id="scripts-for-nodecontroller">Scripts for nodecontroller</h2>
-<p>This document enumulates python scripts that the nodecontroller uses.</p>
-<ul>
-<li>Nodecontroller registration script</li>
-</ul>
-<div role="main" class="document">
-            
-  <div class="section" id="nc-registration-script">
-<h1>NC Registration Script<a class="headerlink" href="#nc-registration-script" title="Permalink to this headline">¶</a></h1>
-<p>A python script that creates a registration message from the NC and sends it to the internal communication to put in the DC.</p>
-</div>
+<p>This document enumulates python scripts that the nodecontroller uses.<br />** It only appears in HTML file, not markdown file.</p>
+<!-- EXTERNAL LINK TO CODE "NC/NC_configuration.py" -->
 
 
-          </div>
-          
+<!-- EXTERNAL LINK TO CODE "NC/ping.py" -->
 
 
-<div role="main" class="document">
-            
-  <div class="section" id="module-external_communicator">
-<span id="external-communicator-module-functions"></span><h1>External Communicator Module Functions<a class="headerlink" href="#module-external_communicator" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
-<dt id="external_communicator.external_communicator">
-<em class="property">class </em><code class="descclassname">external_communicator.</code><code class="descname">external_communicator</code><a class="headerlink" href="#external_communicator.external_communicator" title="Permalink to this definition">¶</a></dt>
-<dd><p>This class is a convenience class that stores shared variables amongst all instances.</p>
-<dl class="method">
-<dt id="external_communicator.external_communicator.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#external_communicator.external_communicator.__init__" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="external_communicator.pika_push">
-<em class="property">class </em><code class="descclassname">external_communicator.</code><code class="descname">pika_push</code><span class="sig-paren">(</span><em>group=None</em>, <em>target=None</em>, <em>name=None</em>, <em>args=()</em>, <em>kwargs={}</em><span class="sig-paren">)</span><a class="headerlink" href="#external_communicator.pika_push" title="Permalink to this definition">¶</a></dt>
-<dd><p>A pika client for rabbitMQ to push messages to the cloud. When the cloud is connected, the pull client sends pull requests and puts messages into the outgoing queue. 
-When the outgoing queue is not empty, this pika client will connect and push those messages to the cloud.</p>
-</dd></dl>
-
-<dl class="class">
-<dt id="external_communicator.pika_pull">
-<em class="property">class </em><code class="descclassname">external_communicator.</code><code class="descname">pika_pull</code><span class="sig-paren">(</span><em>group=None</em>, <em>target=None</em>, <em>name=None</em>, <em>args=()</em>, <em>kwargs={}</em><span class="sig-paren">)</span><a class="headerlink" href="#external_communicator.pika_pull" title="Permalink to this definition">¶</a></dt>
-<dd><p>A pika client for pulling messages from the cloud. If messages are sent from the cloud, this client will put them into the incoming queue.</p>
-</dd></dl>
-
-<dl class="class">
-<dt id="external_communicator.external_client_pull">
-<em class="property">class </em><code class="descclassname">external_communicator.</code><code class="descname">external_client_pull</code><span class="sig-paren">(</span><em>group=None</em>, <em>target=None</em>, <em>name=None</em>, <em>args=()</em>, <em>kwargs={}</em><span class="sig-paren">)</span><a class="headerlink" href="#external_communicator.external_client_pull" title="Permalink to this definition">¶</a></dt>
-<dd><p>A client process that connects to the data cache if the cloud is currently connected.  Once a message is recieved, it is put into the outgoing queue.</p>
-</dd></dl>
-
-<dl class="class">
-<dt id="external_communicator.external_client_push">
-<em class="property">class </em><code class="descclassname">external_communicator.</code><code class="descname">external_client_push</code><span class="sig-paren">(</span><em>group=None</em>, <em>target=None</em>, <em>name=None</em>, <em>args=()</em>, <em>kwargs={}</em><span class="sig-paren">)</span><a class="headerlink" href="#external_communicator.external_client_push" title="Permalink to this definition">¶</a></dt>
-<dd><p>A client process that connects to the data cache and pushes incoming messages.</p>
-</dd></dl>
-
-</div>
-
-
-          </div>
-          
+<!-- EXTERNAL LINK TO CODE "NC/time.py" -->
 </body>
 </html>

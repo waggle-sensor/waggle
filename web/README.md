@@ -2,6 +2,8 @@
 
 Web pages that describe about Waggle are necessary in order to provide information of the latest stable version of Waggle to users. Github markdown files placed in our github repositories are used to generate such web pages. This means that contents of the web pages come from the corresponding markdown files. This allows developers to maintain their web site by just editing the markdown files and compiling them to make updated web pages.
 
+<img src="res/web-doc-diagram.png" width=400 /> <br>
+
 ## Generate html files
 
 In order to make web pages, a file list should be updated and checked. The file list is located under __'res'__ folder and contains pairs of links between the paths of a markdown file and the corresponding web page. For example, __'index.md:index.html'__ (':' is delimiter) describes that __'index.md'__ is the source of __'index.html'__. If one of the links or pairs changed in git repositories, it must be updated in the file list before compilation.

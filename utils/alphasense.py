@@ -5,7 +5,7 @@ replaced with some other layer.
 
 Example:
 
-Suppose that the Alphasense is device /dev/ttyACM0. You can simple run:
+Suppose that the Alphasense is device /dev/ttyACM0. You can simply run:
 
 python alphasense.py /dev/ttyACM0
 

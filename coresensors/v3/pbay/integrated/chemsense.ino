@@ -6,12 +6,12 @@
 // #define MAX_FMT_SIZE 6
 // byte formatted_data_buffer[MAX_FMT_SIZE];
 
-char one;
-char KEY[3];
-char VAL[12];
+unsigned char INPUT_BYTE;
+char KEY[4];
+char VAL[14];
 
-int key_id = 0;
-int val_id = 0;
+int KEY_NUM_ID = 0;
+int VAL_NUM_ID = 0;
 
 bool flag_KEY = false;
 /* reference: buffer length of each format
@@ -86,9 +86,9 @@ void chemsense_acquire()
     // write data what needs to be
     while (Serial3.available() > 0) 
     {
-        one = Serial3.read();     //read the incoming byte
+        INPUT_BYTE = Serial3.read();     //read the incoming byte
 
-        switch(one)
+        switch(INPUT_BYTE)
         {
             case 48 ... 57: // numbers
             case 65 ... 90: // Upper case letter
@@ -97,37 +97,40 @@ void chemsense_acquire()
             {
                 if (!flag_KEY)
                 {
-                    KEY[key_id] = one;
-                    key_id++;
-                    KEY[key_id] = '\0';
+                    KEY[KEY_NUM_ID] = INPUT_BYTE;
+                    KEY_NUM_ID++;
+                    KEY[KEY_NUM_ID] = '\0';
                 }
                 else
                 {
-                    VAL[val_id] = one;
-                    val_id++;
-                    VAL[val_id] = '\0';
+                    VAL[VAL_NUM_ID] = INPUT_BYTE;
+                    VAL_NUM_ID++;
+                    VAL[VAL_NUM_ID] = '\0';
                 }
                 break;
             } 
+            
             case '=':
             {
                 flag_KEY = true;
                 break;
             }
+            
             case ' ':
             {
                 Carrier();
                 flag_KEY = false;
-                key_id = 0;
-                val_id = 0;
+                KEY_NUM_ID = 0;
+                VAL_NUM_ID = 0;
                 break;
             }
+            
             case '\r':
             {
                 Carrier();
                 flag_KEY = false;
-                key_id = 0;
-                val_id = 0;
+                KEY_NUM_ID = 0;
+                VAL_NUM_ID = 0;
                 break;
             }
             default:
@@ -694,8 +697,8 @@ void Carrier()
 //     SerialUSB.print("\n");
 
     flag_KEY = false;
-    key_id = 0;
-    val_id = 0;
+    KEY_NUM_ID = 0;
+    VAL_NUM_ID = 0;
 }
 
 // formatting data

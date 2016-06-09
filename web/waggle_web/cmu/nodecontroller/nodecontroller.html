@@ -26,44 +26,45 @@ code > span.fu { color: #06287e; }
 code > span.er { color: #ff0000; font-weight: bold; }
   </style>
   <link rel="stylesheet" href="../../Img/style.css" type="text/css" />
+  <link rel="stylesheet" href="../../Img/doxygen.css" type="text/css" />
 </head>
 <body>
 <h2 id="installation">Installation</h2>
 <p>The nodecontroller is already installed on the Waggle image. If you need the very latest version of the nodecontroller you can do a git pull:</p>
-<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">cduser_documentationususer_documentationlib/waggle/nodecontroller/</span>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">cd</span> /usr/lib/waggle/nodecontroller/
 <span class="kw">git</span> pull</code></pre>
 <p>Alternatively you can do a git clone on any Linux:</p>
-<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">mkdir</span> -puser_documentationususer_documentationlib/waggle/
-<span class="kw">cduser_documentationususer_documentationlib/waggle/</span>
-<span class="kw">git</span> clone httpsuser_documentatiouser_documentationgithub.com/waggle-sensor/waggle_image.git
-<span class="kw">git</span> clone --recursive httpsuser_documentatiouser_documentationgithub.com/waggle-sensor/nodecontroller.git
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">mkdir</span> -p /usr/lib/waggle/
+<span class="kw">cd</span> /usr/lib/waggle/
+<span class="kw">git</span> clone https://github.com/waggle-sensor/waggle_image.git
+<span class="kw">git</span> clone --recursive https://github.com/waggle-sensor/nodecontroller.git
 <span class="kw">cd</span> nodecontroller</code></pre>
 <p>Also, if you are not using the Waggle image, you may have to install the dependencies of the nodecontroller. This script uses apt-get commands. For other Linux distributions look into this file to see what needs to be installed.</p>
-<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">scriptuser_documentationinstall_dependencies.sh</span></code></pre>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">scripts/install_dependencies.sh</span></code></pre>
 <h3 id="installation-with-docker-only-x86">Installation with Docker (only x86)</h3>
 <p>A docker image is available for testing and developing purposes. Currently this is x86, thus it will not run on the ODROID which has an ARM architecture. We will provide ARM Docker images hopefully soon.</p>
 <pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">docker</span> rm -f nc
-<span class="kw">docker</span> pull waggluser_documentationnodecontroller
-<span class="kw">docker</span> run -ti --name nc --rm waggluser_documentationnodecontroller
-<span class="kw">cduser_documentationususer_documentationlib/waggle/nodecontroller/</span></code></pre>
+<span class="kw">docker</span> pull waggle/nodecontroller
+<span class="kw">docker</span> run -ti --name nc --rm waggle/nodecontroller
+<span class="kw">cd</span> /usr/lib/waggle/nodecontroller/</code></pre>
 <p>For developing purposes mounting the git repo from the host can be helpful:</p>
-<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">mkdir</span> -p cd <span class="ot">${HOMEuser_documentationgiuser_documentation</span>
-<span class="er">cd ${HOMEuser_documentationgiuser_documentation</span>
-<span class="er">git clone </span><span class="ot">-</span>-recursive git@github.com:waggle-sensouser_documentationnodecontroller.git
-docker run -ti --name nc --rm -v <span class="ot">${HOMEuser_documentationgiuser_documentationnodecontroller/</span>:<span class="ot">/</span>usr/lib/waggle/nodecontroller  waggle/nodecontroller</code></pre>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">mkdir</span> -p cd <span class="ot">${HOME}</span>/git/
+<span class="kw">cd</span> <span class="ot">${HOME}</span>/git/
+<span class="kw">git</span> clone --recursive git@github.com:waggle-sensor/nodecontroller.git
+<span class="kw">docker</span> run -ti --name nc --rm -v <span class="ot">${HOME}</span>/git/nodecontroller/:/usr/lib/waggle/nodecontroller  waggle/nodecontroller</code></pre>
 <h2 id="configuration">Configuration</h2>
 <p>The environment variable RABBITMQ_HOST can be used to tell the node controller where to send the sensor data. Run the configure script.</p>
 <pre class="sourceCode bash"><code class="sourceCode bash">
-<span class="kw">cduser_documentationususer_documentationlib/waggle/nodecontroller/</span>
-<span class="ot">RABBITMQ_HOST=</span><span class="kw">&lt;IP&gt;</span> user_documentationconfigure</code></pre>
+<span class="kw">cd</span> /usr/lib/waggle/nodecontroller/
+<span class="ot">RABBITMQ_HOST=</span><span class="kw">&lt;IP&gt;</span> ./configure</code></pre>
 <p>Inside of a Docker container communication with the guest node may require overwriting NCIP. Access to ports 9090 and 9091 is restricted by only exposing them instead of publishing them.</p>
-<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">echo</span> <span class="st">&quot;0.0.0.0&quot;</span> <span class="kw">&gt;</span>user_documentationetuser_documentationwaggle/NCIP</code></pre>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">echo</span> <span class="st">&quot;0.0.0.0&quot;</span> <span class="kw">&gt;</span> /etc/waggle/NCIP</code></pre>
 <h3 id="ssl-certificates">SSL certificates</h3>
 <p>The nodecontroller needs SSL certificates to be able to talk to the RabbitMQ component of the beehive server. Those files are not installed on the Waggle image.</p>
 <p>SSL related files expected by the nodecontroller:</p>
-<pre class="text"><code>Private key of the node:                  user_documentationususer_documentationlib/waggle/SSL/node/key.pem
-Public certificate of the node:           user_documentationususer_documentationlib/waggle/SSL/node/cert.pem
-Public certificate of the RabbitMQ server:user_documentationususer_documentationlib/waggle/SSL/waggleca/cacert.pem</code></pre>
+<pre class="text"><code>Private key of the node:                   /usr/lib/waggle/SSL/node/key.pem
+Public certificate of the node:            /usr/lib/waggle/SSL/node/cert.pem
+Public certificate of the RabbitMQ server: /usr/lib/waggle/SSL/waggleca/cacert.pem</code></pre>
 <p>The certificate files have to be created by the certificate authority on the beehive server. In principle there are two ways for the nodecontroller to get theses files.</p>
 <ol>
 <li>Manual: The beehive administrator creates keys for the node and the node user has to copy them onto the node, e.g. using ssh.<br /></li>
@@ -84,8 +85,8 @@ waggle_wagman                    RUNNING    pid 7242, uptime 3:30:13</code></pre
 <pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">supervisorctl</span> start waggle_communications</code></pre>
 <h2 id="simple-cpu-temperature-sensor">Simple CPU temperature sensor</h2>
 <p>This script can be used to test sending of sensor data. Note that this script sends data to the data cache. It does not check if data actually arrives at the server.</p>
-<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">cduser_documentationususer_documentationlib/waggle/nodecontroller/nc-wag-os/waggled/NC</span>
-<span class="kw">user_documentationnode_sensor.py</span> </code></pre>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">cd</span> /usr/lib/waggle/nodecontroller/nc-wag-os/waggled/NC
+<span class="kw">./node_sensor.py</span> </code></pre>
 <h2 id="developer-notes">Developer Notes</h2>
 <p>Everything that is installed on the Node Controller lives here. There<br />are three basic pieces:</p>
 <ul>
