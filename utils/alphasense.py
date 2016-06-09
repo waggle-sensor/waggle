@@ -171,21 +171,20 @@ if __name__ == '__main__':
 
     try:
         while True:
-            data = alphasense.get_histogram_raw()
-            print(decode17(data))
-            print(repr(data))
-            print()
-            # data = alphasense.get_histogram()
+            rawdata = alphasense.get_histogram_raw()
 
-            # for size, count in zip(alphasense.bin_sizes, data['bins']):
-            #     print('{: 3.4f} {:>6}'.format(size, count))
-            # print()
-            #
-            # for pm in ['pm1', 'pm2.5', 'pm10']:
-            #     print('{} {}'.format(pm, data[pm]))
-            # print()
-            #
-            # print(data)
+            data = decode17(rawdata)
+
+            for size, count in zip(alphasense.bin_sizes, data['bins']):
+                print('{: 3.4f} {:>6}'.format(size, count))
+            print()
+
+            for pm in ['pm1', 'pm2.5', 'pm10']:
+                print('{} {}'.format(pm, data[pm]))
+            print()
+
+            print(data)
+            print(repr(rawdata))
 
             sleep(10)
     finally:
