@@ -57,6 +57,33 @@ def lininterp(a, b, n):
     return tuple(a + i * (b - a) / (n - 1) for i in range(n))
 
 
+def decode17(data):
+    bincounts = struct.unpack_from('<16B', data, offset=0)
+    checksum = struct.unpack_from('<H', data, offset=48)[0]
+    mtof = [x / 3 for x in struct.unpack_from('<4B', data, offset=32)]
+    sample_flow_rate = struct.unpack_from('<I', data, offset=36)[0]
+    pmvalues = struct.unpack_from('<fff', data, offset=50)
+    pressure = struct.unpack_from('<I', data, offset=40)[0]
+    temperature = pressure / 10.0
+
+    values = {
+        'bins': bincounts,
+        'mtof': mtof,
+        'sample flow rate': sample_flow_rate,
+        'pm1': pmvalues[0],
+        'pm2.5': pmvalues[1],
+        'pm10': pmvalues[2],
+        'error': sum(bincounts) & 0xFF != checksum,
+    }
+
+    if temperature > 200:
+        values['pressure'] = pressure
+    else:
+        values['temperature'] = temperature
+
+    return values
+
+
 class Alphasense(object):
 
     bin_sizes = lininterp(0.38, 17.0, 16)
@@ -79,6 +106,7 @@ class Alphasense(object):
         self.serial.close()
 
     def transfer(self, data):
+        sleep(0.004)
         return iss_spi_transfer_data(self.serial, data)
 
     def power_on(self, fan=True, laser=True):
@@ -104,74 +132,27 @@ class Alphasense(object):
         self.transfer([0x42, 0x00, power])
 
     @property
-    def info(self):
+    def firmware(self):
         self.transfer([0x3F])
-        sleep(0.01)
-        response = self.transfer([0x3F] * 60)
-        return response.decode()
+        sleep(0.1)
+        return bytes(self.transfer([0x3F])[0] for i in range(60))
 
     def ping(self):
         response = self.transfer([0xCF])
         return response[0] == 0xF3
 
     def get_config(self):
-        raise NotImplementedError
-
         self.transfer([0x3C])
-        sleep(0.01)
+        sleep(0.1)
+        return bytes(self.transfer([0x3C])[0] for i in range(256))
 
-        result = bytearray(256)
-
-        for i in range(256):  # so common we should add a thing for this
-            result[i] = self.transfer([0x3C])[0]
-            sleep(0.001)
-
-        print(struct.unpack_from('<16H', result, 0))
+    def get_histogram_raw(self):
+        self.transfer([0x30])
+        sleep(0.1)
+        return bytes(self.transfer([0x30])[0] for i in range(62))
 
     def get_histogram(self):
-        response = bytearray(62)
-
-        self.transfer([0x30])
-        sleep(0.5)
-
-        for i in range(len(response)):
-            response[i] = self.transfer([0x30])[0]
-            sleep(0.01)
-
-        bincounts = struct.unpack_from('<16B', response, offset=0)
-
-        checksum = struct.unpack_from('<H', response, offset=48)[0]
-
-        if sum(bincounts) & 0xFF != checksum:
-            raise RuntimeError('Alphasense data has bad checksum.')
-
-        mtof = [x / 3 for x in struct.unpack_from('<4B', response, offset=32)]
-
-        sample_flow_rate = struct.unpack_from('<I', response, offset=36)[0]
-
-        pmvalues = struct.unpack_from('<fff', response, offset=50)
-
-        # Alphasense seems to randomly decide if it's going to send temperature
-        # or pressure. I'm just checking if temperature is sensible and using
-        # that value when it is.
-        pressure = struct.unpack_from('<I', response, offset=40)[0]
-        temperature = pressure / 10
-
-        data = {
-            'bins': bincounts,
-            'mtof': mtof,
-            'sample flow rate': sample_flow_rate,
-            'pm1': pmvalues[0],
-            'pm2.5': pmvalues[1],
-            'pm10': pmvalues[2],
-        }
-
-        if temperature > 200:
-            data['pressure'] = pressure
-        else:
-            data['temperature'] = temperature
-
-        return data
+        return decode17(self.get_histogram_binary())
 
 
 if __name__ == '__main__':
@@ -181,24 +162,30 @@ if __name__ == '__main__':
 
     alphasense = Alphasense(sys.argv[1])
     sleep(1)
+
     alphasense.power_on()
     sleep(1)
-    print(alphasense.info)
-    sleep(1)
+
+    print(alphasense.firmware.decode())
+    print(repr(alphasense.get_config()))
 
     try:
         while True:
-            data = alphasense.get_histogram()
-
-            for size, count in zip(alphasense.bin_sizes, data['bins']):
-                print('{: 3.4f} {:>6}'.format(size, count))
+            data = alphasense.get_histogram_raw()
+            print(decode17(data))
+            print(repr(data))
             print()
+            # data = alphasense.get_histogram()
 
-            for pm in ['pm1', 'pm2.5', 'pm10']:
-                print('{} {}'.format(pm, data[pm]))
-            print()
-
-            print(data)
+            # for size, count in zip(alphasense.bin_sizes, data['bins']):
+            #     print('{: 3.4f} {:>6}'.format(size, count))
+            # print()
+            #
+            # for pm in ['pm1', 'pm2.5', 'pm10']:
+            #     print('{} {}'.format(pm, data[pm]))
+            # print()
+            #
+            # print(data)
 
             sleep(10)
     finally:
