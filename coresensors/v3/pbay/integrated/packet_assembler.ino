@@ -249,6 +249,7 @@ void assemble_packet_whole()
         packet_whole[packet_whole_index] = chemsense_MAC_ID[i];
         packet_whole_index++;
     }
+    chemsense_MAC_ID[1] = (chg_valid << 7) | LENGTH_FORMAT3;
 #endif
 
 #ifdef SHT25_include
@@ -259,6 +260,7 @@ void assemble_packet_whole()
         packet_whole[packet_whole_index] = SHT25[i];
         packet_whole_index++;
     }
+    SHT25[1] = (chg_valid << 7) | (LENGTH_FORMAT2 + LENGTH_FORMAT1);
 #endif
 
 #ifdef LPS25H_include
@@ -269,6 +271,7 @@ void assemble_packet_whole()
         packet_whole[packet_whole_index] = LPS25H[i];
         packet_whole_index++;
     }
+    LPS25H[1] = (chg_valid << 7) | (LENGTH_FORMAT2 + LENGTH_FORMAT4);
 #endif
 
 #ifdef Si1145_include
@@ -279,6 +282,7 @@ void assemble_packet_whole()
         packet_whole[packet_whole_index] = Si1145[i];
         packet_whole_index++;
     }
+    Si1145[1] = (chg_valid << 7) | (LENGTH_FORMAT1 * 3);
 #endif
 
 #ifdef total_reducing_gases_include
@@ -289,6 +293,7 @@ void assemble_packet_whole()
         packet_whole[packet_whole_index] = total_reducing_gases[i];
         packet_whole_index++;
     }
+    total_reducing_gases[1] = (chg_valid << 7) | LENGTH_FORMAT5;
 #endif
 
 #ifdef total_oxidizing_gases_include
@@ -299,6 +304,7 @@ void assemble_packet_whole()
         packet_whole[packet_whole_index] = total_oxidizing_gases[i];
         packet_whole_index++;
     }
+    total_oxidizing_gases[1] = (chg_valid << 7) | LENGTH_FORMAT5;
 #endif
 
 #ifdef sulfur_dioxide_include
@@ -309,6 +315,7 @@ void assemble_packet_whole()
         packet_whole[packet_whole_index] = sulfur_dioxide[i];
         packet_whole_index++;
     }
+    sulfur_dioxide[1] = (chg_valid << 7) | LENGTH_FORMAT5;
 #endif
 
 #ifdef hydrogen_sulphide_include
@@ -319,6 +326,7 @@ void assemble_packet_whole()
         packet_whole[packet_whole_index] = hydrogen_sulphide[i];
         packet_whole_index++;
     }
+    hydrogen_sulphide[1] = (chg_valid << 7) | LENGTH_FORMAT5;
 #endif
 
 #ifdef ozone_include
@@ -329,6 +337,7 @@ void assemble_packet_whole()
         packet_whole[packet_whole_index] = ozone[i];
         packet_whole_index++;
     }
+    ozone[1] = (chg_valid << 7) | LENGTH_FORMAT5;
 #endif
 
 #ifdef nitrogen_dioxide_include
@@ -339,6 +348,7 @@ void assemble_packet_whole()
         packet_whole[packet_whole_index] = nitrogen_dioxide[i];
         packet_whole_index++;
     }
+    nitrogen_dioxide[1] = (chg_valid << 7) | LENGTH_FORMAT5;
 #endif
 
 #ifdef carbon_monoxide_include
@@ -349,6 +359,7 @@ void assemble_packet_whole()
         packet_whole[packet_whole_index] = carbon_monoxide[i];
         packet_whole_index++;
     }
+    carbon_monoxide[1] = (chg_valid << 7) | LENGTH_FORMAT5;
 #endif
 
 #ifdef CO_ADC_temp_include
@@ -359,6 +370,7 @@ void assemble_packet_whole()
         packet_whole[packet_whole_index] = CO_ADC_temp[i];
         packet_whole_index++;
     }
+    CO_ADC_temp[1] = (chg_valid << 7) | LENGTH_FORMAT2;
 #endif
 
 #ifdef IAQ_IRR_ADC_temp_include
@@ -369,6 +381,7 @@ void assemble_packet_whole()
         packet_whole[packet_whole_index] = IAQ_IRR_ADC_temp[i];
         packet_whole_index++;
     }
+    IAQ_IRR_ADC_temp[1] = (chg_valid << 7) | LENGTH_FORMAT2;
 #endif
 
 #ifdef O3_NO2_ADC_temp_include
@@ -379,6 +392,7 @@ void assemble_packet_whole()
         packet_whole[packet_whole_index] = O3_NO2_ADC_temp[i];
         packet_whole_index++;
     }
+    O3_NO2_ADC_temp[1] = (chg_valid << 7) | LENGTH_FORMAT2;
 #endif
 
 #ifdef SO2_H2S_ADC_temp_include
@@ -389,6 +403,7 @@ void assemble_packet_whole()
         packet_whole[packet_whole_index] = SO2_H2S_ADC_temp[i];
         packet_whole_index++;
     }
+    SO2_H2S_ADC_temp[1] = (chg_valid << 7) | LENGTH_FORMAT2;
 #endif
 
 #ifdef CO_LMP_temp_include
@@ -399,6 +414,7 @@ void assemble_packet_whole()
         packet_whole[packet_whole_index] = CO_LMP_temp[i];
         packet_whole_index++;
     }
+    CO_LMP_temp[1] = (chg_valid << 7) | LENGTH_FORMAT2;
 #endif
 
 #ifdef three_accel_and_vib_include
@@ -409,6 +425,7 @@ void assemble_packet_whole()
         packet_whole[packet_whole_index] = three_accel_and_vib[i];
         packet_whole_index++;
     }
+    three_accel_and_vib[1] = (chg_valid << 7) | (LENGTH_FORMAT2 * 3 + LENGTH_FORMAT4);
 #endif
 
 #ifdef three_gyro_and_orientation_include
@@ -419,6 +436,7 @@ void assemble_packet_whole()
         packet_whole[packet_whole_index] = three_gyro_and_orientation[i];
         packet_whole_index++;
     }
+    three_gyro_and_orientation[1] = (chg_valid << 7) | (LENGTH_FORMAT2 * 3 + LENGTH_FORMAT4);
 #endif
 #endif
 
