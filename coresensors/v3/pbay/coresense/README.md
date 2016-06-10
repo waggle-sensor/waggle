@@ -20,3 +20,5 @@ make run
 ```
 </br>
 __To exit the screen session created for the test, press Control+a, and press k and y afterward.__
+
+Or you can use python script to see data.
