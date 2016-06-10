@@ -405,18 +405,18 @@ class usbSerial ( threading.Thread ):
                                     print ":".join("{:02x}".format(ord(c)) for c in extractedData)
 
                                     while consume_ptr < len(extractedData):
-                                        #try:
-                                        This_id = str(ord(extractedData[consume_ptr]))
-                                        This_id_msg_size_valid = ord(extractedData [consume_ptr+1])
-                                        This_id_msg_size = This_id_msg_size_valid & 0x7F
-                                        print This_id_msg_size
-                                        This_id_msg_valid = (This_id_msg_size_valid & 0x80) >> 7
-                                        This_id_msg = extractedData[consume_ptr+2:consume_ptr+2+This_id_msg_size]
+                                        try:
+                                            This_id = str(ord(extractedData[consume_ptr]))
+                                            This_id_msg_size_valid = ord(extractedData [consume_ptr+1])
+                                            This_id_msg_size = This_id_msg_size_valid & 0x7F
+                                            print This_id_msg_size
+                                            This_id_msg_valid = (This_id_msg_size_valid & 0x80) >> 7
+                                            This_id_msg = extractedData[consume_ptr+2:consume_ptr+2+This_id_msg_size]
+                                            
                                         except Exception,e:
                                             print "ERROR!!!!"
                                             print str(e)
                                             print "consume_ptr: ", consume_ptr, " len(extractedData): ", len(extractedData)
-                                            print "END OF ERROR!!!"
                                             pass
                                         
                                         #print (int(This_id)), This_id_msg_valid, This_id_msg_size, This_id_msg
