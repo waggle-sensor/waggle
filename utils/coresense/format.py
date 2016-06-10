@@ -1,3 +1,25 @@
+'''
+Library for working with coresense data formats.
+
+Example
+
+>>> import format
+
+>>> data = format.pack('1122', 32, 55, -123, -321)
+>>> print(format.unpack(data))
+
+Format Reference
+
+- 1: unsigned 16 bit integer
+- 2: signed 16 bit integer
+- 3: mac address
+- 4: unsigned 24 bit integer
+- 5: signed 24 bit integer
+- 6: fixed point (-31.999, 31.999)
+- 7: array of 4 bytes
+- 8: fixed point (-127.99, 127.99)
+
+'''
 from functools import partial
 
 
@@ -166,6 +188,20 @@ formatsize = {
 
     '3': 6,
     '7': 4,
+}
+
+formatdesc = {
+    '1': 'unsigned 16 bit integer',
+    '2': 'signed 16 bit integer',
+
+    '4': 'unsigned 24 bit integer',
+    '5': 'signed 24 bit integer',
+
+    '6': 'fixed point (-31.999, 31.999)',
+    '8': 'fixed point (-127.99, 127.99)',
+
+    '3': 'mac address',
+    '7': 'array of 4 bytes',
 }
 
 
