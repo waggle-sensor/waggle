@@ -174,8 +174,7 @@ def parse_sensor (sensor_id,sensor_data):
             data = data + str(format6(sensor_data[2*i:2*(i+1)])) + ' '
         print  data
 #"MLX90614" "MLX90614"
-    elif sensor_id == '18
-import time':
+    elif sensor_id == '18':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
         print  format6(sensor_data)
 #"TMP421" "TMP421"
@@ -413,24 +412,12 @@ class usbSerial ( threading.Thread ):
                                         print This_id_msg_size
                                         This_id_msg_valid = (This_id_msg_size_valid & 0x80) >> 7
                                         This_id_msg = extractedData[consume_ptr+2:consume_ptr+2+This_id_msg_size]
-                                        #except Exception,e:
-                                            #print "ERROR!!!!"
-                                            #print str(e)
-                                            #print "consume_ptr: ", consume_ptr, " len(extractedData): ", len(extractedData)
-                                            
-                                            #This_id = str(ord(extractedData[consume_ptr]))
-                                            #print " This_id: ", int(This_id)
-                                            #This_id_msg_size_valid = ord(extractedData [consume_ptr+1])
-                                            #print " This_id_msg_size_valid: ", int(This_id_msg_size_valid)
-                                            #This_id_msg_size = This_id_msg_size_valid & 0x7F
-                                            #print " This_id_msg_size: ", This_id_msg_size
-                                            #This_id_msg_valid = (This_id_msg_size_valid & 0x80) >> 7
-                                            #print " This_id_msg_valid: ", This_id_msg_valid
-                                            #This_id_msg = extractedData[consume_ptr+2:consume_ptr+2+This_id_msg_size]
-                                            #print " This_id_msg: ", This_id_msg
-                                            
-                                            #print "END OF ERROR!!!"
-                                            #pass
+                                        except Exception,e:
+                                            print "ERROR!!!!"
+                                            print str(e)
+                                            print "consume_ptr: ", consume_ptr, " len(extractedData): ", len(extractedData)
+                                            print "END OF ERROR!!!"
+                                            pass
                                         
                                         #print (int(This_id)), This_id_msg_valid, This_id_msg_size, This_id_msg
                                         
