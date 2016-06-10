@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import sys, time, os
 
-def links(link):
+def links(link, tag):
 	'''
 	This extracts all the sources of 'a' tag from the file
 	'''
@@ -18,11 +18,11 @@ def links(link):
 	pos = 0
 	pos_next = 0
 	while(1):
-		pos = content.find('a href="', pos_next)
-		pos_next = content.find('"', pos + 8)
+		pos = content.find(tag, pos_next)
+		pos_next = content.find('"', pos + len(tag))
 		if pos == -1:
 			break
-		link = content[pos + 8:pos_next]
+		link = content[pos + len(tag):pos_next]
 		#print link
 		ret.append(link)
 	return ret
@@ -115,8 +115,8 @@ def replace(input_file, original_source_code, namespace_filename, namespace_file
 		exit(1)
 
 if __name__ == '__main__':
-	if len(sys.argv) < 3:
-		print links(sys.argv[1])
+	if len(sys.argv) < 4:
+		print links(sys.argv[1], sys.argv[2])
 	elif len(sys.argv) < 5:
 		convert(sys.argv[1], sys.argv[2], sys.argv[3])
 	elif len(sys.argv) < 6:

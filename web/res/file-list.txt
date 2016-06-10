@@ -29,4 +29,4 @@ payloads/app_processor/createImage.html:nodecontroller/docs/create_waggle_image.
 payloads/app_processor/waggle-protocol.html:guestnodes/waggle_protocol/README.md
 payloads/app_processor/app_processor.html:guestnodes/README.md
 deverlopers/tools/devtools.html:devtools/README.md
-payloads/sensors/SensorTable.html:user_documentation/sensor/SensorTable.html
+payloads/sensors/SensorTable.html:user_documentation/sensors/SensorTable.html

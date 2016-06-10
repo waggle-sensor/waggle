@@ -37,8 +37,8 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <span class="co"># if you do not have unzip, install it using sudo apt-get install unzip</span></code></pre>
 <p>Install avrdude to upload the firmware:</p>
 <pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">sudo</span> apt-get install avrdude</code></pre>
-<p>Connect microUSB-USB cable to wagman with the computer. </br><br /><img src="../Img/Wire_wagman_firmware_update.JPG" width=400 /> </br></p>
-<p>Run install.sh:</p>
+<p>Connect microUSB-USB cable to wagman with the computer. Important: If you are using a virtual machine, then be sure the USB cable is connected to the machine. You can do so by finding the removable devices menu on the machine and you should see the USB there. </br><br /><img src="../Img/Wire_wagman_firmware_update.JPG" width=400 /> </br></p>
+<p>Run install.sh. You need to be the root user to run the script. When the script is executed, you should see a green light and red/orange flashing light for a few seconds. After that is done, the C1+ should start up after about 15 seconds and the XU4 should start up after about 90 seconds.</p>
 <pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">cd</span> wagman_init
 <span class="kw">./install.sh</span></code></pre>
 <h2 id="nodecontroller-and-extension_node-firmware-installation">Nodecontroller and extension_node firmware installation</h2>
