@@ -159,7 +159,7 @@ void lightsense_acquire (void)
 //     SerialUSB.print("SPV1840LR5HB: ");
 //     SerialUSB.println(mcp3428_2.readADC());
 // #endif
-#endif
+// #endif
 
 }
 
