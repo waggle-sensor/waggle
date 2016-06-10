@@ -47,6 +47,9 @@ You can explore the following sub categories to be familarized yourself with Wag
 * [Plugins](./guestnodes/plugins/README.md) </br>
     Extend plugins as additional sensors attached to Waggle node.
 
+* [Sensors](./user_documentation/sensors/SensorTable.html) </br>
+    Specifications of the sensors.
+
 ## Beehive server
 * [Introduction](./beehive-server/README.md) </br>
     Structures and configuration of the server.
