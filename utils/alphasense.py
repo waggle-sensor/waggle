@@ -31,7 +31,7 @@ def iss_spi_divisor(sck):
 
 
 def iss_set_spi_mode(serial, mode, freq):
-    serial.write(bytes([0x5A, 0x02, mode, iss_spi_divisor(freq)]))
+    serial.write(bytearray([0x5A, 0x02, mode, iss_spi_divisor(freq)]))
     response = serial.read(2)
     if response[0] == 0:
         if response[1] == 0x05:
@@ -45,7 +45,7 @@ def iss_set_spi_mode(serial, mode, freq):
 
 
 def iss_spi_transfer_data(serial, data):
-    serial.write(bytes([0x61] + data))
+    serial.write(bytearray([0x61] + data))
     response = serial.read(1 + len(data))
     if response[0] == 0:
         raise RuntimeError('USB-ISS: Transmission Error')
@@ -131,25 +131,24 @@ class Alphasense(object):
     def set_fan_power(self, power):
         self.transfer([0x42, 0x00, power])
 
-    @property
-    def firmware(self):
+    def get_firmware_version(self):
         self.transfer([0x3F])
         sleep(0.1)
-        return bytes(self.transfer([0x3F])[0] for i in range(60))
+        return bytearray(self.transfer([0x3F])[0] for i in range(60))
+
+    def get_config_data(self):
+        self.transfer([0x3C])
+        sleep(0.1)
+        return bytearray(self.transfer([0x3C])[0] for i in range(256))
 
     def ping(self):
         response = self.transfer([0xCF])
         return response[0] == 0xF3
 
-    def get_config(self):
-        self.transfer([0x3C])
-        sleep(0.1)
-        return bytes(self.transfer([0x3C])[0] for i in range(256))
-
     def get_histogram_raw(self):
         self.transfer([0x30])
         sleep(0.1)
-        return bytes(self.transfer([0x30])[0] for i in range(62))
+        return bytearray(self.transfer([0x30])[0] for i in range(62))
 
     def get_histogram(self):
         return decode17(self.get_histogram_binary())
@@ -166,8 +165,8 @@ if __name__ == '__main__':
     alphasense.power_on()
     sleep(1)
 
-    print(alphasense.firmware.decode())
-    print(repr(alphasense.get_config()))
+    print(repr(alphasense.get_firmware_version()))
+    print(repr(alphasense.get_config_data()))
 
     try:
         while True:
