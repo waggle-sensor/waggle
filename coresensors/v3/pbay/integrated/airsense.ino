@@ -5,7 +5,7 @@ void airsense_acquire (void)
     SerialUSB.println("Acquiring AirSense Data.");
 #endif
 
-#ifdef SPV1840LR5HB_include
+#ifdef SPV1840LR5HB_include   ////was  SPV1840LR5HB_2_include
     Temp_uint16 = analogRead(PIN_RAW_MIC);
     format1(Temp_uint16);
     

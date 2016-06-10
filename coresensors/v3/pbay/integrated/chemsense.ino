@@ -7,7 +7,7 @@
 // byte formatted_data_buffer[MAX_FMT_SIZE];
 
 unsigned char INPUT_BYTE;
-char KEY[4];
+char KEY[5];
 char VAL[14];
 
 int KEY_NUM_ID = 0;
@@ -547,7 +547,6 @@ void Carrier()
     {
         Int_form2();
         
-        three_accel_and_vib[0] = ID_THREE_ACCEL_AND_VIB;
         three_accel_and_vib[1] = (valid << 7) | (LENGTH_FORMAT2 * 2);
         three_accel_and_vib[4] = formatted_data_buffer[0];
         three_accel_and_vib[5] = formatted_data_buffer[1];
@@ -565,7 +564,6 @@ void Carrier()
     {
         Int_form2();
         
-        three_accel_and_vib[0] = ID_THREE_ACCEL_AND_VIB;
         three_accel_and_vib[1] = (valid << 7) | (LENGTH_FORMAT2 * 3);
         three_accel_and_vib[6] = formatted_data_buffer[0];
         three_accel_and_vib[7] = formatted_data_buffer[1];
@@ -583,7 +581,6 @@ void Carrier()
     {
         Int_form4();
         
-        three_accel_and_vib[0] = ID_THREE_ACCEL_AND_VIB;
         three_accel_and_vib[1] = (valid << 7) | (LENGTH_FORMAT2 * 3 + LENGTH_FORMAT4);
         three_accel_and_vib[8] = formatted_data_buffer[0];
         three_accel_and_vib[9] = formatted_data_buffer[1];
