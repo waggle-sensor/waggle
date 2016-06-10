@@ -21,4 +21,11 @@ make run
 </br>
 __To exit the screen session created for the test, press Control+a, and press k and y afterward.__
 
-Or you can use python script to see data.
+Or you can use python script to see data. When you want to use your python code, do
+```bash
+make install
+```
+and execute python script.
+```bash
+python <file name>
+```
