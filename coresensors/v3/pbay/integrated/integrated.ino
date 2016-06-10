@@ -226,7 +226,7 @@ void loop()
         assemble_packet_whole();
 
         SerialUSB.write(packet_whole, packet_whole_index + 1);      // To print Postscript
-        SerialUSB.write(packet_whole_index);
+        //SerialUSB.write(packet_whole_index);
         SerialUSB.print("\n");
         
         TIMER = false;
