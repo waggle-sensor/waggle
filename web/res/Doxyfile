@@ -24,4 +24,4 @@ FILE_PATTERNS = *.ino *.py
 EXTENSION_MAPPING = ino=C
 HTML_OUTPUT = tmp
 
-INPUT = 
+INPUT = ../guestnodes/lib/msg_handler.py ../guestnodes/plugin_manager.py ../guestnodes/waggle-plugins.py

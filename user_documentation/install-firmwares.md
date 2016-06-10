@@ -16,10 +16,10 @@ Install avrdude to upload the firmware:
 sudo apt-get install avrdude
 ```
 
-Connect microUSB-USB cable to wagman with the computer. </br>
+Connect microUSB-USB cable to wagman with the computer. Important: If you are using a virtual machine, then be sure the USB cable is connected to the machine. You can do so by finding the removable devices menu on the machine and you should see the USB there. </br>
 <img src="./pictures/Wire_wagman_firmware_update.JPG" width=400 /> </br>
 
-Run install.sh:
+Run install.sh. You need to be the root user to run the script. When the script is executed, you should see a green light and red/orange flashing light for a few seconds. After that is done, the C1+ should start up after about 15 seconds and the XU4 should start up after about 90 seconds.
 
 ```bash
 cd wagman_init

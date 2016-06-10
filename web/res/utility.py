@@ -27,7 +27,7 @@ def links(link):
 		ret.append(link)
 	return ret
 
-def convert(input_file, input_file_path, codes_files):
+def convert(input_file, file_path, codes_files):
 	'''
 	This converts the external links from the code into
 	actual source codes generated from Doxygen
@@ -78,8 +78,46 @@ def convert(input_file, input_file_path, codes_files):
 	except:
 		exit(1)
 
+def replace(input_file, original_source_code, namespace_filename, namespace_filename_without_extension):
+	'''
+	This converts the external links from the code into
+	a link that goes to actual source code generated from Doxygen
+	'''
+	A_TAG="<a href=\"{}\">{}</a> <br>"
+	try:
+		file = open(input_file, "r+")
+		content = file.read()
+		file.close()
+	except:
+		exit(1)
+	pos = 0
+	pos_next = 0
+	while(1):
+		pos = content.find('<!--', pos_next)
+		pos_next = content.find('-->', pos + 4)
+		if pos == -1:
+			break
+		tag = content[pos + 4:pos_next]
+		
+		tag_pos = tag.find("\"")
+		tag_end_pos = tag.find("\"", tag_pos + 1)
+		tag = tag[tag_pos + 1:tag_end_pos]
+		#print tag
+
+		if original_source_code in tag:
+			content = content.replace(content[pos:pos_next + 3], A_TAG.format(namespace_filename, namespace_filename_without_extension))
+
+	try:
+		file = open(input_file, "w")
+		file.write(content)
+		file.close()
+	except:
+		exit(1)
+
 if __name__ == '__main__':
 	if len(sys.argv) < 3:
 		print links(sys.argv[1])
-	else:
+	elif len(sys.argv) < 5:
 		convert(sys.argv[1], sys.argv[2], sys.argv[3])
+	elif len(sys.argv) < 6:
+		replace(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
