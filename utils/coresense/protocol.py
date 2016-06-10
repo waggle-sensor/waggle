@@ -21,7 +21,7 @@ class FramingProtocol(object):
 
     def align_candidates(self, start):
         try:
-            offset = self.data.index(0xAA, start, self.size)
+            offset = self.data.index(bytearray([0xAA]), start, self.size)
             newsize = self.size - offset
             self.data[:newsize] = self.data[offset:self.size]
             self.size = newsize
