@@ -332,6 +332,7 @@ class usbSerial ( threading.Thread ):
     def marshalData(self,_dataNew):
         self.data.extend(_dataNew)
         bufferLength = len(self.data)
+        print self.data
         while self.keepAlive:
 
             try:
@@ -392,7 +393,7 @@ class usbSerial ( threading.Thread ):
                                     #ideally we should be able to throw the whole packet out, but purging just a byte for avoiding corner cases.
                                     del self.data[0]
                                 else:
-                                    #print self.data
+                                    print self.data
                                     print '-------------'
                                     print time.asctime(), _msg_seq_num, _postscriptLoc
                                     #extract the data bytes alone, exclude preamble, prot version, len, crc and postScript
@@ -402,7 +403,7 @@ class usbSerial ( threading.Thread ):
 
                                     del self.data[:self.data.index(_postScript)+1]
 
-                                    print ":".join("{:02x}".format(ord(c)) for c in extractedData)
+                                    #print ":".join("{:02x}".format(ord(c)) for c in extractedData)
 
                                     while consume_ptr < len(extractedData):
                                         try:
@@ -419,7 +420,7 @@ class usbSerial ( threading.Thread ):
                                             print "consume_ptr: ", consume_ptr, " len(extractedData): ", len(extractedData)
                                             pass
                                         
-                                        #print (int(This_id)), This_id_msg_valid, This_id_msg_size, This_id_msg
+                                        print (int(This_id)), This_id_msg_valid, This_id_msg_size, This_id_msg
                                         
                                         consume_ptr = consume_ptr + 2 + This_id_msg_size
                                         if (This_id_msg_valid == 1):

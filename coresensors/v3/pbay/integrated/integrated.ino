@@ -167,6 +167,7 @@ int packet_whole_index = 0;
 float Temp_float[3];    //air, light
 uint16_t Temp_uint16;   //air, TMP112
 long Temp_long;         //air, TMP112
+unsigned long Temp_ulong[2]; // Chem
 int Temp_int[3];        //HIH
 byte Temp_byte[8];      //sensor setup, HIH
 
@@ -224,10 +225,11 @@ void loop()
 
         assemble_packet_empty();
         assemble_packet_whole();
-
-        SerialUSB.write(packet_whole, packet_whole_index + 1);      // To print Postscript
-        //SerialUSB.write(packet_whole_index);
-        SerialUSB.print("\n");
+        
+        for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i ++)
+        {
+                SerialUSB.write(packet_whole[i]);      
+        }
         
         TIMER = false;
     }

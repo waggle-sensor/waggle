@@ -1,6 +1,8 @@
 byte packet_seq_number = 0x00;
 int CHECK_LEN = 0;
 
+int buffer_num = 0;
+
 /** Assemble empty packet *************************************************************/
 void assemble_packet_empty()
 {
@@ -24,9 +26,9 @@ void assemble_packet_whole()
 
 #ifdef AIRSENSE_INCLUDE
 #ifdef MAC_ID_include    // Append MAC_ID
-    for (int i = 0; i < sizeof(MAC_ID); i++)
+    for (buffer_num = 0; buffer_num < sizeof(MAC_ID); buffer_num++)
     {
-        packet_whole[packet_whole_index] = MAC_ID[i];
+        packet_whole[packet_whole_index] = MAC_ID[buffer_num];
         // Increment index for whole packet
         packet_whole_index++;
     }
@@ -34,9 +36,9 @@ void assemble_packet_whole()
 #endif
 
 #ifdef TMP112_include    // Append TMP112
-    for (int i = 0; i < sizeof(TMP112); i++)
+    for (buffer_num = 0; buffer_num < sizeof(TMP112); buffer_num++)
     {
-        packet_whole[packet_whole_index] = TMP112[i];
+        packet_whole[packet_whole_index] = TMP112[buffer_num];
         // Increment index for whole packet
         packet_whole_index++;
     }
@@ -44,41 +46,20 @@ void assemble_packet_whole()
 #endif
 
 #ifdef HTU21D_include    // Append HTU21D
-    for (int i = 0; i < sizeof(HTU21D); i++)
+    for (buffer_num = 0; buffer_num < sizeof(HTU21D); buffer_num++)
     {
-        packet_whole[packet_whole_index] = HTU21D[i];
+        packet_whole[packet_whole_index] = HTU21D[buffer_num];
         // Increment index for whole packet
         packet_whole_index++;
     }
     HTU21D[1] = (chg_valid << 7) | ((LENGTH_FORMAT6 * 2));
 #endif
 
-// ************************************************************************ does not exist byte array in integrated.ino
-// #ifdef GP2Y1010AU0F_include    // Append GP2Y1010AU0F
-//     for (int i = 0; i < sizeof(GP2Y1010AU0F); i++)
-//     {
-//         packet_whole[packet_whole_index] = GP2Y1010AU0F[i];
-//         // Increment index for whole packet
-//         packet_whole_index++;
-//     }
-//     GP2Y1010AU0F[1] = (chg_valid << 7) | 0;
-// #endif
-// 
-// #ifdef SPV1840LR5HB_1_include    // Append SPV1840LR5HB_1
-//     for (int i = 0; i < sizeof(SPV1840LR5HB_1); i++)
-//     {
-//         packet_whole[packet_whole_index] = SPV1840LR5HB_1[i];
-//         // Increment index for whole packet
-//         packet_whole_index++;
-//     }
-//     SPV1840LR5HB_1[1] = (chg_valid << 7) | 0;
-// #endif
-// ************************************************************************ does not exist byte array in integrated.ino
 
 #ifdef BMP180_include    // Append BMP180
-    for (int i = 0; i < sizeof(BMP180); i++)
+    for (buffer_num = 0; buffer_num < sizeof(BMP180); buffer_num++)
     {
-        packet_whole[packet_whole_index] = BMP180[i];
+        packet_whole[packet_whole_index] = BMP180[buffer_num];
         // Increment index for whole packet
         packet_whole_index++;
     }
@@ -86,9 +67,9 @@ void assemble_packet_whole()
 #endif
 
 #ifdef PR103J2_include    // Append PR103J2
-    for (int i = 0; i < sizeof(PR103J2); i++)
+    for (buffer_num = 0; buffer_num < sizeof(PR103J2); buffer_num++)
     {
-        packet_whole[packet_whole_index] = PR103J2[i];
+        packet_whole[packet_whole_index] = PR103J2[buffer_num];
         // Increment index for whole packet
         packet_whole_index++;
     }
@@ -96,9 +77,9 @@ void assemble_packet_whole()
 #endif
 
 #ifdef TSL250RD_1_include    // Append TSL250RD_1
-    for (int i = 0; i < sizeof(TSL250RD_1); i++)
+    for (buffer_num = 0; buffer_num < sizeof(TSL250RD_1); buffer_num++)
     {
-        packet_whole[packet_whole_index] = TSL250RD_1[i];
+        packet_whole[packet_whole_index] = TSL250RD_1[buffer_num];
         // Increment index for whole packet
         packet_whole_index++;
     }
@@ -106,9 +87,9 @@ void assemble_packet_whole()
 #endif
 
 #ifdef MMA8452Q_include    // Append MMA8452Q
-    for (int i = 0; i < sizeof(MMA8452Q); i++)
+    for (buffer_num = 0; buffer_num < sizeof(MMA8452Q); buffer_num++)
     {
-        packet_whole[packet_whole_index] = MMA8452Q[i];
+        packet_whole[packet_whole_index] = MMA8452Q[buffer_num];
         // Increment index for whole packet
         packet_whole_index++;
     }
@@ -116,21 +97,21 @@ void assemble_packet_whole()
 #endif
 
 #ifdef TSYS01_include    // Append TSYS01
-    for (int i = 0; i < sizeof(TSYS01); i++)
+    for (buffer_num = 0; buffer_num < sizeof(TSYS01); buffer_num++)
     {
-        packet_whole[packet_whole_index] = TSYS01[i];
+        packet_whole[packet_whole_index] = TSYS01[buffer_num];
         // Increment index for whole packet
         packet_whole_index++;
-    TSYS01[1] = (chg_valid << 7) | LENGTH_FORMAT6;
     }
+    TSYS01[1] = (chg_valid << 7) | LENGTH_FORMAT6;
 #endif
 #endif
 
 #ifdef LIGHTSENSE_INCLUDE
 #ifdef HMC5883L_include    // Append HMC5883L
-    for (int i = 0; i < sizeof(HMC5883L); i++)
+    for (buffer_num = 0; buffer_num < sizeof(HMC5883L); buffer_num++)
     {
-        packet_whole[packet_whole_index] = HMC5883L[i];
+        packet_whole[packet_whole_index] = HMC5883L[buffer_num];
         // Increment index for whole packet
         packet_whole_index++;
     }
@@ -138,9 +119,9 @@ void assemble_packet_whole()
 #endif
 
 #ifdef HIH6130_include    // Append HIH6130
-    for (int i = 0; i < sizeof(HIH6130); i++)
+    for (buffer_num = 0; buffer_num < sizeof(HIH6130); buffer_num++)
     {
-        packet_whole[packet_whole_index] = HIH6130[i];
+        packet_whole[packet_whole_index] = HIH6130[buffer_num];
         // Increment index for whole packet
         packet_whole_index++;
     }
@@ -148,9 +129,9 @@ void assemble_packet_whole()
 #endif
 
 #ifdef APDS9006020_include    // Append APDS9006020
-    for (int i = 0; i < sizeof(APDS9006020); i++)
+    for (buffer_num = 0; buffer_num < sizeof(APDS9006020); buffer_num++)
     {
-        packet_whole[packet_whole_index] = APDS9006020[i];
+        packet_whole[packet_whole_index] = APDS9006020[buffer_num];
         // Increment index for whole packet
         packet_whole_index++;
     }
@@ -158,9 +139,9 @@ void assemble_packet_whole()
 #endif
 
 #ifdef TSL260RD_include    // Append TSL260RD
-    for (int i = 0; i < sizeof(TSL260RD); i++)
+    for (buffer_num = 0; buffer_num < sizeof(TSL260RD); buffer_num++)
     {
-        packet_whole[packet_whole_index] = TSL260RD[i];
+        packet_whole[packet_whole_index] = TSL260RD[buffer_num];
         // Increment index for whole packet
         packet_whole_index++;
     }
@@ -168,9 +149,9 @@ void assemble_packet_whole()
 #endif
 
 #ifdef TSL250RD_2_include    // Append TSL250RD_2
-    for (int i = 0; i < sizeof(TSL250RD_2); i++)
+    for (buffer_num = 0; buffer_num < sizeof(TSL250RD_2); buffer_num++)
     {
-        packet_whole[packet_whole_index] = TSL250RD_2[i];
+        packet_whole[packet_whole_index] = TSL250RD_2[buffer_num];
         // Increment index for whole packet
         packet_whole_index++;
     }
@@ -178,9 +159,9 @@ void assemble_packet_whole()
 #endif
 
 #ifdef MLX75305_include    // Append MLX75305
-    for (int i = 0; i < sizeof(MLX75305); i++)
+    for (buffer_num = 0; buffer_num < sizeof(MLX75305); buffer_num++)
     {
-        packet_whole[packet_whole_index] = MLX75305[i];
+        packet_whole[packet_whole_index] = MLX75305[buffer_num];
         // Increment index for whole packet
         packet_whole_index++;
     }
@@ -189,9 +170,9 @@ void assemble_packet_whole()
 
 #ifdef ML8511_include
     // Append ML8511
-    for (int i = 0; i < sizeof(ML8511); i++)
+    for (buffer_num = 0; buffer_num < sizeof(ML8511); buffer_num++)
     {
-        packet_whole[packet_whole_index] = ML8511[i];
+        packet_whole[packet_whole_index] = ML8511[buffer_num];
         // Increment index for whole packet
         packet_whole_index++;
     }
@@ -199,9 +180,9 @@ void assemble_packet_whole()
 #endif
 
 #ifdef D6T_include    // Append D6T
-    for (int i = 0; i < sizeof(D6T); i++)
+    for (buffer_num = 0; buffer_num < sizeof(D6T); buffer_num++)
     {
-        packet_whole[packet_whole_index] = D6T[i];
+        packet_whole[packet_whole_index] = D6T[buffer_num];
         // Increment index for whole packet
         packet_whole_index++;
     }
@@ -209,9 +190,9 @@ void assemble_packet_whole()
 #endif
 
 #ifdef MLX90614_include    // Append MLX90614
-    for (int i = 0; i < sizeof(MLX90614); i++)
+    for (buffer_num = 0; buffer_num < sizeof(MLX90614); buffer_num++)
     {
-        packet_whole[packet_whole_index] = MLX90614[i];
+        packet_whole[packet_whole_index] = MLX90614[buffer_num];
         // Increment index for whole packet
         packet_whole_index++;
     }
@@ -219,9 +200,9 @@ void assemble_packet_whole()
 #endif
 
 #ifdef TMP421_include    // Append TMP421
-    for (int i = 0; i < sizeof(TMP421); i++)
+    for (buffer_num = 0; buffer_num < sizeof(TMP421); buffer_num++)
     {
-        packet_whole[packet_whole_index] = TMP421[i];
+        packet_whole[packet_whole_index] = TMP421[buffer_num];
         // Increment index for whole packet
         packet_whole_index++;
     }
@@ -229,9 +210,9 @@ void assemble_packet_whole()
 #endif
 
 #ifdef SPV1840LR5HB_include    // Append SPV1840LR5HB_2
-    for (int i = 0; i < sizeof(SPV1840LR5HB); i++)  //********************was SPV1840LR5HB_2
+    for (buffer_num = 0; buffer_num < sizeof(SPV1840LR5HB); buffer_num++)  //********************was SPV1840LR5HB_2
     {
-        packet_whole[packet_whole_index] = SPV1840LR5HB[i]; //********************was SPV1840LR5HB_2
+        packet_whole[packet_whole_index] = SPV1840LR5HB[buffer_num]; //********************was SPV1840LR5HB_2
         // Increment index for whole packet
         packet_whole_index++;
     }
@@ -240,204 +221,132 @@ void assemble_packet_whole()
 #endif
 
 #ifdef CHEMSENSE_INCLUDE
-    
-#ifdef chemsense_MAC_ID_include
-    CHECK_LEN = chemsense_MAC_ID[1] & 0x7F;
-    CHECK_LEN += 2;
-    for (int i = 0; i < CHECK_LEN; i++)
+    for (buffer_num = 0; buffer_num < sizeof(chemsense_MAC_ID); buffer_num++)
     {
-        packet_whole[packet_whole_index] = chemsense_MAC_ID[i];
+        packet_whole[packet_whole_index] = chemsense_MAC_ID[buffer_num];
         packet_whole_index++;
     }
     chemsense_MAC_ID[1] = (chg_valid << 7) | LENGTH_FORMAT3;
-#endif
 
-#ifdef SHT25_include
-    CHECK_LEN = SHT25[1] & 0x7F;
-    CHECK_LEN += 2;
-    for (int i = 0; i < CHECK_LEN; i++)
+    for (buffer_num = 0; buffer_num <  sizeof(SHT25); buffer_num++)
     {
-        packet_whole[packet_whole_index] = SHT25[i];
+        packet_whole[packet_whole_index] = SHT25[buffer_num];
         packet_whole_index++;
     }
     SHT25[1] = (chg_valid << 7) | (LENGTH_FORMAT2 + LENGTH_FORMAT1);
-#endif
-
-#ifdef LPS25H_include
-    CHECK_LEN = LPS25H[1] & 0x7F;
-    CHECK_LEN += 2;
-    for (int i = 0; i < CHECK_LEN; i++)
+    
+    for (buffer_num = 0; buffer_num <  sizeof(LPS25H); buffer_num++)
     {
-        packet_whole[packet_whole_index] = LPS25H[i];
+        packet_whole[packet_whole_index] = LPS25H[buffer_num];
         packet_whole_index++;
     }
     LPS25H[1] = (chg_valid << 7) | (LENGTH_FORMAT2 + LENGTH_FORMAT4);
-#endif
-
-#ifdef Si1145_include
-    CHECK_LEN = Si1145[1] & 0x7F;
-    CHECK_LEN += 2;
-    for (int i = 0; i < CHECK_LEN; i++)
+    
+    for (buffer_num = 0; buffer_num <  sizeof(Si1145); buffer_num++)
     {
-        packet_whole[packet_whole_index] = Si1145[i];
+        packet_whole[packet_whole_index] = Si1145[buffer_num];
         packet_whole_index++;
     }
     Si1145[1] = (chg_valid << 7) | (LENGTH_FORMAT1 * 3);
-#endif
-
-#ifdef total_reducing_gases_include
-    CHECK_LEN = total_reducing_gases[1] & 0x7F;
-    CHECK_LEN += 2;
-    for (int i = 0; i < CHECK_LEN; i++)
+    
+    for (buffer_num = 0; buffer_num <  sizeof(total_reducing_gases); buffer_num++)
     {
-        packet_whole[packet_whole_index] = total_reducing_gases[i];
+        packet_whole[packet_whole_index] = total_reducing_gases[buffer_num];
         packet_whole_index++;
     }
     total_reducing_gases[1] = (chg_valid << 7) | LENGTH_FORMAT5;
-#endif
-
-#ifdef total_oxidizing_gases_include
-    CHECK_LEN = total_oxidizing_gases[1] & 0x7F;
-    CHECK_LEN += 2;
-    for (int i = 0; i < CHECK_LEN; i++)
+    
+    for (buffer_num = 0; buffer_num <  sizeof(total_oxidizing_gases); buffer_num++)
     {
-        packet_whole[packet_whole_index] = total_oxidizing_gases[i];
+        packet_whole[packet_whole_index] = total_oxidizing_gases[buffer_num];
         packet_whole_index++;
     }
     total_oxidizing_gases[1] = (chg_valid << 7) | LENGTH_FORMAT5;
-#endif
-
-#ifdef sulfur_dioxide_include
-    CHECK_LEN = sulfur_dioxide[1] & 0x7F;
-    CHECK_LEN += 2;
-    for (int i = 0; i < CHECK_LEN; i++)
+    
+    for (buffer_num = 0; buffer_num <  sizeof(sulfur_dioxide); buffer_num++)
     {
-        packet_whole[packet_whole_index] = sulfur_dioxide[i];
+        packet_whole[packet_whole_index] = sulfur_dioxide[buffer_num];
         packet_whole_index++;
     }
     sulfur_dioxide[1] = (chg_valid << 7) | LENGTH_FORMAT5;
-#endif
-
-#ifdef hydrogen_sulphide_include
-    CHECK_LEN = hydrogen_sulphide[1] & 0x7F;
-    CHECK_LEN += 2;
-    for (int i = 0; i < CHECK_LEN; i++)
+    
+    for (buffer_num = 0; buffer_num <  sizeof(hydrogen_sulphide); buffer_num++)
     {
-        packet_whole[packet_whole_index] = hydrogen_sulphide[i];
+        packet_whole[packet_whole_index] = hydrogen_sulphide[buffer_num];
         packet_whole_index++;
     }
     hydrogen_sulphide[1] = (chg_valid << 7) | LENGTH_FORMAT5;
-#endif
-
-#ifdef ozone_include
-    CHECK_LEN = ozone[1] & 0x7F;
-    CHECK_LEN += 2;
-    for (int i = 0; i < CHECK_LEN; i++)
+    
+    for (buffer_num = 0; buffer_num <  sizeof(ozone); buffer_num++)
     {
-        packet_whole[packet_whole_index] = ozone[i];
+        packet_whole[packet_whole_index] = ozone[buffer_num];
         packet_whole_index++;
     }
     ozone[1] = (chg_valid << 7) | LENGTH_FORMAT5;
-#endif
-
-#ifdef nitrogen_dioxide_include
-    CHECK_LEN = nitrogen_dioxide[1] & 0x7F;
-    CHECK_LEN += 2;
-    for (int i = 0; i < CHECK_LEN; i++)
+    
+    for (buffer_num = 0; buffer_num <  sizeof(nitrogen_dioxide); buffer_num++)
     {
-        packet_whole[packet_whole_index] = nitrogen_dioxide[i];
+        packet_whole[packet_whole_index] = nitrogen_dioxide[buffer_num];
         packet_whole_index++;
     }
     nitrogen_dioxide[1] = (chg_valid << 7) | LENGTH_FORMAT5;
-#endif
-
-#ifdef carbon_monoxide_include
-    CHECK_LEN = carbon_monoxide[1] & 0x7F;
-    CHECK_LEN += 2;
-    for (int i = 0; i < CHECK_LEN; i++)
+    
+    for (buffer_num = 0; buffer_num <  sizeof(carbon_monoxide); buffer_num++)
     {
-        packet_whole[packet_whole_index] = carbon_monoxide[i];
+        packet_whole[packet_whole_index] = carbon_monoxide[buffer_num];
         packet_whole_index++;
     }
     carbon_monoxide[1] = (chg_valid << 7) | LENGTH_FORMAT5;
-#endif
-
-#ifdef CO_ADC_temp_include
-    CHECK_LEN = CO_ADC_temp[1] & 0x7F;
-    CHECK_LEN += 2;
-    for (int i = 0; i < CHECK_LEN; i++)
+    
+    for (buffer_num = 0; buffer_num <  sizeof(CO_ADC_temp); buffer_num++)
     {
-        packet_whole[packet_whole_index] = CO_ADC_temp[i];
+        packet_whole[packet_whole_index] = CO_ADC_temp[buffer_num];
         packet_whole_index++;
     }
     CO_ADC_temp[1] = (chg_valid << 7) | LENGTH_FORMAT2;
-#endif
-
-#ifdef IAQ_IRR_ADC_temp_include
-    CHECK_LEN = IAQ_IRR_ADC_temp[1] & 0x7F;
-    CHECK_LEN += 2;
-    for (int i = 0; i < CHECK_LEN; i++)
+    
+    for (buffer_num = 0; buffer_num <  sizeof(IAQ_IRR_ADC_temp); buffer_num++)
     {
-        packet_whole[packet_whole_index] = IAQ_IRR_ADC_temp[i];
+        packet_whole[packet_whole_index] = IAQ_IRR_ADC_temp[buffer_num];
         packet_whole_index++;
     }
     IAQ_IRR_ADC_temp[1] = (chg_valid << 7) | LENGTH_FORMAT2;
-#endif
-
-#ifdef O3_NO2_ADC_temp_include
-    CHECK_LEN = O3_NO2_ADC_temp[1] & 0x7F;
-    CHECK_LEN += 2;
-    for (int i = 0; i < CHECK_LEN; i++)
+    
+    for (buffer_num = 0; buffer_num <  sizeof(O3_NO2_ADC_temp); buffer_num++)
     {
-        packet_whole[packet_whole_index] = O3_NO2_ADC_temp[i];
+        packet_whole[packet_whole_index] = O3_NO2_ADC_temp[buffer_num];
         packet_whole_index++;
     }
     O3_NO2_ADC_temp[1] = (chg_valid << 7) | LENGTH_FORMAT2;
-#endif
-
-#ifdef SO2_H2S_ADC_temp_include
-    CHECK_LEN = SO2_H2S_ADC_temp[1] & 0x7F;
-    CHECK_LEN += 2;
-    for (int i = 0; i < CHECK_LEN; i++)
+    
+    for (buffer_num = 0; buffer_num <  sizeof(SO2_H2S_ADC_temp); buffer_num++)
     {
-        packet_whole[packet_whole_index] = SO2_H2S_ADC_temp[i];
+        packet_whole[packet_whole_index] = SO2_H2S_ADC_temp[buffer_num];
         packet_whole_index++;
     }
     SO2_H2S_ADC_temp[1] = (chg_valid << 7) | LENGTH_FORMAT2;
-#endif
-
-#ifdef CO_LMP_temp_include
-    CHECK_LEN = CO_LMP_temp[1] & 0x7F;
-    CHECK_LEN += 2;
-    for (int i = 0; i < CHECK_LEN; i++)
+    
+    for (buffer_num = 0; buffer_num <  sizeof(CO_LMP_temp); buffer_num++)
     {
-        packet_whole[packet_whole_index] = CO_LMP_temp[i];
+        packet_whole[packet_whole_index] = CO_LMP_temp[buffer_num];
         packet_whole_index++;
     }
     CO_LMP_temp[1] = (chg_valid << 7) | LENGTH_FORMAT2;
-#endif
-
-#ifdef three_accel_and_vib_include
-    CHECK_LEN = three_accel_and_vib[1] & 0x7F;
-    CHECK_LEN += 2;
-    for (int i = 0; i < CHECK_LEN; i++)
+    
+    for (buffer_num = 0; buffer_num <  sizeof(three_accel_and_vib); buffer_num++)
     {
-        packet_whole[packet_whole_index] = three_accel_and_vib[i];
+        packet_whole[packet_whole_index] = three_accel_and_vib[buffer_num];
         packet_whole_index++;
     }
     three_accel_and_vib[1] = (chg_valid << 7) | (LENGTH_FORMAT2 * 3 + LENGTH_FORMAT4);
-#endif
-
-#ifdef three_gyro_and_orientation_include
-    CHECK_LEN = three_gyro_and_orientation[1] & 0x7F;
-    CHECK_LEN += 2;
-    for (int i = 0; i < CHECK_LEN; i++)
+    
+    for (buffer_num = 0; buffer_num <  sizeof(three_gyro_and_orientation); buffer_num++)
     {
-        packet_whole[packet_whole_index] = three_gyro_and_orientation[i];
+        packet_whole[packet_whole_index] = three_gyro_and_orientation[buffer_num];
         packet_whole_index++;
     }
     three_gyro_and_orientation[1] = (chg_valid << 7) | (LENGTH_FORMAT2 * 3 + LENGTH_FORMAT4);
-#endif
+    
 #endif
 
     /*
