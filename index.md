@@ -41,14 +41,14 @@ You can explore the following sub categories to be familarized yourself with Wag
 * [App processor](./guestnodes/README.md) </br>
     App processor that interacts with connected sensors.
 
+* [Core sensors](./coresensors/v3/pbay/integrated/README.md) </br>
+    Instructions of the air/light/chem sensors. Sensor specifications can be found [here](./user_documentation/sensors/SensorTable.html)
+
 * [Sensor communication](./coresensors/docs/sensorStreamFormat/README.md) </br>
     Definitions of communication between app processor and core sensors.
 
 * [Plugins](./guestnodes/plugins/README.md) </br>
     Extend plugins as additional sensors attached to Waggle node.
-
-* [Sensors](./user_documentation/sensors/SensorTable.html) </br>
-    Specifications of the sensors.
 
 ## Beehive server
 * [Introduction](./beehive-server/README.md) </br>
