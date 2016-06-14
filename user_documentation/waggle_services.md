@@ -1,4 +1,4 @@
-
+## Waggle Services
 
 Waggle services on the waggle node are currently executed by upstart. Upstart scripts can be found in the corresponding git repositories in the upstart directory. The configure scripts in the corresponding git repositories copy the upstart scripts in the /etc/init/ directory.
 
