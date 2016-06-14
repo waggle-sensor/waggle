@@ -51,7 +51,7 @@ for i in 0..61
 *This struct is written assuming little endian byte layout, 2 byte short
 and 4 byte int!*
 
-* The histogram is supposed to alternate whether the temperature or pressure is included. Temperature is extracted by dividing the temperature / pressure field by 10 and is given in celsius. *
+*The histogram is supposed to alternate whether the temperature or pressure is included. Temperature is extracted by dividing the temperature / pressure field by 10 and is given in celsius.*
 
 ```
 struct {
