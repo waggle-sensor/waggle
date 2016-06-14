@@ -35,8 +35,8 @@ device stopping
         set alarm $heartbeat_alarm to 30 seconds
         send shutdown message to device
 
-    on alarm 0 (cannot seem to kill device)
-    on alarm 1 (no heartbeat for at least 30 seconds)
+    on alarm $timeout_alarm (cannot seem to kill device)
+    on alarm $heartbeat_alarm (no heartbeat for at least 30 seconds)
         turn off device power
         change state to stopped
 
