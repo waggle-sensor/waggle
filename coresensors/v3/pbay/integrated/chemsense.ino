@@ -73,7 +73,7 @@ void form1_int_string_to_unsigned_int()                //form1
     format1(Temp_uint16);
 }
 
-void form4_int_string_to_unsigned_long()                //form4
+void form4_int_string_to_unsigned_long(int shift_needed)                //form4
 {
     Temp_ulong[0] = 0;
     for (int i = 0; i < VAL_NUM_ID; i++)
@@ -84,7 +84,10 @@ void form4_int_string_to_unsigned_long()                //form4
         VAL[i] = VAL[i] - '0';
         Temp_ulong[0] = (Temp_ulong[0] * 10) + VAL[i];
     }
-    format4(Temp_ulong[0]);
+    if (shift_needed == 1)
+        Temp_ulong[0] = (Temp_ulong[0] & 0xffffff00) >> 8;
+    
+    format4(Temp_ulong[0] & 0xffffff);
 }
 
 void form2_int_string_to_int()                   // form2
@@ -259,7 +262,7 @@ void Carrier()
     else if (compareKey('L', 'P', 'P') == 0)
     {
         //Int_form4();
-        form4_int_string_to_unsigned_long();
+        form4_int_string_to_unsigned_long(0);
         
         LPS25H[0] = ID_LPS25H;
         LPS25H[1] = (valid << 7) | (LENGTH_FORMAT2 + LENGTH_FORMAT4);
@@ -624,7 +627,7 @@ void Carrier()
     else if (compareKey('V', 'I', 'X') == 0)
     {
         //Int_form4();
-        form4_int_string_to_unsigned_long();
+        form4_int_string_to_unsigned_long(1);
         
         three_accel_and_vib[0] = ID_THREE_ACCEL_AND_VIB;
         three_accel_and_vib[1] = (valid << 7) | (LENGTH_FORMAT2 * 3 + LENGTH_FORMAT4);
@@ -701,7 +704,7 @@ void Carrier()
     else if (compareKey('O', 'I', 'X') == 0)
     {
         //Int_form4();
-        form4_int_string_to_unsigned_long();
+        form4_int_string_to_unsigned_long(1);
         
         three_gyro_and_orientation[0] = ID_THREE_GYRO_AND_ORIENTATION;
         three_gyro_and_orientation[1] = (valid << 7) | (LENGTH_FORMAT2 * 3 + LENGTH_FORMAT4);
