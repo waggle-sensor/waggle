@@ -45,3 +45,22 @@ for i in 0..61
     sleep 1 ms
     histdata[i] <- AS
 ```
+
+## Histogram Layout (Firmware Version 18)
+
+*Note: This struct is written assuming little endian byte layout, 2 byte short
+and 4 byte int!*
+
+```
+struct {
+    unsigned short bins[16];
+    unsigned char mtof[4];
+    unsigned int sample_flow_rate;
+    unsigned int temperature_pressure;
+    unsigned int sample_period;
+    unsigned short checksum;
+    float pm1;
+    float pm25;
+    float pm10;
+};
+```
