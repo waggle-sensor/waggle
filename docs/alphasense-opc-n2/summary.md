@@ -38,11 +38,11 @@ histdata :: 62 byte buffer
 
 30 -> AS
 F3 <- AS
-sleep 10 ms
+wait 10 ms
 
 for i in 0..61
     30 -> AS
-    sleep 1 ms
+    wait 1 ms
     histdata[i] <- AS
 ```
 
@@ -50,6 +50,8 @@ for i in 0..61
 
 *This struct is written assuming little endian byte layout, 2 byte short
 and 4 byte int!*
+
+*The histogram is supposed to alternate whether the temperature or pressure is included. Temperature is extracted by dividing the temperature / pressure field by 10 and is given in celsius. Probably want to just check value range since pressure given in pascals.*
 
 ```
 struct {
