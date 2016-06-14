@@ -100,6 +100,8 @@ class Alphasense(object):
 
     def __init__(self, port):
         self.serial = Serial(port)
+        # spi mode: 1
+        # divisor: 500000 HZ
         iss_set_spi_mode(self.serial, 0x92, 500000)
 
     def close(self):
@@ -119,11 +121,11 @@ class Alphasense(object):
 
     def power_off(self, fan=True, laser=True):
         if fan and laser:
-            self.transfer_data([0x03, 0x01])
+            self.transfer([0x03, 0x01])
         elif fan:
-            self.transfer_data([0x03, 0x05])
+            self.transfer([0x03, 0x05])
         elif laser:
-            self.transfer_data([0x03, 0x03])
+            self.transfer([0x03, 0x03])
 
     def set_laser_power(self, power):
         self.transfer([0x42, 0x01, power])
