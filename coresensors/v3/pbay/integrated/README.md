@@ -22,3 +22,13 @@ make run
 ```
 </br>
 __To exit the screen session created for the test, press Control+a, and press k and y afterward.__
+
+To test this and get decoded data with python script, do
+```bash
+make install
+```
+and execute [coresense.py](./coresense_plugin/coresense.py) in [coresens_plugin](./coresense_plugin). 
+```bash
+python coresense.py
+```
+Decode process is done through [coresense_pluginUSBSerial.py](./coresense_plugin/coresense_pluginUSBSerial.py).

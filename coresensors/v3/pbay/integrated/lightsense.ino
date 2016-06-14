@@ -146,20 +146,20 @@ void lightsense_acquire (void)
 #endif
 #endif
 
-#ifdef SPV1840LR5HB_2_include
-    mcp3428_2.selectChannel(MCP342X::CHANNEL_1, MCP342X::GAIN_1);
-    format1(mcp3428_2.readADC());
-    
-    SPV1840LR5HB_2[0] = ID_SPV1840LR5HB_2;
-    SPV1840LR5HB_2[1] = (valid << 7) | LENGTH_FORMAT1;
-    SPV1840LR5HB_2[2] = formatted_data_buffer[0];
-    SPV1840LR5HB_2[3] = formatted_data_buffer[1];
-    
-#ifdef SERIAL_DEBUG
-    SerialUSB.print("SPV1840LR5HB: ");
-    SerialUSB.println(mcp3428_2.readADC());
-#endif
-#endif
+// #ifdef SPV1840LR5HB_2_include
+//     mcp3428_2.selectChannel(MCP342X::CHANNEL_1, MCP342X::GAIN_1);
+//     format1(mcp3428_2.readADC());
+//     
+//     SPV1840LR5HB_2[0] = ID_SPV1840LR5HB_2;
+//     SPV1840LR5HB_2[1] = (valid << 7) | LENGTH_FORMAT1;
+//     SPV1840LR5HB_2[2] = formatted_data_buffer[0];
+//     SPV1840LR5HB_2[3] = formatted_data_buffer[1];
+//     
+// #ifdef SERIAL_DEBUG
+//     SerialUSB.print("SPV1840LR5HB: ");
+//     SerialUSB.println(mcp3428_2.readADC());
+// #endif
+// #endif
 
 }
 

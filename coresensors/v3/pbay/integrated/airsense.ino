@@ -5,7 +5,7 @@ void airsense_acquire (void)
     SerialUSB.println("Acquiring AirSense Data.");
 #endif
 
-#ifdef SPV1840LR5HB_include
+#ifdef SPV1840LR5HB_include   ////was  SPV1840LR5HB_2_include
     Temp_uint16 = analogRead(PIN_RAW_MIC);
     format1(Temp_uint16);
     
@@ -163,27 +163,23 @@ void airsense_acquire (void)
 #ifdef TSYS01_include
     TSYS01_read();
     format6(Temp_float[0]);  // Put it into format 2
-    
     TSYS01[0] = ID_TSYS01;
     TSYS01[1] = (valid << 7) | LENGTH_FORMAT6;
     TSYS01[2] = formatted_data_buffer[0];
     TSYS01[3] = formatted_data_buffer[1];
-    
 #ifdef SERIAL_DEBUG
     SerialUSB.print("TSYS01: ");
     SerialUSB.println(Temp_float[0]);
 #endif
 #endif
 
-#ifdef HIH4030_include
+#ifdef HIH4030_include      // NOT IN THE PACKET, DO NOT KNOW WHAT IS HAPPENING
     Temp_uint16 = analogRead(PIN_HIH4030);
     format1(Temp_uint16);
-    
     HIH4030[0] = ID_HIH4030;
     HIH4030[1] = (valid << 7) | LENGTH_FORMAT1;
     HIH4030[2] = formatted_data_buffer[0];
     HIH4030[3] = formatted_data_buffer[1];
-    
 #ifdef SERIAL_DEBUG
     SerialUSB.print("HIH4030: ");
     SerialUSB.println(Temp_uint16);

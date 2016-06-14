@@ -30,7 +30,7 @@ cd wagman_init
 
 **WARNING: before procceding the following steps, pull out wagman's power adapter plug.
 
-Follow the instruction [here](https://github.com/waggle-sensor/waggle/blob/master/user_documentation/copy_waggle_image_to_memory_card.md) to upload the latest version of both nodecontroller and extension_node firmware. As a result, you will have two micro SD cards for both devices, respectively.
+Follow the instruction [here](./copy_waggle_image_to_memory_card.md) to upload the latest version of both nodecontroller and extension_node firmware. As a result, you will have two micro SD cards for both devices, respectively.
 
 Insert each micro SD card on the designated device (nodecontroller firmware for nodecontroller and extension_node firmware for extension_node). eMMC card should also be inserted on both devices.
 

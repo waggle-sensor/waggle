@@ -16,7 +16,7 @@ docs:
 install:
 ifeq ($(INSTALL_URL),)
 	@echo "Set INSTALL_URL the location where you publish"
-	@echo "For example, export INSTALL_URL=ID@http://your.website.domain:where.html.files.go"
+	@echo "For example, export INSTALL_URL=ID@http://your.website.domain:where/html/files/go"
 else
 	
 ifeq ($(wildcard $(CHECK_DIR)/.*),)

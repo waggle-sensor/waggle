@@ -5,7 +5,6 @@ flag_NAME = False
 flag_SIGN = False
 
 SIGN = "-------------"
-TIME = "Jun"    #Need to change time
 FILE_NAME = "data.txt"  #Need to change file name
 
 #**************************************************
@@ -28,7 +27,7 @@ FILE_NAME = "data.txt"  #Need to change file name
 #NAME = "LPS25H"
 #NAME = "Si1145"
 
-NAME = "Total reducing gases"
+#NAME = "Total reducing gases"
 #NAME = "Total Oxidizing gases"
 #NAME = "Sulfur Dioxide"
 #NAME = "Hydrogen Sulphide"
@@ -36,7 +35,7 @@ NAME = "Total reducing gases"
 #NAME = "Nitrogen Di-oxide"
 #NAME = "Carbon Monoxide"
 
-#NAME = "CO ADC temp"
+NAME = "CO ADC temp"
 #NAME = "IAQ/IRR ADC temp"
 #NAME = "O3/NO2 ADC temp"
 #NAME = "SO2/H2S ADC temp"
@@ -177,6 +176,7 @@ try:
 
             elif NAME in line:
                 two = line.split(" ")
+                #print two
                 if flag_TIME == False:
                     break
                 for i in range (0, MAX_trial):
@@ -193,6 +193,7 @@ try:
                         #one[last_val] = tmp[0]
                         #print one[last_val]
                         flag_NAME = True
+                        break
 
             if flag_TIME == True and flag_NAME == True:
                 sub_file.write(year)
@@ -219,48 +220,3 @@ except (KeyboardInterrupt, SystemExit):
 
 data_file.close()
 sub_file.close()
-
-
-'''
-    while (line != ""):
-        line = data_file.readline()
-        #print line
-
-        if TIME in line:
-            one = line.split(" ")
-            #print one
-            time = one[4]
-            flag_TIME = True
-
-        if NAME in line:
-            two = line.split(" ")
-            if flag_TIME == False:
-                break
-            for i in range (0, MAX_trial):
-                k = i
-                if two[i] == "@":
-                    i = i + 2
-                    for j in range (0, num):
-                        one[j] = two[i + j]
-                        #last_two = i + j
-                        #last_val = j
-                        #print "if"
-                        #print one[j]
-                    #tmp = two[last_two].split("\n")
-                    #one[last_val] = tmp[0]
-                    #print one[last_val]
-                    flag_NAME = True
-
-        if flag_TIME == True and flag_NAME == True:
-            sub_file.write(time)
-            sub_file.write(" ")
-            #print time, " ",
-            for i in range (0, num):
-                sub_file.write(one[i])
-                if i != num-1:
-                    sub_file.write(" ")
-                #print one[i]
-
-            flag_NAME = False
-            flag_TIME = False
-'''

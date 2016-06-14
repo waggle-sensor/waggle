@@ -97,8 +97,18 @@ byte TSL250RD_1[LENGTH_FORMAT1 + 2]; // ambient light (400-950nm)
 byte SPV1840LR5HB[LENGTH_FORMAT1 + 2]; // sound pressure
 byte HIH4030[LENGTH_FORMAT1 + 2]; // humidity **************************************************does not exist in packet_assembler.ino
 
+// Lightsense board
+byte HMC5883L[(LENGTH_FORMAT8 * 3) + 2]; // magnetic field strength for traffic flow
+byte HIH6130[(LENGTH_FORMAT6 * 2) + 2]; // temp and RH inside transparent box
+byte APDS9006020[LENGTH_FORMAT1 + 2]; // ambient light inside cavity
+byte TSL260RD[LENGTH_FORMAT1 + 2]; // solar near IR
+byte TSL250RD_2[LENGTH_FORMAT1 + 2]; // solar visible light
+byte MLX75305[LENGTH_FORMAT1 + 2]; // solar visible light
+byte ML8511[LENGTH_FORMAT1 + 2]; // solar UV
+byte D6T[(LENGTH_FORMAT6 * 17) + 2]; // temp of surrounding objects
+byte MLX90614[LENGTH_FORMAT1 + 2]; // temp of pavement
+byte TMP421[LENGTH_FORMAT6 + 2]; // temp inside transparent box
 
-#ifdef CHEMSENSE_INCLUDE
 //chemsense board
 byte chemsense_MAC_ID[LENGTH_FORMAT3 + 2] = {0,0,0,0,0,0,0,0}; // MAC address of chemsense board
 
@@ -122,20 +132,6 @@ byte CO_LMP_temp[LENGTH_FORMAT2 + 2];
 
 byte three_accel_and_vib[(LENGTH_FORMAT2 * 3) + LENGTH_FORMAT4 + 2];
 byte three_gyro_and_orientation[(LENGTH_FORMAT2 * 3) + LENGTH_FORMAT4 + 2];
-#endif
-
-
-// Lightsense board
-byte HMC5883L[(LENGTH_FORMAT8 * 3) + 2]; // magnetic field strength for traffic flow
-byte HIH6130[(LENGTH_FORMAT6 * 2) + 2]; // temp and RH inside transparent box
-byte APDS9006020[LENGTH_FORMAT1 + 2]; // ambient light inside cavity
-byte TSL260RD[LENGTH_FORMAT1 + 2]; // solar near IR
-byte TSL250RD_2[LENGTH_FORMAT1 + 2]; // solar visible light
-byte MLX75305[LENGTH_FORMAT1 + 2]; // solar visible light
-byte ML8511[LENGTH_FORMAT1 + 2]; // solar UV
-byte D6T[(LENGTH_FORMAT6 * 17) + 2]; // temp of surrounding objects
-byte MLX90614[LENGTH_FORMAT1 + 2]; // temp of pavement
-byte TMP421[LENGTH_FORMAT6 + 2]; // temp inside transparent box
 
 // Whole packet
 byte packet_whole[LENGTH_WHOLE];
@@ -171,6 +167,7 @@ int packet_whole_index = 0;
 float Temp_float[3];    //air, light
 uint16_t Temp_uint16;   //air, TMP112
 long Temp_long;         //air, TMP112
+unsigned long Temp_ulong[2]; // Chem
 int Temp_int[3];        //HIH
 byte Temp_byte[8];      //sensor setup, HIH
 
@@ -228,9 +225,11 @@ void loop()
 
         assemble_packet_empty();
         assemble_packet_whole();
-
-        SerialUSB.write(packet_whole, packet_whole_index + 1);      // To print Postscript
-        SerialUSB.print("\n");
+        
+        for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i ++)
+        {
+                SerialUSB.write(packet_whole[i]);      
+        }
         
         TIMER = false;
     }

@@ -332,6 +332,7 @@ class usbSerial ( threading.Thread ):
     def marshalData(self,_dataNew):
         self.data.extend(_dataNew)
         bufferLength = len(self.data)
+        print self.data
         while self.keepAlive:
 
             try:
@@ -366,7 +367,7 @@ class usbSerial ( threading.Thread ):
                         del self.data[0]
 
                     else:
-                        if (_postscriptLoc > bufferLength+2):
+                        if (_postscriptLoc > bufferLength):
                         #We do not have full packet in the buffer, cannot process.
                             break
                         else:
@@ -392,7 +393,7 @@ class usbSerial ( threading.Thread ):
                                     #ideally we should be able to throw the whole packet out, but purging just a byte for avoiding corner cases.
                                     del self.data[0]
                                 else:
-                                    #print self.data
+                                    print self.data
                                     print '-------------'
                                     print time.asctime(), _msg_seq_num, _postscriptLoc
                                     #extract the data bytes alone, exclude preamble, prot version, len, crc and postScript
@@ -402,12 +403,22 @@ class usbSerial ( threading.Thread ):
 
                                     del self.data[:self.data.index(_postScript)+1]
 
+                                    #print ":".join("{:02x}".format(ord(c)) for c in extractedData)
+
                                     while consume_ptr < len(extractedData):
-                                        This_id = str(ord(extractedData[consume_ptr]))
-                                        This_id_msg_size_valid = ord(extractedData [consume_ptr+1])
-                                        This_id_msg_size = This_id_msg_size_valid & 0x7F
-                                        This_id_msg_valid = (This_id_msg_size_valid & 0x80) >> 7
-                                        This_id_msg = extractedData[consume_ptr+2:consume_ptr+2+This_id_msg_size]
+                                        try:
+                                            This_id = str(ord(extractedData[consume_ptr]))
+                                            This_id_msg_size_valid = ord(extractedData [consume_ptr+1])
+                                            This_id_msg_size = This_id_msg_size_valid & 0x7F
+                                            #print This_id_msg_size
+                                            This_id_msg_valid = (This_id_msg_size_valid & 0x80) >> 7
+                                            This_id_msg = extractedData[consume_ptr+2:consume_ptr+2+This_id_msg_size]
+                                            
+                                        except Exception,e:
+                                            print "ERROR!!!!"
+                                            print str(e)
+                                            print "consume_ptr: ", consume_ptr, " len(extractedData): ", len(extractedData)
+                                            pass
                                         
                                         #print (int(This_id)), This_id_msg_valid, This_id_msg_size, This_id_msg
                                         

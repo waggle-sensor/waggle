@@ -37,7 +37,7 @@ w = []
 #TITLE = "LPS25H"
 #TITLE = "Si1145"
 
-TITLE = "TotalReducing"
+#TITLE = "TotalReducing"
 #TITLE = "TotalOxidizing"
 #TITLE = "SulfurDioxide"
 #TITLE = "HydrogenSulphide"
@@ -45,7 +45,7 @@ TITLE = "TotalReducing"
 #TITLE = "NitrogenDiOxide"
 #TITLE = "CarbonMonoxide"
 
-#TITLE = "CO_ADCtemp"
+TITLE = "CO_ADCtemp"
 #TITLE = "IAQ_IRR_ADCtemp"
 #TITLE = "O3_NO2_ADCtemp"
 #TITLE = "SO2_H2S_ADCtemp"
@@ -79,19 +79,19 @@ try:
                 x.append(dt.datetime.strptime(one[0], "%Y:%b:%d:%H:%M:%S"))
 
                 if num == 1:
-                    y.append(int(one[1].strip("\n")))
+                    y.append(float(one[1].strip("\n")))
                 elif num == 2:
-                    y.append(int(one[1].strip("\n")))
-                    z.append(int(one[2].strip("\n")))
-                elif  num == 3:
-                    y.append(int(one[1].strip("\n")))
-                    z.append(int(one[2].strip("\n")))
-                    v.append(int(one[3].strip("\n")))
+                    y.append(float(one[1].strip("\n")))
+                    z.append(float(one[2].strip("\n")))
+                elif num == 3:
+                    y.append(float(one[1].strip("\n")))
+                    z.append(float(one[2].strip("\n")))
+                    v.append(float(one[3].strip("\n")))
                 elif num == 4:
-                    y.append(int(one[1].strip("\n")))
-                    z.append(int(one[2].strip("\n")))
-                    v.append(int(one[3].strip("\n")))
-                    w.append(int(one[4].strip("\n")))
+                    y.append(float(one[1].strip("\n")))
+                    z.append(float(one[2].strip("\n")))
+                    v.append(float(one[3].strip("\n")))
+                    w.append(float(one[4].strip("\n")))
                 else:
                     print "Wrong num"
                     break
@@ -132,35 +132,3 @@ except (KeyboardInterrupt, SystemExit):
     data_file.close()
 
 data_file.close()
-
-
-#import datetime
-#import numpy as np
-#import matplotlib.pyplot as plt
-#import matplotlib.dates as mdates
-#import matplotlib.cbook as cbook
-
-#hours = mdates.MinuteLocator(interval=10)   # every year
-#minutes = mdates.MinuteLocator(interval=10)  # every month
-#hourFmt= mdates.DateFormatter('%H:%M:%S')
-
-#fig, ax = plt.subplots()
-#ax.plot(dates, y)
-#plt.grid(b=True, which='both')
-
-# format the ticks
-#ax.xaxis.set_major_locator(hours)
-#ax.xaxis.set_major_formatter(hourFmt)
-#ax.xaxis.set_minor_locator(minutes)
-#ax.xaxis.set_minor_formatter(hourFmt)
-
-#datemin = datetime.date(r.date.min().year, 1, 1)
-#datemax = datetime.date(r.date.max().year + 1, 1, 1)
-#ax.set_xlim(datemin, datemax)
-
-
-# rotates and right aligns the x labels, and moves the bottom of the
-# axes up to make room for them
-#fig.autofmt_xdate()
-
-#plt.show()

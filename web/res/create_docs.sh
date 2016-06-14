@@ -45,12 +45,22 @@ for i in ${!OUT_FILES[@]} ; do
   
   echo "  making a document ${name_to}.html <- ${from}"
   mkdir -p ${INSTALL_DIR}${dir_to}
-  # Convert .md to .html with .css files
-  pandoc -f markdown_github -t html -c ${gotoroot}Img/style.css -c ${gotoroot}Img/doxygen.css  ${ROOT_DIR}${from} -o ${INSTALL_DIR}${to}
+  
+  # For .md files convert them into html files
+  target_extension=${from##*.}
+
+  if [ "${target_extension}" = "md" ]; then
+    # Convert .md to .html with .css files
+    pandoc -f markdown_github -t html -c ${gotoroot}Img/style.css -c ${gotoroot}Img/doxygen.css  ${ROOT_DIR}${from} -o ${INSTALL_DIR}${to}
+  elif [ "${target_extension}" = "html" ]; then
+    # Just copy the file to the destination
+    cp ${ROOT_DIR}${from} ${INSTALL_DIR}${to}
+  fi
+
 
   echo "    ... changing image links..."
   # Find image links from the html file
-  img_links=($(grep 'img src=[a-zA-Z0-9]*' ./${INSTALL_DIR}${to} | awk -F "\"" '{print $2}'))
+  img_links=($(python ${RES_DIR}utility.py ./${INSTALL_DIR}${to} "img src=\"" | tr -d "[',']"))
   
   for j in ${!img_links[@]}; do
     # Ignor absolute path links
@@ -69,7 +79,7 @@ for i in ${!OUT_FILES[@]} ; do
 
   echo "    ... changing page links..."
   # Find page links
-  page_links=($(python ${RES_DIR}utility.py ./${INSTALL_DIR}${to} | tr -d "[',']"))
+  page_links=($(python ${RES_DIR}utility.py ./${INSTALL_DIR}${to} "a href=\"" | tr -d "[',']"))
   #page_links=($(grep 'a href=[a-zA-Z0-9]*' ./${INSTALL_DIR}${to} | awk -F "\"" '{print $2}'))
   for j in ${!page_links[@]}; do
     # Ignore absolute path links
