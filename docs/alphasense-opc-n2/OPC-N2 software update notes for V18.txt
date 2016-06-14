@@ -1,0 +1,22 @@
+New software functions to test new firmware v18.
+
+1. 'Digital pot Read Status'
+Press Ctrl+R to read the Configuration parameters as in older software/firmware version. The Fan and Laser status (ON or OFF and DAC values) will be read along with the rest of the data (visible on row 4).
+
+2. 'Read serial number string'
+Press Ctrl+R to read the Configuration parameters as in older software/firmware version. The serial number string will be read along with the rest of the data (visible on row 1). This will be a string of nonsense characters until a serial string has been written to the device.
+
+3. 'Write serial number string'
+Clear the main textbox and type a serial number string of up to 60 characters in length. If the string is longer it will be cropped. If it is shorter it will be padded with spaces. When the string is ready, press Ctrl+Shift+G. A warning window will appear for you to confirm. The string can only be written once, even if the firmware is subsequently updated via the USB bootloader method. It can however be erased by erasing and reprogramming the microcontroller via the 'pogo-pins' method.
+
+4. 'Read Firmware Version'
+Press Ctrl+R to read the Configuration parameters as in older software/firmware version. The Firmware version will be read in numeric format along with the rest of the data (visible on row 3).
+
+5. 'Read Configuration Variables 2'
+Press Ctrl+R to read the Configuration parameters as in older software/firmware version. The new extra configuration parameters for adjustment to standalone operation will be read along with the rest of the data (visible at bottom of list from row 100).
+
+6. 'Write Configuration Variables 2'
+Press Ctrl+R to read the Configuration parameters as in older software/firmware version. The new configuration variables are also displayed in the textbox. Edit these as required, being careful not to alter anything else in the textbox. Then press Ctrl+W to write the edited data back to the OPC. Don't forget to use the 'SaveToNVR' function (Ctrl+S) if you want the OPC to remember a new configuration after its next reset cycle.
+
+7. 'Read PM data'
+While holding down Ctrl, click on the 'Start sampling' button to display current PM data in the textbox. This mode isn't fully utilised by this software, which still reads out the complete dataset in normal running. However, performing the above sequence is adequate to test the new firmware function. It is possible to start the fan and laser manually by bringing up the Fan/Laser DAC control window (press Ctrl+L) and double-clicking the Fan or Laser title labels to toggle ON or OFF. With the fan and laser switched on in this manner, rather than automatically via the 'StartSampling' sequence, periodically press Ctrl+'Start sampling' to update the PM data displayed.
