@@ -38,11 +38,11 @@ histdata :: 62 byte buffer
 
 30 -> AS
 F3 <- AS
-sleep 10 ms
+wait 10 ms
 
 for i in 0..61
     30 -> AS
-    sleep 1 ms
+    wait 1 ms
     histdata[i] <- AS
 ```
 
