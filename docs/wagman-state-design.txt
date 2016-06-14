@@ -57,6 +57,9 @@ device started
     on alarm
         how to handle missing heartbeat?
 
+    on start
+        broadcast event device started // nothing to do!
+
     on stop
         change state to stopping
 
@@ -69,6 +72,9 @@ device stopped (maybe make default state?)
     on restart
         change state to starting
 
+    on stop
+        broadcast event device stopped
+
     on heartbeat
         change state to started?
 
@@ -78,18 +84,39 @@ wagman normal
         set alarm to 1 minute
 
     on alarm
-        ...a couple options...
+        if current device start attempts < current device allowed attempts
+            send start command to current device
+            increment device start attempts (these things may want to be saved)
+        else
+            send start recover command to current device
 
-        can either
-
-        send start command to current device
-        set alarm to 1 minute
-
-    on guest started
+    on device stopped
         ...
 
-    on guest stopped
-        ...
+wagman start devices
+
+    on enter
+        find next not started device (save as next start device)
+
+        if none
+            change state to normal
+        else
+            change state to start next device
+
+wagman start next device
+
+    on enter
+        if current device start attempts < current device allowed attempts
+            send start command to current device
+        else
+            send start recover command to current device
+
+    on device started
+        change wagman state to start devices
+
+    on device start failed
+        increment device fail attempts
+        change wagman state to start devices
 
 wagman will hibernate
 
