@@ -367,7 +367,7 @@ class usbSerial ( threading.Thread ):
                         del self.data[0]
 
                     else:
-                        if (_postscriptLoc > bufferLength+2):
+                        if (_postscriptLoc > bufferLength):
                         #We do not have full packet in the buffer, cannot process.
                             break
                         else:
@@ -410,7 +410,7 @@ class usbSerial ( threading.Thread ):
                                             This_id = str(ord(extractedData[consume_ptr]))
                                             This_id_msg_size_valid = ord(extractedData [consume_ptr+1])
                                             This_id_msg_size = This_id_msg_size_valid & 0x7F
-                                            print This_id_msg_size
+                                            #print This_id_msg_size
                                             This_id_msg_valid = (This_id_msg_size_valid & 0x80) >> 7
                                             This_id_msg = extractedData[consume_ptr+2:consume_ptr+2+This_id_msg_size]
                                             
@@ -420,7 +420,7 @@ class usbSerial ( threading.Thread ):
                                             print "consume_ptr: ", consume_ptr, " len(extractedData): ", len(extractedData)
                                             pass
                                         
-                                        print (int(This_id)), This_id_msg_valid, This_id_msg_size, This_id_msg
+                                        #print (int(This_id)), This_id_msg_valid, This_id_msg_size, This_id_msg
                                         
                                         consume_ptr = consume_ptr + 2 + This_id_msg_size
                                         if (This_id_msg_valid == 1):
