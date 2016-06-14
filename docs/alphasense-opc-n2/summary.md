@@ -34,11 +34,13 @@ F3 <- AS
 ### Read Histogram
 
 ```
+histdata :: 62 byte buffer
+
 30 -> AS
 F3 <- AS
 sleep 10 ms
 
-for i in range(62):
+for i in 0..61
     30 -> AS
     sleep 1 ms
     histdata[i] <- AS
