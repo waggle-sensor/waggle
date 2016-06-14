@@ -1,9 +1,12 @@
+/* Chemsesne reader using the Serial "Serial3".
+ * Suppose that the Chemsense is device /dev/ttyACM0 when you connect the board with light and airsense.
+ */
 unsigned char INPUT_BYTE;
-char KEY[5];
-char VAL[14];
+char KEY[4];
+char VAL[13];
 
 char first[6], second[6];
-char *i = VAL;
+//char *i = VAL;
 
 byte formatted_byte_temp[8];
 
@@ -13,6 +16,116 @@ int VAL_NUM_ID = 0;
 int j = 0;
 
 bool flag_KEY = false;
+
+void form3_hex_string_to_hex()                     // Hex to hex: form3
+{
+    Temp_ulong[0] = 0x000000;
+    Temp_ulong[1] = 0x000000;
+    
+    for (int i = 0; i < VAL_NUM_ID; i++)
+    {
+        if (VAL[i] > '9')                   // letters
+            VAL[i] = VAL[i] - 'a' + 0x0a;
+        else                                // numbers
+            VAL[i] = VAL[i] - '0';
+        
+        if (i < VAL_NUM_ID / 2)
+            Temp_ulong[0] = Temp_ulong[0] | (VAL[i] << (VAL_NUM_ID / 2 - i - 1) * 4);
+        else
+            Temp_ulong[1] = Temp_ulong[1] | (VAL[i] << (VAL_NUM_ID - i - 1) * 4);
+    }
+    
+    Temp_byte[0] = (Temp_ulong[0] & 0xFF0000) >> 16;
+    Temp_byte[1] = (Temp_ulong[0] & 0x00FF00) >> 8;
+    Temp_byte[2] = (Temp_ulong[0] & 0x0000FF);
+    Temp_byte[3] = (Temp_ulong[1] & 0xFF0000) >> 16;
+    Temp_byte[4] = (Temp_ulong[1] & 0x00FF00) >> 8;
+    Temp_byte[5] = (Temp_ulong[1] & 0x0000FF);
+    format3(Temp_byte);
+}
+
+void form1_hex_string_to_unsigned_int()            //hex to uint: form1
+{
+    Temp_uint16 = 0x0000;
+    for (int i = 0; i < VAL_NUM_ID; i++)
+    {
+        if (VAL[i] > '9')                   // letters
+            VAL[i] = VAL[i] - 'a' + 0x0a;
+        else                                // numbers
+            VAL[i] = VAL[i] - '0';
+        
+        Temp_uint16 = Temp_uint16 | (VAL[i] << (VAL_NUM_ID - i - 1) * 4);
+    }
+    format1(Temp_uint16);
+}
+
+void form1_int_string_to_unsigned_int()                //form1
+{
+    Temp_uint16 = 0;
+    for (int i = 0; i < VAL_NUM_ID; i++)
+    {
+        if (VAL[i] == '-')
+            continue;
+        
+        VAL[i] = VAL[i] - '0';
+        Temp_uint16 = (Temp_uint16 * 10) + VAL[i];
+    }
+    format1(Temp_uint16);
+}
+
+void form4_int_string_to_unsigned_long()                //form4
+{
+    Temp_ulong[0] = 0;
+    for (int i = 0; i < VAL_NUM_ID; i++)
+    {
+        if (VAL[i] == '-')
+            continue;
+        
+        VAL[i] = VAL[i] - '0';
+        Temp_ulong[0] = (Temp_ulong[0] * 10) + VAL[i];
+    }
+    format4(Temp_ulong[0]);
+}
+
+void form2_int_string_to_int()                   // form2
+{
+    Temp_int[0] = 0;
+    for (int i = 0; i < VAL_NUM_ID; i++)
+    {
+        if (VAL[i] == '-')
+            continue;
+        
+        VAL[i] = VAL[i] - '0';
+        Temp_int[0] = (Temp_int[0] * 10) + VAL[i];
+    }
+    if (VAL[0] == '-')
+        Temp_int[0] *= -1;
+    format2(Temp_int[0]);
+}
+
+void form5_int_string_to_long()    // form5
+{
+    Temp_long = 0;
+    for (int i = 0; i < VAL_NUM_ID; i++)
+    {
+        if (VAL[i] == '-')
+            continue;
+        
+        VAL[i] = VAL[i] - '0';
+        Temp_long = (Temp_long * 10) + VAL[i];
+    }
+    if (VAL[0] == '-')
+        Temp_long *= -1;
+    format5(Temp_long);
+}
+
+int compareKey(char k1, char k2, char k3)
+{
+    if (KEY[0] != k1) return -1;
+    if (KEY[1] != k2) return -1;
+    if (KEY[2] != k3) return -1;
+    return 0;
+}
 
 void chemsense_acquire()
 {
@@ -42,50 +155,12 @@ void chemsense_acquire()
         }
         else if (INPUT_BYTE == '\r' || INPUT_BYTE == ' ')
         {
-            KEY[KEY_NUM_ID] = '\0';
-            VAL[VAL_NUM_ID] = '\0';
+            //KEY[KEY_NUM_ID] = '\0';
+            //VAL[VAL_NUM_ID] = '\0';
+            Carrier();
             KEY_NUM_ID = 0;
             VAL_NUM_ID = 0;
-            Carrier();
         }
-//         switch(INPUT_BYTE)
-//         {
-//             case 48 ... 57: // numbers
-//             case 65 ... 90: // Upper case letter
-//             case 97 ... 122: // Lower case letter
-//             case '-': //negative sign
-//             {
-//                 if (!flag_KEY)
-//                 {
-//                     KEY[KEY_NUM_ID] = INPUT_BYTE;
-//                     KEY_NUM_ID++;
-//                 }
-//                 else
-//                 {
-//                     VAL[VAL_NUM_ID] = INPUT_BYTE;
-//                     VAL_NUM_ID++;
-//                 }
-//                 break;
-//             } 
-//             
-//             case '=':
-//             {
-//                 flag_KEY = true;
-//                 break;
-//             }
-//             case '\r':
-//             case ' ':
-//             {
-//                 KEY[KEY_NUM_ID] = '\0';
-//                 VAL[VAL_NUM_ID] = '\0';
-//                 KEY_NUM_ID = 0;
-//                 VAL_NUM_ID = 0;
-//                 //Carrier();
-//                 break;
-//             }
-//             default:
-//             break;
-//         }
     }
 }
 
@@ -105,9 +180,10 @@ void Carrier()
         SerialUSB.print(" ");
     #endif
     
-	if (strncmp(KEY, "BAD", 3) == 0) 
+	if (compareKey('B', 'A', 'D') == 0) 
 	{
-        Hex_BAD();
+        //Hex_BAD();
+        form3_hex_string_to_hex();
         
         chemsense_MAC_ID[0] = ID_CHEMSENSE_MAC;
         chemsense_MAC_ID[1] = (valid << 7) | LENGTH_FORMAT3;
@@ -117,16 +193,17 @@ void Carrier()
         
         #ifdef SERIAL_DEBUG
                 // to check output
-                for (int j = 0; j < LENGTH_FORMAT3; j++)
+                for (j = 0; j < LENGTH_FORMAT3; j++)
                 {
                     SerialUSB.print(formatted_data_buffer[j],HEX);
                     SerialUSB.print(" ");
                 }
         #endif
 	}
-	else if (strncmp(KEY, "SHT", 3) == 0)  // wait SHH
+	else if (compareKey('S', 'H', 'T') == 0)  // wait SHH
 	{
-        Int_form2();
+        //Int_form2();
+        form2_int_string_to_int();
 
         formatted_byte_temp[0] = formatted_data_buffer[0];
         formatted_byte_temp[1] = formatted_data_buffer[1];
@@ -140,10 +217,11 @@ void Carrier()
         }
 #endif
     }
-    else if (strncmp(KEY, "SHH", 3) == 0)
+    else if (compareKey('S', 'H', 'H') == 0)
     {
-        Temp_uint16 = (unsigned int)atoi(VAL);       //char to int
-        format1(Temp_uint16); 
+        //Temp_uint16 = (unsigned int)atoi(VAL);       //char to int
+        //format1(Temp_uint16); 
+        form1_int_string_to_unsigned_int();
         
         SHT25[0] = ID_SHT25;
         SHT25[1] = (valid << 7) | (LENGTH_FORMAT2 + LENGTH_FORMAT1);
@@ -161,9 +239,10 @@ void Carrier()
         }
 #endif
     }
-	else if (strncmp(KEY, "LPT", 3) == 0)  // wait LPP
+	else if (compareKey('L', 'P', 'T') == 0)  // wait LPP
 	{
-        Int_form2();
+        //Int_form2();
+        form2_int_string_to_int();
         
         formatted_byte_temp[0] = formatted_data_buffer[0];
         formatted_byte_temp[1] = formatted_data_buffer[1];
@@ -177,9 +256,10 @@ void Carrier()
         }
 #endif
     }
-    else if (strncmp(KEY, "LPP", 3) == 0)
+    else if (compareKey('L', 'P', 'P') == 0)
     {
-        Int_form4();
+        //Int_form4();
+        form4_int_string_to_unsigned_long();
         
         LPS25H[0] = ID_LPS25H;
         LPS25H[1] = (valid << 7) | (LENGTH_FORMAT2 + LENGTH_FORMAT4);
@@ -198,9 +278,10 @@ void Carrier()
         }
 #endif
 	}
-	else if (strncmp(KEY, "SUV", 3) == 0)  // wait SVL and SIR
+	else if (compareKey('S', 'U', 'V') == 0)  // wait SVL and SIR
 	{
-        Hex_form1();
+        //Hex_form1();
+        form1_hex_string_to_unsigned_int();
         
         formatted_byte_temp[0] = formatted_data_buffer[0];
         formatted_byte_temp[1] = formatted_data_buffer[1];
@@ -214,9 +295,10 @@ void Carrier()
         }
 #endif
     }
-	else if (strncmp(KEY, "SVL", 3) == 0)
+	else if (compareKey('S', 'V', 'L') == 0)
     {
-        Hex_form1();
+        //Hex_form1();
+        form1_hex_string_to_unsigned_int();
         
         formatted_byte_temp[2] = formatted_data_buffer[0];
         formatted_byte_temp[3] = formatted_data_buffer[1];
@@ -230,9 +312,10 @@ void Carrier()
         }
 #endif
     }
-    else if (strncmp(KEY, "SIR", 3) == 0)
+    else if (compareKey('S', 'I', 'R') == 0)
     {
-        Hex_form1();
+        //Hex_form1();
+        form1_hex_string_to_unsigned_int();
         
         Si1145[0] = ID_Si1145;
         Si1145[1] = (valid << 7) | (LENGTH_FORMAT1 * 3);
@@ -252,9 +335,10 @@ void Carrier()
         }
 #endif
     }
-	else if (strncmp(KEY, "IRR", 3) == 0)
+	else if (compareKey('I', 'R', 'R') == 0)
 	{
-        Int_form5();
+        //Int_form5();
+        form5_int_string_to_long();
         
         total_reducing_gases[0] = ID_TOTAL_REDUCING_GASES;
         total_reducing_gases[1] = (valid << 7) | LENGTH_FORMAT5;
@@ -271,9 +355,10 @@ void Carrier()
         }
 #endif
     }
-	else if (strncmp(KEY, "IAQ", 3) == 0)
+	else if (compareKey('I', 'A', 'Q') == 0)
     {
-        Int_form5();
+        //Int_form5();
+        form5_int_string_to_long();
         
         total_oxidizing_gases[0] = ID_TOTAL_OXIDIZING_GASES;
         total_oxidizing_gases[1] = (valid << 7) | LENGTH_FORMAT5;
@@ -290,9 +375,10 @@ void Carrier()
         }
 #endif
     }
-	else if (strncmp(KEY, "SO2", 3) == 0)
+	else if (compareKey('S', 'O', '2') == 0)
     {
-        Int_form5();
+        //Int_form5();
+        form5_int_string_to_long();
         
         sulfur_dioxide[0] = ID_SULFUR_DIOXIDE;
         sulfur_dioxide[1] = (valid << 7) | LENGTH_FORMAT5;
@@ -309,9 +395,10 @@ void Carrier()
         }
 #endif
     }
-	else if (strncmp(KEY, "H2S", 3) == 0)
+	else if (compareKey('H', '2', 'S') == 0)
 	{
-        Int_form5();
+        //Int_form5();
+        form5_int_string_to_long();
         
         hydrogen_sulphide[0] = ID_HYDROGEN_SULPHIDE;
         hydrogen_sulphide[1] = (valid << 7) | LENGTH_FORMAT5;
@@ -328,9 +415,10 @@ void Carrier()
         }
 #endif
     }
-	else if (strncmp(KEY, "OZO", 3) == 0)
+	else if (compareKey('O', 'Z', 'O') == 0)
 	{
-        Int_form5();
+        //Int_form5();
+        form5_int_string_to_long();
         
         ozone[0] = ID_OZONE;
         ozone[1] = (valid << 7) | LENGTH_FORMAT5;
@@ -347,9 +435,10 @@ void Carrier()
         }
 #endif
     }
-	else if (strncmp(KEY, "NO2", 3) == 0)
+	else if (compareKey('N', 'O', '2') == 0)
 	{
-        Int_form5();
+        //Int_form5();
+        form5_int_string_to_long();
         
         nitrogen_dioxide[0] = ID_NITROGEN_DIOXIDE;
         nitrogen_dioxide[1] = (valid << 7) | LENGTH_FORMAT5;
@@ -366,9 +455,10 @@ void Carrier()
         }
 #endif
     }
-	else if (strncmp(KEY, "CMO", 3) == 0)
+	else if (compareKey('C', 'M', 'O') == 0)
 	{
-        Int_form5();
+        //Int_form5();
+        form5_int_string_to_long();
         
         carbon_monoxide[0] = ID_CARBON_MONOXIDE;
         carbon_monoxide[1] = (valid << 7) | LENGTH_FORMAT5;
@@ -385,9 +475,10 @@ void Carrier()
         }
 #endif
 	}
-	else if (strncmp(KEY, "AT0", 3) == 0)
+	else if (compareKey('A', 'T', '0') == 0)
 	{
-        Int_form2();
+        //Int_form2();
+        form2_int_string_to_int();
         
         CO_ADC_temp[0] = ID_CO_ADC_TEMP;
         CO_ADC_temp[1] = (valid << 7) | LENGTH_FORMAT2;
@@ -403,9 +494,10 @@ void Carrier()
         }
 #endif
     }
-	else if (strncmp(KEY, "AT1", 3) == 0)
+	else if (compareKey('A', 'T', '1') == 0)
 	{
-		Int_form2();
+		//Int_form2();
+        form2_int_string_to_int();
         
         IAQ_IRR_ADC_temp[0] = ID_IAQ_IRR_ADC_TEMP;
         IAQ_IRR_ADC_temp[1] = (valid << 7) | LENGTH_FORMAT2;
@@ -421,9 +513,10 @@ void Carrier()
         }
 #endif
     }
-	else if (strncmp(KEY, "AT2", 3) == 0)
+	else if (compareKey('A', 'T', '2') == 0)
 	{
-		Int_form2();
+		//Int_form2();
+        form2_int_string_to_int();
         
         O3_NO2_ADC_temp[0] = ID_O3_NO2_ADC_TEMP;
         O3_NO2_ADC_temp[1] = (valid << 7) | LENGTH_FORMAT2;
@@ -439,9 +532,10 @@ void Carrier()
         }
 #endif
     }
-	else if (strncmp(KEY, "AT3", 3) == 0)
+	else if (compareKey('A', 'T', '3') == 0)
 	{
-        Int_form2();
+        //Int_form2();
+        form2_int_string_to_int();
         
         SO2_H2S_ADC_temp[0] = ID_SO2_H2S_ADC_TEMP;
         SO2_H2S_ADC_temp[1] = (valid << 7) | LENGTH_FORMAT2;
@@ -457,9 +551,10 @@ void Carrier()
         }
 #endif
     }
-	else if (strncmp(KEY, "LTM", 3) == 0)
+	else if (compareKey('L', 'T', 'M') == 0)
 	{
-		Int_form2();
+		//Int_form2();
+        form2_int_string_to_int();
         
         CO_LMP_temp[0] = ID_CO_LMP_TEMP;
         CO_LMP_temp[1] = (valid << 7) | LENGTH_FORMAT2;
@@ -475,9 +570,10 @@ void Carrier()
         }
 #endif
     }
-	else if (strncmp(KEY, "ACX", 3) == 0)  //wait ACY, ACZ, and VIX
+	else if (compareKey('A', 'C', 'X') == 0)  //wait ACY, ACZ, and VIX
     {
-        Int_form2();
+        //Int_form2();
+        form2_int_string_to_int();
         
         formatted_byte_temp[0] = formatted_data_buffer[0];
         formatted_byte_temp[1] = formatted_data_buffer[1];
@@ -491,9 +587,10 @@ void Carrier()
         }
 #endif
     }
-    else if (strncmp(KEY, "ACY", 3) == 0)
+    else if (compareKey('A', 'C', 'Y') == 0)
     {
-        Int_form2();
+        //Int_form2();
+        form2_int_string_to_int();
         
         formatted_byte_temp[2] = formatted_data_buffer[0];
         formatted_byte_temp[3] = formatted_data_buffer[1];
@@ -507,9 +604,10 @@ void Carrier()
         }
 #endif
     }
-    else if (strncmp(KEY, "ACZ", 3) == 0)
+    else if (compareKey('A', 'C', 'Z') == 0)
     {
-        Int_form2();
+        //Int_form2();
+        form2_int_string_to_int();
         
         formatted_byte_temp[4] = formatted_data_buffer[0];
         formatted_byte_temp[5] = formatted_data_buffer[1];
@@ -523,9 +621,10 @@ void Carrier()
         }
 #endif
     }
-    else if (strncmp(KEY, "VIX", 3) == 0)
+    else if (compareKey('V', 'I', 'X') == 0)
     {
-        Int_form4();
+        //Int_form4();
+        form4_int_string_to_unsigned_long();
         
         three_accel_and_vib[0] = ID_THREE_ACCEL_AND_VIB;
         three_accel_and_vib[1] = (valid << 7) | (LENGTH_FORMAT2 * 3 + LENGTH_FORMAT4);
@@ -548,9 +647,10 @@ void Carrier()
         }
 #endif
     }
-	else if (strncmp(KEY, "GYX", 3) == 0)  //wait GYY, GYZ, and OIX
+	else if (compareKey('G', 'Y', 'X') == 0)  //wait GYY, GYZ, and OIX
     {
-        Int_form2();
+        //Int_form2();
+        form2_int_string_to_int();
         
         formatted_byte_temp[0] = formatted_data_buffer[0];
         formatted_byte_temp[1] = formatted_data_buffer[1];
@@ -564,9 +664,10 @@ void Carrier()
         }
 #endif
     }
-    else if (strncmp(KEY, "GYY", 3) == 0)
+    else if (compareKey('G', 'Y', 'Y') == 0)
     {
-        Int_form2();
+        //Int_form2();
+        form2_int_string_to_int();
         
         formatted_byte_temp[2] = formatted_data_buffer[0];
         formatted_byte_temp[3] = formatted_data_buffer[1];
@@ -580,9 +681,10 @@ void Carrier()
         }
 #endif
     }
-    else if (strncmp(KEY, "GYZ", 3) == 0)
+    else if (compareKey('G', 'Y', 'Z') == 0)
     {
-        Int_form2();
+        //Int_form2();
+        form2_int_string_to_int();
         
         formatted_byte_temp[4] = formatted_data_buffer[0];
         formatted_byte_temp[5] = formatted_data_buffer[1];
@@ -596,9 +698,10 @@ void Carrier()
         }
 #endif
     }
-    else if (strncmp(KEY, "OIX", 3) == 0)
+    else if (compareKey('O', 'I', 'X') == 0)
     {
-        Int_form4();
+        //Int_form4();
+        form4_int_string_to_unsigned_long();
         
         three_gyro_and_orientation[0] = ID_THREE_GYRO_AND_ORIENTATION;
         three_gyro_and_orientation[1] = (valid << 7) | (LENGTH_FORMAT2 * 3 + LENGTH_FORMAT4);
@@ -628,48 +731,48 @@ void Carrier()
 #endif
 }
 
-// formatting data
-void Hex_BAD()          // format3
-{
-    //SerialUSB.println(VAL);
-	strncpy(first, VAL, 6);
-	i += 6;
-	strncpy(second, i, 6);
-	Temp_ulong[0]= (unsigned long) strtol(first, NULL, 16);      //too short to contain the whole value of 'BAD'
-	Temp_ulong[1] = (unsigned long) strtol(second, NULL, 16);
-	byte result[6];
-	result[0] = (Temp_ulong[0] & 0xFF0000) >> 16;
-	result[1] = (Temp_ulong[0] & 0x00FF00) >> 8;
-	result[2] = (Temp_ulong[0] & 0x0000FF);
-	result[3] = (Temp_ulong[1] & 0xFF0000) >> 16;
-	result[4] = (Temp_ulong[1] & 0x00FF00) >> 8;
-	result[5] = (Temp_ulong[1] & 0x0000FF);
-	format3(result);
-}
-
-void Hex_form1()
-{
-    Temp_uint16 = (unsigned int)strtol(VAL, NULL, 16);   //hex string to int
-    format1(Temp_uint16);
-}
-
-void Int_form2()
-{
-    
-    Temp_int[0] = (int)atoi(VAL);
-    format2(Temp_int[0]);
-}
-
-void Int_form4()
-{
-    Temp_ulong[0] = (unsigned long)atol(VAL);              //char to int
-    format4(Temp_ulong[0]);
-}
-
-void Int_form5()
-{
-    Temp_long = (long) strtol(VAL, NULL, 10);
-    format5(Temp_long);
-}
+// // formatting data
+// void Hex_BAD()          // format3
+// {
+//     //SerialUSB.println(VAL);
+// 	strncpy(first, VAL, 6);
+// 	i += 6;
+// 	strncpy(second, i, 6);
+// 	Temp_ulong[0]= (unsigned long) strtol(first, NULL, 16);      //too short to contain the whole value of 'BAD'
+// 	Temp_ulong[1] = (unsigned long) strtol(second, NULL, 16);
+// 	byte result[6];
+// 	result[0] = (Temp_ulong[0] & 0xFF0000) >> 16;
+// 	result[1] = (Temp_ulong[0] & 0x00FF00) >> 8;
+// 	result[2] = (Temp_ulong[0] & 0x0000FF);
+// 	result[3] = (Temp_ulong[1] & 0xFF0000) >> 16;
+// 	result[4] = (Temp_ulong[1] & 0x00FF00) >> 8;
+// 	result[5] = (Temp_ulong[1] & 0x0000FF);
+// 	format3(result);
+// }
+// 
+// void Hex_form1()
+// {
+//     Temp_uint16 = (unsigned int)strtol(VAL, NULL, 16);   //hex string to int
+//     format1(Temp_uint16);
+// }
+// 
+// void Int_form2()
+// {
+//     
+//     Temp_int[0] = (int)atoi(VAL);
+//     format2(Temp_int[0]);
+// }
+// 
+// void Int_form4()
+// {
+//     Temp_ulong[0] = (unsigned long)atol(VAL);              //char to int
+//     format4(Temp_ulong[0]);
+// }
+// 
+// void Int_form5()
+// {
+//     Temp_long = (long) strtol(VAL, NULL, 10);
+//     format5(Temp_long);
+// }
 
 
