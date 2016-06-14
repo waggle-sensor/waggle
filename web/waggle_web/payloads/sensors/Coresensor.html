@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+  </style>
+  <link rel="stylesheet" href="../../Img/style.css" type="text/css" />
+  <link rel="stylesheet" href="../../Img/doxygen.css" type="text/css" />
+</head>
+<body>
+<h2 id="integrated-codes">Integrated codes</h2>
+<p>This folder contains all files to test the airsense, lightsense, and chemsense board together. The boards need to be connected to your computer as shown in the document <a href="../../../docs/sensorStreamFormat/link.pdf">link.pdf</a>. Target file for integrated board test is <a href="integrated_8ino.html">integrated.ino</a>, and this gathers data from <a href="airsense_8ino.html">airsense.ino</a>, <a href="lightsense_8ino.html">lightsense.ino</a>, and <a href="chemsense_8ino.html">chemsense.ino</a>. Each sensor data is cumulated and parsed into designated format as explained in the document, <a href="../../../docs/sensorStreamFormat/sensorStreamFormat.pdf">sensorStreamFormat.pdf</a>. The formatted values will be stored in a sub-packet format which is explained also in the sensorStreamFormat.pdf. Please refer the two domucments.<br />The outcome of this process is a super-packet which contains all sensor values.</p>
+<h2 id="tools-and-equipment-required">Tools and equipment required:</h2>
+<ul>
+<li>One of each Chemsense, Lightsense, and Airsense borads<br /></li>
+<li>Two ethernet cables and a micro-USB cable<br /></li>
+<li>A computer to test the Chemsense</li>
+</ul>
+<h2 id="perform-a-test-with-the-files">Perform a test with the files</h2>
+<p>When you test with the files, make sure the sensor boards are connected and powered on. To see the values from the sensor boards, make sure that the SERIAL_DEBUG is set in config.cpp.</p>
+<p>To compile the files, do</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">make</span></code></pre>
+<p>To compile and run the files, do</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">make</span> run</code></pre>
+<p></br><br /><strong>To exit the screen session created for the test, press Control+a, and press k and y afterward.</strong></p>
+<p>To test this and get decoded data with python script, do</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">make</span> install</code></pre>
+<p>and execute <a href="coresense_8py.html">coresense.py</a> in <a href="./coresense_plugin">coresens_plugin</a>.</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">python</span> coresense.py</code></pre>
+<p>Decode process is done through <a href="coresense__pluginUSBSerial_8py.html">coresense_pluginUSBSerial.py</a>.</p>
+</body>
+</html>
