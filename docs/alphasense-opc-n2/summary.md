@@ -48,7 +48,7 @@ for i in 0..61
 
 ## Histogram Layout (Firmware Version 18)
 
-*Note: This struct is written assuming little endian byte layout, 2 byte short
+*This struct is written assuming little endian byte layout, 2 byte short
 and 4 byte int!*
 
 ```
