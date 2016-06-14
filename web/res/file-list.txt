@@ -30,3 +30,4 @@ payloads/app_processor/waggle-protocol.html:guestnodes/waggle_protocol/README.md
 payloads/app_processor/app_processor.html:guestnodes/README.md
 deverlopers/tools/devtools.html:devtools/README.md
 payloads/sensors/SensorTable.html:user_documentation/sensors/SensorTable.html
+payloads/sensors/Coresensor.html:coresensors/v3/pbay/integrated/README.md
