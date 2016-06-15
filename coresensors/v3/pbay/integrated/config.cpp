@@ -1,5 +1,3 @@
-
-
 //#define DELAY_MS 15000
 
 //#define CR_ENABLE 0
@@ -101,8 +99,8 @@
 
 
 // Which sensor boards are being used   ************************* IS BEING USED OR NOT
-#define AIRSENSE_INCLUDE 0x01
-#define LIGHTSENSE_INCLUDE 0x01
+// #define AIRSENSE_INCLUDE 0x01
+// #define LIGHTSENSE_INCLUDE 0x01
 #define CHEMSENSE_INCLUDE 0x01
 //*************************************************************** IS BEING USED OR NOT
 
@@ -136,12 +134,12 @@
 
 //#define system_health_include 0x01
 //#define RANDOMIZE_VALID 0x01
-// #define SERIAL_DEBUG 0x01
+//#define SERIAL_DEBUG 0x01
 //#define PRINT_BUFFER 0x01
 
 #define USBSERIAL_INTERFACE 0x01
 
-#define I2C_INTERFACE 0x01
-#define I2C_INTERFACE_CONST_SIZE 0x01
-#define I2C_PACKET_SIZE 163
+// #define I2C_INTERFACE 0x01
+// #define I2C_INTERFACE_CONST_SIZE 0x01
+// #define I2C_PACKET_SIZE 163
 #define I2C_SLAVE_ADDRESS 0x03

@@ -1,5 +1,5 @@
 #include <Wire.h>
-#include <DueTimer.h>
+#include "./libs/DueTimer/DueTimer.h"
 extern TwoWire Wire1;
 #include <OneWire.h>
 #include "config.cpp"
@@ -181,23 +181,27 @@ void setup()
     Wire.begin(); // Sensors are on the first I2C Bus.
     SerialUSB.begin(USBSERIAL_INTERFACE_DATARATE); // Serial data line to the host computer
     Serial3.begin(CHEMSENSE_DATARATE); // data from the Chemsense board arrives here.
-    
+
     initializeSensorBoard();
+
 
     //Setup the I2C buffer
     for (byte i=0x00; i<LENGTH_WHOLE; i++)
         packet_whole[i] = 0x00;
-    
+
     assemble_packet_empty();
     Sensors_Setup();
+
+    #ifdef CHEMSENSE_INCLUDE
     digitalWrite(PIN_CHEMSENSE_POW, LOW); // Power on the Chemsense board
-    
+    #endif
+
     #ifdef I2C_INTERFACE
     I2C_READ_COMPLETE = false;
     Wire1.begin(I2C_SLAVE_ADDRESS);
     Wire1.onRequest(requestEvent);
     #endif
-    
+
     Timer3.attachInterrupt(handler).setPeriod(1000000 * 5).start(); // print super-packet every 30 secs
 }
 
@@ -225,12 +229,12 @@ void loop()
 
         assemble_packet_empty();
         assemble_packet_whole();
-        
+
         for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i ++)
         {
-                SerialUSB.write(packet_whole[i]);      
+                SerialUSB.write(packet_whole[i]);
         }
-        
+
         TIMER = false;
     }
 }
@@ -239,7 +243,7 @@ void requestEvent()
 {
     #ifdef I2C_INTERFACE_CONST_SIZE
     Wire1.write(packet_whole, I2C_PACKET_SIZE);
-    
+
     #else
     char bytes_to_send;
     bytes_to_send = packet_whole[0x02] +0x05;
