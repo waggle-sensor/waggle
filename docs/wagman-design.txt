@@ -101,7 +101,7 @@ device stopped (maybe make default state?)
         change state to starting
 
     on stop
-        broadcast event device stopped
+        broadcast event device stopped (or already started)
 
     on heartbeat
         change state to started?
