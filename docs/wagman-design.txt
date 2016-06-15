@@ -17,10 +17,9 @@ a rolling log stored in persistent memory, etc.
 
 This all clearly separates the device logic from the hardware layer which may
 change over time. (For example, we may decide to use heartbeat pins which
-support interrupts or add a new environment sensor.) It also makes it easier to
-move towards something like a "sleep for a while, turn on, do some updates,
-sleep again" style design like we talked about with the eventual low power
-Wagman.
+support interrupts.) It also makes it easier to move towards something like a
+"sleep for a while, turn on, do some updates, sleep again" style design like we
+talked about with the eventual low power Wagman.
 
 ## Node Controller / Guest Node Approximate States
 
