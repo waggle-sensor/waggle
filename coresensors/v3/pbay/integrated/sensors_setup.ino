@@ -7,6 +7,7 @@ void initializeSensorBoard()
     pinMode(PIN_RAW_MIC,INPUT);
     pinMode(PIN_HIH4030,INPUT);
     pinMode(PIN_CHEMSENSE_POW, OUTPUT); // ON/OFF sensor, OUTPUT:LOW = ON
+    digitalWrite(PIN_CHEMSENSE_POW, HIGH); // Power OFF the Chemsense board
 
     if (ds2401.reset() == TRUE)
     {
@@ -57,7 +58,7 @@ byte readEEPROM (unsigned int memory_address )
 
     if (Wire.available())
         recv_data = Wire.read();
-    
+
     return recv_data;
 }
 
@@ -66,7 +67,7 @@ void Sensors_Setup(void)
 #ifdef SERIAL_DEBUG
     SerialUSB.println("Setting up sensors...");
 #endif
-    
+
 #ifdef TMP112_include
     TMP112_CONFIG();
 #ifdef SERIAL_DEBUG
