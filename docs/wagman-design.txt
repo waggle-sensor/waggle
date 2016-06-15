@@ -142,6 +142,7 @@ wagman start next device
 
     on device start failed
         increment device fail attempts
+        change wagman state to normal
 
 wagman will hibernate
 
