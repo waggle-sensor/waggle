@@ -99,39 +99,26 @@ wagman normal
         set alarm to 1 minute
 
     on alarm
-        if current device start attempts < current device allowed attempts
-            send start command to current device
-            increment device start attempts (these things may want to be saved)
-        else
-            send start recover command to current device
+        change state to start next device
 
-    on device stopped
-        ...
-
-wagman start devices
-
-    on enter
-        find next not started device (save as next start device)
-
-        if none
-            change state to normal
-        else
-            change state to start next device
+    on environment warn?
+        change state to start hibernate
 
 wagman start next device
 
     on enter
+        get next start priority device which is not started
+
         if current device start attempts < current device allowed attempts
-            send start command to current device
+            send start event to current device
         else
-            send start recover command to current device
+            send start recover event to current device
 
     on device started
-        change wagman state to start devices
+        change wagman state to normal
 
     on device start failed
         increment device fail attempts
-        change wagman state to start devices
 
 wagman will hibernate
 
