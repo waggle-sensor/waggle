@@ -1,0 +1,174 @@
+# Node Controller / Guest Node Approximate States
+
+device starting
+    enum { timeout_alarm }
+
+    on enter
+        set alarm timeout_alarm to 120 seconds
+        turn on power to guest port
+
+    on alarm
+        broadcast start failed
+        change state to stopped
+
+    on heartbeat
+        change state to started
+
+    on stop
+        ignore or change state to stopping / restart?
+        how should we handle this kind of thing?
+        change state to will_stop
+
+    on restart
+        ignore or change state to stopping / restart?
+        how should we handle this kind of thing?
+
+device stopping
+    enum { timeout_alarm, heartbeat_alarm }
+
+    on enter
+        set alarm timeout_alarm to 10 minutes
+        set alarm heartbeat_alarm to 1 minute
+        send shutdown message to device
+
+    on heartbeat
+        set alarm heartbeat_alarm to 1 minute
+        send shutdown message to device
+
+    on alarm $timeout_alarm (cannot seem to kill device)
+        broadcast stop failed
+        turn off device power
+        change state to stopped
+
+    on alarm $heartbeat_alarm (no heartbeat for at least 30 seconds)
+        turn off device power
+        change state to stopped
+
+    on start
+    on restart
+        change state to restarting?
+
+device started
+    enum { heartbeat_alarm }
+
+    on enter
+        broadcast device started
+        set alarm $heartbeat_alarm to 5 minutes
+
+    on heartbeat
+        set alarm $heartbeat_alarm to 5 minutes
+
+    on alarm
+        ...handle heartbeat timeout...
+
+    on do_start
+        broadcast device started
+
+    on do_stop
+        change state to stopping
+
+    on do_restart
+        change state to restarting
+
+device stopped (maybe make default state?)
+
+    on enter
+        broadcast stopped
+
+    on start
+    on restart
+        change state to starting
+
+    on stop
+        broadcast event device stopped
+
+    on heartbeat
+        change state to started?
+
+device restarting
+
+    on enter
+        send device restart message
+
+# Wagman Approximate States
+
+wagman normal
+
+    on enter
+        set alarm to 1 minute
+
+    on alarm
+        if current device start attempts < current device allowed attempts
+            send start command to current device
+            increment device start attempts (these things may want to be saved)
+        else
+            send start recover command to current device
+
+    on device stopped
+        ...
+
+wagman start devices
+
+    on enter
+        find next not started device (save as next start device)
+
+        if none
+            change state to normal
+        else
+            change state to start next device
+
+wagman start next device
+
+    on enter
+        if current device start attempts < current device allowed attempts
+            send start command to current device
+        else
+            send start recover command to current device
+
+    on device started
+        change wagman state to start devices
+
+    on device start failed
+        increment device fail attempts
+        change wagman state to start devices
+
+wagman will hibernate
+
+    let stop_alarm = 0
+
+    on enter
+        set alarm $stop_alarm to 30 seconds
+
+    on alarm
+        send stop event to next guest
+        set alarm $stop_alarm to 30 seconds
+
+    on environment normal
+        change state to normal
+
+wagman hibernating
+
+    let stop_alarm = 0
+
+    on enter
+        set alarm $stop_alarm to 30 seconds
+
+    on alarm
+        send stop event to next guest
+        set alarm $stop_alarm to 30 seconds
+
+    on environment normal
+        change state to normal
+
+# Communication Layer
+
+...will write up more shortly...
+
+# Additional Ideas / Plan
+
+* Keep events in a rolling log in persistent memory. This allows us to get an
+approximate sense of what was going on in the node when we check it.
+
+* The communication layer to the node can also tell devices to start / stop /
+etc using this. That way all the details of timing out a start and handling a
+failure are managed by the state machine and not tied up in communication logic.
