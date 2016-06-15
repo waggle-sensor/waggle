@@ -3,6 +3,10 @@ from serial import Serial
 import sys
 
 
+def format_hex(x):
+    return '{:02X}'.format(x)
+
+
 class CoresensePluginProtocol(CoresenseProtocol):
 
     def packet_start(self, sequence, version):
@@ -19,7 +23,7 @@ class CoresensePluginProtocol(CoresenseProtocol):
         print('start subpacket')
         print('sensor:', sensor)
         print('valid:', valid)
-        print('data:', list(data))
+        print('data:', ' '.join(map(format_hex, data)))
         print('end subpacket')
         print()
 
