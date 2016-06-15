@@ -52,8 +52,6 @@ class CoresensePluginProtocol(CoresenseProtocol):
             print('    Sensor Values:')
 
             for field, value in zip(fields, unpack(fmt, data)):
-                if isinstance(value, bytearray):
-                    value = format_mac(value)
                 print('    - {}: {}'.format(field, value))
         else:
             print('    Sensor Name: ?')
