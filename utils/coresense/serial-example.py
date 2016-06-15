@@ -45,6 +45,12 @@ class CoresensePluginProtocol(CoresenseProtocol):
         print('    Valid:', valid)
         print('    Raw Data:', ' '.join(map(format_hex, data)))
 
+        self.show_unpacked_values(sensor, valid, data)
+
+        print('  End Subpacket')
+        print()
+
+    def show_unpacked_values(self, sensor, valid, data):
         if sensor in sensorspec:
             name, fmt, fields = sensorspec[sensor]
 
@@ -58,9 +64,6 @@ class CoresensePluginProtocol(CoresenseProtocol):
         else:
             print('    Sensor Name: ?')
             print('    Sensor Values: ?')
-
-        print('  End Subpacket')
-        print()
 
     def invalid_packet(self, exc):
         print('!! Bad packet!', exc)
