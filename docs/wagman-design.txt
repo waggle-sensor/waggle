@@ -12,7 +12,7 @@ say things like "after x seconds trigger an event" are built-into to it. This
 simplifies things like waiting for heartbeats or timeouts.
 
 As we develop communication and logging, these systems can tie into this core
-to do things like: send devices start / stop events, place last n logs into
+to do things like: send devices start / stop events, place last n events into
 a rolling log stored in persistent memory, etc.
 
 This all clearly separates the device logic from the hardware layer which may
