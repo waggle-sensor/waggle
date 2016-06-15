@@ -40,7 +40,7 @@ device starting
     on start
     on stop
     on restart
-        tell sender busy
+        tell sender busy (sender can include communication layer too)
 
 device stopping
     enum { timeout_alarm, heartbeat_alarm }
@@ -66,7 +66,7 @@ device stopping
     on start
     on restart
     on stop
-        tell sender busy
+        tell sender busy (sender can include communication layer too)
 
 device started
     enum { heartbeat_alarm }
