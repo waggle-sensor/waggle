@@ -189,6 +189,11 @@ void nc_starting(Device *device, const Event *event)
         case EVENT_HEARTBEAT:
             change_state(device, nc_started);
             break;
+        case EVENT_START:
+        case EVENT_STOP:
+        case EVENT_RESTART:
+            send busy event to event sender
+            break;
     }
 }
 
@@ -212,6 +217,11 @@ void nc_stopping(Device *device, const Event *event)
                 broadcast_event(device, EVENT_STOP_FAILED);
             // kill power to device
             change_state(device, nc_stopped);
+            break;
+        case EVENT_START:
+        case EVENT_STOP:
+        case EVENT_RESTART:
+            send busy event to event sender
             break;
     }
 }
