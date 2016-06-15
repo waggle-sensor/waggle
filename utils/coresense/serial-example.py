@@ -52,6 +52,8 @@ class CoresensePluginProtocol(CoresenseProtocol):
             print('    Sensor Values:')
 
             for field, value in zip(fields, unpack(fmt, data)):
+                if isinstance(value, bytearray):
+                    value = format_mac(value)
                 print('    - {}: {}'.format(field, value))
         else:
             print('    Sensor Name: ?')
@@ -69,6 +71,10 @@ class CoresensePluginProtocol(CoresenseProtocol):
 
 def format_hex(x):
     return '{:02X}'.format(x)
+
+
+def format_mac(macaddr):
+    return ''.join(map(format_hex, macaddr))
 
 
 if len(sys.argv) != 2:
