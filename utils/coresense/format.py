@@ -132,12 +132,18 @@ def unpack_lfloat_from(buffer, offset):
 
 
 def pack_macaddr_into(macaddr, buffer, offset):
-    assert len(macaddr) == 6
-    buffer[offset:offset + 6] = macaddr
+    assert len(macaddr) == 12
+
+    for i in range(0, 6):
+        buffer[offset + i] = int(macaddr[2*i:2*i+2], 16)
 
 
 def unpack_macaddr_from(buffer, offset):
-    return buffer[offset:offset + 6]
+    return ''.join(map(format_hex, (buffer[offset + i] for i in range(6))))
+
+
+def format_hex(x):
+    return '{:02X}'.format(x)
 
 
 def pack_uint8array_into(array, buffer, offset):
