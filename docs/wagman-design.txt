@@ -192,11 +192,11 @@ void nc_stopping(Device *device, const Event *event)
     {
         case EVENT_ENTER:
             set_alarm(device, ALARM_TIMEOUT, MINUTES(10));
-            set_alarm(deivce, ALARM_HEARTBEAT, MINUTES(1));
+            set_alarm(device, ALARM_HEARTBEAT, MINUTES(1));
             // send device shutdown message...if supports...?
             break;
         case EVENT_HEARTBEAT:
-            set_alarm(deivce, ALARM_HEARTBEAT, MINUTES(1));
+            set_alarm(device, ALARM_HEARTBEAT, MINUTES(1));
             // send device shutdown message...if supports...?
             break;
         case EVENT_ALARM:
@@ -215,7 +215,7 @@ void nc_started(Device *device, const Event *event)
     switch (event->type)
     {
         case EVENT_ENTER:
-            broadbast_event(device, EVENT_STARTED);
+            broadcast_event(device, EVENT_STARTED);
             set_alarm(device, ALARM_HB, MINUTES(5));
             break;
         case EVENT_HEARTBEAT:
@@ -226,7 +226,7 @@ void nc_started(Device *device, const Event *event)
             change_state(device, nc_stopping);
             break;
         case EVENT_START:
-            broadbast_event(device, EVENT_STARTED);
+            broadcast_event(device, EVENT_STARTED);
             break;
         case EVENT_STOP:
             change_state(device, nc_stopping);
