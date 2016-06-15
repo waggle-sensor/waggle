@@ -1,13 +1,15 @@
-device starting
+# Node Controller / Guest Node Approximate States
 
-    let timeout_alarm = 0
+device starting
+    enum { timeout_alarm }
 
     on enter
-        set alarm $timeout_alarm to 120 seconds
+        set alarm timeout_alarm to 120 seconds
         turn on power to guest port
 
     on alarm
-        change state to start failed
+        broadcast start failed
+        change state to stopped
 
     on heartbeat
         change state to started
@@ -22,20 +24,22 @@ device starting
         how should we handle this kind of thing?
 
 device stopping
-
-    let timeout_alarm = 0
-    let heartbeat_alarm = 1
+    enum { timeout_alarm, heartbeat_alarm }
 
     on enter
-        set alarm $timeout_alarm to 10 minutes
-        set alarm $heartbeat_alarm to 30 seconds
+        set alarm timeout_alarm to 10 minutes
+        set alarm heartbeat_alarm to 1 minute
         send shutdown message to device
 
     on heartbeat
-        set alarm $heartbeat_alarm to 30 seconds
+        set alarm heartbeat_alarm to 1 minute
         send shutdown message to device
 
     on alarm $timeout_alarm (cannot seem to kill device)
+        broadcast stop failed
+        turn off device power
+        change state to stopped
+
     on alarm $heartbeat_alarm (no heartbeat for at least 30 seconds)
         turn off device power
         change state to stopped
@@ -45,28 +49,31 @@ device stopping
         change state to restarting?
 
 device started
-
-    let heartbeat_alarm = 0
+    enum { heartbeat_alarm }
 
     on enter
+        broadcast device started
         set alarm $heartbeat_alarm to 5 minutes
 
     on heartbeat
         set alarm $heartbeat_alarm to 5 minutes
 
     on alarm
-        how to handle missing heartbeat?
+        ...handle heartbeat timeout...
 
-    on start
-        broadcast event device started // nothing to do!
+    on do_start
+        broadcast device started
 
-    on stop
+    on do_stop
         change state to stopping
 
-    on restart
+    on do_restart
         change state to restarting
 
 device stopped (maybe make default state?)
+
+    on enter
+        broadcast stopped
 
     on start
     on restart
@@ -77,6 +84,13 @@ device stopped (maybe make default state?)
 
     on heartbeat
         change state to started?
+
+device restarting
+
+    on enter
+        send device restart message
+
+# Wagman Approximate States
 
 wagman normal
 
@@ -146,22 +160,15 @@ wagman hibernating
     on environment normal
         change state to normal
 
+# Communication Layer
 
-other thoughts?
+...will write up more shortly...
 
-do we want events for
+# Additional Ideas / Plan
 
-    on device power on
-        ...
+* Keep events in a rolling log in persistent memory. This allows us to get an
+approximate sense of what was going on in the node when we check it.
 
-    on device power off
-        ...
-
-    on device power change
-        ...
-
-    on environment dangerous? or should this be checked by wagman this is a detail to resolve
-        ...
-
-    on environement safe?
-        ...
+* The communication layer to the node can also tell devices to start / stop /
+etc using this. That way all the details of timing out a start and handling a
+failure are managed by the state machine and not tied up in communication logic.
