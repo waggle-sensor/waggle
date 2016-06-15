@@ -37,14 +37,10 @@ device starting
     on heartbeat
         change state to started
 
+    on start
     on stop
-        ignore or change state to stopping / restart?
-        how should we handle this kind of thing?
-        change state to will_stop
-
     on restart
-        ignore or change state to stopping / restart?
-        how should we handle this kind of thing?
+        tell sender busy
 
 device stopping
     enum { timeout_alarm, heartbeat_alarm }
@@ -69,7 +65,8 @@ device stopping
 
     on start
     on restart
-        change state to restarting?
+    on stop
+        tell sender busy
 
 device started
     enum { heartbeat_alarm }
@@ -85,13 +82,13 @@ device started
         broadcast event lost heartbeat
         change state to stopping
 
-    on do_start
-        broadcast device started
+    on start
+        broadcast device started (or already started)
 
-    on do_stop
+    on stop
         change state to stopping
 
-    on do_restart
+    on restart
         change state to restarting
 
 device stopped (maybe make default state?)
