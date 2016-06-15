@@ -1,4 +1,28 @@
-# Node Controller / Guest Node Approximate States
+# State Machine Design
+
+My current plan is to implement a tiny event-driven state machine on the
+Wagman. There will be a state machine instance for the Wagman, node controller,
+and any guest nodes. These exist independently (in order to make sure each
+device is able to safely bring it's corresponding piece of hardware through
+a correct power up / power down / etc process). The Wagman state machine plays
+the special role of telling these devices to start / stop / etc.
+
+The core of this machine is simple and basic functionality like being able to
+say things like "after x seconds trigger an event" are built-into to it. This
+simplifies things like waiting for heartbeats or timeouts.
+
+As we develop communication and logging, these systems can tie into this core
+to do things like: send devices start / stop events, place last n logs into
+a rolling log stored in persistent memory, etc.
+
+This all clearly separates the device logic from the hardware layer which may
+change over time. (For example, we may decide to use heartbeat pins which
+support interrupts or add a new environment sensor.) It also makes it easier to
+move towards something like a "sleep for a while, turn on, do some updates,
+sleep again" style design like we talked about with the eventual low power
+Wagman.
+
+## Node Controller / Guest Node Approximate States
 
 device starting
     enum { timeout_alarm }
@@ -91,7 +115,7 @@ device restarting
     on enter
         send device restart message
 
-# Wagman Approximate States
+## Wagman Approximate States
 
 wagman normal
 
