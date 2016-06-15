@@ -51,7 +51,9 @@ class CoresensePluginProtocol(CoresenseProtocol):
             print('    Sensor Name:', name)
             print('    Sensor Values:')
 
-            for field, value in zip(fields, unpack(fmt, data)):
+            values = unpack(fmt, data)
+
+            for field, value in zip(fields, values):
                 print('    - {}: {}'.format(field, value))
         else:
             print('    Sensor Name: ?')
@@ -61,10 +63,10 @@ class CoresensePluginProtocol(CoresenseProtocol):
         print()
 
     def invalid_packet(self, exc):
-        print('bad packet!', exc)
+        print('!! Bad packet!', exc)
 
     def invalid_subpacket(self, exc):
-        print('bad subpacket!', exc)
+        print('!!!! Bad subpacket!', exc)
 
 
 def format_hex(x):
