@@ -27,11 +27,11 @@ class CoresensePluginProtocol(CoresenseProtocol):
         print('end subpacket')
         print()
 
-    def invalid_packet(self):
-        print('bad packet!')
+    def invalid_packet(self, exc):
+        print('bad packet!', exc)
 
-    def invalid_subpacket(self):
-        print('bad subpacket!')
+    def invalid_subpacket(self, exc):
+        print('bad subpacket!', exc)
 
 
 if len(sys.argv) != 2:

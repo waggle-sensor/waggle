@@ -50,13 +50,13 @@ class FramingProtocol(object):
                 self.packet_received(sequence, version, packetdata)
                 self.align_candidates(length + HEADERSIZE + FOOTERSIZE)
             else:
-                self.invalid_packet()
+                self.invalid_packet(exc=None)
                 self.align_candidates(1)
 
     def packet_received(self, sequence, version, data):
         pass
 
-    def invalid_packet(self):
+    def invalid_packet(self, exc):
         pass
 
 
@@ -90,10 +90,10 @@ class CoresenseProtocol(FramingProtocol):
                 offset += length
 
                 self.subpacket_received(sensor, valid, subpacket_data)
-        except IndexError:
-            self.invalid_subpacket()
+        except Exception as exc:
+            self.invalid_subpacket(exc=exc)
 
-    def invalid_subpacket(self):
+    def invalid_subpacket(self, exc):
         pass
 
 
