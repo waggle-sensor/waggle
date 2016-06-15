@@ -38,7 +38,7 @@ if len(sys.argv) != 2:
     print('Usage: {} device'.format(sys.argv[0]))
     sys.exit(1)
 
-serial = Serial(sys.argv[1])
+serial = Serial(sys.argv[1], 115200)
 
 protocol = CoresensePluginProtocol()
 protocol.connection_made()
