@@ -34,6 +34,10 @@ class CoresensePluginProtocol(CoresenseProtocol):
         print('bad subpacket!')
 
 
+if len(sys.argv) != 2:
+    print('Usage: {} device'.format(sys.argv[0]))
+    sys.exit(1)
+
 serial = Serial(sys.argv[1])
 
 protocol = CoresensePluginProtocol()
