@@ -79,16 +79,22 @@ class CoresenseProtocol(FramingProtocol):
     def process_subpackets(self, data):
         offset = 0
 
-        while offset < len(data):
-            sensor = data[offset + 0]
-            valid = (data[offset + 1] & 0x80) != 0
-            length = data[offset + 1] & 0x7F
-            offset += 2
+        try:
+            while offset < len(data):
+                sensor = data[offset + 0]
+                valid = (data[offset + 1] & 0x80) != 0
+                length = data[offset + 1] & 0x7F
+                offset += 2
 
-            subpacket_data = data[offset:offset + length]
-            offset += length
+                subpacket_data = data[offset:offset + length]
+                offset += length
 
-            self.subpacket_received(sensor, valid, subpacket_data)
+                self.subpacket_received(sensor, valid, subpacket_data)
+        except IndexError:
+            self.invalid_subpacket()
+
+    def invalid_subpacket(self):
+        pass
 
 
 def create_packet(sequence, version, data):
