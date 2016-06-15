@@ -45,7 +45,7 @@ class CoresensePluginProtocol(CoresenseProtocol):
         print('    Valid:', valid)
         print('    Raw Data:', ' '.join(map(format_hex, data)))
 
-        self.show_unpacked_values(sensor, valid, data)
+        # self.show_unpacked_values(sensor, valid, data)
 
         print('  End Subpacket')
         print()
