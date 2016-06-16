@@ -50,13 +50,13 @@ class FramingProtocol(object):
                 self.packet_received(sequence, version, packetdata)
                 self.align_candidates(length + HEADERSIZE + FOOTERSIZE)
             else:
-                self.invalid_packet()
+                self.invalid_packet(exc=None)
                 self.align_candidates(1)
 
     def packet_received(self, sequence, version, data):
         pass
 
-    def invalid_packet(self):
+    def invalid_packet(self, exc):
         pass
 
 
@@ -80,15 +80,22 @@ class CoresenseProtocol(FramingProtocol):
         offset = 0
 
         while offset < len(data):
-            sensor = data[offset + 0]
-            valid = (data[offset + 1] & 0x80) != 0
-            length = data[offset + 1] & 0x7F
-            offset += 2
+            try:
+                sensor = data[offset + 0]
+                valid = (data[offset + 1] & 0x80) != 0
+                length = data[offset + 1] & 0x7F
+                offset += 2
 
-            subpacket_data = data[offset:offset + length]
-            offset += length
+                subpacket_data = data[offset:offset + length]
+                offset += length
+            except Exception as exc:
+                self.invalid_subpacket(exc=exc)
+                break
 
             self.subpacket_received(sensor, valid, subpacket_data)
+
+    def invalid_subpacket(self, exc):
+        pass
 
 
 def create_packet(sequence, version, data):

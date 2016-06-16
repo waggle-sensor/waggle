@@ -332,7 +332,6 @@ class usbSerial ( threading.Thread ):
     def marshalData(self,_dataNew):
         self.data.extend(_dataNew)
         bufferLength = len(self.data)
-        print self.data
         while self.keepAlive:
 
             try:
@@ -376,6 +375,7 @@ class usbSerial ( threading.Thread ):
                                     #we probably have not locked to the header, consume and retry locking to header
                                     del self.data[0]
                                 else:
+<<<<<<< HEAD
                                     #we may have a valid packet
                                     _packetCRC = 0
                                     packetmismatch = 0
@@ -407,6 +407,7 @@ class usbSerial ( threading.Thread ):
                                         #print ":".join("{:02x}".format(ord(c)) for c in extractedData)
 
                                         while consume_ptr < len(extractedData):
+
                                             try:
                                                 This_id = str(ord(extractedData[consume_ptr]))
                                                 This_id_msg_size_valid = ord(extractedData [consume_ptr+1])

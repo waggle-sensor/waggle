@@ -1,0 +1,269 @@
+# State Machine Design
+
+My current plan is to implement a tiny event-driven state machine on the
+Wagman. There will be a state machine instance for the Wagman, node controller,
+and any guest nodes. These exist independently (in order to make sure each
+device is able to safely bring it's corresponding piece of hardware through
+a correct power up / power down / etc process). The Wagman state machine plays
+the special role of telling these devices to start / stop / etc.
+
+The core of this machine is simple and basic functionality like being able to
+say things like "after x seconds trigger an event" are built-into to it. This
+simplifies things like waiting for heartbeats or timeouts.
+
+As we develop communication and logging, these systems can tie into this core
+to do things like: send devices start / stop events, place last n events into
+a rolling log stored in persistent memory, etc.
+
+This all clearly separates the device logic from the hardware layer which may
+change over time. (For example, we may decide to use heartbeat pins which
+support interrupts.) It also makes it easier to move towards something like a
+"sleep for a while, turn on, do some updates, sleep again" style design like we
+talked about with the eventual low power Wagman.
+
+## Node Controller / Guest Node Approximate States
+
+device starting
+    enum { timeout_alarm }
+
+    on enter
+        set alarm timeout_alarm to 120 seconds
+        turn on power to guest port
+
+    on alarm
+        broadcast start failed
+        change state to stopped
+
+    on heartbeat
+        change state to started
+
+    on start
+    on stop
+    on restart
+        tell sender busy (sender can include communication layer too)
+
+device stopping
+    enum { timeout_alarm, heartbeat_alarm }
+
+    on enter
+        set alarm timeout_alarm to 10 minutes
+        set alarm heartbeat_alarm to 1 minute
+        send shutdown message to device
+
+    on heartbeat
+        set alarm heartbeat_alarm to 1 minute
+        send shutdown message to device
+
+    on alarm $timeout_alarm (cannot seem to kill device)
+        broadcast stop failed
+        turn off device power
+        change state to stopped
+
+    on alarm $heartbeat_alarm (no heartbeat for at least 30 seconds)
+        turn off device power
+        change state to stopped
+
+    on start
+    on restart
+    on stop
+        tell sender busy (sender can include communication layer too)
+
+device started
+    enum { heartbeat_alarm }
+
+    on enter
+        broadcast device started
+        set alarm heartbeat_alarm to 5 minutes
+
+    on heartbeat
+        set alarm heartbeat_alarm to 5 minutes
+
+    on alarm
+        broadcast event lost heartbeat
+        change state to stopping
+
+    on start
+        broadcast device started (or already started)
+
+    on stop
+        change state to stopping
+
+    on restart
+        change state to restarting
+
+device stopped (maybe make default state?)
+
+    on enter
+        broadcast stopped
+
+    on start
+    on restart
+        change state to starting
+
+    on stop
+        broadcast event device stopped (or already started)
+
+    on heartbeat
+        change state to started?
+
+device restarting
+
+    on enter
+        send device restart message
+
+## Wagman Approximate States
+
+wagman normal
+
+    on enter
+        set alarm to 1 minute
+
+    on alarm
+        change state to start next device
+
+    on environment warn?
+        change state to start hibernate
+
+wagman start next device
+
+    on enter
+        get next start priority device which is not started
+
+        if current device start attempts < current device allowed attempts
+            send start event to current device
+        else
+            send start recover event to current device
+
+    on device started
+        change wagman state to normal
+
+    on device start failed
+        increment device fail attempts
+        change wagman state to start next device
+
+wagman will hibernate
+
+    let stop_alarm = 0
+
+    on enter
+        set alarm $stop_alarm to 30 seconds
+
+    on alarm
+        send stop event to next guest
+        set alarm $stop_alarm to 30 seconds
+
+    on environment normal
+        change state to normal
+
+wagman hibernating
+
+    let stop_alarm = 0
+
+    on enter
+        set alarm $stop_alarm to 30 seconds
+
+    on alarm
+        send stop event to next guest
+        set alarm $stop_alarm to 30 seconds
+
+    on environment normal
+        change state to normal
+
+One nice thing about this spec is that it translates into code pretty much
+as is. Here are a few examples:
+
+void nc_starting(Device *device, const Event *event)
+{
+    enum { ALARM_TIMEOUT = 0 };
+
+    switch (event->type)
+    {
+        case EVENT_ENTER:
+            set_alarm(device, ALARM_TIMEOUT, MINUTES(2));
+            // power on device
+            break;
+        case EVENT_ALARM:
+            broadcast_event(device, EVENT_START_FAILED);
+            change_state(device, nc_stopping);
+            break;
+        case EVENT_HEARTBEAT:
+            change_state(device, nc_started);
+            break;
+        case EVENT_START:
+        case EVENT_STOP:
+        case EVENT_RESTART:
+            send busy event to event sender
+            break;
+    }
+}
+
+void nc_stopping(Device *device, const Event *event)
+{
+    enum { ALARM_TIMEOUT = 0, ALARM_HEARTBEAT = 1 };
+
+    switch (event->type)
+    {
+        case EVENT_ENTER:
+            set_alarm(device, ALARM_TIMEOUT, MINUTES(10));
+            set_alarm(device, ALARM_HEARTBEAT, MINUTES(1));
+            // send device shutdown message...if supports...?
+            break;
+        case EVENT_HEARTBEAT:
+            set_alarm(device, ALARM_HEARTBEAT, MINUTES(1));
+            // send device shutdown message...if supports...?
+            break;
+        case EVENT_ALARM:
+            if (event->data.alarm == ALARM_TIMEOUT)
+                broadcast_event(device, EVENT_STOP_FAILED);
+            // kill power to device
+            change_state(device, nc_stopped);
+            break;
+        case EVENT_START:
+        case EVENT_STOP:
+        case EVENT_RESTART:
+            send busy event to event sender
+            break;
+    }
+}
+
+void nc_started(Device *device, const Event *event)
+{
+    enum { ALARM_HB = 0 };
+
+    switch (event->type)
+    {
+        case EVENT_ENTER:
+            broadcast_event(device, EVENT_STARTED);
+            set_alarm(device, ALARM_HB, MINUTES(5));
+            break;
+        case EVENT_HEARTBEAT:
+            set_alarm(device, ALARM_HB, MINUTES(5));
+            break;
+        case EVENT_ALARM:
+            broadcast_event(device, EVENT_LOST_HEARTBEAT);
+            change_state(device, nc_stopping);
+            break;
+        case EVENT_START:
+            broadcast_event(device, EVENT_STARTED);
+            break;
+        case EVENT_STOP:
+            change_state(device, nc_stopping);
+            break;
+        case EVENT_RESTART:
+            change_state(device, nc_restarting);
+            break;
+    }
+}
+
+# Communication Layer
+
+...will write up more shortly...
+
+# Additional Ideas / Plan
+
+* Keep events in a rolling log in persistent memory. This allows us to get an
+approximate sense of what was going on in the node when we check it.
+
+* The communication layer to the node can also tell devices to start / stop /
+etc using this. That way all the details of timing out a start and handling a
+failure are managed by the state machine and not tied up in communication logic.

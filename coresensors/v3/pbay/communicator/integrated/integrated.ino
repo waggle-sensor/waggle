@@ -80,6 +80,233 @@ LibTempTMP421 TMP421_Sensor = LibTempTMP421();
 #endif
 // ****************************************************************** INCLUDING SENSORS ON AIR/LIGHTSENSE
 
+byte computecrc(byte *data, byte size, byte crc)
+{
+    for (int j = 0; j < size; j++) {
+        
+        crc ^= data[j];
+    
+        for (byte i = 0; i < 8; i++)
+        {
+            if (crc & 0x01)
+                crc = (crc >> 0x01) ^ 0x8C;
+            else
+                crc =  crc >> 0x01;
+        }
+    }
+
+    return crc;
+}
+
+class Communicator
+{
+    public:
+
+        Communicator();
+
+        void transfer();
+
+        void packetBegin();
+        void packetEnd();
+        
+        void subpacketBegin(byte sensor, bool valid=true);
+        void subpacketEnd();
+
+        void subpacketFormat1(unsigned int input);
+        void subpacketFormat2(int input);
+        void subpacketFormat3(byte *input);
+        void subpacketFormat4(unsigned long value);
+        void subpacketFormat5(long value);
+        void subpacketFormat6(float value);
+        void subpacketFormat7(byte *value);
+        void subpacketFormat8(float value);
+
+    private:
+
+        byte sequence;
+        byte version;
+
+        byte packet[256];
+        byte packetSize;
+
+        byte subpacketSensor;
+        bool subpacketValid;
+
+        byte subpacket[256];
+        byte subpacketSize;
+};
+
+Communicator::Communicator()
+{
+    sequence = 0;
+    version = 2;
+}
+
+void Communicator::transfer()
+{
+    byte seqver = ((sequence << 4) & 0xF0) | (version & 0x0F);
+    byte crc = computecrc(packet, packetSize, 0);
+    
+    SerialUSB.write((byte)0xAA);
+    SerialUSB.write((byte)seqver);
+    SerialUSB.write((byte)packetSize);
+    SerialUSB.write(packet, packetSize);
+    SerialUSB.write((byte)crc);
+    SerialUSB.write((byte)0x55);
+
+    sequence++;
+}
+
+void Communicator::packetBegin()
+{
+    packetSize = 0;
+}
+
+void Communicator::packetEnd()
+{
+}
+
+void Communicator::subpacketBegin(byte sensor, bool valid)
+{
+    subpacketSize = 0;
+    subpacketSensor = sensor;
+    subpacketValid = valid;
+}
+
+void Communicator::subpacketEnd()
+{
+    byte vallen = subpacketSize & 0x7F;
+
+    if (subpacketValid)
+        vallen |= 0x80;
+    
+    packet[packetSize++] = subpacketSensor;
+    packet[packetSize++] = vallen;
+    
+    for (int i = 0; i < subpacketSize; i++) {
+        packet[packetSize++] = subpacket[i];
+    }
+}
+
+void Communicator::subpacketFormat1(unsigned int input)
+{
+    subpacket[subpacketSize++] = (input & 0xff00) >> 8;
+    subpacket[subpacketSize++] = input & 0xff;
+}
+
+void Communicator::subpacketFormat2(int input)
+{
+    byte _negative;
+    
+    // Input negative?
+    if (input < 0) {
+        _negative = 1;
+    }
+    else {
+        _negative = 0;
+    }
+
+    input = abs(input);
+    
+    subpacket[subpacketSize++] = (_negative << 7) | ((input & 0x7f00) >> 8);
+    subpacket[subpacketSize++] = input & 0xff;
+}
+
+void Communicator::subpacketFormat3(byte *input)
+{
+    for (int i = 0; i < 6; i++) {
+        subpacket[subpacketSize++] = input[i];
+    }
+}
+
+void Communicator::subpacketFormat4(unsigned long input)
+{
+    subpacket[subpacketSize++] = (input & 0xff0000) >> 16;
+    subpacket[subpacketSize++] = (input & 0xff00) >> 8;
+    subpacket[subpacketSize++] = (input & 0xff);
+}
+
+void Communicator::subpacketFormat5(long input)
+{
+    // Flag to store pos/neg info
+    byte _negative;
+
+    // Input negative?
+    if (input < 0) {
+        _negative = 1;
+    }
+    else {
+        _negative = 0;
+    }
+
+    // Get abs. value of input
+    input = abs(input);
+    
+    // Assemble sub-packet
+    subpacket[subpacketSize++] = (_negative << 7) | ((input & 0x7f0000) >> 16);
+    subpacket[subpacketSize++] = (input & 0xff00) >> 8;
+    subpacket[subpacketSize++] = (input & 0xff);
+}
+
+void Communicator::subpacketFormat6(float input)
+{
+    byte _negative;
+
+    // Input negative?
+    if (input < 0) {
+        _negative = 1;
+    }
+    else {
+        _negative = 0;
+    }
+
+    input = abs(input);
+    
+    // Extract integer component
+    unsigned int integer = (int)input;
+    
+    // Extract fractional component (and turn it into an integer)
+    unsigned int fractional = ((int)(input*100) - integer*100);
+
+    subpacket[subpacketSize++] = (_negative << 7) | integer;
+    subpacket[subpacketSize++] = (fractional & 0x7F);
+}
+
+void Communicator::subpacketFormat7(byte *input)
+{
+    for (int i = 0; i < 4; i++) {
+        subpacket[subpacketSize++] = input[i];
+    }
+}
+
+void Communicator::subpacketFormat8(float input)
+{
+    // Flag to store pos/neg info
+    byte _negative;
+
+    // Input negative?
+    if (input < 0) {
+        _negative = 1;
+    }
+    else {
+        _negative = 0;
+    }
+
+    input = abs(input);
+    
+    // Extract integer component
+    int integer = (int)input;
+    
+    // Extract fractional component (and turn it into an integer)
+    int fractional = int((input - integer) * 1000);
+
+    // Assemble sub-packet
+    subpacket[subpacketSize++] = (_negative << 7) | ((integer & 0x1F) << 2) | ((fractional & 0x0300) >> 8);
+    subpacket[subpacketSize++] = (fractional & 0x00FF);
+}
+
+Communicator comm;
+
 // store formatted values, dataFormat.ino ********************************************************** FORMATS FOR VALUES
 byte formatted_data_buffer[MAX_FMT_SIZE];
 
@@ -184,76 +411,40 @@ void setup()
 
     initializeSensorBoard();
 
-
-    //Setup the I2C buffer
-    for (byte i=0x00; i<LENGTH_WHOLE; i++)
-        packet_whole[i] = 0x00;
-
-    assemble_packet_empty();
     Sensors_Setup();
 
     #ifdef CHEMSENSE_INCLUDE
     digitalWrite(PIN_CHEMSENSE_POW, LOW); // Power on the Chemsense board
     #endif
 
-    #ifdef I2C_INTERFACE
-    I2C_READ_COMPLETE = false;
-    Wire1.begin(I2C_SLAVE_ADDRESS);
-    Wire1.onRequest(requestEvent);
-    #endif
-
-    Timer3.attachInterrupt(handler).setPeriod(1000000 * 5).start(); // print super-packet every 30 secs
+//    Timer3.attachInterrupt(handler).setPeriod(1000000 * 5).start(); // print super-packet every 30 secs
 }
 
-void handler()
-{
-    TIMER = true;
-}
+//void handler()
+//{
+//    TIMER = true;
+//}
 
 void loop()
 {
-    //Serial3.println("hello!!!");
-    #ifdef CHEMSENSE_INCLUDE
-    chemsense_acquire();
+    comm.packetBegin();
+    
+//    #ifdef CHEMSENSE_INCLUDE
+//    chemsense_acquire();
+//    #endif
+
+    #ifdef AIRSENSE_INCLUDE
+    airsense_acquire();
     #endif
 
-    if (TIMER)
-    {
-        #ifdef AIRSENSE_INCLUDE
-        airsense_acquire();
-        #endif
+//    #ifdef LIGHTSENSE_INCLUDE
+//    lightsense_acquire();
+//    #endif
 
-        #ifdef LIGHTSENSE_INCLUDE
-        lightsense_acquire();
-        #endif
+    comm.packetEnd();
 
-        assemble_packet_empty();
-        assemble_packet_whole();
+    comm.transfer();
 
-        for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i ++)
-        {
-                SerialUSB.write(packet_whole[i]);
-        }
-
-        TIMER = false;
-    }
+    delay(5000);
 }
-
-void requestEvent()
-{
-    #ifdef I2C_INTERFACE_CONST_SIZE
-    Wire1.write(packet_whole, I2C_PACKET_SIZE);
-
-    #else
-    char bytes_to_send;
-    bytes_to_send = packet_whole[0x02] +0x05;
-    Wire1.write(packet_whole, bytes_to_send );
-    #endif
-
-    I2C_READ_COMPLETE = true;
-    assemble_packet_empty();
-}
-
-
-
 

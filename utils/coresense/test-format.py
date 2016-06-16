@@ -30,7 +30,7 @@ class TestFormat(unittest.TestCase):
 
     def test_macaddr(self):
         buffer = bytearray(6)
-        macaddr = bytearray([0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF])
+        macaddr = 'AABBCCDDEEFF'
         pack_macaddr_into(macaddr, buffer, 0)
         assert unpack_macaddr_from(buffer, 0) == macaddr
 
@@ -61,7 +61,7 @@ class TestFormat(unittest.TestCase):
         format = '211'
         self.assertEqual(unpack(format, pack(format, *values)), values)
 
-        macaddr = bytearray([0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF])
+        macaddr = 'AABBCCDDEEFF'
         values = (macaddr, 3212, -99912, 32943)
         format = '3154'
         self.assertEqual(unpack(format, pack(format, *values)), values)
