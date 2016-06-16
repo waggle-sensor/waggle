@@ -1,10 +1,8 @@
 void airsense_acquire (void)
 {
 #ifdef SPV1840LR5HB_include   ////was  SPV1840LR5HB_2_include
-    Temp_uint16 = analogRead(PIN_RAW_MIC);
-
     comm.subpacketBegin(ID_SPV1840LR5HB);
-    comm.subpacketFormat1(Temp_uint16);
+    comm.subpacketFormat1(analogRead(PIN_RAW_MIC));
     comm.subpacketEnd();
 #endif
 
@@ -17,12 +15,9 @@ void airsense_acquire (void)
 #endif
 
 #ifdef HTU21D_include
-    Temp_float[1] = myHumidity.readHumidity();
-    Temp_float[0] = myHumidity.readTemperature();
-
     comm.subpacketBegin(ID_HTU21D);
-    comm.subpacketFormat6(Temp_float[0]);
-    comm.subpacketFormat6(Temp_float[1]);
+    comm.subpacketFormat6(myHumidity.readHumidity());
+    comm.subpacketFormat6(myHumidity.readTemperature());
     comm.subpacketEnd();
 #endif
 
@@ -43,18 +38,14 @@ void airsense_acquire (void)
 #endif
 
 #ifdef PR103J2_include
-    Temp_uint16 = analogRead(A2D_PRJ103J2);
-
     comm.subpacketBegin(ID_PR103J2);
-    comm.subpacketFormat1(Temp_uint16);
+    comm.subpacketFormat1(analogRead(A2D_PRJ103J2));
     comm.subpacketEnd();
 #endif
 
 #ifdef TSL250RD_1_include
-    Temp_uint16 = analogRead(A2D_TSL250RD_1);
-
     comm.subpacketBegin(ID_TSL250RD_1);
-    comm.subpacketFormat1(Temp_uint16);
+    comm.subpacketFormat1(analogRead(A2D_TSL250RD_1));
     comm.subpacketEnd();
 #endif
 
@@ -78,10 +69,9 @@ void airsense_acquire (void)
 #endif
 
 #ifdef HIH4030_include      // NOT IN THE PACKET, DO NOT KNOW WHAT IS HAPPENING
-    Temp_uint16 = analogRead(PIN_HIH4030);
-
     comm.subpacketBegin(ID_HIH4030);
-    comm.subpacketFormat1(Temp_uint16);
+    comm.subpacketFormat1(analogRead(PIN_HIH4030));
     comm.subpacketEnd();
 #endif
 }
+
