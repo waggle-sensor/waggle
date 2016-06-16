@@ -371,63 +371,70 @@ class usbSerial ( threading.Thread ):
                         #We do not have full packet in the buffer, cannot process.
                             break
                         else:
-                            if self.data[_postscriptLoc] <> _postScript:
-                                #we probably have not locked to the header, consume and retry locking to header
-                                del self.data[0]
-                            else:
-                                #we may have a valid packet
-                                _packetCRC = 0
-                                packetmismatch = 0
-
-                                for i in range(_preambleLoc + _datLenFieldDelta + 0x01, _postscriptLoc):
-                                    #print ord(self.data[i]),
-                                    _packetCRC = ord(self.data[i]) ^ _packetCRC
-                                    for j in range(8):
-                                        if (_packetCRC & 0x01):
-                                            _packetCRC = (_packetCRC >> 0x01) ^ 0x8C
-                                        else:
-                                            _packetCRC =  _packetCRC >> 0x01
-                                print ''
-                                if _packetCRC <> 0x00:
-                                    #bad packet or we probably have not locked to the header, consume and retry locking to header
-                                    #ideally we should be able to throw the whole packet out, but purging just a byte for avoiding corner cases.
+                            try:
+                                if self.data[_postscriptLoc] <> _postScript:
+                                    #we probably have not locked to the header, consume and retry locking to header
                                     del self.data[0]
                                 else:
-                                    print self.data
-                                    print '-------------'
-                                    print time.asctime(), _msg_seq_num, _postscriptLoc
-                                    #extract the data bytes alone, exclude preamble, prot version, len, crc and postScript
-                                    extractedData = self.data[_preambleLoc+3:_postscriptLoc-1]
-                                    consume_ptr = 0x00
-                                    self.CoreSenseConf = 0
+                                    #we may have a valid packet
+                                    _packetCRC = 0
+                                    packetmismatch = 0
 
-                                    del self.data[:self.data.index(_postScript)+1]
+                                    for i in range(_preambleLoc + _datLenFieldDelta + 0x01, _postscriptLoc):
+                                        #print ord(self.data[i]),
+                                        _packetCRC = ord(self.data[i]) ^ _packetCRC
+                                        for j in range(8):
+                                            if (_packetCRC & 0x01):
+                                                _packetCRC = (_packetCRC >> 0x01) ^ 0x8C
+                                            else:
+                                                _packetCRC =  _packetCRC >> 0x01
+                                    print ''
+                                    if _packetCRC <> 0x00:
+                                        #bad packet or we probably have not locked to the header, consume and retry locking to header
+                                        #ideally we should be able to throw the whole packet out, but purging just a byte for avoiding corner cases.
+                                        del self.data[0]
+                                    else:
+                                        print self.data
+                                        print '-------------'
+                                        print time.asctime(), _msg_seq_num, _postscriptLoc
+                                        #extract the data bytes alone, exclude preamble, prot version, len, crc and postScript
+                                        extractedData = self.data[_preambleLoc+3:_postscriptLoc-1]
+                                        consume_ptr = 0x00
+                                        self.CoreSenseConf = 0
 
-                                    #print ":".join("{:02x}".format(ord(c)) for c in extractedData)
+                                        del self.data[:self.data.index(_postScript)+1]
 
-                                    while consume_ptr < len(extractedData):
-                                        try:
-                                            This_id = str(ord(extractedData[consume_ptr]))
-                                            This_id_msg_size_valid = ord(extractedData [consume_ptr+1])
-                                            This_id_msg_size = This_id_msg_size_valid & 0x7F
-                                            #print This_id_msg_size
-                                            This_id_msg_valid = (This_id_msg_size_valid & 0x80) >> 7
-                                            This_id_msg = extractedData[consume_ptr+2:consume_ptr+2+This_id_msg_size]
-                                            
-                                        except Exception,e:
-                                            print "ERROR!!!!"
-                                            print str(e)
-                                            print "consume_ptr: ", consume_ptr, " len(extractedData): ", len(extractedData)
-                                            pass
-                                        
-                                        #print (int(This_id)), This_id_msg_valid, This_id_msg_size, This_id_msg
-                                        
-                                        consume_ptr = consume_ptr + 2 + This_id_msg_size
-                                        if (This_id_msg_valid == 1):
+                                        #print ":".join("{:02x}".format(ord(c)) for c in extractedData)
+
+                                        while consume_ptr < len(extractedData):
                                             try:
-                                                parse_sensor (This_id, This_id_msg)
+                                                This_id = str(ord(extractedData[consume_ptr]))
+                                                This_id_msg_size_valid = ord(extractedData [consume_ptr+1])
+                                                This_id_msg_size = This_id_msg_size_valid & 0x7F
+                                                #print This_id_msg_size
+                                                This_id_msg_valid = (This_id_msg_size_valid & 0x80) >> 7
+                                                This_id_msg = extractedData[consume_ptr+2:consume_ptr+2+This_id_msg_size]
+                                                
+                                            except Exception,e:
+                                                print "ERROR!!!!"
+                                                print str(e)
+                                                print "consume_ptr: ", consume_ptr, " len(extractedData): ", len(extractedData)
                                                 pass
-                                            except:
+                                            
+                                            #print (int(This_id)), This_id_msg_valid, This_id_msg_size, This_id_msg
+                                            
+                                            consume_ptr = consume_ptr + 2 + This_id_msg_size
+                                            if (This_id_msg_valid == 1):
+                                                try:
+                                                    parse_sensor (This_id, This_id_msg)
+                                                    pass
+                                                except:
+                                                    pass
+                                            else:
                                                 pass
-                                        else:
-                                            pass
+                            except:
+                                print "ERRor"
+                                print "buffer len", bufferLength
+                                print "data len", len(self.data)
+                                print "_postscriptLoc", _postscriptLoc
+                                pass
