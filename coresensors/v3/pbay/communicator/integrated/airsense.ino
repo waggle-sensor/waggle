@@ -27,12 +27,11 @@ void airsense_acquire (void)
     /* Display the results (barometric pressure is measure in Pascals) */
     if (event.pressure)
     {
-        Temp_long = long(event.pressure);
         bmp.getTemperature(&Temp_float[0]);
 
         comm.subpacketBegin(ID_HTU21D);
         comm.subpacketFormat6(Temp_float[0]);
-        comm.subpacketFormat5(Temp_long);
+        comm.subpacketFormat5(event.pressure);
         comm.subpacketEnd();
     }
 #endif
