@@ -104,7 +104,7 @@ print "wagman connected:", summary['wagman']['connected']
 ### Extension node
 
 # TODO: something like: ssh extensionnode cat /etc/hostname  ???
-
+# TODO: Odroid model and mac-address, e.g. ssh extensionnode /usr/lib/waggle/waggle_image/scripts/detect_odroid_model.sh
 
 
 
