@@ -5,11 +5,8 @@ extern TwoWire Wire1;
 #include "config.cpp"
 
 // Air/Lightsense ******************************************************** INCLUDING SENSORS ON AIR/LIGHTSENSE
-#ifdef LIGHTSENSE_INCLUDE
-    #include "./libs/MCP342X/MCP342X.h"
-    MCP342X mcp3428_1;
-    MCP342X mcp3428_2;
-#endif
+
+#ifdef AIRSENSE_INCLUDE
 
 #ifdef HTU21D_include
     #include "./libs/HTU21D/HTU21D.h"
@@ -23,14 +20,11 @@ HTU21D myHumidity;
     sensors_event_t event;
 #endif
 
+
 #ifdef  PR103J2_include
     #define A2D_PRJ103J2 0
 #endif
 
-#ifdef SPV1840LR5HB_1_include
-    #define SPV_1_SPL 6
-    #define SPV_1_AMP 5
-#endif
 
 #ifdef TSL250RD_1_include
     #define A2D_TSL250RD_1 1
@@ -63,51 +57,90 @@ HTU21D myHumidity;
     uint16_t TSYS_coefficents[5];
 #endif
 
+#endif
+
+
+
+
 #ifdef LIGHTSENSE_INCLUDE
+
 #ifdef HMC5883L_include
-#include "./libs/HMC5883L_waggle/HMC5883L_waggle.h"
-HMC5883_Sensor HMC5883_Magnetometer = HMC5883_Sensor(&Wire);
+    #include "./libs/HMC5883L_waggle/HMC5883L_waggle.h"
+    HMC5883_Sensor HMC5883_Magnetometer = HMC5883_Sensor(&Wire);
 #endif
 
 #ifdef HIH6130_include
-#define HIH_ADDRESS 0x27
+    #define HIH_ADDRESS 0x27
+#endif
+
+#ifdef TSL260RD_include
+    #include "./libs/MCP342X/MCP342X.h"
+    MCP342X mcp3428_1;
+    MCP342X mcp3428_2;
 #endif
 
 #ifdef TMP421_include
-#include "./libs/LibTempTMP421/LibTempTMP421.h"
-LibTempTMP421 TMP421_Sensor = LibTempTMP421();
+    #include "./libs/LibTempTMP421/LibTempTMP421.h"
+    LibTempTMP421 TMP421_Sensor = LibTempTMP421();
 #endif
+
+
+// #ifdef SPV1840LR5HB_1_include
+//     #define SPV_1_SPL 6
+//     #define SPV_1_AMP 5
+// #endif
+
 #endif
+
+
+
+
+
+
+
+
+
 // ****************************************************************** INCLUDING SENSORS ON AIR/LIGHTSENSE
 
 // store formatted values, dataFormat.ino ********************************************************** FORMATS FOR VALUES
 byte formatted_data_buffer[MAX_FMT_SIZE];
 
 // Sub-packets for each format
+
+byte MAC_ID[LENGTH_FORMAT3 + 2]; // MAC address
+
 // Airsense board
-byte MAC_ID[LENGTH_FORMAT3 + 2] = {ID_MAC, 134,0,0,0,0,0,0}; // MAC address
+
+byte TMP112[LENGTH_FORMAT6 + 2]; // ambient temp
+byte HTU21D[(LENGTH_FORMAT6 * 2) + 2]; // ambient RH & temp
+
+byte HIH4030[LENGTH_FORMAT1 + 2]; // humidity 
 
 byte BMP180[LENGTH_FORMAT5 + LENGTH_FORMAT6 + 2]; // atmospheric pressure
-byte TMP112[LENGTH_FORMAT6 + 2]; // ambient temp
-byte TSYS01[LENGTH_FORMAT6 + 2]; // ambient temp
-byte HTU21D[(LENGTH_FORMAT6 * 2) + 2]; // ambient RH & temp
-byte MMA8452Q[(LENGTH_FORMAT6 * 4) + 2]; // 3-axis accel for traffic flow
 byte PR103J2[LENGTH_FORMAT1 + 2]; // light
 byte TSL250RD_1[LENGTH_FORMAT1 + 2]; // ambient light (400-950nm)
+
+byte MMA8452Q[(LENGTH_FORMAT6 * 4) + 2]; // 3-axis accel for traffic flow
 byte SPV1840LR5HB[LENGTH_FORMAT1 + 2]; // sound pressure
-byte HIH4030[LENGTH_FORMAT1 + 2]; // humidity **************************************************does not exist in packet_assembler.ino
+byte TSYS01[LENGTH_FORMAT6 + 2]; // ambient temp
+
 
 // Lightsense board
+
 byte HMC5883L[(LENGTH_FORMAT8 * 3) + 2]; // magnetic field strength for traffic flow
 byte HIH6130[(LENGTH_FORMAT6 * 2) + 2]; // temp and RH inside transparent box
+
 byte APDS9006020[LENGTH_FORMAT1 + 2]; // ambient light inside cavity
 byte TSL260RD[LENGTH_FORMAT1 + 2]; // solar near IR
 byte TSL250RD_2[LENGTH_FORMAT1 + 2]; // solar visible light
+
 byte MLX75305[LENGTH_FORMAT1 + 2]; // solar visible light
 byte ML8511[LENGTH_FORMAT1 + 2]; // solar UV
-byte D6T[(LENGTH_FORMAT6 * 17) + 2]; // temp of surrounding objects
-byte MLX90614[LENGTH_FORMAT1 + 2]; // temp of pavement
 byte TMP421[LENGTH_FORMAT6 + 2]; // temp inside transparent box
+
+// byte D6T[(LENGTH_FORMAT6 * 17) + 2]; // temp of surrounding objects
+// byte MLX90614[LENGTH_FORMAT1 + 2]; // temp of pavement
+
 
 //chemsense board
 byte chemsense_MAC_ID[LENGTH_FORMAT3 + 2] = {0,0,0,0,0,0,0,0}; // MAC address of chemsense board
@@ -156,6 +189,9 @@ OneWire ds2401(PIN_DS2401);  //DS2401 PIN
 int valid = 1;
 int packet_whole_index = 0;
 
+
+int j = 0;
+
 //unsigned char buffer [BUFFER_SIZE_CHEMSENSE];
 //unsigned char parameter[PARAM_SIZE_CHEMSENSE];
 //unsigned char cnt = 0;
@@ -202,7 +238,8 @@ void setup()
     Wire1.onRequest(requestEvent);
     #endif
 
-    Timer3.attachInterrupt(handler).setPeriod(1000000 * 5).start(); // print super-packet every 30 secs
+    chem_buff_initialization();
+    Timer3.attachInterrupt(handler).setPeriod(1000000 * 10).start(); // print super-packet every 30 secs
 }
 
 void handler()
@@ -232,7 +269,7 @@ void loop()
 
         for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i ++)
         {
-                SerialUSB.write(packet_whole[i]);
+            SerialUSB.write(packet_whole[i]);
         }
 
         TIMER = false;

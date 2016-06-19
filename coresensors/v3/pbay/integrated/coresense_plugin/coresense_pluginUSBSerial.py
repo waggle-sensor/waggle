@@ -3,6 +3,7 @@ import threading
 import serial
 import sys
 import time
+import Queue
 
 _preamble = '\xaa'
 _postScript = '\x55'
@@ -278,6 +279,11 @@ class usbSerial ( threading.Thread ):
         self.packetmismatch = 0
         self.keepAlive = 1
 
+        self.failCount = 0
+        self.file = open('failed.txt', 'w+')
+        self.cumulativeCount = 0
+        self.failBuffer = Queue.Queue()
+
     def run (self):
         print time.asctime()
         #Checking if the port is still available for connection
@@ -325,6 +331,7 @@ class usbSerial ( threading.Thread ):
         self.keepAlive = False
         try :
             self.ser.close()
+            self.file.close()
         except:
             pass
 
@@ -366,7 +373,7 @@ class usbSerial ( threading.Thread ):
                         del self.data[0]
 
                     else:
-                        if (_postscriptLoc > bufferLength):
+                        if (_postscriptLoc >= bufferLength):
                         #We do not have full packet in the buffer, cannot process.
                             break
                         else:
@@ -375,7 +382,6 @@ class usbSerial ( threading.Thread ):
                                     #we probably have not locked to the header, consume and retry locking to header
                                     del self.data[0]
                                 else:
-<<<<<<< HEAD
                                     #we may have a valid packet
                                     _packetCRC = 0
                                     packetmismatch = 0
@@ -397,6 +403,22 @@ class usbSerial ( threading.Thread ):
                                         print self.data
                                         print '-------------'
                                         print time.asctime(), _msg_seq_num, _postscriptLoc
+                                        
+                                        # SH put data into buffer to store into a file
+                                        try:
+                                            self.failBuffer.put(self.data[0:_postscriptLoc])
+                                            if self.failBuffer.qsize() > 20:
+                                                if self.failCount > 0:
+                                                    self.file.write(self.get())
+                                                    self.file.write("\r\n")
+                                                    self.failCount = self.failCount - 1
+                                                else:
+                                                    self.get()
+                                        except:
+                                            print "Error while writing file"
+                                            print "failcount was ", self.failCount
+                                            pass
+
                                         #extract the data bytes alone, exclude preamble, prot version, len, crc and postScript
                                         extractedData = self.data[_preambleLoc+3:_postscriptLoc-1]
                                         consume_ptr = 0x00
@@ -422,6 +444,18 @@ class usbSerial ( threading.Thread ):
                                                 print "consume_ptr: ", consume_ptr, " len(extractedData): ", len(extractedData)
                                                 pass
                                             
+                                            if This_id == '16':
+                                                if format1(This_id_msg) == 0xffff:
+                                                    # ERROR FOUND~!!!!!!!!!!!!!!!!!!!
+                                                    self.failCount = 20
+                                                    self.cumulativeCount = self.cumulativeCount + 1
+                                                    if self.cumulativeCount > 50:
+                                                        # I do not want to see any more.... Get me out of here!
+                                                        self.stop()
+                                                        break
+
+
+
                                             #print (int(This_id)), This_id_msg_valid, This_id_msg_size, This_id_msg
                                             
                                             consume_ptr = consume_ptr + 2 + This_id_msg_size
@@ -438,4 +472,5 @@ class usbSerial ( threading.Thread ):
                                 print "buffer len", bufferLength
                                 print "data len", len(self.data)
                                 print "_postscriptLoc", _postscriptLoc
+                                del self.data[0]
                                 pass

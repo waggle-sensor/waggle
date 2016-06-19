@@ -13,7 +13,6 @@ byte formatted_byte_temp[8];
 int KEY_NUM_ID = 0;
 int VAL_NUM_ID = 0;
 
-int j = 0;
 
 bool flag_KEY = false;
 
@@ -143,20 +142,34 @@ void chemsense_acquire()
         {
             if (!flag_KEY)
             {
-                KEY[KEY_NUM_ID] = INPUT_BYTE;
-                KEY_NUM_ID++;
+                if (KEY_NUM_ID < 3)
+                {
+                    KEY[KEY_NUM_ID] = INPUT_BYTE;
+                    KEY_NUM_ID++;
+                }
+                else
+                    KEY_NUM_ID = 0;
             }
             else
             {
-                VAL[VAL_NUM_ID] = INPUT_BYTE;
-                VAL_NUM_ID++;
+                if (VAL_NUM_ID < 12)
+                {
+                    VAL[VAL_NUM_ID] = INPUT_BYTE;
+                    VAL_NUM_ID++;
+                }
+                else
+                {
+                    KEY_NUM_ID = 0;
+                    VAL_NUM_ID = 0;
+                    flag_KEY = false;
+                }
             }
         }
         else if (INPUT_BYTE == '=')
         {
             flag_KEY = true;
         }
-        else if (INPUT_BYTE == '\r' || INPUT_BYTE == ' ')
+        else if (INPUT_BYTE == '\r' || INPUT_BYTE == ' ' || INPUT_BYTE == '\n')
         {
             //KEY[KEY_NUM_ID] = '\0';
             //VAL[VAL_NUM_ID] = '\0';
@@ -175,13 +188,13 @@ void Carrier()
 		return;
 
     flag_KEY = false;
-    #ifdef SERIAL_DEBUG
-        // to confirm output data
-        SerialUSB.print(KEY);
-        SerialUSB.print(" ");
-        SerialUSB.print(VAL);
-        SerialUSB.print(" ");
-    #endif
+    // #ifdef SERIAL_DEBUG
+    //     // to confirm output data
+    //     SerialUSB.print(KEY);
+    //     SerialUSB.print(" ");
+    //     SerialUSB.print(VAL);
+    //     SerialUSB.print(" ");
+    // #endif
 
 	if (compareKey('B', 'A', 'D') == 0)
 	{
@@ -194,15 +207,13 @@ void Carrier()
         for (j = 0; j < LENGTH_FORMAT3; j++)
             chemsense_MAC_ID[2 + j] = formatted_data_buffer[j];
 
-        #ifdef SERIAL_DEBUG
-                // to check output
-                for (j = 0; j < LENGTH_FORMAT3; j++)
-                {
-                    SerialUSB.print(formatted_data_buffer[j],HEX);
-                    SerialUSB.print(" ");
-                }
-        #endif
+#ifdef SERIAL_DEBUG
+        // to check output
+        for (j = 0; j < LENGTH_FORMAT3; j++)
+            SerialUSB.print(formatted_data_buffer[j],HEX);
+#endif
 	}
+
 	else if (compareKey('S', 'H', 'T') == 0)  // wait SHH
 	{
         //Int_form2();
@@ -214,12 +225,10 @@ void Carrier()
 #ifdef SERIAL_DEBUG
         // to check the values
         for (j = 0; j < LENGTH_FORMAT1; j++)
-        {
             SerialUSB.print(formatted_data_buffer[j],HEX);
-            SerialUSB.print(" ");
-        }
 #endif
     }
+
     else if (compareKey('S', 'H', 'H') == 0)
     {
         //Temp_uint16 = (unsigned int)atoi(VAL);       //char to int
@@ -236,12 +245,10 @@ void Carrier()
 #ifdef SERIAL_DEBUG
         // to check the values
         for (j = 0; j < LENGTH_FORMAT1; j++)
-        {
             SerialUSB.print(formatted_data_buffer[j],HEX);
-            SerialUSB.print(" ");
-        }
 #endif
     }
+
 	else if (compareKey('L', 'P', 'T') == 0)  // wait LPP
 	{
         //Int_form2();
@@ -253,12 +260,10 @@ void Carrier()
 #ifdef SERIAL_DEBUG
         // to check output
         for (j = 0; j < LENGTH_FORMAT2; j++)
-        {
             SerialUSB.print(formatted_data_buffer[j],HEX);
-            SerialUSB.print(" ");
-        }
 #endif
     }
+
     else if (compareKey('L', 'P', 'P') == 0)
     {
         //Int_form4();
@@ -275,12 +280,10 @@ void Carrier()
 #ifdef SERIAL_DEBUG
         // to check output
         for (j = 0; j < LENGTH_FORMAT4; j++)
-        {
             SerialUSB.print(formatted_data_buffer[j],HEX);
-            SerialUSB.print(" ");
-        }
 #endif
 	}
+
 	else if (compareKey('S', 'U', 'V') == 0)  // wait SVL and SIR
 	{
         //Hex_form1();
@@ -292,12 +295,10 @@ void Carrier()
 #ifdef SERIAL_DEBUG
         // to check output
         for (j = 0; j < LENGTH_FORMAT1; j++)
-        {
             SerialUSB.print(formatted_data_buffer[j],HEX);
-            SerialUSB.print(" ");
-        }
 #endif
     }
+
 	else if (compareKey('S', 'V', 'L') == 0)
     {
         //Hex_form1();
@@ -309,12 +310,10 @@ void Carrier()
 #ifdef SERIAL_DEBUG
         // to check output
         for (j = 0; j < LENGTH_FORMAT1; j++)
-        {
             SerialUSB.print(formatted_data_buffer[j],HEX);
-            SerialUSB.print(" ");
-        }
 #endif
     }
+
     else if (compareKey('S', 'I', 'R') == 0)
     {
         //Hex_form1();
@@ -332,12 +331,10 @@ void Carrier()
 #ifdef SERIAL_DEBUG
         // to check output
         for (j = 0; j < LENGTH_FORMAT1; j++)
-        {
             SerialUSB.print(formatted_data_buffer[j],HEX);
-            SerialUSB.print(" ");
-        }
 #endif
     }
+
 	else if (compareKey('I', 'R', 'R') == 0)
 	{
         //Int_form5();
@@ -352,12 +349,10 @@ void Carrier()
 #ifdef SERIAL_DEBUG
         // to check output
         for (j = 0; j < LENGTH_FORMAT5; j++)
-        {
             SerialUSB.print(formatted_data_buffer[j],HEX);
-            SerialUSB.print(" ");
-        }
 #endif
     }
+
 	else if (compareKey('I', 'A', 'Q') == 0)
     {
         //Int_form5();
@@ -372,12 +367,10 @@ void Carrier()
 #ifdef SERIAL_DEBUG
         // to check output
         for (j = 0; j < LENGTH_FORMAT5; j++)
-        {
             SerialUSB.print(formatted_data_buffer[j],HEX);
-            SerialUSB.print(" ");
-        }
 #endif
     }
+
 	else if (compareKey('S', 'O', '2') == 0)
     {
         //Int_form5();
@@ -392,12 +385,10 @@ void Carrier()
 #ifdef SERIAL_DEBUG
         // to check output
         for (j = 0; j < LENGTH_FORMAT5; j++)
-        {
             SerialUSB.print(formatted_data_buffer[j],HEX);
-            SerialUSB.print(" ");
-        }
 #endif
     }
+
 	else if (compareKey('H', '2', 'S') == 0)
 	{
         //Int_form5();
@@ -412,12 +403,10 @@ void Carrier()
 #ifdef SERIAL_DEBUG
         // to check output
         for (j = 0; j < LENGTH_FORMAT5; j++)
-        {
             SerialUSB.print(formatted_data_buffer[j],HEX);
-            SerialUSB.print(" ");
-        }
 #endif
     }
+
 	else if (compareKey('O', 'Z', 'O') == 0)
 	{
         //Int_form5();
@@ -432,12 +421,10 @@ void Carrier()
 #ifdef SERIAL_DEBUG
         // to check output
         for (j = 0; j < LENGTH_FORMAT5; j++)
-        {
             SerialUSB.print(formatted_data_buffer[j],HEX);
-            SerialUSB.print(" ");
-        }
 #endif
     }
+
 	else if (compareKey('N', 'O', '2') == 0)
 	{
         //Int_form5();
@@ -452,12 +439,10 @@ void Carrier()
 #ifdef SERIAL_DEBUG
         // to check output
         for (j = 0; j < LENGTH_FORMAT5; j++)
-        {
             SerialUSB.print(formatted_data_buffer[j],HEX);
-            SerialUSB.print(" ");
-        }
 #endif
     }
+
 	else if (compareKey('C', 'M', 'O') == 0)
 	{
         //Int_form5();
@@ -472,12 +457,10 @@ void Carrier()
 #ifdef SERIAL_DEBUG
         // to check output
         for (j = 0; j < LENGTH_FORMAT5; j++)
-        {
             SerialUSB.print(formatted_data_buffer[j],HEX);
-            SerialUSB.print(" ");
-        }
 #endif
 	}
+
 	else if (compareKey('A', 'T', '0') == 0)
 	{
         //Int_form2();
@@ -491,12 +474,10 @@ void Carrier()
 #ifdef SERIAL_DEBUG
         // to check output
         for (j = 0; j < LENGTH_FORMAT2; j++)
-        {
             SerialUSB.print(formatted_data_buffer[j],HEX);
-            SerialUSB.print(" ");
-        }
 #endif
     }
+
 	else if (compareKey('A', 'T', '1') == 0)
 	{
 		//Int_form2();
@@ -510,12 +491,10 @@ void Carrier()
 #ifdef SERIAL_DEBUG
         // to check output
         for (j = 0; j < LENGTH_FORMAT2; j++)
-        {
             SerialUSB.print(formatted_data_buffer[j],HEX);
-            SerialUSB.print(" ");
-        }
 #endif
     }
+
 	else if (compareKey('A', 'T', '2') == 0)
 	{
 		//Int_form2();
@@ -529,12 +508,10 @@ void Carrier()
 #ifdef SERIAL_DEBUG
         // to check output
         for (j = 0; j < LENGTH_FORMAT2; j++)
-        {
             SerialUSB.print(formatted_data_buffer[j],HEX);
-            SerialUSB.print(" ");
-        }
 #endif
     }
+
 	else if (compareKey('A', 'T', '3') == 0)
 	{
         //Int_form2();
@@ -548,12 +525,10 @@ void Carrier()
 #ifdef SERIAL_DEBUG
         // to check output
         for (j = 0; j < LENGTH_FORMAT2; j++)
-        {
             SerialUSB.print(formatted_data_buffer[j],HEX);
-            SerialUSB.print(" ");
-        }
 #endif
     }
+
 	else if (compareKey('L', 'T', 'M') == 0)
 	{
 		//Int_form2();
@@ -567,12 +542,10 @@ void Carrier()
 #ifdef SERIAL_DEBUG
         // to check output
         for (j = 0; j < LENGTH_FORMAT2; j++)
-        {
             SerialUSB.print(formatted_data_buffer[j],HEX);
-            SerialUSB.print(" ");
-        }
 #endif
     }
+
 	else if (compareKey('A', 'C', 'X') == 0)  //wait ACY, ACZ, and VIX
     {
         //Int_form2();
@@ -584,12 +557,10 @@ void Carrier()
 #ifdef SERIAL_DEBUG
         // to check output
         for (j = 0; j < LENGTH_FORMAT2; j++)
-        {
             SerialUSB.print(formatted_data_buffer[j],HEX);
-            SerialUSB.print(" ");
-        }
 #endif
     }
+
     else if (compareKey('A', 'C', 'Y') == 0)
     {
         //Int_form2();
@@ -601,12 +572,10 @@ void Carrier()
 #ifdef SERIAL_DEBUG
         // to check output
         for (j = 0; j < LENGTH_FORMAT2; j++)
-        {
             SerialUSB.print(formatted_data_buffer[j],HEX);
-            SerialUSB.print(" ");
-        }
 #endif
     }
+
     else if (compareKey('A', 'C', 'Z') == 0)
     {
         //Int_form2();
@@ -618,12 +587,10 @@ void Carrier()
 #ifdef SERIAL_DEBUG
         // to check output
         for (j = 0; j < LENGTH_FORMAT2; j++)
-        {
             SerialUSB.print(formatted_data_buffer[j],HEX);
-            SerialUSB.print(" ");
-        }
 #endif
     }
+
     else if (compareKey('V', 'I', 'X') == 0)
     {
         //Int_form4();
@@ -644,12 +611,10 @@ void Carrier()
 #ifdef SERIAL_DEBUG
         // to check output
         for (j = 0; j < LENGTH_FORMAT4; j++)
-        {
             SerialUSB.print(formatted_data_buffer[j],HEX);
-            SerialUSB.print(" ");
-        }
 #endif
     }
+
 	else if (compareKey('G', 'Y', 'X') == 0)  //wait GYY, GYZ, and OIX
     {
         //Int_form2();
@@ -661,12 +626,10 @@ void Carrier()
 #ifdef SERIAL_DEBUG
         // to check output
         for (j = 0; j < LENGTH_FORMAT2; j++)
-        {
             SerialUSB.print(formatted_data_buffer[j],HEX);
-            SerialUSB.print(" ");
-        }
 #endif
     }
+
     else if (compareKey('G', 'Y', 'Y') == 0)
     {
         //Int_form2();
@@ -678,12 +641,10 @@ void Carrier()
 #ifdef SERIAL_DEBUG
         // to check output
         for (j = 0; j < LENGTH_FORMAT2; j++)
-        {
             SerialUSB.print(formatted_data_buffer[j],HEX);
-            SerialUSB.print(" ");
-        }
 #endif
     }
+
     else if (compareKey('G', 'Y', 'Z') == 0)
     {
         //Int_form2();
@@ -695,12 +656,10 @@ void Carrier()
 #ifdef SERIAL_DEBUG
         // to check output
         for (j = 0; j < LENGTH_FORMAT2; j++)
-        {
             SerialUSB.print(formatted_data_buffer[j],HEX);
-            SerialUSB.print(" ");
-        }
 #endif
     }
+
     else if (compareKey('O', 'I', 'X') == 0)
     {
         //Int_form4();
@@ -722,16 +681,13 @@ void Carrier()
 #ifdef SERIAL_DEBUG
         // to check output
         for (j = 0; j < LENGTH_FORMAT4; j++)
-        {
             SerialUSB.print(formatted_data_buffer[j],HEX);
-            SerialUSB.print(" ");
-        }
 #endif
     }
 
-#ifdef SERIAL_DEBUG
-    SerialUSB.print("\r\n");
-#endif
+// #ifdef SERIAL_DEBUG
+//     SerialUSB.print("\r\n");
+// #endif
 }
 
 // // formatting data
