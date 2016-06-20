@@ -6,10 +6,11 @@ Purpose: Use software test to test hardware functionality and connections after 
 Access to node will only be possible via serial port (diagnostics port).
 
 
-Installation:
+Installation (copy-paste this block):
 ```bash
-wget https://raw.githubusercontent.com/waggle-sensor/waggle/master/testing/integration-test/integration-test.py
-chmod +x integration-test.py
-./integration-test.py
+rm -f integration-test.py ; \
+  wget https://raw.githubusercontent.com/waggle-sensor/waggle/master/testing/integration-test/integration-test.py ; \
+  chmod +x integration-test.py ; \
+  ./integration-test.py
 ```
 
