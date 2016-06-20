@@ -56,7 +56,7 @@ def list_other_modems():
 
 
 def read_sourced_env(script):
-    command = ['bash', '-c', 'source init_env && env']
+    command = ['bash', '-c', 'source %s && env' % (script)]
     environment={}
     proc = subprocess.Popen(command, stdout = subprocess.PIPE)
 
