@@ -62,7 +62,7 @@ def read_sourced_env(script):
 
     for line in proc.stdout:
       (key, _, value) = line.partition("=")
-      environment[key] = value
+      environment[key] = value.rstrip()
 
     proc.communicate()
     
