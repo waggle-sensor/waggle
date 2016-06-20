@@ -1,3 +1,12 @@
+float previous_mag_x = 0;
+float previous_mag_y = 0;
+float previous_mag_z = 0;
+
+float current_mag_x = 0;
+float current_mag_y = 0;
+float current_mag_z = 0;
+
+int light_j = 0;
 
 void lightsense_acquire (void)
 {
@@ -13,32 +22,104 @@ void lightsense_acquire (void)
 
     HMC5883L[1] = (valid << 7) | (LENGTH_FORMAT8 * 3);
 
-    format8(event.magnetic.x);
-    HMC5883L[2] = formatted_data_buffer[0];
-    HMC5883L[3] = formatted_data_buffer[1];
+    if (previous_mag_x == 0)
+    {
+        previous_mag_x = event.magnetic.x;
+        previous_mag_y = event.magnetic.y;
+        previous_mag_z = event.magnetic.z;
+        
+        format8(event.magnetic.x);
+        HMC5883L[2] = formatted_data_buffer[0];
+        HMC5883L[3] = formatted_data_buffer[1];
 
-#ifdef SERIAL_DEBUG
-    for (j = 0; j < LENGTH_FORMAT8; j++)
-        SerialUSB.print(formatted_data_buffer[j],HEX);
-#endif
+    #ifdef SERIAL_DEBUG
+        for (light_j = 0; light_j < LENGTH_FORMAT8; light_j++)
+            SerialUSB.print(formatted_data_buffer[light_j],HEX);
+    #endif
 
-    format8(event.magnetic.y);
-    HMC5883L[4] = formatted_data_buffer[0];
-    HMC5883L[5] = formatted_data_buffer[1];
+        format8(event.magnetic.y);
+        HMC5883L[4] = formatted_data_buffer[0];
+        HMC5883L[5] = formatted_data_buffer[1];
 
-#ifdef SERIAL_DEBUG
-    for (j = 0; j < LENGTH_FORMAT8; j++)
-        SerialUSB.print(formatted_data_buffer[j],HEX);
-#endif
+    #ifdef SERIAL_DEBUG
+        for (light_j = 0; light_j < LENGTH_FORMAT8; light_j++)
+            SerialUSB.print(formatted_data_buffer[light_j],HEX);
+    #endif
 
-    format8(event.magnetic.z);
-    HMC5883L[6] = formatted_data_buffer[0];
-    HMC5883L[7] = formatted_data_buffer[1];
+        format8(event.magnetic.z);
+        HMC5883L[6] = formatted_data_buffer[0];
+        HMC5883L[7] = formatted_data_buffer[1];
 
-#ifdef SERIAL_DEBUG
-    for (j = 0; j < LENGTH_FORMAT8; j++)
-        SerialUSB.print(formatted_data_buffer[j],HEX);
-#endif
+    #ifdef SERIAL_DEBUG
+        for (light_j = 0; light_j < LENGTH_FORMAT8; light_j++)
+            SerialUSB.print(formatted_data_buffer[light_j],HEX);
+    #endif
+    }
+
+    else if (previous_mag_x != 0)
+    {
+        current_mag_x = (previous_mag_x + event.magnetic.x) / 2;
+        current_mag_y = (previous_mag_y + event.magnetic.y) / 2;
+        current_mag_z = (previous_mag_z + event.magnetic.z) / 2;
+
+        previous_mag_x = event.magnetic.x;
+        previous_mag_y = event.magnetic.y;
+        previous_mag_z = event.magnetic.z;
+        
+        format8(current_mag_x);
+        HMC5883L[2] = formatted_data_buffer[0];
+        HMC5883L[3] = formatted_data_buffer[1];
+
+    #ifdef SERIAL_DEBUG
+        for (light_j = 0; light_j < LENGTH_FORMAT8; light_j++)
+            SerialUSB.print(formatted_data_buffer[light_j],HEX);
+    #endif
+
+        format8(current_mag_y);
+        HMC5883L[4] = formatted_data_buffer[0];
+        HMC5883L[5] = formatted_data_buffer[1];
+
+    #ifdef SERIAL_DEBUG
+        for (light_j = 0; light_j < LENGTH_FORMAT8; light_j++)
+            SerialUSB.print(formatted_data_buffer[light_j],HEX);
+    #endif
+
+        format8(current_mag_z);
+        HMC5883L[6] = formatted_data_buffer[0];
+        HMC5883L[7] = formatted_data_buffer[1];
+
+    #ifdef SERIAL_DEBUG
+        for (light_j = 0; light_j < LENGTH_FORMAT8; light_j++)
+            SerialUSB.print(formatted_data_buffer[light_j],HEX);
+    #endif
+    }
+
+//     format8(event.magnetic.x);
+//     HMC5883L[2] = formatted_data_buffer[0];
+//     HMC5883L[3] = formatted_data_buffer[1];
+
+// #ifdef SERIAL_DEBUG
+//     for (j = 0; j < LENGTH_FORMAT8; j++)
+//         SerialUSB.print(formatted_data_buffer[j],HEX);
+// #endif
+
+//     format8(event.magnetic.y);
+//     HMC5883L[4] = formatted_data_buffer[0];
+//     HMC5883L[5] = formatted_data_buffer[1];
+
+// #ifdef SERIAL_DEBUG
+//     for (j = 0; j < LENGTH_FORMAT8; j++)
+//         SerialUSB.print(formatted_data_buffer[j],HEX);
+// #endif
+
+//     format8(event.magnetic.z);
+//     HMC5883L[6] = formatted_data_buffer[0];
+//     HMC5883L[7] = formatted_data_buffer[1];
+
+// #ifdef SERIAL_DEBUG
+//     for (j = 0; j < LENGTH_FORMAT8; j++)
+//         SerialUSB.print(formatted_data_buffer[j],HEX);
+// #endif
 
 // #ifdef SERIAL_DEBUG
 //     SerialUSB.print("HMC5883L X:");
@@ -61,8 +142,8 @@ void lightsense_acquire (void)
     HIH6130[3] = formatted_data_buffer[1];
 
 #ifdef SERIAL_DEBUG
-    for (j = 0; j < LENGTH_FORMAT6; j++)
-        SerialUSB.print(formatted_data_buffer[j],HEX);
+    for (light_j = 0; light_j < LENGTH_FORMAT6; light_j++)
+        SerialUSB.print(formatted_data_buffer[light_j],HEX);
 #endif
 
     format6(Temp_float[1]);
@@ -70,8 +151,8 @@ void lightsense_acquire (void)
     HIH6130[5] = formatted_data_buffer[1];
 
 #ifdef SERIAL_DEBUG
-    for (j = 0; j < LENGTH_FORMAT6; j++)
-        SerialUSB.print(formatted_data_buffer[j],HEX);
+    for (light_j = 0; light_j < LENGTH_FORMAT6; light_j++)
+        SerialUSB.print(formatted_data_buffer[light_j],HEX);
 #endif
 
 // #ifdef SERIAL_DEBUG
@@ -95,8 +176,8 @@ void lightsense_acquire (void)
     // SerialUSB.print("APDS9006020: ");
     // SerialUSB.println(mcp3428_2.readADC());
 
-    for (j = 0; j < LENGTH_FORMAT1; j++)
-        SerialUSB.print(formatted_data_buffer[j],HEX);
+    for (light_j = 0; light_j < LENGTH_FORMAT1; light_j++)
+        SerialUSB.print(formatted_data_buffer[light_j],HEX);
 #endif
 #endif
 
@@ -112,8 +193,8 @@ void lightsense_acquire (void)
     // SerialUSB.print("TSL260RD: ");
     // SerialUSB.println(mcp3428_1.readADC());
 
-    for (j = 0; j < LENGTH_FORMAT1; j++)
-        SerialUSB.print(formatted_data_buffer[j],HEX);
+    for (light_j = 0; light_j < LENGTH_FORMAT1; light_j++)
+        SerialUSB.print(formatted_data_buffer[light_j],HEX);
 #endif
 #endif
 
@@ -129,8 +210,8 @@ void lightsense_acquire (void)
     // SerialUSB.print("TSL250RD_2: ");
     // SerialUSB.println(mcp3428_1.readADC());
 
-    for (j = 0; j < LENGTH_FORMAT1; j++)
-        SerialUSB.print(formatted_data_buffer[j],HEX);
+    for (light_j = 0; light_j < LENGTH_FORMAT1; light_j++)
+        SerialUSB.print(formatted_data_buffer[light_j],HEX);
 #endif
 #endif
 
@@ -147,8 +228,8 @@ void lightsense_acquire (void)
     // SerialUSB.print("MLX75305: ");
     // SerialUSB.println(mcp3428_1.readADC());
 
-    for (j = 0; j < LENGTH_FORMAT1; j++)
-        SerialUSB.print(formatted_data_buffer[j],HEX);
+    for (light_j = 0; light_j < LENGTH_FORMAT1; light_j++)
+        SerialUSB.print(formatted_data_buffer[light_j],HEX);
 #endif
 #endif
 
@@ -164,8 +245,8 @@ void lightsense_acquire (void)
     // SerialUSB.print("ML8511: ");
     // SerialUSB.println(mcp3428_1.readADC());
 
-    for (j = 0; j < LENGTH_FORMAT1; j++)
-        SerialUSB.print(formatted_data_buffer[j],HEX);
+    for (light_j = 0; light_j < LENGTH_FORMAT1; light_j++)
+        SerialUSB.print(formatted_data_buffer[light_j],HEX);
 #endif
 #endif
 
@@ -183,8 +264,8 @@ void lightsense_acquire (void)
     // SerialUSB.println(Temp_float[0]);
 
     //SerialUSB.print(0xAABBCCDD);
-    for (j = 0; j < LENGTH_FORMAT6; j++)
-        SerialUSB.print(formatted_data_buffer[j],HEX);
+    for (light_j = 0; light_j < LENGTH_FORMAT6; light_j++)
+        SerialUSB.print(formatted_data_buffer[light_j],HEX);
 #endif
 #endif
 

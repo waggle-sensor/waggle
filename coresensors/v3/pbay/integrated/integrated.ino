@@ -5,7 +5,6 @@ extern TwoWire Wire1;
 #include "config.cpp"
 
 // Air/Lightsense ******************************************************** INCLUDING SENSORS ON AIR/LIGHTSENSE
-
 #ifdef AIRSENSE_INCLUDE
 
 #ifdef HTU21D_include
@@ -60,8 +59,6 @@ HTU21D myHumidity;
 #endif
 
 
-
-
 #ifdef LIGHTSENSE_INCLUDE
 
 #ifdef HMC5883L_include
@@ -84,33 +81,21 @@ HTU21D myHumidity;
     LibTempTMP421 TMP421_Sensor = LibTempTMP421();
 #endif
 
-
 // #ifdef SPV1840LR5HB_1_include
 //     #define SPV_1_SPL 6
 //     #define SPV_1_AMP 5
 // #endif
 
 #endif
-
-
-
-
-
-
-
-
-
 // ****************************************************************** INCLUDING SENSORS ON AIR/LIGHTSENSE
 
 // store formatted values, dataFormat.ino ********************************************************** FORMATS FOR VALUES
 byte formatted_data_buffer[MAX_FMT_SIZE];
 
 // Sub-packets for each format
-
 byte MAC_ID[LENGTH_FORMAT3 + 2]; // MAC address
 
 // Airsense board
-
 byte TMP112[LENGTH_FORMAT6 + 2]; // ambient temp
 byte HTU21D[(LENGTH_FORMAT6 * 2) + 2]; // ambient RH & temp
 
@@ -126,7 +111,6 @@ byte TSYS01[LENGTH_FORMAT6 + 2]; // ambient temp
 
 
 // Lightsense board
-
 byte HMC5883L[(LENGTH_FORMAT8 * 3) + 2]; // magnetic field strength for traffic flow
 byte HIH6130[(LENGTH_FORMAT6 * 2) + 2]; // temp and RH inside transparent box
 
@@ -169,18 +153,13 @@ byte three_gyro_and_orientation[(LENGTH_FORMAT2 * 3) + LENGTH_FORMAT4 + 2];
 // Whole packet
 byte packet_whole[LENGTH_WHOLE];
 byte sensor_health[SENSOR_HEALTH_SIZE+2];
-
-
 // ************************************************************************************************ FORMATS FOR VALUES
 
 OneWire ds2401(PIN_DS2401);  //DS2401 PIN
 
 //byte test_seq;   //********************************** NOT USING NOW
-
-
-// Data sub-packet
+//Data sub-packet
 //byte packet_data[LENGTH_DATA];  //********************************** NOT USING NOW
-
 
 // These lengths are calculated at packet assembly
 //byte length_whole_actual;
@@ -188,9 +167,6 @@ OneWire ds2401(PIN_DS2401);  //DS2401 PIN
 
 int valid = 1;
 int packet_whole_index = 0;
-
-
-int j = 0;
 
 //unsigned char buffer [BUFFER_SIZE_CHEMSENSE];
 //unsigned char parameter[PARAM_SIZE_CHEMSENSE];
@@ -238,7 +214,7 @@ void setup()
     Wire1.onRequest(requestEvent);
     #endif
 
-    chem_buff_initialization();
+    sensor_buff_initialization();
     Timer3.attachInterrupt(handler).setPeriod(1000000 * 10).start(); // print super-packet every 30 secs
 }
 
@@ -254,15 +230,23 @@ void loop()
     chemsense_acquire();
     #endif
 
+    #ifdef AIRSENSE_INCLUDE
+    airsense_acquire();
+    #endif
+
+    #ifdef LIGHTSENSE_INCLUDE
+    lightsense_acquire();
+    #endif
+
     if (TIMER)
     {
-        #ifdef AIRSENSE_INCLUDE
-        airsense_acquire();
-        #endif
+        // #ifdef AIRSENSE_INCLUDE
+        // airsense_acquire();
+        // #endif
 
-        #ifdef LIGHTSENSE_INCLUDE
-        lightsense_acquire();
-        #endif
+        // #ifdef LIGHTSENSE_INCLUDE
+        // lightsense_acquire();
+        // #endif
 
         assemble_packet_empty();
         assemble_packet_whole();

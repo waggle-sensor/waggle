@@ -47,7 +47,7 @@ void assemble_packet_whole()
             // Increment index for whole packet
             packet_whole_index++;
         }
-    TMP112[1] = (chg_valid << 7) | (LENGTH_FORMAT6);
+        TMP112[1] = (chg_valid << 7) | LENGTH_FORMAT6;
     }
 #endif
 
@@ -60,7 +60,7 @@ void assemble_packet_whole()
             // Increment index for whole packet
             packet_whole_index++;
         }
-        HTU21D[1] = (chg_valid << 7) | ((LENGTH_FORMAT6 * 2));
+        HTU21D[1] = (chg_valid << 7) | LENGTH_FORMAT6;
     }
 #endif
 
@@ -237,31 +237,31 @@ void assemble_packet_whole()
     }
 #endif
 
-#ifdef D6T_include    // Append D6T
-    if (D6T[1] > 10)
-    {
-        for (buffer_num = 0; buffer_num < sizeof(D6T); buffer_num++)
-        {
-            packet_whole[packet_whole_index] = D6T[buffer_num];
-            // Increment index for whole packet
-            packet_whole_index++;
-        }
-        D6T[1] = (chg_valid << 7) | (LENGTH_FORMAT6 * 17);
-    }
-#endif
+// #ifdef D6T_include    // Append D6T
+//     if (D6T[1] > 10)
+//     {
+//         for (buffer_num = 0; buffer_num < sizeof(D6T); buffer_num++)
+//         {
+//             packet_whole[packet_whole_index] = D6T[buffer_num];
+//             // Increment index for whole packet
+//             packet_whole_index++;
+//         }
+//         D6T[1] = (chg_valid << 7) | (LENGTH_FORMAT6 * 17);
+//     }
+// #endif
 
-#ifdef MLX90614_include    // Append MLX90614
-    if (MLX90614[1] > 10)
-    {
-        for (buffer_num = 0; buffer_num < sizeof(MLX90614); buffer_num++)
-        {
-            packet_whole[packet_whole_index] = MLX90614[buffer_num];
-            // Increment index for whole packet
-            packet_whole_index++;
-        }
-        MLX90614[1] = (chg_valid << 7) | LENGTH_FORMAT1;
-    }
-#endif
+// #ifdef MLX90614_include    // Append MLX90614
+//     if (MLX90614[1] > 10)
+//     {
+//         for (buffer_num = 0; buffer_num < sizeof(MLX90614); buffer_num++)
+//         {
+//             packet_whole[packet_whole_index] = MLX90614[buffer_num];
+//             // Increment index for whole packet
+//             packet_whole_index++;
+//         }
+//         MLX90614[1] = (chg_valid << 7) | LENGTH_FORMAT1;
+//     }
+// #endif
 
 #ifdef TMP421_include    // Append TMP421
     if (TMP421[1] > 10)

@@ -1,5 +1,11 @@
 int air_j = 0;
 
+uint16_t temp_SPV = 0;
+uint16_t current_SPV = 0;
+
+float temp_MMA[4] = {0, 0, 0, 0};
+float current_MMA[4] = {0, 0, 0, 0};
+
 void airsense_acquire (void)
 {
 // #ifdef SERIAL_DEBUG
@@ -158,47 +164,103 @@ void airsense_acquire (void)
 #endif
 #endif
 
-
+//***************************************************************************************************//
 #ifdef MMA8452Q_include
     MMA8452_read();           //************ From mma84521.ino
 
     MMA8452Q[1] = (valid << 7) | (LENGTH_FORMAT6 * 4);
 
-    format6(Temp_float[0]);  // Put it into format 1
-    MMA8452Q[2] = formatted_data_buffer[0];
-    MMA8452Q[3] = formatted_data_buffer[1];
+    if (temp_MMA[0] == 0)
+    {
+        temp_MMA[0] = Temp_float[0];
+        temp_MMA[1] = Temp_float[1];
+        temp_MMA[2] = Temp_float[2];
+        
 
-#ifdef SERIAL_DEBUG
-    for (air_j = 0; air_j < LENGTH_FORMAT6; air_j++)
-        SerialUSB.print(formatted_data_buffer[air_j],HEX);
-#endif
+        format6(Temp_float[0]);  // Put it into format 1
+        MMA8452Q[2] = formatted_data_buffer[0];
+        MMA8452Q[3] = formatted_data_buffer[1];
 
-    format6(Temp_float[1]);  // Put it into format 1
-    MMA8452Q[4] = formatted_data_buffer[0];
-    MMA8452Q[5] = formatted_data_buffer[1];
+        #ifdef SERIAL_DEBUG
+        for (air_j = 0; air_j < LENGTH_FORMAT6; air_j++)
+            SerialUSB.print(formatted_data_buffer[air_j],HEX);
+        #endif
 
-#ifdef SERIAL_DEBUG
-    for (air_j = 0; air_j < LENGTH_FORMAT6; air_j++)
-        SerialUSB.print(formatted_data_buffer[air_j],HEX);
-#endif
+        format6(Temp_float[1]);  // Put it into format 1
+        MMA8452Q[4] = formatted_data_buffer[0];
+        MMA8452Q[5] = formatted_data_buffer[1];
 
-    format6(Temp_float[2]);  // Put it into format 1
-    MMA8452Q[6] = formatted_data_buffer[0];
-    MMA8452Q[7] = formatted_data_buffer[1];
+        #ifdef SERIAL_DEBUG
+        for (air_j = 0; air_j < LENGTH_FORMAT6; air_j++)
+            SerialUSB.print(formatted_data_buffer[air_j],HEX);
+        #endif
 
-#ifdef SERIAL_DEBUG
-    for (air_j = 0; air_j < LENGTH_FORMAT6; air_j++)
-        SerialUSB.print(formatted_data_buffer[air_j],HEX);
-#endif
+        format6(Temp_float[2]);  // Put it into format 1
+        MMA8452Q[6] = formatted_data_buffer[0];
+        MMA8452Q[7] = formatted_data_buffer[1];
 
-    format6(0);  // Put it into format 1
-    MMA8452Q[8] = formatted_data_buffer[0];
-    MMA8452Q[9] = formatted_data_buffer[1];
+        #ifdef SERIAL_DEBUG
+        for (air_j = 0; air_j < LENGTH_FORMAT6; air_j++)
+            SerialUSB.print(formatted_data_buffer[air_j],HEX);
+        #endif
 
-#ifdef SERIAL_DEBUG
-    for (air_j = 0; air_j < LENGTH_FORMAT6; air_j++)
-        SerialUSB.print(formatted_data_buffer[air_j],HEX);
-#endif
+        format6(0);  // Put it into format 1
+        MMA8452Q[8] = formatted_data_buffer[0];
+        MMA8452Q[9] = formatted_data_buffer[1];
+
+        #ifdef SERIAL_DEBUG
+        for (air_j = 0; air_j < LENGTH_FORMAT6; air_j++)
+            SerialUSB.print(formatted_data_buffer[air_j],HEX);
+        #endif   
+    }
+
+    else if(temp_MMA[0] != 0)
+    {
+        current_MMA[0] = (temp_MMA[0] + Temp_float[0]) / 2;
+        current_MMA[1] = (temp_MMA[1] + Temp_float[1]) / 2;
+        current_MMA[2] = (temp_MMA[2] + Temp_float[2]) / 2;
+
+        temp_MMA[0] = Temp_float[0];
+        temp_MMA[1] = Temp_float[1];
+        temp_MMA[2] = Temp_float[2];
+
+
+        format6(current_MMA[0]);  // Put it into format 1
+        MMA8452Q[2] = formatted_data_buffer[0];
+        MMA8452Q[3] = formatted_data_buffer[1];
+
+        #ifdef SERIAL_DEBUG
+        for (air_j = 0; air_j < LENGTH_FORMAT6; air_j++)
+            SerialUSB.print(formatted_data_buffer[air_j],HEX);
+        #endif
+
+        format6(current_MMA[1]);  // Put it into format 1
+        MMA8452Q[4] = formatted_data_buffer[0];
+        MMA8452Q[5] = formatted_data_buffer[1];
+
+        #ifdef SERIAL_DEBUG
+        for (air_j = 0; air_j < LENGTH_FORMAT6; air_j++)
+            SerialUSB.print(formatted_data_buffer[air_j],HEX);
+        #endif
+
+        format6(current_MMA[2]);  // Put it into format 1
+        MMA8452Q[6] = formatted_data_buffer[0];
+        MMA8452Q[7] = formatted_data_buffer[1];
+
+        #ifdef SERIAL_DEBUG
+        for (air_j = 0; air_j < LENGTH_FORMAT6; air_j++)
+            SerialUSB.print(formatted_data_buffer[air_j],HEX);
+        #endif
+
+        format6(0);  // Put it into format 1
+        MMA8452Q[8] = formatted_data_buffer[0];
+        MMA8452Q[9] = formatted_data_buffer[1];
+
+        #ifdef SERIAL_DEBUG
+        for (air_j = 0; air_j < LENGTH_FORMAT6; air_j++)
+            SerialUSB.print(formatted_data_buffer[air_j],HEX);
+        #endif
+    }
 
 // #ifdef SERIAL_DEBUG
 //     SerialUSB.print("MMA8452Q x: ");
@@ -212,13 +274,33 @@ void airsense_acquire (void)
 // #endif
 #endif
 
+
+
 #ifdef SPV1840LR5HB_include   ////was  SPV1840LR5HB_2_include
     Temp_uint16 = analogRead(PIN_RAW_MIC);
-    format1(Temp_uint16);
-    
-    SPV1840LR5HB[1] = (valid << 7) | LENGTH_FORMAT1;
-    SPV1840LR5HB[2] = formatted_data_buffer[0];
-    SPV1840LR5HB[3] = formatted_data_buffer[1];
+
+    if (temp_SPV == 0)
+    {
+        temp_SPV = Temp_uint16;
+
+        format1(Temp_uint16);
+        
+        SPV1840LR5HB[1] = (valid << 7) | LENGTH_FORMAT1;
+        SPV1840LR5HB[2] = formatted_data_buffer[0];
+        SPV1840LR5HB[3] = formatted_data_buffer[1];
+    }
+
+    else if (temp_SPV != 0)
+    {
+        current_SPV = (temp_SPV + Temp_uint16) / 2;
+        temp_SPV = Temp_uint16;
+
+        format1(current_SPV);
+        
+        SPV1840LR5HB[1] = (valid << 7) | LENGTH_FORMAT1;
+        SPV1840LR5HB[2] = formatted_data_buffer[0];
+        SPV1840LR5HB[3] = formatted_data_buffer[1];        
+    }
 
 #ifdef SERIAL_DEBUG
     // SerialUSB.print("SPV1840LR5HB: ");
@@ -228,6 +310,8 @@ void airsense_acquire (void)
         SerialUSB.print(formatted_data_buffer[air_j],HEX);
 #endif
 #endif
+//***************************************************************************************************//
+
 
 #ifdef TSYS01_include
     TSYS01_read();
