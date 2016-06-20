@@ -1,4 +1,4 @@
-ARD_HOME = $(MY_ARD_HOME)
+ARD_HOME = $(ARDUINO_DIR)
 TARGET = coresense
 PACKAGE = arduino
 ARCH = sam
