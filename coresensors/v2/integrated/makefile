@@ -1,12 +1,12 @@
 #ARD_HOME = /digital/github/waggle/devtools/arduino/compilers/arduino-1.6.5-linux/arduino_64
-ARD_HOME = /home/rajesh/WaggleGIT/arduino-1.6.7
+ARD_HOME = $(ARDUINO_DIR)
 TARGET = integrated
 PACKAGE = arduino
 ARCH = sam
 BOARD = arduino_due_x
 TYPE =
 FLASHER_BAUD_RATE = 115200
-PORT = ttyACM0
+PORT = waggle_coresense
 BOARD_FLASH = $(PACKAGE):$(ARCH):$(BOARD)
 BOOT_LOADER_TYPE = wiring
 PRE_FLASH_COMMAND = stty -F /dev/$(PORT) 1200 hupcl; sleep 2
