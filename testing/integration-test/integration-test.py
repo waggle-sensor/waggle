@@ -146,7 +146,13 @@ summary['cameras']['list'] = []
 for vendor_product in ['05a3:9830', '05a3:9520']:
 
     # example output os lsusb: "Bus 003 Device 006: ID 05a3:9520 ARC International"
-    for line in subprocess.check_output(["lsusb", "-d", vendor_product]).split("\n"):
+    lsusb_result=''
+    try:
+        lsusb_result = subprocess.check_output(["lsusb", "-d", vendor_product])
+    except:
+        pass
+    
+    for line in lsusb_result.split("\n"):
         #print "line:", line
         matchObj = re.match( r'Bus (\d{3}) Device (\d{3}): ID (\S{4}):(\S{4}) (.*)$', line, re.M|re.I)
         if matchObj:
@@ -169,8 +175,8 @@ for vendor_product in ['05a3:9830', '05a3:9520']:
                         #print "got:", key, matchObj.group(1).rstrip()
                         camera[key] = matchObj.group(1).rstrip()
             
-            # try v4l2 to extract resolution
-            # v4l2-ctl --list-formats-ext -d /dev/video0 ISSUE: I do not know which video device that would be!!!
+            # TODO: try v4l2 to extract resolution
+            # v4l2-ctl --list-formats-ext -d /dev/video? works , BUT: I do not know which video device that would be!!!
         
             print json.dumps(camera, indent=4)
             summary['cameras']['list'].append(camera)
