@@ -1,4 +1,4 @@
-This folder is for test Chemsense board and integrate codes for sensor boards inclusing airsense and lightsense.
+This folder is for test V3 Intel Chemsense board and integrate codes for sensor boards inclusing airsense and lightsense (Jun 21, 2016).
 
 Coresense folder contains codes for testing chemsense board. The goal for the test is 
 * get data from Chemsense board
