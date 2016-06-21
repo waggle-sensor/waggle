@@ -131,7 +131,7 @@ int compareKey(char k1, char k2, char k3)
 
 void chemsense_acquire()
 {
-    if (Serial3.available() > 0)
+    while (Serial3.available() > 0)
     {
         INPUT_BYTE = Serial3.read();     //read the incoming byte
 

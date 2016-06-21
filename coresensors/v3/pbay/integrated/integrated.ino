@@ -230,28 +230,28 @@ void loop()
     chemsense_acquire();
     #endif
 
-    #ifdef AIRSENSE_INCLUDE
-    airsense_acquire();
-    #endif
+    // #ifdef AIRSENSE_INCLUDE
+    // airsense_acquire();
+    // #endif
 
-    #ifdef LIGHTSENSE_INCLUDE
-    lightsense_acquire();
-    #endif
+    // #ifdef LIGHTSENSE_INCLUDE
+    // lightsense_acquire();
+    // #endif
 
     if (TIMER)
     {
-        // #ifdef AIRSENSE_INCLUDE
-        // airsense_acquire();
-        // #endif
+        #ifdef AIRSENSE_INCLUDE
+        airsense_acquire();
+        #endif
 
-        // #ifdef LIGHTSENSE_INCLUDE
-        // lightsense_acquire();
-        // #endif
+        #ifdef LIGHTSENSE_INCLUDE
+        lightsense_acquire();
+        #endif
 
         assemble_packet_empty();
         assemble_packet_whole();
 
-        for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i ++)
+        for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
         {
             SerialUSB.write(packet_whole[i]);
         }
@@ -267,7 +267,7 @@ void requestEvent()
 
     #else
     char bytes_to_send;
-    bytes_to_send = packet_whole[0x02] +0x05;
+    bytes_to_send = packet_whole[0x02] + 0x05;
     Wire1.write(packet_whole, bytes_to_send );
     #endif
 
