@@ -16,14 +16,14 @@ To compile the files, do
 make
 ```
 
-To compile and run the files, do
+To compile, build and run the files, do
 ```bash
 make run
 ```
 </br>
 __To exit the screen session created for the test, press Control+a, and press k and y afterward.__
 
-To test this and get decoded data with python script, do
+To compile, build the codes and get decoded data with python script, do
 ```bash
 make install
 ```
