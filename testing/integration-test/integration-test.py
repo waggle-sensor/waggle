@@ -136,38 +136,46 @@ summary['cameras']={}
 summary['cameras']['list'] = []
 
 
-# ELP-USB500W02M-{L21,L170} 
-# Sorry, there's no way to distiguish lenses.
 
 
-# example output os lsusb: "Bus 003 Device 006: ID 05a3:9520 ARC International"
-for line in subprocess.check_output(["lsusb", "-d", "05a3:9520" ]).split("\n"):
-    #print "line:", line
-    matchObj = re.match( r'Bus (\d{3}) Device (\d{3}): ID (\S{4}):(\S{4}) (.*)$', line, re.M|re.I)
-    if matchObj:
-        #print "matchObj.group() : ", matchObj.group()
+# known cameras:
+# 05a3:9520 -- ELP-USB500W02M-{L21,L170} ; Sorry, there's no way to distiguish lenses.
+# 05a3:9830 -- ELP-USB8MP02G-L75   Sonix_Technology_Co.__Ltd._USB_2.0_Camera_SN0001
+
+
+for vendor_product in ['05a3:9830', '05a3:9520']:
+
+    # example output os lsusb: "Bus 003 Device 006: ID 05a3:9520 ARC International"
+    for line in subprocess.check_output(["lsusb", "-d", vendor_product]).split("\n"):
+        #print "line:", line
+        matchObj = re.match( r'Bus (\d{3}) Device (\d{3}): ID (\S{4}):(\S{4}) (.*)$', line, re.M|re.I)
+        if matchObj:
+            #print "matchObj.group() : ", matchObj.group()
         
-        camera={}
-        camera['bus']           =matchObj.group(1).rstrip()
-        camera['device']        =matchObj.group(2).rstrip()
-        camera['idVendor']      =matchObj.group(3).rstrip()
-        camera['idProduct']     =matchObj.group(4).rstrip()
-        camera['vendor_name']   =matchObj.group(5).rstrip()
+            camera={}
+            camera['bus']           =matchObj.group(1).rstrip()
+            camera['device']        =matchObj.group(2).rstrip()
+            camera['idVendor']      =matchObj.group(3).rstrip()
+            camera['idProduct']     =matchObj.group(4).rstrip()
+            camera['vendor_name']   =matchObj.group(5).rstrip()
         
-        vendor_product = "%s:%s" % (camera['bus'], camera['device'])
+            bus_device = "%s:%s" % (camera['bus'], camera['device'])
         
-        for line in subprocess.check_output(["lsusb", "-s", vendor_product , "-v" ]).split("\n"):
-            #print line
-            for key in ['wHeight','wWidth']:
-                matchObj = re.match( r'.*%s\( 0\)\s+(\d+)' % (key), line, re.M|re.I)
-                if matchObj:
-                    #print "got:", key, matchObj.group(1).rstrip()
-                    camera[key] = matchObj.group(1).rstrip()
+            for line in subprocess.check_output(["lsusb", "-s", bus_device , "-v" ]).split("\n"):
+                #print line
+                for key in ['wHeight','wWidth']:
+                    matchObj = re.match( r'.*%s\( 0\)\s+(\d+)' % (key), line, re.M|re.I)
+                    if matchObj:
+                        #print "got:", key, matchObj.group(1).rstrip()
+                        camera[key] = matchObj.group(1).rstrip()
+            
+            # try v4l2 to extract resolution
+            # v4l2-ctl --list-formats-ext -d /dev/video0 ISSUE: I do not know which video device that would be!!!
         
-        print json.dumps(camera, indent=4)
-        summary['cameras']['list'].append(camera)
+            print json.dumps(camera, indent=4)
+            summary['cameras']['list'].append(camera)
         
-        # TODO:  fswebcam -r 2592x1944 --jpeg 95 -D 0 best.jpg
+            # TODO:  fswebcam -r 2592x1944 --jpeg 95 -D 0 best.jpg
        
 
 
