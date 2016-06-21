@@ -8,6 +8,15 @@ The formatted values will be stored in a sub-packet format which is explained al
 
 When you need to do "serial debug (verbose mode)" or need to test without one or more sensors, the mode can be modified by changing status defined in [config.cpp](./config.cpp).
 
+## Coresense_plugin
+
+The coresense plugin folder contains python codes which de-parse super-packets into human readable lines. Processes to de-parse super-packets are in [coresense_pluginUSBSerial.py](./coresense_plugin/coresense_pluginUSBSerial.py). To change USB serial port, see [coresense_InotifyKernel.py](./coresense_plugin/coresense_InotifyKernel.py) and change "/dev/waggle_coresense" in "newDevice.put('/dev/waggle_coresense')" to what you are using.
+
+To execute this process, do
+```bash
+python coresense.py
+```
+
 ## Tools and equipment required:
 * One of each Chemsense, Lightsense, and Airsense borads
 * Two ethernet cables and a micro-USB cable
