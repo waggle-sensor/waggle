@@ -1,6 +1,11 @@
 #include <Arduino.h>
 #line 1
 #line 1 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/integrated.ino"
+/*
+ * /coresensors/v3/pbay/integrated
+ * integrated.ino V3 (pbay)
+ */
+
 #include <Wire.h>
 #include "./libs/DueTimer/DueTimer.h"
 extern TwoWire Wire1;
@@ -187,15 +192,23 @@ int Temp_int[3];        //HIH
 byte Temp_byte[8];      //sensor setup, HIH
 
 bool TIMER = false;
+
+int on_off_counter = 1;;
+bool CHEM_OFF = false;
+bool TESTER = false;
+
+
 byte I2C_READ_COMPLETE = true;
 
-#line 189 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/integrated.ino"
+#line 200 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/integrated.ino"
 void setup();
-#line 221 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/integrated.ino"
+#line 233 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/integrated.ino"
+void tester();
+#line 238 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/integrated.ino"
 void handler();
-#line 226 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/integrated.ino"
+#line 243 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/integrated.ino"
 void loop();
-#line 263 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/integrated.ino"
+#line 300 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/integrated.ino"
 void requestEvent();
 #line 2 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/CRC_8_Waggle.ino"
 byte CRC_calc(byte length_data);
@@ -287,7 +300,7 @@ void writeEEPROM(unsigned int memory_address, byte data_byte );
 byte readEEPROM(unsigned int memory_address );
 #line 65 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/sensors_setup.ino"
 void Sensors_Setup(void);
-#line 189
+#line 200
 void setup()
 {
     // Let us wait for the processor and the sensors to settle down
@@ -317,7 +330,13 @@ void setup()
     #endif
 
     sensor_buff_initialization();
-    Timer3.attachInterrupt(handler).setPeriod(1000000 * 10).start(); // print super-packet every 30 secs
+    //Timer3.attachInterrupt(handler).setPeriod(1000000 * 10).start(); // print super-packet every 30 secs
+    Timer3.attachInterrupt(tester).setPeriod(1000000 * 35).start();  // POWER ON/OFF Chemsense board
+}
+
+void tester()
+{
+	TESTER = true;
 }
 
 void handler()
@@ -327,10 +346,30 @@ void handler()
 
 void loop()
 {
+	if (TESTER == false && CHEM_OFF == true)
+	{
+    	digitalWrite(PIN_CHEMSENSE_POW, LOW); // Power ON the Chemsense board
+    	CHEM_OFF = false;
+    	on_off_counter++;
+
+    	SerialUSB.print("CHEMSENSE_ON ");
+    	SerialUSB.println(on_off_counter);
+	}
+
     //Serial3.println("hello!!!");
     #ifdef CHEMSENSE_INCLUDE
     chemsense_acquire();
     #endif
+
+    if (TESTER == true)
+    {
+		digitalWrite(PIN_CHEMSENSE_POW, HIGH); // Power OFF the Chemsense board
+		SerialUSB.println("CHEMSENSE_OFF");
+		TESTER = false;
+		CHEM_OFF = true;
+
+		delay(1000 * 5);
+    }
 
     // #ifdef AIRSENSE_INCLUDE
     // airsense_acquire();

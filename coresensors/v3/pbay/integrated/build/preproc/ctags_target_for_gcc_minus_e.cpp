@@ -19714,6 +19714,11 @@ uint32_t USBD_Connected(void);
 # 2 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/build/sketch/integrated.ino.cpp" 2
 # 1 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/build/sketch/integrated.ino.cpp"
 # 1 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/integrated.ino"
+/*
+ * /coresensors/v3/pbay/integrated
+ * integrated.ino V3 (pbay)
+ */
+
 # 1 "/home/spark/.arduino15/packages/arduino/hardware/sam/1.6.7/libraries/Wire/src/Wire.h" 1
 /*
  * TwoWire.h - TWI/I2C library for Arduino Due
@@ -19913,7 +19918,7 @@ extern TwoWire Wire;
 
 
 extern TwoWire Wire1;
-# 2 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/integrated.ino" 2
+# 7 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/integrated.ino" 2
 # 1 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/build/sketch/./libs/DueTimer/DueTimer.h" 1
 /*
   DueTimer.h - DueTimer header file, definition of methods and attributes...
@@ -20042,7 +20047,7 @@ extern DueTimer Timer1;
 extern DueTimer Timer6;
 extern DueTimer Timer7;
 extern DueTimer Timer8;
-# 3 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/integrated.ino" 2
+# 8 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/integrated.ino" 2
 extern TwoWire Wire1;
 # 1 "/home/spark/Arduino/libraries/OneWire/OneWire.h" 1
 
@@ -20249,7 +20254,7 @@ class OneWire
 
 
 };
-# 5 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/integrated.ino" 2
+# 10 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/integrated.ino" 2
 # 1 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/build/sketch/config.cpp" 1
 //#define DELAY_MS 15000
 
@@ -20311,7 +20316,7 @@ class OneWire
 //#define RANDOMIZE_VALID 0x01
 //#define SERIAL_DEBUG 0x01
 //#define PRINT_BUFFER 0x01
-# 6 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/integrated.ino" 2
+# 11 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/integrated.ino" 2
 
 // Air/Lightsense ******************************************************** INCLUDING SENSORS ON AIR/LIGHTSENSE
 
@@ -20399,7 +20404,7 @@ private:
   //Private Variables
 
 };
-# 12 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/integrated.ino" 2
+# 17 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/integrated.ino" 2
 HTU21D myHumidity;
 
 
@@ -20586,7 +20591,7 @@ class Adafruit_Sensor {
  private:
   bool _autoRange;
 };
-# 17 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/integrated.ino" 2
+# 22 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/integrated.ino" 2
 # 1 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/build/sketch/./libs/Adafruit_BMP085_Unified-master/Adafruit_BMP085_U.h" 1
 /***************************************************************************
   This is a library for the BMP085 pressure sensor
@@ -20766,10 +20771,10 @@ class Adafruit_BMP085_Unified : public Adafruit_Sensor
     int32_t computeB5(int32_t ut);
     int32_t _sensorID;
 };
-# 18 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/integrated.ino" 2
+# 23 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/integrated.ino" 2
     Adafruit_BMP085_Unified bmp = Adafruit_BMP085_Unified(10085);
     sensors_event_t event;
-# 47 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/integrated.ino"
+# 52 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/integrated.ino"
     typedef enum TSYS_KPoly_E //structure to hold calibration values from temperature sensor registers
     {
         TSYS_K4 = 0,
@@ -20780,7 +20785,7 @@ class Adafruit_BMP085_Unified : public Adafruit_Sensor
     }
     TSYS_KPoly_T;
     uint16_t TSYS_coefficents[5];
-# 65 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/integrated.ino"
+# 70 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/integrated.ino"
 # 1 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/build/sketch/./libs/HMC5883L_waggle/HMC5883L_waggle.h" 1
 /***************************************************************************
   This is a library for the HMC5883 magnentometer/compass
@@ -20971,7 +20976,7 @@ class HMC5883_Sensor : public Adafruit_Sensor
     byte read8(byte address, byte reg);
     void read(void);
 };
-# 66 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/integrated.ino" 2
+# 71 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/integrated.ino" 2
     HMC5883_Sensor HMC5883_Magnetometer = HMC5883_Sensor(&Wire);
 
 
@@ -21038,7 +21043,7 @@ private:
 
  byte I2C_ADDRESS;
 };
-# 75 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/integrated.ino" 2
+# 80 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/integrated.ino" 2
     MCP342X mcp3428_1;
     MCP342X mcp3428_2;
 
@@ -21095,7 +21100,7 @@ class LibTempTMP421
     LibTempTMP421();
     float GetTemperature(void);
 };
-# 81 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/integrated.ino" 2
+# 86 "/home/spark/repos/waggle/coresensors/v3/pbay/integrated/integrated.ino" 2
     LibTempTMP421 TMP421_Sensor = LibTempTMP421();
 
 
@@ -21202,6 +21207,12 @@ int Temp_int[3]; //HIH
 byte Temp_byte[8]; //sensor setup, HIH
 
 bool TIMER = 0x0;
+
+int on_off_counter = 1;;
+bool CHEM_OFF = 0x0;
+bool TESTER = 0x0;
+
+
 byte I2C_READ_COMPLETE = 0x1;
 
 void setup()
@@ -21233,7 +21244,13 @@ void setup()
 
 
     sensor_buff_initialization();
-    Timer3.attachInterrupt(handler).setPeriod(1000000 * 10).start(); // print super-packet every 30 secs
+    //Timer3.attachInterrupt(handler).setPeriod(1000000 * 10).start(); // print super-packet every 30 secs
+    Timer3.attachInterrupt(tester).setPeriod(1000000 * 35).start(); // POWER ON/OFF Chemsense board
+}
+
+void tester()
+{
+ TESTER = 0x1;
 }
 
 void handler()
@@ -21243,10 +21260,30 @@ void handler()
 
 void loop()
 {
+ if (TESTER == 0x0 && CHEM_OFF == 0x1)
+ {
+     digitalWrite(47, 0x0); // Power ON the Chemsense board
+     CHEM_OFF = 0x0;
+     on_off_counter++;
+
+     SerialUSB.print("CHEMSENSE_ON ");
+     SerialUSB.println(on_off_counter);
+ }
+
     //Serial3.println("hello!!!");
 
     chemsense_acquire();
 
+
+    if (TESTER == 0x1)
+    {
+  digitalWrite(47, 0x1); // Power OFF the Chemsense board
+  SerialUSB.println("CHEMSENSE_OFF");
+  TESTER = 0x0;
+  CHEM_OFF = 0x1;
+
+  delay(1000 * 5);
+    }
 
     // #ifdef AIRSENSE_INCLUDE
     // airsense_acquire();
