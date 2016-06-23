@@ -7,6 +7,10 @@ import os
 import subprocess
 import re
 
+import sys
+sys.path.append('/usr/lib/waggle/nodecontroller/scripts')
+from wagman_client import *
+
 #Test serial connection with XU4 and with C1+
 #use minicom
 
@@ -93,11 +97,16 @@ summary['odroid-model']=get_odroid_model()
 
 ### WagMan
 summary['wagman']={}
+summary['wagman']['id']=''
 summary['wagman']['connected']=wagman_connected()
-print "wagman connected:", summary['wagman']['connected']
 
-# TODO later: talk with wagman
-
+if summary['wagman']['connected']:
+    try:
+        summary['wagman']['id'] = wagman_client(['id'])[0]
+    except:
+        pass
+    
+    print "wagman_id: \"%s\"" % (summary['wagman']['id'])
 
 
 
@@ -182,6 +191,7 @@ for vendor_product in ['05a3:9830', '05a3:9520']:
             summary['cameras']['list'].append(camera)
         
             # TODO:  fswebcam -r 2592x1944 --jpeg 95 -D 0 best.jpg
+            # apt-get install fswebcam
        
 
 
