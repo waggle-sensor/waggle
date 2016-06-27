@@ -15,7 +15,7 @@ You do not need to download the image with your browser at this point, just spec
 export URL="http://www.mcs.anl.gov/research/projects/waggle/downloads/waggle_images/nodecontroller/ODROID_MODEL" # for nodecontroller
 export IMAGE="waggle-nodecontroller-MODEL-VERSION.img"  # do not include the ".xz" suffix !
 # or
-export URL="http://www.mcs.anl.gov/research/projects/waggle/downloads/waggle_images/extension_node/ODROID_MODEL" # for extensionnode
+export URL="http://www.mcs.anl.gov/research/projects/waggle/downloads/waggle_images/extension_node/odroid-xu3/" # for extensionnode
 export IMAGE="waggle-guestnode-MODEL-VERSION.img"  # do not include the ".xz" suffix !
 ```
 
