@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os.path
 import glob
@@ -32,7 +32,7 @@ summary = {}
 
 
 def read_file( str ):
-    print "read_file: "+str
+    print("read_file: "+str)
     if not os.path.isfile(str) :
         return ""
     with open(str,'r') as file_:
@@ -118,7 +118,7 @@ if summary['wagman']['connected']:
     except:
         pass
     
-    print "wagman_id: \"%s\"" % (summary['wagman']['id'])
+    print("wagman_id: \"%s\"" % (summary['wagman']['id']))
 
 
 
@@ -132,7 +132,7 @@ if summary['wagman']['connected']:
 ### Coresence
 summary['coresense']={}
 summary['coresense']['connected']=coresense_connected()
-print "coresense connected:", summary['coresense']['connected']
+print("coresense connected:", summary['coresense']['connected'])
 
 # TODO: Read sensor values ?
 #(get values? use waggle-plugin log ?)
@@ -199,7 +199,7 @@ for vendor_product in ['05a3:9830', '05a3:9520']:
             # TODO: try v4l2 to extract resolution
             # v4l2-ctl --list-formats-ext -d /dev/video? works , BUT: I do not know which video device that would be!!!
         
-            print json.dumps(camera, indent=4)
+            print(json.dumps(camera, indent=4))
             summary['cameras']['list'].append(camera)
         
             # TODO:  fswebcam -r 2592x1944 --jpeg 95 -D 0 best.jpg
@@ -223,7 +223,7 @@ for vendor_product in ['05a3:9830', '05a3:9520']:
 summary['modems']={}
 summary['modems']['list'] = list_pantech_modems()
 summary['modems']['list'].append(list_other_modems())
-print "modems:" , summary['modems']['list']
+print("modems:" , summary['modems']['list'])
 
 summary['modems']['IMEI']='NA'
 
@@ -237,7 +237,7 @@ summary['modems']['IMEI']='NA'
 
  
  
-print json.dumps(summary, indent=4)
+print(json.dumps(summary, indent=4))
 
 
 
