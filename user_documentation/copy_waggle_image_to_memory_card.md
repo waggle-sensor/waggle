@@ -12,10 +12,10 @@ http://www.mcs.anl.gov/research/projects/waggle/downloads/
 You do not need to download the image with your browser at this point, just specify the image filename in the variable IMAGE below. The environment variable IMAGE contains the image filename without the url and without the suffix ".xz"! This makes it easier to run other commands later, as they then can simply be copied into the terminal without changes. Now paste these two lines (including your changes to the second line) into your terminal:
 
 ```bash
-export URL="http://www.mcs.anl.gov/research/projects/waggle/downloads/waggle_images/nodecontroller/ODROID_MODEL" # for nodecontroller
+export URL="http://www.mcs.anl.gov/research/projects/waggle/downloads/waggle_images/nodecontroller/odroid-c1/" # for nodecontroller
 export IMAGE="waggle-nodecontroller-MODEL-VERSION.img"  # do not include the ".xz" suffix !
 # or
-export URL="http://www.mcs.anl.gov/research/projects/waggle/downloads/waggle_images/extension_node/ODROID_MODEL" # for extensionnode
+export URL="http://www.mcs.anl.gov/research/projects/waggle/downloads/waggle_images/extension_node/odroid-xu3/" # for extensionnode
 export IMAGE="waggle-guestnode-MODEL-VERSION.img"  # do not include the ".xz" suffix !
 ```
 
@@ -97,4 +97,6 @@ sudo diskutil eject /dev/r${DEVICE_NAME}
 ```
 
 You can now safely disconnect the memory card from your computer.
+
+#should probably add a link here
 
