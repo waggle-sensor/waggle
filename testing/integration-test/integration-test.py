@@ -8,7 +8,7 @@ import subprocess
 import re
 
 import sys
-sys.path.append('/usr/lib/waggle/nodecontroller/scripts')
+sys.path.append('/usr/lib/waggle/nodecontroller/wagman')
 from wagman_client import *
 
 #Test serial connection with XU4 and with C1+
@@ -72,6 +72,18 @@ def read_sourced_env(script):
     
     return environment
     
+
+def get_command_output(command):
+    result = ''
+    try:
+        proc = subprocess.Popen(command, stdout = subprocess.PIPE)
+        for line in proc.stdout:
+            result += line
+    except Exception:
+        return ''
+    
+    return line    
+        
     
 def get_mac_address():
     environment = read_sourced_env('/usr/lib/waggle/waggle_image/scripts/detect_mac_address.sh')
@@ -102,7 +114,7 @@ summary['wagman']['connected']=wagman_connected()
 
 if summary['wagman']['connected']:
     try:
-        summary['wagman']['id'] = wagman_client(['id'])[0]
+        summary['wagman']['id'] = wagman_client(['id'])[1].strip()
     except:
         pass
     
