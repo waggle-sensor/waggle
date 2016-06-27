@@ -65,8 +65,8 @@ def read_sourced_env(script):
     proc = subprocess.Popen(command, stdout = subprocess.PIPE)
 
     for line in proc.stdout:
-      (key, _, value) = line.partition("=")
-      environment[key] = value.rstrip()
+        (key, _, value) = line.decode().partition("=")
+        environment[key] = value.rstrip()
 
     proc.communicate()
     
