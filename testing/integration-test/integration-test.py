@@ -82,7 +82,7 @@ def get_command_output(command):
     except Exception:
         return ''
     
-    return line    
+    return result    
         
     
 def get_mac_address():
@@ -121,15 +121,18 @@ if summary['wagman']['connected']:
     print("wagman_id: \"%s\"" % (summary['wagman']['id']))
 
 
+# TODO thermistors
+# TODO wagman reset (SRE line)
+
+
 
 ### Extension node
 
-# TODO: something like: ssh extensionnode cat /etc/hostname  ???
-# TODO: Odroid model and mac-address, e.g. ssh extensionnode /usr/lib/waggle/waggle_image/scripts/detect_odroid_model.sh
+# TODO: recursive call (scp and ssh) (only one recursion!!!)
 
 
 
-### Coresence
+### Coresense
 summary['coresense']={}
 summary['coresense']['connected']=coresense_connected()
 print("coresense connected:", summary['coresense']['connected'])
@@ -152,7 +155,9 @@ summary['chemsense']['UUID']='NA'
 
 ### Cameras
 
-# TODO: parse lsusb
+
+# issue: found no way to map lsusb and /dev/videoX devices
+
 summary['cameras']={}
 summary['cameras']['list'] = []
 
@@ -207,14 +212,19 @@ for vendor_product in ['05a3:9830', '05a3:9520']:
        
 
 
-        
 
-       
-#TODO: collect vendor ID and device ID
+#TODO fswebcam and confirm image
 
-#TODO: get picture for verification
+# list devices
+#ls -1 /dev/ | grep "^video"
 
+# check if device is virtual
+# udevadm info --query=all /dev/video10 | grep "P: /devices/virtual" | wc -l
 
+# get highest resolution
+# v4l2-ctl --list-formats-ext -d /dev/video0
+
+# v4l2-ctl --list-formats-ext -d /dev/video0 | grep -o "Size: Discrete [0-9]*x[0-9]*" | grep -o "[0-9]*x[0-9]*"
 
 
 
