@@ -205,7 +205,7 @@ void Carrier()
         chemsense_MAC_ID[1] = (valid << 7) | LENGTH_FORMAT3;
 
         for (j = 0; j < LENGTH_FORMAT3; j++)
-            chemsense_MAC_ID[2 + j] = formatted_data_buffer[LENGTH_FORMAT3 - j - 1];
+            chemsense_MAC_ID[2 + j] = formatted_data_buffer[j];
 	}
 
 	else if (compareKey('S', 'H', 'T') == 0)  // wait SHH
@@ -678,54 +678,4 @@ void Carrier()
             SerialUSB.print(formatted_data_buffer[j],HEX);
 #endif
     }
-
-// #ifdef SERIAL_DEBUG
-//     SerialUSB.print("\r\n");
-// #endif
 }
-
-// // formatting data
-// void Hex_BAD()          // format3
-// {
-//     //SerialUSB.println(VAL);
-// 	strncpy(first, VAL, 6);
-// 	i += 6;
-// 	strncpy(second, i, 6);
-// 	Temp_ulong[0]= (unsigned long) strtol(first, NULL, 16);      //too short to contain the whole value of 'BAD'
-// 	Temp_ulong[1] = (unsigned long) strtol(second, NULL, 16);
-// 	byte result[6];
-// 	result[0] = (Temp_ulong[0] & 0xFF0000) >> 16;
-// 	result[1] = (Temp_ulong[0] & 0x00FF00) >> 8;
-// 	result[2] = (Temp_ulong[0] & 0x0000FF);
-// 	result[3] = (Temp_ulong[1] & 0xFF0000) >> 16;
-// 	result[4] = (Temp_ulong[1] & 0x00FF00) >> 8;
-// 	result[5] = (Temp_ulong[1] & 0x0000FF);
-// 	format3(result);
-// }
-//
-// void Hex_form1()
-// {
-//     Temp_uint16 = (unsigned int)strtol(VAL, NULL, 16);   //hex string to int
-//     format1(Temp_uint16);
-// }
-//
-// void Int_form2()
-// {
-//
-//     Temp_int[0] = (int)atoi(VAL);
-//     format2(Temp_int[0]);
-// }
-//
-// void Int_form4()
-// {
-//     Temp_ulong[0] = (unsigned long)atol(VAL);              //char to int
-//     format4(Temp_ulong[0]);
-// }
-//
-// void Int_form5()
-// {
-//     Temp_long = (long) strtol(VAL, NULL, 10);
-//     format5(Temp_long);
-// }
-
-

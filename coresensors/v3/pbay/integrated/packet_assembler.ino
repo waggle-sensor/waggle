@@ -38,13 +38,13 @@ void assemble_packet_whole()
     SerialUSB.print("Airsense-");
    for (unsigned char a = 0x02; a < 0x08; a++)
     {
-        if ((MAC_ID[0x09 - a] & 0xF0) == 0x00)
+        if ((MAC_ID[a] & 0xF0) == 0x00)
         {
 
             SerialUSB.print('0');            
         }
 
-        SerialUSB.print(MAC_ID[0x09 - a],HEX);
+        SerialUSB.print(MAC_ID[a],HEX);
 
         if (a < 0x07) { SerialUSB.print(":"); }
         else { SerialUSB.println("\r"); }
@@ -53,13 +53,13 @@ void assemble_packet_whole()
     SerialUSB.print("Lightsense-");
     for (unsigned char a = 0x02; a < 0x08; a++)
     {
-        if ((MAC_ID[0x09 - a] & 0xF0) == 0x00)
+        if ((MAC_ID[a] & 0xF0) == 0x00)
         {
 
             SerialUSB.print('0');            
         }
 
-        SerialUSB.print(MAC_ID[0x09 - a],HEX);
+        SerialUSB.print(MAC_ID[a],HEX);
 
         if (a < 0x07) { SerialUSB.print(":"); }
         else { SerialUSB.println("\r"); }
@@ -267,32 +267,6 @@ void assemble_packet_whole()
     }
 #endif
 
-#ifdef D6T_include    // Append D6T
-    if (D6T[1] > 10)
-    {
-        for (buffer_num = 0; buffer_num < sizeof(D6T); buffer_num++)
-        {
-            packet_whole[packet_whole_index] = D6T[buffer_num];
-            // Increment index for whole packet
-            packet_whole_index++;
-        }
-        D6T[1] = (chg_valid << 7) | (LENGTH_FORMAT6 * 17);
-    }
-#endif
-
-#ifdef MLX90614_include    // Append MLX90614
-    if (MLX90614[1] > 10)
-    {
-        for (buffer_num = 0; buffer_num < sizeof(MLX90614); buffer_num++)
-        {
-            packet_whole[packet_whole_index] = MLX90614[buffer_num];
-            // Increment index for whole packet
-            packet_whole_index++;
-        }
-        MLX90614[1] = (chg_valid << 7) | LENGTH_FORMAT1;
-    }
-#endif
-
 #ifdef TMP421_include    // Append TMP421
     if (TMP421[1] > 10)
     {
@@ -325,9 +299,9 @@ void assemble_packet_whole()
         SerialUSB.print("Chemsense-");
         for (j = 0x02; j < 0x08; j++)
         {
-            if ((chemsense_MAC_ID[0x09 - j] & 0xf0) == 0x00)
+            if ((chemsense_MAC_ID[j] & 0xf0) == 0x00)
                 SerialUSB.print('0');
-            SerialUSB.print(chemsense_MAC_ID[0x09 - j],HEX);
+            SerialUSB.print(chemsense_MAC_ID[j],HEX);
             if (j < LENGTH_FORMAT3 + 1) { SerialUSB.print(":"); }
             else { SerialUSB.println("\r"); }
         }

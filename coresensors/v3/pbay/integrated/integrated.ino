@@ -60,6 +60,11 @@ HTU21D myHumidity;
     TSYS_KPoly_T;
     uint16_t TSYS_coefficents[5];
 #endif
+    
+#ifdef SPV1840LR5HB_include
+    #define SPV_1_SPL 6
+    #define SPV_1_AMP 5
+#endif
 
 #endif
 
@@ -85,11 +90,6 @@ HTU21D myHumidity;
     #include "./libs/LibTempTMP421/LibTempTMP421.h"
     LibTempTMP421 TMP421_Sensor = LibTempTMP421();
 #endif
-
-// #ifdef SPV1840LR5HB_1_include
-//     #define SPV_1_SPL 6
-//     #define SPV_1_AMP 5
-// #endif
 
 #endif
 // ****************************************************************** INCLUDING SENSORS ON AIR/LIGHTSENSE
@@ -190,7 +190,7 @@ byte Temp_byte[8];      //sensor setup, HIH
 
 bool TIMER = true;
 
-int on_off_counter = 1;;
+int on_off_counter = 1;
 bool CHEM_OFF = false;
 bool TESTER = false;
 
@@ -206,28 +206,25 @@ void setup()
     Serial3.begin(CHEMSENSE_DATARATE); // data from the Chemsense board arrives here.
 
     initializeSensorBoard();
+    sensor_buff_initialization();
 
     //Setup the I2C buffer
-    for (byte i=0x00; i<LENGTH_WHOLE; i++)
+    for (byte i = 0x00; i < LENGTH_WHOLE; i++)
         packet_whole[i] = 0x00;
 
     assemble_packet_empty();
-    Sensors_Setup();
 
     #ifdef CHEMSENSE_INCLUDE
     digitalWrite(PIN_CHEMSENSE_POW, LOW); // Power on the Chemsense board
     #endif
 
+    Sensors_Setup();
+    
     #ifdef I2C_INTERFACE
     I2C_READ_COMPLETE = false;
     Wire1.begin(I2C_SLAVE_ADDRESS);
     Wire1.onRequest(requestEvent);
     #endif
-
-    sensor_buff_initialization();
-    
-
-      //Timer3.attachInterrupt(tester).setPeriod(1000000 * 35).start();  // POWER ON/OFF Chemsense board
 }
 
 void handler()
@@ -238,6 +235,8 @@ void handler()
 void loop()
 {
 
+    // digitalWrite(PIN_CHEMSENSE_POW, LOW); // Power on the Chemsense board
+
     #ifdef AIRSENSE_INCLUDE
     airsense_acquire();
     #endif
@@ -245,7 +244,7 @@ void loop()
     lightsense_acquire();
     #endif
     
-    Timer3.attachInterrupt(handler).setPeriod(1000000 * TIME_DELAY).start(); // print super-packet every 30 secs
+    Timer3.attachInterrupt(handler).setPeriod(1000000 * 24).start(); // print super-packet every 30 secs
 
 
     while (TIMER)
@@ -259,12 +258,8 @@ void loop()
     assemble_packet_whole();
     TIMER = true;
     
-    // for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
-    // {
-    //     SerialUSB.write(packet_whole[i]);
-    //     SerialUSB.print(packet_whole[i], HEX);
-    //     SerialUSB.print(":");
-    // }
+    for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
+        SerialUSB.write(packet_whole[i]);
     
         
 }
