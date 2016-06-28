@@ -74,16 +74,15 @@ def read_sourced_env(script):
     
 
 def get_command_output(command):
-    result = ''
-    try:
-        proc = subprocess.Popen(command, stdout = subprocess.PIPE, shell=True)
-        for line in proc.stdout:
-            result += line.decode()
-    except Exception as e:
-        print("error:", str(e))
-        return ''
     
-    return result    
+    result = ''
+    
+    try:
+        result = subprocess.check_output(command, shell=True)
+    except:
+        pass
+    
+    return result.decode("utf-8").rstrip()
         
     
 def get_mac_address():
@@ -179,7 +178,7 @@ for vendor_product in ['05a3:9830', '05a3:9520']:
     except:
         pass
     
-    for line in lsusb_result.split("\n"):
+    for line in lsusb_result.decode("utf-8").rstrip().split("\n"):
         #print "line:", line
         matchObj = re.match( r'Bus (\d{3}) Device (\d{3}): ID (\S{4}):(\S{4}) (.*)$', line, re.M|re.I)
         if matchObj:
@@ -218,7 +217,7 @@ for vendor_product in ['05a3:9830', '05a3:9520']:
 
 # list devices
 #ls -1 /dev/ | grep "^video"
-video_devices = get_command_output('ls -1 /dev/ | grep "^video"').rstrip().split('\n')
+video_devices = get_command_output('ls -1 /dev/ | grep "^video"').split('\n')
 
 summary['video_devices']={}
 summary['video_devices']['list'] = []
@@ -227,7 +226,7 @@ for video_device in video_devices:
     print("--------------------------- %s", video_device)
     command  = 'udevadm info --query=all /dev/%s | grep "P: /devices/virtual" | wc -l' % (video_device)
     print(command)
-    count_virtual = get_command_output(command).rstrip()
+    count_virtual = get_command_output(command)
     print("\"%s\"" % (count_virtual))
     if count_virtual == "1":
         # video device is virtual
@@ -240,7 +239,7 @@ for video_device in video_devices:
     
     #TODO list all possible resolutions (rightv now this just extracts the highest resolution and ignores the Pixel Format)
     # alternative to extract resolution might be: ffmpeg -f v4l2 -list_formats all -i /dev/video0
-    resolutions = get_command_output('v4l2-ctl --list-formats-ext -d /dev/%s | grep -o "Size: Discrete [0-9]*x[0-9]*" | grep -o "[0-9]*x[0-9]*"' % (video_device)).rstrip().split('\n')
+    resolutions = get_command_output('v4l2-ctl --list-formats-ext -d /dev/%s | grep -o "Size: Discrete [0-9]*x[0-9]*" | grep -o "[0-9]*x[0-9]*"' % (video_device)).split('\n')
     print(resolutions)
     max_resolution_size = 0
     max_resolution_x = 0
