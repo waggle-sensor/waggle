@@ -76,10 +76,11 @@ def read_sourced_env(script):
 def get_command_output(command):
     result = ''
     try:
-        proc = subprocess.Popen(command, stdout = subprocess.PIPE)
+        proc = subprocess.Popen(command, stdout = subprocess.PIPE, shell=True)
         for line in proc.stdout:
-            result += line
-    except Exception:
+            result += line.decode()
+    except Exception as e:
+        print("error:", str(e))
         return ''
     
     return result    
@@ -211,16 +212,57 @@ for vendor_product in ['05a3:9830', '05a3:9520']:
             # apt-get install fswebcam
        
 
-
+#TODO install fswebcam  and v4l-utils on image
 
 #TODO fswebcam and confirm image
 
 # list devices
 #ls -1 /dev/ | grep "^video"
+video_devices = get_command_output('ls -1 /dev/ | grep "^video"').rstrip().split('\n')
 
-# check if device is virtual
-# udevadm info --query=all /dev/video10 | grep "P: /devices/virtual" | wc -l
+summary['video_devices']={}
+summary['video_devices']['list'] = []
 
+for video_device in video_devices:
+    print("--------------------------- %s", video_device)
+    command  = 'udevadm info --query=all /dev/%s | grep "P: /devices/virtual" | wc -l' % (video_device)
+    print(command)
+    count_virtual = get_command_output(command).rstrip()
+    print("\"%s\"" % (count_virtual))
+    if count_virtual == "1":
+        # video device is virtual
+        print("virtual device")
+        continue
+    print("NOT virtual device")
+    
+    video_device_obj={}
+    video_device_obj['device']='/dev/%s' % (video_device)
+    
+    #TODO list all possible resolutions (rightv now this just extracts the highest resolution and ignores the Pixel Format)
+    # alternative to extract resolution might be: ffmpeg -f v4l2 -list_formats all -i /dev/video0
+    resolutions = get_command_output('v4l2-ctl --list-formats-ext -d /dev/%s | grep -o "Size: Discrete [0-9]*x[0-9]*" | grep -o "[0-9]*x[0-9]*"' % (video_device)).rstrip().split('\n')
+    print(resolutions)
+    max_resolution_size = 0
+    max_resolution_x = 0
+    max_resolution_y = 0
+    for resolution in resolutions:
+        print("resolution:", resolution)
+        (x, _, y) = resolution.partition('x')
+        try:
+            size = int(x)*int(y)
+        except Exception:
+            print("error: could not parse resolution", resolution)
+            continue
+        print(x,y, size)
+        if size > max_resolution_size:
+            max_resolution_size = size
+            max_resolution_x = x
+            max_resolution_y = y
+    print(max_resolution_x, max_resolution_y , max_resolution_size)
+    video_device_obj['max_resolution_x'] = max_resolution_x
+    video_device_obj['max_resolution_y'] = max_resolution_y
+    video_device_obj['max_resolution_size'] = max_resolution_size
+    summary['video_devices']['list'].append(video_device_obj)
 # get highest resolution
 # v4l2-ctl --list-formats-ext -d /dev/video0
 
