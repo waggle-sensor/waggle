@@ -6,7 +6,8 @@
 //** integrated.ino
 OneWire ds2401(PIN_DS2401);  //DS2401 PIN
 byte I2C_READ_COMPLETE = true;
-bool TIMER = true;		// TIMER FOR 24sec period of getting data from chemsense
+bool TIMER = false;			// TIMER FOR 29sec period to get data from all sensors
+bool C_TIMER = false; 		// TIMER FOR 4sec period to get data from chemsense
 
 
 //** air, light, chem, TMP112, TSYS01, MMA84521, sensor_setup

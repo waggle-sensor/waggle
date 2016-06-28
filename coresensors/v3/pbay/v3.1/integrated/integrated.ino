@@ -9,7 +9,7 @@ extern TwoWire Wire1;
 #include <OneWire.h>
 #include "config.cpp"
 
-#include "./variable.h"     //** byte arrays, variables for all sensors and integrated.ino
+#include "./variables.h"     //** byte arrays, variables for all sensors and integrated.ino
 #include "./setsensor.h"    //** add variables for sensors on airsense and lightsense boards depening on its availability 
 
 void setup()
@@ -46,17 +46,36 @@ void setup()
     Wire1.begin(I2C_SLAVE_ADDRESS);
     Wire1.onRequest(requestEvent);
     #endif
-    
-    // Timer3.attachInterrupt(tester).setPeriod(1000000 * 35).start();
 }
 
 void handler()
 {
-    TIMER = false;
+    TIMER = true;
+}
+
+void chem_handler()
+{
+    C_TIMER = true;
 }
 
 void loop()
 {
+    Timer3.attachInterrupt(handler).setPeriod(1000000 * 29).start();
+    while (TIMER)
+    {
+        Timer3.attachInterrupt(chem_handler).setPeriod(1000000 * 4).start();
+        while (C_TIMER)
+        {
+            #ifdef CHEMSENSE_INCLUDE
+            chemsense_acquire();
+            #endif        
+        }
+
+        Timer3.attachInterrupt(chem_handler).stop();
+    }
+
+    Timer3.attachInterrupt(handler).stop();
+    assemble_packet_whole();
 
     #ifdef AIRSENSE_INCLUDE
     airsense_acquire();
@@ -66,43 +85,48 @@ void loop()
     lightsense_acquire();
     #endif
 
-    Timer3.attachInterrupt(handler).setPeriod(1000000 * 25).start(); 
+    for (byte i = 0; i < packet_whole[1] + 5; i++)
+        SerialUSB.write(packet_whole[i]);
 
-    while (TIMER)
+
+#ifdef I2C_INTERFACE
+
+    if (I2C_READ_COMPLETE == true)
     {
+        #ifdef AIRSENSE_INCLUDE
+        airsense_acquire();
+        #endif
+
+        #ifdef LIGHTSENSE_INCLUDE
+        lightsense_acquire();
+        #endif
+
         #ifdef CHEMSENSE_INCLUDE
-        chemsense_acquire();
+        new_chemsense_acquire();
         #endif
     }
-
-    Timer3.attachInterrupt(handler).stop();
-    assemble_packet_whole();
-    TIMER = true;
-
-    for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
-    {
-        SerialUSB.write(packet_whole[i]);
-    }
-
         
+        assemble_packet_whole();
+        I2C_READ_COMPLETE = false;
+#endif
 }
 
-// #ifdef I2C_INTERFACE
-// void requestEvent()
-// {
-//     #ifdef I2C_INTERFACE_CONST_SIZE
-//     Wire1.write(packet_whole, I2C_PACKET_SIZE);
+#ifdef I2C_INTERFACE
+void requestEvent()
+{
+    #ifdef I2C_INTERFACE_CONST_SIZE
+    Wire1.write(packet_whole, I2C_PACKET_SIZE);
 
-//     #else
-//     char bytes_to_send;
-//     bytes_to_send = packet_whole[0x02] + 0x05;
-//     Wire1.write(packet_whole, bytes_to_send );
-//     #endif
+    #else
+    char bytes_to_send;
+    bytes_to_send = packet_whole[0x02] + 0x05;
+    Wire1.write(packet_whole, bytes_to_send );
+    #endif
 
-//     I2C_READ_COMPLETE = true;
-//     assemble_packet_empty();
-// }
-// #endif
+    I2C_READ_COMPLETE = true;
+    assemble_packet_empty();
+}
+#endif
 
 
 

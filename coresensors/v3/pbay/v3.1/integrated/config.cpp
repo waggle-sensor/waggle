@@ -138,21 +138,37 @@
     #define TMP421_include 0x01
 #endif
 
+// Chemsense board
+#ifdef CHEMSENSE_INCLUDE
+    #define chemsense_MAC_ID_include 0x01;
+    #define SHT25_include 0x01;
+    #define LPS25H_include 0x01;
+    #define Si1145_include 0x01;
+
+    #define total_reducing_gases_include 0x01;
+    #define total_oxidizing_gases_include 0x01;
+    #define sulfur_dioxide_include 0x01;
+    #define hydrogen_sulphide_include 0x01;
+    #define ozone_include 0x01;
+    #define nitrogen_dioxide_include 0x01;
+    #define carbon_monoxide_include 0x01;
+
+    #define CO_ADC_temp_include 0x01;
+    #define IAQ_IRR_ADC_temp_include 0x01;
+    #define O3_NO2_ADC_temp_include 0x01;
+    #define SO2_H2S_ADC_temp_include 0x01;
+    #define CO_LMP_temp_include 0x01;
+
+    #define three_accel_and_vib_include 0x01;
+    #define three_gyro_and_orientation_include 0x01;
+#endif
+
 //#define system_health_include 0x01
 //#define RANDOMIZE_VALID 0x01
 //#define SERIAL_DEBUG 0x01
 //#define PRINT_BUFFER 0x01
 
-#define USBSERIAL_INTERFACE 0x01
-
-// #define I2C_INTERFACE 0x01
-// #define I2C_INTERFACE_CONST_SIZE 0x01
-// #define I2C_PACKET_SIZE 191
-// #define I2C_SLAVE_ADDRESS 0x03
-
-
 //*****************************************************************************************************************************
-
 #define USBSERIAL_INTERFACE 0x01
 
 #ifndef USBSERIAL_INTERFACE

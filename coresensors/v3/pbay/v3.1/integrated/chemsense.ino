@@ -6,12 +6,14 @@
  **/
 
 
+// CHENAGE THIS CODE USING READLINE();
+
 void form3_hex_string_to_hex()                     // Hex to hex: form3
 {
     Temp_ulong[0] = 0x000000;
     Temp_ulong[1] = 0x000000;
 
-    for (int i = 0; i < VAL_NUM_ID; i++)
+    for (i = 0; i < VAL_NUM_ID; i++)
     {
         if (VAL[i] > '9')                   // letters
             VAL[i] = VAL[i] - 'a' + 0x0a;
@@ -19,9 +21,9 @@ void form3_hex_string_to_hex()                     // Hex to hex: form3
             VAL[i] = VAL[i] - '0';
 
         if (i < VAL_NUM_ID / 2)
-            Temp_ulong[0] = Temp_ulong[0] | (VAL[i] << (VAL_NUM_ID / 2 - i - 1) * 4);
+            Temp_ulong[0] = Temp_ulong[0] | (VAL[i] << ((VAL_NUM_ID / 2) - 1 - i) * 4);
         else
-            Temp_ulong[1] = Temp_ulong[1] | (VAL[i] << (VAL_NUM_ID - i - 1) * 4);
+            Temp_ulong[1] = Temp_ulong[1] | (VAL[i] << (VAL_NUM_ID - 1 - i ) * 4);
     }
 
     Temp_byte[0] = (Temp_ulong[0] & 0xFF0000) >> 16;
@@ -36,7 +38,7 @@ void form3_hex_string_to_hex()                     // Hex to hex: form3
 void form1_hex_string_to_unsigned_int()            //hex to uint: form1
 {
     Temp_uint16 = 0x0000;
-    for (int i = 0; i < VAL_NUM_ID; i++)
+    for (i = 0; i < VAL_NUM_ID; i++)
     {
         if (VAL[i] > '9')                   // letters
             VAL[i] = VAL[i] - 'a' + 0x0a;
@@ -51,7 +53,7 @@ void form1_hex_string_to_unsigned_int()            //hex to uint: form1
 void form1_int_string_to_unsigned_int()                //form1
 {
     Temp_uint16 = 0;
-    for (int i = 0; i < VAL_NUM_ID; i++)
+    for (i = 0; i < VAL_NUM_ID; i++)
     {
         if (VAL[i] == '-')
             continue;
@@ -65,7 +67,7 @@ void form1_int_string_to_unsigned_int()                //form1
 void form4_int_string_to_unsigned_long(int shift_needed)                //form4
 {
     Temp_ulong[0] = 0;
-    for (int i = 0; i < VAL_NUM_ID; i++)
+    for (i = 0; i < VAL_NUM_ID; i++)
     {
         if (VAL[i] == '-')
             continue;
@@ -82,7 +84,7 @@ void form4_int_string_to_unsigned_long(int shift_needed)                //form4
 void form2_int_string_to_int()                   // form2
 {
     Temp_int[0] = 0;
-    for (int i = 0; i < VAL_NUM_ID; i++)
+    for (i = 0; i < VAL_NUM_ID; i++)
     {
         if (VAL[i] == '-')
             continue;
@@ -98,7 +100,7 @@ void form2_int_string_to_int()                   // form2
 void form5_int_string_to_long()    // form5
 {
     Temp_long = 0;
-    for (int i = 0; i < VAL_NUM_ID; i++)
+    for (i = 0; i < VAL_NUM_ID; i++)
     {
         if (VAL[i] == '-')
             continue;
@@ -161,8 +163,6 @@ void chemsense_acquire()
         }
         else if (INPUT_BYTE == '\r' || INPUT_BYTE == ' ' || INPUT_BYTE == '\n')
         {
-            //KEY[KEY_NUM_ID] = '\0';
-            //VAL[VAL_NUM_ID] = '\0';
             Carrier();
             KEY_NUM_ID = 0;
             VAL_NUM_ID = 0;
