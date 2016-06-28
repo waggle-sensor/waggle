@@ -26,13 +26,24 @@ void initializeSensorBoard()
     else { MAC_ID[3] = 0xaa; } //Nothing is connected in the bus
 
     #ifdef SERIAL_DEBUG
-    for (i=0; i<8; i++)
+    SerialUSB.print("Airsense:");
+    for (int a = 2; a < 8; a++)
     {
-        SerialUSB.print(MAC_ID[i],HEX);
+        SerialUSB.print(MAC_ID[a],HEX);
 
-        if (i < 7) { SerialUSB.print(":"); }
+        if (a < 7) { SerialUSB.print(":"); }
         else { SerialUSB.print("\n"); }
     }
+
+    SerialUSB.print("Lightsense:");
+    for (int a = 2; a < 8; a++)
+    {
+        SerialUSB.print(MAC_ID[a],HEX);
+
+        if (a < 7) { SerialUSB.print(":"); }
+        else { SerialUSB.println("\r"); }
+    }
+
     #endif
 }
 
@@ -168,7 +179,7 @@ void Sensors_Setup(void)
 #endif
 #endif
 
-#ifdef LIGHTSENSE_INCLUDE
+#ifdef TSL260RD_include
     mcp3428_1.init(MCP342X::L, MCP342X::L);
     mcp3428_2.init(MCP342X::L, MCP342X::F);
 #endif

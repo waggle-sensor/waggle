@@ -1,38 +1,43 @@
+/*
+ * /coresensors/v2/pbay/integrated
+ * initialization.ino V2 (including NEW INTEL CHEMSENSE BOARD)
+ */
+
 int sensor_initial = 0;
 
 void sensor_buff_initialization()
 {
-	MAC_ID[0] = ID_MAC;	MAC_ID[0] = ID_MAC;
+	MAC_ID[0] = ID_MAC;
 
 	// airsense board
-    TMP112[0] = ID_TMP112;
-    HTU21D[0] = ID_HTU21D;
+	TMP112[0] = ID_TMP112;
+	HTU21D[0] = ID_HTU21D;
 
-    BMP180[0] = ID_BMP180;
-    PR103J2[0] = ID_PR103J2;
-    TSL250RD_1[0] = ID_TSL250RD_1;
+	BMP180[0] = ID_BMP180;
+	PR103J2[0] = ID_PR103J2;
+	TSL250RD_1[0] = ID_TSL250RD_1;
 
-    MMA8452Q[0] = ID_MMA8452Q;
-    SPV1840LR5HB_1[0] = ID_SPV1840LR5HB_1;
-    TSYS01[0] = ID_TSYS01;
+	MMA8452Q[0] = ID_MMA8452Q;
+	SPV1840LR5HB_1[0] = ID_SPV1840LR5HB_1;
+	TSYS01[0] = ID_TSYS01;
 
 
 
-    // lightsense board
-    HMC5883L[0] = ID_HMC5883L;
-    HIH6130[0] = ID_HIH6130;
+	// lightsense board
+	HMC5883L[0] = ID_HMC5883L;
+	HIH6130[0] = ID_HIH6130;
 
-    APDS9006020[0] = ID_APDS9006020;
-    TSL260RD[0] = ID_TSL260RD;
-    TSL250RD_2[0] = ID_TSL250RD_2;
+	APDS9006020[0] = ID_APDS9006020;
+	TSL260RD[0] = ID_TSL260RD;
+	TSL250RD_2[0] = ID_TSL250RD_2;
 
-    MLX75305[0] = ID_MLX75305;
-    ML8511[0] = ID_ML8511;
+	MLX75305[0] = ID_MLX75305;
+	ML8511[0] = ID_ML8511;
 
-    D6T[0] = ID_D6T;
+	D6T[0] = ID_D6T;
 	MLX90614[0] = ID_MLX90614;
 
-    TMP421[0] = ID_TMP421;
+	TMP421[0] = ID_TMP421;
 	SPV1840LR5HB_2[0] = ID_SPV1840LR5HB_2;
 
 
@@ -63,37 +68,37 @@ void sensor_buff_initialization()
 
 
 
-    // airsense initialization
+	// airsense initialization
 	MAC_ID[1] = (1 << 7) | LENGTH_FORMAT3;
 
 	// airsense initialization
-    TMP112[1] = (sensor_initial << 7) | LENGTH_FORMAT6;
-    HTU21D[1] = (sensor_initial << 7) | LENGTH_FORMAT6;
+	TMP112[1] = (sensor_initial << 7) | LENGTH_FORMAT6;
+	HTU21D[1] = (sensor_initial << 7) | LENGTH_FORMAT6;
 
-    BMP180[1] = (sensor_initial << 7) | (LENGTH_FORMAT5 + LENGTH_FORMAT6);
-    PR103J2[1] = (sensor_initial << 7) | LENGTH_FORMAT1;
-    TSL250RD_1[1] = (sensor_initial << 7) | LENGTH_FORMAT1;
+	BMP180[1] = (sensor_initial << 7) | (LENGTH_FORMAT5 + LENGTH_FORMAT6);
+	PR103J2[1] = (sensor_initial << 7) | LENGTH_FORMAT1;
+	TSL250RD_1[1] = (sensor_initial << 7) | LENGTH_FORMAT1;
 
-    MMA8452Q[1] = (sensor_initial << 7) | (LENGTH_FORMAT6 * 4);
-    SPV1840LR5HB_1[1] = (sensor_initial << 7) | LENGTH_FORMAT1;
-    TSYS01[1] = (sensor_initial << 7) | LENGTH_FORMAT6;
+	MMA8452Q[1] = (sensor_initial << 7) | (LENGTH_FORMAT6 * 4);
+	SPV1840LR5HB_1[1] = (sensor_initial << 7) | LENGTH_FORMAT1;
+	TSYS01[1] = (sensor_initial << 7) | LENGTH_FORMAT6;
 
 
-    // lightsense initialization
-    HMC5883L[1] = (sensor_initial << 7) | (LENGTH_FORMAT8 * 3);
-    HIH6130[1] = (sensor_initial << 7) | (LENGTH_FORMAT6 * 2);
+	// lightsense initialization
+	HMC5883L[1] = (sensor_initial << 7) | (LENGTH_FORMAT8 * 3);
+	HIH6130[1] = (sensor_initial << 7) | (LENGTH_FORMAT6 * 2);
 
-    APDS9006020[1] = (sensor_initial << 7) | LENGTH_FORMAT1;
-    TSL260RD[1] = (sensor_initial << 7) | LENGTH_FORMAT1;
-    TSL250RD_2[1] = (sensor_initial << 7) | LENGTH_FORMAT1;
+	APDS9006020[1] = (sensor_initial << 7) | LENGTH_FORMAT1;
+	TSL260RD[1] = (sensor_initial << 7) | LENGTH_FORMAT1;
+	TSL250RD_2[1] = (sensor_initial << 7) | LENGTH_FORMAT1;
 
-    MLX75305[1] = (sensor_initial << 7) | LENGTH_FORMAT1;
-    ML8511[1] = (sensor_initial << 7) | LENGTH_FORMAT1;
+	MLX75305[1] = (sensor_initial << 7) | LENGTH_FORMAT1;
+	ML8511[1] = (sensor_initial << 7) | LENGTH_FORMAT1;
 
 	D6T[1] = (sensor_initial << 7) | (LENGTH_FORMAT6 * 17);
 	MLX90614[1] = (sensor_initial << 7 ) | LENGTH_FORMAT1;
 
-    TMP421[1] = (sensor_initial << 7) | LENGTH_FORMAT6;
+	TMP421[1] = (sensor_initial << 7) | LENGTH_FORMAT6;
 	SPV1840LR5HB_2[1] = (sensor_initial << 7) | LENGTH_FORMAT1;
 
 

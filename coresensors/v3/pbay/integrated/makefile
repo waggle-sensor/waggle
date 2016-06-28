@@ -48,3 +48,7 @@ connect:
 	screen $(LINKPORT) $(SERIALBAUD)
 
 test:	program connect
+
+do:		install
+	sleep 2
+	python coresense_plugin/coresense.py

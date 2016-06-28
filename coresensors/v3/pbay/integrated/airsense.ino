@@ -1,11 +1,3 @@
-int air_j = 0;
-
-uint16_t temp_SPV = 0;
-uint16_t current_SPV = 0;
-
-float temp_MMA[4] = {0, 0, 0, 0};
-float current_MMA[4] = {0, 0, 0, 0};
-
 void airsense_acquire (void)
 {
 // #ifdef SERIAL_DEBUG
@@ -17,17 +9,13 @@ void airsense_acquire (void)
     TMP112_read();           //************ From TMP112.ino
     format6(Temp_float[0]);  // Put it into format 1
 
-    TMP112[1] = (valid << 7) | LENGTH_FORMAT6;
+    TMP112[1] = (1 << 7) | LENGTH_FORMAT6;
     TMP112[2] = formatted_data_buffer[0];
     TMP112[3] = formatted_data_buffer[1];
 
 #ifdef SERIAL_DEBUG
-    // SerialUSB.print("TMP112: ");
-    // SerialUSB.println(Temp_float[0]);
-
-
-    for (air_j = 0; air_j < LENGTH_FORMAT6; air_j++)
-        SerialUSB.print(formatted_data_buffer[air_j],HEX);
+    SerialUSB.print("TMP112: ");
+    SerialUSB.println(Temp_float[0]);
 #endif
 #endif
 
@@ -35,35 +23,25 @@ void airsense_acquire (void)
     Temp_float[1] = myHumidity.readHumidity();
     Temp_float[0] = myHumidity.readTemperature();
 
-    HTU21D[1] = (valid << 7) | (LENGTH_FORMAT6 * 2);
+    HTU21D[1] = (1 << 7) | (LENGTH_FORMAT6 * 2);
 
     format6(Temp_float[0]);  // Put it into format 1
     HTU21D[2] = formatted_data_buffer[0];
     HTU21D[3] = formatted_data_buffer[1];
-
-#ifdef SERIAL_DEBUG
-    for (air_j = 0; air_j < LENGTH_FORMAT6; air_j++)
-        SerialUSB.print(formatted_data_buffer[air_j],HEX);
-#endif
 
     format6(Temp_float[1]);  // Put it into format 1
     HTU21D[4] = formatted_data_buffer[0];
     HTU21D[5] = formatted_data_buffer[1];
 
 #ifdef SERIAL_DEBUG
-    for (air_j = 0; air_j < LENGTH_FORMAT6; air_j++)
-        SerialUSB.print(formatted_data_buffer[air_j],HEX);
+    SerialUSB.print("HTU21D Temperature:");
+    SerialUSB.print(Temp_float[0]);
+    SerialUSB.print("C");
+    SerialUSB.print(" Humidity:");
+    SerialUSB.print(Temp_float[1]);
+    SerialUSB.print("%");
+    SerialUSB.println();
 #endif
-
-// #ifdef SERIAL_DEBUG
-//     SerialUSB.print("HTU21D Temperature:");
-//     SerialUSB.print(Temp_float[0]);
-//     SerialUSB.print("C");
-//     SerialUSB.print(" Humidity:");
-//     SerialUSB.print(Temp_float[1]);
-//     SerialUSB.print("%");
-//     SerialUSB.println();
-// #endif
 #endif
 
 
@@ -71,15 +49,12 @@ void airsense_acquire (void)
     Temp_uint16 = analogRead(PIN_HIH4030);
     format1(Temp_uint16);
 
-    HIH4030[1] = (valid << 7) | LENGTH_FORMAT1;
+    HIH4030[1] = (1 << 7) | LENGTH_FORMAT1;
     HIH4030[2] = formatted_data_buffer[0];
     HIH4030[3] = formatted_data_buffer[1];
 #ifdef SERIAL_DEBUG
-    // SerialUSB.print("HIH4030: ");
-    // SerialUSB.println(Temp_uint16);
-
-    for (air_j = 0; air_j < LENGTH_FORMAT1; air_j++)
-        SerialUSB.print(formatted_data_buffer[air_j],HEX);
+    SerialUSB.print("HIH4030: ");
+    SerialUSB.println(Temp_uint16);
 #endif
 #endif
 
@@ -91,7 +66,7 @@ void airsense_acquire (void)
     /* Display the results (barometric pressure is measure in Pascals) */
     if (event.pressure)
     {
-        BMP180[1] = (valid << 7) | (LENGTH_FORMAT6 + LENGTH_FORMAT5);
+        BMP180[1] = (1 << 7) | (LENGTH_FORMAT6 + LENGTH_FORMAT5);
         
         Temp_long = long(event.pressure);
         bmp.getTemperature(&Temp_float[0]);
@@ -99,38 +74,27 @@ void airsense_acquire (void)
         
         BMP180[2] = formatted_data_buffer[0];
         BMP180[3] = formatted_data_buffer[1];
-
-#ifdef SERIAL_DEBUG
-    for (air_j = 0; air_j < LENGTH_FORMAT6; air_j++)
-        SerialUSB.print(formatted_data_buffer[air_j],HEX);
-#endif
         
         format5(Temp_long);
         BMP180[4] = formatted_data_buffer[0];
         BMP180[5] = formatted_data_buffer[1];
         BMP180[6] = formatted_data_buffer[2];
-
-#ifdef SERIAL_DEBUG
-    for (air_j = 0; air_j < LENGTH_FORMAT5; air_j++)
-        SerialUSB.print(formatted_data_buffer[air_j],HEX);
-#endif
-
     }
 
     else { BMP180[1] = (0 << 7) | (LENGTH_FORMAT6 + LENGTH_FORMAT5); }
 
-// #ifdef SERIAL_DEBUG
-//     SerialUSB.print("BMP180 temp: ");
-//     SerialUSB.print(Temp_float[0]);
-//     SerialUSB.print("C pressure: ");
-//     SerialUSB.print(Temp_long);
-//     SerialUSB.println("hPa");
-// #endif
+#ifdef SERIAL_DEBUG
+    SerialUSB.print("BMP180 temp: ");
+    SerialUSB.print(Temp_float[0]);
+    SerialUSB.print("C pressure: ");
+    SerialUSB.print(Temp_long);
+    SerialUSB.println("hPa");
+#endif
 #endif
 
 #ifdef PR103J2_include
 
-    PR103J2[1] = (valid << 7) | LENGTH_FORMAT1;
+    PR103J2[1] = (1 << 7) | LENGTH_FORMAT1;
     
     Temp_uint16 = analogRead(A2D_PRJ103J2);
     format1(Temp_uint16);
@@ -138,17 +102,14 @@ void airsense_acquire (void)
     PR103J2[3] = formatted_data_buffer[1];
     
 #ifdef SERIAL_DEBUG
-    // SerialUSB.print("PR103J2: ");
-    // SerialUSB.println(Temp_uint16);
-
-    for (air_j = 0; air_j < LENGTH_FORMAT1; air_j++)
-        SerialUSB.print(formatted_data_buffer[air_j],HEX);
+    SerialUSB.print("PR103J2: ");
+    SerialUSB.println(Temp_uint16);
 #endif
 #endif
 
 #ifdef TSL250RD_1_include
 
-    TSL250RD_1[1] = (valid << 7) | LENGTH_FORMAT1;
+    TSL250RD_1[1] = (1 << 7) | LENGTH_FORMAT1;
 
     Temp_uint16 = analogRead(A2D_TSL250RD_1);
     format1(Temp_uint16);
@@ -156,122 +117,45 @@ void airsense_acquire (void)
     TSL250RD_1[3] = formatted_data_buffer[1];
     
 #ifdef SERIAL_DEBUG
-    // SerialUSB.print("TSL250RD: ");
-    // SerialUSB.println(Temp_uint16);
-
-    for (air_j = 0; air_j < LENGTH_FORMAT1; air_j++)
-        SerialUSB.print(formatted_data_buffer[air_j],HEX);
+    SerialUSB.print("TSL250RD: ");
+    SerialUSB.println(Temp_uint16);
 #endif
 #endif
 
-//***************************************************************************************************//
+
 #ifdef MMA8452Q_include
-    MMA8452_read();           //************ From mma84521.ino
+    MMA8452_read();
 
-    MMA8452Q[1] = (valid << 7) | (LENGTH_FORMAT6 * 4);
+    MMA8452Q[1] = (1 << 7) | (LENGTH_FORMAT6 * 4);
 
-    if (temp_MMA[0] == 0)
-    {
-        temp_MMA[0] = Temp_float[0];
-        temp_MMA[1] = Temp_float[1];
-        temp_MMA[2] = Temp_float[2];
-        
+    format6(Temp_float[0]);  // Put it into format 1
+    MMA8452Q[2] = formatted_data_buffer[0];
+    MMA8452Q[3] = formatted_data_buffer[1];
 
-        format6(Temp_float[0]);  // Put it into format 1
-        MMA8452Q[2] = formatted_data_buffer[0];
-        MMA8452Q[3] = formatted_data_buffer[1];
-
-        #ifdef SERIAL_DEBUG
-        for (air_j = 0; air_j < LENGTH_FORMAT6; air_j++)
-            SerialUSB.print(formatted_data_buffer[air_j],HEX);
-        #endif
-
-        format6(Temp_float[1]);  // Put it into format 1
-        MMA8452Q[4] = formatted_data_buffer[0];
-        MMA8452Q[5] = formatted_data_buffer[1];
-
-        #ifdef SERIAL_DEBUG
-        for (air_j = 0; air_j < LENGTH_FORMAT6; air_j++)
-            SerialUSB.print(formatted_data_buffer[air_j],HEX);
-        #endif
-
-        format6(Temp_float[2]);  // Put it into format 1
-        MMA8452Q[6] = formatted_data_buffer[0];
-        MMA8452Q[7] = formatted_data_buffer[1];
-
-        #ifdef SERIAL_DEBUG
-        for (air_j = 0; air_j < LENGTH_FORMAT6; air_j++)
-            SerialUSB.print(formatted_data_buffer[air_j],HEX);
-        #endif
-
-        format6(0);  // Put it into format 1
-        MMA8452Q[8] = formatted_data_buffer[0];
-        MMA8452Q[9] = formatted_data_buffer[1];
-
-        #ifdef SERIAL_DEBUG
-        for (air_j = 0; air_j < LENGTH_FORMAT6; air_j++)
-            SerialUSB.print(formatted_data_buffer[air_j],HEX);
-        #endif   
-    }
-
-    else if(temp_MMA[0] != 0)
-    {
-        current_MMA[0] = (temp_MMA[0] + Temp_float[0]) / 2;
-        current_MMA[1] = (temp_MMA[1] + Temp_float[1]) / 2;
-        current_MMA[2] = (temp_MMA[2] + Temp_float[2]) / 2;
-
-        temp_MMA[0] = Temp_float[0];
-        temp_MMA[1] = Temp_float[1];
-        temp_MMA[2] = Temp_float[2];
+    format6(Temp_float[1]);  // Put it into format 1
+    MMA8452Q[4] = formatted_data_buffer[0];
+    MMA8452Q[5] = formatted_data_buffer[1];
 
 
-        format6(current_MMA[0]);  // Put it into format 1
-        MMA8452Q[2] = formatted_data_buffer[0];
-        MMA8452Q[3] = formatted_data_buffer[1];
+    format6(Temp_float[2]);  // Put it into format 1
+    MMA8452Q[6] = formatted_data_buffer[0];
+    MMA8452Q[7] = formatted_data_buffer[1];
 
-        #ifdef SERIAL_DEBUG
-        for (air_j = 0; air_j < LENGTH_FORMAT6; air_j++)
-            SerialUSB.print(formatted_data_buffer[air_j],HEX);
-        #endif
 
-        format6(current_MMA[1]);  // Put it into format 1
-        MMA8452Q[4] = formatted_data_buffer[0];
-        MMA8452Q[5] = formatted_data_buffer[1];
+    format6(Tenp_float[3]);  // Put it into format 1
+    MMA8452Q[8] = formatted_data_buffer[0];
+    MMA8452Q[9] = formatted_data_buffer[1];
 
-        #ifdef SERIAL_DEBUG
-        for (air_j = 0; air_j < LENGTH_FORMAT6; air_j++)
-            SerialUSB.print(formatted_data_buffer[air_j],HEX);
-        #endif
-
-        format6(current_MMA[2]);  // Put it into format 1
-        MMA8452Q[6] = formatted_data_buffer[0];
-        MMA8452Q[7] = formatted_data_buffer[1];
-
-        #ifdef SERIAL_DEBUG
-        for (air_j = 0; air_j < LENGTH_FORMAT6; air_j++)
-            SerialUSB.print(formatted_data_buffer[air_j],HEX);
-        #endif
-
-        format6(0);  // Put it into format 1
-        MMA8452Q[8] = formatted_data_buffer[0];
-        MMA8452Q[9] = formatted_data_buffer[1];
-
-        #ifdef SERIAL_DEBUG
-        for (air_j = 0; air_j < LENGTH_FORMAT6; air_j++)
-            SerialUSB.print(formatted_data_buffer[air_j],HEX);
-        #endif
-    }
-
-// #ifdef SERIAL_DEBUG
-//     SerialUSB.print("MMA8452Q x: ");
-//     SerialUSB.print(Temp_float[0]);
-//     SerialUSB.print(" y: ");
-//     SerialUSB.print(Temp_float[1]);
-//     SerialUSB.print(" z: ");
-//     SerialUSB.print(Temp_float[2]);
-//     SerialUSB.print(" rms: ");
-//     SerialUSB.println(0);
-// #endif
+#ifdef SERIAL_DEBUG
+    SerialUSB.print("MMA8452Q x: ");
+    SerialUSB.print(Temp_float[0]);
+    SerialUSB.print(" y: ");
+    SerialUSB.print(Temp_float[1]);
+    SerialUSB.print(" z: ");
+    SerialUSB.print(Temp_float[2]);
+    SerialUSB.print(" rms: ");
+    SerialUSB.println(0);
+#endif
 #endif
 
 
@@ -285,7 +169,7 @@ void airsense_acquire (void)
 
         format1(Temp_uint16);
         
-        SPV1840LR5HB[1] = (valid << 7) | LENGTH_FORMAT1;
+        SPV1840LR5HB[1] = (1 << 7) | LENGTH_FORMAT1;
         SPV1840LR5HB[2] = formatted_data_buffer[0];
         SPV1840LR5HB[3] = formatted_data_buffer[1];
     }
@@ -297,17 +181,14 @@ void airsense_acquire (void)
 
         format1(current_SPV);
         
-        SPV1840LR5HB[1] = (valid << 7) | LENGTH_FORMAT1;
+        SPV1840LR5HB[1] = (1 << 7) | LENGTH_FORMAT1;
         SPV1840LR5HB[2] = formatted_data_buffer[0];
         SPV1840LR5HB[3] = formatted_data_buffer[1];        
     }
 
 #ifdef SERIAL_DEBUG
-    // SerialUSB.print("SPV1840LR5HB: ");
-    // SerialUSB.println(Temp_uint16);
-
-    for (air_j = 0; air_j < LENGTH_FORMAT1; air_j++)
-        SerialUSB.print(formatted_data_buffer[air_j],HEX);
+    SerialUSB.print("SPV1840LR5HB: ");
+    SerialUSB.println(Temp_uint16);
 #endif
 #endif
 //***************************************************************************************************//
@@ -317,15 +198,12 @@ void airsense_acquire (void)
     TSYS01_read();
     format6(Temp_float[0]);  // Put it into format 2
 
-    TSYS01[1] = (valid << 7) | LENGTH_FORMAT6;
+    TSYS01[1] = (1 << 7) | LENGTH_FORMAT6;
     TSYS01[2] = formatted_data_buffer[0];
     TSYS01[3] = formatted_data_buffer[1];
 #ifdef SERIAL_DEBUG
-    // SerialUSB.print("TSYS01: ");
-    // SerialUSB.println(Temp_float[0]);
-
-    for (air_j = 0; air_j < LENGTH_FORMAT6; air_j++)
-        SerialUSB.print(formatted_data_buffer[air_j],HEX);
+    SerialUSB.print("TSYS01: ");
+    SerialUSB.println(Temp_float[0]);
 #endif
 #endif
 

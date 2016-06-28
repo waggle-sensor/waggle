@@ -1,4 +1,9 @@
-void lightsense_acquire (void)
+/*
+ * /coresensors/v2/pbay/integrated
+ * integrated.ino V2 (including NEW INTEL CHEMSENSE BOARD)
+ */
+
+ void lightsense_acquire (void)
 {
     #ifdef SERIAL_DEBUG
     SerialUSB.print("\n");
@@ -136,6 +141,7 @@ void lightsense_acquire (void)
     #endif
     #endif
 
+
     #ifdef SPV1840LR5HB_2_include
     mcp3428_2.selectChannel(MCP342X::CHANNEL_1, MCP342X::GAIN_1);
     format1(mcp3428_2.readADC());
@@ -149,6 +155,5 @@ void lightsense_acquire (void)
     SerialUSB.println(mcp3428_2.readADC());
     #endif
     #endif
-
 }
 

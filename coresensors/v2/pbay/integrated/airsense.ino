@@ -1,3 +1,9 @@
+/*
+ * /coresensors/v2/pbay/integrated
+ * airsense.ino V2 (including NEW INTEL CHEMSENSE BOARD)
+ */
+
+
 void airsense_acquire (void)
 {
     #ifdef SERIAL_DEBUG
@@ -106,7 +112,6 @@ void airsense_acquire (void)
     #endif
     #endif
 
-
     #ifdef MMA8452Q_include
     MMA8452_read();
 
@@ -174,7 +179,6 @@ void airsense_acquire (void)
     SerialUSB.println(Temp_uint16);
     #endif
     #endif
-
 
     #ifdef TSYS01_include
     TSYS01_read();

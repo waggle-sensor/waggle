@@ -8,6 +8,7 @@
 // Chemsense data communication rate *********************** FOR CHEMSEMSE DATA COMMUNICATION W/COM or W/SENSOR BOARD
 #define USBSERIAL_INTERFACE_DATARATE 115200
 #define CHEMSENSE_DATARATE 19200
+#define TIME_DELAY 3
 // ********************************************************* FOR CHEMSEMSE DATA COMMUNICATION W/COM or W/SENSOR BOARD
 
 // Buffer size for each format **************************** ARE USED IN AIR/LIGHT/CHEM/DATAFORMAT/ETC
@@ -121,47 +122,52 @@
 #ifdef AIRSENSE_INCLUDE
     #define MAC_ID_include 0x01
 
-    #define TMP112_include 0x01
-    #define HTU21D_include 0x01
+    // #define TMP112_include 0x01
+    // #define HTU21D_include 0x01
 
-    #define HIH4030_include 0x01
+    // #define HIH4030_include 0x01
 
-    #define BMP180_include 0x01
-    #define PR103J2_include 0x01
-    #define TSL250RD_1_include 0x01
+    // #define BMP180_include 0x01
+    // #define PR103J2_include 0x01
+    // #define TSL250RD_1_include 0x01
 
-    #define MMA8452Q_include 0x01
-    #define SPV1840LR5HB_include 0x01
-    #define TSYS01_include 0x01
+    // #define MMA8452Q_include 0x01
+    // #define SPV1840LR5HB_include 0x01
+    // #define TSYS01_include 0x01
 #endif
 
 // Lightsense board
 #ifdef LIGHTSENSE_INCLUDE
-    #define HMC5883L_include 0x01
-    #define HIH6130_include 0x01
+    // #define HMC5883L_include 0x01
+    // #define HIH6130_include 0x01
 
-    #define APDS9006020_include 0x01
-    #define TSL260RD_include 0x01
-    #define TSL250RD_2_include 0x01
+    // #define APDS9006020_include 0x01
+    // #define TSL260RD_include 0x01
+    // #define TSL250RD_2_include 0x01
 
-    #define MLX75305_include 0x01
-    #define ML8511_include 0x01
-    #define TMP421_include 0x01
+    // #define MLX75305_include 0x01
+    // #define ML8511_include 0x01
+    // #define TMP421_include 0x01
 //     #define MLX90614_include 0x01
 //     #define D6T_include 0x01
 #endif
 
 //#define system_health_include 0x01
 //#define RANDOMIZE_VALID 0x01
-//#define SERIAL_DEBUG 0x01
+#define SERIAL_DEBUG 0x01
 //#define PRINT_BUFFER 0x01
+
+// #define  NOT_A_TEST 0x01
 
 #define USBSERIAL_INTERFACE 0x01
 
+#ifndef USBSERIAL_INTERFACE
 #define I2C_INTERFACE 0x01
-#define I2C_INTERFACE_CONST_SIZE 0x01
-#define I2C_PACKET_SIZE 191
 #define I2C_SLAVE_ADDRESS 0x03
+#endif 
 
+//#define I2C_INTERFACE_CONST_SIZE 0x01
 
-
+#ifndef I2C_INTERFACE_CONST_SIZE
+#define I2C_PACKET_SIZE 191
+#endif

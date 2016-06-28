@@ -205,13 +205,7 @@ void Carrier()
         chemsense_MAC_ID[1] = (valid << 7) | LENGTH_FORMAT3;
 
         for (j = 0; j < LENGTH_FORMAT3; j++)
-            chemsense_MAC_ID[2 + j] = formatted_data_buffer[j];
-
-#ifdef SERIAL_DEBUG
-        // to check output
-        for (j = 0; j < LENGTH_FORMAT3; j++)
-            SerialUSB.print(formatted_data_buffer[j],HEX);
-#endif
+            chemsense_MAC_ID[2 + j] = formatted_data_buffer[LENGTH_FORMAT3 - j - 1];
 	}
 
 	else if (compareKey('S', 'H', 'T') == 0)  // wait SHH
