@@ -1,0 +1,118 @@
+
+//** integrated.ino
+OneWire ds2401(PIN_DS2401);  //DS2401 PIN
+byte I2C_READ_COMPLETE = true;
+bool TIMER = true;		// TIMER FOR 24sec period of getting data from chemsense
+
+
+//** air, light, chem, TMP112, TSYS01, MMA84521, sensor_setup
+uint16_t Temp_uint16;
+int Temp_int[3];
+long Temp_long; 
+unsigned long Temp_ulong[2];
+float Temp_float[3]; 
+byte Temp_byte[8];
+
+//** chemsense
+unsigned char INPUT_BYTE;
+char KEY[4];
+char VAL[13];
+char first[6], second[6];
+byte formatted_byte_temp[8];
+int KEY_NUM_ID = 0;
+int VAL_NUM_ID = 0;
+bool flag_KEY = false;
+
+
+//** CRC_8_Waggle
+byte crc = 0x00;
+byte crc_i;
+int i = 0;			//** CRC, air, light, chemsense, packet_assembler, MMA
+
+//** packet_assembler.ino
+byte packet_seq_number = 0x00;
+int packet_whole_index = 0;
+
+//** TSYS01.ino
+float retVal = 0.0;
+
+//** MMA84521.ino
+byte fsr;
+int gCount = 0;
+
+
+
+//** store formatted values, dataFormat.ino ********************************************************** FORMATS FOR VALUES
+byte formatted_data_buffer[MAX_FMT_SIZE];
+
+
+
+
+//** Sub-packets for each format
+byte MAC_ID[LENGTH_FORMAT3 + 2]; // MAC address
+
+//** Airsense board
+byte TMP112[LENGTH_FORMAT6 + 2]; // ambient temp
+byte HTU21D_array[(LENGTH_FORMAT6 * 2) + 2]; // ambient RH & temp
+
+byte HIH4030[LENGTH_FORMAT1 + 2]; // humidity 
+
+byte BMP180[LENGTH_FORMAT5 + LENGTH_FORMAT6 + 2]; // atmospheric pressure
+byte PR103J2[LENGTH_FORMAT1 + 2]; // light
+byte TSL250RD_1[LENGTH_FORMAT1 + 2]; // ambient light (400-950nm)
+
+byte MMA8452Q[(LENGTH_FORMAT6 * 4) + 2]; // 3-axis accel for traffic flow
+byte SPV1840LR5HB[LENGTH_FORMAT1 + 2]; // sound pressure
+byte TSYS01[LENGTH_FORMAT6 + 2]; // ambient temp
+
+
+
+
+
+//** Lightsense board
+byte HMC5883L[(LENGTH_FORMAT8 * 3) + 2]; // magnetic field strength for traffic flow
+byte HIH6130[(LENGTH_FORMAT6 * 2) + 2]; // temp and RH inside transparent box
+
+byte APDS9006020[LENGTH_FORMAT1 + 2]; // ambient light inside cavity
+byte TSL260RD[LENGTH_FORMAT1 + 2]; // solar near IR
+byte TSL250RD_2[LENGTH_FORMAT1 + 2]; // solar visible light
+
+byte MLX75305[LENGTH_FORMAT1 + 2]; // solar visible light
+byte ML8511[LENGTH_FORMAT1 + 2]; // solar UV
+byte TMP421[LENGTH_FORMAT6 + 2]; // temp inside transparent box
+
+
+
+
+
+//**chemsense board
+byte chemsense_MAC_ID[LENGTH_FORMAT3 + 2] = {0,0,0,0,0,0,0,0}; // MAC address of chemsense board
+
+byte SHT25[LENGTH_FORMAT2 + LENGTH_FORMAT1 + 2]; // ambient temp and RH
+byte LPS25H[LENGTH_FORMAT2 + LENGTH_FORMAT4 + 2]; // atmospheric temperature and pressure
+byte Si1145[(LENGTH_FORMAT1 * 3) + 2]; // UV
+
+byte total_reducing_gases[LENGTH_FORMAT5 + 2]; // ambient concentration
+byte total_oxidizing_gases[LENGTH_FORMAT5 + 2]; // ambient concentration
+byte sulfur_dioxide[LENGTH_FORMAT5 + 2]; // ambient concentration
+byte hydrogen_sulphide[LENGTH_FORMAT5 + 2]; // ambient concentration
+byte ozone[LENGTH_FORMAT5 + 2]; // ambient concentration
+byte nitrogen_dioxide[LENGTH_FORMAT5 + 2]; // ambient concentration
+byte carbon_monoxide[LENGTH_FORMAT5 + 2]; // ambient concentration
+
+byte CO_ADC_temp[LENGTH_FORMAT2 + 2];
+byte IAQ_IRR_ADC_temp[LENGTH_FORMAT2 + 2];
+byte O3_NO2_ADC_temp[LENGTH_FORMAT2 + 2];
+byte SO2_H2S_ADC_temp[LENGTH_FORMAT2 + 2];
+byte CO_LMP_temp[LENGTH_FORMAT2 + 2];
+
+byte three_accel_and_vib[(LENGTH_FORMAT2 * 3) + LENGTH_FORMAT4 + 2];
+byte three_gyro_and_orientation[(LENGTH_FORMAT2 * 3) + LENGTH_FORMAT4 + 2];
+
+
+
+
+//** Whole packet
+byte packet_whole[LENGTH_WHOLE];
+byte sensor_health[SENSOR_HEALTH_SIZE+2];
+// ************************************************************************************************ FORMATS FOR VALUES

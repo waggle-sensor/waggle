@@ -1,0 +1,62 @@
+
+#include <SPI.h>
+
+// will use digital pin 33 instead of pin 10 because of the circumstance of the airsense board
+const int slaveAPin = 33;
+const int slaveBPin = 10;
+uint8_t stat1, val1, val2, result;
+
+// set up the speed, data order and data mode
+SPISettings settingsA(2000000, MSBFIRST, SPI_MODE0);
+SPISettings settingsB(16000000, LSBFIRST, SPI_MODE3);
+
+void setup() {
+  // set the Slave Select Pins as outputs:
+  pinMode (slaveAPin, OUTPUT);
+  pinMode (slaveBPin, OUTPUT);
+  // initialize SPI:
+  SPI.begin();
+}
+
+
+
+void loop() 
+{
+  // read three bytes from device A
+  SPI.beginTransaction(settingsA);
+  digitalWrite (slaveAPin, LOW);
+  delay(100);
+  // reading only, so data sent does not matter
+  stat1 = SPI.transfer(0x55);
+  val1 = SPI.transfer(0);
+  val2 = SPI.transfer(0);
+  delay(100);
+  digitalWrite (slaveAPin, HIGH);
+  SPI.endTransaction();
+  delay(4000);
+}
+
+/*
+#include <SPI.h>
+void setup(){
+  // initialize the bus for a device on pin 4
+  SPI.begin(4);
+  // initialize the bus for a device on pin 10
+  SPI.begin(10);
+  pinMode(33, OUTPUT);           // set pin to input
+  digitalWrite(33, HIGH);
+  SerialUSB.begin(9600);
+  
+}
+
+void loop()
+{
+digitalWrite(33, LOW);
+delay(100);
+byte response = SPI.transfer(10, 0x55);
+SerialUSB.println(response,HEX);
+delay(100);
+digitalWrite(33, HIGH);
+delay(4000);
+}
+*/
