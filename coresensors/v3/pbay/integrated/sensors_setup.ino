@@ -17,7 +17,7 @@ void initializeSensorBoard()
 
         if (OneWire::crc8(Temp_byte, 8) == 0)
         {
-            for (i=1; i<7; i++)
+            for (i = 1; i < 7; i++)
                 MAC_ID[i + 1] = Temp_byte[i];
         }
 
