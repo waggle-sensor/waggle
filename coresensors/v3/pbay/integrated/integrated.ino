@@ -226,7 +226,8 @@ void setup()
 
     sensor_buff_initialization();
     
-    //Timer3.attachInterrupt(tester).setPeriod(1000000 * 35).start();  // POWER ON/OFF Chemsense board
+
+      //Timer3.attachInterrupt(tester).setPeriod(1000000 * 35).start();  // POWER ON/OFF Chemsense board
 }
 
 void handler()
@@ -243,7 +244,7 @@ void loop()
     #ifdef LIGHTSENSE_INCLUDE
     lightsense_acquire();
     #endif
-
+    
     Timer3.attachInterrupt(handler).setPeriod(1000000 * TIME_DELAY).start(); // print super-packet every 30 secs
 
 
@@ -257,14 +258,14 @@ void loop()
     Timer3.attachInterrupt(handler).stop();
     assemble_packet_whole();
     TIMER = true;
-    /*
-    for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
-    {
-        SerialUSB.write(packet_whole[i]);
-        SerialUSB.print(packet_whole[i], HEX);
-        SerialUSB.print(":");
-    }
-    */
+    
+    // for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
+    // {
+    //     SerialUSB.write(packet_whole[i]);
+    //     SerialUSB.print(packet_whole[i], HEX);
+    //     SerialUSB.print(":");
+    // }
+    
         
 }
 

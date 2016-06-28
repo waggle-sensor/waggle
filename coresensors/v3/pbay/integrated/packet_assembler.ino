@@ -27,47 +27,44 @@ void assemble_packet_whole()
 #ifdef AIRSENSE_INCLUDE
 
 #ifdef MAC_ID_include    // Append MAC_ID
-
-
-    // if (MAC_ID[1] > 10)
-    // {
-        for (buffer_num = 0; buffer_num < sizeof(MAC_ID); buffer_num++)
-        {
-            packet_whole[packet_whole_index] = MAC_ID[buffer_num];
-            // Increment index for whole packet
-            packet_whole_index++;
-        }
-    // }
-    
-    #ifdef SERIAL_DEBUG
-    SerialUSB.print("Airsense-");
-    for (int a = 2; a < 8; a++)
+    for (buffer_num = 0; buffer_num < sizeof(MAC_ID); buffer_num++)
     {
-      if ((MAC_ID[0x09-a] & 0xF0) == 0x00)
-      {
-            SerialUSB.print("0");           
-      }
+        packet_whole[packet_whole_index] = MAC_ID[buffer_num];
+        // Increment index for whole packet
+        packet_whole_index++;
+    }
+    
+#ifdef PRINT_ADDRESS
+    SerialUSB.print("Airsense-");
+   for (unsigned char a = 0x02; a < 0x08; a++)
+    {
+        if ((MAC_ID[0x09 - a] & 0xF0) == 0x00)
+        {
 
-        SerialUSB.print(MAC_ID[0x09-a],HEX);
+            SerialUSB.print('0');            
+        }
 
-        if (a < 7) { SerialUSB.print(":"); }
+        SerialUSB.print(MAC_ID[0x09 - a],HEX);
+
+        if (a < 0x07) { SerialUSB.print(":"); }
         else { SerialUSB.println("\r"); }
     }
 
     SerialUSB.print("Lightsense-");
-    for (int a = 2; a < 8; a++)
+    for (unsigned char a = 0x02; a < 0x08; a++)
     {
-        if ((MAC_ID[0x09-a] & 0xF0) == 0x00)
-      {
-            SerialUSB.print("0");           
-      }
+        if ((MAC_ID[0x09 - a] & 0xF0) == 0x00)
+        {
 
-        SerialUSB.print(MAC_ID[0x09-a],HEX);
+            SerialUSB.print('0');            
+        }
 
-        if (a < 7) { SerialUSB.print(":"); }
+        SerialUSB.print(MAC_ID[0x09 - a],HEX);
+
+        if (a < 0x07) { SerialUSB.print(":"); }
         else { SerialUSB.println("\r"); }
     }
-    #endif
+#endif
 
 #endif
 
@@ -270,31 +267,31 @@ void assemble_packet_whole()
     }
 #endif
 
-// #ifdef D6T_include    // Append D6T
-//     if (D6T[1] > 10)
-//     {
-//         for (buffer_num = 0; buffer_num < sizeof(D6T); buffer_num++)
-//         {
-//             packet_whole[packet_whole_index] = D6T[buffer_num];
-//             // Increment index for whole packet
-//             packet_whole_index++;
-//         }
-//         D6T[1] = (chg_valid << 7) | (LENGTH_FORMAT6 * 17);
-//     }
-// #endif
+#ifdef D6T_include    // Append D6T
+    if (D6T[1] > 10)
+    {
+        for (buffer_num = 0; buffer_num < sizeof(D6T); buffer_num++)
+        {
+            packet_whole[packet_whole_index] = D6T[buffer_num];
+            // Increment index for whole packet
+            packet_whole_index++;
+        }
+        D6T[1] = (chg_valid << 7) | (LENGTH_FORMAT6 * 17);
+    }
+#endif
 
-// #ifdef MLX90614_include    // Append MLX90614
-//     if (MLX90614[1] > 10)
-//     {
-//         for (buffer_num = 0; buffer_num < sizeof(MLX90614); buffer_num++)
-//         {
-//             packet_whole[packet_whole_index] = MLX90614[buffer_num];
-//             // Increment index for whole packet
-//             packet_whole_index++;
-//         }
-//         MLX90614[1] = (chg_valid << 7) | LENGTH_FORMAT1;
-//     }
-// #endif
+#ifdef MLX90614_include    // Append MLX90614
+    if (MLX90614[1] > 10)
+    {
+        for (buffer_num = 0; buffer_num < sizeof(MLX90614); buffer_num++)
+        {
+            packet_whole[packet_whole_index] = MLX90614[buffer_num];
+            // Increment index for whole packet
+            packet_whole_index++;
+        }
+        MLX90614[1] = (chg_valid << 7) | LENGTH_FORMAT1;
+    }
+#endif
 
 #ifdef TMP421_include    // Append TMP421
     if (TMP421[1] > 10)
@@ -323,32 +320,25 @@ void assemble_packet_whole()
         chemsense_MAC_ID[1] = (chg_valid << 7) | LENGTH_FORMAT3;
     }
 
-#ifdef SERIAL_DEBUG
+#ifdef PRINT_ADDRESS
         // to check output
         SerialUSB.print("Chemsense-");
-
         for (j = 0x02; j < 0x08; j++)
         {
-            
-            if ((chemsense_MAC_ID[0x09-j] & 0xF0) == 0x00)
-      {
-            SerialUSB.print("0");           
-      }
-            SerialUSB.print(chemsense_MAC_ID[0x09-j],HEX);
-            
-            if (j < 0x07) { SerialUSB.print(":"); }
+            if ((chemsense_MAC_ID[0x09 - j] & 0xf0) == 0x00)
+                SerialUSB.print('0');
+            SerialUSB.print(chemsense_MAC_ID[0x09 - j],HEX);
+            if (j < LENGTH_FORMAT3 + 1) { SerialUSB.print(":"); }
             else { SerialUSB.println("\r"); }
         }
 #endif
 
-
-
-#ifdef  NOT_A_TEST
     if (SHT25[1] > 10)
     {
         for (buffer_num = 0; buffer_num <  sizeof(SHT25); buffer_num++)
         {
             packet_whole[packet_whole_index] = SHT25[buffer_num];
+
             packet_whole_index++;
         }
         SHT25[1] = (chg_valid << 7) | (LENGTH_FORMAT2 + LENGTH_FORMAT1);
@@ -514,8 +504,6 @@ void assemble_packet_whole()
         }
         three_gyro_and_orientation[1] = (chg_valid << 7) | (LENGTH_FORMAT2 * 3 + LENGTH_FORMAT4);
     }
-#endif
-    
 #endif
 
     /*

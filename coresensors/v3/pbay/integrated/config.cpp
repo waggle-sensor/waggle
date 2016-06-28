@@ -8,7 +8,7 @@
 // Chemsense data communication rate *********************** FOR CHEMSEMSE DATA COMMUNICATION W/COM or W/SENSOR BOARD
 #define USBSERIAL_INTERFACE_DATARATE 115200
 #define CHEMSENSE_DATARATE 19200
-#define TIME_DELAY 3
+#define TIME_DELAY 30
 // ********************************************************* FOR CHEMSEMSE DATA COMMUNICATION W/COM or W/SENSOR BOARD
 
 // Buffer size for each format **************************** ARE USED IN AIR/LIGHT/CHEM/DATAFORMAT/ETC
@@ -154,10 +154,9 @@
 
 //#define system_health_include 0x01
 //#define RANDOMIZE_VALID 0x01
-#define SERIAL_DEBUG 0x01
+// #define SERIAL_DEBUG 0x01
+#define PRINT_ADDRESS 0x01
 //#define PRINT_BUFFER 0x01
-
-// #define  NOT_A_TEST 0x01
 
 #define USBSERIAL_INTERFACE 0x01
 
