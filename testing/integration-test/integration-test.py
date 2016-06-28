@@ -173,12 +173,10 @@ for vendor_product in ['05a3:9830', '05a3:9520']:
 
     # example output os lsusb: "Bus 003 Device 006: ID 05a3:9520 ARC International"
     lsusb_result=''
-    try:
-        lsusb_result = subprocess.check_output(["lsusb", "-d", vendor_product])
-    except:
-        pass
     
-    for line in lsusb_result.decode("utf-8").rstrip().split("\n"):
+    lsusb_result = get_command_output(["lsusb", "-d", vendor_product])
+    
+    for line in lsusb_result.split("\n"):
         #print "line:", line
         matchObj = re.match( r'Bus (\d{3}) Device (\d{3}): ID (\S{4}):(\S{4}) (.*)$', line, re.M|re.I)
         if matchObj:
@@ -193,7 +191,7 @@ for vendor_product in ['05a3:9830', '05a3:9520']:
         
             bus_device = "%s:%s" % (camera['bus'], camera['device'])
         
-            for line in subprocess.check_output(["lsusb", "-s", bus_device , "-v" ]).split("\n"):
+            for line in get_command_output(["lsusb", "-s", bus_device , "-v" ]).split("\n"):
                 #print line
                 for key in ['wHeight','wWidth']:
                     matchObj = re.match( r'.*%s\( 0\)\s+(\d+)' % (key), line, re.M|re.I)
