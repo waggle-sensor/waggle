@@ -1,3 +1,5 @@
+#ifdef TMP112_include
+
 void TMP112_CONFIG()
 {
     Wire.beginTransmission(I2C_TMP112); // start transmission to device
@@ -47,3 +49,5 @@ void TMP112_read()
         Temp_float[0] = (Temp_uint16 & 0x0FFF)*-0.0625;
     }
 }
+
+#endif

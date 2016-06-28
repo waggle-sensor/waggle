@@ -1,14 +1,12 @@
-//#define DELAY_MS 15000
 
-//#define CR_ENABLE 0
-//#define BUFFER_SIZE_CHEMSENSE 150   //*************************************chemsense buffer size
-//#define PARAM_SIZE_CHEMSENSE 15     //*************************************chemsense parameter size
-//#define DEBUG_chemsense 0           //*************************************chemsense debug
+/*
+ * /coresensors/v3/pbay/integrated
+ * config.cpp V3 (pbay)
+ */
 
 // Chemsense data communication rate *********************** FOR CHEMSEMSE DATA COMMUNICATION W/COM or W/SENSOR BOARD
 #define USBSERIAL_INTERFACE_DATARATE 115200
 #define CHEMSENSE_DATARATE 19200
-#define TIME_DELAY 3
 // ********************************************************* FOR CHEMSEMSE DATA COMMUNICATION W/COM or W/SENSOR BOARD
 
 // Buffer size for each format **************************** ARE USED IN AIR/LIGHT/CHEM/DATAFORMAT/ETC
@@ -32,6 +30,11 @@
 #define HEADER_RESERVED 0x00 // Upper nibble ***************************************NOT USING THIS VALUE!!!!!!!!!!
 #define HEADER_VERSION 0x00 // Lower nibble
 // ***************************************************** ARE USED IN PACK ASSEMBLER
+
+//************* airsense 
+#define I2C_TMP112 0x48
+#define TMP112_CONFIG_REG 0x01
+#define TMP112_TEMP_REG 0x00
 
 #define SENSOR_HEALTH_SIZE 0x04
 
@@ -123,39 +126,39 @@
     #define MAC_ID_include 0x01
 
     // #define TMP112_include 0x01
-    // #define HTU21D_include 0x01
+    #define HTU21D_include 0x01
 
-    // #define HIH4030_include 0x01
+    #define HIH4030_include 0x01
 
-    // #define BMP180_include 0x01
-    // #define PR103J2_include 0x01
-    // #define TSL250RD_1_include 0x01
+    #define BMP180_include 0x01
+    #define PR103J2_include 0x01
+    #define TSL250RD_1_include 0x01
 
-    // #define MMA8452Q_include 0x01
-    // #define SPV1840LR5HB_include 0x01
-    // #define TSYS01_include 0x01
+    #define MMA8452Q_include 0x01
+    #define SPV1840LR5HB_include 0x01
+    #define TSYS01_include 0x01
 #endif
 
 // Lightsense board
 #ifdef LIGHTSENSE_INCLUDE
-    // #define HMC5883L_include 0x01
-    // #define HIH6130_include 0x01
+    #define HMC5883L_include 0x01
+    #define HIH6130_include 0x01
 
-    // #define APDS9006020_include 0x01
-    // #define TSL260RD_include 0x01
-    // #define TSL250RD_2_include 0x01
+    #define APDS9006020_include 0x01
+    #define TSL260RD_include 0x01
+    #define TSL250RD_2_include 0x01
 
-    // #define MLX75305_include 0x01
-    // #define ML8511_include 0x01
-    // #define TMP421_include 0x01
-//     #define MLX90614_include 0x01
-//     #define D6T_include 0x01
+    #define MLX75305_include 0x01
+    #define ML8511_include 0x01
+    #define TMP421_include 0x01
+    #define MLX90614_include 0x01
+    #define D6T_include 0x01
 #endif
 
 //#define system_health_include 0x01
 //#define RANDOMIZE_VALID 0x01
 // #define SERIAL_DEBUG 0x01
-#define PRINT_ADDRESS 0x01
+// #define PRINT_ADDRESS 0x01
 //#define PRINT_BUFFER 0x01
 
 #define USBSERIAL_INTERFACE 0x01

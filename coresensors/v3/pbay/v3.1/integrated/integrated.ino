@@ -1,5 +1,5 @@
 /**
- ** /coresensors/v3/pbay/reintegrated
+ ** /coresensors/v3/pbay/v3.1/integrated
  ** reintegrated.ino V3 (pbay)
  **/
 
@@ -27,19 +27,18 @@ void setup()
     sensor_buff_initialization();
 
     //** sensors_setup.ino, set pinMode and put MACID of airsense
-    //** sensors_setup.ino, initialize sensors in airsense and lightsense boards
     initializeSensorBoard();
-    Sensors_Setup();
+    
+    #ifdef CHEMSENSE_INCLUDE
+    digitalWrite(PIN_CHEMSENSE_POW, LOW);  //** Power on the Chemsense board
+    #endif
 
+    //** sensors_setup.ino, initialize sensors in airsense and lightsense boards
+    Sensors_Setup();
 
     //** Setup the I2C buffer
     for (byte i=0x00; i<LENGTH_WHOLE; i++)
         packet_whole[i] = 0x00;
-
-
-    #ifdef CHEMSENSE_INCLUDE
-    digitalWrite(PIN_CHEMSENSE_POW, LOW);  //** Power on the Chemsense board
-    #endif
 
     #ifdef I2C_INTERFACE
     I2C_READ_COMPLETE = false;
@@ -53,29 +52,17 @@ void handler()
     TIMER = true;
 }
 
-void chem_handler()
-{
-    C_TIMER = true;
-}
-
 void loop()
 {
-    Timer3.attachInterrupt(handler).setPeriod(1000000 * 29).start();
+    Timer3.attachInterrupt(handler).setPeriod(1000000 * 25).start();
     while (TIMER)
     {
-        Timer3.attachInterrupt(chem_handler).setPeriod(1000000 * 4).start();
-        while (C_TIMER)
-        {
-            #ifdef CHEMSENSE_INCLUDE
-            chemsense_acquire();
-            #endif        
-        }
-
-        Timer3.attachInterrupt(chem_handler).stop();
+        #ifdef CHEMSENSE_INCLUDE
+        chemsense_acquire();
+        #endif        
     }
 
     Timer3.attachInterrupt(handler).stop();
-    assemble_packet_whole();
 
     #ifdef AIRSENSE_INCLUDE
     airsense_acquire();
@@ -85,6 +72,7 @@ void loop()
     lightsense_acquire();
     #endif
 
+    assemble_packet_whole();
     for (byte i = 0; i < packet_whole[1] + 5; i++)
         SerialUSB.write(packet_whole[i]);
 
@@ -127,6 +115,3 @@ void requestEvent()
     assemble_packet_empty();
 }
 #endif
-
-
-
