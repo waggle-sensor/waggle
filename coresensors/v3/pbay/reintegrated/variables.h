@@ -1,3 +1,7 @@
+/**
+ ** /coresensors/v3/pbay/reintegrated
+ ** variables.h (pbay)
+ **/
 
 //** integrated.ino
 OneWire ds2401(PIN_DS2401);  //DS2401 PIN
@@ -6,18 +10,28 @@ bool TIMER = true;		// TIMER FOR 24sec period of getting data from chemsense
 
 
 //** air, light, chem, TMP112, TSYS01, MMA84521, sensor_setup
-float Temp_float[3]; 
 uint16_t Temp_uint16;
+int Temp_int[3];
 long Temp_long; 
 unsigned long Temp_ulong[2];
-int Temp_int[3];
+float Temp_float[3]; 
 byte Temp_byte[8];
+
+//** chemsense
+unsigned char INPUT_BYTE;
+char KEY[4];
+char VAL[13];
+char first[6], second[6];
+byte formatted_byte_temp[8];
+int KEY_NUM_ID = 0;
+int VAL_NUM_ID = 0;
+bool flag_KEY = false;
 
 
 //** CRC_8_Waggle
 byte crc = 0x00;
 byte crc_i;
-int i = 0;			//** CRC, air, light, chem, packet_assembler, MMA
+int i = 0;			//** CRC, air, light, chemsense, packet_assembler, MMA
 
 //** packet_assembler.ino
 byte packet_seq_number = 0x00;

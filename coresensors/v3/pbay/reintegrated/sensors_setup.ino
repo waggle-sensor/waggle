@@ -1,3 +1,8 @@
+/**
+ ** /coresensors/v3/pbay/reintegrated
+ ** sensor_setup.ino V3 (pbay)
+ **/
+
 void initializeSensorBoard()
 {
     byte i;
@@ -43,7 +48,7 @@ void Sensors_Setup(void)      // sensor initialization
     TSYS01_CONFIG();
 #endif
 
-#ifdef LIGHTSENSE_INCLUDE
+#ifdef TSL260RD_include
     mcp3428_1.init(MCP342X::L, MCP342X::L);
     mcp3428_2.init(MCP342X::L, MCP342X::F);
 #endif

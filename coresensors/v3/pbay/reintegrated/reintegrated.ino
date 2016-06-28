@@ -1,6 +1,6 @@
 /**
- ** /coresensors/v3/pbay/integrated
- ** integrated.ino V3 (pbay)
+ ** /coresensors/v3/pbay/reintegrated
+ ** reintegrated.ino V3 (pbay)
  **/
 
 #include <Wire.h> 

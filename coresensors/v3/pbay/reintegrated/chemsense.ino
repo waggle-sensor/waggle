@@ -1,6 +1,9 @@
-/* Chemsesne reader using the Serial "Serial3".
- * Suppose that the Chemsense is device /dev/ttyACM0 when you connect the board with light and airsense.
- */
+/** Chemsesne reader using the Serial "Serial3".
+ ** Suppose that the Chemsense is device /dev/ttyACM0 when you connect the board with light and airsense.
+ **
+ ** /coresensors/v3/pbay/reintegrated
+ ** sensor_setup.ino V3 (pbay)
+ **/
 
 
 void form3_hex_string_to_hex()                     // Hex to hex: form3

@@ -151,4 +151,17 @@
 // #define I2C_SLAVE_ADDRESS 0x03
 
 
+//*****************************************************************************************************************************
 
+#define USBSERIAL_INTERFACE 0x01
+
+#ifndef USBSERIAL_INTERFACE
+#define I2C_INTERFACE 0x01
+#define I2C_SLAVE_ADDRESS 0x03
+#endif 
+
+//#define I2C_INTERFACE_CONST_SIZE 0x01
+
+#ifndef I2C_INTERFACE_CONST_SIZE
+#define I2C_PACKET_SIZE 191
+#endif

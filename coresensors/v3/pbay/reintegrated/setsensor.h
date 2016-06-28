@@ -1,3 +1,8 @@
+/**
+ ** /coresensors/v3/pbay/reintegrated
+ ** setsensor.h V3 (pbay)
+ **/
+
 // Air/Lightsense ******************************************************** INCLUDING SENSORS ON AIR/LIGHTSENSE
 #ifdef AIRSENSE_INCLUDE
 

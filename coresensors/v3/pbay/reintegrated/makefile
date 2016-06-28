@@ -1,5 +1,5 @@
 ARD_HOME = $(ARDUINO_DIR)
-TARGET = integrated
+TARGET = reintegrated
 PACKAGE = arduino
 ARCH = sam
 BOARD = arduino_due_x

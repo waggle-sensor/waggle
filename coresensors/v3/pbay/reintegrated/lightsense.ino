@@ -1,10 +1,7 @@
-float previous_mag_x = 0;
-float previous_mag_y = 0;
-float previous_mag_z = 0;
-
-float current_mag_x = 0;
-float current_mag_y = 0;
-float current_mag_z = 0;
+/**
+ ** /coresensors/v3/pbay/reintegrated
+ ** lightsense.ino V3 (pbay)
+ **/
 
 void lightsense_acquire (void)
 {
@@ -20,113 +17,41 @@ void lightsense_acquire (void)
 
     HMC5883L[1] = (1 << 7) | (LENGTH_FORMAT8 * 3);
 
-    if (previous_mag_x == 0)
-    {
-        previous_mag_x = event.magnetic.x;
-        previous_mag_y = event.magnetic.y;
-        previous_mag_z = event.magnetic.z;
-        
-        format8(event.magnetic.x);
-        HMC5883L[2] = formatted_data_buffer[0];
-        HMC5883L[3] = formatted_data_buffer[1];
+    format8(event.magnetic.x);
+    HMC5883L[2] = formatted_data_buffer[0];
+    HMC5883L[3] = formatted_data_buffer[1];
 
-    #ifdef SERIAL_DEBUG
-        for (i = 0; i < LENGTH_FORMAT8; i++)
-            SerialUSB.print(formatted_data_buffer[i],HEX);
-    #endif
+#ifdef SERIAL_DEBUG
+    for (j = 0; j < LENGTH_FORMAT8; j++)
+        SerialUSB.print(formatted_data_buffer[j],HEX);
+#endif
 
-        format8(event.magnetic.y);
-        HMC5883L[4] = formatted_data_buffer[0];
-        HMC5883L[5] = formatted_data_buffer[1];
+    format8(event.magnetic.y);
+    HMC5883L[4] = formatted_data_buffer[0];
+    HMC5883L[5] = formatted_data_buffer[1];
 
-    #ifdef SERIAL_DEBUG
-        for (i = 0; i < LENGTH_FORMAT8; i++)
-            SerialUSB.print(formatted_data_buffer[i],HEX);
-    #endif
+#ifdef SERIAL_DEBUG
+    for (j = 0; j < LENGTH_FORMAT8; j++)
+        SerialUSB.print(formatted_data_buffer[j],HEX);
+#endif
 
-        format8(event.magnetic.z);
-        HMC5883L[6] = formatted_data_buffer[0];
-        HMC5883L[7] = formatted_data_buffer[1];
+    format8(event.magnetic.z);
+    HMC5883L[6] = formatted_data_buffer[0];
+    HMC5883L[7] = formatted_data_buffer[1];
 
-    #ifdef SERIAL_DEBUG
-        for (i = 0; i < LENGTH_FORMAT8; i++)
-            SerialUSB.print(formatted_data_buffer[i],HEX);
-    #endif
-    }
+#ifdef SERIAL_DEBUG
+    for (j = 0; j < LENGTH_FORMAT8; j++)
+        SerialUSB.print(formatted_data_buffer[j],HEX);
+#endif
 
-    else if (previous_mag_x != 0)
-    {
-        current_mag_x = (previous_mag_x + event.magnetic.x) / 2;
-        current_mag_y = (previous_mag_y + event.magnetic.y) / 2;
-        current_mag_z = (previous_mag_z + event.magnetic.z) / 2;
-
-        previous_mag_x = event.magnetic.x;
-        previous_mag_y = event.magnetic.y;
-        previous_mag_z = event.magnetic.z;
-        
-        format8(current_mag_x);
-        HMC5883L[2] = formatted_data_buffer[0];
-        HMC5883L[3] = formatted_data_buffer[1];
-
-    #ifdef SERIAL_DEBUG
-        for (i = 0; i < LENGTH_FORMAT8; i++)
-            SerialUSB.print(formatted_data_buffer[i],HEX);
-    #endif
-
-        format8(current_mag_y);
-        HMC5883L[4] = formatted_data_buffer[0];
-        HMC5883L[5] = formatted_data_buffer[1];
-
-    #ifdef SERIAL_DEBUG
-        for (i = 0; i < LENGTH_FORMAT8; i++)
-            SerialUSB.print(formatted_data_buffer[i],HEX);
-    #endif
-
-        format8(current_mag_z);
-        HMC5883L[6] = formatted_data_buffer[0];
-        HMC5883L[7] = formatted_data_buffer[1];
-
-    #ifdef SERIAL_DEBUG
-        for (i = 0; i < LENGTH_FORMAT8; i++)
-            SerialUSB.print(formatted_data_buffer[i],HEX);
-    #endif
-    }
-
-//     format8(event.magnetic.x);
-//     HMC5883L[2] = formatted_data_buffer[0];
-//     HMC5883L[3] = formatted_data_buffer[1];
-
-// #ifdef SERIAL_DEBUG
-//     for (j = 0; j < LENGTH_FORMAT8; j++)
-//         SerialUSB.print(formatted_data_buffer[j],HEX);
-// #endif
-
-//     format8(event.magnetic.y);
-//     HMC5883L[4] = formatted_data_buffer[0];
-//     HMC5883L[5] = formatted_data_buffer[1];
-
-// #ifdef SERIAL_DEBUG
-//     for (j = 0; j < LENGTH_FORMAT8; j++)
-//         SerialUSB.print(formatted_data_buffer[j],HEX);
-// #endif
-
-//     format8(event.magnetic.z);
-//     HMC5883L[6] = formatted_data_buffer[0];
-//     HMC5883L[7] = formatted_data_buffer[1];
-
-// #ifdef SERIAL_DEBUG
-//     for (j = 0; j < LENGTH_FORMAT8; j++)
-//         SerialUSB.print(formatted_data_buffer[j],HEX);
-// #endif
-
-// #ifdef SERIAL_DEBUG
-//     SerialUSB.print("HMC5883L X:");
-//     SerialUSB.print(event.magnetic.x);
-//     SerialUSB.print(", Y:");
-//     SerialUSB.print(event.magnetic.y);
-//     SerialUSB.print(", Z:");
-//     SerialUSB.println(event.magnetic.z);
-// #endif
+#ifdef SERIAL_DEBUG
+    SerialUSB.print("HMC5883L X:");
+    SerialUSB.print(event.magnetic.x);
+    SerialUSB.print(", Y:");
+    SerialUSB.print(event.magnetic.y);
+    SerialUSB.print(", Z:");
+    SerialUSB.println(event.magnetic.z);
+#endif
 #endif
 
 
