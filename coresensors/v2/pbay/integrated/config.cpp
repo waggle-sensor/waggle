@@ -1,3 +1,7 @@
+/*
+ * /coresensors/v2/pbay/integrated
+ * config.cpp V2 (including NEW INTEL CHEMSENSE BOARD)
+ */
 
 /** Constants *************************************************************************/
 #define I2C_SLAVE_ADDRESS 0x03
@@ -6,11 +10,6 @@
 
 #define LENGTH_DATA  250
 #define LENGTH_WHOLE  LENGTH_DATA + 5
-
-// #define CR_ENABLE 0
-// #define BUFFER_SIZE_CHEMSENSE 150
-// #define PARAM_SIZE_CHEMSENSE 15
-// #define DEBUG_chemsense 0
 
 #define LENGTH_FORMAT1  2
 #define LENGTH_FORMAT2  2
@@ -121,22 +120,18 @@
     #define MLX75305_include 0x01
     #define ML8511_include 0x01
 
-    // #define D6T_include 0x01
-    // #define MLX90614_include 0x01
+    #define D6T_include 0x01
+    #define MLX90614_include 0x01
 
     #define TMP421_include 0x01
     #define SPV1840LR5HB_2_include 0x01
-#endif
-
-#ifdef CHEMSENSE_INCLUDE
-    #define PIN_CHEMSENSE_POW   47
 #endif
 
 // #define system_health_include 0x01
 // #define RANDOMIZE_VALID 0x01
 //#define SERIAL_DEBUG 0x01
 
-// #define USBSERIAL_INTERFACE 0x01
-#define I2C_INTERFACE 0x01
+#define USBSERIAL_INTERFACE 0x01
+// #define I2C_INTERFACE 0x01
 // #define I2C_PACKET_SIZE 191
 // #define I2C_INTERFACE_CONST_SIZE 0x01

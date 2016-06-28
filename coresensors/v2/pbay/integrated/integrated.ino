@@ -1,3 +1,8 @@
+/*
+ * /coresensors/v2/pbay/integrated
+ * integrated.ino V2 (including NEW INTEL CHEMSENSE BOARD)
+ */
+
 // #include "/home/rajesh/.arduino15/packages/arduino/hardware/sam/1.6.4/libraries/Wire/Wire.h"
 
 #include <Wire.h>
@@ -84,7 +89,7 @@ TwoWire *wirex=&Wire1;
 byte formatted_data_buffer[MAX_FMT_SIZE];
 
 // Airsense board
-byte MAC_ID[LENGTH_FORMAT3 + 2] = {ID_MAC, 134,3,1,8,1,0,6}; // MAC address
+byte MAC_ID[LENGTH_FORMAT3 + 2] = {ID_MAC, 134,3,1,8,1,0,7}; // MAC address
 byte TMP112[LENGTH_FORMAT6 + 2]; // ambient temp
 byte HTU21D[(LENGTH_FORMAT6 * 2) + 2]; // ambient RH & temp
 
@@ -142,23 +147,6 @@ byte three_gyro_and_orientation[(LENGTH_FORMAT2 * 3) + LENGTH_FORMAT4 + 2];
 // Whole packet
 byte packet_whole[LENGTH_WHOLE];
 byte sensor_health[SENSOR_HEALTH_SIZE + 2];
-// Data sub-packet
-// byte packet_data[LENGTH_DATA];
-// Sub-packets for each format
-
-
-// These lengths are calculated at packet assembly
-// byte length_whole_actual;
-// byte length_data_actual;
-
-
-// unsigned char buffer [BUFFER_SIZE_CHEMSENSE];
-// unsigned char parameter[PARAM_SIZE_CHEMSENSE];
-// unsigned char cnt = 0;
-// boolean chemsense_ready = false;
-// long param_value;
-// unsigned char attenuate = 0;
-// byte valid;
 
 byte packet_seq_number = 0x00;
 
@@ -169,12 +157,9 @@ long Temp_long;
 int Temp_int[3];
 unsigned long Temp_ulong[2];
 
-// char inByte;
-// char ChemSensed = 0;
-// char Chemsense_locked = 0;
-// unsigned long LOOPING;
-
 bool TIMER = false;
+bool init_SPV1 = false;
+
 
 // CRC-8
 byte crc = 0x00;
@@ -222,10 +207,6 @@ void setup()
     SerialUSB.println("Starting...");
     #endif
 
-    // #ifdef CHEMSENSE_INCLUDE
-    // digitalWrite(PIN_CHEMSENSE_POW, LOW); // Power on the Chemsense board
-    // #endif
-
     Serial3.begin(19200);
     //     Setup the I2C buffer
     for (byte i=0x00; i<LENGTH_WHOLE; i++)
@@ -241,9 +222,6 @@ void setup()
     #ifdef USBSERIAL_INTERFACE
     Timer3.attachInterrupt(handler).setPeriod(1000000 * 15).start(); // print super-packet every 30 secs
     #endif
-    
-   
-
 }
 /**************************************************************************************/
 
@@ -255,7 +233,7 @@ void handler()
 void loop()
 {
 
-    #ifdef USBSERIAL_INTERFACE
+#ifdef USBSERIAL_INTERFACE
     
     //Serial3.println("hello!!!");
     #ifdef CHEMSENSE_INCLUDE
@@ -281,14 +259,11 @@ void loop()
         }
 
         TIMER = false;
-    }
-    
-    #endif
+    }  
+#endif
 
-    #ifdef I2C_INTERFACE
-    
-    
-    
+#ifdef I2C_INTERFACE
+
     if (I2C_READ_COMPLETE == true)
     {
         #ifdef AIRSENSE_INCLUDE
@@ -299,26 +274,22 @@ void loop()
         lightsense_acquire();
         #endif
         
-        Timer3.attachInterrupt(handler).setPeriod(4000000 * 6).start(); // print super-packet every 30 secs
+        Timer3.attachInterrupt(handler).setPeriod(1000000 * 24).start(); // print super-packet every 30 secs
 
-        // this is a hack... 
-        
+        // this is a hack...      
         while (TIMER == false)
         {
-       
-        #ifdef CHEMSENSE_INCLUDE
-        new_chemsense_acquire();
-        #endif
-        delay(1);
-
+            #ifdef CHEMSENSE_INCLUDE
+            new_chemsense_acquire();
+            #endif
+            delay(1);
         }
+        
         Timer3.attachInterrupt(handler).stop(); 
         assemble_packet_whole();
         I2C_READ_COMPLETE = false;
-    }
-    
-    
-    #endif
+    }    
+#endif
 
 }
 

@@ -20,13 +20,15 @@ void assemble_packet_whole()
     int chg_valid = 0;
     packet_whole_index = 3; // start at 3 to account for header
     
-#ifdef SERIAL_DEBUG
-    SerialUSB.println("Packing.");
-#endif
+// #ifdef SERIAL_DEBUG
+//     SerialUSB.println("Packing.");
+// #endif
 
 #ifdef AIRSENSE_INCLUDE
 
 #ifdef MAC_ID_include    // Append MAC_ID
+
+
     // if (MAC_ID[1] > 10)
     // {
         for (buffer_num = 0; buffer_num < sizeof(MAC_ID); buffer_num++)
@@ -36,6 +38,37 @@ void assemble_packet_whole()
             packet_whole_index++;
         }
     // }
+    
+    #ifdef SERIAL_DEBUG
+    SerialUSB.print("Airsense-");
+    for (int a = 2; a < 8; a++)
+    {
+      if ((MAC_ID[0x09-a] & 0xF0) == 0x00)
+      {
+            SerialUSB.print("0");           
+      }
+
+        SerialUSB.print(MAC_ID[0x09-a],HEX);
+
+        if (a < 7) { SerialUSB.print(":"); }
+        else { SerialUSB.println("\r"); }
+    }
+
+    SerialUSB.print("Lightsense-");
+    for (int a = 2; a < 8; a++)
+    {
+        if ((MAC_ID[0x09-a] & 0xF0) == 0x00)
+      {
+            SerialUSB.print("0");           
+      }
+
+        SerialUSB.print(MAC_ID[0x09-a],HEX);
+
+        if (a < 7) { SerialUSB.print(":"); }
+        else { SerialUSB.println("\r"); }
+    }
+    #endif
+
 #endif
 
 #ifdef TMP112_include    // Append TMP112
@@ -279,6 +312,7 @@ void assemble_packet_whole()
 #endif
 
 #ifdef CHEMSENSE_INCLUDE
+
     if (chemsense_MAC_ID[1] > 10)
     {
         for (buffer_num = 0; buffer_num < sizeof(chemsense_MAC_ID); buffer_num++)
@@ -289,6 +323,27 @@ void assemble_packet_whole()
         chemsense_MAC_ID[1] = (chg_valid << 7) | LENGTH_FORMAT3;
     }
 
+#ifdef SERIAL_DEBUG
+        // to check output
+        SerialUSB.print("Chemsense-");
+
+        for (j = 0x02; j < 0x08; j++)
+        {
+            
+            if ((chemsense_MAC_ID[0x09-j] & 0xF0) == 0x00)
+      {
+            SerialUSB.print("0");           
+      }
+            SerialUSB.print(chemsense_MAC_ID[0x09-j],HEX);
+            
+            if (j < 0x07) { SerialUSB.print(":"); }
+            else { SerialUSB.println("\r"); }
+        }
+#endif
+
+
+
+#ifdef  NOT_A_TEST
     if (SHT25[1] > 10)
     {
         for (buffer_num = 0; buffer_num <  sizeof(SHT25); buffer_num++)
@@ -459,6 +514,7 @@ void assemble_packet_whole()
         }
         three_gyro_and_orientation[1] = (chg_valid << 7) | (LENGTH_FORMAT2 * 3 + LENGTH_FORMAT4);
     }
+#endif
     
 #endif
 

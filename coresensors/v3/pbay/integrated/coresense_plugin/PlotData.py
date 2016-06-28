@@ -75,7 +75,7 @@ try:
 
             if flag_FIRST == False:
                 one = line.split(" ")
-
+                
                 x.append(dt.datetime.strptime(one[0], "%Y:%b:%d:%H:%M:%S"))
 
                 if num == 1:

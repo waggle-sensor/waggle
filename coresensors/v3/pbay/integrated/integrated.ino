@@ -1,3 +1,8 @@
+/*
+ * /coresensors/v3/pbay/integrated
+ * integrated.ino V3 (pbay)
+ */
+
 #include <Wire.h>
 #include "./libs/DueTimer/DueTimer.h"
 extern TwoWire Wire1;
@@ -183,7 +188,13 @@ unsigned long Temp_ulong[2]; // Chem
 int Temp_int[3];        //HIH
 byte Temp_byte[8];      //sensor setup, HIH
 
-bool TIMER = false;
+bool TIMER = true;
+
+int on_off_counter = 1;;
+bool CHEM_OFF = false;
+bool TESTER = false;
+
+
 byte I2C_READ_COMPLETE = true;
 
 void setup()
@@ -195,7 +206,6 @@ void setup()
     Serial3.begin(CHEMSENSE_DATARATE); // data from the Chemsense board arrives here.
 
     initializeSensorBoard();
-
 
     //Setup the I2C buffer
     for (byte i=0x00; i<LENGTH_WHOLE; i++)
@@ -215,51 +225,50 @@ void setup()
     #endif
 
     sensor_buff_initialization();
-    Timer3.attachInterrupt(handler).setPeriod(1000000 * 10).start(); // print super-packet every 30 secs
+    
+    //Timer3.attachInterrupt(tester).setPeriod(1000000 * 35).start();  // POWER ON/OFF Chemsense board
 }
 
 void handler()
 {
-    TIMER = true;
+    TIMER = false;
 }
 
 void loop()
 {
-    //Serial3.println("hello!!!");
-    #ifdef CHEMSENSE_INCLUDE
-    chemsense_acquire();
+
+    #ifdef AIRSENSE_INCLUDE
+    airsense_acquire();
+    #endif
+    #ifdef LIGHTSENSE_INCLUDE
+    lightsense_acquire();
     #endif
 
-    // #ifdef AIRSENSE_INCLUDE
-    // airsense_acquire();
-    // #endif
+    Timer3.attachInterrupt(handler).setPeriod(1000000 * TIME_DELAY).start(); // print super-packet every 30 secs
 
-    // #ifdef LIGHTSENSE_INCLUDE
-    // lightsense_acquire();
-    // #endif
 
-    if (TIMER)
+    while (TIMER)
     {
-        #ifdef AIRSENSE_INCLUDE
-        airsense_acquire();
+        #ifdef CHEMSENSE_INCLUDE
+        chemsense_acquire();
         #endif
-
-        #ifdef LIGHTSENSE_INCLUDE
-        lightsense_acquire();
-        #endif
-
-        assemble_packet_empty();
-        assemble_packet_whole();
-
-        for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
-        {
-            SerialUSB.write(packet_whole[i]);
-        }
-
-        TIMER = false;
     }
+
+    Timer3.attachInterrupt(handler).stop();
+    assemble_packet_whole();
+    TIMER = true;
+    /*
+    for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
+    {
+        SerialUSB.write(packet_whole[i]);
+        SerialUSB.print(packet_whole[i], HEX);
+        SerialUSB.print(":");
+    }
+    */
+        
 }
 
+#ifdef I2C_INTERFACE
 void requestEvent()
 {
     #ifdef I2C_INTERFACE_CONST_SIZE
@@ -274,7 +283,7 @@ void requestEvent()
     I2C_READ_COMPLETE = true;
     assemble_packet_empty();
 }
-
+#endif
 
 
 
