@@ -75,12 +75,24 @@ def read_sourced_env(script):
 
 def get_command_output(command):
     
-    result = ''
+    use_shell=True
+    if str(type(command))=="<class 'list'>":
+        print("execute:", " ".join(command))
+        use_shell=False
+    else:
+        print("execute:", command)
     
+    result = ''
+        
     try:
-        result = subprocess.check_output(command, shell=True)
-    except:
-        pass
+        result = subprocess.check_output(command, shell=use_shell)
+    except Exception as e:
+        print("error:", str(e))
+        return ''
+    
+    #print("result type:", type(result))
+    if (str(type(result)) == "<class 'str'>"):
+            return result.rstrip()
     
     return result.decode("utf-8").rstrip()
         
@@ -170,11 +182,12 @@ summary['cameras']['list'] = []
 
 
 for vendor_product in ['05a3:9830', '05a3:9520']:
-
+    
     # example output os lsusb: "Bus 003 Device 006: ID 05a3:9520 ARC International"
     lsusb_result=''
     
     lsusb_result = get_command_output(["lsusb", "-d", vendor_product])
+    print(lsusb_result)
     
     for line in lsusb_result.split("\n"):
         #print "line:", line
