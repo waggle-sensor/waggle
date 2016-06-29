@@ -107,6 +107,22 @@ def get_odroid_model():
     return environment['ODROID_MODEL'] if 'ODROID_MODEL' in environment else "NA"
 
 
+def parse_lsusb_line(line):
+    matchObj = re.match( r'Bus (\d{3}) Device (\d{3}): ID (\S{4}):(\S{4}) (.*)$', line, re.M|re.I)
+    if matchObj:
+        #print "matchObj.group() : ", matchObj.group()
+    
+        result={}
+        result['bus']           =matchObj.group(1).rstrip()
+        result['device']        =matchObj.group(2).rstrip()
+        result['idVendor']      =matchObj.group(3).rstrip()
+        result['idProduct']     =matchObj.group(4).rstrip()
+        result['vendor_name']   =matchObj.group(5).rstrip()
+        return result
+    
+    return None
+    
+
 ###############################################################
 
 
@@ -191,18 +207,12 @@ for vendor_product in ['05a3:9830', '05a3:9520']:
     
     for line in lsusb_result.split("\n"):
         #print "line:", line
-        matchObj = re.match( r'Bus (\d{3}) Device (\d{3}): ID (\S{4}):(\S{4}) (.*)$', line, re.M|re.I)
-        if matchObj:
+        camera_obj = parse_lsusb_line(line)
+        #matchObj = re.match( r'Bus (\d{3}) Device (\d{3}): ID (\S{4}):(\S{4}) (.*)$', line, re.M|re.I)
+        if camera_obj:
             #print "matchObj.group() : ", matchObj.group()
         
-            camera={}
-            camera['bus']           =matchObj.group(1).rstrip()
-            camera['device']        =matchObj.group(2).rstrip()
-            camera['idVendor']      =matchObj.group(3).rstrip()
-            camera['idProduct']     =matchObj.group(4).rstrip()
-            camera['vendor_name']   =matchObj.group(5).rstrip()
-        
-            bus_device = "%s:%s" % (camera['bus'], camera['device'])
+            bus_device = "%s:%s" % (camera_obj['bus'], camera_obj['device'])
         
             for line in get_command_output(["lsusb", "-s", bus_device , "-v" ]).split("\n"):
                 #print line
@@ -210,13 +220,13 @@ for vendor_product in ['05a3:9830', '05a3:9520']:
                     matchObj = re.match( r'.*%s\( 0\)\s+(\d+)' % (key), line, re.M|re.I)
                     if matchObj:
                         #print "got:", key, matchObj.group(1).rstrip()
-                        camera[key] = matchObj.group(1).rstrip()
+                        camera_obj[key] = matchObj.group(1).rstrip()
             
             # TODO: try v4l2 to extract resolution
             # v4l2-ctl --list-formats-ext -d /dev/video? works , BUT: I do not know which video device that would be!!!
         
-            print(json.dumps(camera, indent=4))
-            summary['cameras']['list'].append(camera)
+            print(json.dumps(camera_obj, indent=4))
+            summary['cameras']['list'].append(camera_obj)
         
             # TODO:  fswebcam -r 2592x1944 --jpeg 95 -D 0 best.jpg
             # apt-get install fswebcam
@@ -290,7 +300,22 @@ print("modems:" , summary['modems']['list'])
 summary['modems']['IMEI']='NA'
 
 
+# 1199:68a3  Sierra Wireless, Inc. MC8700 Modem
+for vendor_product in ['1199:68a3']:
+    for modem_line in get_command_output(['lsusb', '-d', vendor_product]).split('\n'):
+        modem_obj = parse_lsusb_line(modem_line)
 
+        bus_device = "%s:%s" % (modem_obj['bus'], modem_obj['device'])
+
+        for line in get_command_output(["lsusb", "-s", bus_device , "-v" ]).split("\n"):
+        
+            for key in ['iSerial', 'idProduct', 'idVendor']:
+                matchObj = re.match( r'.*%s\s+\d+\s+(\d+)' % (key), line, re.M|re.I)
+                if matchObj:
+                    modem_obj[key] = matchObj.group(1).rstrip()
+        
+    
+        summary['modems']['list'].append(modem_obj)
 
 ### Microphone in USB bus
 
