@@ -1,3 +1,8 @@
+#ifdef MMA8452Q_include
+
+byte fsr;
+int gCount = 0;
+
 void MMA8452_read()
 {
     readAccelData(Temp_int);
@@ -82,3 +87,5 @@ void MMA8452writeRegister(byte addressToWrite, byte dataToWrite)
     Wire.write(dataToWrite);
     Wire.endTransmission(); //Stop transmitting
 }
+
+#endif

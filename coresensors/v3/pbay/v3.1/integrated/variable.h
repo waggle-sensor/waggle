@@ -25,21 +25,11 @@ bool flag_KEY = false;
 
 
 //** CRC_8_Waggle
-byte crc = 0x00;
-byte crc_i;
 int i = 0;			//** CRC, air, light, chemsense, packet_assembler, MMA
 
 //** packet_assembler.ino
 byte packet_seq_number = 0x00;
 int packet_whole_index = 0;
-
-//** TSYS01.ino
-float retVal = 0.0;
-
-//** MMA84521.ino
-byte fsr;
-int gCount = 0;
-
 
 
 //** store formatted values, dataFormat.ino ********************************************************** FORMATS FOR VALUES

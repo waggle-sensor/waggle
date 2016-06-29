@@ -125,7 +125,7 @@
 #ifdef AIRSENSE_INCLUDE
     #define MAC_ID_include 0x01
 
-    // #define TMP112_include 0x01
+    #define TMP112_include 0x01
     #define HTU21D_include 0x01
 
     #define HIH4030_include 0x01

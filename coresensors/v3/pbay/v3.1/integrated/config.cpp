@@ -136,6 +136,8 @@
     #define MLX75305_include 0x01
     #define ML8511_include 0x01
     #define TMP421_include 0x01
+    #define MLX90614_include 0x01
+    #define D6T_include 0x01
 #endif
 
 #ifdef CHEMSENSE_INCLUDE

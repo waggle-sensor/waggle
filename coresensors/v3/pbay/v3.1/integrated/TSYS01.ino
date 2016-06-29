@@ -1,3 +1,7 @@
+#ifdef TSYS01_include
+
+float retVal = 0.0;
+
 void TSYS01_CONFIG()
 {
     TSYS01INIT();
@@ -67,3 +71,5 @@ void TSYS01GetTemp()
 
     Temp_float[0] = TSYS_ScaleTemp_C((((unsigned long)Temp_byte[0] << 8) | ((unsigned long)Temp_byte[1]))); //convert and cast to Temp with scaling equation
 }
+
+#endif

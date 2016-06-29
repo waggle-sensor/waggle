@@ -34,12 +34,7 @@ void setup()
     #endif
 
     //** sensors_setup.ino, initialize sensors in airsense and lightsense boards
-    Sensors_Setup();
-
-
-    //** Setup the I2C buffer
-    for (byte i=0x00; i<LENGTH_WHOLE; i++)
-        packet_whole[i] = 0x00;
+    Sensors_Setup();    // TMP112 config(); Chemsense turned off
 
     #ifdef I2C_INTERFACE
     I2C_READ_COMPLETE = false;
@@ -72,7 +67,6 @@ void handler()
 
 void loop()
 {
-
     #ifdef AIRSENSE_INCLUDE
     airsense_acquire();
     #endif
@@ -81,21 +75,35 @@ void loop()
     lightsense_acquire();
     #endif
 
-    Timer3.attachInterrupt(handler).setPeriod(1000000 * 25).start(); 
+    // #ifdef CHEMSENSE_INCLUDE
+    // chemsense_acquire();
+    // #endif
+
+    Timer3.attachInterrupt(handler).setPeriod(1000000 * 24).start(); 
 
     while (TIMER)
     {
+        #ifdef AIRSENSE_INCLUDE
+        airsense_acquire();
+        #endif
+        
+        #ifdef LIGHTSENSE_INCLUDE
+        lightsense_acquire();
+        #endif
+
         #ifdef CHEMSENSE_INCLUDE
         chemsense_acquire();
         #endif
     }
 
     Timer3.attachInterrupt(handler).stop();
+    assemble_packet_empty();
     assemble_packet_whole();
     TIMER = true;
 
     for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
         SerialUSB.write(packet_whole[i]);
+    delay(500);
 }
 
 
