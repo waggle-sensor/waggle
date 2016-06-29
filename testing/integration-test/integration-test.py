@@ -164,6 +164,7 @@ summary['wagman']['id']=''
 summary['wagman']['connected']=wagman_connected()
 
 if summary['wagman']['connected']:
+    # wagman ID
     try:
         summary['wagman']['id'] = wagman_client(['id'])[1].strip()
     except:
@@ -172,11 +173,19 @@ if summary['wagman']['connected']:
     print("wagman_id: \"%s\"" % (summary['wagman']['id']))
 
 
+    # current usage
     try:
         summary['wagman']['current_usage'] = wagman_client(['cu'])[1].strip().split('\n')
     except:
         pass
 
+    # thermistors
+    try:
+        summary['wagman']['thermistors'] = wagman_client(['th'])[1].strip().split('\n')
+    except:
+        pass
+
+    # environment: temperature, humidity
     try:
         environment_array=wagman_client(['env'])[1].strip().split('\n')
     except:
@@ -188,10 +197,35 @@ if summary['wagman']['connected']:
         if value:
             summary['wagman']['environment'][key]=value
     
+    
+    # test wagman reset
+    try:
+        wagman_client(['reset'])[1]
+    except:
+        pass
+    
+    # wait some time until wagman is responsive
+    time.sleep(20)
 
+    # this is a fake call, workaround for a bug in wagman-server
+    try:
+        wagman_client(['uptime'])[1].strip().split('\n')
+    except:
+        pass
+        
+    #get uptime
+    try:
+        uptime = int(wagman_client(['uptime'])[1].strip())
+    except:
+        pass
 
-# TODO thermistors
-# TODO wagman reset (SRE line)
+    if uptime == 0:
+        summary['wagman']['reset-test']='no_time_available'
+    elif uptime > 0 and uptime < 30:
+        summary['wagman']['reset-test']='success'
+    else:
+        summary['wagman']['reset-test']='error: uptime %d seconds'% (uptime)
+   
 
 
 
