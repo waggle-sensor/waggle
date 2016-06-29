@@ -3,6 +3,7 @@
  ** integrated.ino V3 (pbay)
  **/
 
+#include <SPI.h>
 #include <Wire.h> 
 #include "./libs/DueTimer/DueTimer.h"   //** TIMER3 library
 extern TwoWire Wire1;
@@ -17,17 +18,19 @@ void setup()
     //** Let us wait for the processor and the sensors to settle down
     delay(2000);
 
+    //** initialize the super-packet
+    //** and sub-packets
+    //** sensors_setup.ino, set pinMode and put MACID of airsense
+    assemble_packet_empty();
+    sensor_buff_initialization();
+    initializeSensorBoard();
+
+
     //** begin all communication lines
     Wire.begin(); // Sensors are on the first I2C Bus.
     SerialUSB.begin(USBSERIAL_INTERFACE_DATARATE); // Serial data line to the host computer
     Serial3.begin(CHEMSENSE_DATARATE); // data from the Chemsense board arrives here.
-
-    //** initialize the super-packet and sub-packets
-    assemble_packet_empty();
-    sensor_buff_initialization();
-
-    //** sensors_setup.ino, set pinMode and put MACID of airsense
-    initializeSensorBoard();
+    SPI.begin();
 
     #ifdef CHEMSENSE_INCLUDE
     digitalWrite(PIN_CHEMSENSE_POW, LOW);  //** Power on the Chemsense board
@@ -41,6 +44,7 @@ void setup()
     Wire1.begin(I2C_SLAVE_ADDRESS);
     Wire1.onRequest(requestEvent);
     #endif
+    delay(10000);
 }
 
 #ifdef I2C_INTERFACE
@@ -67,21 +71,13 @@ void handler()
 
 void loop()
 {
-    #ifdef AIRSENSE_INCLUDE
-    airsense_acquire();
-    #endif
-    
-    #ifdef LIGHTSENSE_INCLUDE
-    lightsense_acquire();
+
+    #ifdef ALPHASENSE_INCLUDE
+    alphasense_on();
+    delay(10000);
     #endif
 
-    // #ifdef CHEMSENSE_INCLUDE
-    // chemsense_acquire();
-    // #endif
-
-    Timer3.attachInterrupt(handler).setPeriod(1000000 * 24).start(); 
-
-    while (TIMER)
+    while (true)
     {
         #ifdef AIRSENSE_INCLUDE
         airsense_acquire();
@@ -91,19 +87,60 @@ void loop()
         lightsense_acquire();
         #endif
 
-        #ifdef CHEMSENSE_INCLUDE
-        chemsense_acquire();
+        // #ifdef CHEMSENSE_INCLUDE
+        // chemsense_acquire();
+        // #endif
+
+        #ifdef ALPHASENSE_INCLUDE
+
+        count++;
+        SerialUSB.println(count);
+        delay(1000);    
+        
+        alphasense_firmware();
+        SerialUSB.print("firmware");
+        delay(100);
+
+        alphasense_histo();
+        SerialUSB.print("histogram");
+        delay(1000);
+
+        alphasense_config();
+        Serial.print("configuration");
+        delay(100);
+        
+        alphasense_off();
+        SerialUSB.print("off");
+        delay(10000);
         #endif
+
+        // Timer3.attachInterrupt(handler).setPeriod(1000000 * 24).start(); 
+
+        // while (TIMER)
+        // {
+        //     #ifdef AIRSENSE_INCLUDE
+        //     airsense_acquire();
+        //     #endif
+            
+        //     #ifdef LIGHTSENSE_INCLUDE
+        //     lightsense_acquire();
+        //     #endif
+
+        //     #ifdef CHEMSENSE_INCLUDE
+        //     chemsense_acquire();
+        //     #endif
+        // }
+
+        // Timer3.attachInterrupt(handler).stop();
+        assemble_packet_empty();
+        assemble_packet_whole();
+        TIMER = true;
+
+        for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
+            SerialUSB.write(packet_whole[i]);
+        delay(500);
+
     }
-
-    Timer3.attachInterrupt(handler).stop();
-    assemble_packet_empty();
-    assemble_packet_whole();
-    TIMER = true;
-
-    for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
-        SerialUSB.write(packet_whole[i]);
-    delay(500);
 }
 
 

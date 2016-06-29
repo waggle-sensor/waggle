@@ -258,8 +258,8 @@ void loop()
     assemble_packet_whole();
     TIMER = true;
     
-    for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
-        SerialUSB.write(packet_whole[i]);
+    // for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
+    //     SerialUSB.write(packet_whole[i]);
     
         
 }

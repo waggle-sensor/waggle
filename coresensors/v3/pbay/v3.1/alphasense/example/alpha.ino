@@ -1,6 +1,3 @@
-#include <Arduino.h>
-#line 1
-#line 1 "/home/spark/waggle_sensors/waggle_june20/coresensors/v3/pbay/alphasense/alphasense.ino"
 // the sensor communicates using SPI, so include the library:
 #include <SPI.h>
 
@@ -25,11 +22,6 @@ byte SPI_read_byte = 0;
 
 SPISettings set1(SPI_MAX_speed, LSBFIRST, SPI_MODE1);
 
-#line 25 "/home/spark/waggle_sensors/waggle_june20/coresensors/v3/pbay/alphasense/alphasense.ino"
-void setup();
-#line 48 "/home/spark/waggle_sensors/waggle_june20/coresensors/v3/pbay/alphasense/alphasense.ino"
-void loop();
-#line 25
 void setup() {
     SerialUSB.begin(115200);
 

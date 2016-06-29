@@ -1,7 +1,8 @@
 
 #include <SPI.h>
 
-// will use digital pin 33 instead of pin 10 because of the circumstance of the airsense board
+// will use digital pin 33 instead of pin 10 
+// because of the circumstance of the airsense boards
 const int slaveAPin = 33;
 const int slaveBPin = 10;
 uint8_t stat1, val1, val2, result;

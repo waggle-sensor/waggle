@@ -100,11 +100,15 @@
 #define PIN_RAW_MIC         A9
 #define PIN_HIH4030         A10
 
+//** alphasense
+#define PIN_ALPHASENSE_SLAVE 33
+#define SPI_MAX_speed 500000
 
 // Which sensor boards are being used   ************************* IS BEING USED OR NOT
-#define AIRSENSE_INCLUDE 0x01
-#define LIGHTSENSE_INCLUDE 0x01
-#define CHEMSENSE_INCLUDE 0x01
+// #define AIRSENSE_INCLUDE 0x01
+// #define LIGHTSENSE_INCLUDE 0x01
+// #define CHEMSENSE_INCLUDE 0x01
+#define ALPHASENSE_INCLUDE 0x01
 //*************************************************************** IS BEING USED OR NOT
 
 #ifdef AIRSENSE_INCLUDE

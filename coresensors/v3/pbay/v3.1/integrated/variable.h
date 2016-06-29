@@ -4,6 +4,9 @@ OneWire ds2401(PIN_DS2401);  //DS2401 PIN
 byte I2C_READ_COMPLETE = true;
 bool TIMER = true;		// TIMER FOR 24sec period of getting data from chemsense
 
+//** alphasense
+byte SPI_read_byte = 0;
+SPISettings set1(SPI_MAX_speed, MSBFIRST, SPI_MODE1);
 
 //** air, light, chem, TMP112, TSYS01, MMA84521, sensor_setup
 uint16_t Temp_uint16;
@@ -23,6 +26,14 @@ int KEY_NUM_ID = 0;
 int VAL_NUM_ID = 0;
 bool flag_KEY = false;
 
+
+//** alphasensor
+byte alpha_firmware[2];
+byte alpha_config [256];
+byte alpha_histogram[62];
+uint8_t val1, val2;
+
+int count = 0;
 
 //** CRC_8_Waggle
 int i = 0;			//** CRC, air, light, chemsense, packet_assembler, MMA
@@ -55,10 +66,6 @@ byte MMA8452Q[(LENGTH_FORMAT6 * 4) + 2]; // 3-axis accel for traffic flow
 byte SPV1840LR5HB[LENGTH_FORMAT1 + 2]; // sound pressure
 byte TSYS01[LENGTH_FORMAT6 + 2]; // ambient temp
 
-
-
-
-
 //** Lightsense board
 byte HMC5883L[(LENGTH_FORMAT8 * 3) + 2]; // magnetic field strength for traffic flow
 byte HIH6130[(LENGTH_FORMAT6 * 2) + 2]; // temp and RH inside transparent box
@@ -70,10 +77,6 @@ byte TSL250RD_2[LENGTH_FORMAT1 + 2]; // solar visible light
 byte MLX75305[LENGTH_FORMAT1 + 2]; // solar visible light
 byte ML8511[LENGTH_FORMAT1 + 2]; // solar UV
 byte TMP421[LENGTH_FORMAT6 + 2]; // temp inside transparent box
-
-
-
-
 
 //**chemsense board
 byte chemsense_MAC_ID[LENGTH_FORMAT3 + 2] = {0,0,0,0,0,0,0,0}; // MAC address of chemsense board
@@ -98,7 +101,6 @@ byte CO_LMP_temp[LENGTH_FORMAT2 + 2];
 
 byte three_accel_and_vib[(LENGTH_FORMAT2 * 3) + LENGTH_FORMAT4 + 2];
 byte three_gyro_and_orientation[(LENGTH_FORMAT2 * 3) + LENGTH_FORMAT4 + 2];
-
 
 
 
