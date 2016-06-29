@@ -1,13 +1,13 @@
 
 # WagMan
 
-# port 1 (C1+ nodecontroller)
+## port 1 (C1+ nodecontroller)
 - see C1+ connections
 
-# port 2  (XU4 extension node)
+## port 2  (XU4 extension node)
 - see XU4 connections
 
-# port 3 (LightSense)
+## port 3 (LightSense)
 - WagMan port 3 slots 1-4 to LightSense friction mount slots 1-4 (slot 1 on the right side is marked with a little circle on the board) <br>
 color coding of wires if applicable:
 ```text
@@ -22,21 +22,23 @@ Switch on the LightSense below friction mount has to switched inside.
 - WagMan/battery thermistor to port 3 (slots 5 and 6)
 
 
-# port 4
+## port 4
 - metal frame thermistor to port 4 (slots 5 and 6)
 
-# port5
+## port5
 - AC/DC thermistor to port 5 (slots 5 and 6)
 
-
-
+## power
+- AC/DC converter: <br>
+     WagMan J10 friction mount: AC/DC -V to Wagman J10 ground (the one next to the power barrel connector) ; +V to WagMan J10 5V<br>
+     alternative, if available: WagMan barrel connector
 
 # C1+ connections
 
 ## USB connections
 
 - C1+ USB to Lightsense micro USB using aluminium USB cable (which one exactly?)
-- C1+ USB to WagMan micro USB using normal USB cable (which one exactly?)
+- C1+ USB to WagMan micro USB using normal USB cable (right angle USB cable)
 - C1+ USB to microUSB/RJ45-adapter ("CAT6 USB BKT1") using normal USB cable (which one exactly?)
 - C1+ USB to ?
 
@@ -51,8 +53,8 @@ Switch on the LightSense below friction mount has to switched inside.
 
 ## USB connections
 - XU4 USB (2-port USB) to camera (LightSense, non-coated camera) using camera wire
-- XU4 USB (2-port USB) to microUSB/RJ45-adapter ("CAT6 USB BKT1"), outer micro USB using aluminium USB cable
-- XU4 USB (1-port USB) to microUSB/RJ45-adapter ("CAT6 USB BKT1"), the outer micro USB on other side using aluminium USB cable
+- XU4 USB (2-port USB) to microUSB/RJ45-adapter ("CAT6 USB BKT1"), outer micro USB (the one closest to XU4 USB slots) using aluminium USB cable
+- XU4 USB (1-port USB) to microUSB/RJ45-adapter ("CAT6 USB BKT1"), outer micro USB (on other side, the one farthest away from XU4 USB slots) using aluminium USB cable
 
 
 ## Ethernet
@@ -76,7 +78,7 @@ Switch on the LightSense below friction mount has to switched inside.
 
 
 # Other
-- CAT6 USB BKT2
+- CAT6 USB BKT1 JP1 to CAT6 USB BKT2 JP1
 
 
 
