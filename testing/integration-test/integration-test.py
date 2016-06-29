@@ -214,6 +214,7 @@ if summary['wagman']['connected']:
         pass
         
     #get uptime
+    uptime = -1
     try:
         uptime = int(wagman_client(['uptime'])[1].strip())
     except:
