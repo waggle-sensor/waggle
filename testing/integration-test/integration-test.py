@@ -172,6 +172,24 @@ if summary['wagman']['connected']:
     print("wagman_id: \"%s\"" % (summary['wagman']['id']))
 
 
+    try:
+        summary['wagman']['current_usage'] = wagman_client(['cu'])[1].strip().split('\n')
+    except:
+        pass
+
+    try:
+        environment_array=wagman_client(['env'])[1].strip().split('\n')
+    except:
+        pass
+
+    summary['wagman']['environment'] = {}
+    for line in environment_array:
+        (key, _, value) = line.partition('=')
+        if value:
+            summary['wagman']['environment'][key]=value
+    
+
+
 # TODO thermistors
 # TODO wagman reset (SRE line)
 
@@ -245,7 +263,7 @@ for vendor_product in ['05a3:9830', '05a3:9520']:
             # apt-get install fswebcam
        
 
-#TODO install fswebcam  and v4l-utils on image
+
 
 #TODO fswebcam and confirm image
 
