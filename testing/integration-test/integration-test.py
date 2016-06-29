@@ -293,18 +293,21 @@ for video_device in video_devices:
 ### modem
 
 summary['modems']={}
-summary['modems']['list'] = list_pantech_modems()
-summary['modems']['list'].append(list_other_modems())
-print("modems:" , summary['modems']['list'])
+summary['modems']['list'] = []
 
-summary['modems']['IMEI']='NA'
+# list_pantech_modems()
+#summary['modems']['list'].append(list_other_modems())
+#print("modems:" , summary['modems']['list'])
+
+#summary['modems']['IMEI']='NA'
 
 
 # 1199:68a3  Sierra Wireless, Inc. MC8700 Modem
 for vendor_product in ['1199:68a3']:
     for modem_line in get_command_output(['lsusb', '-d', vendor_product]).split('\n'):
         modem_obj = parse_lsusb_line(modem_line)
-
+        modem_obj['IMEI'] = 'NA'
+        
         bus_device = "%s:%s" % (modem_obj['bus'], modem_obj['device'])
 
         for line in get_command_output(["lsusb", "-s", bus_device , "-v" ]).split("\n"):
