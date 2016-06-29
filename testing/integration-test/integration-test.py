@@ -319,6 +319,10 @@ summary['modems']['list'] = []
 for vendor_product in ['1199:68a3']:
     for modem_line in get_command_output(['lsusb', '-d', vendor_product]).split('\n'):
         modem_obj = parse_lsusb_line(modem_line)
+        if not modem_obj:
+            print("could not parse: ", modem_line)
+            continue
+            
         modem_obj['IMEI'] = 'NA'
         
         bus_device = "%s:%s" % (modem_obj['bus'], modem_obj['device'])
