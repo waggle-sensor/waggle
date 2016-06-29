@@ -8,6 +8,7 @@ Take a waggle image and modify it accordingly:
 Disable waggle services:
 ```bash
 waggle-service stop waggle-init
+rm -f /recovery_p*
 touch /recovery_p1.tar.gz /recovery_p2.tar.gz
 ls -1 /etc/init/waggle-* | grep -v epoch | grep -v init | xargs -i rm {}
 ```
