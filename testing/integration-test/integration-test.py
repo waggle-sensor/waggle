@@ -318,6 +318,9 @@ summary['modems']['list'] = []
 # 1199:68a3  Sierra Wireless, Inc. MC8700 Modem
 for vendor_product in ['1199:68a3']:
     for modem_line in get_command_output(['lsusb', '-d', vendor_product]).split('\n'):
+        if modem_line.rstrip() == "":
+            continue
+            
         modem_obj = parse_lsusb_line(modem_line)
         if not modem_obj:
             print("could not parse: ", modem_line)
