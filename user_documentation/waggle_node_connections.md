@@ -11,10 +11,10 @@
 - WagMan port 3 slots 1-4 to LightSense friction mount slots 1-4 (slot 1 on the right side is marked with a little circle on the board) <br>
 color coding of wires if applicable:
 ```text
-gray  -> reset
-red   -> 5V
-white -> heartbeat
-black -> gnd
+1. gray  -> reset
+2. red   -> 5V
+3. white -> heartbeat
+4. black -> gnd
 ```
 
 - WagMan/battery thermistor to port 3 (slots 5 and 6)
