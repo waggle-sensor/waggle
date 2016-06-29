@@ -15,9 +15,9 @@ void assemble_packet_whole()
 {
     packet_whole_index = 3; // start at 3 to account for header
     
-#ifdef SERIAL_DEBUG
-    SerialUSB.println("Packing.");
-#endif
+// #ifdef SERIAL_DEBUG
+//     SerialUSB.println("Packing.");
+// #endif
 
 #ifdef AIRSENSE_INCLUDE
 
@@ -246,6 +246,8 @@ void assemble_packet_whole()
 #endif
 
 #ifdef CHEMSENSE_INCLUDE
+
+#ifdef chemsense_MAC_ID_include 0x01
     if (chemsense_MAC_ID[1] > 10)
     {
         for (i = 0; i < sizeof(chemsense_MAC_ID); i++)
@@ -255,7 +257,9 @@ void assemble_packet_whole()
         }
         chemsense_MAC_ID[1] = (0 << 7) | LENGTH_FORMAT3;
     }
+#endif
 
+#ifdef SHT25_include 0x01
     if (SHT25[1] > 10)
     {
         for (i = 0; i <  sizeof(SHT25); i++)
@@ -266,7 +270,9 @@ void assemble_packet_whole()
         SHT25[1] = (0 << 7) | (LENGTH_FORMAT2 + LENGTH_FORMAT1);
 
     }
-    
+#endif
+
+#ifdef LPS25H_include 0x01    
     if (LPS25H[1] > 10)
     {
         for (i = 0; i <  sizeof(LPS25H); i++)
@@ -276,7 +282,9 @@ void assemble_packet_whole()
         }
         LPS25H[1] = (0 << 7) | (LENGTH_FORMAT2 + LENGTH_FORMAT4);
     }
+#endif
 
+#ifdef Si1145_include 0x01
     if (Si1145[1] > 10)
     { 
         for (i = 0; i <  sizeof(Si1145); i++)
@@ -286,7 +294,9 @@ void assemble_packet_whole()
         }
         Si1145[1] = (0 << 7) | (LENGTH_FORMAT1 * 3);
     }   
-    
+#endif
+
+#ifdef total_reducing_gases_include 0x01    
     if (total_reducing_gases[1] > 10)
     {
         for (i = 0; i <  sizeof(total_reducing_gases); i++)
@@ -296,7 +306,9 @@ void assemble_packet_whole()
         }
         total_reducing_gases[1] = (0 << 7) | LENGTH_FORMAT5;
     }
-    
+#endif
+
+#ifdef total_oxidizing_gases_include 0x01    
     if (total_oxidizing_gases[1] > 10)
     {
         for (i = 0; i <  sizeof(total_oxidizing_gases); i++)
@@ -306,7 +318,9 @@ void assemble_packet_whole()
         }
         total_oxidizing_gases[1] = (0 << 7) | LENGTH_FORMAT5;
     }
-    
+#endif
+
+#ifdef sulfur_dioxide_include 0x01    
     if (sulfur_dioxide[1] > 10)
     {
         for (i = 0; i <  sizeof(sulfur_dioxide); i++)
@@ -316,7 +330,9 @@ void assemble_packet_whole()
         }
         sulfur_dioxide[1] = (0 << 7) | LENGTH_FORMAT5;
     }
-    
+#endif
+
+#ifdef hydrogen_sulphide_include 0x01    
     if (hydrogen_sulphide[1] > 10)
     {
         for (i = 0; i <  sizeof(hydrogen_sulphide); i++)
@@ -326,7 +342,9 @@ void assemble_packet_whole()
         }
         hydrogen_sulphide[1] = (0 << 7) | LENGTH_FORMAT5;
     }
-    
+#endif
+
+#ifdef ozone_include 0x01    
     if (ozone[1] > 10)
     {
         for (i = 0; i <  sizeof(ozone); i++)
@@ -336,7 +354,9 @@ void assemble_packet_whole()
         }
         ozone[1] = (0 << 7) | LENGTH_FORMAT5;
     }
-    
+#endif
+
+#ifdef nitrogen_dioxide_include 0x01    
     if (nitrogen_dioxide[1] > 10)
     {
         for (i = 0; i <  sizeof(nitrogen_dioxide); i++)
@@ -346,7 +366,9 @@ void assemble_packet_whole()
         }
         nitrogen_dioxide[1] = (0 << 7) | LENGTH_FORMAT5;
     }
-    
+#endif
+
+#ifdef carbon_monoxide_include 0x01   
     if (carbon_monoxide[1] > 10)
     {
         for (i = 0; i <  sizeof(carbon_monoxide); i++)
@@ -356,7 +378,9 @@ void assemble_packet_whole()
         }
         carbon_monoxide[1] = (0 << 7) | LENGTH_FORMAT5;
     }
-    
+#endif
+
+#ifdef CO_ADC_temp_include 0x01    
     if (CO_ADC_temp[1] > 10)
     {
         for (i = 0; i <  sizeof(CO_ADC_temp); i++)
@@ -366,7 +390,9 @@ void assemble_packet_whole()
         }
         CO_ADC_temp[1] = (0 << 7) | LENGTH_FORMAT2;
     }
-    
+#endif
+
+#ifdef IAQ_IRR_ADC_temp_include 0x01    
     if (IAQ_IRR_ADC_temp[1] > 10)
     {
         for (i = 0; i <  sizeof(IAQ_IRR_ADC_temp); i++)
@@ -376,7 +402,9 @@ void assemble_packet_whole()
         }
         IAQ_IRR_ADC_temp[1] = (0 << 7) | LENGTH_FORMAT2;
     }
-    
+#endif
+
+#ifdef O3_NO2_ADC_temp_include 0x01    
     if (O3_NO2_ADC_temp[1] > 10)
     {
         for (i = 0; i <  sizeof(O3_NO2_ADC_temp); i++)
@@ -386,7 +414,9 @@ void assemble_packet_whole()
         }
         O3_NO2_ADC_temp[1] = (0 << 7) | LENGTH_FORMAT2;
     }
-    
+#endif
+
+#ifdef SO2_H2S_ADC_temp_include 0x01    
     if (SO2_H2S_ADC_temp[1] > 10)
     {
         for (i = 0; i <  sizeof(SO2_H2S_ADC_temp); i++)
@@ -396,7 +426,9 @@ void assemble_packet_whole()
         }
         SO2_H2S_ADC_temp[1] = (0 << 7) | LENGTH_FORMAT2;
     }
+#endif
 
+#ifdef CO_LMP_temp_include 0x01
     if (CO_LMP_temp[1] > 10)
     { 
         for (i = 0; i <  sizeof(CO_LMP_temp); i++)
@@ -406,7 +438,9 @@ void assemble_packet_whole()
         }
         CO_LMP_temp[1] = (0 << 7) | LENGTH_FORMAT2;
     }   
-    
+#endif
+
+#ifdef three_accel_and_vib_include 0x01    
     if (three_accel_and_vib[1] > 10)
     {
         for (i = 0; i <  sizeof(three_accel_and_vib); i++)
@@ -416,7 +450,9 @@ void assemble_packet_whole()
         }
         three_accel_and_vib[1] = (0 << 7) | (LENGTH_FORMAT2 * 3 + LENGTH_FORMAT4);
     }
-    
+#endif
+
+#ifdef three_gyro_and_orientation_include 0x01     
     if (three_gyro_and_orientation[1] > 10)
     {
         for (i = 0; i <  sizeof(three_gyro_and_orientation); i++)
@@ -426,6 +462,7 @@ void assemble_packet_whole()
         }
         three_gyro_and_orientation[1] = (0 << 7) | (LENGTH_FORMAT2 * 3 + LENGTH_FORMAT4);
     }
+#endif
     
 #endif
 

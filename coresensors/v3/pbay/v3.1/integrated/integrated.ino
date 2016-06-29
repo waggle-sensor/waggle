@@ -27,8 +27,13 @@ void setup()
     sensor_buff_initialization();
 
     //** sensors_setup.ino, set pinMode and put MACID of airsense
-    //** sensors_setup.ino, initialize sensors in airsense and lightsense boards
     initializeSensorBoard();
+
+    #ifdef CHEMSENSE_INCLUDE
+    digitalWrite(PIN_CHEMSENSE_POW, LOW);  //** Power on the Chemsense board
+    #endif
+
+    //** sensors_setup.ino, initialize sensors in airsense and lightsense boards
     Sensors_Setup();
 
 
@@ -36,19 +41,29 @@ void setup()
     for (byte i=0x00; i<LENGTH_WHOLE; i++)
         packet_whole[i] = 0x00;
 
-
-    #ifdef CHEMSENSE_INCLUDE
-    digitalWrite(PIN_CHEMSENSE_POW, LOW);  //** Power on the Chemsense board
-    #endif
-
     #ifdef I2C_INTERFACE
     I2C_READ_COMPLETE = false;
     Wire1.begin(I2C_SLAVE_ADDRESS);
     Wire1.onRequest(requestEvent);
     #endif
-    
-    // Timer3.attachInterrupt(tester).setPeriod(1000000 * 35).start();
 }
+
+#ifdef I2C_INTERFACE
+void requestEvent()
+{
+    #ifdef I2C_INTERFACE_CONST_SIZE
+    Wire1.write(packet_whole, I2C_PACKET_SIZE);
+
+    #else
+    char bytes_to_send;
+    bytes_to_send = packet_whole[0x02] + 0x05;
+    Wire1.write(packet_whole, bytes_to_send );
+    #endif
+
+    I2C_READ_COMPLETE = true;
+    assemble_packet_empty();
+}
+#endif
 
 void handler()
 {
@@ -80,29 +95,9 @@ void loop()
     TIMER = true;
 
     for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
-    {
         SerialUSB.write(packet_whole[i]);
-    }
-
-        
 }
 
-// #ifdef I2C_INTERFACE
-// void requestEvent()
-// {
-//     #ifdef I2C_INTERFACE_CONST_SIZE
-//     Wire1.write(packet_whole, I2C_PACKET_SIZE);
-
-//     #else
-//     char bytes_to_send;
-//     bytes_to_send = packet_whole[0x02] + 0x05;
-//     Wire1.write(packet_whole, bytes_to_send );
-//     #endif
-
-//     I2C_READ_COMPLETE = true;
-//     assemble_packet_empty();
-// }
-// #endif
 
 
 
