@@ -123,7 +123,7 @@ def parse_lsusb_line(line):
     return None
     
 
-def get_sensorboard_mac_addresses:
+def get_sensorboard_mac_addresses():
     mac_addresses={}
 
     start = int(time.time())
