@@ -16,6 +16,8 @@ color coding of wires if applicable:
 3. white -> heartbeat
 4. black -> gnd
 ```
+Switch on the LightSense below friction mount has to switched inside.
+
 
 - WagMan/battery thermistor to port 3 (slots 5 and 6)
 
