@@ -6,7 +6,7 @@ import json
 import os
 import subprocess
 import re
-
+import serial
 import sys
 sys.path.append('/usr/lib/waggle/nodecontroller/wagman')
 from wagman_client import *
@@ -123,6 +123,29 @@ def parse_lsusb_line(line):
     return None
     
 
+def get_sensorboard_mac_addresses:
+    mac_addresses={}
+
+    start = int(time.time())
+    with serial.Serial('/dev/waggle_coresense', 115200, timeout=60) as ser:
+        while int(time.time()) < start + 30:
+            line = ser.readline().decode('utf-8').rstrip()   # read a '\n' terminated line
+            #print(line)
+            (sensorboard, _, mac) = line.partition('-')
+            #print(sensorboard, mac)
+            mac_array = mac.split(':')
+            #print(mac_array)
+            if len(mac_array) == 6:
+                if not sensorboard.lower() in mac_addresses:
+                    mac_addresses[sensorboard.lower()]={}
+                    mac_addresses[sensorboard.lower()]['mac']= mac.upper()
+            if 'airsense' in mac_addresses and 'chemsense' in mac_addresses and 'lightsense' in mac_addresses:
+                break
+
+
+    return mac_addresses
+
+
 ###############################################################
 
 
@@ -166,19 +189,9 @@ summary['coresense']['connected']=coresense_connected()
 print("coresense connected:", summary['coresense']['connected'])
 
 # TODO: Read sensor values ?
-#(get values? use waggle-plugin log ?)
 
-# TODO: Read UUIDs from Airsense, Lightsense and Chemsense (also use log ?)
-summary['airsense']={}
-summary['airsense']['UUID']='NA'
-
-summary['lightsense']={}
-summary['lightsense']['UUID']='NA'
-
-summary['chemsense']={}
-summary['chemsense']['UUID']='NA'
-
-
+if summary['coresense']['connected']:
+    summary['coresense']['boards'] = get_sensorboard_mac_addresses()
 
 
 ### Cameras
