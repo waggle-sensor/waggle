@@ -1,0 +1,23 @@
+** subs
+Ignore it
+This is just for shpark
+
+** coresense
+Get data from chemsense, through lightsense and airsense.
+
+** integrated
+Integrated version 0, using timer to get data from the chemsese board
+Version was used to pass MAC address only for PDT sets
+Make sure to on/off lines in "integrated.ino" and "config.cpp"
+
+Alphasense is not included
+
+** v3.1
+Clean up the coresense
+In the middle of merging alphasensor
+
+Testing packet loss (jun 30, 2016)
+
+** v3.2
+Copy of v3.1 (Jun 30, 2016)
+Merging alphasensor

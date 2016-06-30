@@ -1,5 +1,0 @@
-get a new chemical sensor board and test with this new one.
-on/off chmical sensor board with commands using ATMEL
-
-Serial3. Communication with the board
-SerialUSB. Communication with the computer

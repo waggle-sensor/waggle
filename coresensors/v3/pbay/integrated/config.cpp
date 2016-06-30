@@ -68,9 +68,10 @@
 #define ID_ML8511  0x10
 #define ID_TMP421  0x13
 
-//#define ID_D6T  0x11
-//#define ID_MLX90614  0x12
-//#define ID_SPV1840LR5HB_2  0x13
+//** NO USE but FYI interms of using codes in /coresense_plugin
+//#define ID_D6T  0x11                  // NO USE
+//#define ID_MLX90614  0x12             // NO USE
+//#define ID_SPV1840LR5HB_2  0x14       // NO USE
 
 //Chemsense
 #define ID_CHEMSENSE_MAC  0x20
@@ -78,6 +79,9 @@
 #define ID_SHT25 0x1D
 #define ID_LPS25H 0x1E
 #define ID_Si1145 0x1F
+
+//** NO USE but FYI interms of using codes in /coresense_plugin
+// #define ID_ETHANOL  0x16              // NO USE
 
 #define ID_TOTAL_REDUCING_GASES  0x15
 #define ID_TOTAL_OXIDIZING_GASES  0x1A
@@ -96,7 +100,6 @@
 #define ID_THREE_ACCEL_AND_VIB	0x26
 #define ID_THREE_GYRO_AND_ORIENTATION	0x27
 
-// #define ID_ETHANOL  0x16
 // ***************************************************************** ARE USED IN AIR/LIGHT/CHEM
 
 #define ID_HEALTH  0xFE
