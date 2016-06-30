@@ -29,11 +29,9 @@ rep.bind('tcp://*:5556')
 while True:
     msg = rep.recv()
 
-    # send message to device / this would be a serial write
-    push.send(msg)
-
     # should do this with a timeout
     sub.setsockopt(zmq.SUBSCRIBE, msg)
+    push.send(msg)
     output = sub.recv()
     sub.setsockopt(zmq.UNSUBSCRIBE, msg)
 
