@@ -37,7 +37,7 @@ void setup()
     #endif
 
     //** sensors_setup.ino, initialize sensors in airsense and lightsense boards
-    Sensors_Setup();    // TMP112 config(); Chemsense turned off
+    Sensors_Setup();    // TMP112 config(); Chemsense turned off, This has to come later than chemsense digital write
 
     //** begin I2C interface
     #ifdef I2C_INTERFACE

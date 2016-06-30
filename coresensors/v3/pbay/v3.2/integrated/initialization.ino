@@ -58,6 +58,15 @@ void sensor_buff_initialization()
 	three_gyro_and_orientation[0] = ID_THREE_GYRO_AND_ORIENTATION;
 
 
+	// alpha sensor
+	alpha_firmware[0] = ID_ALPHA_FIRMWARE;
+	alpha_histogram[0] = ID_ALPHA_HISTOGRAM;
+
+	alpha_config_a[0] = ID_ALPHA_CONFIG_A;
+	alpha_config_b[0] = ID_ALPHA_CONFIG_B;
+	alpha_config_c[0] = ID_ALPHA_CONFIG_C;
+
+
 
 	//***************************** SECOND BYTE of the array
     // airsense initialization
@@ -114,4 +123,13 @@ void sensor_buff_initialization()
 
 	three_accel_and_vib[1] = (0 << 7) | ((LENGTH_FORMAT2 * 3) + LENGTH_FORMAT4);
 	three_gyro_and_orientation[1] = (0 << 7) | ((LENGTH_FORMAT2 * 3) + LENGTH_FORMAT4);
+
+
+	// alpha sensor
+	alpha_firmware[1] = (0 << 7) | LENGTH_ALPHA_FIRMWARE;
+	alpha_histogram[1] = (0 << 7) | LENGTH_ALPHA_HISTOGRAM;
+
+	alpha_config_a[1] = (0 << 7) | LENGTH_ALPHA_CONFIG_A;
+	alpha_config_b[1] = (0 << 7) | LENGTH_ALPHA_CONFIG_B;
+	alpha_config_c[1] = (0 << 7) | LENGTH_ALPHA_CONFIG_C;
 }

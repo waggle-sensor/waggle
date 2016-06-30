@@ -32,7 +32,7 @@ void assemble_packet_whole()
 #endif
 
 #ifdef TMP112_include    // Append TMP112
-    if (TMP112[1] > 10)
+    if ((TMP112[1] & 0x80) == 0x80)
     {
         for (i = 0; i < sizeof(TMP112); i++)
         {
@@ -45,7 +45,7 @@ void assemble_packet_whole()
 #endif
 
 #ifdef HTU21D_include    // Append HTU21D
-    if(HTU21D_array[1] > 10)
+    if((HTU21D_array[1] & 0x80) == 0x80)
     {
         for (i = 0; i < sizeof(HTU21D_array); i++)
         {
@@ -59,7 +59,7 @@ void assemble_packet_whole()
 
 
 #ifdef BMP180_include    // Append BMP180
-    if (BMP180[1] > 10)
+    if ((BMP180[1] & 0x80) == 0x80)
     {
         for (i = 0; i < sizeof(BMP180); i++)
         {
@@ -72,7 +72,7 @@ void assemble_packet_whole()
 #endif
 
 #ifdef PR103J2_include    // Append PR103J2
-    if (PR103J2[1] > 10)
+    if ((PR103J2[1] & 0x80) == 0x80)
     {
         for (i = 0; i < sizeof(PR103J2); i++)
         {
@@ -85,7 +85,7 @@ void assemble_packet_whole()
 #endif
 
 #ifdef TSL250RD_1_include    // Append TSL250RD_1
-    if (TSL250RD_1[1] > 10)
+    if ((TSL250RD_1 & 0x80) == 0x80)
     {
         for (i = 0; i < sizeof(TSL250RD_1); i++)
         {
@@ -98,7 +98,7 @@ void assemble_packet_whole()
 #endif
 
 #ifdef MMA8452Q_include    // Append MMA8452Q
-    if (MMA8452Q[1] > 10)
+    if ((MMA8452Q[1] & 0x80) == 0x80)
     {
         for (i = 0; i < sizeof(MMA8452Q); i++)
         {
@@ -111,7 +111,7 @@ void assemble_packet_whole()
 #endif
 
 #ifdef SPV1840LR5HB_include    // Append SPV1840LR5HB_2
-    if (SPV1840LR5HB[1] > 10)
+    if ((SPV1840LR5HB[1] & 0x80) == 0x80)
     {
         for (i = 0; i < sizeof(SPV1840LR5HB); i++)  //********************was SPV1840LR5HB_2
         {
@@ -124,7 +124,7 @@ void assemble_packet_whole()
 #endif
     
 #ifdef TSYS01_include    // Append TSYS01
-    if (TSYS01[1] > 10)
+    if ((TSYS01[1] & 0x80) == 0x80)
     {
         for (i = 0; i < sizeof(TSYS01); i++)
         {
@@ -139,7 +139,7 @@ void assemble_packet_whole()
 
 #ifdef LIGHTSENSE_INCLUDE
 #ifdef HMC5883L_include    // Append HMC5883L
-    if (HMC5883L[1] > 10)
+    if ((HMC5883L[1] & 0x80) == 0x80)
     {
         for (i = 0; i < sizeof(HMC5883L); i++)
         {
@@ -152,7 +152,7 @@ void assemble_packet_whole()
 #endif
 
 #ifdef HIH6130_include    // Append HIH6130
-    if (HIH6130[1] > 10)
+    if ((HIH6130[1] & 0x80) == 0x80)
     {
         for (i = 0; i < sizeof(HIH6130); i++)
         {
@@ -165,7 +165,7 @@ void assemble_packet_whole()
 #endif
 
 #ifdef APDS9006020_include    // Append APDS9006020
-    if (APDS9006020[1] > 10)
+    if ((APDS9006020[1] & 0x80) == 0x80)
     {
         for (i = 0; i < sizeof(APDS9006020); i++)
         {
@@ -178,7 +178,7 @@ void assemble_packet_whole()
 #endif
 
 #ifdef TSL260RD_include    // Append TSL260RD
-    if (TSL250RD_2[1] > 10)
+    if ((TSL250RD_2[1] & 0x80) == 0x80)
     {
         for (i = 0; i < sizeof(TSL260RD); i++)
         {
@@ -191,7 +191,7 @@ void assemble_packet_whole()
 #endif
 
 #ifdef TSL250RD_2_include    // Append TSL250RD_2
-    if (TSL250RD_2[1] > 10)
+    if ((TSL250RD_2[1] & 0x80) == 0x80)
     {
         for (i = 0; i < sizeof(TSL250RD_2); i++)
         {
@@ -204,7 +204,7 @@ void assemble_packet_whole()
 #endif
 
 #ifdef MLX75305_include    // Append MLX75305
-    if (MLX75305[1] > 10)
+    if ((MLX75305[1] & 0x80) == 0x80)
     {
         for (i = 0; i < sizeof(MLX75305); i++)
         {
@@ -218,7 +218,7 @@ void assemble_packet_whole()
 
 #ifdef ML8511_include
     // Append ML8511
-    if (ML8511[1] > 10)
+    if ((ML8511[1] & 0x80) == 0x80)
     {
         for (i = 0; i < sizeof(ML8511); i++)
         {
@@ -231,7 +231,7 @@ void assemble_packet_whole()
 #endif
 
 #ifdef TMP421_include    // Append TMP421
-    if (TMP421[1] > 10)
+    if ((TMP421[1] & 0x80) == 0x80)
     {
         for (i = 0; i < sizeof(TMP421); i++)
         {
@@ -248,7 +248,7 @@ void assemble_packet_whole()
 #ifdef CHEMSENSE_INCLUDE
 
 #ifdef chemsense_MAC_ID_include
-    if (chemsense_MAC_ID[1] > 10)
+    if ((chemsense_MAC_ID[1] & 0x80) == 0x80)
     {
         for (i = 0; i < sizeof(chemsense_MAC_ID); i++)
         {
@@ -260,7 +260,7 @@ void assemble_packet_whole()
 #endif
 
 #ifdef SHT25_include
-    if (SHT25[1] > 10)
+    if ((SHT25[1] & 0x80) == 0x80)
     {
         for (i = 0; i <  sizeof(SHT25); i++)
         {
@@ -273,7 +273,7 @@ void assemble_packet_whole()
 #endif
 
 #ifdef LPS25H_include
-    if (LPS25H[1] > 10)
+    if ((LPS25H[1] & 0x80) == 0x80)
     {
         for (i = 0; i <  sizeof(LPS25H); i++)
         {
@@ -285,7 +285,7 @@ void assemble_packet_whole()
 #endif
 
 #ifdef Si1145_include
-    if (Si1145[1] > 10)
+    if ((Si1145[1] & 0x80) == 0x80)
     { 
         for (i = 0; i <  sizeof(Si1145); i++)
         {
@@ -297,7 +297,7 @@ void assemble_packet_whole()
 #endif
 
 #ifdef total_reducing_gases_include
-    if (total_reducing_gases[1] > 10)
+    if ((total_reducing_gases[1] & 0x80) == 0x80)
     {
         for (i = 0; i <  sizeof(total_reducing_gases); i++)
         {
@@ -309,7 +309,7 @@ void assemble_packet_whole()
 #endif
 
 #ifdef total_oxidizing_gases_include
-    if (total_oxidizing_gases[1] > 10)
+    if ((total_oxidizing_gases[1] & 0x80) == 0x80)
     {
         for (i = 0; i <  sizeof(total_oxidizing_gases); i++)
         {
@@ -321,7 +321,7 @@ void assemble_packet_whole()
 #endif
 
 #ifdef sulfur_dioxide_include
-    if (sulfur_dioxide[1] > 10)
+    if ((sulfur_dioxide[1] & 0x80) == 0x80)
     {
         for (i = 0; i <  sizeof(sulfur_dioxide); i++)
         {
@@ -333,7 +333,7 @@ void assemble_packet_whole()
 #endif
 
 #ifdef hydrogen_sulphide_include
-    if (hydrogen_sulphide[1] > 10)
+    if ((hydrogen_sulphide[1] & 0x80) == 0x80)
     {
         for (i = 0; i <  sizeof(hydrogen_sulphide); i++)
         {
@@ -345,7 +345,7 @@ void assemble_packet_whole()
 #endif
 
 #ifdef ozone_include
-    if (ozone[1] > 10)
+    if ((ozone[1] & 0x80) == 0x80)
     {
         for (i = 0; i <  sizeof(ozone); i++)
         {
@@ -357,7 +357,7 @@ void assemble_packet_whole()
 #endif
 
 #ifdef nitrogen_dioxide_include
-    if (nitrogen_dioxide[1] > 10)
+    if ((nitrogen_dioxide[1] & 0x80) == 0x80)
     {
         for (i = 0; i <  sizeof(nitrogen_dioxide); i++)
         {
@@ -369,7 +369,7 @@ void assemble_packet_whole()
 #endif
 
 #ifdef carbon_monoxide_include
-    if (carbon_monoxide[1] > 10)
+    if ((carbon_monoxide[1] & 0x80) == 0x80)
     {
         for (i = 0; i <  sizeof(carbon_monoxide); i++)
         {
@@ -381,7 +381,7 @@ void assemble_packet_whole()
 #endif
 
 #ifdef CO_ADC_temp_include
-    if (CO_ADC_temp[1] > 10)
+    if ((CO_ADC_temp[1] & 0x80) == 0x80)
     {
         for (i = 0; i <  sizeof(CO_ADC_temp); i++)
         {
@@ -393,7 +393,7 @@ void assemble_packet_whole()
 #endif
 
 #ifdef IAQ_IRR_ADC_temp_include
-    if (IAQ_IRR_ADC_temp[1] > 10)
+    if ((IAQ_IRR_ADC_temp[1] & 0x80) == 0x80)
     {
         for (i = 0; i <  sizeof(IAQ_IRR_ADC_temp); i++)
         {
@@ -405,7 +405,7 @@ void assemble_packet_whole()
 #endif
 
 #ifdef O3_NO2_ADC_temp_include
-    if (O3_NO2_ADC_temp[1] > 10)
+    if ((O3_NO2_ADC_temp[1] & 0x80) == 0x80)
     {
         for (i = 0; i <  sizeof(O3_NO2_ADC_temp); i++)
         {
@@ -417,7 +417,7 @@ void assemble_packet_whole()
 #endif
 
 #ifdef SO2_H2S_ADC_temp_include
-    if (SO2_H2S_ADC_temp[1] > 10)
+    if ((SO2_H2S_ADC_temp[1] & 0x80) == 0x80)
     {
         for (i = 0; i <  sizeof(SO2_H2S_ADC_temp); i++)
         {
@@ -429,7 +429,7 @@ void assemble_packet_whole()
 #endif
 
 #ifdef CO_LMP_temp_include
-    if (CO_LMP_temp[1] > 10)
+    if ((CO_LMP_temp[1] & 0x80) == 0x80)
     { 
         for (i = 0; i <  sizeof(CO_LMP_temp); i++)
         {
@@ -441,7 +441,7 @@ void assemble_packet_whole()
 #endif
 
 #ifdef three_accel_and_vib_include
-    if (three_accel_and_vib[1] > 10)
+    if ((three_accel_and_vib[1] & 0x80) == 0x80)
     {
         for (i = 0; i <  sizeof(three_accel_and_vib); i++)
         {
@@ -453,7 +453,7 @@ void assemble_packet_whole()
 #endif
 
 #ifdef three_gyro_and_orientation_include
-    if (three_gyro_and_orientation[1] > 10)
+    if ((three_gyro_and_orientation[1] & 0x80) == 0x80)
     {
         for (i = 0; i <  sizeof(three_gyro_and_orientation); i++)
         {
@@ -467,7 +467,6 @@ void assemble_packet_whole()
 #endif
 
 #endif
-
     
 
     // #ifdef system_health_include

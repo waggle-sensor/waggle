@@ -5,6 +5,7 @@ byte I2C_READ_COMPLETE = true;
 bool TIMER = true;		// TIMER FOR 24sec period of getting data from chemsense
 bool UP_DOWN = false; 	//which is zero!!!!!!!
 int count = 0;
+int count_conf = 0;
 
 
 //************ common variables air, light, chem, TMP112, TSYS01, MMA84521, HIH, sensor_setup
@@ -31,14 +32,15 @@ bool flag_KEY = false;
 byte SPI_read_byte = 0;
 SPISettings set1(SPI_MAX_speed, MSBFIRST, SPI_MODE1);
 //** alphasensor which will be moved to down there and initialization (Jun 30)
-byte alpha_firmware[2];
-byte alpha_config [256];
-byte alpha_histogram[62];
 uint8_t val1, val2;
 
 //** packet_assembler
 int packet_whole_index = 0;
-byte packet_seq_number = 0x00;\
+byte packet_seq_number = 0x00;
+
+//** alpha_packet
+bool flag_alphaFirmware = false;
+bool flag_alphaConfig = false;
 
 //** OIX verification
 int OIX_count = 0;
@@ -81,7 +83,7 @@ byte MLX75305[LENGTH_FORMAT1 + 2]; // solar visible light
 byte ML8511[LENGTH_FORMAT1 + 2]; // solar UV
 byte TMP421[LENGTH_FORMAT6 + 2]; // temp inside transparent box
 
-//**chemsense board
+//** chemsense board
 byte chemsense_MAC_ID[LENGTH_FORMAT3 + 2] = {0,0,0,0,0,0,0,0}; // MAC address of chemsense board
 
 byte SHT25[LENGTH_FORMAT2 + LENGTH_FORMAT1 + 2]; // ambient temp and RH
@@ -104,6 +106,14 @@ byte CO_LMP_temp[LENGTH_FORMAT2 + 2];
 
 byte three_accel_and_vib[(LENGTH_FORMAT2 * 3) + LENGTH_FORMAT4 + 2];
 byte three_gyro_and_orientation[(LENGTH_FORMAT2 * 3) + LENGTH_FORMAT4 + 2];
+
+//** alphasensor
+byte alpha_firmware[LENGTH_ALPHA_FIRMWARE + 2];
+byte alpha_histogram[LENGTH_ALPHA_HISTOGRAM + 2];
+
+byte alpha_config_a[LENGTH_ALPHA_CONFIG_A + 2];
+byte alpha_config_b[LENGTH_ALPHA_CONFIG_B + 2];
+byte alpha_config_c[LENGTH_ALPHA_CONFIG_C + 2];
 
 
 

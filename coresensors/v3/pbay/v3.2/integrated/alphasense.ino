@@ -35,9 +35,10 @@ void alphasense_on()
     digitalWrite(PIN_ALPHASENSE_SLAVE, HIGH);
     SPI.endTransaction();
 
-//     SerialUSB.print(val1, HEX);
-//     SerialUSB.print(val2, HEX);
-// 
+#ifdef ALPAH_DEBUG
+    SerialUSB.print(val1, HEX);
+    SerialUSB.print(val2, HEX);
+#endif
 }
 
 void alphasense_off()
@@ -55,8 +56,10 @@ void alphasense_off()
 	digitalWrite(PIN_ALPHASENSE_SLAVE, HIGH);
     SPI.endTransaction();
 
-    // SerialUSB.print(val1, HEX);
-    // SerialUSB.print(val2, HEX);
+#ifdef ALPAH_DEBUG
+    SerialUSB.print(val1, HEX);
+    SerialUSB.print(val2, HEX);
+#endif
 }
 
 void alphasense_firmware()
@@ -77,8 +80,10 @@ void alphasense_firmware()
     digitalWrite(PIN_ALPHASENSE_SLAVE, HIGH);
     SPI.endTransaction();
 
-    SerialUSB.print(alpha_firmware[0], HEX);
-    SerialUSB.print(alpha_firmware[1], HEX);
+#ifdef ALPHA_DEBUG
+    SerialUSB.write(alpha_firmware[0]);
+    SerialUSB.write(alpha_firmware[1]);
+#endif
 }
 
 void alphasense_histo()
@@ -100,8 +105,10 @@ void alphasense_histo()
     digitalWrite(PIN_ALPHASENSE_SLAVE, HIGH);
     SPI.endTransaction();	
 
+#ifdef ALPHA_DEBUG
     for (i = 0; i < 62; i++)
-    	SerialUSB.print(alpha_config[i]);
+    	SerialUSB.write(alpha_config[i]);
+#endif
 }
 
 void alphasense_config()
@@ -123,6 +130,10 @@ void alphasense_config()
     digitalWrite(PIN_ALPHASENSE_SLAVE, HIGH);
     SPI.endTransaction();
 
+#ifdef ALPHA_DEBUG
     for (i = 0; i < 256; i++)
-	    SerialUSB.print(alpha_config[i]);
+	    SerialUSB.print(alpha_config[i], HEX);
+#endif
 }
+
+

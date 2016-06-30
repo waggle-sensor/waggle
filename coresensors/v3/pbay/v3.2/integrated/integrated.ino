@@ -25,19 +25,18 @@ void setup()
     sensor_buff_initialization();
     initializeSensorBoard();
 
-
     //** begin communication lines
     Wire.begin(); // Sensors are on the first I2C Bus, air and light sensor boards
     SerialUSB.begin(USBSERIAL_INTERFACE_DATARATE); // Serial data line to the host computer
     Serial3.begin(CHEMSENSE_DATARATE); // data from the Chemsense board arrives here.
-    SPI.begin(); // data from the alphasensor
+    SPI.begin(); // data from the ****************************************************** alphasensor
 
     #ifdef CHEMSENSE_INCLUDE
     digitalWrite(PIN_CHEMSENSE_POW, LOW);  //** Power on the Chemsense board
     #endif
 
     //** sensors_setup.ino, initialize sensors in airsense and lightsense boards
-    Sensors_Setup();    // TMP112 config(); Chemsense turned off
+    Sensors_Setup();    // TMP112 config(); Chemsense turned off, This has to come later than chemsense digital write
 
     //** begin I2C interface
     #ifdef I2C_INTERFACE
@@ -46,25 +45,39 @@ void setup()
     Wire1.onRequest(requestEvent);
     #endif
 
+    #ifdef ALPHASENSE_INCLUDE
+    alphasense_on();
+    SerialUSB.print("on");
+    delay(10000);
+
+    alphasense_config();
+    Serial.print("configuration");
+    delay(1000);
+
+    flag_alphaConfig = true;
+    #endif
+
     Timer3.attachInterrupt(handler).setPeriod(1000000 * 1).start();
 }
 
 void loop()
 {
+    // alphasense_firmware();
+    // SerialUSB.print("firmware");
+    // delay(1000);
 
-    // #ifdef ALPHASENSE_INCLUDE
-    // alphasense_on();
-    // SerialUSB.print("on");
-    // delay(10000);
-    // #endif
-
-    #ifdef AIRSENSE_INCLUDE
-    airsense_acquire();
-    #endif
+    // alphasense_config();
+    // Serial.print("configuration");
+    // delay(1000);
     
-    #ifdef LIGHTSENSE_INCLUDE
-    lightsense_acquire();
-    #endif
+
+    // #ifdef AIRSENSE_INCLUDE
+    // airsense_acquire();
+    // #endif
+    
+    // #ifdef LIGHTSENSE_INCLUDE
+    // lightsense_acquire();
+    // #endif
 
     // #ifdef CHEMSENSE_INCLUDE
     // chemsense_acquire();
@@ -107,39 +120,91 @@ void loop()
         // lightsense_acquire();
         // #endif
 
-        #ifdef CHEMSENSE_INCLUDE
-        chemsense_acquire();
-        #endif
+        // #ifdef CHEMSENSE_INCLUDE
+        // chemsense_acquire();
+        // #endif
+
+        // alphasense_firmware();
+        // SerialUSB.print("firmware");
+        // delay(5000);
+
+        if (count == 23)
+        {
+            count_conf++;
+            if (count_conf == 26)       // every 598 secs, about 10 min
+            {
+                flag_alphaConfig = true;
+                count_conf = 0;
+            }
+        }
+
+        // JUST FOR THE TEST OF AVAILABILITY IF CONF ARRAY
+        if (count == 10)
+        {
+            alphasense_config();
+            Serial.print("configuration");
+            delay(1000);
+        }
+        // JUST FOR THE TEST OF AVAILABILITY IF CONF ARRAY
+
+        alphasense_histo();
+        SerialUSB.print("histogram");
+        delay(5000);
     }
+
+
+    #ifdef ALPHASENSE_INCLUDE
+    alphasense_off();
+    SerialUSB.print("off");
+    delay(1000);
+    #endif
 
     // Timer3.attachInterrupt(handler).stop();
-    assemble_packet_empty();
+    // assemble_packet_empty();
     assemble_packet_whole();
-    // TIMER = true;
-
-    SerialUSB.print("OIX_count ");
-    SerialUSB.print(OIX_count);
-    SerialUSB.print(" OIX_packet_count ");
-    SerialUSB.println(OIX_packet_count);
-
-    for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
-    {
-        SerialUSB.print(packet_whole[i], HEX);
-        if (i < packet_whole[0x02] + 0x04)
-            SerialUSB.print(":");
-    }
-    SerialUSB.print("\n");
-
-
-    OIX_count = 0;
-    OIX_packet_count = 0;
-
-    count = 0;
-
     // for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
     //     SerialUSB.write(packet_whole[i]);
 
-    delay(500);
+    alpha_packet_whole();
+    // for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
+    //     SerialUSB.write(packet_whole[i]);
+
+    if (flag_alphaConfig == true)
+    {
+        alpha_packet_config();
+
+        // for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
+            // SerialUSB.write(packet_whole[i]);
+    }
+
+
+    flag_alphaConfig = false;
+    count = 0;
+
+    // TIMER = true;
+
+
+    //************************** test OIX sub-packet
+    // SerialUSB.print("OIX_count ");
+    // SerialUSB.print(OIX_count);
+    // SerialUSB.print(" OIX_packet_count ");
+    // SerialUSB.println(OIX_packet_count);
+
+    // for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
+    // {
+    //     SerialUSB.print(packet_whole[i], HEX);
+    //     if (i < packet_whole[0x02] + 0x04)
+    //         SerialUSB.print(":");
+    // }
+    // SerialUSB.print("\n");
+
+    // OIX_count = 0;
+    // OIX_packet_count = 0;
+    //************************** test OIX sub-packet
+
+
+    // for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
+    //     SerialUSB.write(packet_whole[i]);
 }
 
 #ifdef I2C_INTERFACE

@@ -16,6 +16,8 @@ Alphasense is not included
 Clean up the coresense
 In the middle of merging alphasensor
 
+HBEAT is added, switch HIGH/LOW every 1 sec
+
 Testing packet loss (jun 30, 2016)
 
 ** v3.2
