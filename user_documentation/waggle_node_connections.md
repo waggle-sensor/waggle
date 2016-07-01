@@ -54,7 +54,7 @@ Switch on the LightSense below friction mount has to switched inside.
 ## USB connections
 - XU4 USB (2-port USB) to camera (LightSense, non-coated camera) using camera wire
 - XU4 USB (2-port USB) to microUSB/RJ45-adapter ("CAT6 USB BKT1"), outer micro USB (the one closest to XU4 USB slots) using aluminium USB cable
-- XU4 USB (1-port USB) to microUSB/RJ45-adapter ("CAT6 USB BKT1"), outer micro USB (on other side, the one farthest away from XU4 USB slots) using aluminium USB cable
+- XU4 USB (1-port USB) to microUSB/RJ45-adapter ("CAT6 USB BKT1"), outer micro USB (on other side, the one farthest away from XU4 USB slots) using normal USB cable
 
 
 ## Ethernet
