@@ -82,5 +82,11 @@ Comment: CAT6 USB BKT1 and CAT6 USB BKT2 are extending USB ports of the C1+ and 
 
 - CAT6 USB BKT1 to CAT6 USB BKT2 using CAT6 Ethernet cable (one-to-one mapping JP1-JP1 and JP2-JP2)
 
+# CAT6 USB BKT2
+- CAT6 USB BKT2 J1 to coated camera 
+- CAT6 USB BKT2 J2 to modem
+- CAT6 USB BKT2 J3 to ?? (particle sensor ?)
+- CAT6 USB BKT2 J4 to microphone
+
 
 
