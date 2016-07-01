@@ -6,7 +6,7 @@ Purpose of this test is to verify that the replaced heatsink is functional, i.e.
 ## Instructions
 
 1. Insert stress-test SD-card into unpowered ODROID.
-2. The XU4 boot switch must have SD-card selected. If the swicth has been replaced by three wires, short the uSD and center wire to make sure the SD-card will be booted. (Keep the wires shorted the whole time, in case of a reboot)
+2. The XU4 boot switch must have SD-card selected. If the swicth has been replaced by three wires, short the uSD and center wire to make sure the SD-card will be booted. (Keep the wires shorted the whole time, in case of a reboot. A breadboard is helpful for this.)
 3. Plug power connector into ODROID.
 4. After 4-5 minutes connect the label printer using the USB connector:
   - Success: Label printer prints barcode label (without "ERROR")
