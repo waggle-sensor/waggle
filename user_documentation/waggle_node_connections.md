@@ -89,5 +89,5 @@ JP1 on CAT6 USB BKT1 is the one closer to the Odroid C1+.
 - CAT6 USB BKT2 J3 to ?? (particle sensor ?)
 - CAT6 USB BKT2 J4 to microphone
 
-
-
+# Conexel-UART console cable
+- Long end of the UART wire goes into the XU4, the short end into the C1+. The conexel 8-pin goes through the hole in the cover of the box.
