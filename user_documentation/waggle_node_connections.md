@@ -80,7 +80,7 @@ Switch on the LightSense below friction mount has to switched inside.
 # USB Breakouts
 Comment: CAT6 USB BKT1 and CAT6 USB BKT2 are extending USB ports of the C1+ and XU4 to attach devices (modem, camera, particle sensor) located in the Stevenson shield. The two outer USB cables connect to the XU4, while the inner two connect to the C1+. The two breakouts are connected with each other using two Ethernet cables.
 
-- CAT6 USB BKT1 to CAT6 USB BKT2 using Ethernet cable (one-to-one mapping JP1-JP1 and JP2-JP2)
+- CAT6 USB BKT1 to CAT6 USB BKT2 using CAT6 Ethernet cable (one-to-one mapping JP1-JP1 and JP2-JP2)
 
 
 
