@@ -16,7 +16,7 @@ void alpha_packet_whole()
         alpha_histogram[1] = (0 << 7) | LENGTH_ALPHA_HISTOGRAM;
     }
 
-    if (flag_alphaFirmware)
+    if (flag_alpha == true)
     {
         if ((alpha_firmware[1] & 0x80) == 0x80)
         {
@@ -29,7 +29,7 @@ void alpha_packet_whole()
         }
     }
 
-    if (flag_alphaConfig)
+    if (flag_alpha == true)
     {
         if ((alpha_config_a[1] & 0x80) == 0x80)
         {

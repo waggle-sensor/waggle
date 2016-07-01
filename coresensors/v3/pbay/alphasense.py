@@ -167,8 +167,8 @@ if __name__ == '__main__':
     alphasense.power_on()
     sleep(1)
 
-    print(repr(alphasense.get_firmware_version()))
-    print(repr(alphasense.get_config_data()))
+    # print(repr(alphasense.get_firmware_version()))
+    # print(repr(alphasense.get_config_data()))
 
     try:
         while True:

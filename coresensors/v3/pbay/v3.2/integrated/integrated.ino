@@ -50,11 +50,12 @@ void setup()
     SerialUSB.print("on");
     delay(10000);
 
+    alphasense_firmware();
     alphasense_config();
-    Serial.print("configuration");
+    // Serial.print("configuration");
     delay(1000);
 
-    flag_alphaConfig = true;
+    flag_alpha = true;
     #endif
 
     Timer3.attachInterrupt(handler).setPeriod(1000000 * 1).start();
@@ -110,7 +111,7 @@ void loop()
 
     // Timer3.attachInterrupt(handler).setPeriod(1000000 * 24).start(); 
 
-    while (count < 24)
+    while (count < 24)       // every 24 sec
     {
         // #ifdef AIRSENSE_INCLUDE
         // airsense_acquire();
@@ -133,52 +134,55 @@ void loop()
             count_conf++;
             if (count_conf == 26)       // every 598 secs, about 10 min
             {
-                flag_alphaConfig = true;
+                alphasense_config();
+                delay(1000);
+
+                flag_alpha = true;
                 count_conf = 0;
             }
         }
 
         // JUST FOR THE TEST OF AVAILABILITY IF CONF ARRAY
-        if (count == 10)
-        {
-            alphasense_config();
-            Serial.print("configuration");
-            delay(1000);
-        }
+        // if (count == 10)
+        // {
+        //     alphasense_config();
+        //     Serial.print("configuration");
+        //     delay(1000);
+        // }
         // JUST FOR THE TEST OF AVAILABILITY IF CONF ARRAY
 
         alphasense_histo();
-        SerialUSB.print("histogram");
+        // SerialUSB.print("histogram");
         delay(5000);
     }
 
 
-    #ifdef ALPHASENSE_INCLUDE
-    alphasense_off();
-    SerialUSB.print("off");
-    delay(1000);
-    #endif
+    // #ifdef ALPHASENSE_INCLUDE
+    // alphasense_off();
+    // SerialUSB.print("off");
+    // delay(1000);
+    // #endif
 
     // Timer3.attachInterrupt(handler).stop();
     // assemble_packet_empty();
-    assemble_packet_whole();
+    assemble_packet_whole();        //******** packetize air/light/chem
     // for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
     //     SerialUSB.write(packet_whole[i]);
 
-    alpha_packet_whole();
-    // for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
-    //     SerialUSB.write(packet_whole[i]);
+    alpha_packet_whole();           //******** packetize histo/firmware/config(part)
+    for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
+        SerialUSB.write(packet_whole[i]);
 
-    if (flag_alphaConfig == true)
+    if (flag_alpha == true)
     {
-        alpha_packet_config();
+        alpha_packet_config();       //******** packetize config(part)
 
-        // for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
-            // SerialUSB.write(packet_whole[i]);
+        for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
+            SerialUSB.write(packet_whole[i]);
     }
 
 
-    flag_alphaConfig = false;
+    flag_alpha = false;
     count = 0;
 
     // TIMER = true;

@@ -6,7 +6,7 @@ void alpha_packet_config()
     
 
 #ifdef ALPHASENSE_INCLUDE
-    if (flag_alphaConfig)
+    if (flag_alpha == true)
     {
         if ((alpha_config_b[1] & 0x80) == 0x80)
         {
@@ -28,7 +28,7 @@ void alpha_packet_config()
             alpha_config_c[1] = (0 << 7) | LENGTH_ALPHA_CONFIG_C;
         }
 
-        flag_alphaConfig = false;
+        flag_alpha = false;
     }
 #endif
    

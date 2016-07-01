@@ -39,8 +39,7 @@ int packet_whole_index = 0;
 byte packet_seq_number = 0x00;
 
 //** alpha_packet
-bool flag_alphaFirmware = false;
-bool flag_alphaConfig = false;
+bool flag_alpha= false;
 
 //** OIX verification
 int OIX_count = 0;
