@@ -34,3 +34,11 @@ chmod +x install.sh install-stress-ng.sh stress-test.sh
 ## QA testing instructions
 
 [QA_testing_instructions.md](./QA_testing_instructions.md)
+
+## CPU temperature
+
+For debugging you may want to check the CPU temperature while running the stress-test:
+
+```bash
+while [ 1 ] ; do sleep 1 ; cat /sys/class/thermal/thermal_zone0/temp ; done
+```

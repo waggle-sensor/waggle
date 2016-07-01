@@ -378,8 +378,6 @@ for vendor_product in ['1199:68a3']:
         if not modem_obj:
             print("could not parse: ", modem_line)
             continue
-            
-        modem_obj['IMEI'] = 'NA'
         
         bus_device = "%s:%s" % (modem_obj['bus'], modem_obj['device'])
 
@@ -388,7 +386,10 @@ for vendor_product in ['1199:68a3']:
             for key in ['iSerial', 'idProduct', 'idVendor']:
                 matchObj = re.match( r'.*%s\s+\d+\s+(\d+)' % (key), line, re.M|re.I)
                 if matchObj:
-                    modem_obj[key] = matchObj.group(1).rstrip()
+                    if key == 'iSerial':
+                        modem_obj['IMEI'] = matchObj.group(1).rstrip()
+                    else:
+                        modem_obj[key] = matchObj.group(1).rstrip()
         
     
         summary['modems']['list'].append(modem_obj)
