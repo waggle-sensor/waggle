@@ -8,7 +8,7 @@
 - see XU4 connections
 
 ## port 3 (LightSense)
-- WagMan port 3 slots 1-4 to LightSense friction mount slots 1-4 (slot 1 on the right side is marked with a little circle on the board) <br>
+- WagMan port 3 slots 2-4 to LightSense friction mount slots 2-4 (slot 1 on the right side is marked with a little circle on the board; slot 1 would refer to reset, we are not using this) <br>
 color coding of wires if applicable:
 ```text
 1. gray  -> reset
