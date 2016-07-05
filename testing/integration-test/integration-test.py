@@ -6,10 +6,9 @@ import json
 import os
 import subprocess
 import re
-import serial
 import sys
 sys.path.append('/usr/lib/waggle/nodecontroller/wagman')
-from wagman_client import *
+#from wagman_client import *
 
 #Test serial connection with XU4 and with C1+
 #use minicom
@@ -124,6 +123,7 @@ def parse_lsusb_line(line):
     
 
 def get_sensorboard_mac_addresses():
+    import serial
     mac_addresses={}
 
     start = int(time.time())
@@ -164,6 +164,7 @@ summary['wagman']['id']=''
 summary['wagman']['connected']=wagman_connected()
 
 if summary['wagman']['connected']:
+    from wagman_client import *
     # wagman ID
     try:
         summary['wagman']['id'] = wagman_client(['id'])[1].strip()
