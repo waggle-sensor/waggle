@@ -200,6 +200,7 @@ if __name__ == '__main__':
             pass
 
         # environment: temperature, humidity
+        environment_array=''
         try:
             environment_array=wagman_client(['env'])[1].strip().split('\n')
         except:
