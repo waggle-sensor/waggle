@@ -437,6 +437,9 @@ if __name__ == '__main__':
             summary['modems']['list'].append(modem_obj)
 
 
+    if summary["odroid-model"] == "C":
+        summary["extension_nodes"] = []
+
 
     print(json.dumps(summary, indent=4))
  
