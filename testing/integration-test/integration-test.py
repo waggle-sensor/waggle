@@ -156,7 +156,7 @@ def get_sensorboard_mac_addresses():
 if __name__ == '__main__':
     
     parser = argparse.ArgumentParser()
-    parser.add_argument('--output', dest='output', action='store_true')
+    parser.add_argument("-o", "--output")
 
     args = parser.parse_args()
     
