@@ -67,10 +67,10 @@ class CoresenseProtocol(FramingProtocol):
         self.process_subpackets(data)
         self.packet_end()
 
-    def packet_start(sequence, version):
+    def packet_start(self, sequence, version):
         pass
 
-    def packet_end():
+    def packet_end(self):
         pass
 
     def subpacket_received(self, sensor, valid, data):
