@@ -49,6 +49,6 @@ connect:
 
 test:	program connect
 
-do:		install
+do:	install
 	sleep 2
 	python coresense_plugin/coresense.py

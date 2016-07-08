@@ -220,7 +220,7 @@ void setup()
     delay(1000);
     
     #ifdef USBSERIAL_INTERFACE
-    Timer3.attachInterrupt(handler).setPeriod(1000000 * 24).start(); // print super-packet every 30 secs
+    Timer3.attachInterrupt(handler).setPeriod(1000000 * 5).start(); // print super-packet every 30 secs
     #endif
 }
 /**************************************************************************************/
@@ -240,7 +240,6 @@ void loop()
 
     if (TIMER)
     {
-        SerialUSB.print("timer on");
         #ifdef AIRSENSE_INCLUDE
         airsense_acquire();
         #endif
@@ -249,16 +248,11 @@ void loop()
         lightsense_acquire();
         #endif
 
-        SerialUSB.print("timer on");
         assemble_packet_empty();
         assemble_packet_whole();
 
-        SerialUSB.print("timer on");
         for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i ++)
-        {
             SerialUSB.write(packet_whole[i]);
-        }
-        SerialUSB.print("timer on");
 
         TIMER = false;
     }  

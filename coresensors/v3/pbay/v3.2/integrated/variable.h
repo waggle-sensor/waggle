@@ -113,6 +113,7 @@ byte alpha_histogram[LENGTH_ALPHA_HISTOGRAM + 2];
 byte alpha_config_a[LENGTH_ALPHA_CONFIG_A + 2];
 byte alpha_config_b[LENGTH_ALPHA_CONFIG_B + 2];
 byte alpha_config_c[LENGTH_ALPHA_CONFIG_C + 2];
+byte alpha_config_d[LENGTH_ALPHA_CONFIG_D + 2];
 
 
 

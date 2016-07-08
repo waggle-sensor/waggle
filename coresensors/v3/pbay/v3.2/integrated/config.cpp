@@ -18,9 +18,10 @@
 #define LENGTH_ALPHA_FIRMWARE 2
 #define LENGTH_ALPHA_HISTOGRAM 62
 
-#define LENGTH_ALPHA_CONFIG_A 86
-#define LENGTH_ALPHA_CONFIG_B 85
-#define LENGTH_ALPHA_CONFIG_C 85
+#define LENGTH_ALPHA_CONFIG_A 64
+#define LENGTH_ALPHA_CONFIG_B 64
+#define LENGTH_ALPHA_CONFIG_C 64
+#define LENGTH_ALPHA_CONFIG_D 64
 
 // ******************************************************** ARE USED IN AIR/LIGHT/CHEM/DATAFORMAT/ETC
 
@@ -134,6 +135,7 @@
 #define ID_ALPHA_CONFIG_A 0x30
 #define ID_ALPHA_CONFIG_B 0x31 
 #define ID_ALPHA_CONFIG_C 0x32
+#define ID_ALPHA_CONFIG_D 0x33
 
 //** include each sensor
 #ifdef AIRSENSE_INCLUDE

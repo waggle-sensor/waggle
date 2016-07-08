@@ -1,20 +1,7 @@
 /* Chemsesne reader using the Serial "Serial3".
  * Suppose that the Chemsense is device /dev/ttyACM0 when you connect the board with light and airsense.
  */
-unsigned char INPUT_BYTE;
-char KEY[4];
-char VAL[13];
 
-char first[6], second[6];
-//char *i = VAL;
-
-byte formatted_byte_temp[8];
-
-int KEY_NUM_ID = 0;
-int VAL_NUM_ID = 0;
-int j = 0;
-
-bool flag_KEY = false;
 
 void form3_hex_string_to_hex()                     // Hex to hex: form3
 {
@@ -202,10 +189,16 @@ void Carrier()
         form3_hex_string_to_hex();
 
         chemsense_MAC_ID[0] = ID_CHEMSENSE_MAC;
-        chemsense_MAC_ID[1] = (valid << 7) | LENGTH_FORMAT3;
+        chemsense_MAC_ID[1] = (1 << 7) | LENGTH_FORMAT3;
 
-        for (j = 0; j < LENGTH_FORMAT3; j++)
-            chemsense_MAC_ID[2 + j] = formatted_data_buffer[j];
+        for (i = 0; i < LENGTH_FORMAT3; i++)
+            chemsense_MAC_ID[2 + i] = formatted_data_buffer[i];
+
+#ifdef SERIAL_DEBUG
+        // to check output
+        for (i = 0; i < LENGTH_FORMAT3; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
+#endif
 	}
 
 	else if (compareKey('S', 'H', 'T') == 0)  // wait SHH
@@ -218,8 +211,8 @@ void Carrier()
 
 #ifdef SERIAL_DEBUG
         // to check the values
-        for (j = 0; j < LENGTH_FORMAT1; j++)
-            SerialUSB.print(formatted_data_buffer[j],HEX);
+        for (i = 0; i < LENGTH_FORMAT1; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
     }
 
@@ -230,7 +223,7 @@ void Carrier()
         form1_int_string_to_unsigned_int();
 
         SHT25[0] = ID_SHT25;
-        SHT25[1] = (valid << 7) | (LENGTH_FORMAT2 + LENGTH_FORMAT1);
+        SHT25[1] = (1 << 7) | (LENGTH_FORMAT2 + LENGTH_FORMAT1);
         SHT25[2] = formatted_byte_temp[0];
         SHT25[3] = formatted_byte_temp[1];
         SHT25[4] = formatted_data_buffer[0];
@@ -238,8 +231,8 @@ void Carrier()
 
 #ifdef SERIAL_DEBUG
         // to check the values
-        for (j = 0; j < LENGTH_FORMAT1; j++)
-            SerialUSB.print(formatted_data_buffer[j],HEX);
+        for (i = 0; i < LENGTH_FORMAT1; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
     }
 
@@ -253,8 +246,8 @@ void Carrier()
 
 #ifdef SERIAL_DEBUG
         // to check output
-        for (j = 0; j < LENGTH_FORMAT2; j++)
-            SerialUSB.print(formatted_data_buffer[j],HEX);
+        for (i = 0; i < LENGTH_FORMAT2; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
     }
 
@@ -264,7 +257,7 @@ void Carrier()
         form4_int_string_to_unsigned_long(0);
 
         LPS25H[0] = ID_LPS25H;
-        LPS25H[1] = (valid << 7) | (LENGTH_FORMAT2 + LENGTH_FORMAT4);
+        LPS25H[1] = (1 << 7) | (LENGTH_FORMAT2 + LENGTH_FORMAT4);
         LPS25H[2] = formatted_byte_temp[0];
         LPS25H[3] = formatted_byte_temp[1];
         LPS25H[4] = formatted_data_buffer[0];
@@ -273,8 +266,8 @@ void Carrier()
 
 #ifdef SERIAL_DEBUG
         // to check output
-        for (j = 0; j < LENGTH_FORMAT4; j++)
-            SerialUSB.print(formatted_data_buffer[j],HEX);
+        for (i = 0; i < LENGTH_FORMAT4; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
 	}
 
@@ -288,8 +281,8 @@ void Carrier()
 
 #ifdef SERIAL_DEBUG
         // to check output
-        for (j = 0; j < LENGTH_FORMAT1; j++)
-            SerialUSB.print(formatted_data_buffer[j],HEX);
+        for (i = 0; i < LENGTH_FORMAT1; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
     }
 
@@ -303,8 +296,8 @@ void Carrier()
 
 #ifdef SERIAL_DEBUG
         // to check output
-        for (j = 0; j < LENGTH_FORMAT1; j++)
-            SerialUSB.print(formatted_data_buffer[j],HEX);
+        for (i = 0; i < LENGTH_FORMAT1; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
     }
 
@@ -314,7 +307,7 @@ void Carrier()
         form1_hex_string_to_unsigned_int();
 
         Si1145[0] = ID_Si1145;
-        Si1145[1] = (valid << 7) | (LENGTH_FORMAT1 * 3);
+        Si1145[1] = (1 << 7) | (LENGTH_FORMAT1 * 3);
         Si1145[2] = formatted_byte_temp[0];
         Si1145[3] = formatted_byte_temp[1];
         Si1145[4] = formatted_byte_temp[2];
@@ -324,8 +317,8 @@ void Carrier()
 
 #ifdef SERIAL_DEBUG
         // to check output
-        for (j = 0; j < LENGTH_FORMAT1; j++)
-            SerialUSB.print(formatted_data_buffer[j],HEX);
+        for (i = 0; i < LENGTH_FORMAT1; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
     }
 
@@ -335,15 +328,15 @@ void Carrier()
         form5_int_string_to_long();
 
         total_reducing_gases[0] = ID_TOTAL_REDUCING_GASES;
-        total_reducing_gases[1] = (valid << 7) | LENGTH_FORMAT5;
+        total_reducing_gases[1] = (1 << 7) | LENGTH_FORMAT5;
         total_reducing_gases[2] = formatted_data_buffer[0];
         total_reducing_gases[3] = formatted_data_buffer[1];
         total_reducing_gases[4] = formatted_data_buffer[2];
 
 #ifdef SERIAL_DEBUG
         // to check output
-        for (j = 0; j < LENGTH_FORMAT5; j++)
-            SerialUSB.print(formatted_data_buffer[j],HEX);
+        for (i = 0; i < LENGTH_FORMAT5; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
     }
 
@@ -353,15 +346,15 @@ void Carrier()
         form5_int_string_to_long();
 
         total_oxidizing_gases[0] = ID_TOTAL_OXIDIZING_GASES;
-        total_oxidizing_gases[1] = (valid << 7) | LENGTH_FORMAT5;
+        total_oxidizing_gases[1] = (1 << 7) | LENGTH_FORMAT5;
         total_oxidizing_gases[2] = formatted_data_buffer[0];
         total_oxidizing_gases[3] = formatted_data_buffer[1];
         total_oxidizing_gases[4] = formatted_data_buffer[2];
 
 #ifdef SERIAL_DEBUG
         // to check output
-        for (j = 0; j < LENGTH_FORMAT5; j++)
-            SerialUSB.print(formatted_data_buffer[j],HEX);
+        for (i = 0; i < LENGTH_FORMAT5; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
     }
 
@@ -371,15 +364,15 @@ void Carrier()
         form5_int_string_to_long();
 
         sulfur_dioxide[0] = ID_SULFUR_DIOXIDE;
-        sulfur_dioxide[1] = (valid << 7) | LENGTH_FORMAT5;
+        sulfur_dioxide[1] = (1 << 7) | LENGTH_FORMAT5;
         sulfur_dioxide[2] = formatted_data_buffer[0];
         sulfur_dioxide[3] = formatted_data_buffer[1];
         sulfur_dioxide[4] = formatted_data_buffer[2];
 
 #ifdef SERIAL_DEBUG
         // to check output
-        for (j = 0; j < LENGTH_FORMAT5; j++)
-            SerialUSB.print(formatted_data_buffer[j],HEX);
+        for (i = 0; i < LENGTH_FORMAT5; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
     }
 
@@ -389,15 +382,15 @@ void Carrier()
         form5_int_string_to_long();
 
         hydrogen_sulphide[0] = ID_HYDROGEN_SULPHIDE;
-        hydrogen_sulphide[1] = (valid << 7) | LENGTH_FORMAT5;
+        hydrogen_sulphide[1] = (1 << 7) | LENGTH_FORMAT5;
         hydrogen_sulphide[2] = formatted_data_buffer[0];
         hydrogen_sulphide[3] = formatted_data_buffer[1];
         hydrogen_sulphide[4] = formatted_data_buffer[2];
 
 #ifdef SERIAL_DEBUG
         // to check output
-        for (j = 0; j < LENGTH_FORMAT5; j++)
-            SerialUSB.print(formatted_data_buffer[j],HEX);
+        for (i = 0; i < LENGTH_FORMAT5; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
     }
 
@@ -407,15 +400,15 @@ void Carrier()
         form5_int_string_to_long();
 
         ozone[0] = ID_OZONE;
-        ozone[1] = (valid << 7) | LENGTH_FORMAT5;
+        ozone[1] = (1 << 7) | LENGTH_FORMAT5;
         ozone[2] = formatted_data_buffer[0];
         ozone[3] = formatted_data_buffer[1];
         ozone[4] = formatted_data_buffer[2];
 
 #ifdef SERIAL_DEBUG
         // to check output
-        for (j = 0; j < LENGTH_FORMAT5; j++)
-            SerialUSB.print(formatted_data_buffer[j],HEX);
+        for (i = 0; i < LENGTH_FORMAT5; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
     }
 
@@ -425,15 +418,15 @@ void Carrier()
         form5_int_string_to_long();
 
         nitrogen_dioxide[0] = ID_NITROGEN_DIOXIDE;
-        nitrogen_dioxide[1] = (valid << 7) | LENGTH_FORMAT5;
+        nitrogen_dioxide[1] = (1 << 7) | LENGTH_FORMAT5;
         nitrogen_dioxide[2] = formatted_data_buffer[0];
         nitrogen_dioxide[3] = formatted_data_buffer[1];
         nitrogen_dioxide[4] = formatted_data_buffer[2];
 
 #ifdef SERIAL_DEBUG
         // to check output
-        for (j = 0; j < LENGTH_FORMAT5; j++)
-            SerialUSB.print(formatted_data_buffer[j],HEX);
+        for (i = 0; i < LENGTH_FORMAT5; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
     }
 
@@ -443,15 +436,15 @@ void Carrier()
         form5_int_string_to_long();
 
         carbon_monoxide[0] = ID_CARBON_MONOXIDE;
-        carbon_monoxide[1] = (valid << 7) | LENGTH_FORMAT5;
+        carbon_monoxide[1] = (1 << 7) | LENGTH_FORMAT5;
         carbon_monoxide[2] = formatted_data_buffer[0];
         carbon_monoxide[3] = formatted_data_buffer[1];
         carbon_monoxide[4] = formatted_data_buffer[2];
 
 #ifdef SERIAL_DEBUG
         // to check output
-        for (j = 0; j < LENGTH_FORMAT5; j++)
-            SerialUSB.print(formatted_data_buffer[j],HEX);
+        for (i = 0; i < LENGTH_FORMAT5; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
 	}
 
@@ -461,14 +454,14 @@ void Carrier()
         form2_int_string_to_int();
 
         CO_ADC_temp[0] = ID_CO_ADC_TEMP;
-        CO_ADC_temp[1] = (valid << 7) | LENGTH_FORMAT2;
+        CO_ADC_temp[1] = (1 << 7) | LENGTH_FORMAT2;
         CO_ADC_temp[2] = formatted_data_buffer[0];
         CO_ADC_temp[3] = formatted_data_buffer[1];
 
 #ifdef SERIAL_DEBUG
         // to check output
-        for (j = 0; j < LENGTH_FORMAT2; j++)
-            SerialUSB.print(formatted_data_buffer[j],HEX);
+        for (i = 0; i < LENGTH_FORMAT2; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
     }
 
@@ -478,14 +471,14 @@ void Carrier()
         form2_int_string_to_int();
 
         IAQ_IRR_ADC_temp[0] = ID_IAQ_IRR_ADC_TEMP;
-        IAQ_IRR_ADC_temp[1] = (valid << 7) | LENGTH_FORMAT2;
+        IAQ_IRR_ADC_temp[1] = (1 << 7) | LENGTH_FORMAT2;
         IAQ_IRR_ADC_temp[2] = formatted_data_buffer[0];
         IAQ_IRR_ADC_temp[3] = formatted_data_buffer[1];
 
 #ifdef SERIAL_DEBUG
         // to check output
-        for (j = 0; j < LENGTH_FORMAT2; j++)
-            SerialUSB.print(formatted_data_buffer[j],HEX);
+        for (i = 0; i < LENGTH_FORMAT2; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
     }
 
@@ -495,14 +488,14 @@ void Carrier()
         form2_int_string_to_int();
 
         O3_NO2_ADC_temp[0] = ID_O3_NO2_ADC_TEMP;
-        O3_NO2_ADC_temp[1] = (valid << 7) | LENGTH_FORMAT2;
+        O3_NO2_ADC_temp[1] = (1 << 7) | LENGTH_FORMAT2;
         O3_NO2_ADC_temp[2] = formatted_data_buffer[0];
         O3_NO2_ADC_temp[3] = formatted_data_buffer[1];
 
 #ifdef SERIAL_DEBUG
         // to check output
-        for (j = 0; j < LENGTH_FORMAT2; j++)
-            SerialUSB.print(formatted_data_buffer[j],HEX);
+        for (i = 0; i < LENGTH_FORMAT2; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
     }
 
@@ -512,14 +505,14 @@ void Carrier()
         form2_int_string_to_int();
 
         SO2_H2S_ADC_temp[0] = ID_SO2_H2S_ADC_TEMP;
-        SO2_H2S_ADC_temp[1] = (valid << 7) | LENGTH_FORMAT2;
+        SO2_H2S_ADC_temp[1] = (1 << 7) | LENGTH_FORMAT2;
         SO2_H2S_ADC_temp[2] = formatted_data_buffer[0];
         SO2_H2S_ADC_temp[3] = formatted_data_buffer[1];
 
 #ifdef SERIAL_DEBUG
         // to check output
-        for (j = 0; j < LENGTH_FORMAT2; j++)
-            SerialUSB.print(formatted_data_buffer[j],HEX);
+        for (i = 0; i < LENGTH_FORMAT2; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
     }
 
@@ -529,14 +522,14 @@ void Carrier()
         form2_int_string_to_int();
 
         CO_LMP_temp[0] = ID_CO_LMP_TEMP;
-        CO_LMP_temp[1] = (valid << 7) | LENGTH_FORMAT2;
+        CO_LMP_temp[1] = (1 << 7) | LENGTH_FORMAT2;
         CO_LMP_temp[2] = formatted_data_buffer[0];
         CO_LMP_temp[3] = formatted_data_buffer[1];
 
 #ifdef SERIAL_DEBUG
         // to check output
-        for (j = 0; j < LENGTH_FORMAT2; j++)
-            SerialUSB.print(formatted_data_buffer[j],HEX);
+        for (i = 0; i < LENGTH_FORMAT2; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
     }
 
@@ -550,8 +543,8 @@ void Carrier()
 
 #ifdef SERIAL_DEBUG
         // to check output
-        for (j = 0; j < LENGTH_FORMAT2; j++)
-            SerialUSB.print(formatted_data_buffer[j],HEX);
+        for (i = 0; i < LENGTH_FORMAT2; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
     }
 
@@ -565,8 +558,8 @@ void Carrier()
 
 #ifdef SERIAL_DEBUG
         // to check output
-        for (j = 0; j < LENGTH_FORMAT2; j++)
-            SerialUSB.print(formatted_data_buffer[j],HEX);
+        for (i = 0; i < LENGTH_FORMAT2; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
     }
 
@@ -580,8 +573,8 @@ void Carrier()
 
 #ifdef SERIAL_DEBUG
         // to check output
-        for (j = 0; j < LENGTH_FORMAT2; j++)
-            SerialUSB.print(formatted_data_buffer[j],HEX);
+        for (i = 0; i < LENGTH_FORMAT2; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
     }
 
@@ -591,7 +584,7 @@ void Carrier()
         form4_int_string_to_unsigned_long(1);
 
         three_accel_and_vib[0] = ID_THREE_ACCEL_AND_VIB;
-        three_accel_and_vib[1] = (valid << 7) | (LENGTH_FORMAT2 * 3 + LENGTH_FORMAT4);
+        three_accel_and_vib[1] = (1 << 7) | (LENGTH_FORMAT2 * 3 + LENGTH_FORMAT4);
         three_accel_and_vib[2] = formatted_byte_temp[0];
         three_accel_and_vib[3] = formatted_byte_temp[1];
         three_accel_and_vib[4] = formatted_byte_temp[2];
@@ -604,8 +597,8 @@ void Carrier()
 
 #ifdef SERIAL_DEBUG
         // to check output
-        for (j = 0; j < LENGTH_FORMAT4; j++)
-            SerialUSB.print(formatted_data_buffer[j],HEX);
+        for (i = 0; i < LENGTH_FORMAT4; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
     }
 
@@ -619,8 +612,8 @@ void Carrier()
 
 #ifdef SERIAL_DEBUG
         // to check output
-        for (j = 0; j < LENGTH_FORMAT2; j++)
-            SerialUSB.print(formatted_data_buffer[j],HEX);
+        for (i = 0; i < LENGTH_FORMAT2; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
     }
 
@@ -634,8 +627,8 @@ void Carrier()
 
 #ifdef SERIAL_DEBUG
         // to check output
-        for (j = 0; j < LENGTH_FORMAT2; j++)
-            SerialUSB.print(formatted_data_buffer[j],HEX);
+        for (i = 0; i < LENGTH_FORMAT2; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
     }
 
@@ -649,8 +642,8 @@ void Carrier()
 
 #ifdef SERIAL_DEBUG
         // to check output
-        for (j = 0; j < LENGTH_FORMAT2; j++)
-            SerialUSB.print(formatted_data_buffer[j],HEX);
+        for (i = 0; i < LENGTH_FORMAT2; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
     }
 
@@ -660,7 +653,7 @@ void Carrier()
         form4_int_string_to_unsigned_long(1);
 
         three_gyro_and_orientation[0] = ID_THREE_GYRO_AND_ORIENTATION;
-        three_gyro_and_orientation[1] = (valid << 7) | (LENGTH_FORMAT2 * 3 + LENGTH_FORMAT4);
+        three_gyro_and_orientation[1] = (1 << 7) | (LENGTH_FORMAT2 * 3 + LENGTH_FORMAT4);
         three_gyro_and_orientation[2] = formatted_byte_temp[0];
         three_gyro_and_orientation[3] = formatted_byte_temp[1];
         three_gyro_and_orientation[4] = formatted_byte_temp[2];
@@ -672,10 +665,13 @@ void Carrier()
         three_gyro_and_orientation[9] = formatted_data_buffer[1];
         three_gyro_and_orientation[10] = formatted_data_buffer[2];
 
+        OIX_count++;
+
 #ifdef SERIAL_DEBUG
         // to check output
-        for (j = 0; j < LENGTH_FORMAT4; j++)
-            SerialUSB.print(formatted_data_buffer[j],HEX);
+        for (i = 0; i < LENGTH_FORMAT4; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
     }
+
 }

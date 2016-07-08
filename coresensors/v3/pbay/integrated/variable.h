@@ -2,7 +2,6 @@
 //** integrated.ino
 OneWire ds2401(PIN_DS2401);  //DS2401 PIN
 byte I2C_READ_COMPLETE = true;
-bool TIMER = true;		// TIMER FOR 24sec period of getting data from chemsense
 bool UP_DOWN = false; 	//which is zero!!!!!!!
 int count = 0;
 
@@ -31,6 +30,7 @@ bool flag_KEY = false;
 byte SPI_read_byte = 0;
 SPISettings set1(SPI_MAX_speed, MSBFIRST, SPI_MODE1);
 //** alphasensor which will be moved to down there and initialization (Jun 30)
+
 byte alpha_firmware[2];
 byte alpha_config [256];
 byte alpha_histogram[62];
@@ -38,12 +38,11 @@ uint8_t val1, val2;
 
 //** packet_assembler
 int packet_whole_index = 0;
-byte packet_seq_number = 0x00;\
+byte packet_seq_number = 0x00;
 
 //** OIX verification
 int OIX_count = 0;
 int OIX_packet_count = 0;
-int arb = 0;
 
 
 //** store formatted values, dataFormat.ino ********************************************************** FORMATS FOR VALUES

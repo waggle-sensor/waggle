@@ -28,6 +28,17 @@ void alpha_packet_config()
             alpha_config_c[1] = (0 << 7) | LENGTH_ALPHA_CONFIG_C;
         }
 
+        if ((alpha_config_d[1] & 0x80) == 0x80)
+        {
+            for (i = 0; i <  sizeof(alpha_config_d); i++)
+            {
+                packet_whole[packet_whole_index] = alpha_config_d[i];
+                packet_whole_index++;
+            }
+            alpha_config_d[1] = (0 << 7) | LENGTH_ALPHA_CONFIG_D;
+        }
+
+
         flag_alpha = false;
     }
 #endif

@@ -85,7 +85,7 @@ void assemble_packet_whole()
 #endif
 
 #ifdef TSL250RD_1_include    // Append TSL250RD_1
-    if ((TSL250RD_1 & 0x80) == 0x80)
+    if ((TSL250RD_1[1] & 0x80) == 0x80)
     {
         for (i = 0; i < sizeof(TSL250RD_1); i++)
         {

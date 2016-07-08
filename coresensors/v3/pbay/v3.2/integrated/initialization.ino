@@ -65,6 +65,7 @@ void sensor_buff_initialization()
 	alpha_config_a[0] = ID_ALPHA_CONFIG_A;
 	alpha_config_b[0] = ID_ALPHA_CONFIG_B;
 	alpha_config_c[0] = ID_ALPHA_CONFIG_C;
+	alpha_config_d[0] = ID_ALPHA_CONFIG_D;
 
 
 
@@ -132,4 +133,5 @@ void sensor_buff_initialization()
 	alpha_config_a[1] = (0 << 7) | LENGTH_ALPHA_CONFIG_A;
 	alpha_config_b[1] = (0 << 7) | LENGTH_ALPHA_CONFIG_B;
 	alpha_config_c[1] = (0 << 7) | LENGTH_ALPHA_CONFIG_C;
+	alpha_config_d[1] = (0 << 7) | LENGTH_ALPHA_CONFIG_D;
 }

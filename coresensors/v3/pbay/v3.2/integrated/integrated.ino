@@ -63,15 +63,6 @@ void setup()
 
 void loop()
 {
-    // alphasense_firmware();
-    // SerialUSB.print("firmware");
-    // delay(1000);
-
-    // alphasense_config();
-    // Serial.print("configuration");
-    // delay(1000);
-    
-
     // #ifdef AIRSENSE_INCLUDE
     // airsense_acquire();
     // #endif
@@ -80,47 +71,8 @@ void loop()
     // lightsense_acquire();
     // #endif
 
-    // #ifdef CHEMSENSE_INCLUDE
-    // chemsense_acquire();
-    // #endif
-
-    // #ifdef ALPHASENSE_INCLUDE
-    // // alphasense_on();
-    // // delay(5000);
-
-    // count++;
-    // SerialUSB.println(count);
-    // delay(1000);    
-    
-    // alphasense_firmware();
-    // SerialUSB.print("firmware");
-    // delay(5000);
-
-    // alphasense_histo();
-    // SerialUSB.print("histogram");
-    // delay(5000);
-
-    // alphasense_config();
-    // Serial.print("configuration");
-    // delay(10000);
-    
-    // alphasense_off();
-    // SerialUSB.print("off");
-    // delay(10000);
-    // #endif
-
-    // Timer3.attachInterrupt(handler).setPeriod(1000000 * 24).start(); 
-
     while (count < 24)       // every 24 sec
     {
-        // #ifdef AIRSENSE_INCLUDE
-        // airsense_acquire();
-        // #endif
-        
-        // #ifdef LIGHTSENSE_INCLUDE
-        // lightsense_acquire();
-        // #endif
-
         // #ifdef CHEMSENSE_INCLUDE
         // chemsense_acquire();
         // #endif
@@ -129,33 +81,26 @@ void loop()
         // SerialUSB.print("firmware");
         // delay(5000);
 
+#ifdef ALPHASENSE_INCLUDE
         if (count == 23)
         {
             count_conf++;
             if (count_conf == 26)       // every 598 secs, about 10 min
             {
                 alphasense_config();
-                delay(1000);
+                delay(100);
+                alphasense_firmware();
+                delay(100);
 
                 flag_alpha = true;
                 count_conf = 0;
             }
         }
-
-        // JUST FOR THE TEST OF AVAILABILITY IF CONF ARRAY
-        // if (count == 10)
-        // {
-        //     alphasense_config();
-        //     Serial.print("configuration");
-        //     delay(1000);
-        // }
-        // JUST FOR THE TEST OF AVAILABILITY IF CONF ARRAY
+#endif
 
         alphasense_histo();
-        // SerialUSB.print("histogram");
         delay(5000);
     }
-
 
     // #ifdef ALPHASENSE_INCLUDE
     // alphasense_off();
@@ -163,8 +108,6 @@ void loop()
     // delay(1000);
     // #endif
 
-    // Timer3.attachInterrupt(handler).stop();
-    // assemble_packet_empty();
     assemble_packet_whole();        //******** packetize air/light/chem
     // for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
     //     SerialUSB.write(packet_whole[i]);
@@ -185,9 +128,6 @@ void loop()
     flag_alpha = false;
     count = 0;
 
-    // TIMER = true;
-
-
     //************************** test OIX sub-packet
     // SerialUSB.print("OIX_count ");
     // SerialUSB.print(OIX_count);
@@ -205,10 +145,6 @@ void loop()
     // OIX_count = 0;
     // OIX_packet_count = 0;
     //************************** test OIX sub-packet
-
-
-    // for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
-    //     SerialUSB.write(packet_whole[i]);
 }
 
 #ifdef I2C_INTERFACE
