@@ -8,6 +8,7 @@ Take a waggle image and modify it accordingly:
 Disable waggle services:
 ```bash
 waggle-service stop waggle-init
+rm -f /recovery_p*
 touch /recovery_p1.tar.gz /recovery_p2.tar.gz
 ls -1 /etc/init/waggle-* | grep -v epoch | grep -v init | xargs -i rm {}
 ```
@@ -33,3 +34,11 @@ chmod +x install.sh install-stress-ng.sh stress-test.sh
 ## QA testing instructions
 
 [QA_testing_instructions.md](./QA_testing_instructions.md)
+
+## CPU temperature
+
+For debugging you may want to check the CPU temperature while running the stress-test:
+
+```bash
+while [ 1 ] ; do sleep 1 ; cat /sys/class/thermal/thermal_zone0/temp ; done
+```
