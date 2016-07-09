@@ -64,6 +64,11 @@ class TestFramingProtocol(unittest.TestCase):
         results = process_dataset(dataset)
         self.assertEqual(dataset, results)
 
+    def test_invalid(self):
+        dataset = [(1, 3, bytearray([0xAA, 0x55] * 5))]
+        results = process_dataset(dataset, start=1)
+        self.assertEqual([], results)
+
     def test_incomplete(self):
         dataset = [
             (1, 3, bytearray([1, 1, 1])),
