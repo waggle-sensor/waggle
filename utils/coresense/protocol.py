@@ -13,8 +13,7 @@ class FramingProtocol(object):
         pass
 
     def data_received(self, data):
-        for x in data:
-            self.buffer.append(x)
+        self.buffer.extend(data)
 
         self.drop_incomplete(start=0)
 
