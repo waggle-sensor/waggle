@@ -89,9 +89,6 @@ class CoresenseProtocol(FramingProtocol):
 
             self.subpacket_received(sensor, valid, subpacket_data)
 
-    def invalid_subpacket(self, exc):
-        pass
-
 
 def create_packet(sequence, version, data):
     sequence_version = ((sequence & 0x0F) << 4) | (version & 0x0F)
