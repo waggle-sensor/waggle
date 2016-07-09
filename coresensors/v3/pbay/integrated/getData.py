@@ -3,8 +3,8 @@ import time
 
 while 1:
     try:
-        #link = serial.Serial("/dev/ttyACM0", 115200)
-        link = serial.Serial("/dev/ttyACM1", 19200)
+        link = serial.Serial("/dev/ttyACM0", 115200)
+        #link = serial.Serial("/dev/ttyUSB0", 19200)
         print "connected"
         break
     except:

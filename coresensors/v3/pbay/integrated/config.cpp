@@ -1,9 +1,4 @@
 
-/*
- * /coresensors/v3/pbay/integrated
- * config.cpp V3 (pbay)
- */
-
 // Chemsense data communication rate *********************** FOR CHEMSEMSE DATA COMMUNICATION W/COM or W/SENSOR BOARD
 #define USBSERIAL_INTERFACE_DATARATE 115200
 #define CHEMSENSE_DATARATE 19200
@@ -31,12 +26,36 @@
 #define HEADER_VERSION 0x00 // Lower nibble
 // ***************************************************** ARE USED IN PACK ASSEMBLER
 
-//************* airsense 
-#define I2C_TMP112 0x48
-#define TMP112_CONFIG_REG 0x01
-#define TMP112_TEMP_REG 0x00
+// #define SENSOR_HEALTH_SIZE 0x04
 
-#define SENSOR_HEALTH_SIZE 0x04
+// ***************************************************************** ARE USED IN AIR/LIGHT/CHEM
+
+// #define ID_HEALTH  0xFE
+
+#define EEPROM_ADDRESS      0x50    //Address of 24LC256 EEPROM
+#define PIN_CHEMSENSE_POW   47
+#define PIN_DS2401          48
+// #define PIN_CHEMSENSE_RST   49
+// #define PIN_CHEMSENSE_HBT   50
+
+#define PIN_HBT             8               // HBEAT PIN (ON/OFF)
+// #define PIN_GP2Y_OUT        A7
+// #define PIN_GP2Y_IN         A4
+#define PIN_SPV_AMP         A5
+#define PIN_SVP_SPL         A6
+#define PIN_RAW_MIC         A9
+#define PIN_HIH4030         A10
+
+//** alphasense
+#define PIN_ALPHASENSE_SLAVE 33
+#define SPI_MAX_speed 500000
+
+// Which sensor boards are being used   ************************* IS BEING USED OR NOT
+#define AIRSENSE_INCLUDE 0x01
+#define LIGHTSENSE_INCLUDE 0x01
+#define CHEMSENSE_INCLUDE 0x01
+#define ALPHASENSE_INCLUDE 0x01
+//*************************************************************** IS BEING USED OR NOT
 
 // First byte for every formatted buffers **************************** ARE USED IN AIR/LIGHT/CHEM
 #define ID_MAC  0x00
@@ -68,9 +87,10 @@
 #define ID_ML8511  0x10
 #define ID_TMP421  0x13
 
-//#define ID_D6T  0x11
-//#define ID_MLX90614  0x12
-//#define ID_SPV1840LR5HB_2  0x13
+//** NO USE but FYI interms of using codes in /coresense_plugin
+//#define ID_D6T  0x11                  // NO USE
+//#define ID_MLX90614  0x12             // NO USE
+//#define ID_SPV1840LR5HB_2  0x14       // NO USE
 
 //Chemsense
 #define ID_CHEMSENSE_MAC  0x20
@@ -78,6 +98,9 @@
 #define ID_SHT25 0x1D
 #define ID_LPS25H 0x1E
 #define ID_Si1145 0x1F
+
+//** NO USE but FYI interms of using codes in /coresense_plugin
+// #define ID_ETHANOL  0x16              // NO USE
 
 #define ID_TOTAL_REDUCING_GASES  0x15
 #define ID_TOTAL_OXIDIZING_GASES  0x1A
@@ -96,36 +119,11 @@
 #define ID_THREE_ACCEL_AND_VIB	0x26
 #define ID_THREE_GYRO_AND_ORIENTATION	0x27
 
-// #define ID_ETHANOL  0x16
-// ***************************************************************** ARE USED IN AIR/LIGHT/CHEM
-
-#define ID_HEALTH  0xFE
-
-#define EEPROM_ADDRESS      0x50    //Address of 24LC256 EEPROM
-#define PIN_CHEMSENSE_POW   47
-#define PIN_DS2401          48
-#define PIN_CHEMSENSE_RST   49
-#define PIN_CHEMSENSE_HBT   50
-
-#define PIN_HBT             8
-#define PIN_GP2Y_OUT        A7
-#define PIN_GP2Y_IN         A4
-#define PIN_SPV_AMP         A5
-#define PIN_SVP_SPL         A6
-#define PIN_RAW_MIC         A9
-#define PIN_HIH4030         A10
-
-
-// Which sensor boards are being used   ************************* IS BEING USED OR NOT
-#define AIRSENSE_INCLUDE 0x01
-#define LIGHTSENSE_INCLUDE 0x01
-#define CHEMSENSE_INCLUDE 0x01
-//*************************************************************** IS BEING USED OR NOT
-
+//** include each sensor
 #ifdef AIRSENSE_INCLUDE
     #define MAC_ID_include 0x01
 
-    // #define TMP112_include 0x01
+    #define TMP112_include 0x01
     #define HTU21D_include 0x01
 
     #define HIH4030_include 0x01
@@ -151,25 +149,50 @@
     #define MLX75305_include 0x01
     #define ML8511_include 0x01
     #define TMP421_include 0x01
-    #define MLX90614_include 0x01
-    #define D6T_include 0x01
 #endif
 
-//#define system_health_include 0x01
-//#define RANDOMIZE_VALID 0x01
+#ifdef CHEMSENSE_INCLUDE
+    #define chemsense_MAC_ID_include 0x01
+
+    #define SHT25_include 0x01
+    #define LPS25H_include 0x01
+    #define Si1145_include 0x01
+
+    #define total_reducing_gases_include 0x01
+    #define total_oxidizing_gases_include 0x01
+    #define sulfur_dioxide_include 0x01
+    #define hydrogen_sulphide_include 0x01
+    #define ozone_include 0x01
+    #define nitrogen_dioxide_include 0x01
+    #define carbon_monoxide_include 0x01
+
+    #define CO_ADC_temp_include 0x01
+    #define IAQ_IRR_ADC_temp_include 0x01
+    #define O3_NO2_ADC_temp_include 0x01
+    #define SO2_H2S_ADC_temp_include 0x01
+    #define CO_LMP_temp_include 0x01
+
+    #define three_accel_and_vib_include 0x01
+    #define three_gyro_and_orientation_include 0x01
+#endif
+
+// #define system_health_include 0x01
+// #define RANDOMIZE_VALID 0x01
+// #define PRINT_BUFFER 0x01
 // #define SERIAL_DEBUG 0x01
 // #define PRINT_ADDRESS 0x01
-//#define PRINT_BUFFER 0x01
 
 #define USBSERIAL_INTERFACE 0x01
+//#define I2C_INTERFACE_CONST_SIZE 0x01
 
 #ifndef USBSERIAL_INTERFACE
 #define I2C_INTERFACE 0x01
 #define I2C_SLAVE_ADDRESS 0x03
 #endif 
 
-//#define I2C_INTERFACE_CONST_SIZE 0x01
-
 #ifndef I2C_INTERFACE_CONST_SIZE
 #define I2C_PACKET_SIZE 191
 #endif
+
+
+

@@ -1,0 +1,32 @@
+** subs
+Ignore it
+This is just for shpark
+
+** coresense
+Get data from chemsense, through lightsense and airsense.
+
+** integrated
+Integrated version 0, using 24sec timer to get data from the chemsese board
+>>>Version was used to pass MAC address only for PDT sets
+Make sure to on/off PRINT_ADDRESS in "config.cpp"
+(+)
+Clean up the codes
+In the middle of merging alphasensor
+>>>HBEAT is added, switch HIGH/LOW every 1 sec
+Just variables are added on config.cpp
+Testing packet loss - OIX_count test (jun 30, 2016)
+(+)
+>>>Problem that chemsense is not powered on while it mounted on a node
+Codes for alpha sensor are not included
+Position of sensor_setup();
+This one will be used for v3 sensors without alphasensor
+-->> This is the one on the node for tests (July 5)
+
+** v3.2
+Copy of integrated (Jun 8, 2016)
+Merging alphasensor
+>>>Make packets for alphasensor data
+Four sub-packets for alpha sensor configureation (64bytes each)
+v3.1 airsense board does not have SPI SS pin, so I cannot test the whole sensors together
+USE ONLY ALPHASENSOR
+--> This is the one success with alpha sensor

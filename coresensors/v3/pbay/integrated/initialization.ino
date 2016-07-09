@@ -1,12 +1,11 @@
-int sensor_initial = 0;
-
 void sensor_buff_initialization()
 {
+	//***************************** FIRST BYTE of the array
 	MAC_ID[0] = ID_MAC;	MAC_ID[0] = ID_MAC;
 
 	// airsense board
     TMP112[0] = ID_TMP112;
-    HTU21D[0] = ID_HTU21D;
+    HTU21D_array[0] = ID_HTU21D;
 
     HIH4030[0] = ID_HIH4030;
 
@@ -31,7 +30,6 @@ void sensor_buff_initialization()
     MLX75305[0] = ID_MLX75305;
     ML8511[0] = ID_ML8511;
     TMP421[0] = ID_TMP421;
-//	SPV1840LR5HB_2[0] = ID_SPV1840LR5HB_2;
 
 
 
@@ -61,59 +59,59 @@ void sensor_buff_initialization()
 
 
 
+	//***************************** SECOND BYTE of the array
     // airsense initialization
 	MAC_ID[1] = (1 << 7) | LENGTH_FORMAT3;
 
 	// airsense initialization
-    TMP112[1] = (sensor_initial << 7) | LENGTH_FORMAT6;
-    HTU21D[1] = (sensor_initial << 7) | LENGTH_FORMAT6;
+    TMP112[1] = (0 << 7) | LENGTH_FORMAT6;
+    HTU21D_array[1] = (0 << 7) | LENGTH_FORMAT6;
 
-    HIH4030[1] = (sensor_initial << 7) | LENGTH_FORMAT1;
+    HIH4030[1] = (0 << 7) | LENGTH_FORMAT1;
 
-    BMP180[1] = (sensor_initial << 7) | (LENGTH_FORMAT5 + LENGTH_FORMAT6);
-    PR103J2[1] = (sensor_initial << 7) | LENGTH_FORMAT1;
-    TSL250RD_1[1] = (sensor_initial << 7) | LENGTH_FORMAT1;
+    BMP180[1] = (0 << 7) | (LENGTH_FORMAT5 + LENGTH_FORMAT6);
+    PR103J2[1] = (0 << 7) | LENGTH_FORMAT1;
+    TSL250RD_1[1] = (0 << 7) | LENGTH_FORMAT1;
 
-    MMA8452Q[1] = (sensor_initial << 7) | (LENGTH_FORMAT6 * 4);
-    SPV1840LR5HB[1] = (sensor_initial << 7) | LENGTH_FORMAT1;
-    TSYS01[1] = (sensor_initial << 7) | LENGTH_FORMAT6;
+    MMA8452Q[1] = (0 << 7) | (LENGTH_FORMAT6 * 4);
+    SPV1840LR5HB[1] = (0 << 7) | LENGTH_FORMAT1;
+    TSYS01[1] = (0 << 7) | LENGTH_FORMAT6;
 
 
     // lightsense initialization
-    HMC5883L[1] = (sensor_initial << 7) | (LENGTH_FORMAT8 * 3);
-    HIH6130[1] = (sensor_initial << 7) | (LENGTH_FORMAT6 * 2);
+    HMC5883L[1] = (0 << 7) | (LENGTH_FORMAT8 * 3);
+    HIH6130[1] = (0 << 7) | (LENGTH_FORMAT6 * 2);
 
-    APDS9006020[1] = (sensor_initial << 7) | LENGTH_FORMAT1;
-    TSL260RD[1] = (sensor_initial << 7) | LENGTH_FORMAT1;
-    TSL250RD_2[1] = (sensor_initial << 7) | LENGTH_FORMAT1;
+    APDS9006020[1] = (0 << 7) | LENGTH_FORMAT1;
+    TSL260RD[1] = (0 << 7) | LENGTH_FORMAT1;
+    TSL250RD_2[1] = (0 << 7) | LENGTH_FORMAT1;
 
-    MLX75305[1] = (sensor_initial << 7) | LENGTH_FORMAT1;
-    ML8511[1] = (sensor_initial << 7) | LENGTH_FORMAT1;
-    TMP421[1] = (sensor_initial << 7) | LENGTH_FORMAT6;
-//	SPV1840LR5HB_2[1] = (sensor_initial << 7) | LENGTH_FORMAT1;
+    MLX75305[1] = (0 << 7) | LENGTH_FORMAT1;
+    ML8511[1] = (0 << 7) | LENGTH_FORMAT1;
+    TMP421[1] = (0 << 7) | LENGTH_FORMAT6;
 
 
 	// chemsemse initialization
-	chemsense_MAC_ID[1] = (sensor_initial << 7) | LENGTH_FORMAT3;
+	chemsense_MAC_ID[1] = (0 << 7) | LENGTH_FORMAT3;
 
-	SHT25[1] = (sensor_initial << 7) | (LENGTH_FORMAT2 + LENGTH_FORMAT1);
-	LPS25H[1] = (sensor_initial << 7) | (LENGTH_FORMAT2 + LENGTH_FORMAT4);
-	Si1145[1] = (sensor_initial << 7) | (LENGTH_FORMAT1 * 3);
+	SHT25[1] = (0 << 7) | (LENGTH_FORMAT2 + LENGTH_FORMAT1);
+	LPS25H[1] = (0 << 7) | (LENGTH_FORMAT2 + LENGTH_FORMAT4);
+	Si1145[1] = (0 << 7) | (LENGTH_FORMAT1 * 3);
 
-	total_reducing_gases[1] = (sensor_initial << 7) | LENGTH_FORMAT5;
-	total_oxidizing_gases[1] = (sensor_initial << 7) | LENGTH_FORMAT5;
-	sulfur_dioxide[1] = (sensor_initial << 7) | LENGTH_FORMAT5;
-	hydrogen_sulphide[1] = (sensor_initial << 7) | LENGTH_FORMAT5;
-	ozone[1] = (sensor_initial << 7) | LENGTH_FORMAT5;
-	nitrogen_dioxide[1] = (sensor_initial << 7) | LENGTH_FORMAT5;
-	carbon_monoxide[1] = (sensor_initial << 7) | LENGTH_FORMAT5;
+	total_reducing_gases[1] = (0 << 7) | LENGTH_FORMAT5;
+	total_oxidizing_gases[1] = (0 << 7) | LENGTH_FORMAT5;
+	sulfur_dioxide[1] = (0 << 7) | LENGTH_FORMAT5;
+	hydrogen_sulphide[1] = (0 << 7) | LENGTH_FORMAT5;
+	ozone[1] = (0 << 7) | LENGTH_FORMAT5;
+	nitrogen_dioxide[1] = (0 << 7) | LENGTH_FORMAT5;
+	carbon_monoxide[1] = (0 << 7) | LENGTH_FORMAT5;
 
-	CO_ADC_temp[1] = (sensor_initial << 7) | LENGTH_FORMAT2;
-	IAQ_IRR_ADC_temp[1] = (sensor_initial << 7) | LENGTH_FORMAT2;
-	O3_NO2_ADC_temp[1] = (sensor_initial << 7) | LENGTH_FORMAT2;
-	SO2_H2S_ADC_temp[1] = (sensor_initial >> 7) | LENGTH_FORMAT2;
-	CO_LMP_temp[1] = (sensor_initial << 7) | LENGTH_FORMAT2;
+	CO_ADC_temp[1] = (0 << 7) | LENGTH_FORMAT2;
+	IAQ_IRR_ADC_temp[1] = (0 << 7) | LENGTH_FORMAT2;
+	O3_NO2_ADC_temp[1] = (0 << 7) | LENGTH_FORMAT2;
+	SO2_H2S_ADC_temp[1] = (0 >> 7) | LENGTH_FORMAT2;
+	CO_LMP_temp[1] = (0 << 7) | LENGTH_FORMAT2;
 
-	three_accel_and_vib[1] = (sensor_initial << 7) | ((LENGTH_FORMAT2 * 3) + LENGTH_FORMAT4);
-	three_gyro_and_orientation[1] = (sensor_initial << 7) | ((LENGTH_FORMAT2 * 3) + LENGTH_FORMAT4);
+	three_accel_and_vib[1] = (0 << 7) | ((LENGTH_FORMAT2 * 3) + LENGTH_FORMAT4);
+	three_gyro_and_orientation[1] = (0 << 7) | ((LENGTH_FORMAT2 * 3) + LENGTH_FORMAT4);
 }
