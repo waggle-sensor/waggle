@@ -46,9 +46,8 @@ class FramingProtocol(object):
                 self.drop_incomplete(start=1)
                 continue
 
+            # received a good packet (up to crc / footer check...)
             self.packet_received(sequence, version, data)
-
-            # clear packet from buffer
             del self.buffer[:HEADER_LENGTH + length + FOOTER_LENGTH]
 
     def drop_incomplete(self, start):
