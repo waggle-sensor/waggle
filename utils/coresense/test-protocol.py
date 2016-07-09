@@ -89,20 +89,6 @@ class TestFramingProtocol(unittest.TestCase):
         results = process_dataset(dataset, end=-11)
         self.assertEqual(dataset[:-2], results)
 
-    def test_random(self):
-        from random import seed, randint
-
-        seed(123)
-
-        for i in range(10000):
-            sequence = randint(0, 15)
-            version = randint(0, 15)
-            size = randint(0, 240)
-            data = bytearray([randint(0, 255) for _ in range(size)])
-
-            dataset = [(sequence, version, data)]
-            self.assertEqual(dataset, process_dataset(dataset))
-
 
 if __name__ == '__main__':
     unittest.main()

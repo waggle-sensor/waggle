@@ -67,15 +67,7 @@ class FramingProtocol(object):
 class CoresenseProtocol(FramingProtocol):
 
     def packet_received(self, sequence, version, data):
-        self.packet_start(sequence, version)
         self.process_subpackets(data)
-        self.packet_end()
-
-    def packet_start(self, sequence, version):
-        pass
-
-    def packet_end(self):
-        pass
 
     def subpacket_received(self, sensor, valid, data):
         pass
@@ -84,26 +76,28 @@ class CoresenseProtocol(FramingProtocol):
         offset = 0
 
         while offset < len(data):
-            try:
-                sensor = data[offset + 0]
-                valid = (data[offset + 1] & 0x80) != 0
-                length = data[offset + 1] & 0x7F
-                offset += 2
+            sensor = data[offset + 0]
+            valid = (data[offset + 1] & 0x80) != 0
+            length = data[offset + 1] & 0x7F
+            offset += 2
 
-                subpacket_data = data[offset:offset + length]
-                offset += length
-            except Exception as exc:
-                self.invalid_subpacket(exc=exc)
-                break
+            if offset + length > len(data):
+                raise IndexError('sensor {} subpacket has invalid length'.format(sensor))
+
+            subpacket_data = data[offset:offset + length]
+            offset += length
 
             self.subpacket_received(sensor, valid, subpacket_data)
+
+    def invalid_subpacket(self, exc):
+        pass
 
 
 def create_packet(sequence, version, data):
     sequence_version = ((sequence & 0x0F) << 4) | (version & 0x0F)
     header = bytearray([0xAA, sequence_version, len(data)])
     footer = bytearray([compute_crc(data), 0x55])
-    return header + data + footer  # join instead...?
+    return bytearray([]).join([header, data, footer])
 
 
 def create_subpacket(sensor, valid, data):
@@ -112,8 +106,9 @@ def create_subpacket(sensor, valid, data):
 
 
 def create_packet_from_subpackets(sequence, version, subpackets):
-    return create_packet(sequence, version, bytearray([]).join(
-        create_subpacket(sensor, valid, data) for sensor, valid, data in subpackets))
+    subpacket_data = bytearray([]).join(create_subpacket(sensor, valid, data)
+                                        for sensor, valid, data in subpackets)
+    return create_packet(sequence, version, subpacket_data)
 
 
 def compute_crc(data, crc=0):
