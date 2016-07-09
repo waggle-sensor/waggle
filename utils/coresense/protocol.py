@@ -1,5 +1,3 @@
-from bytequeue import bytequeue
-
 HEADER_BYTE = 0xAA
 FOOTER_BYTE = 0x55
 HEADER_LENGTH = 3
@@ -9,19 +7,18 @@ FOOTER_LENGTH = 2
 class FramingProtocol(object):
 
     def connection_made(self):
-        self.buffer = bytequeue(capacity=4096)
+        self.buffer = bytearray()
 
     def connection_lost(self):
         pass
 
     def data_received(self, data):
-        for byte in data:
-            self.buffer.enqueue(byte)
+        for x in data:
+            self.buffer.append(x)
+
+        self.drop_incomplete(start=0)
 
         while True:
-            while len(self.buffer) > 0 and self.buffer[0] != HEADER_BYTE:
-                self.buffer.dequeue()
-
             if len(self.buffer) < HEADER_LENGTH:
                 break
 
@@ -41,19 +38,25 @@ class FramingProtocol(object):
 
             if end != FOOTER_BYTE:
                 self.invalid_packet(self, ValueError('Bad end byte.'))
-                self.buffer.dequeue()
+                self.drop_incomplete(start=1)
                 continue
 
             if compute_crc(data) != crc:
                 self.invalid_packet(self, ValueError('Bad CRC.'))
-                self.buffer.dequeue()
+                self.drop_incomplete(start=1)
                 continue
 
             self.packet_received(sequence, version, data)
 
             # clear packet from buffer
-            for _ in range(HEADER_LENGTH + length + FOOTER_LENGTH):
-                self.buffer.dequeue()
+            del self.buffer[:HEADER_LENGTH + length + FOOTER_LENGTH]
+
+    def drop_incomplete(self, start):
+        try:
+            offset = self.buffer.index(HEADER_BYTE, start)
+            del self.buffer[:offset]
+        except ValueError:
+            del self.buffer[:]
 
     def packet_received(self, sequence, version, data):
         pass
