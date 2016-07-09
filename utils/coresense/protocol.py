@@ -51,7 +51,7 @@ class FramingProtocol(object):
 
     def drop_incomplete(self, start):
         try:
-            offset = self.buffer.index(HEADER_BYTE, start)
+            offset = self.buffer.index(bytearray([HEADER_BYTE]), start)
             del self.buffer[:offset]
         except ValueError:
             del self.buffer[:]
@@ -90,6 +90,7 @@ class CoresenseProtocol(FramingProtocol):
 
 
 def create_packet(sequence, version, data):
+    data = bytearray(data)
     sequence_version = ((sequence & 0x0F) << 4) | (version & 0x0F)
     header = bytearray([0xAA, sequence_version, len(data)])
     footer = bytearray([compute_crc(data), 0x55])
@@ -97,6 +98,7 @@ def create_packet(sequence, version, data):
 
 
 def create_subpacket(sensor, valid, data):
+    data = bytearray(data)
     flag = (0x80 if valid else 0) | (len(data) & 0x7F)
     return bytearray([sensor, flag]) + data
 

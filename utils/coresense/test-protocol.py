@@ -17,7 +17,7 @@ def process_dataset(dataset, start=0, end=None, fragmented=False):
     protocol = TestProtocol()
     protocol.connection_made()
 
-    data = b''.join(create_packet(*entry) for entry in dataset)[start:end]
+    data = bytearray([]).join(create_packet(*entry) for entry in dataset)[start:end]
 
     if fragmented:
         for x in data:
