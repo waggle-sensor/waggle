@@ -31,21 +31,21 @@ void setup()
     Serial3.begin(CHEMSENSE_DATARATE); // data from the Chemsense board arrives here.
     SPI.begin(); // data from the ****************************************************** alphasensor
 
-    #ifdef CHEMSENSE_INCLUDE
+#ifdef CHEMSENSE_INCLUDE
     digitalWrite(PIN_CHEMSENSE_POW, LOW);  //** Power on the Chemsense board
-    #endif
+#endif
 
     //** sensors_setup.ino, initialize sensors in airsense and lightsense boards
     Sensors_Setup();    // TMP112 config(); Chemsense turned off, This has to come later than chemsense digital write
 
     //** begin I2C interface
-    #ifdef I2C_INTERFACE
+#ifdef I2C_INTERFACE
     I2C_READ_COMPLETE = false;
     Wire1.begin(I2C_SLAVE_ADDRESS);
     Wire1.onRequest(requestEvent);
-    #endif
+#endif
 
-    #ifdef ALPHASENSE_INCLUDE
+#ifdef ALPHASENSE_INCLUDE
     alphasense_on();
     SerialUSB.print("on");
     delay(10000);
@@ -56,50 +56,64 @@ void setup()
     delay(1000);
 
     flag_alpha = true;
-    #endif
-
+#endif
+    
     Timer3.attachInterrupt(handler).setPeriod(1000000 * 1).start();
 }
 
 void loop()
 {
-    // #ifdef AIRSENSE_INCLUDE
-    // airsense_acquire();
-    // #endif
-    
-    // #ifdef LIGHTSENSE_INCLUDE
-    // lightsense_acquire();
-    // #endif
+#ifdef AIRSENSE_INCLUDE
+    airsense_acquire();
+#endif
+
+#ifdef LIGHTSENSE_INCLUDE
+    lightsense_acquire();
+#endif
 
     while (count < 24)       // every 24 sec
     {
-        // #ifdef CHEMSENSE_INCLUDE
-        // chemsense_acquire();
-        // #endif
-
-        // alphasense_firmware();
-        // SerialUSB.print("firmware");
-        // delay(5000);
-
-#ifdef ALPHASENSE_INCLUDE
-        if (count == 23)
+        if (repeat < count)
         {
-            count_conf++;
-            if (count_conf == 26)       // every 598 secs, about 10 min
+            repeat++;
+        #ifdef HMC5883L_include
+            HMC5883L_acquire();
+        #endif
+
+        #ifdef LIGHTSENSE_INCLUDE
+        #ifdef SPV1840LR5HB_include
+            SPV1840LR5HB_acquire();
+        #endif
+        #ifdef MMA8452Q_INCLUDE
+            MMA8452Q_acquire();
+        #endif
+        #endif
+
+        #ifdef ALPHASENSE_INCLUDE
+            alphasense_histo();
+            delay(100);
+
+            if (count == 23)
             {
-                alphasense_config();
-                delay(100);
-                alphasense_firmware();
-                delay(100);
+                count_conf++;
+                if (count_conf == 26)       // every 598 secs, about 10 min
+                {
+                    alphasense_config();
+                    delay(100);
+                    alphasense_firmware();
+                    delay(100);
 
-                flag_alpha = true;
-                count_conf = 0;
+                    flag_alpha = true;
+                    count_conf = 0;
+                }
             }
+        #endif
         }
-#endif
 
-        alphasense_histo();
-        delay(5000);
+    flag_CHEM_WHILE = true;
+    #ifdef CHEMSENSE_INCLUDE
+        chemsense_acquire();
+    #endif
     }
 
     // #ifdef ALPHASENSE_INCLUDE
@@ -112,6 +126,7 @@ void loop()
     // for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
     //     SerialUSB.write(packet_whole[i]);
 
+#ifdef ALPHASENSE_INCLUDE
     alpha_packet_whole();           //******** packetize histo/firmware/config(part)
     for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
         SerialUSB.write(packet_whole[i]);
@@ -124,26 +139,28 @@ void loop()
             SerialUSB.write(packet_whole[i]);
     }
 
-
     flag_alpha = false;
+#endif
+    
     count = 0;
+    repeat = 0;
 
     //************************** test OIX sub-packet
-    // SerialUSB.print("OIX_count ");
-    // SerialUSB.print(OIX_count);
-    // SerialUSB.print(" OIX_packet_count ");
-    // SerialUSB.println(OIX_packet_count);
+    SerialUSB.print("OIX_count ");
+    SerialUSB.print(OIX_count);
+    SerialUSB.print(" OIX_packet_count ");
+    SerialUSB.println(OIX_packet_count);
 
-    // for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
-    // {
-    //     SerialUSB.print(packet_whole[i], HEX);
-    //     if (i < packet_whole[0x02] + 0x04)
-    //         SerialUSB.print(":");
-    // }
-    // SerialUSB.print("\n");
+    for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
+    {
+        SerialUSB.print(packet_whole[i], HEX);
+        if (i < packet_whole[0x02] + 0x04)
+            SerialUSB.print(":");
+    }
+    SerialUSB.print("\n");
 
-    // OIX_count = 0;
-    // OIX_packet_count = 0;
+    OIX_count = 0;
+    OIX_packet_count = 0;
     //************************** test OIX sub-packet
 }
 
@@ -166,7 +183,6 @@ void requestEvent()
 
 void handler()
 {
-    //TIMER = false;
     count++;
     UP_DOWN =! UP_DOWN;
     digitalWrite(PIN_HBT, UP_DOWN);

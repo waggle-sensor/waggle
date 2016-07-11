@@ -1,44 +1,44 @@
 
-void lightsense_acquire (void)
+void lightsense_acquire ()
 {
 // #ifdef SERIAL_DEBUG
 //     SerialUSB.print("\n");
 //     SerialUSB.println("Acquiring LightSense Data");
 // #endif
 
+//****** defined in a new function
+// #ifdef HMC5883L_include
+//     sensors_event_t event;
+//     HMC5883_Magnetometer.getEvent(&event);
 
-#ifdef HMC5883L_include
-    sensors_event_t event;
-    HMC5883_Magnetometer.getEvent(&event);
+//     HMC5883L[1] = (1 << 7) | (LENGTH_FORMAT8 * 3);
 
-    HMC5883L[1] = (1 << 7) | (LENGTH_FORMAT8 * 3);
+//     format8(event.magnetic.x);
+//     HMC5883L[2] = formatted_data_buffer[0];
+//     HMC5883L[3] = formatted_data_buffer[1];
 
-    format8(event.magnetic.x);
-    HMC5883L[2] = formatted_data_buffer[0];
-    HMC5883L[3] = formatted_data_buffer[1];
+// #ifdef SERIAL_DEBUG
+//     for (j = 0; j < LENGTH_FORMAT8; j++)
+//         SerialUSB.print(formatted_data_buffer[j],HEX);
+// #endif
 
-#ifdef SERIAL_DEBUG
-    for (j = 0; j < LENGTH_FORMAT8; j++)
-        SerialUSB.print(formatted_data_buffer[j],HEX);
-#endif
+//     format8(event.magnetic.y);
+//     HMC5883L[4] = formatted_data_buffer[0];
+//     HMC5883L[5] = formatted_data_buffer[1];
 
-    format8(event.magnetic.y);
-    HMC5883L[4] = formatted_data_buffer[0];
-    HMC5883L[5] = formatted_data_buffer[1];
+// #ifdef SERIAL_DEBUG
+//     for (j = 0; j < LENGTH_FORMAT8; j++)
+//         SerialUSB.print(formatted_data_buffer[j],HEX);
+// #endif
 
-#ifdef SERIAL_DEBUG
-    for (j = 0; j < LENGTH_FORMAT8; j++)
-        SerialUSB.print(formatted_data_buffer[j],HEX);
-#endif
+//     format8(event.magnetic.z);
+//     HMC5883L[6] = formatted_data_buffer[0];
+//     HMC5883L[7] = formatted_data_buffer[1];
 
-    format8(event.magnetic.z);
-    HMC5883L[6] = formatted_data_buffer[0];
-    HMC5883L[7] = formatted_data_buffer[1];
-
-#ifdef SERIAL_DEBUG
-    for (j = 0; j < LENGTH_FORMAT8; j++)
-        SerialUSB.print(formatted_data_buffer[j],HEX);
-#endif
+// #ifdef SERIAL_DEBUG
+//     for (j = 0; j < LENGTH_FORMAT8; j++)
+//         SerialUSB.print(formatted_data_buffer[j],HEX);
+// #endif
 
 // #ifdef SERIAL_DEBUG
 //     SerialUSB.print("HMC5883L X:");
@@ -48,7 +48,8 @@ void lightsense_acquire (void)
 //     SerialUSB.print(", Z:");
 //     SerialUSB.println(event.magnetic.z);
 // #endif
-#endif
+// #endif
+//****** defined in a new function
 
 
 #ifdef HIH6130_include
@@ -188,4 +189,68 @@ void lightsense_acquire (void)
 #endif
 
 }
+
+
+#ifdef HMC5883L_include
+void HMC5883L_acquire()
+{
+    sensors_event_t event;
+    HMC5883_Magnetometer.getEvent(&event);
+
+    if (repeat == 1)
+    {
+        prev_HMC[0] = event.magnetic.x;
+        prev_HMC[1] = event.magnetic.y;
+        prev_HMC[2] = event.magnetic.z;
+    }
+    else
+    {
+        curr_HMC[0] = (event.magnetic.x + prev_HMC[0])/2;
+        curr_HMC[1] = (event.magnetic.y + prev_HMC[1])/2;
+        curr_HMC[2] = (event.magnetic.z + prev_HMC[2])/2;
+
+        prev_HMC[0] = curr_HMC[0];
+        prev_HMC[1] = curr_HMC[1];
+        prev_HMC[2] = curr_HMC[2];
+
+        HMC5883L[1] = (1 << 7) | (LENGTH_FORMAT8 * 3);
+
+        format8(curr_HMC[0]);
+        HMC5883L[2] = formatted_data_buffer[0];
+        HMC5883L[3] = formatted_data_buffer[1];
+
+    #ifdef SERIAL_DEBUG
+        for (j = 0; j < LENGTH_FORMAT8; j++)
+            SerialUSB.print(formatted_data_buffer[j],HEX);
+    #endif
+
+        format8(curr_HMC[1]);
+        HMC5883L[4] = formatted_data_buffer[0];
+        HMC5883L[5] = formatted_data_buffer[1];
+
+    #ifdef SERIAL_DEBUG
+        for (j = 0; j < LENGTH_FORMAT8; j++)
+            SerialUSB.print(formatted_data_buffer[j],HEX);
+    #endif
+
+        format8(curr_HMC[2]);
+        HMC5883L[6] = formatted_data_buffer[0];
+        HMC5883L[7] = formatted_data_buffer[1];
+
+    #ifdef SERIAL_DEBUG
+        for (j = 0; j < LENGTH_FORMAT8; j++)
+            SerialUSB.print(formatted_data_buffer[j],HEX);
+    #endif
+    }
+
+#ifdef SERIAL_DEBUG
+    SerialUSB.print("HMC5883L X:");
+    SerialUSB.print(event.magnetic.x);
+    SerialUSB.print(", Y:");
+    SerialUSB.print(event.magnetic.y);
+    SerialUSB.print(", Z:");
+    SerialUSB.println(event.magnetic.z);
+#endif
+}
+#endif
 

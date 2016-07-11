@@ -6,6 +6,7 @@ bool TIMER = true;		// TIMER FOR 24sec period of getting data from chemsense
 bool UP_DOWN = false; 	//which is zero!!!!!!!
 int count = 0;
 int count_conf = 0;
+int repeat = 0;
 
 
 //************ common variables air, light, chem, TMP112, TSYS01, MMA84521, HIH, sensor_setup
@@ -26,7 +27,17 @@ byte formatted_byte_temp[8];
 int KEY_NUM_ID = 0;
 int VAL_NUM_ID = 0;
 bool flag_KEY = false;
+bool flag_CHEM_WHILE = false;
 
+//** lightsense
+float prev_HMC[3];
+float curr_HMC[3];
+
+//** airsense
+int prev_SPV = 0;
+int curr_SPV = 0;
+float prev_MMA[4];
+float curr_MMA[4];
 
 //** alphasensor
 byte SPI_read_byte = 0;

@@ -25,12 +25,11 @@ void setup()
     sensor_buff_initialization();
     initializeSensorBoard();
 
-
     //** begin communication lines
     Wire.begin(); // Sensors are on the first I2C Bus, air and light sensor boards
     SerialUSB.begin(USBSERIAL_INTERFACE_DATARATE); // Serial data line to the host computer
     Serial3.begin(CHEMSENSE_DATARATE); // data from the Chemsense board arrives here.
-    SPI.begin(); // data from the alphasensor
+    SPI.begin(); // data from the ****************************************************** alphasensor
 
     #ifdef CHEMSENSE_INCLUDE
     digitalWrite(PIN_CHEMSENSE_POW, LOW);  //** Power on the Chemsense board
@@ -46,54 +45,104 @@ void setup()
     Wire1.onRequest(requestEvent);
     #endif
 
+    #ifdef ALPHASENSE_INCLUDE
+    alphasense_on();
+    SerialUSB.print("on");
+    delay(10000);
+
+    alphasense_firmware();
+    alphasense_config();
+    // Serial.print("configuration");
+    delay(1000);
+
+    flag_alpha = true;
+    #endif
+
     Timer3.attachInterrupt(handler).setPeriod(1000000 * 1).start();
 }
 
 void loop()
 {
-    #ifdef AIRSENSE_INCLUDE
-    airsense_acquire();
-    #endif
+    // #ifdef AIRSENSE_INCLUDE
+    // airsense_acquire();
+    // #endif
     
-    #ifdef LIGHTSENSE_INCLUDE
-    lightsense_acquire();
-    #endif
+    // #ifdef LIGHTSENSE_INCLUDE
+    // lightsense_acquire();
+    // #endif
 
-    while (count < 24)
+    while (count < 24)       // every 24 sec
     {
-        #ifdef CHEMSENSE_INCLUDE
-        chemsense_acquire();
-        #endif
+        // #ifdef CHEMSENSE_INCLUDE
+        // chemsense_acquire();
+        // #endif
+
+#ifdef ALPHASENSE_INCLUDE
+        alphasense_histo();
+        delay(100);
+
+        if (count == 23)
+        {
+            count_conf++;
+            if (count_conf == 26)       // every 598 secs, about 10 min
+            {
+                alphasense_config();
+                delay(100);
+                alphasense_firmware();
+                delay(100);
+
+                flag_alpha = true;
+                count_conf = 0;
+            }
+        }
+#endif
     }
 
-    assemble_packet_whole();
+    // #ifdef ALPHASENSE_INCLUDE
+    // alphasense_off();
+    // SerialUSB.print("off");
+    // delay(1000);
+    // #endif
 
-    //** To check how much time has OIX packet been generated in 24 secs
+    assemble_packet_whole();        //******** packetize air/light/chem
+    // for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
+    //     SerialUSB.write(packet_whole[i]);
+
+#ifdef ALPHASENSE_INCLUDE
+    alpha_packet_whole();           //******** packetize histo/firmware/config(part)
+    for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
+        SerialUSB.write(packet_whole[i]);
+
+    if (flag_alpha == true)
+    {
+        alpha_packet_config();       //******** packetize config(part)
+
+        for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
+            SerialUSB.write(packet_whole[i]);
+    }
+
+    flag_alpha = false;
+#endif
+    
+    count = 0;
+
+    //************************** test OIX sub-packet
     // SerialUSB.print("OIX_count ");
     // SerialUSB.print(OIX_count);
     // SerialUSB.print(" OIX_packet_count ");
     // SerialUSB.println(OIX_packet_count);
 
-    #ifndef PRINT_ADDRESS
-    for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
-    {
-        SerialUSB.write(packet_whole[i]);
+    // for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
+    // {
+    //     SerialUSB.print(packet_whole[i], HEX);
+    //     if (i < packet_whole[0x02] + 0x04)
+    //         SerialUSB.print(":");
+    // }
+    // SerialUSB.print("\n");
 
-        //** To check how much time has OIX packet been generated in 24 secs
-        // SerialUSB.print(packet_whole[i], HEX);
-        // if (i < packet_whole[0x02] + 0x04)
-        //     SerialUSB.print(":");
-    }
-    // SerialUSB.println("");
-    #endif
-
-
-    OIX_count = 0;
-    OIX_packet_count = 0;
-
-    count = 0;
-
-    delay(100);
+    // OIX_count = 0;
+    // OIX_packet_count = 0;
+    //************************** test OIX sub-packet
 }
 
 #ifdef I2C_INTERFACE
@@ -115,6 +164,7 @@ void requestEvent()
 
 void handler()
 {
+    //TIMER = false;
     count++;
     UP_DOWN =! UP_DOWN;
     digitalWrite(PIN_HBT, UP_DOWN);

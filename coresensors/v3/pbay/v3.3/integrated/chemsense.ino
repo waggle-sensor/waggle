@@ -118,7 +118,8 @@ int compareKey(char k1, char k2, char k3)
 
 void chemsense_acquire()
 {
-    while (Serial3.available() > 0)
+    // while (Serial3.available() > 0)
+    while (flag_CHEM_WHILE == true)
     {
         INPUT_BYTE = Serial3.read();     //read the incoming byte
 
@@ -141,6 +142,7 @@ void chemsense_acquire()
             {
                 if (VAL_NUM_ID < 12)
                 {
+                    
                     VAL[VAL_NUM_ID] = INPUT_BYTE;
                     VAL_NUM_ID++;
                 }
@@ -315,6 +317,8 @@ void Carrier()
         Si1145[6] = formatted_data_buffer[0];
         Si1145[7] = formatted_data_buffer[1];
 
+        flag_CHEM_WHILE = false;
+
 #ifdef SERIAL_DEBUG
         // to check output
         for (i = 0; i < LENGTH_FORMAT1; i++)
@@ -441,6 +445,8 @@ void Carrier()
         carbon_monoxide[3] = formatted_data_buffer[1];
         carbon_monoxide[4] = formatted_data_buffer[2];
 
+        flag_CHEM_WHILE = false;
+
 #ifdef SERIAL_DEBUG
         // to check output
         for (i = 0; i < LENGTH_FORMAT5; i++)
@@ -525,6 +531,8 @@ void Carrier()
         CO_LMP_temp[1] = (1 << 7) | LENGTH_FORMAT2;
         CO_LMP_temp[2] = formatted_data_buffer[0];
         CO_LMP_temp[3] = formatted_data_buffer[1];
+
+        flag_CHEM_WHILE = false;
 
 #ifdef SERIAL_DEBUG
         // to check output
@@ -665,6 +673,8 @@ void Carrier()
         three_gyro_and_orientation[9] = formatted_data_buffer[1];
         three_gyro_and_orientation[10] = formatted_data_buffer[2];
 
+        flag_CHEM_WHILE = false;
+
         OIX_count++;
 
 #ifdef SERIAL_DEBUG
@@ -673,5 +683,16 @@ void Carrier()
             SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
     }
+    else
+    {
+        SerialUSB.print("YH ");
+        SerialUSB.print(KEY[0]);
+        SerialUSB.print(KEY[1]);
+        SerialUSB.print(KEY[2]);
 
+        for (int i = 0; i < VAL_NUM_ID; i++)
+            SerialUSB.print(VAL[i], HEX);
+
+        SerialUSB.println("HH ");
+    }
 }

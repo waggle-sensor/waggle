@@ -60,10 +60,10 @@
 #define SPI_MAX_speed 500000
 
 // Which sensor boards are being used   ************************* IS BEING USED OR NOT
-// #define AIRSENSE_INCLUDE 0x01
-// #define LIGHTSENSE_INCLUDE 0x01
-// #define CHEMSENSE_INCLUDE 0x01
-#define ALPHASENSE_INCLUDE 0x01
+#define AIRSENSE_INCLUDE 0x01
+#define LIGHTSENSE_INCLUDE 0x01
+#define CHEMSENSE_INCLUDE 0x01
+// #define ALPHASENSE_INCLUDE 0x01
 //*************************************************************** IS BEING USED OR NOT
 
 // First byte for every formatted buffers **************************** ARE USED IN AIR/LIGHT/CHEM

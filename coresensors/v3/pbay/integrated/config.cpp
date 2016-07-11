@@ -14,6 +14,15 @@
 #define LENGTH_FORMAT7  4
 #define LENGTH_FORMAT8  2
 #define MAX_FMT_SIZE 6
+
+#define LENGTH_ALPHA_FIRMWARE 2
+#define LENGTH_ALPHA_HISTOGRAM 62
+
+#define LENGTH_ALPHA_CONFIG_A 64
+#define LENGTH_ALPHA_CONFIG_B 64
+#define LENGTH_ALPHA_CONFIG_C 64
+#define LENGTH_ALPHA_CONFIG_D 64
+
 // ******************************************************** ARE USED IN AIR/LIGHT/CHEM/DATAFORMAT/ETC
 
 // Packet header *************************************** ARE USED IN PACK ASSEMBLER
@@ -51,9 +60,9 @@
 #define SPI_MAX_speed 500000
 
 // Which sensor boards are being used   ************************* IS BEING USED OR NOT
-#define AIRSENSE_INCLUDE 0x01
-#define LIGHTSENSE_INCLUDE 0x01
-#define CHEMSENSE_INCLUDE 0x01
+// #define AIRSENSE_INCLUDE 0x01
+// #define LIGHTSENSE_INCLUDE 0x01
+// #define CHEMSENSE_INCLUDE 0x01
 #define ALPHASENSE_INCLUDE 0x01
 //*************************************************************** IS BEING USED OR NOT
 
@@ -119,6 +128,15 @@
 #define ID_THREE_ACCEL_AND_VIB	0x26
 #define ID_THREE_GYRO_AND_ORIENTATION	0x27
 
+//** alphasensor
+#define ID_ALPHA_HISTOGRAM 0x28
+#define ID_ALPHA_FIRMWARE 0x29
+
+#define ID_ALPHA_CONFIG_A 0x30
+#define ID_ALPHA_CONFIG_B 0x31 
+#define ID_ALPHA_CONFIG_C 0x32
+#define ID_ALPHA_CONFIG_D 0x33
+
 //** include each sensor
 #ifdef AIRSENSE_INCLUDE
     #define MAC_ID_include 0x01
@@ -177,9 +195,9 @@
 #endif
 
 // #define system_health_include 0x01
-// #define RANDOMIZE_VALID 0x01
-// #define PRINT_BUFFER 0x01
-// #define SERIAL_DEBUG 0x01
+//#define RANDOMIZE_VALID 0x01
+//#define PRINT_BUFFER 0x01
+//#define SERIAL_DEBUG 0x01
 // #define PRINT_ADDRESS 0x01
 
 #define USBSERIAL_INTERFACE 0x01

@@ -21,11 +21,9 @@ Codes for alpha sensor are not included
 Position of sensor_setup();
 This one will be used for v3 sensors without alphasensor
 -->> This is the one on the node for tests (July 5)
-
-** v3.2
-Copy of integrated (Jun 8, 2016)
+(+)
 Merging alphasensor
->>>Make packets for alphasensor data
+>>>Make packets for alphasensor data(July5)
 Four sub-packets for alpha sensor configureation (64bytes each)
 v3.1 airsense board does not have SPI SS pin, so I cannot test the whole sensors together
 USE ONLY ALPHASENSOR

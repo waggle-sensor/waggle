@@ -4,6 +4,7 @@ import serial
 import sys
 import time
 import Queue
+import struct
 
 _preamble = '\xaa'
 _postScript = '\x55'
@@ -24,8 +25,26 @@ __lenFmt7 = 4
 __lenFmt8 = 3
 
 #sensor_list = ["Board MAC","TMP112","HTU21D","GP2Y1010AU0F","BMP180","PR103J2","TSL250RD","MMA8452Q","SPV1840LR5H-B","TSYS01","HMC5883L","HIH6130","APDS-9006-020","TSL260RD","TSL250RD","MLX75305","ML8511","D6T","MLX90614","TMP421","SPV1840LR5H-B","Total reducing gases","Ethanol (C2H5-OH)","Nitrogen Di-oxide (NO2)","Ozone (03)","Hydrogen Sulphide (H2S)","Total Oxidizing gases","Carbon Monoxide (C0)","Sulfur Dioxide (SO2)","SHT25","LPS25H","Si1145","Intel MAC"]
-sensor_list = ["Board MAC","TMP112","HTU21D","HIH4030","BMP180","PR103J2","TSL250RD","MMA8452Q","SPV1840LR5H-B","TSYS01","HMC5883L","HIH6130","APDS-9006-020","TSL260RD","TSL250RD","MLX75305","ML8511","D6T","MLX90614","TMP421","SPV1840LR5H-B","Total reducing gases","Ethanol (C2H5-OH)","Nitrogen Di-oxide (NO2)","Ozone (03)","Hydrogen Sulphide (H2S)","Total Oxidizing gases","Carbon Monoxide (C0)","Sulfur Dioxide (SO2)","SHT25","LPS25H","Si1145","Intel MAC","CO ADC temp","IAQ/IRR ADC temp","O3/NO2 ADC temp","SO2/H2S ADC temp","CO LMP temp","Accelerometer","Gyroscope"]
+sensor_list = ["Board MAC","TMP112","HTU21D","HIH4030","BMP180","PR103J2","TSL250RD","MMA8452Q","SPV1840LR5H-B","TSYS01","HMC5883L","HIH6130","APDS-9006-020","TSL260RD","TSL250RD","MLX75305","ML8511","D6T","MLX90614","TMP421","SPV1840LR5H-B","Total reducing gases","Ethanol (C2H5-OH)","Nitrogen Di-oxide (NO2)","Ozone (03)","Hydrogen Sulphide (H2S)","Total Oxidizing gases","Carbon Monoxide (C0)","Sulfur Dioxide (SO2)","SHT25","LPS25H","Si1145","Intel MAC","CO ADC temp","IAQ/IRR ADC temp","O3/NO2 ADC temp","SO2/H2S ADC temp","CO LMP temp","Accelerometer","Gyroscope", "alpha histo", "alpha firmware", "alpha conf a", "alpha conf b", "alpha conf c"]
 #decoded_output = ['0' for x in range(16)]
+
+#### alpha        
+def lininterp(a, b, n):
+    assert isinstance(n, int) and n > 1
+    return tuple(a + i * (b - a) / (n - 1) for i in range(n))
+
+bin_sizes = lininterp(0.38, 17.0, 16)
+bin_units = {
+    'bins': 'particle / second',
+    'mtof': 'second',
+    'sample flow rate': 'sample / second',
+    'pm1': 'microgram / meter^3',
+    'pm2.5': 'microgram / meter^3',
+    'pm10': 'microgram / meter^3',
+    'temperature': 'celcius',
+    'pressure': 'pascal',
+}
+
 
 def format1 (input):
     #F1 - unsigned int_16 output, {0-0xffff} - Byte1 Byte2 (16 bit number)
@@ -103,6 +122,89 @@ def parse_sensor (sensor_id,sensor_data):
             data = data + str(format3(sensor_data[i]))
         print  data
         pass
+
+
+
+def decode17(data):
+
+    data = bytearray(data)
+
+    bincounts = struct.unpack_from('<16B', data, offset=0)
+    checksum = struct.unpack_from('<H', data, offset=48)[0]
+    mtof = [x / 3 for x in struct.unpack_from('<4B', data, offset=32)]
+    sample_flow_rate = struct.unpack_from('<I', data, offset=36)[0]
+    pmvalues = struct.unpack_from('<fff', data, offset=50)
+    pressure = struct.unpack_from('<I', data, offset=40)[0]
+    temperature = pressure / 10.0
+
+
+    values = {
+        'bins': bincounts,
+        'mtof': mtof,
+        'sample flow rate': sample_flow_rate,
+        'pm1': pmvalues[0],
+        'pm2.5': pmvalues[1],
+        'pm10': pmvalues[2],
+        'error': sum(bincounts) & 0xFF != checksum,
+    }
+
+    if temperature > 200:
+        values['pressure'] = pressure
+    else:
+        values['temperature'] = temperature
+
+    return values
+
+def alphasense_histo(raw_data):
+    data = decode17(raw_data)
+
+    for size, count in zip(bin_sizes, data['bins']):
+        print('{: 3.4f} {:>6}'.format(size, count))
+    print()
+
+    for pm in ['pm1', 'pm2.5', 'pm10']:
+        print('{} {}'.format(pm, data[pm]))
+    print()
+
+    print(data)
+    print(repr(raw_data))
+
+
+def parse_sensor (sensor_id,sensor_data):
+#"Board MAC" "Board MAC"
+    if sensor_id == '0':
+        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
+        data = ''
+        for i in range(len(sensor_data)):
+            data = data + str(format3(sensor_data[i]))
+        print  data
+        pass
+
+#alpha histo
+    elif sensor_id == '40':
+        print "Sensor:", sensor_id, sensor_list[int(sensor_id)], '@ ',
+        alphasense_histo(sensor_data)
+
+#alpha firmware
+    elif sensor_id == '41':
+        print "Sensor:", sensor_id, sensor_list[int(sensor_id)], '@ ',
+        print ord(sensor_data[0]), ord(sensor_data[1])
+
+#alpha configuration
+    elif sensor_id == '42':
+        print "Sensor:", sensor_id, sensor_list[int(sensor_id)], '@ ',
+        alpha_config = sensor_data
+    elif sensor_id == '43':
+        print "Sensor:", sensor_id, sensor_list[int(sensor_id)], '@ ',
+        alpha_config.extend(sensor_data)
+    elif sensor_id == '44':
+        print "Sensor:", sensor_id, sensor_list[int(sensor_id)], '@ ',
+        alpha_config.extend(sensor_data)
+        print alpha_config
+        
+        
+
+
 #"TMP112" "TMP112"
     elif sensor_id == '1':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
@@ -266,7 +368,11 @@ def parse_sensor (sensor_id,sensor_data):
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
         print  format2(sensor_data[0:2]),format2(sensor_data[2:4]),format2(sensor_data[4:6]),format4(sensor_data[6:9])
 
+
+
 class usbSerial ( threading.Thread ):
+
+
     def __init__ ( self,port):
         self.port = port
         threading.Thread.__init__ ( self )
@@ -387,7 +493,7 @@ class usbSerial ( threading.Thread ):
                                     packetmismatch = 0
 
                                     for i in range(_preambleLoc + _datLenFieldDelta + 0x01, _postscriptLoc):
-                                        #print ord(self.data[i]),
+                                        print ord(self.data[i]),
                                         _packetCRC = ord(self.data[i]) ^ _packetCRC
                                         for j in range(8):
                                             if (_packetCRC & 0x01):

@@ -50,5 +50,5 @@ connect:
 test:	program connect
 
 do:	install
-	sleep 2
+	sleep 5
 	python coresense_plugin/coresense.py
