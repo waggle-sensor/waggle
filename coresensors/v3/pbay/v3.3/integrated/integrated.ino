@@ -1,5 +1,5 @@
 /**
- ** /coresensors/v3/pbay/v3.1/integrated
+ ** /coresensors/v3/pbay/integrated
  ** integrated.ino V3 (pbay)
  **/
 
@@ -37,6 +37,7 @@ void setup()
 
     //** sensors_setup.ino, initialize sensors in airsense and lightsense boards
     Sensors_Setup();    // TMP112 config(); Chemsense turned off, This has to come later than chemsense digital write
+    delay(1000);
 
     //** begin I2C interface
 #ifdef I2C_INTERFACE
@@ -46,6 +47,7 @@ void setup()
 #endif
 
 #ifdef ALPHASENSE_INCLUDE
+    delay(5000);
     alphasense_on();
     SerialUSB.print("on");
     delay(10000);
@@ -123,8 +125,8 @@ void loop()
     // #endif
 
     assemble_packet_whole();        //******** packetize air/light/chem
-    // for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
-    //     SerialUSB.write(packet_whole[i]);
+    for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
+        SerialUSB.write(packet_whole[i]);
 
 #ifdef ALPHASENSE_INCLUDE
     alpha_packet_whole();           //******** packetize histo/firmware/config(part)
@@ -145,6 +147,7 @@ void loop()
     count = 0;
     repeat = 0;
 
+#ifdef OIX_DEBUG
     //************************** test OIX sub-packet
     SerialUSB.print("OIX_count ");
     SerialUSB.print(OIX_count);
@@ -158,10 +161,12 @@ void loop()
             SerialUSB.print(":");
     }
     SerialUSB.print("\n");
+#endif
 
     OIX_count = 0;
     OIX_packet_count = 0;
     //************************** test OIX sub-packet
+
 }
 
 #ifdef I2C_INTERFACE

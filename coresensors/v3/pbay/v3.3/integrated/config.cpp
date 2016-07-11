@@ -60,10 +60,10 @@
 #define SPI_MAX_speed 500000
 
 // Which sensor boards are being used   ************************* IS BEING USED OR NOT
-#define AIRSENSE_INCLUDE 0x01
-#define LIGHTSENSE_INCLUDE 0x01
-#define CHEMSENSE_INCLUDE 0x01
-// #define ALPHASENSE_INCLUDE 0x01
+// #define AIRSENSE_INCLUDE 0x01
+// #define LIGHTSENSE_INCLUDE 0x01
+// #define CHEMSENSE_INCLUDE 0x01
+#define ALPHASENSE_INCLUDE 0x01
 //*************************************************************** IS BEING USED OR NOT
 
 // First byte for every formatted buffers **************************** ARE USED IN AIR/LIGHT/CHEM
@@ -195,13 +195,14 @@
 #endif
 
 // #define system_health_include 0x01
-//#define RANDOMIZE_VALID 0x01
-//#define SERIAL_DEBUG 0x01
-#define ALPHA_DEBUG 0x01
-//#define PRINT_BUFFER 0x01
+// #define RANDOMIZE_VALID 0x01
+// #define PRINT_BUFFER 0x01
+// #define SERIAL_DEBUG 0x01
+// #define OIX_DEBUG 0x01
+// #define PRINT_ADDRESS 0x01
 
 #define USBSERIAL_INTERFACE 0x01
-//#define I2C_INTERFACE_CONST_SIZE 0x01
+// #define I2C_INTERFACE_CONST_SIZE 0x01
 
 #ifndef USBSERIAL_INTERFACE
 #define I2C_INTERFACE 0x01

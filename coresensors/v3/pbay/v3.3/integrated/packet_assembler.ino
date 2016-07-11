@@ -29,6 +29,38 @@ void assemble_packet_whole()
         // Increment index for whole packet
         packet_whole_index++;
     }
+
+#ifdef PRINT_ADDRESS
+    SerialUSB.print("Airsense-");
+   for (unsigned char a = 0x02; a < 0x08; a++)
+    {
+        if ((MAC_ID[a] & 0xF0) == 0x00)
+        {
+
+            SerialUSB.print('0');            
+        }
+
+        SerialUSB.print(MAC_ID[a],HEX);
+
+        if (a < 0x07) { SerialUSB.print(":"); }
+        else { SerialUSB.println("\r"); }
+    }
+
+    SerialUSB.print("Lightsense-");
+    for (unsigned char a = 0x02; a < 0x08; a++)
+    {
+        if ((MAC_ID[a] & 0xF0) == 0x00)
+        {
+
+            SerialUSB.print('0');            
+        }
+
+        SerialUSB.print(MAC_ID[a],HEX);
+
+        if (a < 0x07) { SerialUSB.print(":"); }
+        else { SerialUSB.println("\r"); }
+    }
+#endif
 #endif
 
 #ifdef TMP112_include    // Append TMP112
@@ -257,6 +289,19 @@ void assemble_packet_whole()
         }
         chemsense_MAC_ID[1] = (0 << 7) | LENGTH_FORMAT3;
     }
+    
+#ifdef PRINT_ADDRESS
+        // to check output
+        SerialUSB.print("Chemsense-");
+        for (i = 0x02; i < 0x08; i++)
+        {
+            if ((chemsense_MAC_ID[i] & 0xf0) == 0x00)
+                SerialUSB.print('0');
+            SerialUSB.print(chemsense_MAC_ID[i],HEX);
+            if (i < LENGTH_FORMAT3 + 1) { SerialUSB.print(":"); }
+            else { SerialUSB.println("\r"); }
+        }
+#endif
 #endif
 
 #ifdef SHT25_include

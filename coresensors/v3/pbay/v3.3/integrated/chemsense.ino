@@ -118,7 +118,6 @@ int compareKey(char k1, char k2, char k3)
 
 void chemsense_acquire()
 {
-    // while (Serial3.available() > 0)
     while (flag_CHEM_WHILE == true)
     {
         INPUT_BYTE = Serial3.read();     //read the incoming byte
@@ -683,6 +682,7 @@ void Carrier()
             SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
     }
+#ifdef OIX_DEBUG
     else
     {
         SerialUSB.print("YH ");
@@ -695,4 +695,5 @@ void Carrier()
 
         SerialUSB.println("HH ");
     }
+#endif
 }

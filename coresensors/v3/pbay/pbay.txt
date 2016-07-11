@@ -28,3 +28,8 @@ Four sub-packets for alpha sensor configureation (64bytes each)
 v3.1 airsense board does not have SPI SS pin, so I cannot test the whole sensors together
 USE ONLY ALPHASENSOR
 --> This is the one success with alpha sensor
+
+**v3.3
+Copy of integrated
+averaging some of sensors on Air/Lightsense boards
+Change the condition of while loop on chemsense.ino

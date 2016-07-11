@@ -1,0 +1,12 @@
+\section{Physical Connections and Interfaces}
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=4in]{link_July2016.png}
+\caption{Connections between the sensor boards and the sensor}
+\label{fig:physicalConnections}
+\end{center}
+\end{figure}
+
+Physical connections between sensor boards and sensors are shown in the figure above. An Airsense board is connected to a Lightsense board and a Chemsense board through CAT6 cable. Airsense and Lightsense deliver data through I2C communication, and Chemsense board delivers data through serial3 communication. All sensor data from Airsense, Lightsense, and Chemsense board are delivered to node controller thourgh USB connection on Lightsense board.
+Alpha sensor is connected to node controller directly, and the data is delivered through SPI-USB converter line for now (July 2016). This alpha sensor SPI communication line will be implemented into Airsense board.
