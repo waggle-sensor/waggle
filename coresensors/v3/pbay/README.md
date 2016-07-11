@@ -25,7 +25,7 @@ for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
 ##v3.3
 Include averaging some of sensors on Air/Lightsense boards.
 
-Tools and equipments require for the both are:
+##Tools and equipments
 * each of sensor boards
 * two len cables
 * one micro-usb cable
