@@ -8,7 +8,7 @@
 - see XU4 connections
 
 ## port 3 (LightSense)
-- WagMan port 3 slots 1-4 to LightSense friction mount slots 1-4 (slot 1 on the right side is marked with a little circle on the board) <br>
+- WagMan port 3 slots 2-4 to LightSense friction mount slots 2-4 (slot 1 on the right side is marked with a little circle on the board; slot 1 would refer to reset, we are not using this) <br>
 color coding of wires if applicable:
 ```text
 1. gray  -> reset
@@ -54,7 +54,7 @@ Switch on the LightSense below friction mount has to switched inside.
 ## USB connections
 - XU4 USB (2-port USB) to camera (LightSense, non-coated camera) using camera wire
 - XU4 USB (2-port USB) to microUSB/RJ45-adapter ("CAT6 USB BKT1"), outer micro USB (the one closest to XU4 USB slots) using aluminium USB cable
-- XU4 USB (1-port USB) to microUSB/RJ45-adapter ("CAT6 USB BKT1"), outer micro USB (on other side, the one farthest away from XU4 USB slots) using aluminium USB cable
+- XU4 USB (1-port USB) to microUSB/RJ45-adapter ("CAT6 USB BKT1"), outer micro USB (on other side, the one farthest away from XU4 USB slots) using normal USB cable
 
 
 ## Ethernet
@@ -80,7 +80,14 @@ Switch on the LightSense below friction mount has to switched inside.
 # USB Breakouts
 Comment: CAT6 USB BKT1 and CAT6 USB BKT2 are extending USB ports of the C1+ and XU4 to attach devices (modem, camera, particle sensor) located in the Stevenson shield. The two outer USB cables connect to the XU4, while the inner two connect to the C1+. The two breakouts are connected with each other using two Ethernet cables.
 
-- CAT6 USB BKT1 to CAT6 USB BKT2 using Ethernet cable (one-to-one mapping JP1-JP1 and JP2-JP2)
+- CAT6 USB BKT1 to CAT6 USB BKT2 using CAT6 Ethernet cable (one-to-one mapping JP1-JP1 and JP2-JP2)<br>
+JP1 on CAT6 USB BKT1 is the one closer to the Odroid C1+.
 
+# CAT6 USB BKT2
+- CAT6 USB BKT2 J1 to coated camera 
+- CAT6 USB BKT2 J2 to modem
+- CAT6 USB BKT2 J3 to ?? (particle sensor ?)
+- CAT6 USB BKT2 J4 to microphone
 
-
+# Conexel-UART console cable
+- Long end of the UART wire goes into the XU4, the short end into the C1+. The conexel 8-pin goes through the hole in the cover of the box.
