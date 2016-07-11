@@ -28,7 +28,7 @@ void alphasense_on()
     delay(100);
 
     val1 = SPI.transfer(0x03);
-    delay(20);
+    delay(100);
     val2 = SPI.transfer(0x00);
     delay(100);
     
@@ -49,7 +49,7 @@ void alphasense_off()
     delay(100);
 
 	val1 = SPI.transfer(0x03);
-	delay(20);
+	delay(100);
     val2 = SPI.transfer(0x01);
     delay(100);
 
@@ -72,10 +72,10 @@ void alphasense_firmware()
     delay(100);
     
     SPI.transfer(0x12);    // 0xF3
-    delay(20);
+    delay(100);
 
     alpha_firmware[2] = SPI.transfer(0x12);
-    delay(20);
+    delay(100);
     alpha_firmware[3] = SPI.transfer(0x12);
     delay(100);
 
@@ -98,14 +98,13 @@ void alphasense_histo()
     delay(100);
 
     SPI.transfer(0x30);   // 0xF3
-    delay(20);
+    delay(100);
     
     for (i = 0; i < 62; i++)
     {
 	    alpha_histogram[i + 2] = SPI.transfer(0x30);
-	    delay(10);
+	    delay(100);
 	}
-	delay(90);
 
     digitalWrite(PIN_ALPHASENSE_SLAVE, HIGH);
     SPI.endTransaction();	
@@ -121,43 +120,51 @@ void alphasense_config()
     alpha_config_a[1] = (1 << 7) | LENGTH_ALPHA_CONFIG_A;
     alpha_config_b[1] = (1 << 7) | LENGTH_ALPHA_CONFIG_B;
     alpha_config_c[1] = (1 << 7) | LENGTH_ALPHA_CONFIG_C;
+    alpha_config_d[1] = (1 << 7) | LENGTH_ALPHA_CONFIG_D;
 
     SPI.beginTransaction(set1);
     digitalWrite(PIN_ALPHASENSE_SLAVE, LOW);
     delay(100);
 
     SPI.transfer(0x3C);   // 0xF3
-    delay(20);
+    delay(100);
     
-    for (i = 0; i < 86; i++)
+    for (i = 0; i < 64; i++)
     {
 	    alpha_config_a[i + 2] = SPI.transfer(0x3C);
-	    delay(10);
+	    delay(100);
 	}
 
-    for (i = 0; i < 85; i++)
+    for (i = 0; i < 64; i++)
     {
         alpha_config_b[i + 2] = SPI.transfer(0x3C);
-        delay(10);
+        delay(100);
     }
 
-    for (i = 0; i < 85; i++)
+    for (i = 0; i < 64; i++)
     {
         alpha_config_c[i + 2] = SPI.transfer(0x3C);
-        delay(10);
+        delay(100);
     }
-	delay(90);
+
+    for (i = 0; i < 64; i++)
+    {
+        alpha_config_d[i + 2] = SPI.transfer(0x3C);
+        delay(100);
+    }
 
     digitalWrite(PIN_ALPHASENSE_SLAVE, HIGH);
     SPI.endTransaction();
 
 #ifdef ALPHA_DEBUG
-    for (i = 0; i < 86; i++)
+    for (i = 0; i < 64; i++)
 	    SerialUSB.print(alpha_config_a[i], HEX);
-    for (i = 0; i < 85; i++)
+    for (i = 0; i < 64; i++)
         SerialUSB.print(alpha_config_b[i], HEX);
-    for (i = 0; i < 85; i++)
+    for (i = 0; i < 64; i++)
         SerialUSB.print(alpha_config_c[i], HEX);
+    for (i = 0; i < 64; i++)
+        SerialUSB.print(alpha_config_d[i], HEX);
 #endif
 }
 

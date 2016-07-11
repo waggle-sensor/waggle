@@ -25,7 +25,7 @@ __lenFmt7 = 4
 __lenFmt8 = 3
 
 #sensor_list = ["Board MAC","TMP112","HTU21D","GP2Y1010AU0F","BMP180","PR103J2","TSL250RD","MMA8452Q","SPV1840LR5H-B","TSYS01","HMC5883L","HIH6130","APDS-9006-020","TSL260RD","TSL250RD","MLX75305","ML8511","D6T","MLX90614","TMP421","SPV1840LR5H-B","Total reducing gases","Ethanol (C2H5-OH)","Nitrogen Di-oxide (NO2)","Ozone (03)","Hydrogen Sulphide (H2S)","Total Oxidizing gases","Carbon Monoxide (C0)","Sulfur Dioxide (SO2)","SHT25","LPS25H","Si1145","Intel MAC"]
-sensor_list = ["Board MAC","TMP112","HTU21D","HIH4030","BMP180","PR103J2","TSL250RD","MMA8452Q","SPV1840LR5H-B","TSYS01","HMC5883L","HIH6130","APDS-9006-020","TSL260RD","TSL250RD","MLX75305","ML8511","D6T","MLX90614","TMP421","SPV1840LR5H-B","Total reducing gases","Ethanol (C2H5-OH)","Nitrogen Di-oxide (NO2)","Ozone (03)","Hydrogen Sulphide (H2S)","Total Oxidizing gases","Carbon Monoxide (C0)","Sulfur Dioxide (SO2)","SHT25","LPS25H","Si1145","Intel MAC","CO ADC temp","IAQ/IRR ADC temp","O3/NO2 ADC temp","SO2/H2S ADC temp","CO LMP temp","Accelerometer","Gyroscope", "alpha histo", "alpha firmware", "alpha conf a", "alpha conf b", "alpha conf c"]
+sensor_list = ["Board MAC","TMP112","HTU21D","HIH4030","BMP180","PR103J2","TSL250RD","MMA8452Q","SPV1840LR5H-B","TSYS01","HMC5883L","HIH6130","APDS-9006-020","TSL260RD","TSL250RD","MLX75305","ML8511","D6T","MLX90614","TMP421","SPV1840LR5H-B","Total reducing gases","Ethanol (C2H5-OH)","Nitrogen Di-oxide (NO2)","Ozone (03)","Hydrogen Sulphide (H2S)","Total Oxidizing gases","Carbon Monoxide (C0)","Sulfur Dioxide (SO2)","SHT25","LPS25H","Si1145","Intel MAC","CO ADC temp","IAQ/IRR ADC temp","O3/NO2 ADC temp","SO2/H2S ADC temp","CO LMP temp","Accelerometer","Gyroscope", "alpha histo", "alpha firmware", "alpha conf a", "alpha conf b", "alpha conf c", "alpha conf d"]
 #decoded_output = ['0' for x in range(16)]
 
 #### alpha        
@@ -195,14 +195,13 @@ def parse_sensor (sensor_id,sensor_data):
         print "Sensor:", sensor_id, sensor_list[int(sensor_id)], '@ ',
         alpha_config = sensor_data
     elif sensor_id == '43':
-        print "Sensor:", sensor_id, sensor_list[int(sensor_id)], '@ ',
         alpha_config.extend(sensor_data)
     elif sensor_id == '44':
-        print "Sensor:", sensor_id, sensor_list[int(sensor_id)], '@ ',
+        alpha_config.extend(sensor_data)
+    elif sensor_id == '45':
         alpha_config.extend(sensor_data)
         print alpha_config
-        
-        
+                
 
 
 #"TMP112" "TMP112"
