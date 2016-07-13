@@ -1,57 +1,60 @@
-HEADERSIZE = 3
-FOOTERSIZE = 2
+HEADER_BYTE = 0xAA
+FOOTER_BYTE = 0x55
+HEADER_LENGTH = 3
+FOOTER_LENGTH = 2
 
 
 class FramingProtocol(object):
 
     def connection_made(self):
-        self.data = bytearray(1024)
-        self.size = 0
+        self.buffer = bytearray()
 
     def connection_lost(self):
-        self.size = 0
+        pass
 
     def data_received(self, data):
-        for byte in data:
-            self.data[self.size] = byte  # check for overflow?
-            self.size += 1
-            if self.size == len(self.data):
-                self.process_candidates()
-        self.process_candidates()
+        self.buffer.extend(data)
 
-    def align_candidates(self, start):
-        try:
-            offset = self.data.index(bytearray([0xAA]), start, self.size)
-            newsize = self.size - offset
-            self.data[:newsize] = self.data[offset:self.size]
-            self.size = newsize
-        except ValueError:
-            self.size = 0
+        self.drop_incomplete(start=0)
 
-    def process_candidates(self):
         while True:
-            if self.size < HEADERSIZE:
+            if len(self.buffer) < HEADER_LENGTH:
                 break
 
-            header = self.data[0]
-            sequence = (self.data[1] >> 4) & 0x0F
-            version = self.data[1] & 0x0F
-            length = self.data[2]
+            # unpack header
+            sequence = (self.buffer[1] >> 4) & 0x0F
+            version = self.buffer[1] & 0x0F
+            length = self.buffer[2]
 
-            # don't have entire packet
-            if self.size < length + HEADERSIZE + FOOTERSIZE:
+            # ensure that we have at least enough for single packet
+            if len(self.buffer) < HEADER_LENGTH + length + FOOTER_LENGTH:
                 break
 
-            packetdata = self.data[3:3 + length]
-            crc = self.data[3 + length + 0]
-            footer = self.data[3 + length + 1]
+            # unpack footer
+            data = self.buffer[HEADER_LENGTH:HEADER_LENGTH + length]
+            crc = self.buffer[HEADER_LENGTH + length + 0]
+            end = self.buffer[HEADER_LENGTH + length + 1]
 
-            if header == 0xAA and footer == 0x55 and crc == compute_crc(packetdata):
-                self.packet_received(sequence, version, packetdata)
-                self.align_candidates(length + HEADERSIZE + FOOTERSIZE)
-            else:
-                self.invalid_packet(exc=None)
-                self.align_candidates(1)
+            if end != FOOTER_BYTE:
+                self.invalid_packet(self, ValueError('Bad end byte.'))
+                self.drop_incomplete(start=1)
+                continue
+
+            if compute_crc(data) != crc:
+                self.invalid_packet(self, ValueError('Bad CRC.'))
+                self.drop_incomplete(start=1)
+                continue
+
+            # received a good packet (up to crc / footer check...)
+            self.packet_received(sequence, version, data)
+            del self.buffer[:HEADER_LENGTH + length + FOOTER_LENGTH]
+
+    def drop_incomplete(self, start):
+        try:
+            offset = self.buffer.index(bytearray([HEADER_BYTE]), start)
+            del self.buffer[:offset]
+        except ValueError:
+            del self.buffer[:]
 
     def packet_received(self, sequence, version, data):
         pass
@@ -63,15 +66,7 @@ class FramingProtocol(object):
 class CoresenseProtocol(FramingProtocol):
 
     def packet_received(self, sequence, version, data):
-        self.packet_start(sequence, version)
         self.process_subpackets(data)
-        self.packet_end()
-
-    def packet_start(self, sequence, version):
-        pass
-
-    def packet_end(self):
-        pass
 
     def subpacket_received(self, sensor, valid, data):
         pass
@@ -80,39 +75,38 @@ class CoresenseProtocol(FramingProtocol):
         offset = 0
 
         while offset < len(data):
-            try:
-                sensor = data[offset + 0]
-                valid = (data[offset + 1] & 0x80) != 0
-                length = data[offset + 1] & 0x7F
-                offset += 2
+            sensor = data[offset + 0]
+            valid = (data[offset + 1] & 0x80) != 0
+            length = data[offset + 1] & 0x7F
+            offset += 2
 
-                subpacket_data = data[offset:offset + length]
-                offset += length
-            except Exception as exc:
-                self.invalid_subpacket(exc=exc)
-                break
+            if offset + length > len(data):
+                raise IndexError('sensor {} subpacket has invalid length'.format(sensor))
+
+            subpacket_data = data[offset:offset + length]
+            offset += length
 
             self.subpacket_received(sensor, valid, subpacket_data)
 
-    def invalid_subpacket(self, exc):
-        pass
-
 
 def create_packet(sequence, version, data):
+    data = bytearray(data)
     sequence_version = ((sequence & 0x0F) << 4) | (version & 0x0F)
     header = bytearray([0xAA, sequence_version, len(data)])
     footer = bytearray([compute_crc(data), 0x55])
-    return header + data + footer  # join instead...?
+    return bytearray([]).join([header, data, footer])
 
 
 def create_subpacket(sensor, valid, data):
+    data = bytearray(data)
     flag = (0x80 if valid else 0) | (len(data) & 0x7F)
     return bytearray([sensor, flag]) + data
 
 
 def create_packet_from_subpackets(sequence, version, subpackets):
-    return create_packet(sequence, version, bytearray([]).join(
-        create_subpacket(sensor, valid, data) for sensor, valid, data in subpackets))
+    subpacket_data = bytearray([]).join(create_subpacket(sensor, valid, data)
+                                        for sensor, valid, data in subpackets)
+    return create_packet(sequence, version, subpacket_data)
 
 
 def compute_crc(data, crc=0):

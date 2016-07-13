@@ -1,86 +1,93 @@
 from protocol import FramingProtocol
 # from protocol import CoresenseProtocol
 from protocol import create_packet
-from random import randint
 import unittest
 
 
-def test_basic_decode(testcase, testsequence, testversion, testdata):
+class TestProtocol(FramingProtocol):
 
-    class FramingTestProtocol(FramingProtocol):
+    def __init__(self):
+        self.results = []
 
-        def packet_received(self, sequence, version, data):
-            testcase.assertEqual(sequence, testsequence)
-            testcase.assertEqual(version, testversion)
-            testcase.assertEqual(data, testdata)
+    def packet_received(self, sequence, version, data):
+        self.results.append((sequence, version, data))
 
-    packet = create_packet(testsequence, testversion, testdata)
 
-    protocol = FramingTestProtocol()
+def process_dataset(dataset, start=0, end=None, fragmented=False):
+    protocol = TestProtocol()
     protocol.connection_made()
-    protocol.data_received(packet)
+
+    data = bytearray([]).join(create_packet(*entry) for entry in dataset)[start:end]
+
+    if fragmented:
+        for x in data:
+            protocol.data_received(bytearray([x]))
+    else:
+        protocol.data_received(data)
+
     protocol.connection_lost()
+    return protocol.results
 
 
-def test_broken_packet(testcase, testsequence, testversion, testdata, skip):
-
-    class FramingTestProtocol(FramingProtocol):
-
-        def __init__(self):
-            self.got_broken = False
-
-        def invalid_packet(self):
-            self.got_broken = True
-
-        def packet_received(self, sequence, version, data):
-            testcase.assertEqual(sequence, testsequence)
-            testcase.assertEqual(version, testversion)
-            testcase.assertEqual(data, testdata)
-            testcase.assertTrue(self.got_broken)
-
-    packet = create_packet(testsequence, testversion, testdata)
-
-    protocol = FramingTestProtocol()
-    protocol.connection_made()
-    protocol.data_received(packet[skip:])
-    protocol.data_received(packet)
-    protocol.connection_lost()
-
-
-class TestProtocol(unittest.TestCase):
+class TestFramingProtocol(unittest.TestCase):
 
     def test_basic(self):
-        for version in range(16):
-            for sequence in range(16):
-                data = bytearray([1, 2, 3])
-                test_basic_decode(self, version, sequence, data)
-
-    def test_broken(self):
-        data = bytearray([0xAA] * 10) + bytearray(range(1, 20))
-        test_broken_packet(self, 2, 7, data, 3)
+        data = bytearray([11, 82, 32, 9, 7])
 
         for version in range(16):
             for sequence in range(16):
-                for skip in range(1, 7):
-                    data = bytearray(range(1, 20))
-                    test_broken_packet(self, version, sequence, data, skip)
+                dataset = [(version, sequence, data)]
+                results = process_dataset(dataset)
+                self.assertEqual(dataset, results)
+
+    def test_fragmented(self):
+        data = bytearray([11, 82, 32, 9, 7])
+
+        for version in range(16):
+            for sequence in range(16):
+                dataset = [(version, sequence, data)]
+                results = process_dataset(dataset, fragmented=True)
+                self.assertEqual(dataset, results)
 
     def test_empty(self):
-        test_basic_decode(self, 1, 3, bytearray([]))
+        dataset = [(1, 3, bytearray([]))]
+        results = process_dataset(dataset)
+        self.assertEqual(dataset, results)
 
     def test_special_1(self):
-        test_basic_decode(self, 1, 3, bytearray([0xAA]))
+        dataset = [(1, 3, bytearray([0xAA]))]
+        results = process_dataset(dataset)
+        self.assertEqual(dataset, results)
 
     def test_special_2(self):
-        test_basic_decode(self, 1, 3, bytearray([0x55]))
+        dataset = [(1, 3, bytearray([0x55]))]
+        results = process_dataset(dataset)
+        self.assertEqual(dataset, results)
 
-    def test_random(self):
-        for i in range(10000):
-            sequence = randint(0, 15)
-            version = randint(0, 15)
-            size = randint(0, 240)
-            data = bytearray([randint(0, 255) for _ in range(size)])
-            test_basic_decode(self, sequence, version, data)
+    def test_invalid(self):
+        dataset = [(1, 3, bytearray([0xAA, 0x55] * 5))]
+        results = process_dataset(dataset, start=1)
+        self.assertEqual([], results)
+
+    def test_incomplete(self):
+        dataset = [
+            (1, 3, bytearray([1, 1, 1])),
+            (5, 2, bytearray([2, 2])),
+            (2, 3, bytearray([3])),
+            (0, 6, bytearray([1, 8, 7])),
+        ]
+
+        results = process_dataset(dataset, start=3)
+        self.assertEqual(dataset[1:], results)
+
+        results = process_dataset(dataset, start=10)
+        self.assertEqual(dataset[2:], results)
+
+        results = process_dataset(dataset, end=-4)
+        self.assertEqual(dataset[:-1], results)
+
+        results = process_dataset(dataset, end=-11)
+        self.assertEqual(dataset[:-2], results)
 
 
 if __name__ == '__main__':
