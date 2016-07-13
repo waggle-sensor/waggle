@@ -1,0 +1,1322 @@
+\newpage
+\section{Sub-packets}
+
+As shortly explained in document section \ref{ssec:sub-pack}, data sub-packets are generated depending on its designated data format and length. The first byte of the sub-packet is sensor ID for each parameter, and the second byte means validity of the packet and length of the sensor data. The packet validity is initially 0, and it will be changed to 1 when each sub-packet gets sensor value from sensor. And after a transmission packet is trasmitted, the validity becomes 0 again. The form of sub-packet is shown below.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Source ID} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{1-bit Validity | 7-bits Sensor Data Length} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Data} \\
+\noalign{\hrule height 2pt}
+One Byte & One Byte & up to 127 Bytes \\
+\hline
+\end{tabular}
+\end{table}
+
+
+\subsection{Parameters}
+
+The sensor boards output a set of parameters which are identified by a unique ID. Each parameter
+has a set of values associated with it which are encoded in an appropriate data format. The table
+below lists the various parameters produced by the sensor boards, the unique source ID used to identify them, the values produced by them and the format in which the value is encoded.
+
+
+\begin{center}
+\rowcolors{2}{white}{black!5}
+\begin{longtable}{|l|c|l|}
+\caption{Data sub-packet structure (each row is a "chunk")} \label{tab:dataChunk} \\
+
+\hline \rowcolor{white} \multicolumn{1}{|c|}{\textbf{Parameter}} & \multicolumn{1}{c|}{\textbf{Source ID}} & \multicolumn{1}{c|}{\textbf{Values and Formats}} \\ \hline
+\endfirsthead
+
+\multicolumn{3}{c}%
+{{\bfseries \tablename\ \thetable{} -- continued from previous page}} \\
+\hline \rowcolor{white} \multicolumn{1}{|c|}{\textbf{Parameter}} & \multicolumn{1}{c|}{\textbf{Source ID}} & \multicolumn{1}{c|}{\textbf{Values and Formats}} \\ \hline 
+\endhead
+
+\hline \rowcolor{white} \multicolumn{3}{|r|}{{Continued on next page}} \\ \hline
+\endfoot
+
+\hline \hline
+\endlastfoot
+
+     \hline \rowcolor{white} \multicolumn{3}{|c|}{{Airsense board}} \\ \hline
+        Airsense/Lightsense MAC address & 0x00 & MAC Address -- Format 3 \\
+        TMP112 & 0x01 & Temperature -- Format 6\\
+        HTU21D & 0x02 & Temperature and Humidity -- Format 6\\
+        BMP180 & 0x04 & Temperature -- Format 6 \& Pressure -- Format 4\\
+        PR103J2 & 0x05 & Temperature -- Format 1\\
+        TSL250RD & 0x06 & Visible Light -- Format 1\\
+        MMA8452Q & 0x07 & Three Accelerations and Vibration -- Format 6\\
+        SPV1840LR5H-B & 0x08 & RMS Sound Level -- Format 1\\
+        TSYS01 & 0x09 & Temperature -- Format 6\\
+     \hline \rowcolor{white} \multicolumn{3}{|c|}{{Lightsense board}} \\ \hline
+        HMC5883L & 0x0A & Three Magnetic Fields -- Format 8\\
+        HIH6130 & 0x0B & Temperature and Humidity -- Format 6\\
+        APDS-9006-020 & 0x0C & Visible Light -- Format 1\\
+        TSL260RD & 0x0D & IR Light -- Format 1\\
+        TSL250RD & 0x0E & Visible Light -- Format 1\\
+        MLX75305 & 0x0F & Light -- Format 1\\
+        ML8511 & 0x10 & Light -- Format 1\\
+        TMP421 & 0x13 & Temperature -- Format 6\\
+        SPV1840LR5H-B & 0x14 & RMS Sound Level -- Format 1\\
+%       Lightsense MAC address & 0x14 & MAC Address -- Format 3 \\
+     \hline \rowcolor{white} \multicolumn{3}{|c|}{{Chemsense board}} \\ \hline
+        Total reducing gases & 0x15 & Raw Concentration -- Format 5\\
+        Nitrogen dioxide & 0x17 & Raw Concentration -- Format 5\\
+        Ozone & 0x18 & Raw Concentration -- Format 5\\
+        Hydrogen sulphide & 0x19 & Raw Concentration -- Format 5\\
+        Total oxidizing gases & 0x1A & Raw Concentration -- Format 5\\
+        Carbon monoxide & 0x1B & Raw Concentration -- Format 5\\
+        Sulfur dioxide & 0x1C & Raw Concentration -- Format 5\\
+        SHT25 & 0x1D & Temperature \& Humidity -- Format 2\\
+        LPS25H & 0x1E & Temperature -- Format 2 \& Pressure -- Format 4\\
+        Si1145 & 0x1F & UV intensity -- Format 1\\
+        Chemsense MAC address & 0x20 & MAC Address -- Format 3\\
+        CO ADC temp & 0x21 & ADC temperature -- Format 2\\
+        IAQ IRR ADC temp & 0x22 & ADC temperature -- Format 2\\
+        O3 NO2 ADC temp & 0x23 & ADC temperature -- Format 2\\
+        SO2 H2S ADC temp & 0x24 & ADC temperature -- Format 2\\
+        CO LMP temp & 0x25 & ADC temperature -- Format 2\\
+        Accelerometer & 0x26 & Three Accelerations -- Format 2 \& Vibration -- Format 4\\
+        Gyro & 0x27 & Three Orientation -- Format 2 \& Orientation Index -- Format 4\\
+\end{longtable}
+\end{center}
+
+
+Each parameter and its values are composed into a sub-packet based on
+the format described in document section \ref{ssec:sub-pack}.
+In the case of parameters with 2 or more values, the encoded values are
+arranged in the sub-packets sequentially. The context of each parameter,
+its utility and the arrangement of its values is described below. In all
+the tables below, the validity bit is set to 1. The parameter descriptions
+below are aggregated based on the sensor-board they are situated on -
+Airsense, Lightsense and Chemsense.
+% document subsections \ref{ssec:first} to \ref{ssec:last}.
+
+\subsection{Airsense:}
+\subsubsection{ Airsense/Lightsense MAC address} \label{ssec:first}
+
+This is a six byte ID that uniquely identifies each Airsense board. This MAC address is also applied to each Lightsense board which has the same board number. The ID is provided by a DS2401 1-Wire DSN chip. The 1-byte family ID and CRC provided by the DSN chip are omitted, and the rest six bytes are used as the Unique ID. The Unique ID uses Format 3 for encoding and the arrangement is listed below.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x00} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x86} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{ID in Format 3}\\
+\noalign{\hrule height 2pt}
+Byte[0] & Byte[1] & Bytes[2 -- 7]\\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{ TMP112}
+
+TMP112 is a digital temperature sensor, which provides the temperature values
+in centigrade.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x01} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x82} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Temperature in Format 6} \\
+\noalign{\hrule height 2pt}
+Byte[0] & Byte[1] & Bytes[2 -- 3] \\
+\hline
+\end{tabular}
+\end{table}
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Value} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Board Output} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-Processing Mode} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-processed Output} \\
+\noalign{\hrule height 2pt}
+Temperature & $^{\circ}$C & None & None \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{ HTU21D}
+HTU21D is a digital temperature and humidity sensor, which provides
+relative humidity value (\%RH) and temperature value in centigrade.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x02} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x84} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Temperature in Format 6}&
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{\%RH in Format 6}\\
+\noalign{\hrule height 2pt}
+Byte[0] & Byte[1] & Bytes[2 -- 3]  & Bytes [4 -- 5]\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Value} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Board Output} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-Processing Mode} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-processed Output} \\
+\noalign{\hrule height 2pt}
+Temperature & $^{\circ}$C & None & None \\
+\hline
+Relative Humidity & \%RH & None & None \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{ BMP180}
+
+BMP180 is an digital temperature and barometric pressure sensor,
+which provides temperature in centigrade and pressure in hectopascals.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x04} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x85} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Temperature in Format 6}&
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Pressure in Format 4}\\
+\noalign{\hrule height 2pt}
+Byte[0] & Byte[1] & Bytes[2 -- 3] & Bytes [4 -- 6]\\
+\hline
+\end{tabular}
+\end{table}
+
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Value} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Board Output} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-Processing Mode} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-processed Output} \\
+\noalign{\hrule height 2pt}
+Temperature & $^{\circ}$C & None & None \\
+\hline
+Atmospheric Pressure & hPa & None & None \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{ PR103J2}
+
+PR103J2 is an analog temperature sensor whose resistance changes with change in temperature.
+The sensor is implemented in a voltage divider circuit, and the center-tap voltage is converted and packed into Format 1 using a 10-bit ADC.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x05} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x82} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Temperature in Format 1}\\
+\noalign{\hrule height 2pt}
+Byte[0] & Byte[1] & Bytes[2 -- 3]\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Value} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Board Output} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-Processing Mode} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-processed Output} \\
+\noalign{\hrule height 2pt}
+Temperature & raw integer & Bulk Curve Fitting & $^{\circ}$C \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{ TSL250RD}
+
+TSL250RD is an analog visible light sensor that produces an analog voltage that is
+representative of the irradiance measured in $\mu$W/cm$^2$. The output voltage of the sensor
+is converted and packed into Format 1 using a 10-bit ADC.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x06} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x82} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Light intensity in Format 1}\\
+\noalign{\hrule height 2pt}
+Byte[0] & Byte[1] & Bytes[2 -- 3]\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Value} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Board Output} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-Processing Mode} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-processed Output} \\
+\noalign{\hrule height 2pt}
+Light Intensity & raw integer & Bulk Curve Fitting & $\mu$W/cm$^2$ \\
+\hline
+\end{tabular}
+\end{table}
+
+
+\subsubsection{ MMA8452Q}
+
+MMA8452Q is a digital three-axis accelerometer. The accelerations in three orthogonal directions,
+x, y and z, as a multiple of acceleration due to gravity (g) are obtained from the sensor,
+and a vibration value (represented as multiple of g) is calculated using high-frequency
+time series data from the three axis.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x07} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x88} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Acc. X in Format 6}&
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Acc. Y in Format 6}&
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Acc. Z in Format 6}&
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Vibration in Format 6}\\
+\noalign{\hrule height 2pt}
+Byte[0] & Byte[1] & Bytes[2 -- 3] & Bytes[4 -- 5] & Bytes[6 -- 7] & Bytes[8 -- 9]\\
+\hline
+\end{tabular}
+\end{table}
+
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Value} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Board Output} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-Processing Mode} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-processed Output} \\
+\noalign{\hrule height 2pt}
+Acc. X & g & none & none \\
+\hline
+Acc. Y & g & none & none \\
+\hline
+Acc. Z & g & none & none \\
+\hline
+Vibration & g & none & none \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{ SPV1840LR5H-B}
+
+SPV1840LR5H is a MEMS microphone that is sampled at high frequency to obtain
+the peaks and calculate the sound intensity for a time window. The raw calculated
+intensity is represented as a 16-bit integer value using Format 1.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x08} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x82} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Sound Intensity in Format 1}\\
+\noalign{\hrule height 2pt}
+Byte[0] & Byte[1] & Bytes[2 -- 3]\\
+\hline
+\end{tabular}
+\end{table}
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Value} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Board Output} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-Processing Mode} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-processed Output} \\
+\noalign{\hrule height 2pt}
+Sound Intensity & raw integer & Bulk Curve Fitting & dB \\
+\hline
+\end{tabular}
+\end{table}
+
+
+\subsubsection{ TSYS01}
+
+TSYS01 is a digital temperature sensor, which provides the temperature values
+in centigrade.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x09} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x82} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Temperature in Format 6} \\
+\noalign{\hrule height 2pt}
+Byte[0] & Byte[1] & Bytes[2 -- 3]\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Value} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Board Output} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-Processing Mode} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-processed Output} \\
+\noalign{\hrule height 2pt}
+Temperature & $^{\circ}$C & None & None \\
+\hline
+\end{tabular}
+\end{table}
+
+
+\subsection{Lightsense:}
+\subsubsection{ HMC5883L}
+
+
+HMC5883L is a digital three-axis magnetometer. The magnetic field strengths in three orthogonal directions,
+x, y and z are obtained from the sensor.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x0A} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x88} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Field strength X in Format 8}&
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Field strength Y in Format 8}&
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Field strength Z in Format 8}\\
+\noalign{\hrule height 2pt}
+Byte[0] & Byte[1] & Bytes[2 -- 3] & Bytes[4 -- 5] & Bytes[6 -- 7]\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Value} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Board Output} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-Processing Mode} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-processed Output} \\
+\noalign{\hrule height 2pt}
+Mag. Field X & Gauss & none & none \\
+\hline
+Mag. Field Y & Gauss & none & none \\
+\hline
+Mag. Field Z & Gauss & none & none \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{ HIH6130}
+
+HIH6130 is a digital temperature and humidity sensor, which provides
+relative humidity value (\%RH) and temperature value in centigrade.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x0B} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x84} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Temperature in Format 6}&
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{\%RH in Format 6}\\
+\noalign{\hrule height 2pt}
+Byte[0] & Byte[1] & Bytes[2 -- 3] & Bytes[4 -- 5]\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Value} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Board Output} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-Processing Mode} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-processed Output} \\
+\noalign{\hrule height 2pt}
+Temperature & $^{\circ}$C & None & None \\
+\hline
+Relative Humidity & \%RH & None & None \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{ APDS-9006-020}
+
+APDS-9006-020 is an analog visible light sensor that produces an analog voltage that is
+representative of the general luminance. The output voltage of the sensor
+is converted and packed into Format 1 using a 16-bit ADC.
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x0C} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x82} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Raw luminance in Format 1}\\
+\noalign{\hrule height 2pt}
+Byte[0] & Byte[1] & Bytes[2 -- 3]\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Value} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Board Output} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-Processing Mode} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-processed Output} \\
+\noalign{\hrule height 2pt}
+Ambient Light Intensity & raw integer & Bulk Curve Fitting &  $\mu$W/cm$^2$\\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{ TSL260RD}
+
+TSL260RD is an analog Near-infrared light sensor that produces an analog voltage that is
+representative of the irradiance measured in $\mu$W/cm$^2$. The output voltage of the sensor
+is converted and packed into Format 1 using a 16-bit ADC.
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x0D} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x82} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Near-infrared intensity in Format 1}\\
+\noalign{\hrule height 2pt}
+Byte[0] & Byte[1] & Bytes[2 -- 3]\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Value} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Board Output} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-Processing Mode} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-processed Output} \\
+\noalign{\hrule height 2pt}
+Nera-infrared Intensity & raw integer & Bulk Curve Fitting &  $\mu$W/cm$^2$\\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{ TSL250RD}
+TSL250RD is an analog visible light sensor that produces an analog voltage that is
+representative of the irradiance measured in $\mu$W/cm$^2$. The output voltage of the sensor
+is converted and packed into Format 1 using a 16-bit ADC.
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x0E} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x82} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Light intensity in Format 1}\\
+\noalign{\hrule height 2pt}
+Byte[0] & Byte[1] & Bytes[2 -- 3]\\
+\hline
+\end{tabular}
+\end{table}
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Value} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Board Output} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-Processing Mode} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-processed Output} \\
+\noalign{\hrule height 2pt}
+Ambient Light Intensity & raw integer & Bulk Curve Fitting &  $\mu$W/cm$^2$\\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{ MLX75305}
+MLX75305 is an visible light sensor that produces an analog output that is
+representative of the light intensity. The output voltage of the sensor
+is converted and packed into Format 1 using a 16-bit ADC.
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x0F} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x82} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Light intensity in Format 1}\\
+\noalign{\hrule height 2pt}
+Byte[0] & Byte[1] & Bytes[2 -- 3]\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Value} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Board Output} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-Processing Mode} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-processed Output} \\
+\noalign{\hrule height 2pt}
+Ambient Light Intensity & raw integer & Bulk Curve Fitting &  $\mu$W/cm$^2$\\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{ ML8511}
+
+ML8511 is an ultra-violet light sensor that produces an analog output that is
+representative of the ultra-violet light intensity. The output voltage of the sensor
+is converted and packed into Format 1 using a 16-bit ADC.
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x10} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x82} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{UV intensity in Format 1}\\
+\noalign{\hrule height 2pt}
+Byte[0] & Byte[1] & Bytes[2 -- 3]\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Value} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Board Output} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-Processing Mode} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-processed Output} \\
+\noalign{\hrule height 2pt}
+UV Light Intensity & raw integer & Bulk Curve Fitting &  $\mu$W/cm$^2$\\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{ TMP421}
+TMP421 is a digital temperature sensor, which provides the temperature values
+in centigrade.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x13} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x82} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Temperature in Format 6} \\
+\noalign{\hrule height 2pt}
+Byte[0] & Byte[1] & Bytes[2 -- 3]\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Value} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Board Output} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-Processing Mode} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-processed Output} \\
+\noalign{\hrule height 2pt}
+Temperature & $^{\circ}$C & None & None \\
+\hline
+\end{tabular}
+\end{table}
+
+
+\subsubsection{ SPV1840LR5H-B}
+
+SPV1840LR5H is a MEMS microphone that is sampled at high frequency to obtain
+the peaks and calculate the sound intensity for a time window. The raw calculated
+intensity is represented as a 16-bit integer value using Format 1.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x08} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x82} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Sound Intensity in Format 1}\\
+\noalign{\hrule height 2pt}
+Byte[0] & Byte[1] & Bytes[2 -- 3]\\
+\hline
+\end{tabular}
+\end{table}
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Value} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Board Output} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-Processing Mode} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-processed Output} \\
+\noalign{\hrule height 2pt}
+Sound Intensity & raw integer & Bulk Curve Fitting & dB \\
+\hline
+\end{tabular}
+\end{table}
+
+
+\subsection{Chemsense:}
+\subsubsection{ Total reducing gases}
+This parameter provides the current output of the electrochemical
+ToR sensor. The cell current is quantified using an AFE that uses a
+24-bit ADC to convert it into a signed digital value. This value is
+represented in Format 5.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x15} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x83} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Raw current value in Format 5}\\
+\noalign{\hrule height 2pt}
+Byte[0] & Byte[1] & Bytes[2 -- 3]\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Value} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Board Output} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-Processing Mode} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-processed Output} \\
+\noalign{\hrule height 2pt}
+Concentration & raw integer & per-sensor & PPM \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{ Nitrogen dioxide}
+This parameter provides the current output of the electrochemical
+NO$_2$ sensor. The cell current is quantified using an AFE that uses a
+24-bit ADC to convert it into a signed digital value. This value is
+represented in Format 5.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x17} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x83} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Raw current value in Format 5}\\
+\noalign{\hrule height 2pt}
+Byte[0] & Byte[1] & Bytes[2 -- 3]\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Value} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Board Output} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-Processing Mode} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-processed Output} \\
+\noalign{\hrule height 2pt}
+Concentration & raw integer & per-sensor & PPM \\
+\hline
+\end{tabular}
+\end{table}
+
+
+\subsubsection{ Ozone}
+This parameter provides the current output of the electrochemical
+O$_3$ sensor. The cell current is quantified using an AFE that uses a
+24-bit ADC to convert it into a signed digital value. This value is
+represented in Format 5.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x18} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x83} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Raw current value in Format 5}\\
+\noalign{\hrule height 2pt}
+Byte[0] & Byte[1] & Bytes[2 -- 3]\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Value} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Board Output} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-Processing Mode} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-processed Output} \\
+\noalign{\hrule height 2pt}
+Concentration & raw integer & per-sensor & PPM \\
+\hline
+\end{tabular}
+\end{table}
+
+
+\subsubsection{ Hydrogen sulphide}
+This parameter provides the current output of the electrochemical
+H$_2$S sensor. The cell current is quantified using an AFE that uses a
+24-bit ADC to convert it into a signed digital value. This value is
+represented in Format 5.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x19} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x83} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Raw current value in Format 5}\\
+\noalign{\hrule height 2pt}
+Byte[0] & Byte[1] & Bytes[2 -- 3]\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Value} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Board Output} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-Processing Mode} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-processed Output} \\
+\noalign{\hrule height 2pt}
+Concentration & raw integer & per-sensor & PPM \\
+\hline
+\end{tabular}
+\end{table}
+
+
+\subsubsection{ Total oxidizing gases}
+This parameter provides the current output of the electrochemical
+ToX sensor. The cell current is quantified using an AFE that uses a
+24-bit ADC to convert it into a signed digital value. This value is
+represented in Format 5.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x1A} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x83} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Raw current value in Format 5}\\
+\noalign{\hrule height 2pt}
+Byte[0] & Byte[1] & Bytes[2 -- 3]\\
+\hline
+\end{tabular}
+\end{table}
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Value} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Board Output} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-Processing Mode} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-processed Output} \\
+\noalign{\hrule height 2pt}
+Concentration & raw integer & per-sensor & PPM \\
+\hline
+\end{tabular}
+\end{table}
+
+
+\subsubsection{ Carbon monoxide}
+This parameter provides the current output of the electrochemical
+CO sensor. The cell current is quantified using an AFE that uses a
+24-bit ADC to convert it into a signed digital value. This value is
+represented in Format 5.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x1B} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x83} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Raw current value in Format 5}\\
+\noalign{\hrule height 2pt}
+Byte[0] & Byte[1] & Bytes[2 -- 3]\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Value} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Board Output} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-Processing Mode} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-processed Output} \\
+\noalign{\hrule height 2pt}
+Concentration & raw integer & per-sensor & PPM \\
+\hline
+\end{tabular}
+\end{table}
+
+
+\subsubsection{ Sulfur dioxide}
+This parameter provides the current output of the electrochemical
+SO$_2$ sensor. The cell current is quantified using an AFE that uses a
+24-bit ADC to convert it into a signed digital value. This value is
+represented in Format 5.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x1C} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x83} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Raw current value in Format 5}\\
+\noalign{\hrule height 2pt}
+Byte[0] & Byte[1] & Bytes[2 -- 3]\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Value} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Board Output} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-Processing Mode} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-processed Output} \\
+\noalign{\hrule height 2pt}
+Concentration & raw integer & per-sensor & PPM \\
+\hline
+\end{tabular}
+\end{table}
+
+
+\subsubsection{ SHT25}
+
+SHT25 is a temperature and humidity sensor. The temperature and humidity raw values are
+encoded in Format 2.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x1D} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x84} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Raw temperature value in Format 2}&
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Raw humidity value in Format 2}\\
+\noalign{\hrule height 2pt}
+Byte[0] & Byte[1] & Bytes[2 -- 3] & Bytes[4 -- 5]\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Value} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Board Output} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-Processing Mode} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-processed Output} \\
+\noalign{\hrule height 2pt}
+Temperature & raw integer & Bulk Curve Fitting & $^{\circ}$C \\
+\hline
+Humidity & raw integer & Bulk Curve Fitting & \%RH \\
+\hline
+\end{tabular}
+\end{table}
+
+
+\subsubsection{ LPS25H}
+
+LPS25H is a temperature and pressure sensor. The temperature and pressure raw values are
+encoded in Format 2 and Format 4 respectively.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x1E} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x85} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Raw temperature value in Format 2}&
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Raw pressure value in Format 4}\\
+\noalign{\hrule height 2pt}
+Byte[0] & Byte[1] & Bytes[2 -- 3] & Bytes[4 -- 6]\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Value} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Board Output} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-Processing Mode} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-processed Output} \\
+\noalign{\hrule height 2pt}
+Temperature & raw integer & Bulk Curve Fitting & $^{\circ}$C \\
+\hline
+Atmospheric Pressure & raw integer & Bulk Curve Fitting & hPa \\
+\hline
+\end{tabular}
+\end{table}
+
+
+\subsubsection{ Si1145}
+
+Si1145 is an Ultra-violet sensor. The raw output from the sensor is encoded Format 1.
+
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x1F} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x86} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Raw UV intensity in Format 1}\\
+\noalign{\hrule height 2pt}
+Byte[0] & Byte[1] & Bytes[2 -- 3]\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Value} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Board Output} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-Processing Mode} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-processed Output} \\
+\noalign{\hrule height 2pt}
+UV Intensity & raw integer & Bulk Curve Fitting &  $\mu$W/cm$^2$\\
+\hline
+\end{tabular}
+\end{table}
+
+
+\subsubsection{ Chemsense MAC address}
+
+This is a six byte ID that uniquely identifies each Chemsense board. The Unique ID uses Format 3
+for encoding and the arrangement is listed below.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x20} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x86} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{ID in Format 3}\\
+\noalign{\hrule height 2pt}
+Byte[0] & Byte[1] & Bytes[2 -- 7]\\
+\hline
+\end{tabular}
+\end{table}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{ ADC Temperatures}
+Chemsense board measures temperature of sensor ADCs. This includes five parameters which are:
+ 
+\begin{itemize}
+  \item CO ADC Temp
+  \item IAQ/IRR ADC Temp
+  \item O3/NO2 ADC Temp
+  \item SO2/H2S ADC Temp
+  \item CO CMT Temp
+\end{itemize}
+
+All of them give ADC temperature in 100ths of degree celsious. Format 2 is used for encoding and the arrangement is listed below. No specific descriptions for each sensor data are given for now (July 2016).
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Source ID (0x21 $\sim$ 0x25)} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x82} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{temperature in Format 2}\\
+\noalign{\hrule height 2pt}
+Byte[0] & Byte[1] & Bytes [2 -- 3] \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Value} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Board Output} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-Processing Mode} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-processed Output} \\
+\noalign{\hrule height 2pt}
+Temperature &  $^{\circ}$C $\times$ 100 & None & None\\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{ Accelerometer}
+The accelerations in three orthogonal directions, x, y and z, as a multiple of acceleration are obtained from the sensor, and a vibration index is calculated. Acceleration data are encoded in Format 2, and vibration index is encoded in Format 4. No specific descriptions for each sensor data are given for now (July 2016).
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x26} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x89} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Acc. X in Format 2}&
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Acc. Y in Format 2}&
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Acc. Z in Format 2}&
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Vibration in Format 4}\\
+\noalign{\hrule height 2pt}
+Byte[0] & Byte[1] & Bytes[2 -- 3] & Bytes[4 -- 5] & Bytes[6 -- 7] & Bytes[8 -- 10]\\
+\hline
+\end{tabular}
+\end{table}
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Value} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Board Output} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-Processing Mode} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-processed Output} \\
+\noalign{\hrule height 2pt}
+Acc. X & raw integer & none & none \\
+\hline
+Acc. Y & raw integer & none & none \\
+\hline
+Acc. Z & raw integer & none & none \\
+\hline
+Vibration Index & raw integer & none & none \\
+\hline
+\end{tabular}
+\end{table}
+
+
+\subsubsection{ Gyro}
+The gyro in three orthogonal directions, x, y and z, as a multiple of acceleration are obtained from the sensor, and a orientation index is calculated. Gyro data are encoded in Format 2, and orientation index is encoded in Format 4. No specific descriptions for each sensor data are given for now (July 2016).
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x27} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x89} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{X in Format 2} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Y in Format 2} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Z in Format 2} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Index in Format 4}\\
+\noalign{\hrule height 2pt}
+Byte[0] & Byte[1] & Bytes[2 -- 3] & Byte[4 -- 5] & Bytes[6 -- 7] & Bytes[8 -- 10]\\
+\hline
+\end{tabular}
+\end{table}
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Value} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Board Output} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-Processing Mode} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-processed Output} \\
+\noalign{\hrule height 2pt}
+X Orientation & raw integer & none & none \\
+\hline
+Y Orientation & raw integer & none & none \\
+\hline
+Z Orientation & raw integer & none & none \\
+\hline
+Orientation Index & raw integer & none & none \\
+\hline
+\end{tabular}
+\end{table}
+

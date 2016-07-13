@@ -27,10 +27,14 @@ void alphasense_on()
     digitalWrite(PIN_ALPHASENSE_SLAVE, LOW);
     delay(100);
 
-    val1 = SPI.transfer(0x03);
-    delay(100);
-    val2 = SPI.transfer(0x00);
-    delay(100);
+    while (val2 != 0x03)
+    {
+        val1 = SPI.transfer(0x03);
+        delay(100);
+        val2 = SPI.transfer(0x00);
+        delay(100);
+        SerialUSB.print(val2, HEX);
+    }
     
     digitalWrite(PIN_ALPHASENSE_SLAVE, HIGH);
     SPI.endTransaction();

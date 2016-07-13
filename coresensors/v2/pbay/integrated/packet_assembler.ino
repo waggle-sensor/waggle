@@ -230,9 +230,9 @@ void assemble_packet_whole()
     if (TSL250RD_2[1] > 10)
     {
         // Append TSL260RD
-        for (buffer_num = 0; buffer_num < sizeof(TSL260RD); buffer_num++)
+        for (buffer_num = 0; buffer_num < sizeof(TSL250RD_2); buffer_num++)
         {
-            packet_whole[packet_whole_index] = TSL260RD[buffer_num];
+            packet_whole[packet_whole_index] = TSL250RD_2[buffer_num];
 
             // Increment index for whole packet
             packet_whole_index++;

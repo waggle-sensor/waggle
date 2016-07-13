@@ -1,0 +1,262 @@
+% \section{Data Sub-Packet} \label{section:dataSub}
+%
+% The data sub-packet consists of 32 "chunks" (30 sensors and 2 MAC addresses).  Each "chunk" follows one of seven formats.\\
+
+%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Data Formats}
+
+The data sent in each sub-packet is encoded in one or more formats. Currently
+we define eight formats for various types of data including integers, bytes,
+and floating point numbers. The numerical range of these representations is
+restricted to within the bounds of values that we expect from the various sensors
+and other sources. Thus the encoding schemes are specifically designed to
+effectively and efficiently encode the values expected in the sensor streams.
+The eight formats, and the encoding schemes are listed below.
+
+\begin{table}[H]
+    \centering
+    {\rowcolors{2}{black!8}{black!2}
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        \textbf{Format} & \textbf{Number of Bytes Used} & \textbf{Value Represented} & \textbf{Value Range} \\
+%          & \textbf{Encoding}
+        \hline
+        \hline
+        1 & 2 & unsigned int\_16 input & 0 -- 65535 \\ %& MSByte LSByte\\
+        2 & 2 & int\_16 input & $\pm$\{0 -- 32767\} \\%& [1Sign|7-MSBits] LSByte \\
+        3 & 6 & byte input[6] & 0x00 -- 0xffffffffffff \\%& MSByte1 MSByte2 MSByte3 MSByte4 MSByte5 LSByte \\
+        4 & 3 & unsigned long\_24 input & 0 -- 16777215 \\%& MSByte1 MSByte2 LSByte \\
+        5 & 3 & long\_24 input & $\pm$\{0 -- 8388607\} \\%& [1Sign|7-MSBits] MSByte2 LByte \\
+        6 & 2 & float input & $\pm$\{0 -- 127.99\} \\%& [1Sign|7Bits\_Int] [0|7Bits\_Frac]\\
+        7 & 4 & byte input[4] & 0x00 -- 0xffffffff \\%& MSByte1 MSByte2 LSByte2 LSByte\\
+        8 & 2 & float input & $\pm$\{0 -- 31.999\} \\%& [1Sign|5Bits\_Int|2MSBits\_Frac]  8LSBits\_Frac\\
+        \hline
+    \end{tabular}
+    }
+    \caption{Data formats}
+    \label{table:overall}
+\end{table}
+
+%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Format 1}
+
+This 2 byte format is used to transmit an integer between 0 and 65535. The
+number is split and serialized as follows --\\
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{8 Most Significant Bits} &
+  \multicolumn{1}{!{\vrule width 1pt}c!{\vrule width 2pt}}{8 Least Significant Bits} \\
+\noalign{\hrule height 2pt}
+Byte[0] & Byte[1] \\
+\hline
+\end{tabular}
+\end{table}
+
+
+\subsection{Format 2}
+This 2 byte format is used to transmit an integer between -32767 and 32767. The
+number is split and serialized as follows --\\
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Sign Bit | 7 Most Significant Bits} &
+\multicolumn{1}{!{\vrule width 1pt}c!{\vrule width 2pt}}{8 Least Significant Bits} \\
+\noalign{\hrule height 2pt}
+Byte[0] & Byte[1] \\
+\hline
+\end{tabular}
+\end{table}
+
+The Sign Bit which is the most significant bit in Byte 0 is set as follows ---
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|}
+\hline
+Positive Integer & 0 \\ 
+\hline
+Negative Integer & 1 \\
+\hline
+\end{tabular}
+\end{table}
+
+
+
+\subsection{Format 3}
+
+This 6 byte format is used to transmit an array of 6 bytes. The array is serialized as follows --\\
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Array[0]} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Array[1]} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Array[2]} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Array[3]} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Array[4]} &
+\multicolumn{1}{!{\vrule width 1pt}c!{\vrule width 2pt}}{Array[5]} \\
+\noalign{\hrule height 2pt}
+1st Byte & 2nd Byte & 3rd Byte & 4th Byte & 5th Byte & 6th Byte \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Format 4}
+
+This 3 byte format is used to transmit an integer between 0 and 16777215. The
+number is split and serialized as follows --\\
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{8 Most Significant Bits} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Bits 15 -- 8 } &
+  \multicolumn{1}{!{\vrule width 1pt}c!{\vrule width 2pt}}{8 Least Significant Bits} \\
+\noalign{\hrule height 2pt}
+Byte 0 & Byte 1 & Byte 2\\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Format 5}
+
+This 3 byte format is used to transmit an integer between -8388607 and 8388607. The
+number is split and serialized as follows --\\
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Sign Bit | 7 Most Significant Bits} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Bits 15 -- 8 } &
+  \multicolumn{1}{!{\vrule width 1pt}c!{\vrule width 2pt}}{8 Least Significant Bits} \\
+\noalign{\hrule height 2pt}
+Byte 0 & Byte 1 & Byte 2\\
+\hline
+\end{tabular}
+\end{table}
+
+The Sign Bit which is the most significant bit in Byte 0 is set as follows ---
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|}
+\hline
+Positive Integer & 0 \\
+\hline
+Negative Integer & 1 \\
+\hline
+\end{tabular}
+\end{table}
+
+
+
+\subsection{Format 6}
+
+This 2 byte format is used to transmit a floating point number between
+-127.99 and 127.99. Only 2 fractional places are allowed in this format and
+the number is serialized as follows --\\
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Sign Bit| 7 bit representation of Integer part} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{ 0 | 7 bit representation of the Fractional part} \\
+\noalign{\hrule height 2pt}
+Byte 0 & Byte 1\\
+\hline
+\end{tabular}
+\end{table}
+
+As shown above, the leading bit of the Byte 1 is always set to 0, and
+the Sign Bit which is the most significant bit of Byte 0 is set as follows ---
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|}
+\hline
+Positive Number & 0 \\
+\hline
+Negative Number & 1 \\
+\hline
+\end{tabular}
+\end{table}
+
+
+\subsection{Format 7}
+
+This 4 byte format is used to transmit an array of 4 bytes. The array is serialized as follows --\\
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Array[0]} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Array[1]} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Array[2]} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Array[3]}\\
+\noalign{\hrule height 2pt}
+Byte 0 & Byte 1 & Byte 2 & Byte 3 \\
+\hline
+\end{tabular}
+\end{table}
+
+
+\subsection{Format 8}
+
+This 2 byte format is used to transmit a floating point number between
+-31.999 and 31.99. Only 3 fractional places are allowed in this format and
+the number is serialized as follows --\\
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+% column1a & column2a \\
+\noalign{\hrule height 2pt}
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Sign Bit| 5 bit representation of Integer | 2 most significant bits of fraction} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{ 8 least significant bits of the fraction} \\
+\noalign{\hrule height 2pt}
+Byte 0 & Byte 1\\
+\hline
+\end{tabular}
+\end{table}
+
+As shown above, the format uses 5 bits for representing the integer part and 10 bits to represent the
+fractional part. The Sign Bit which is the most significant bit of Byte 0 is set as follows ---
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|}
+\hline
+Positive Number & 0 \\
+\hline
+Negative Number & 1 \\
+\hline
+\end{tabular}
+\end{table}
+

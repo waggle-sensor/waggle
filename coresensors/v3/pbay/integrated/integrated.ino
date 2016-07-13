@@ -46,6 +46,7 @@ void setup()
     #endif
 
     #ifdef ALPHASENSE_INCLUDE
+    delay(15000);
     alphasense_on();
     SerialUSB.print("on");
     delay(10000);
@@ -63,19 +64,19 @@ void setup()
 
 void loop()
 {
-    // #ifdef AIRSENSE_INCLUDE
-    // airsense_acquire();
-    // #endif
+    #ifdef AIRSENSE_INCLUDE
+    airsense_acquire();
+    #endif
     
-    // #ifdef LIGHTSENSE_INCLUDE
-    // lightsense_acquire();
-    // #endif
+    #ifdef LIGHTSENSE_INCLUDE
+    lightsense_acquire();
+    #endif
 
     while (count < 24)       // every 24 sec
     {
-        // #ifdef CHEMSENSE_INCLUDE
-        // chemsense_acquire();
-        // #endif
+        #ifdef CHEMSENSE_INCLUDE
+        chemsense_acquire();
+        #endif
 
 #ifdef ALPHASENSE_INCLUDE
         alphasense_histo();
@@ -105,8 +106,8 @@ void loop()
     // #endif
 
     assemble_packet_whole();        //******** packetize air/light/chem
-    // for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
-    //     SerialUSB.write(packet_whole[i]);
+    for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
+        SerialUSB.write(packet_whole[i]);
 
 #ifdef ALPHASENSE_INCLUDE
     alpha_packet_whole();           //******** packetize histo/firmware/config(part)

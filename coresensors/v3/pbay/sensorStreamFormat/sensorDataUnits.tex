@@ -1,49 +1,93 @@
+\newpage
 \section{Sensor Data Units : Raw and Processed} \label{section:parameterUnits}
 
-\begin{table}[H]
-    \centering
-    {\rowcolors{2}{black!8}{black!2}
-    \begin{tabular}{|l l l l|}
-        \hline
-        \textbf{Sensor/Parameter} & \textbf{Raw Units} & \textbf{Processed Units} & \textbf{Comments}\\
-        \hline
-        \hline
-        Main MAC address & No Units & No Units & 6 Octets in hex notation separated by `:'\\
-        TMP112 & \degree C & \degree C & \\
-        HTU21D & \degree C, RH \% & \degree C, RH \% & \\
-        GP2Y1010AU0F & integer & ppm & \\
-        BMP180 & \degree C, hPa & \degree C, hPa & \\
-        PR103J2 & integer & \degree C & \\
-        TSL250RD & integer & w/m\textsuperscript{2} & **finalize after discussion with EVS** \\
-        MMA8452Q & g,g,g,g & g,g,g,g & \\
-        SPV1840LR5H-B & integer & dB & \\
-        TSYS01 & \degree C & \degree C & \\
-        HMC5883L & \si\micro T,\si\micro T,\si\micro T & \si\micro T,\si\micro T,\si\micro T & \\
-        HIH6130 & \degree C, RH \% & \degree C, RH \% & \\
-        APDS-9006-020 & integer & w/m\textsuperscript{2} & **finalize after discussion with EVS**\\
-        TSL260RD & integer & w/m\textsuperscript{2} & **finalize after discussion with EVS** \\
-        TSL250RD & integer & w/m\textsuperscript{2} & **finalize after discussion with EVS** \\
-        MLX75305 & integer & w/m\textsuperscript{2} & **finalize after discussion with EVS** \\
-        ML8511 & integer & w/m\textsuperscript{2} & **finalize after discussion with EVS** \\
-        D6T & \textit{Seventeen} \degree C values & \textit{Seventeen} \degree C values & \\
-        MLX90614 & \degree F & \degree C & \\
-        TMP421 & \degree C & \degree C & \\
-        SPV1840LR5H-B & integer & dB & \\
-        Total reducing gases & integer & concentration & **finalize after discussion with EVS**\\
-        Ethanol & integer & ppm & Quadratic equation with calibrated weights \\
-        Nitrogen dioxide & integer & ppm & Quadratic equation with calibrated weights\\
-        Ozone & integer & ppm & Quadratic equation with calibrated weights\\
-        Hydrogen sulphide & integer & ppm & Quadratic equation with calibrated weights\\
-        Total oxidizing gases & integer & concentration & **finalize after discussion with EVS**\\
-        Carbon monoxide & integer & ppm & Quadratic equation with calibrated weights\\
-        Sulfur dioxide & integer & ppm & Quadratic equation with calibrated weights\\
-        Sensirion & \degree C, RH \% & \degree C, RH \% & \\
-        Bosh & hPa& hPa & \\
-        Intel MAC address & No Units & No Units & 6 Octets in hex notation separated by `:'\\
-        Sensor status (health) & No Units & No Units & 4 bytes of sensor health data\\
-        \hline
-    \end{tabular}
-    }
-    \caption{Sensor and Parameter units both in raw and processed format.}
-    \label{table:parameterUnits}
-\end{table}
+\begin{center}
+\rowcolors{2}{white}{black!5}
+\begin{longtable}{|l|l|l|l|}
+\caption{Sensor and Parameter units both in raw and processed format}
+\label{table:parameterUnits} \\
+
+\hline \rowcolor{white} \multicolumn{1}{|l|}{\textbf{Sensor/Parameter}} & \multicolumn{1}{l|}{\textbf{Raw Units}} & \multicolumn{1}{l|}{\textbf{Processed Units}} & \multicolumn{1}{l|}{\textbf{Comments}} \\ \hline
+\endfirsthead
+
+\multicolumn{4}{c}%
+{{\bfseries \tablename\ \thetable{} -- continued from previous page}} \\
+
+\hline \rowcolor{white} \multicolumn{1}{|l|}{\textbf{Sensor/Parameter}} & \multicolumn{1}{l|}{\textbf{Raw Units}} & \multicolumn{1}{l|}{\textbf{Processed Units}} & \multicolumn{1}{l|}{\textbf{Comments}} \\ \hline
+\endhead
+
+\hline \rowcolor{white} \multicolumn{4}{|r|}{{Continued on next page}} \\ \hline
+\endfoot
+
+\hline \hline
+\endlastfoot
+
+% 
+% \begin{table}[H]
+%     \centering
+%     {\rowcolors{2}{black!8}{black!2}
+%     \begin{tabular}{|l l l l|}
+%         \hline
+%         \textbf{Sensor/Parameter} & \textbf{Raw Units} & \textbf{Processed Units} & \textbf{Comments}\\
+%         \hline
+%         \hline
+    \hline \rowcolor{white} \multicolumn{4}{|c|}{{Airsense board}} \\ \hline
+    Air/Lightsense MAC & No Units & No Units & 6 Octets in hex notation separated by `:'\\
+    TMP112 & \degree C & \degree C & \\
+    HTU21D & \degree C, RH \% & \degree C, RH \% & \\
+    HIH4030 & RH \% & RH \% & \\
+    BMP180 & \degree C, hPa & \degree C, hPa & \\
+    PR103J2 & integer & \degree C & \\
+    TSL250RD & integer & w/m\textsuperscript{2} & **finalize after discussion with EVS** \\
+    MMA8452Q & g,g,g,g & g,g,g,g & \\
+    SPV1840LR5H-B & integer & dB & \\
+    TSYS01 & \degree C & \degree C & \\
+    
+    \hline \rowcolor{white} \multicolumn{4}{|c|}{{Lightsense board}} \\ \hline
+    HMC5883L & \si\micro T,\si\micro T,\si\micro T & \si\micro T,\si\micro T,\si\micro T & \\
+    HIH6130 & \degree C, RH \% & \degree C, RH \% & \\
+    APDS-9006-020 & integer & w/m\textsuperscript{2} & **finalize after discussion with EVS**\\
+    TSL260RD & integer & w/m\textsuperscript{2} & **finalize after discussion with EVS** \\
+    TSL250RD & integer & w/m\textsuperscript{2} & **finalize after discussion with EVS** \\
+    MLX75305 & integer & w/m\textsuperscript{2} & **finalize after discussion with EVS** \\
+    ML8511 & integer & w/m\textsuperscript{2} & **finalize after discussion with EVS** \\
+%     D6T & \textit{Seventeen} \degree C values & \textit{Seventeen} \degree C values & \\
+    MLX90614 & \degree F & \degree C & \\
+    TMP421 & \degree C & \degree C & \\
+%     SPV1840LR5H-B & integer & dB & \\
+
+    \hline \rowcolor{white} \multicolumn{4}{|c|}{{Chemsense board}} \\ \hline
+    Total reducing gases & integer & concentration & **finalize after discussion with EVS**\\
+%     Ethanol & integer & ppm & Quadratic equation with calibrated weights \\
+    Nitrogen dioxide & integer & ppm & Quadratic equation with calibrated weights\\
+    Ozone & integer & ppm & Quadratic equation with calibrated weights\\
+    Hydrogen sulphide & integer & ppm & Quadratic equation with calibrated weights\\
+    Total oxidizing gases & integer & concentration & **finalize after discussion with EVS**\\
+    Carbon monoxide & integer & ppm & Quadratic equation with calibrated weights\\
+    Sulfur dioxide & integer & ppm & Quadratic equation with calibrated weights\\
+    Sensirion (SHT25) & \degree C, RH \% & \degree C, RH \% & \\
+    LPS25H & \degree C $\times$ 100, RH \% & \degree C, RH \% & \\
+    Si1145 & & & \\
+%     Bosh & hPa& hPa & \\
+    Intel MAC address & No Units & No Units & 6 Octets in hex notation separated by `:'\\
+%     Sensor status (health) & No Units & No Units & 4 bytes of sensor health data\\
+    CO ADV temp& & & \\
+    IAQ IRR ADC temp & & & \\
+    O3 NO2 ADC temp & & & \\
+    SO2 H2S ADC temp & & & \\
+    CO LMP temp & & & \\
+    Accelerometer & & & \\
+    Gyro & & & \\
+    
+    \hline \rowcolor{white} \multicolumn{4}{|c|}{{Alpha sensor}} \\ \hline
+    Histogram & & & \\
+    Firmware & & & \\
+    Configuration & & & \\
+    \hline
+%     \end{tabular}
+%     }
+%     \caption{Sensor and Parameter units both in raw and processed format.}
+%     \label{table:parameterUnits}
+% \end{table}
+\end{longtable}
+\end{center}

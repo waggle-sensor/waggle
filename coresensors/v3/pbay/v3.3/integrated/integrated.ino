@@ -1,5 +1,5 @@
 /**
- ** /coresensors/v3/pbay/integrated
+ ** /coresensors/v3/pbay/v3.3
  ** integrated.ino V3 (pbay)
  **/
 
@@ -47,15 +47,12 @@ void setup()
 #endif
 
 #ifdef ALPHASENSE_INCLUDE
-    delay(5000);
     alphasense_on();
     SerialUSB.print("on");
-    delay(10000);
 
     alphasense_firmware();
     alphasense_config();
     // Serial.print("configuration");
-    delay(1000);
 
     flag_alpha = true;
 #endif
@@ -73,7 +70,7 @@ void loop()
     lightsense_acquire();
 #endif
 
-    while (count < 24)       // every 24 sec
+    while (count < 15)       // every 24 sec
     {
         if (repeat < count)
         {
@@ -93,17 +90,14 @@ void loop()
 
         #ifdef ALPHASENSE_INCLUDE
             alphasense_histo();
-            delay(100);
 
-            if (count == 23)
+            if (count == 14)        // every 23 sec
             {
                 count_conf++;
                 if (count_conf == 26)       // every 598 secs, about 10 min
                 {
                     alphasense_config();
-                    delay(100);
                     alphasense_firmware();
-                    delay(100);
 
                     flag_alpha = true;
                     count_conf = 0;

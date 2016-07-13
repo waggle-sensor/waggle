@@ -1,0 +1,11 @@
+\section{Physical Connections and Interfaces}
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=4in]{g4353.png}
+\caption{Connections between the sensor boards and the sensor}
+\label{fig:physicalConnections}
+\end{center}
+\end{figure}
+
+Physical connections between sensor boards and sensors are shown in the Figure \ref{fig:physicalConnections}. Airsense board is connected to lightsense board through CAT6 cable, and chemsense board is connected to lightsense board through jumper cables. Airsense and lightsense deliver data through I2C communication, and chemsense board delivers data through serial3 communication. All sensor data from airsense, lightsense, and chemsense board are delivered to nodecontroller thourgh converter cable attached on airsense board using I2C communication.

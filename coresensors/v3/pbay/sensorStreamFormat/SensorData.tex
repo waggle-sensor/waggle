@@ -358,7 +358,7 @@ Light Intensity & raw integer & Bulk Curve Fitting & $\mu$W/cm$^2$ \\
 
 \subsubsection{ MMA8452Q}
 
-MMA8452Q is a digital 3-axis accelerometer. The accelerations in 3 orthogonal directions,
+MMA8452Q is a digital three-axis accelerometer. The accelerations in three orthogonal directions,
 x, y and z, as a multiple of acceleration due to gravity (g) are obtained from the sensor,
 and a vibration value (represented as multiple of g) is calculated using high-frequency
 time series data from the three axis.
@@ -485,7 +485,7 @@ Temperature & $^{\circ}$C & None & None \\
 \subsubsection{ HMC5883L}
 
 
-HMC5883L is a digital 3-axis magnetometer. The magnetic field strengths in 3 orthogonal directions,
+HMC5883L is a digital three-axis magnetometer. The magnetic field strengths in three orthogonal directions,
 x, y and z are obtained from the sensor.
 
 \begin{table}[H]
@@ -1231,7 +1231,7 @@ Byte[0] & Byte[1] & Bytes[2 -- 7]\\
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{ ADC Temperatures}
-This includes five parameters which are:
+Chemsense board measures temperature of sensor ADCs. This includes five parameters which are:
  
 \begin{itemize}
   \item CO ADC Temp
@@ -1249,7 +1249,7 @@ All of them give ADC temperature in 100ths of degree celsious. Format 2 is used 
 \hline
 % column1a & column2a \\
 \noalign{\hrule height 2pt}
-\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Sensor ID} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Source ID (0x21 $\sim$ 0x25)} &
 \multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x82} &
 \multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{temperature in Format 2}\\
 \noalign{\hrule height 2pt}
@@ -1269,13 +1269,13 @@ Byte[0] & Byte[1] & Bytes [2 -- 3] \\
 \multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-Processing Mode} &
 \multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-processed Output} \\
 \noalign{\hrule height 2pt}
-Temperature & raw integer & None & $^{\circ}$C $\times$ 100\\
+Temperature &  $^{\circ}$C $\times$ 100 & None & None\\
 \hline
 \end{tabular}
 \end{table}
 
 \subsubsection{ Accelerometer}
-The accelerations in 3 orthogonal directions, x, y and z, as a multiple of acceleration are obtained from the sensor, and a vibration index is calculated. Acceleration data are encoded in Format 2, and vibration index is encoded in Format 4. No specific descriptions for each sensor data are given for now (July 2016).
+The accelerations in three orthogonal directions, x, y and z, as a multiple of acceleration are obtained from the sensor, and a vibration index is calculated. Acceleration data are encoded in Format 2, and vibration index is encoded in Format 4. No specific descriptions for each sensor data are given for now (July 2016).
 
 \begin{table}[H]
 \centering
@@ -1285,10 +1285,10 @@ The accelerations in 3 orthogonal directions, x, y and z, as a multiple of accel
 \noalign{\hrule height 2pt}
 \multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x26} &
 \multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x89} &
-\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Acc. X in Format 6}&
-\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Acc. Y in Format 6}&
-\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Acc. Z in Format 6}&
-\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Vibration in Format 6}\\
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Acc. X in Format 2}&
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Acc. Y in Format 2}&
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Acc. Z in Format 2}&
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Vibration in Format 4}\\
 \noalign{\hrule height 2pt}
 Byte[0] & Byte[1] & Bytes[2 -- 3] & Bytes[4 -- 5] & Bytes[6 -- 7] & Bytes[8 -- 10]\\
 \hline
@@ -1320,7 +1320,7 @@ Vibration Index & raw integer & none & none \\
 
 
 \subsubsection{ Gyro}
-The gyro in 3 orthogonal directions, x, y and z, as a multiple of acceleration are obtained from the sensor, and a orientation index is calculated. Gyro data are encoded in Format 2, and orientation index is encoded in Format 4. No specific descriptions for each sensor data are given for now (July 2016).
+The gyro in three orthogonal directions, x, y and z, as a multiple of acceleration are obtained from the sensor, and a orientation index is calculated. Gyro data are encoded in Format 2, and orientation index is encoded in Format 4. No specific descriptions for each sensor data are given for now (July 2016).
 
 \begin{table}[H]
 \centering
@@ -1365,21 +1365,21 @@ Orientation Index & raw integer & none & none \\
 
 
 \subsection{Alpha Sensor:}
-In this document, concise Alpha sensor information is provided. For more information, refer `Firmware commands version 18.xls' and `OPC-N2 Manual Issue December 2015.pdf' at `waggle/docs/alphasense-opc-n2'.
+In this document, concise Alpha sensor information is provided. For more information, refer to `Firmware commands version 18.xls' and `OPC-N2 Manual Issue December 2015.pdf' at `waggle/docs/alphasense-opc-n2'.
 
 \subsubsection{ Histogram}
-This parameter provides various information as listed below.
+This parameter provides various information as listed below. \textbf{All data from the alpha sensor is LSB first}. 
 
 \begin{itemize}
 \item Bin Counts. Bin Counts (Bin0 - Bin15) are unsinged 16 bit integer variables (Bytes[2 -- 33]).
-\item An unsigned 8bit integer represent the average amount of time that particles sized in the stated bin took cross the laser beam of the sensor. Value 10 represent 3.33 $\mu$s (Bytes[36 -- 39]).
-\item The sample flow rate in ml/s is provided as float variable (Bytes[40 -- 43]).
-\item Temperature and Pressure alternating. Temperature is an unsigned 32bit integer that represents temperature in Celsious multiplied by 10. Pressure is an unsigned 32bit integer that represents pressure in pascals (Bytes[44 -- 45]).
+\item An unsigned 8-bit integer represents the average amount of time that particles sized in the stated bin took cross the laser beam of the sensor. Value 10 represents 3.33 $\mu$s (Bytes[36 -- 39]).
+\item The sample flow rate in ml/s is provided as a float variable (Bytes[40 -- 43]).
+\item Temperature and Pressure alternating. Temperature is an unsigned 32-bit integer that represents temperature in Celsious multiplied by 10. Pressure is an unsigned 32-bit integer that represents pressure in pascals (Bytes[44 -- 45]).
 \item Actual sampling period of a measure of the historgam in seconds provided as 4 bytes of float variables (Bytes[46 -- 49]).
-\item The least significat 16bit of the sum of the counts in all the histogram bins is provided by unsigned 16bit integers (Bytes[50 -- 51]).
-\item A float variable occupying 4 bytes for PM1. Units are $\mu$g/m$^3$ (Bytes[52 -- 55]).
-\item A float variable occupying 4 bytes for PM2.5. Units are $\mu$g/m$^3$ (Bytes[56 -- 59]).
-\item A float variable occupying 4 bytes for PM10. Units are $\mu$g/m$^3$ (Bytes[60 -- 63]).
+\item The least significat 16-bit of the sum of the counts in all the histogram bins is provided by unsigned 16bit integers (Bytes[50 -- 51]).
+\item A float variable occupying 4 bytes for PM1. Unit is $\mu$g/m$^3$ (Bytes[52 -- 55]).
+\item A float variable occupying 4 bytes for PM2.5. Unit is $\mu$g/m$^3$ (Bytes[56 -- 59]).
+\item A float variable occupying 4 bytes for PM10. Unit is $\mu$g/m$^3$ (Bytes[60 -- 63]).
 \end{itemize}
 
 \begin{table}[H]
@@ -1431,7 +1431,7 @@ PM10 & $\mu$g/m$^3$ & None & None\\
 
 
 \subsubsection{ Firmware}
-This parameter provides the Firmware version of the alpha sensor by unsigned 8bit integer.
+This parameter provides the Firmware version of the alpha sensor by unsigned 8-bit integer.
 
 \begin{table}[H]
 \centering
@@ -1466,19 +1466,29 @@ Firmware version & raw integer & None & None \\
 
 \subsubsection{ Configuration}
 This parameter provides various information as listed below.
-Since this configuration data is too long to fit into a sub-packet, the data seperated into four sections to packed into four different sub-packets. Thus each of sub-packet takes 64 Bytes of the data.
+Since this configuration data is too long to fit into a sub-packet, the data seperated into four sections to be packed into four sub-packets. Thus each of sub-packet takes 64 Bytes in length.
 
 \begin{itemize}
-\item Bin Boundaries (BB0 - BB14) are unsinged 16 bit integer variables, and two spare bytes (Bytes[0 -- 31] from Alpha sensor, Byte[2 -- 33] on sub-packet A).
-\item Bin Particle Volumes (BPV0 - BPV15) are float variables occupyting 4 bytes each (Bytes[32 -- 95] from Alpha sensor, Byte[34 -- 65] on sub-packet A and Byte[2 -- 33] on sub-packet B).
-\item Bin Particle Densities (BPD0 -- BPD15) are float variables occupying 4 bytes each (Bytes[96 -- 159] from Alpha sensor, Byte[34 -- 65] on sub-packet B and Byte[2 -- 33] on sub-packet C).
-\item Bin Sample Volume Weightings (BSVW0 -- BSVW15) are float variables occupying 4 bytes each (Bytes[160 -- 223] from Alpha sensor, Byte[34 -- 65] on sub-packet C and Byte[2 -- 33] on sub-packet D).
-\item Gain Scaling Coefficient (GSC) is float variable occupying 4 bytes (Bytes[224 -- 227] from Alpha sensor, Byte[34 -- 37] on sub-packet D).
-\item Sample flow rate is a float variable occupying 4 bytes (Bytes[228 -- 231] from Alpha sensor, Byte[38 -- 41] on sub-packet D).
-\item Laser DAC value is unsigned 8bit interger variable (Byte[232] from Alpha sensor, Byte[42] on sub-packet D).
-\item Fan DAC value is unsigned 8bit integer variable (Byte[233] from Alpha sensor, Byte[43] on sub-packet D).
-\item Time of Flight to Sample Flow Rate conversion factor is unsigned 8bit integer variable (Byte[234] from Alpha sensor, Byte[44] on sub-packet D).
-\item  21 spare bytes follow Configuration variables (Bytes[235 -- 255] from Alpha sensor, Byte[45 -- 65] on sub-packet D).
+\item Bin Boundaries (BB0 - BB14) are unsinged 16 bit integer variables, and two spare bytes \\
+(Bytes[0 -- 31] from Alpha sensor, Byte[2 -- 33] on sub-packet A).
+\item Bin Particle Volumes (BPV0 - BPV15) are float variables occupyting 4 bytes each \\
+(Bytes[32 -- 95] from Alpha sensor, Byte[34 -- 65] on sub-packet A and Byte[2 -- 33] on sub-packet B).
+\item Bin Particle Densities (BPD0 -- BPD15) are float variables occupying 4 bytes each \\
+(Bytes[96 -- 159] from Alpha sensor, Byte[34 -- 65] on sub-packet B and Byte[2 -- 33] on sub-packet C).
+\item Bin Sample Volume Weightings (BSVW0 -- BSVW15) are float variables occupying 4 bytes each \\
+(Bytes[160 -- 223] from Alpha sensor, Byte[34 -- 65] on sub-packet C and Byte[2 -- 33] on sub-packet D).
+\item Gain Scaling Coefficient (GSC) is float variable occupying 4 bytes \\
+(Bytes[224 -- 227] from Alpha sensor, Byte[34 -- 37] on sub-packet D).
+\item Sample flow rate is a float variable occupying 4 bytes \\
+(Bytes[228 -- 231] from Alpha sensor, Byte[38 -- 41] on sub-packet D).
+\item Laser DAC value is unsigned 8bit interger variable \\
+(Byte[232] from Alpha sensor, Byte[42] on sub-packet D).
+\item Fan DAC value is unsigned 8bit integer variable \\
+(Byte[233] from Alpha sensor, Byte[43] on sub-packet D).
+\item Time of Flight to Sample Flow Rate conversion factor is unsigned 8bit integer variable \\
+(Byte[234] from Alpha sensor, Byte[44] on sub-packet D).
+\item  21 spare bytes follow Configuration variables \\
+(Bytes[235 -- 255] from Alpha sensor, Byte[45 -- 65] on sub-packet D).
 \end{itemize}
 
 
@@ -1489,7 +1499,7 @@ Since this configuration data is too long to fit into a sub-packet, the data sep
 \hline
 % column1a & column2a \\
 \noalign{\hrule height 2pt}
-\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Sensor ID} &
+\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Source ID (0x30 $\sim$ 0x33)} &
 \multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0xC0} &
 \multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Raw values}\\
 \noalign{\hrule height 2pt}
@@ -1497,6 +1507,8 @@ Byte[0] & Byte[1] & Bytes [2 -- 65] \\
 \hline
 \end{tabular}
 \end{table}
+
+
 
 \begin{table}[H]
 \centering
@@ -1509,25 +1521,39 @@ Byte[0] & Byte[1] & Bytes [2 -- 65] \\
 \multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-Processing Mode} &
 \multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-processed Output} \\
 \noalign{\hrule height 2pt}
-Bin Boundaries & raw integer & None & None\\
+\rowcolor{white} \multicolumn{4}{|c|}{{Configuration Packet A (Source ID 0x30)}} \\
 \hline
-Bin Particle Volumes & raw float & None & None\\
+Bin Boundaries (32 Bytes) & raw integer & None & None\\
+\hline 
+Bin Particle Volumes A (32 Bytes) & raw float & None & None\\
 \hline
-Bin Particle Densities & raw float & None & None\\
+\rowcolor{white} \multicolumn{4}{|c|}{{Configuration Packet B (Source ID 0x31)}} \\
 \hline
-Bin Sample Volume Weightings & raw float & None & None\\
+Bin Particle Volumes B (32 Bytes) & raw float & None & None\\
 \hline
-Gain Scaling Coefficient & raw float & None & None\\
+Bin Particle Densities A (32 Bytes) & raw float & None & None\\
 \hline
-Sample Flow Rate & raw float & None & None\\
+\rowcolor{white} \multicolumn{4}{|c|}{{Configuration Packet C (Source ID 0x32)}} \\
 \hline
-Laser DAC & raw integer & None & None\\
+Bin Particle Densities B (32 Bytes) & raw float & None & None\\
 \hline
-Fan DAC & raw integer & None & None\\
+Bin Sample Volume Weightings A (32 Bytes) & raw float & None & None\\
 \hline
-Conversion factor & raw integer & None & None\\
+\rowcolor{white} \multicolumn{4}{|c|}{{Configuration Packet D (Source ID 0x33)}} \\
 \hline
-Spare Bytes & None & None & None\\
+Bin Sample Volume Weightings B (32 Bytes) & raw float & None & None\\
+\hline
+Gain Scaling Coefficient (4 Bytes) & raw float & None & None\\
+\hline
+Sample Flow Rate (4 Bytes) & raw float & None & None\\
+\hline
+Laser DAC (1 Byte) & raw integer & None & None\\
+\hline
+Fan DAC (1 Byte) & raw integer & None & None\\
+\hline
+Conversion factor (1 Byte) & raw integer & None & None\\
+\hline
+Spare Bytes & None (21 Byte) & None & None\\
 \hline
 \end{tabular}
 \end{table}

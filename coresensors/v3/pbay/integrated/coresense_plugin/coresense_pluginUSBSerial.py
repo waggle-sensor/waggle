@@ -515,11 +515,11 @@ class usbSerial ( threading.Thread ):
                                             self.failBuffer.put(self.data[0:_postscriptLoc])
                                             if self.failBuffer.qsize() > 20:
                                                 if self.failCount > 0:
-                                                    self.file.write(self.get())
+                                                    self.file.write(self.failBuffer.get())
                                                     self.file.write("\r\n")
                                                     self.failCount = self.failCount - 1
                                                 else:
-                                                    self.get()
+                                                    self.failBuffer.get()
                                         except:
                                             print "Error while writing file"
                                             print "failcount was ", self.failCount

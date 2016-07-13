@@ -182,7 +182,7 @@ def parse_sensor (sensor_id,sensor_data):
 
 #alpha histo
     elif sensor_id == '40':
-        print "Sensor:", sensor_id, sensor_list[int(sensor_id)], '@ ',
+        print "Sensor:", sensor_id, sensor_list[int(sensor_id)], '@ '
         alphasense_histo(sensor_data)
 
 #alpha firmware
@@ -192,7 +192,7 @@ def parse_sensor (sensor_id,sensor_data):
 
 #alpha configuration
     elif sensor_id == '42':
-        print "Sensor:", sensor_id, sensor_list[int(sensor_id)], '@ ',
+        print "Sensor:", sensor_id, sensor_list[int(sensor_id)], '@ '
         alpha_config = sensor_data
     elif sensor_id == '43':
         alpha_config.extend(sensor_data)
@@ -514,11 +514,13 @@ class usbSerial ( threading.Thread ):
                                             self.failBuffer.put(self.data[0:_postscriptLoc])
                                             if self.failBuffer.qsize() > 20:
                                                 if self.failCount > 0:
-                                                    self.file.write(self.get())
+                                                    self.file.write(self.failBuffer.get())
                                                     self.file.write("\r\n")
                                                     self.failCount = self.failCount - 1
                                                 else:
-                                                    self.get()
+                                                    self.failBuffer.get()
+
+                                                    get()
                                         except:
                                             print "Error while writing file"
                                             print "failcount was ", self.failCount

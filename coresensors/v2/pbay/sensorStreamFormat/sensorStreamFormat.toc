@@ -1,0 +1,51 @@
+\contentsline {section}{\numberline {1}Physical Connections and Interfaces}{3}
+\contentsline {section}{\numberline {2}Data Transmission}{3}
+\contentsline {subsection}{\numberline {2.1}Transmission Packet}{3}
+\contentsline {subsection}{\numberline {2.2}Data Packer CRC}{4}
+\contentsline {subsection}{\numberline {2.3}Data Sub-packets}{5}
+\contentsline {section}{\numberline {3}Data Formats}{6}
+\contentsline {subsection}{\numberline {3.1}Format 1}{6}
+\contentsline {subsection}{\numberline {3.2}Format 2}{6}
+\contentsline {subsection}{\numberline {3.3}Format 3}{6}
+\contentsline {subsection}{\numberline {3.4}Format 4}{7}
+\contentsline {subsection}{\numberline {3.5}Format 5}{7}
+\contentsline {subsection}{\numberline {3.6}Format 6}{7}
+\contentsline {subsection}{\numberline {3.7}Format 7}{8}
+\contentsline {subsection}{\numberline {3.8}Format 8}{8}
+\contentsline {section}{\numberline {4}Sub-packets}{9}
+\contentsline {subsection}{\numberline {4.1}Parameters}{9}
+\contentsline {subsection}{\numberline {4.2}Airsense:}{10}
+\contentsline {subsubsection}{\numberline {4.2.1} Airsense/Lightsense MAC address}{10}
+\contentsline {subsubsection}{\numberline {4.2.2} TMP112}{10}
+\contentsline {subsubsection}{\numberline {4.2.3} HTU21D}{11}
+\contentsline {subsubsection}{\numberline {4.2.4} BMP180}{11}
+\contentsline {subsubsection}{\numberline {4.2.5} PR103J2}{11}
+\contentsline {subsubsection}{\numberline {4.2.6} TSL250RD}{12}
+\contentsline {subsubsection}{\numberline {4.2.7} MMA8452Q}{12}
+\contentsline {subsubsection}{\numberline {4.2.8} SPV1840LR5H-B}{12}
+\contentsline {subsubsection}{\numberline {4.2.9} TSYS01}{13}
+\contentsline {subsection}{\numberline {4.3}Lightsense:}{13}
+\contentsline {subsubsection}{\numberline {4.3.1} HMC5883L}{13}
+\contentsline {subsubsection}{\numberline {4.3.2} HIH6130}{13}
+\contentsline {subsubsection}{\numberline {4.3.3} APDS-9006-020}{14}
+\contentsline {subsubsection}{\numberline {4.3.4} TSL260RD}{14}
+\contentsline {subsubsection}{\numberline {4.3.5} TSL250RD}{14}
+\contentsline {subsubsection}{\numberline {4.3.6} MLX75305}{15}
+\contentsline {subsubsection}{\numberline {4.3.7} ML8511}{15}
+\contentsline {subsubsection}{\numberline {4.3.8} TMP421}{15}
+\contentsline {subsubsection}{\numberline {4.3.9} SPV1840LR5H-B}{15}
+\contentsline {subsection}{\numberline {4.4}Chemsense:}{16}
+\contentsline {subsubsection}{\numberline {4.4.1} Total reducing gases}{16}
+\contentsline {subsubsection}{\numberline {4.4.2} Nitrogen dioxide}{16}
+\contentsline {subsubsection}{\numberline {4.4.3} Ozone}{16}
+\contentsline {subsubsection}{\numberline {4.4.4} Hydrogen sulphide}{17}
+\contentsline {subsubsection}{\numberline {4.4.5} Total oxidizing gases}{17}
+\contentsline {subsubsection}{\numberline {4.4.6} Carbon monoxide}{17}
+\contentsline {subsubsection}{\numberline {4.4.7} Sulfur dioxide}{17}
+\contentsline {subsubsection}{\numberline {4.4.8} SHT25}{18}
+\contentsline {subsubsection}{\numberline {4.4.9} LPS25H}{18}
+\contentsline {subsubsection}{\numberline {4.4.10} Si1145}{18}
+\contentsline {subsubsection}{\numberline {4.4.11} Chemsense MAC address}{19}
+\contentsline {subsubsection}{\numberline {4.4.12} ADC Temperatures}{19}
+\contentsline {subsubsection}{\numberline {4.4.13} Accelerometer}{19}
+\contentsline {subsubsection}{\numberline {4.4.14} Gyro}{20}
