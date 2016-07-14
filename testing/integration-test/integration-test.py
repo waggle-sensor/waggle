@@ -133,8 +133,11 @@ def get_sensorboard_mac_addresses():
     start = int(time.time())
     with serial.Serial('/dev/waggle_coresense', 115200, timeout=60) as ser:
         while int(time.time()) < start + 30:
-            line = ser.readline().decode('utf-8').rstrip()   # read a '\n' terminated line
+            try:
+                line = ser.readline().decode('utf-8').rstrip()   # read a '\n' terminated line
             #print(line)
+            except:
+                continue
             (sensorboard, _, mac) = line.partition('-')
             #print(sensorboard, mac)
             mac_array = mac.split(':')
