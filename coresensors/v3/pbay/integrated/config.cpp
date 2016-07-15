@@ -63,7 +63,7 @@
 #define AIRSENSE_INCLUDE 0x01
 #define LIGHTSENSE_INCLUDE 0x01
 #define CHEMSENSE_INCLUDE 0x01
-#define ALPHASENSE_INCLUDE 0x01
+// #define ALPHASENSE_INCLUDE 0x01
 //*************************************************************** IS BEING USED OR NOT
 
 // First byte for every formatted buffers **************************** ARE USED IN AIR/LIGHT/CHEM

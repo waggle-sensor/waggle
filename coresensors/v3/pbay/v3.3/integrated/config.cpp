@@ -53,7 +53,6 @@
 #define PIN_SPV_AMP         A5
 #define PIN_SVP_SPL         A6
 #define PIN_RAW_MIC         A9
-#define PIN_HIH4030         A10
 
 //** alphasense
 #define PIN_ALPHASENSE_SLAVE 33

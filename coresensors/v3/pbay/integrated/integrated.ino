@@ -72,7 +72,7 @@ void loop()
     lightsense_acquire();
     #endif
 
-    while (count < 24)       // every 24 sec
+    while (count < 15)       // every 24 sec
     {
         #ifdef CHEMSENSE_INCLUDE
         chemsense_acquire();
@@ -82,7 +82,7 @@ void loop()
         alphasense_histo();
         delay(100);
 
-        if (count == 23)
+        if (count == 14)        //every 23 sec
         {
             count_conf++;
             if (count_conf == 26)       // every 598 secs, about 10 min

@@ -89,6 +89,19 @@ void assemble_packet_whole()
     }
 #endif
 
+#ifdef HIH4030_include    // Append HIH4030
+    if((HIH4030[1] & 0x80) == 0x80)
+    {
+        for (i = 0; i < sizeof(HIH4030); i++)
+        {
+            packet_whole[packet_whole_index] = HIH4030[i];
+            // Increment index for whole packet
+            packet_whole_index++;
+        }
+        HIH4030[1] = (0 << 7) | LENGTH_FORMAT1;
+    }
+#endif
+
 
 #ifdef BMP180_include    // Append BMP180
     if ((BMP180[1] & 0x80) == 0x80)

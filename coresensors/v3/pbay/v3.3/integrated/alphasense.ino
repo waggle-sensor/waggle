@@ -27,7 +27,8 @@ void alphasense_on()
     digitalWrite(PIN_ALPHASENSE_SLAVE, LOW);
     delay(100);
 
-    while (val2 != 0x03)
+    count_alpha = count;
+    while (val2 != 0x03 && count < count_alpha + 5)
     {
         val1 = SPI.transfer(0x03);
         delay(100);
@@ -68,20 +69,23 @@ void alphasense_off()
 
 void alphasense_firmware()
 {
-    alpha_firmware[1] = (1 << 7) | LENGTH_ALPHA_FIRMWARE;
-
 	//** Get firmware    
     SPI.beginTransaction(set1);
     digitalWrite(PIN_ALPHASENSE_SLAVE, LOW);
     delay(100);
     
-    SPI.transfer(0x12);    // 0xF3
+    val1 = SPI.transfer(0x12);    // 0xF3
     delay(100);
 
-    alpha_firmware[2] = SPI.transfer(0x12);
-    delay(100);
-    alpha_firmware[3] = SPI.transfer(0x12);
-    delay(100);
+    if (val1 == 0xF3)
+    {
+        alpha_firmware[1] = (1 << 7) | LENGTH_ALPHA_FIRMWARE;
+
+        alpha_firmware[2] = SPI.transfer(0x12);
+        delay(100);
+        alpha_firmware[3] = SPI.transfer(0x12);
+        delay(100);
+    }
 
     digitalWrite(PIN_ALPHASENSE_SLAVE, HIGH);
     SPI.endTransaction();
@@ -95,20 +99,22 @@ void alphasense_firmware()
 
 void alphasense_histo()
 {
-    alpha_histogram[1] = (1 << 7) | LENGTH_ALPHA_HISTOGRAM;
-
     SPI.beginTransaction(set1);
     digitalWrite(PIN_ALPHASENSE_SLAVE, LOW);
     delay(100);
 
-    SPI.transfer(0x30);   // 0xF3
+    val1 = SPI.transfer(0x30);   // 0xF3
     delay(100);
     
-    for (i = 0; i < 62; i++)
+    if (val1 == 0xF3)
     {
-	    alpha_histogram[i + 2] = SPI.transfer(0x30);
-	    delay(100);
-	}
+        alpha_histogram[1] = (1 << 7) | LENGTH_ALPHA_HISTOGRAM;
+        for (i = 0; i < 62; i++)
+        {
+            alpha_histogram[i + 2] = SPI.transfer(0x30);
+            delay(100);
+        }
+    }
 
     digitalWrite(PIN_ALPHASENSE_SLAVE, HIGH);
     SPI.endTransaction();	
@@ -121,40 +127,43 @@ void alphasense_histo()
 
 void alphasense_config()
 {
-    alpha_config_a[1] = (1 << 7) | LENGTH_ALPHA_CONFIG_A;
-    alpha_config_b[1] = (1 << 7) | LENGTH_ALPHA_CONFIG_B;
-    alpha_config_c[1] = (1 << 7) | LENGTH_ALPHA_CONFIG_C;
-    alpha_config_d[1] = (1 << 7) | LENGTH_ALPHA_CONFIG_D;
-
     SPI.beginTransaction(set1);
     digitalWrite(PIN_ALPHASENSE_SLAVE, LOW);
     delay(100);
 
-    SPI.transfer(0x3C);   // 0xF3
+    val1 = SPI.transfer(0x3C);   // 0xF3
     delay(100);
     
-    for (i = 0; i < 64; i++)
+    if (val1 == 0xF3)
     {
-	    alpha_config_a[i + 2] = SPI.transfer(0x3C);
-	    delay(100);
-	}
+        alpha_config_a[1] = (1 << 7) | LENGTH_ALPHA_CONFIG_A;
+        alpha_config_b[1] = (1 << 7) | LENGTH_ALPHA_CONFIG_B;
+        alpha_config_c[1] = (1 << 7) | LENGTH_ALPHA_CONFIG_C;
+        alpha_config_d[1] = (1 << 7) | LENGTH_ALPHA_CONFIG_D;
 
-    for (i = 0; i < 64; i++)
-    {
-        alpha_config_b[i + 2] = SPI.transfer(0x3C);
-        delay(100);
-    }
+        for (i = 0; i < 64; i++)
+        {
+            alpha_config_a[i + 2] = SPI.transfer(0x3C);
+            delay(100);
+        }
 
-    for (i = 0; i < 64; i++)
-    {
-        alpha_config_c[i + 2] = SPI.transfer(0x3C);
-        delay(100);
-    }
+        for (i = 0; i < 64; i++)
+        {
+            alpha_config_b[i + 2] = SPI.transfer(0x3C);
+            delay(100);
+        }
 
-    for (i = 0; i < 64; i++)
-    {
-        alpha_config_d[i + 2] = SPI.transfer(0x3C);
-        delay(100);
+        for (i = 0; i < 64; i++)
+        {
+            alpha_config_c[i + 2] = SPI.transfer(0x3C);
+            delay(100);
+        }
+
+        for (i = 0; i < 64; i++)
+        {
+            alpha_config_d[i + 2] = SPI.transfer(0x3C);
+            delay(100);
+        }
     }
 
     digitalWrite(PIN_ALPHASENSE_SLAVE, HIGH);

@@ -6,6 +6,8 @@ import time
 import Queue
 import struct
 
+from RTlist import getRT
+
 _preamble = '\xaa'
 _postScript = '\x55'
 
@@ -208,30 +210,55 @@ def parse_sensor (sensor_id,sensor_data):
     elif sensor_id == '1':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
         print  format6(sensor_data)
+
 #"HTU21D" "HTU21D"
     elif sensor_id == '2':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
         print  format6(sensor_data[0:0+__lenFmt6]), format6(sensor_data[0+__lenFmt6:0+__lenFmt6+__lenFmt6])
+
 #"GP2Y1010AU0F" has been chaned into "HIH4030": how does the date format changed?
     elif sensor_id == '3':
+        HIH4030_val = format1(sensor_data)
+        humidity_HIH = (HIH4030_val * 90)/1023.00    # extended exposure to > 90% RH causes a reversible shift of 3% RH
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  format5(sensor_data)
+        print "{:2.2f}".format(humidity_HIH)
+
 #"BMP180" "BMP180"
     elif sensor_id == '4':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
         print  format6(sensor_data[0:0+__lenFmt6]), format5(sensor_data[0+__lenFmt6:0+__lenFmt6+__lenFmt5])
+
 #"PR103J2" "PR103J2"
     elif sensor_id == '5':
+        PR103J2_val = format1(sensor_data)
+        try:
+            temperature_PR = getRT(PR103J2_val)
+        except Exception, e:
+            print "ERROR", str(e)
+            pass
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  format1(sensor_data)
+        print "{:2.2f}".format(temperature_PR)
+        # print  PR103J2_val,
+        # print "{:10.2f}".format(47000*(1023.00/PR103J2_val - 1))
+
 #"TSL250RD" "TSL250RD"
     elif sensor_id == '6':
+        TSL250RD_1_val = format1(sensor_data)
+        try:
+            TSL250RD_1_voltage = (TSL250RD_1_val * 5)/1023.00
+            TSL250RD_1_irradiance = (TSL250RD_1_voltage * 1000 - 90.00)/64.00
+        except Exception, e:
+            print "ERROR", str(e)
+            pass
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  format1(sensor_data)
+        # print  "{:2.2f}".format(TSL250RD_1_val), "{:2.2f}".format(TSL250RD_1_voltage),
+        print "{:2.2f}".format(TSL250RD_1_irradiance)
+
 #"MMA8452Q" "MMA8452Q"
     elif sensor_id == '7':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
         print  format6(sensor_data[0:0+__lenFmt6]), format6(sensor_data[0+__lenFmt6:0+__lenFmt6*2]),format6(sensor_data[0+__lenFmt6*2:0+__lenFmt6*3]),format6(sensor_data[0+__lenFmt6*3:0+__lenFmt6*4])
+
 #"SPV1840LR5H-B" "SPV1840LR5H-B"
     elif sensor_id == '8':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
@@ -240,10 +267,15 @@ def parse_sensor (sensor_id,sensor_data):
     elif sensor_id == '9':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
         print  format6(sensor_data)
+
 #"HMC5883L" "HMC5883L"
     elif sensor_id == '10':
+        HMC_x = format8(sensor_data[0:2]) * 10
+        HMC_y = format8(sensor_data[2:4]) * 10
+        HMC_z = format8(sensor_data[4:6]) * 10
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  format8(sensor_data[0:2]),format8(sensor_data[2:4]),format8(sensor_data[4:6])
+        print  HMC_x, HMC_y, HMC_z
+
 #"HIH6130" "HIH6130"
     elif sensor_id == '11':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
@@ -319,18 +351,24 @@ def parse_sensor (sensor_id,sensor_data):
     elif sensor_id == '28':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
         print  str(format5(sensor_data))
+
 #"SHT25" "SHT25"
     elif sensor_id == '29':
+        SHT_temperature = format2(sensor_data[0:2]) / 100.00
+        SHT_humidity = format2(sensor_data[2:4]) / 100.00
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  format2(sensor_data[0:2]),format2(sensor_data[2:4])
+        print  SHT_temperature, SHT_humidity
 #"LPS25H" "LPS25H"
     elif sensor_id == '30':
+        LPS_temperature = format2(sensor_data[0:2]) / 100.00
+        LPS_humidity = format2(sensor_data[2:4])
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  format2(sensor_data[0:2]),format4(sensor_data[2:5])
+        print  LPS_temperature, LPS_humidity
 #"Si1145" "Si1145"
     elif sensor_id == '31':
         print "Sensor:", sensor_id, sensor_list[int(sensor_id)],'@ ',
         print  hex(format1(sensor_data[0:2])),hex(format2(sensor_data[2:4])),hex(format2(sensor_data[4:6]))
+
 #"Intel MAC" "Intel MAC"
     elif sensor_id == '32': # sensor id 0x20
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
@@ -338,26 +376,32 @@ def parse_sensor (sensor_id,sensor_data):
         for i in range(len(sensor_data)):
             data = data + str(format3(sensor_data[i]))
         print  data
+
 #"CO ADC temp"
     elif sensor_id == '33':
+        sensor33_val = format2(sensor_data) / 100.00
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  format2(sensor_data)
+        print  sensor33_val
 #"IAQ/IRR ADC temp"
     elif sensor_id == '34':
+        sensor34_val = format2(sensor_data) / 100.00
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  format2(sensor_data)
+        print  sensor34_val
 #"O3/NO2 ADC temp"
     elif sensor_id == '35':
+        sensor35_val = format2(sensor_data) / 100.00
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  format2(sensor_data)
+        print  sensor35_val
 #"SO2/H2S ADC temp"
     elif sensor_id == '36':
+        sensor36_val = format2(sensor_data) / 100.00
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  format2(sensor_data)
+        print  sensor36_val
 #"CO LMP temp"
     elif sensor_id == '37':
+        sensor37_val = format2(sensor_data) / 100.00
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  format2(sensor_data)
+        print  sensor37_val
 #"Accelerometer"
     elif sensor_id == '38':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
@@ -492,7 +536,7 @@ class usbSerial ( threading.Thread ):
                                     packetmismatch = 0
 
                                     for i in range(_preambleLoc + _datLenFieldDelta + 0x01, _postscriptLoc):
-                                        print ord(self.data[i]),
+                                        #print ord(self.data[i]),
                                         _packetCRC = ord(self.data[i]) ^ _packetCRC
                                         for j in range(8):
                                             if (_packetCRC & 0x01):
@@ -505,7 +549,7 @@ class usbSerial ( threading.Thread ):
                                         #ideally we should be able to throw the whole packet out, but purging just a byte for avoiding corner cases.
                                         del self.data[0]
                                     else:
-                                        print self.data
+                                        #print self.data
                                         print '-------------'
                                         print time.asctime(), _msg_seq_num, _postscriptLoc
                                         
@@ -519,8 +563,6 @@ class usbSerial ( threading.Thread ):
                                                     self.failCount = self.failCount - 1
                                                 else:
                                                     self.failBuffer.get()
-
-                                                    get()
                                         except:
                                             print "Error while writing file"
                                             print "failcount was ", self.failCount

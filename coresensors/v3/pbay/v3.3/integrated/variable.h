@@ -28,6 +28,7 @@ int KEY_NUM_ID = 0;
 int VAL_NUM_ID = 0;
 bool flag_KEY = false;
 bool flag_CHEM_WHILE = false;
+int count_chem = 0;
 
 //** lightsense
 float prev_HMC[3];
@@ -44,6 +45,7 @@ byte SPI_read_byte = 0;
 SPISettings set1(SPI_MAX_speed, MSBFIRST, SPI_MODE1);
 //** alphasensor which will be moved to down there and initialization (Jun 30)
 uint8_t val1, val2;
+int count_alpha = 0;
 
 //** packet_assembler
 int packet_whole_index = 0;

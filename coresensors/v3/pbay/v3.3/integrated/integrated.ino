@@ -45,6 +45,8 @@ void setup()
     Wire1.begin(I2C_SLAVE_ADDRESS);
     Wire1.onRequest(requestEvent);
 #endif
+    
+    Timer3.attachInterrupt(handler).setPeriod(1000000 * 1).start();
 
 #ifdef ALPHASENSE_INCLUDE
     alphasense_on();
@@ -52,12 +54,9 @@ void setup()
 
     alphasense_firmware();
     alphasense_config();
-    // Serial.print("configuration");
 
     flag_alpha = true;
 #endif
-    
-    Timer3.attachInterrupt(handler).setPeriod(1000000 * 1).start();
 }
 
 void loop()
@@ -94,7 +93,7 @@ void loop()
             if (count == 14)        // every 23 sec
             {
                 count_conf++;
-                if (count_conf == 26)       // every 598 secs, about 10 min
+                if (count_conf == 13)       // every 598 secs, about 10 min
                 {
                     alphasense_config();
                     alphasense_firmware();

@@ -12,6 +12,10 @@
     HTU21D myHumidity = HTU21D();
 #endif
 
+#ifdef HIH4030_include
+    #define PIN_HIH4030 A10
+#endif
+
 #ifdef  BMP180_include
     #include "./libs/Adafruit_Sensor-master/Adafruit_Sensor.h"
     #include "./libs/Adafruit_BMP085_Unified-master/Adafruit_BMP085_U.h"
@@ -25,8 +29,8 @@
 #endif
 
 #ifdef SPV1840LR5HB_include
-#define SPV_1_SPL 6
-#define SPV_1_AMP 5
+#define SPV_1_SPL 6  // no use
+#define SPV_1_AMP 5  // airsense
 #endif
 
 #ifdef TSL250RD_1_include
