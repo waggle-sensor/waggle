@@ -2729,11 +2729,11 @@ x = points[:,0]
 y = points[:,1]
 
 def getRT(PR103J2_val):
-	registance = 47000 * (1023.00/PR103J2_val - 1)  # R_t
+	resistance = 47000 * (1023.00/PR103J2_val - 1)  # R_t
 
 	for index, item in enumerate(y):
-		if item < registance:
-			ratio = (registance - y[index-1])/(y[index] - y[index-1])
+		if item < resistance:
+			ratio = (resistance - y[index-1])/(y[index] - y[index-1])
 			temperature = (x[index] - x[index-1]) * ratio + x[index-1]
 			return temperature
 			# print index-1, y[index-1], x[index-1], index, item, x[index]

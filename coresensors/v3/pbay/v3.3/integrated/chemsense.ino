@@ -689,7 +689,7 @@ void Carrier()
 #ifdef OIX_DEBUG
     else
     {
-        SerialUSB.print("YH ");
+        SerialUSB.print("SH ");
         SerialUSB.print(KEY[0]);
         SerialUSB.print(KEY[1]);
         SerialUSB.print(KEY[2]);

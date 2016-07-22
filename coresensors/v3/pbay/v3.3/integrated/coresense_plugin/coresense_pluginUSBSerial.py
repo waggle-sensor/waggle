@@ -115,18 +115,6 @@ def format8 (input):
         value = value * -1
     return value
 
-def parse_sensor (sensor_id,sensor_data):
-#"Board MAC" "Board MAC"
-    if sensor_id == '0':
-        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        data = ''
-        for i in range(len(sensor_data)):
-            data = data + str(format3(sensor_data[i]))
-        print  data
-        pass
-
-
-
 def decode17(data):
 
     data = bytearray(data)
@@ -175,11 +163,11 @@ def alphasense_histo(raw_data):
 def parse_sensor (sensor_id,sensor_data):
 #"Board MAC" "Board MAC"
     if sensor_id == '0':
-        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
+    #     print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
         data = ''
         for i in range(len(sensor_data)):
             data = data + str(format3(sensor_data[i]))
-        print  data
+        # print  data
         pass
 
 #alpha histo
@@ -213,15 +201,20 @@ def parse_sensor (sensor_id,sensor_data):
 
 #"HTU21D" "HTU21D"
     elif sensor_id == '2':
+        HTU21D_temp = format6(sensor_data[0:0+__lenFmt6])
+        HTU21D_humid = format6(sensor_data[0+__lenFmt6:0+__lenFmt6+__lenFmt6])
+        HTU21D_compensate_humid = HTU21D_humid - (25 - HTU21D_temp) * 0.15
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  format6(sensor_data[0:0+__lenFmt6]), format6(sensor_data[0+__lenFmt6:0+__lenFmt6+__lenFmt6])
+        print "{:2.2f}".format(HTU21D_temp), "{:2.2f}".format(HTU21D_compensate_humid)
+#        print  format6(sensor_data[0:0+__lenFmt6]), format6(sensor_data[0+__lenFmt6:0+__lenFmt6+__lenFmt6])
 
-#"GP2Y1010AU0F" has been chaned into "HIH4030": how does the date format changed?
+#"HIH4030": how does the date format changed? "GP2Y1010AU0F" has been chaned
     elif sensor_id == '3':
         HIH4030_val = format1(sensor_data)
-        humidity_HIH = (HIH4030_val * 90)/1023.00    # extended exposure to > 90% RH causes a reversible shift of 3% RH
+        HIH4030_voltage = (HIH4030_val * 5.00) / 1023.00    # extended exposure to > 90% RH causes a reversible shift of 3% RH
+        HIH4030_humidity = (HIH4030_voltage - 0.85) * 100.00 / 3.00 # PUT DARK LEVEL VOLTAGE 0.85 FOR NOW
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print "{:2.2f}".format(humidity_HIH)
+        print "{:2.2f}".format(HIH4030_humidity)
 
 #"BMP180" "BMP180"
     elif sensor_id == '4':
@@ -241,28 +234,25 @@ def parse_sensor (sensor_id,sensor_data):
         # print  PR103J2_val,
         # print "{:10.2f}".format(47000*(1023.00/PR103J2_val - 1))
 
-#"TSL250RD" "TSL250RD"
-    elif sensor_id == '6':
-        TSL250RD_1_val = format1(sensor_data)
-        try:
-            TSL250RD_1_voltage = (TSL250RD_1_val * 5)/1023.00
-            TSL250RD_1_irradiance = (TSL250RD_1_voltage * 1000 - 90.00)/64.00
-        except Exception, e:
-            print "ERROR", str(e)
-            pass
-        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        # print  "{:2.2f}".format(TSL250RD_1_val), "{:2.2f}".format(TSL250RD_1_voltage),
-        print "{:2.2f}".format(TSL250RD_1_irradiance)
+# #"TSL250RD" "TSL250RD"
+#     elif sensor_id == '6':
+#         TSL250RD_1_val = format1(sensor_data)
+#         TSL250RD_1_voltage = (TSL250RD_1_val * 5)/1023.00
+#         TSL250RD_1_irradiance = (TSL250RD_1_voltage - 0.09)/0.064
+#         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
+#         print "{:2.2f}".format(TSL250RD_1_val), "{:2.2f}".format(TSL250RD_1_voltage),
+#         print "{:2.2f}".format(TSL250RD_1_irradiance)
 
-#"MMA8452Q" "MMA8452Q"
-    elif sensor_id == '7':
-        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  format6(sensor_data[0:0+__lenFmt6]), format6(sensor_data[0+__lenFmt6:0+__lenFmt6*2]),format6(sensor_data[0+__lenFmt6*2:0+__lenFmt6*3]),format6(sensor_data[0+__lenFmt6*3:0+__lenFmt6*4])
+# #"MMA8452Q" "MMA8452Q"
+#     elif sensor_id == '7':
+#         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
+#         print  format6(sensor_data[0:0+__lenFmt6]), format6(sensor_data[0+__lenFmt6:0+__lenFmt6*2]),format6(sensor_data[0+__lenFmt6*2:0+__lenFmt6*3]),format6(sensor_data[0+__lenFmt6*3:0+__lenFmt6*4])
 
-#"SPV1840LR5H-B" "SPV1840LR5H-B"
-    elif sensor_id == '8':
-        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  format1(sensor_data)
+# #"SPV1840LR5H-B" "SPV1840LR5H-B"
+#     elif sensor_id == '8':
+#         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
+#         print  format1(sensor_data)
+
 #"TSYS01" "TSYS01"
     elif sensor_id == '9':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
@@ -280,33 +270,59 @@ def parse_sensor (sensor_id,sensor_data):
     elif sensor_id == '11':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
         print  format6(sensor_data[0:2]), format6(sensor_data[2:4])
-#"APDS-9006-020" "APDS-9006-020"
-    elif sensor_id == '12':
-        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  format1(sensor_data)
-#"TSL260RD" "TSL260RD"
-    elif sensor_id == '13':
-        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  format1(sensor_data)
-#"TSL250RD" "TSL250RD"
-    elif sensor_id == '14':
-        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  format1(sensor_data)
-#"MLX75305" "MLX75305"
-    elif sensor_id == '15':
-        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  format1(sensor_data)
-#"ML8511" "ML8511"
-    elif sensor_id == '16':
-        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  format1(sensor_data)
+
+# ######## Dark voltages of ADPS, MLX75305, TSL260 and TSL250s are needed to be measured!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# #"APDS-9006-020" "APDS-9006-020"  480 - 6400 nm wave
+#     elif sensor_id == '12':
+#         APDS_OUT = (format1(sensor_data) / 32768.0000) * 2.048
+#         APDS_voltage = APDS_OUT * 5.00 / 2.00
+#         APDS_lux = (APDS_voltage / 0.002) / 0.147
+#         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
+#         print format1(sensor_data), "{:5.2f}".format(APDS_voltage), "{:5.2f}".format(APDS_lux)
+
+# ######## Dark voltages of ADPS, MLX75305, TSL260 and TSL250s are needed to be measured!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# #"TSL260RD" "TSL260RD"  940 nm wave
+#     elif sensor_id == '13':
+#         TSL260RD_OUT = (format1(sensor_data) / 32768.0000) * 2.048
+#         TSL260RD_voltage = TSL260RD_OUT * 5.00 / 2.00
+#         TSL260RD_val = (TSL260RD_voltage - 0.01) / 0.058
+#         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
+#         print format1(sensor_data), "{:5.2f}".format(TSL260RD_voltage), "{:5.2f}".format(TSL260RD_val)
+
+# ######## Dark voltages of ADPS, MLX75305, TSL260 and TSL250s are needed to be measured!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# #"TSL250RD" "TSL250RD" 640 nm wave
+#     elif sensor_id == '14':
+#         TSL250RD_2_OUT = (format1(sensor_data) / 32768.0000) * 2.048
+#         TSL250RD_2_voltage = TSL250RD_2_OUT * 5.00 / 2.00
+#         TSL250RD_2_val = (TSL250RD_2_voltage - 0.09) / 0.064
+#         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
+#         print format1(sensor_data), "{:5.2f}".format(TSL250RD_2_voltage), "{:5.2f}".format(TSL250RD_2_val)
+
+# ######## Dark voltages of ADPS, MLX75305, TSL260 and TSL250s are needed to be measured!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# #"MLX75305" "MLX75305" 500 - 1000 nm wave
+#     elif sensor_id == '15':
+#         MLX75305_OUT = (format1(sensor_data) / 32768.0000) * 2.048
+#         MLX75305_voltage = MLX75305_OUT * 5.00 / 2.00
+#         MLX75305_val = (MLX75305_voltage - 0.160) / 0.007
+#         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
+#         print format1(sensor_data), "{:5.2f}".format(MLX75305_voltage), "{:5.2f}".format(MLX75305_val)
+
+# ######## Offset term related to climate, geographic condition!!!!!!!!!!!!!!!!!!!!!
+# #"ML8511" "ML8511"  typically 365 nm wave (300 - 380 nm wave)
+#     elif sensor_id == '16':
+#         ML8511_OUT = (format1(sensor_data) / 32768.0000) * 2.048
+#         ML8511_voltage = ML8511_OUT * 5.00 / 2.00
+#         ML8511_val = ML8511_voltage * 12.49 #- 14.3635  # offset term which will be determined by climate, geographic condition
+#         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
+#         print format1(sensor_data), "{:5.2f}".format(ML8511_voltage), "{:5.2f}".format(ML8511_val)
+
 #"D6T" has been removed
-    elif sensor_id == '17':
-        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        data = ''
-        for i in xrange(len(sensor_data)/2):
-            data = data + str(format6(sensor_data[2*i:2*(i+1)])) + ' '
-        print  data
+    # elif sensor_id == '17':
+    #     print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
+    #     data = ''
+    #     for i in xrange(len(sensor_data)/2):
+    #         data = data + str(format6(sensor_data[2*i:2*(i+1)])) + ' '
+    #     print  data
 #"MLX90614" "MLX90614"
     elif sensor_id == '18':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
@@ -319,97 +335,100 @@ def parse_sensor (sensor_id,sensor_data):
     #elif sensor_id == '20':
         #print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
         #print  format1(sensor_data)
-#"Total reducing gases" "Total reducing gases"
-    elif sensor_id == '21':
-        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print str(format5(sensor_data))
-#"Ethanol (C2H5-OH)" has been removed
-    #elif sensor_id == '22':
-        #print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        #print str(format5(sensor_data))
-#"Nitrogen Di-oxide (NO2)" "Nitrogen Di-oxide (NO2)"
-    elif sensor_id == '23':
-        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  str(format5(sensor_data))
-#"Ozone (03)" "Ozone (03)"
-    elif sensor_id == '24':
-        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  str(format5(sensor_data))
-#"Hydrogen Sulphide (H2S)" "Hydrogen Sulphide (H2S)"
-    elif sensor_id == '25': #sensor id 0x19
-        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  str(format5(sensor_data))
-#"Total Oxidizing gases" "Total Oxidizing gases"
-    elif sensor_id == '26':
-        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  str(format5(sensor_data))
-#"Carbon Monoxide (C0)" "Carbon Monoxide (C0)"
-    elif sensor_id == '27':
-        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  str(format5(sensor_data))
-#"Sulfur Dioxide (SO2)" "Sulfur Dioxide (SO2)"
-    elif sensor_id == '28':
-        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  str(format5(sensor_data))
+
+
+# #"Total reducing gases" "Total reducing gases"
+#     elif sensor_id == '21':
+#         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
+#         print str(format5(sensor_data))
+# #"Ethanol (C2H5-OH)" has been removed
+#     #elif sensor_id == '22':
+#         #print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
+#         #print str(format5(sensor_data))
+# #"Nitrogen Di-oxide (NO2)" "Nitrogen Di-oxide (NO2)"
+#     elif sensor_id == '23':
+#         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
+#         print  str(format5(sensor_data))
+# #"Ozone (03)" "Ozone (03)"
+#     elif sensor_id == '24':
+#         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
+#         print  str(format5(sensor_data))
+# #"Hydrogen Sulphide (H2S)" "Hydrogen Sulphide (H2S)"
+#     elif sensor_id == '25': #sensor id 0x19
+#         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
+#         print  str(format5(sensor_data))
+# #"Total Oxidizing gases" "Total Oxidizing gases"
+#     elif sensor_id == '26':
+#         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
+#         print  str(format5(sensor_data))
+# #"Carbon Monoxide (C0)" "Carbon Monoxide (C0)"
+#     elif sensor_id == '27':
+#         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
+#         print  str(format5(sensor_data))
+# #"Sulfur Dioxide (SO2)" "Sulfur Dioxide (SO2)"
+#     elif sensor_id == '28':
+#         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
+#         print  str(format5(sensor_data))
+
 
 #"SHT25" "SHT25"
     elif sensor_id == '29':
         SHT_temperature = format2(sensor_data[0:2]) / 100.00
-        SHT_humidity = format2(sensor_data[2:4]) / 100.00
+        SHT_humidity = format1(sensor_data[2:4]) / 100.00
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
         print  SHT_temperature, SHT_humidity
 #"LPS25H" "LPS25H"
     elif sensor_id == '30':
         LPS_temperature = format2(sensor_data[0:2]) / 100.00
-        LPS_humidity = format2(sensor_data[2:4])
+        LPS_pressrue = format4(sensor_data[2:5])
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  LPS_temperature, LPS_humidity
+        print  LPS_temperature, LPS_pressure
 #"Si1145" "Si1145"
-    elif sensor_id == '31':
-        print "Sensor:", sensor_id, sensor_list[int(sensor_id)],'@ ',
-        print  hex(format1(sensor_data[0:2])),hex(format2(sensor_data[2:4])),hex(format2(sensor_data[4:6]))
+    # elif sensor_id == '31':
+    #     print "Sensor:", sensor_id, sensor_list[int(sensor_id)],'@ ',
+    #     print  hex(format1(sensor_data[0:2])),hex(format2(sensor_data[2:4])),hex(format2(sensor_data[4:6]))
 
 #"Intel MAC" "Intel MAC"
-    elif sensor_id == '32': # sensor id 0x20
-        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        data = ''
-        for i in range(len(sensor_data)):
-            data = data + str(format3(sensor_data[i]))
-        print  data
+    # elif sensor_id == '32': # sensor id 0x20
+    #     print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
+    #     data = ''
+    #     for i in range(len(sensor_data)):
+    #         data = data + str(format3(sensor_data[i]))
+    #     print  data
 
-#"CO ADC temp"
-    elif sensor_id == '33':
-        sensor33_val = format2(sensor_data) / 100.00
-        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  sensor33_val
-#"IAQ/IRR ADC temp"
-    elif sensor_id == '34':
-        sensor34_val = format2(sensor_data) / 100.00
-        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  sensor34_val
-#"O3/NO2 ADC temp"
-    elif sensor_id == '35':
-        sensor35_val = format2(sensor_data) / 100.00
-        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  sensor35_val
-#"SO2/H2S ADC temp"
-    elif sensor_id == '36':
-        sensor36_val = format2(sensor_data) / 100.00
-        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  sensor36_val
-#"CO LMP temp"
-    elif sensor_id == '37':
-        sensor37_val = format2(sensor_data) / 100.00
-        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  sensor37_val
+# #"CO ADC temp"
+#     elif sensor_id == '33':
+#         sensor33_val = format2(sensor_data) / 100.00
+#         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
+#         print  sensor33_val
+# #"IAQ/IRR ADC temp"
+#     elif sensor_id == '34':
+#         sensor34_val = format2(sensor_data) / 100.00
+#         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
+#         print  sensor34_val
+# #"O3/NO2 ADC temp"
+#     elif sensor_id == '35':
+#         sensor35_val = format2(sensor_data) / 100.00
+#         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
+#         print  sensor35_val
+# #"SO2/H2S ADC temp"
+#     elif sensor_id == '36':
+#         sensor36_val = format2(sensor_data) / 100.00
+#         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
+#         print  sensor36_val
+# #"CO LMP temp"
+#     elif sensor_id == '37':
+#         sensor37_val = format2(sensor_data) / 100.00
+#         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
+#         print  sensor37_val
 #"Accelerometer"
-    elif sensor_id == '38':
-        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  format2(sensor_data[0:2]),format2(sensor_data[2:4]),format2(sensor_data[4:6]),format4(sensor_data[6:9])
-#"Gyroscope"
-    elif sensor_id == '39':
-        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  format2(sensor_data[0:2]),format2(sensor_data[2:4]),format2(sensor_data[4:6]),format4(sensor_data[6:9])
+#     elif sensor_id == '38':
+#         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
+#         print  format2(sensor_data[0:2]),format2(sensor_data[2:4]),format2(sensor_data[4:6]),format4(sensor_data[6:9])
+# #"Gyroscope"
+#     elif sensor_id == '39':
+#         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
+#         print  format2(sensor_data[0:2]),format2(sensor_data[2:4]),format2(sensor_data[4:6]),format4(sensor_data[6:9])
 
 
 

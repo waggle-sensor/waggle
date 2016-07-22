@@ -251,27 +251,27 @@ void airsense_acquire (void)
 //     #endif
 
 
-#ifdef TSYS01_include
-    TSYS01_read();
-    format6(Temp_float[0]);  // Put it into format 2
+// #ifdef TSYS01_include
+//     TSYS01_read();
+//     format6(Temp_float[0]);  // Put it into format 2
 
-    TSYS01[1] = (1 << 7) | LENGTH_FORMAT6;
-    TSYS01[2] = formatted_data_buffer[0];
-    TSYS01[3] = formatted_data_buffer[1];
-#ifdef SERIAL_DEBUG
-    // SerialUSB.print("TSYS01: ");
-    // SerialUSB.println(Temp_float[0]);
+//     TSYS01[1] = (1 << 7) | LENGTH_FORMAT6;
+//     TSYS01[2] = formatted_data_buffer[0];
+//     TSYS01[3] = formatted_data_buffer[1];
+// #ifdef SERIAL_DEBUG
+//     // SerialUSB.print("TSYS01: ");
+//     // SerialUSB.println(Temp_float[0]);
 
-    for (i = 0; i < LENGTH_FORMAT6; i++)
-        SerialUSB.print(formatted_data_buffer[i],HEX);
-#endif
-#endif
+//     for (i = 0; i < LENGTH_FORMAT6; i++)
+//         SerialUSB.print(formatted_data_buffer[i],HEX);
+// #endif
+// #endif
 }
 
 
-#ifdef MMA8452Q_include
-void MMA8452Q_acquire()
+void airsense_ac()
 {
+#ifdef MMA8452Q_include
     MMA8452_read();           //************ From mma84521.ino
 
     if (repeat == 1)
@@ -344,28 +344,19 @@ void MMA8452Q_acquire()
     //     SerialUSB.println(0);
     // #endif   
     }
-}
 #endif
 
 
 #ifdef SPV1840LR5HB_include
-void SPV1840LR5HB_acquire()
-{
     SPV1840LR5HB[1] = (1 << 7) | LENGTH_FORMAT1;
 
-    Temp_uint16 = analogRead(PIN_RAW_MIC);
-    SerialUSB.println(Temp_uint16);
-
-    Temp_uint16 = analogRead(SPV_1_AMP);
-    SerialUSB.println(Temp_uint16);
-
     Temp_uint16 = analogRead(PIN_SPV_AMP);
-    SerialUSB.println(Temp_uint16);
+    // SerialUSB.println(Temp_uint16);
 
-    Temp_uint16 = analogRead(PIN_SVP_SPL);
-    SerialUSB.println(Temp_uint16);
+    // Temp_uint16 = analogRead(PIN_SVP_SPL);  // zero always
+    // SerialUSB.println(Temp_uint16);
 
-    SerialUSB.println(" ");
+    // SerialUSB.println(" ");
 
     format1(Temp_uint16);
     SPV1840LR5HB[2] = formatted_data_buffer[0];
@@ -414,5 +405,31 @@ void SPV1840LR5HB_acquire()
     // for (i = 0; i < LENGTH_FORMAT1; i++)
     //     SerialUSB.print(formatted_data_buffer[i],HEX);
     // #endif
+
+#ifdef TSYS01_include
+    TSYS01_read();
+
+    if (repeat == 1)
+        prev_TSYS01 = Temp_float[0];
+    else
+    {
+        curr_TSYS01 = (Temp_float[0] + prev_TSYS01)/2;
+        prev_TSYS01 = curr_TSYS01;
+
+        format6(curr_TSYS01); 
+
+        TSYS01[1] = (1 << 7) | LENGTH_FORMAT6;
+        TSYS01[2] = formatted_data_buffer[0];
+        TSYS01[3] = formatted_data_buffer[1];
+    }
+
+#ifdef SERIAL_DEBUG
+    // SerialUSB.print("TSYS01: ");
+    // SerialUSB.println(Temp_float[0]);
+
+    for (i = 0; i < LENGTH_FORMAT6; i++)
+        SerialUSB.print(formatted_data_buffer[i],HEX);
+#endif
+#endif
 }
 #endif

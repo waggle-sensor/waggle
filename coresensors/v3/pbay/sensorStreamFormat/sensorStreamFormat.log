@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2016.7.5)  13 JUL 2016 13:42
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2016.7.5)  19 JUL 2016 11:48
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1234,7 +1234,11 @@ LaTeX Font Info:    Try loading font information for T1+cmss on input line 44.
 (/usr/share/texlive/texmf-dist/tex/latex/base/t1cmss.fd
 File: t1cmss.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
-(./sensorStreamFormat.aux)
+(./sensorStreamFormat.aux
+
+LaTeX Warning: Label `section:parameterUnits' multiply defined.
+
+)
 \openout1 = `sensorStreamFormat.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 63.
@@ -1524,42 +1528,39 @@ Overfull \hbox (6.9511pt too wide) in paragraph at lines 1515--1559
  []
 
 ) (./sensorDataUnits.tex [23]
-LaTeX Font Info:    Try loading font information for TS1+cmr on input line 47.
-
-(/usr/share/texlive/texmf-dist/tex/latex/base/ts1cmr.fd
-File: ts1cmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
-)
-Underfull \vbox (badness 10000) detected at line 56
+Underfull \vbox (badness 10000) detected at line 59
  []
 
-[24]) [25] (./sensorStreamFormat.aux) ) 
+[24]) [25] (./sensorStreamFormat.aux)
+
+LaTeX Warning: There were multiply-defined labels.
+
+ ) 
 Here is how much of TeX's memory you used:
- 23402 strings out of 495028
- 458081 string characters out of 6181498
+ 23376 strings out of 495028
+ 457150 string characters out of 6181498
  526355 words of memory out of 5000000
- 26138 multiletter control sequences out of 15000+600000
- 16437 words of font info for 37 fonts, out of 8000000 for 9000
+ 26117 multiletter control sequences out of 15000+600000
+ 15334 words of font info for 35 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  68i,12n,77p,10431b,1335s stack positions out of 5000i,500n,10000p,200000b,80000s
- </home/spark/.texmf-var/fonts/pk/ljfour
-/jknappen/ec/tcrm1000.600pk> </home/spark/.texmf-var/fonts/pk/ljfour/jknappen/e
-c/ecrm0700.600pk> </home/spark/.texmf-var/fonts/pk/ljfour/jknappen/ec/ectt0900.
-600pk> </home/spark/.texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1200.600pk> </ho
-me/spark/.texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1000.600pk> </home/spark/.t
-exmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1440.600pk> </home/spark/.texmf-var/fo
-nts/pk/ljfour/jknappen/ec/ecrm1000.600pk> </home/spark/.texmf-var/fonts/pk/ljfo
-ur/jknappen/ec/eccc1200.600pk> </home/spark/.texmf-var/fonts/pk/ljfour/jknappen
-/ec/eccc1440.600pk> </home/spark/.texmf-var/fonts/pk/ljfour/jknappen/ec/ecxc144
-0.600pk> </home/spark/.texmf-var/fonts/pk/ljfour/jknappen/ec/ecxc2488.600pk></u
-sr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/sha
-re/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texl
-ive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texm
-f-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist
-/fonts/type1/public/amsfonts/cm/cmsy7.pfb>
-Output written on sensorStreamFormat.pdf (26 pages, 1208122 bytes).
+ </home/spark/.texmf-var/fonts/pk/ljfour/jknappen/ec/ectt0900.600pk> </home/s
+park/.texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1200.600pk> </home/spark/.texmf
+-var/fonts/pk/ljfour/jknappen/ec/ecbx1000.600pk> </home/spark/.texmf-var/fonts/
+pk/ljfour/jknappen/ec/ecbx1440.600pk> </home/spark/.texmf-var/fonts/pk/ljfour/j
+knappen/ec/ecrm1000.600pk> </home/spark/.texmf-var/fonts/pk/ljfour/jknappen/ec/
+eccc1200.600pk> </home/spark/.texmf-var/fonts/pk/ljfour/jknappen/ec/eccc1440.60
+0pk> </home/spark/.texmf-var/fonts/pk/ljfour/jknappen/ec/ecxc1440.600pk> </home
+/spark/.texmf-var/fonts/pk/ljfour/jknappen/ec/ecxc2488.600pk></usr/share/texliv
+e/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texm
+f-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/
+fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/ty
+pe1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/pu
+blic/amsfonts/cm/cmsy7.pfb>
+Output written on sensorStreamFormat.pdf (26 pages, 1207254 bytes).
 PDF statistics:
- 491 PDF objects out of 1000 (max. 8388607)
- 122 compressed objects within 2 object streams
+ 481 PDF objects out of 1000 (max. 8388607)
+ 114 compressed objects within 2 object streams
  0 named destinations out of 1000 (max. 500000)
  18 words of extra memory for PDF output out of 10000 (max. 10000000)
 

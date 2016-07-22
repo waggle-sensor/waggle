@@ -61,30 +61,25 @@ void setup()
 
 void loop()
 {
-#ifdef AIRSENSE_INCLUDE
-    airsense_acquire();
-#endif
+// #ifdef AIRSENSE_INCLUDE
+//     airsense_acquire();
+// #endif
 
-#ifdef LIGHTSENSE_INCLUDE
-    lightsense_acquire();
-#endif
+// #ifdef LIGHTSENSE_INCLUDE
+//     lightsense_acquire();
+// #endif
 
     while (count < 15)       // every 24 sec
     {
         if (repeat < count)
         {
             repeat++;
-        #ifdef HMC5883L_include
-            HMC5883L_acquire();
+        #ifdef AIRSENSE_INCLUDE
+            airsense_acquire();
         #endif
 
         #ifdef LIGHTSENSE_INCLUDE
-        #ifdef SPV1840LR5HB_include
-            SPV1840LR5HB_acquire();
-        #endif
-        #ifdef MMA8452Q_INCLUDE
-            MMA8452Q_acquire();
-        #endif
+            lightsense_acquire();
         #endif
 
         #ifdef ALPHASENSE_INCLUDE

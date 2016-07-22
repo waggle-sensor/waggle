@@ -28,10 +28,10 @@
     #define A2D_PRJ103J2 0
 #endif
 
-#ifdef SPV1840LR5HB_include
-#define SPV_1_SPL 6  // no use
-#define SPV_1_AMP 5  // airsense
-#endif
+// #ifdef SPV1840LR5HB_include
+// #define SPV_1_SPL 6  // no use
+// #define SPV_1_AMP 5  // airsense
+// #endif
 
 #ifdef TSL250RD_1_include
     #define A2D_TSL250RD_1 1

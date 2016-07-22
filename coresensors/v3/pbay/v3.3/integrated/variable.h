@@ -39,6 +39,8 @@ int prev_SPV = 0;
 int curr_SPV = 0;
 float prev_MMA[4];
 float curr_MMA[4];
+float prev_TSYS01 = 0;
+float curr_TSYS01 = 0;
 
 //** alphasensor
 byte SPI_read_byte = 0;
