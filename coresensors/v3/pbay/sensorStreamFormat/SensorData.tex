@@ -197,7 +197,7 @@ Byte[0] & Byte[1] & Bytes[2 -- 3]  & Bytes [4 -- 5]\\
 \noalign{\hrule height 2pt}
 Temperature & $^{\circ}$C & None & None \\
 \hline
-Relative Humidity & \%RH & None & None \\
+Relative Humidity & \%RH & Linear Fitting & \%RH \\
 \hline
 \end{tabular}
 \end{table}
@@ -753,40 +753,40 @@ UV Light Intensity & raw integer & Bulk Curve Fitting &  $\mu$W/cm$^2$\\
 \end{tabular}
 \end{table}
 
-\subsubsection{ MLX90614}
-MLX90614 is an IR digital temperature sensor, which provides the temperature values
-in centigrade.
-
-\begin{table}[H]
-\centering
-\begin{tabular}{|c|c|c|c|}
-\hline
-% column1a & column2a \\
-\noalign{\hrule height 2pt}
-\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x12} &
-\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x82} &
-\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Temperature in Format 6} \\
-\noalign{\hrule height 2pt}
-Byte[0] & Byte[1] & Bytes[2 -- 3]\\
-\hline
-\end{tabular}
-\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{|c|c|c|c|}
-\hline
-% column1a & column2a \\
-\noalign{\hrule height 2pt}
-\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Value} &
-\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Board Output} &
-\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-Processing Mode} &
-\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-processed Output} \\
-\noalign{\hrule height 2pt}
-Temperature & $^{\circ}$C & None & None \\
-\hline
-\end{tabular}
-\end{table}
+% \subsubsection{ MLX90614}
+% MLX90614 is an IR digital temperature sensor, which provides the temperature values
+% in centigrade.
+% 
+% \begin{table}[H]
+% \centering
+% \begin{tabular}{|c|c|c|c|}
+% \hline
+% % column1a & column2a \\
+% \noalign{\hrule height 2pt}
+% \multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x12} &
+% \multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{0x82} &
+% \multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Temperature in Format 6} \\
+% \noalign{\hrule height 2pt}
+% Byte[0] & Byte[1] & Bytes[2 -- 3]\\
+% \hline
+% \end{tabular}
+% \end{table}
+% 
+% \begin{table}[H]
+% \centering
+% \begin{tabular}{|c|c|c|c|}
+% \hline
+% % column1a & column2a \\
+% \noalign{\hrule height 2pt}
+% \multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Value} &
+% \multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Board Output} &
+% \multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-Processing Mode} &
+% \multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-processed Output} \\
+% \noalign{\hrule height 2pt}
+% Temperature & $^{\circ}$C & None & None \\
+% \hline
+% \end{tabular}
+% \end{table}
 
 \subsubsection{ TMP421}
 TMP421 is a digital temperature sensor, which provides the temperature values
@@ -1123,9 +1123,9 @@ Byte[0] & Byte[1] & Bytes[2 -- 3] & Bytes[4 -- 5]\\
 \multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-Processing Mode} &
 \multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-processed Output} \\
 \noalign{\hrule height 2pt}
-Temperature & raw integer & Bulk Curve Fitting & $^{\circ}$C \\
+Temperature & 100ths of $^{\circ}$C & Linear Fitting & $^{\circ}$C \\
 \hline
-Humidity & raw integer & Bulk Curve Fitting & \%RH \\
+Humidity & 100ths of \%RH & Linear Fitting & \%RH \\
 \hline
 \end{tabular}
 \end{table}
@@ -1163,9 +1163,9 @@ Byte[0] & Byte[1] & Bytes[2 -- 3] & Bytes[4 -- 6]\\
 \multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-Processing Mode} &
 \multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-processed Output} \\
 \noalign{\hrule height 2pt}
-Temperature & raw integer & Bulk Curve Fitting & $^{\circ}$C \\
+Temperature & 100ths of $^{\circ}$C & Linear Fitting & $^{\circ}$C \\
 \hline
-Atmospheric Pressure & raw integer & Bulk Curve Fitting & hPa \\
+Atmospheric Pressure & Pa & None & None \\
 \hline
 \end{tabular}
 \end{table}
@@ -1173,8 +1173,7 @@ Atmospheric Pressure & raw integer & Bulk Curve Fitting & hPa \\
 
 \subsubsection{ Si1145}
 
-Si1145 is an Ultra-violet sensor. The raw output from the sensor is encoded Format 1.
-
+Si1145 is a light sensor. The raw output values from the sensor are encoded in Format 1, but the values need to be ignored since chemsense board firmware is not completed (July 2016).
 
 
 \begin{table}[H]
@@ -1203,7 +1202,11 @@ Byte[0] & Byte[1] & Bytes[2 -- 3]\\
 \multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-Processing Mode} &
 \multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-processed Output} \\
 \noalign{\hrule height 2pt}
-UV Intensity & raw integer & Bulk Curve Fitting &  $\mu$W/cm$^2$\\
+UV Intensity & fixed hex integer & None & None \\
+\hline
+VL Intensity & fixed hex  integer & None & None \\
+\hline
+IR Intensity & fixed hex  integer & None & None \\
 \hline
 \end{tabular}
 \end{table}
@@ -1269,7 +1272,7 @@ Byte[0] & Byte[1] & Bytes [2 -- 3] \\
 \multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-Processing Mode} &
 \multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Post-processed Output} \\
 \noalign{\hrule height 2pt}
-Temperature &  $^{\circ}$C $\times$ 100 & None & None\\
+Temperature &  100ths of $^{\circ}$C & Linear Fitting & $^{\circ}$C \\
 \hline
 \end{tabular}
 \end{table}

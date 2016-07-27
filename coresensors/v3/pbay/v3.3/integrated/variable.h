@@ -8,6 +8,9 @@ int count = 0;
 int count_conf = 0;
 int repeat = 0;
 
+bool serial_available = false;
+bool modulate_beat_rate = false;
+
 
 //************ common variables air, light, chem, TMP112, TSYS01, MMA84521, HIH, sensor_setup
 uint16_t Temp_uint16;

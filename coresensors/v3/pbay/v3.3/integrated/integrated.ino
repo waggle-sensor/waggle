@@ -61,13 +61,13 @@ void setup()
 
 void loop()
 {
-// #ifdef AIRSENSE_INCLUDE
-//     airsense_acquire();
-// #endif
+#ifdef AIRSENSE_INCLUDE
+    airsense_acquire();
+#endif
 
-// #ifdef LIGHTSENSE_INCLUDE
-//     lightsense_acquire();
-// #endif
+#ifdef LIGHTSENSE_INCLUDE
+    lightsense_acquire();
+#endif
 
     while (count < 15)       // every 24 sec
     {
@@ -75,12 +75,21 @@ void loop()
         {
             repeat++;
         #ifdef AIRSENSE_INCLUDE
-            airsense_acquire();
+            airsense_avg();
         #endif
+        // #ifdef HMC5883L_include
+        //     HMC5883L_acquire();
+        // #endif
+        // #ifdef SPV1840LR5HB_include
+        //     SPV1840LR5HB_acquire();
+        // #endif
 
         #ifdef LIGHTSENSE_INCLUDE
-            lightsense_acquire();
+            lightsense_avg();
         #endif
+        // #ifdef MMA8452Q_INCLUDE
+        //     MMA8452Q_acquire();
+        // #endif
 
         #ifdef ALPHASENSE_INCLUDE
             alphasense_histo();
@@ -176,9 +185,28 @@ void requestEvent()
 
 void handler()
 {
+    // notice of existence of coresense boards. 
+    // when a system has air/light/chemsense, 
+    // voltage level will be changed every second (like up-down-up-down). 
+    // But when chemsense board is missing, 
+    // voltage level will be changed every two seconds (up-up-down-down-up-up-down-down).
     count++;
-    UP_DOWN =! UP_DOWN;
-    digitalWrite(PIN_HBT, UP_DOWN);
+    modulate_beat_rate =! modulate_beat_rate;
+
+    if (serial_available == true)       // chemsense takes about 20 secs to boot up
+    {
+        UP_DOWN =! UP_DOWN;
+        // SerialUSB.print(UP_DOWN);
+        digitalWrite(PIN_HBT, UP_DOWN);
+    }
+    else
+    {
+        if (modulate_beat_rate == true)
+            UP_DOWN =! UP_DOWN;
+            // SerialUSB.print(UP_DOWN);
+            digitalWrite(PIN_HBT, UP_DOWN);
+    }
+
 }
 
 

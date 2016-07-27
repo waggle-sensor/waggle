@@ -269,7 +269,7 @@ void airsense_acquire (void)
 }
 
 
-void airsense_ac()
+void airsense_avg()
 {
 #ifdef MMA8452Q_include
     MMA8452_read();           //************ From mma84521.ino

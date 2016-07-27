@@ -5,7 +5,7 @@
 \begin{center}
 \rowcolors{2}{white}{black!5}
 \begin{longtable}{|l|l|l|l|}
-\caption{Sensor and Parameter units both in raw and processed format}
+\caption{Sensor units both in raw and processed format}
 \label{table:parameterUnits} \\
 
 \hline \rowcolor{white} \multicolumn{1}{|l|}{\textbf{Sensor/Parameter}} & \multicolumn{1}{l|}{\textbf{Raw Units}} & \multicolumn{1}{l|}{\textbf{Processed Units}} & \multicolumn{1}{l|}{\textbf{Comments}} \\ \hline
@@ -45,7 +45,7 @@
     TSYS01 & \degree C & \degree C & \\
     
     \hline \rowcolor{white} \multicolumn{4}{|c|}{{Lightsense board}} \\ \hline
-    HMC5883L & G, G, G & mT, mT, mT & \\
+    HMC5883L & G, G, G & G, G, G & \\
     HIH6130 & \degree C, \%RH & \degree C, \%RH & \\
     APDS-9006-020 & integer & $\mu$w/m$^2$ & \\ % **finalize after discussion with EVS**\\
     TSL260RD & integer & $\mu$w/m$^2$ & \\ % **finalize after discussion with EVS** \\
@@ -66,17 +66,17 @@
     Total oxidizing gases & & & \\ % integer & concentration & **finalize after discussion with EVS**\\
     Carbon monoxide & & & \\ % integer & ppm & Quadratic equation with calibrated weights\\
     Sulfur dioxide & & & \\ % integer & ppm & Quadratic equation with calibrated weights\\
-    Sensirion (SHT25) & & \degree C, \%RH & \\ % \degree C, RH \% & \degree C, RH \% & \\
-    LPS25H & & \degree C, Pa & \\ % \degree C $\times$ 100, RH \% & \degree C, RH \% & \\
-    Si1145 & & & \\
+    Sensirion (SHT25) & 100ths of \degree C, 100ths of \%RH & \degree C, \%RH & \\ % \degree C, RH \% & \degree C, RH \% & \\
+    LPS25H & 100ths of \degree C, Pa & \degree C, Pa & \\ % \degree C $\times$ 100, RH \% & \degree C, RH \% & \\
+    Si1145 & fixed value & & firmware is not completed \\
 %     Bosh & hPa& hPa & \\
     Intel MAC address & No Units & No Units & \\ % 6 Octets in hex notation separated by `:'\\
 %     Sensor status (health) & No Units & No Units & 4 bytes of sensor health data\\
-    CO ADV temp & 100 $\times$ \degree C & \degree C & \\
-    IAQ IRR ADC temp & 100 $\times$ \degree C & \degree C & \\
-    O3 NO2 ADC temp & 100 $\times$ \degree C & \degree C & \\
-    SO2 H2S ADC temp & 100 $\times$ \degree C & \degree C & \\
-    CO LMP temp & 100 $\times$ \degree C & \degree C & \\
+    CO ADV temp & 100ths of \degree C & \degree C & \\
+    IAQ IRR ADC temp & 100ths of \degree C & \degree C & \\
+    O3 NO2 ADC temp & 100ths of \degree C & \degree C & \\
+    SO2 H2S ADC temp & 100ths of \degree C & \degree C & \\
+    CO LMP temp & 100ths of \degree C & \degree C & \\
     Accelerometer & & & \\
     Gyro & & & \\
     
@@ -93,4 +93,201 @@
 \end{longtable}
 \end{center}
 
+
 \subsection{ conversion processure}
+
+\subsection{Airsense:}
+\subsubsection{ TMP112} \label{ssec:first}
+
+Raw ouput of TMP112 is a digital 12-bit value. Coresensor firmware calculates temperature in centigrade using 12-bits of two Bytes reading of the sensor output. \\
+
+{\centering
+  temperature \((\degree C)\) = usigned integer form of 12-bit digital output $\times$ 0.0625\par
+}
+
+\bigbreak
+The equation refers the resolution for the Temperature ADC in Internal Temperature mode which is 0.0625 \(\degree C/count\).
+
+\subsubsection{ HTU21D}
+Raw output values of HTU21D are digital 12-bits / 8-bits (for Temperature / relative humidity) from default configuration. Coresensor firmware calculates  temperature and humidity in centigrade and relative humidity using relevant bits of two Bytes reading of the sensor output.
+
+{\centering
+ \[ \text{temperature \((\degree C)\)} = \frac{\text{usigned integer form of digital output}}{2^{16}} \times 175.72 - 46.85 \] 
+ \[ \text{humidity \((\%RH)\)} = \frac{\text{usigned integer form of digital output}}{2^{16}} \times 125 - 6 \]
+ \par
+ }
+
+\bigbreak
+ The calculated humidity is re-calculated in sensor plugin using temperature coefficient compensation equation. \\
+
+{\centering
+ humidity \((\%RH)\) = unsigned integer form of  - (25 - temperature) $\times$ 0.15
+ \par
+}
+
+\bigbreak
+The equation refers temperature coefficient of the HTU21D(F) in 0.15 \(\%RH/\degree C\).
+
+\subsubsection{ HIH4030}
+
+Raw output of HIH4030 is an interger indicating output voltage from the sensor which is mapped into an integer value between 0 and 1023. Output voltages between 0 and 5 volts from the sensor will be mapped into integer values between 0 and 1023. Coresensor firmware delivers the two Bytes of raw integer value, and coresense plugin calculates humidity using output voltage from the sensor.
+
+{\centering
+ \[ \text{output voltage \((V)\)} = \frac{\text{usinged integer raw output} \times 5}{1023} \] 
+ \[ \text{humidity \((\%RH)\)} = (\text{output voltage} - 0.85) \times \frac{100}{3} \]
+ \par
+ }
+\bigbreak
+The slope term (\(\frac{100}{3}\)) and y-intercept (0.85) are comming from a graph given in the HIH4030 sensor datasheet (figure 4). This slope and y-intercept can be different depending on temperature.
+
+\subsubsection{ BMP180}
+
+Raw ouput values of BMP180 are 16-bit/24-bit value (temperature/pressure), and the values are post-processed through a library provided by Adafruit Industries. Sensor output values from the coresensor firmware are temperature in centigrade and barometric pressure in pascal.
+
+
+\subsubsection{ PR103J2}
+
+Raw output of PR103J2 is an interger indicating output voltage from the sensor which is mapped into integer values between 0 and 1023. Output voltages between 0 and 5 volts from the sensor will be mapped into integer values between 0 and 1023. Coresensor firmware delivers the two Bytes of raw integer value, and coresensor plugin calculates temperature using output voltage from the sensor and resistance-temperature look-up table (PR103J2 R-T table).
+
+{\centering
+ \[ \text{output voltage } (V) = \frac{\text{usinged integer raw output} \times 5}{1023} \] 
+ \[ \text{resistance } (\Omega) = 47000 \times \left(\frac{1023}{\text{voltage}} - 1\right) \]
+ \par
+ }
+
+
+\subsubsection{ TSL250RD}
+
+Raw output of TSL250RD is an interger indicating output voltage from the sensor which is mapped into integer values between 0 and 1023. Output voltages between 0 and 5 volts from the sensor will be mapped into integer values between 0 and 1023. Coresensor firmware delivers the two Bytes of raw integer value, and coresensor plugin calculates irradiance of visible light in micro-watt per square meter.
+
+{\centering
+ \[ \text{output voltage }(V) = \frac{\text{usinged integer raw output} \times 5}{1023} \] 
+ \[ \text{irradiance } (\mu W/m^2) = \frac{\text{output voltage} - 0.09}{0.064} \]
+ \par
+ }
+ 
+\bigbreak
+The equation refers irradiance responsivity of TSL250RD which is 0.064 \(mV/(\mu W/cm^2\)), and 0.09 is output voltage of dark condition (without any light -- NEED TO BE CHECKED).
+
+\subsubsection{ MMA8452Q}
+
+Raw ouput values of MMA8452Q are actual g value, this depends on scale being set.
+
+\subsubsection{ SPV1840LR5H-B}
+
+\subsubsection{ TSYS01}
+
+Raw ouput value of TSYS01 is post-processed value through a library provided by  Free Software Foundation, Inc.. Sensor output from the coresensor firmware is temperature in centigrade.
+
+
+\subsection{Lightsense:}
+\subsubsection{ HMC5883L}
+
+Raw ouput values of HMC5883L are post-processed values through a library provided by Adafruit Industries. Sensor output values from the coresensor firmware are acceleration values in Gauss.
+
+\subsubsection{ HIH6130}
+
+Raw ouput values of HIH6130 are 14-bit temperature and humidity values. Coresensor firmware calculates temperature and humidity in centigrade and relative humidity using 14-bits of two Bytes reading of the sensor output.
+
+{\centering
+ \[ \text{temperature (\degree C)} = \frac{\text{usigned integer form of digital output}}{2^{14} - 2} \times 165 - 40 \] 
+ \[ \text{humidity (\%RH)} = \frac{\text{usigned integer form of digital output}}{2^{14} - 2} \times 100 \]
+ \par
+ }
+
+
+\subsubsection[MCP3426]{ APDS-9006-020, TSL260RD, TSL250RD, MLX75305, ML8511 : \\ using MCP3426}
+
+Raw output value of MCP3426 is an digital output which is proportional to the input voltage and programmable gain amplifier (PGA) settings (see schematics v3.1). Default setting of PGA is x1, and we are using 16-bits resolution. Coresensor firmware delivers the two Bytes of raw integer value, and coresensor plugin calculates irradiance of light in micro-watt per square meter using voltage output from each sensor. The voltage value need to be calculated regarding to the airsense circuit schematics and output modification equation for MCP3426 circuit.
+
+{\centering
+ \[ \text{input value of MCP3426 }(V) = \frac{\text{unsigned integer}}{\text{maximum 16-bit code} + 1} * \text{reference voltage} \]
+ \[ \text{output voltage from a sensor} = \frac{\text{input value of MCP3426} * 5}{2} \]
+ \par
+ }
+
+\bigbreak
+The equation refers maximum n-bit code which is \( 2^{n - 1} - 1 \), and in case of 16-bit code, the number is 32767. Also reference voltage of MCP3426 is 2.048 \(V\). According to schematics v3.1, the output voltage from each sensor is divided, so the original output voltage can be calculated by the equation given above.
+
+\paragraph{a. APDS-9006-020}
+ 
+\paragraph{b. TSL260RD}
+
+\paragraph{c. TSL250RD}
+
+\paragraph{d. MLX75305}
+
+\paragraph{e. ML8511}
+
+%\subsubsection{ MLX90614}
+
+\subsubsection{ TMP421}
+
+Raw ouput value of TMP421 is 16-bit value, and the value is post-processed through a library provided by Free Software Foundation, Inc.. Sensor output from the coresensor firmware is temperature in centigrade.
+
+% \subsubsection{ Lightsense MAC address}
+
+\subsection{Chemsense:}
+\subsubsection{ Total reducing gases}
+
+\subsubsection{ Nitrogen dioxide}
+
+\subsubsection{ Ozone}
+
+\subsubsection{ Hydrogen sulphide}
+
+\subsubsection{ Total oxidizing gases}
+
+\subsubsection{ Carbon monoxide}
+
+\subsubsection{ Sulfur dioxide}
+
+\subsubsection{ SHT25}
+
+Raw output values of SHT25 through chemsense firmware are 100ths of temperature in centigrade and 100ths of humidity value.
+
+{\centering
+ \[ \text{temperature }(\degree C) = \frac{\text{output value}}{100} \]
+ \[ \text{humidity }(\% RH) = \frac{\text{output value}}{100} \]
+ \par
+ }
+
+\subsubsection{ LPS25H}
+
+Raw output values of LPS25H through chemsense firmware are 100ths of temperature in centigrade and pressure in Pa.
+
+{\centering 
+ \[ \text{temperature }(\degree C) = \frac{\text{output value}}{100} \]
+}
+
+\subsubsection{ Si1145}
+
+Si1145 is a light sensor, and Chemsense board firmware is not completed, so the fixed hex values need to be ignored (July 2016).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{ ADC Temperatures}
+Chemsense board measures temperature of sensor ADCs. All of them give ADC temperature in 100ths of degree celsious. This includes five parameters which are:
+ 
+\begin{itemize}
+  \item CO ADC Temp
+  \item IAQ/IRR ADC Temp
+  \item O3/NO2 ADC Temp
+  \item SO2/H2S ADC Temp
+  \item CO CMT Temp
+\end{itemize}
+
+
+{\centering 
+ \[ \text{temperature }(\degree C) = \frac{\text{output value}}{100} \]
+}
+
+\subsubsection{ Accelerometer}
+
+\subsubsection{ Gyro}
+
+\subsection{Alpha Sensor:}
+\subsubsection{ Histogram}
+
+\subsubsection{ Firmware}
+
+\subsubsection{ Configuration}

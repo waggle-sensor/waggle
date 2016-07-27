@@ -190,10 +190,9 @@ void lightsense_acquire ()
 
 }
 
-
-#ifdef HMC5883L_include
-void HMC5883L_acquire()
+void lightsense_avg()
 {
+#ifdef HMC5883L_include
     sensors_event_t event;
     HMC5883_Magnetometer.getEvent(&event);
 
@@ -251,6 +250,6 @@ void HMC5883L_acquire()
     SerialUSB.print(", Z:");
     SerialUSB.println(event.magnetic.z);
 #endif
-}
 #endif
+}
 

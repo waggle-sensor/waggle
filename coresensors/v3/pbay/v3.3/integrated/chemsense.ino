@@ -124,6 +124,7 @@ void chemsense_acquire()
         while (flag_CHEM_WHILE == true && count < count_chem + 4)
         {
             INPUT_BYTE = Serial3.read();     //read the incoming byte
+            serial_available = true;
 
             if (INPUT_BYTE >= 'a' && INPUT_BYTE <= 'z' ||
                 INPUT_BYTE >= 'A' && INPUT_BYTE <= 'Z' ||
@@ -170,6 +171,8 @@ void chemsense_acquire()
             }
         }
     }
+    else
+        serial_available = false;
 }
 
 void Carrier()

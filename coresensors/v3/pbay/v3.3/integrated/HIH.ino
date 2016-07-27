@@ -22,7 +22,7 @@ void HIH_fetch_humidity_temperature()
     Temp_int[1] = (((unsigned int)Temp_byte[3]) << 8) | Temp_byte[4];
     Temp_int[1] = Temp_int[1] / 4;
 
-    Temp_float[1] = (float) Temp_int[0]  / 16382.0 * 100; //* 6.10e-3;
-    Temp_float[0] = (float) Temp_int[1] * 165 / 16382.0 - 40.0; //1.007e-2 - 40.0;
+    Temp_float[1] = (float) Temp_int[0]  / 16382.0 * 100;
+    Temp_float[0] = (float) Temp_int[1] * 165 / 16382.0 - 40.0;
 }
 #endif
