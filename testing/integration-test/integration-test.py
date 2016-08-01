@@ -133,8 +133,11 @@ def get_sensorboard_mac_addresses():
     start = int(time.time())
     with serial.Serial('/dev/waggle_coresense', 115200, timeout=60) as ser:
         while int(time.time()) < start + 30:
-            line = ser.readline().decode('utf-8').rstrip()   # read a '\n' terminated line
+            try:
+                line = ser.readline().decode('utf-8').rstrip()   # read a '\n' terminated line
             #print(line)
+            except:
+                continue
             (sensorboard, _, mac) = line.partition('-')
             #print(sensorboard, mac)
             mac_array = mac.split(':')
@@ -254,6 +257,16 @@ if __name__ == '__main__':
     summary['video_devices']['list'] = []
 
     for video_device in video_devices:
+        
+        video_device_number = None
+        matchObj = re.match( r'video(\d+)', video_device, re.M|re.I)
+        if matchObj:
+            video_device_number = matchObj.group(1).rstrip()
+            
+        if not video_device_number:
+            print('video_device_number not detected: %s ' % (video_device))
+            continue
+            
         print("--------------------------- %s", video_device)
         command  = 'udevadm info --query=all /dev/%s | grep "P: /devices/virtual" | wc -l' % (video_device)
         print(command)
@@ -294,6 +307,23 @@ if __name__ == '__main__':
         video_device_obj['max_resolution_x'] = max_resolution_x
         video_device_obj['max_resolution_y'] = max_resolution_y
         video_device_obj['max_resolution_size'] = max_resolution_size
+        
+        
+        test_file = "/tmp/best.jpg"
+        fswebcam_command = 'fswebcam -r %sx%s --jpeg 95 -D %s %s' % (max_resolution_x, max_resolution_y, video_device_number, test_file)
+        if fswebcam_command:
+            ignore_result = get_command_output(fswebcam_command)
+        
+            statinfo = os.stat(test_file)
+            video_device_obj['test_file_size'] = "%d" % (statinfo.st_size)
+        else:
+            video_device_obj['test_file_size'] = 'NA'
+            
+        try:
+            os.remove(test_file)
+        except:
+            pass
+            
         summary['video_devices']['list'].append(video_device_obj)
     # get highest resolution
     # v4l2-ctl --list-formats-ext -d /dev/video0
