@@ -366,7 +366,7 @@ void airsense_avg()
     SerialUSB.print("SPV1840LR5HB: ");
     SerialUSB.println(Temp_uint16);
     #endif
-    // #endif
+#endif
     // long SPV_1_AMPV[100];
     // double SPV_1_AMPV_AVG = 0;
 
@@ -432,4 +432,3 @@ void airsense_avg()
 #endif
 #endif
 }
-#endif

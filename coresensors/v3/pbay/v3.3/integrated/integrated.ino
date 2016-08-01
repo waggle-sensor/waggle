@@ -77,19 +77,10 @@ void loop()
         #ifdef AIRSENSE_INCLUDE
             airsense_avg();
         #endif
-        // #ifdef HMC5883L_include
-        //     HMC5883L_acquire();
-        // #endif
-        // #ifdef SPV1840LR5HB_include
-        //     SPV1840LR5HB_acquire();
-        // #endif
 
         #ifdef LIGHTSENSE_INCLUDE
             lightsense_avg();
         #endif
-        // #ifdef MMA8452Q_INCLUDE
-        //     MMA8452Q_acquire();
-        // #endif
 
         #ifdef ALPHASENSE_INCLUDE
             alphasense_histo();

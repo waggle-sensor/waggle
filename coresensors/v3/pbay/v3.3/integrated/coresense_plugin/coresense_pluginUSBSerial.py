@@ -324,9 +324,9 @@ def parse_sensor (sensor_id,sensor_data):
     #         data = data + str(format6(sensor_data[2*i:2*(i+1)])) + ' '
     #     print  data
 #"MLX90614" "MLX90614"
-    elif sensor_id == '18':
-        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  format6(sensor_data)
+    # elif sensor_id == '18':
+    #     print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
+    #     print  format6(sensor_data)
 #"TMP421" "TMP421"
     elif sensor_id == '19':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',

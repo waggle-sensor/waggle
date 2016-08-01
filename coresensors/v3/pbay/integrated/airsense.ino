@@ -248,7 +248,7 @@ void airsense_acquire (void)
     for (i = 0; i < LENGTH_FORMAT1; i++)
         SerialUSB.print(formatted_data_buffer[i],HEX);
     #endif
-    #endif
+#endif
 
 
 #ifdef TSYS01_include
