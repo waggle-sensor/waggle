@@ -158,6 +158,9 @@ def sensor_data(in_str, s_id, entry):
 		# elif s_id == 28:
 		# 	data[1] = float(data[1]) / 32.48
 
+		if 21 <= s_id <= 28:
+			data[1] = float(data[1])/100.00
+
 		what_time[entry][s_id][data[0]] = data[1]
 
 if __name__ == "__main__":
