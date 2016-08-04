@@ -51,7 +51,7 @@
     TSL260RD & integer & $\mu$w/m$^2$ & \\ % **finalize after discussion with EVS** \\
     TSL250RD & integer & $\mu$w/m$^2$ & \\ % **finalize after discussion with EVS** \\
     MLX75305 & integer & $\mu$w/m$^2$ & \\ % **finalize after discussion with EVS** \\
-    ML8511 & integer & $\mu$w/m$^2$ & \\ % **finalize after discussion with EVS** \\
+    ML8511 & integer & UV index & \\ % **finalize after discussion with EVS** \\
 %     D6T & \textit{Seventeen} \degree C values & \textit{Seventeen} \degree C values & \\
 %    MLX90614 & \degree F & \degree C & \\
     TMP421 & \degree C & \degree C & \\
@@ -264,12 +264,12 @@ Raw output value of MLX75305 is an analog voltage which is inverse proportional 
 Raw output value of ML8511 is an analog voltage which is proportional to the irradiance. The output voltage from the sensor has been calculated though the equations given in section 5.4.3.
 
 {\centering
- \[ \text{irradiance } (\mu W/m^2) = (\text{output current} - 1.489) * 12.49 \]
+ \[ \text{UV index } = \frac{\text{output current}}{1.489)} * 1.49916 \]
  \par
  }
  
  \bigbreak
- The equation refers to proportional factor which is 12.49 \(mV/(\mu W/cm^2\)), and 0.0996 is output voltage of dark condition, which is initial offset (without any light -- NEED TO BE CHECKED).
+ The equation refers to proportional factor which is 1.49916. This factor is calculated regarding UV Index facfor related to solar irradiance spectrum, McKinlay-Differ Erythermal action spectrum (see ML8511 datasheet). And 1.489 is voltage output difference between when the sensor is at dark condition (no light) and at 1 \(mW/m^2\) irradiance (NEED TO BE CHECKED).
 
 %\subsubsection{ MLX90614}
 

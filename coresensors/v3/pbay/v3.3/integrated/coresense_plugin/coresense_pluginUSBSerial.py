@@ -276,7 +276,8 @@ def parse_sensor (sensor_id,sensor_data):
     elif sensor_id == '12':
         APDS_OUT = (format1(sensor_data) / 32768.0000) * 2.048
         APDS_voltage = APDS_OUT * 5.00 / 2.00
-        APDS_lux = (APDS_voltage / 0.002) / 0.147
+        APDS_current = APDS_voltage / 0.005   # the unit for current result is uA
+        APDS_lux = (APDS_current - 0.000156) * 2.5 #/ 0.002 # * 0.147
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
         print format1(sensor_data), "{:5.2f}".format(APDS_voltage), "{:5.2f}".format(APDS_lux)
 
@@ -285,7 +286,7 @@ def parse_sensor (sensor_id,sensor_data):
     elif sensor_id == '13':
         TSL260RD_OUT = (format1(sensor_data) / 32768.0000) * 2.048
         TSL260RD_voltage = TSL260RD_OUT * 5.00 / 2.00
-        TSL260RD_val = (TSL260RD_voltage - 0.01) / 0.058
+        TSL260RD_val = (TSL260RD_voltage - 0.005313) / 0.058
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
         print format1(sensor_data), "{:5.2f}".format(TSL260RD_voltage), "{:5.2f}".format(TSL260RD_val)
 
@@ -294,7 +295,7 @@ def parse_sensor (sensor_id,sensor_data):
     elif sensor_id == '14':
         TSL250RD_2_OUT = (format1(sensor_data) / 32768.0000) * 2.048
         TSL250RD_2_voltage = TSL250RD_2_OUT * 5.00 / 2.00
-        TSL250RD_2_val = (TSL250RD_2_voltage - 0.09) / 0.064
+        TSL250RD_2_val = (TSL250RD_2_voltage - 0.005313) / 0.064
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
         print format1(sensor_data), "{:5.2f}".format(TSL250RD_2_voltage), "{:5.2f}".format(TSL250RD_2_val)
 
@@ -303,7 +304,7 @@ def parse_sensor (sensor_id,sensor_data):
     elif sensor_id == '15':
         MLX75305_OUT = (format1(sensor_data) / 32768.0000) * 2.048
         MLX75305_voltage = MLX75305_OUT * 5.00 / 2.00
-        MLX75305_val = (MLX75305_voltage - 0.160) / 0.007
+        MLX75305_val = (MLX75305_voltage - 0.0996) / 0.007
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
         print format1(sensor_data), "{:5.2f}".format(MLX75305_voltage), "{:5.2f}".format(MLX75305_val)
 
@@ -312,9 +313,20 @@ def parse_sensor (sensor_id,sensor_data):
     elif sensor_id == '16':
         ML8511_OUT = (format1(sensor_data) / 32768.0000) * 2.048
         ML8511_voltage = ML8511_OUT * 5.00 / 2.00
-        ML8511_val = ML8511_voltage * 12.49 #- 14.3635  # offset term which will be determined by climate, geographic condition
+        ML8511_val = (ML8511_voltage / 1.489) * 1.49916
+        if 2.5 <= ML8511_val <= 3.0:
+            ML8511_val = ML8511_val - 0.3
+        elif 3.0 <= ML8511_val <= 4.0:
+            ML8511_val = ML8511_val - 0.6
+        elif 4.0 <= ML8511_val <= 4.2:
+            ML8511_val = ML8511_val - 0.4
+        elif 4.5 < ML8511_val:
+            ML8511_val = ML8511_val + 0.25
+        # offset term which will be determined by climate, geographic condition
+        # which is 1.49 in the lab, when the sensor is in a Fedex box
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print format1(sensor_data), "{:5.2f}".format(ML8511_voltage), "{:5.2f}".format(ML8511_val)
+        # print format1(sensor_data), "{:5.2f}".format(ML8511_voltage), "{:5.2f}".format(ML8511_val)
+        print "{:2.6f}".format(ML8511_voltage), "{:5.2f}".format(ML8511_val)
 
 #"D6T" has been removed
     # elif sensor_id == '17':

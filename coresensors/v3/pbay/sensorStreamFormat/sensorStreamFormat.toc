@@ -77,7 +77,7 @@
 \contentsline {paragraph}{e. ML8511}{28}
 \contentsline {subsubsection}{\numberline {5.4.4} TMP421}{28}
 \contentsline {subsection}{\numberline {5.5}Chemsense:}{28}
-\contentsline {subsubsection}{\numberline {5.5.1} Chmical sensors}{28}
+\contentsline {subsubsection}{\numberline {5.5.1} Chemical sensors}{28}
 \contentsline {subsubsection}{\numberline {5.5.2} SHT25}{28}
 \contentsline {subsubsection}{\numberline {5.5.3} LPS25H}{29}
 \contentsline {subsubsection}{\numberline {5.5.4} Si1145}{29}
