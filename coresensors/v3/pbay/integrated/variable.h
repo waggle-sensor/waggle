@@ -26,6 +26,8 @@ byte formatted_byte_temp[8];
 int KEY_NUM_ID = 0;
 int VAL_NUM_ID = 0;
 bool flag_KEY = false;
+bool flag_CHEM_WHILE = false;
+int count_chem = 0;
 
 
 //** alphasensor

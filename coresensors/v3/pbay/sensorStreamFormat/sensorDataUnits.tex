@@ -41,7 +41,7 @@
     PR103J2 & integer & \degree C & \\
     TSL250RD & integer & $\mu$w/m$^2$ & \\ % **finalize after discussion with EVS** \\
     MMA8452Q & g, g, g, g & g, g, g, g & \\
-    SPV1840LR5H-B & & & which pin does the sensor is using?\\ % integer & dB & \\
+    SPV1840LR5H-B & integer & dB & Pin\#: PA5@Atmel, A5@Arduino Due\\ % integer & dB & \\
     TSYS01 & \degree C & \degree C & \\
     
     \hline \rowcolor{white} \multicolumn{4}{|c|}{{Lightsense board}} \\ \hline
@@ -130,7 +130,7 @@ The equation refers to temperature coefficient of the HTU21D(F) in 0.15 \(\%RH/\
 
 \subsubsection{ HIH4030}
 
-Raw output of HIH4030 is an interger indicating output voltage from the sensor which is mapped into an integer value between 0 and 1023. Coresensor firmware delivers the two bytes of raw integer value, and equations below can be used to calculate human-readable output value using output voltage from the sensor.
+Output of HIH4030 is an interger indicating output voltage from the sensor, which is mapped into an integer value between 0 and 1023. Coresensor firmware delivers the two bytes of raw integer value, and equations below can be used to calculate human-readable output value using output voltage from the sensor.
 
 {\centering
  \[ \text{output voltage \((V)\)} = \frac{\text{usinged integer raw output} \times 5}{1023} \] 
@@ -142,12 +142,12 @@ The slope term (\(\frac{100}{3}\)) and y-intercept (0.85) are comming from a gra
 
 \subsubsection{ BMP180}
 
-Raw ouput values of BMP180 are 16-bit/24-bit value (temperature/pressure), and the values are post-processed through a library provided by Adafruit Industries. Sensor output values from the coresensor firmware are temperature in centigrade and barometric pressure in pascal.
+Ouput values of BMP180 are 16-bit/24-bit value (temperature/pressure), and the values are post-processed through a library provided by Adafruit Industries. Sensor output values from the coresensor firmware are temperature in centigrade and barometric pressure in pascal.
 
 
 \subsubsection{ PR103J2}
 
-Raw output of PR103J2 is an interger indicating output voltage from the sensor which is mapped into integer values between 0 and 1023. Coresensor firmware delivers the two bytes of raw integer value, and equations below can be used to calculate human-readable output value using output voltage from the sensor and resistance-temperature look-up table (PR103J2 R-T table).
+Output of PR103J2 is an interger indicating output voltage from the sensor, which is mapped into integer values between 0 and 1023. Coresensor firmware delivers the two bytes of raw integer value, and equations below can be used to calculate human-readable output value using output voltage from the sensor and resistance-temperature look-up table (PR103J2 R-T table).
 
 {\centering
  \[ \text{output voltage } (V) = \frac{\text{usinged integer raw output} \times 5}{1023} \] 
@@ -158,7 +158,7 @@ Raw output of PR103J2 is an interger indicating output voltage from the sensor w
 
 \subsubsection{ TSL250RD}
 
-What we can get from TSL250RD in airsense board as a raw output is an interger indicating output voltage from the sensor which is mapped into integer values between 0 and 1023. Coresensor firmware delivers the two bytes of raw integer value, and equations below can be used to calculate human-readable output value as irradiance of visible light in micro-watt per square meter.
+What we can get from TSL250RD in airsense board as a raw output is an interger indicating output voltage from the sensor, which is mapped into integer values between 0 and 1023. Coresensor firmware delivers the two bytes of raw integer value, and equations below can be used to calculate human-readable output value as irradiance of visible light in micro-watt per square meter.
 
 {\centering
  \[ \text{output voltage }(V) = \frac{\text{usinged integer raw output} \times 5}{1023} \] 
@@ -171,10 +171,22 @@ The equation refers to irradiance responsivity of TSL250RD which is 0.064 \(mV/(
 
 \subsubsection{ MMA8452Q}
 
-Raw ouput values of MMA8452Q are actual g value, this depends on scale being set.
+Ouput values of MMA8452Q are actual g value, this depends on scale being set.
 
 \subsubsection{ SPV1840LR5H-B}
 
+Output value of SPV1840LR5H-B is an interger indicating amplified output voltage from the sensor, which is mapped into integer values between 0 and 1023. Coresensor firmware delivers the two bytes of raw integer value, and equations below can be used to calculate human-readable output value as voltage level in decibel (dB).
+
+{\centering
+ \[ \text{amplified output voltage }(V) = \frac{\text{usinged integer raw output} \times 5}{1023} \] 
+ \[ \text{output voltage }(V) = \frac{\text{amplified output voltage}}{\text{external Gain}} \] 
+ \[ \text{voltage level } (dB) = \log_{10} \frac{\text{output voltage}}{\text{input reference voltage}} \times (-20) \]
+ \par
+ }
+
+ \bigbreak
+ The equation refers to external gain as 450.33 which is determined by electric circle design, and input reference voltage as 3.3 (see schematics v3.1). The equation to calculate voltage level is convensional equation for voltage output to decibel (dB).
+ 
 \subsubsection{ TSYS01}
 
 Raw ouput value of TSYS01 is post-processed value through a library provided by  Free Software Foundation, Inc.. Sensor output from the coresensor firmware is temperature in centigrade.
@@ -183,7 +195,7 @@ Raw ouput value of TSYS01 is post-processed value through a library provided by 
 \subsection{Lightsense:}
 \subsubsection{ HMC5883L}
 
-Raw ouput values of HMC5883L are post-processed values through a library provided by Adafruit Industries. Sensor output values from the coresensor firmware are acceleration values in Gauss.
+Ouput values of HMC5883L are post-processed values through a library provided by Adafruit Industries. Sensor output values from the coresensor firmware are acceleration values in Gauss.
 
 \subsubsection{ HIH6130}
 

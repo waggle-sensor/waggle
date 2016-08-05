@@ -1,0 +1,10 @@
+virtual serial
+
+ sudo socat -d -d pty,raw,echo=0,ispeed=115200,ospeed=115200,link=/dev/ttyACM0 pty,raw,echo=0,ispeed=115200,ospeed=115200,link=/dev/ttyACM1
+
+sudo python file_coresense.py			 @ ~ (send data)
+sudo python coresense_plugin/coresense.py
+
+
+END!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+

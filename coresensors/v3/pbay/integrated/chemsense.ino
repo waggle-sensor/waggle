@@ -120,49 +120,53 @@ void chemsense_acquire()
 {
     if (Serial3.available() > 0)
     {
-        INPUT_BYTE = Serial3.read();     //read the incoming byte
+        count_chem = count;        
+        while (flag_CHEM_WHILE == true && count < count_chem + 4)
+        {
+            INPUT_BYTE = Serial3.read();     //read the incoming byte
 
-        if (INPUT_BYTE >= 'a' && INPUT_BYTE <= 'z' ||
-            INPUT_BYTE >= 'A' && INPUT_BYTE <= 'Z' ||
-            INPUT_BYTE >= '0' && INPUT_BYTE <= '9' ||
-            INPUT_BYTE == '-')
-        {
-            if (!flag_KEY)
+            if (INPUT_BYTE >= 'a' && INPUT_BYTE <= 'z' ||
+                INPUT_BYTE >= 'A' && INPUT_BYTE <= 'Z' ||
+                INPUT_BYTE >= '0' && INPUT_BYTE <= '9' ||
+                INPUT_BYTE == '-')
             {
-                if (KEY_NUM_ID < 3)
+                if (!flag_KEY)
                 {
-                    KEY[KEY_NUM_ID] = INPUT_BYTE;
-                    KEY_NUM_ID++;
-                }
-                else
-                    KEY_NUM_ID = 0;
-            }
-            else
-            {
-                if (VAL_NUM_ID < 12)
-                {
-                    VAL[VAL_NUM_ID] = INPUT_BYTE;
-                    VAL_NUM_ID++;
+                    if (KEY_NUM_ID < 3)
+                    {
+                        KEY[KEY_NUM_ID] = INPUT_BYTE;
+                        KEY_NUM_ID++;
+                    }
+                    else
+                        KEY_NUM_ID = 0;
                 }
                 else
                 {
-                    KEY_NUM_ID = 0;
-                    VAL_NUM_ID = 0;
-                    flag_KEY = false;
+                    if (VAL_NUM_ID < 12)
+                    {
+                        VAL[VAL_NUM_ID] = INPUT_BYTE;
+                        VAL_NUM_ID++;
+                    }
+                    else
+                    {
+                        KEY_NUM_ID = 0;
+                        VAL_NUM_ID = 0;
+                        flag_KEY = false;
+                    }
                 }
             }
-        }
-        else if (INPUT_BYTE == '=')
-        {
-            flag_KEY = true;
-        }
-        else if (INPUT_BYTE == '\r' || INPUT_BYTE == ' ' || INPUT_BYTE == '\n')
-        {
-            //KEY[KEY_NUM_ID] = '\0';
-            //VAL[VAL_NUM_ID] = '\0';
-            Carrier();
-            KEY_NUM_ID = 0;
-            VAL_NUM_ID = 0;
+            else if (INPUT_BYTE == '=')
+            {
+                flag_KEY = true;
+            }
+            else if (INPUT_BYTE == '\r' || INPUT_BYTE == ' ' || INPUT_BYTE == '\n')
+            {
+                //KEY[KEY_NUM_ID] = '\0';
+                //VAL[VAL_NUM_ID] = '\0';
+                Carrier();
+                KEY_NUM_ID = 0;
+                VAL_NUM_ID = 0;
+            }
         }
     }
 }
@@ -315,6 +319,8 @@ void Carrier()
         Si1145[6] = formatted_data_buffer[0];
         Si1145[7] = formatted_data_buffer[1];
 
+        flag_CHEM_WHILE = false;
+
 #ifdef SERIAL_DEBUG
         // to check output
         for (i = 0; i < LENGTH_FORMAT1; i++)
@@ -441,6 +447,8 @@ void Carrier()
         carbon_monoxide[3] = formatted_data_buffer[1];
         carbon_monoxide[4] = formatted_data_buffer[2];
 
+        flag_CHEM_WHILE = false;
+
 #ifdef SERIAL_DEBUG
         // to check output
         for (i = 0; i < LENGTH_FORMAT5; i++)
@@ -525,6 +533,8 @@ void Carrier()
         CO_LMP_temp[1] = (1 << 7) | LENGTH_FORMAT2;
         CO_LMP_temp[2] = formatted_data_buffer[0];
         CO_LMP_temp[3] = formatted_data_buffer[1];
+
+        // flag_CHEM_WHILE = false;
 
 #ifdef SERIAL_DEBUG
         // to check output
@@ -664,6 +674,8 @@ void Carrier()
         three_gyro_and_orientation[8] = formatted_data_buffer[0];
         three_gyro_and_orientation[9] = formatted_data_buffer[1];
         three_gyro_and_orientation[10] = formatted_data_buffer[2];
+
+        flag_CHEM_WHILE = false;
 
         OIX_count++;
 

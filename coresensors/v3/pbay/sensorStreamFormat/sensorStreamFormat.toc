@@ -64,27 +64,27 @@
 \contentsline {subsubsection}{\numberline {5.3.5} PR103J2}{26}
 \contentsline {subsubsection}{\numberline {5.3.6} TSL250RD}{26}
 \contentsline {subsubsection}{\numberline {5.3.7} MMA8452Q}{26}
-\contentsline {subsubsection}{\numberline {5.3.8} SPV1840LR5H-B}{26}
-\contentsline {subsubsection}{\numberline {5.3.9} TSYS01}{26}
+\contentsline {subsubsection}{\numberline {5.3.8} SPV1840LR5H-B}{27}
+\contentsline {subsubsection}{\numberline {5.3.9} TSYS01}{27}
 \contentsline {subsection}{\numberline {5.4}Lightsense:}{27}
 \contentsline {subsubsection}{\numberline {5.4.1} HMC5883L}{27}
 \contentsline {subsubsection}{\numberline {5.4.2} HIH6130}{27}
 \contentsline {subsubsection}{\numberline {5.4.3}MCP3426}{27}
-\contentsline {paragraph}{a. APDS-9006-020}{27}
-\contentsline {paragraph}{b. TSL260RD}{27}
+\contentsline {paragraph}{a. APDS-9006-020}{28}
+\contentsline {paragraph}{b. TSL260RD}{28}
 \contentsline {paragraph}{c. TSL250RD}{28}
 \contentsline {paragraph}{d. MLX75305}{28}
 \contentsline {paragraph}{e. ML8511}{28}
 \contentsline {subsubsection}{\numberline {5.4.4} TMP421}{28}
-\contentsline {subsection}{\numberline {5.5}Chemsense:}{28}
-\contentsline {subsubsection}{\numberline {5.5.1} Chemical sensors}{28}
-\contentsline {subsubsection}{\numberline {5.5.2} SHT25}{28}
+\contentsline {subsection}{\numberline {5.5}Chemsense:}{29}
+\contentsline {subsubsection}{\numberline {5.5.1} Chemical sensors}{29}
+\contentsline {subsubsection}{\numberline {5.5.2} SHT25}{29}
 \contentsline {subsubsection}{\numberline {5.5.3} LPS25H}{29}
 \contentsline {subsubsection}{\numberline {5.5.4} Si1145}{29}
 \contentsline {subsubsection}{\numberline {5.5.5} ADC Temperatures}{29}
-\contentsline {subsubsection}{\numberline {5.5.6} Accelerometer}{29}
-\contentsline {subsubsection}{\numberline {5.5.7} Gyro}{29}
-\contentsline {subsection}{\numberline {5.6}Alpha Sensor:}{29}
-\contentsline {subsubsection}{\numberline {5.6.1} Histogram}{29}
-\contentsline {subsubsection}{\numberline {5.6.2} Firmware}{29}
-\contentsline {subsubsection}{\numberline {5.6.3} Configuration}{29}
+\contentsline {subsubsection}{\numberline {5.5.6} Accelerometer}{30}
+\contentsline {subsubsection}{\numberline {5.5.7} Gyro}{30}
+\contentsline {subsection}{\numberline {5.6}Alpha Sensor:}{30}
+\contentsline {subsubsection}{\numberline {5.6.1} Histogram}{30}
+\contentsline {subsubsection}{\numberline {5.6.2} Firmware}{30}
+\contentsline {subsubsection}{\numberline {5.6.3} Configuration}{30}

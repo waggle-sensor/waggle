@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2016.7.5)  3 AUG 2016 17:26
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2016.7.5)  4 AUG 2016 17:01
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1528,7 +1528,42 @@ Overfull \hbox (6.9511pt too wide) in paragraph at lines 1518--1562
  []
 
 ) (./sensorDataUnits.tex [23]
+Overfull \hbox (6.7621pt too wide) in alignment at lines 7--12
+ [] [] [] [] 
+ []
+
+
+Overfull \hbox (6.7621pt too wide) in alignment at lines 12--18
+ [] [] [] [] 
+ []
+
+
+Overfull \hbox (6.7621pt too wide) in alignment at lines 18--21
+ [] [] [] [] 
+ []
+
+
+Overfull \hbox (6.7621pt too wide) in alignment at lines 21--24
+ [] [] [] [] 
+ []
+
+
+Overfull \hbox (6.7621pt too wide) in alignment at lines 24--59
+ [] [] [] [] 
+ []
+
+
 Underfull \vbox (badness 10000) detected at line 59
+ []
+
+
+Overfull \hbox (6.7621pt too wide) in alignment at lines 59--83
+ [] [] [] [] 
+ []
+
+
+Overfull \hbox (6.7621pt too wide) in alignment at lines 83--93
+ [] [] [] [] 
  []
 
 [24]
@@ -1541,7 +1576,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 121--122
 
  []
 
-[25] [26] [27] [28]) [29] (./sensorStreamFormat.aux)
+[25] [26] [27] [28]) [29] [30] (./sensorStreamFormat.aux)
 
 LaTeX Warning: There were multiply-defined labels.
 
@@ -1569,10 +1604,10 @@ type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/p
 ublic/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/am
 sfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts
 /cm/cmsy7.pfb>
-Output written on sensorStreamFormat.pdf (30 pages, 1242931 bytes).
+Output written on sensorStreamFormat.pdf (31 pages, 1244726 bytes).
 PDF statistics:
- 503 PDF objects out of 1000 (max. 8388607)
- 128 compressed objects within 2 object streams
+ 507 PDF objects out of 1000 (max. 8388607)
+ 131 compressed objects within 2 object streams
  0 named destinations out of 1000 (max. 500000)
  18 words of extra memory for PDF output out of 10000 (max. 10000000)
 
