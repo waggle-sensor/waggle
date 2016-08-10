@@ -1,0 +1,79 @@
+\RequirePackage[l2tabu, orthodox]{nag}
+\documentclass[11pt,letter]{article}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{microtype}
+\usepackage{siunitx}
+\usepackage{booktabs}
+\usepackage[colorlinks=false, pdfborder={0 0 0}]{hyperref}
+\usepackage{cleveref}
+\usepackage{bytefield}
+\usepackage{pdflscape}
+\usepackage[ margin=1in]{geometry}
+\usepackage{framed}
+\usepackage[table]{xcolor}
+\newcommand{\guestnode}{hosted\ node\ }
+\newcommand{\zerolenmessage}{2--3 & Length of Message Body & $0x00$ $0x00$ & Empty Message. \\ \hline}
+\usepackage{fancyhdr}
+\usepackage[yyyymmdd,hhmmss]{datetime}
+\usepackage{xcolor}
+\usepackage{sectsty}
+
+\clubpenalty=10000
+\widowpenalty=10000
+
+\definecolor{rahmen}{RGB}{0,73,114}
+\definecolor{grund}{RGB}{238,241,251}
+\definecolor{schrift}{RGB}{116,45,19}
+\sectionfont{\color{black}}
+\subsectionfont{\color{rahmen}}
+\subsubsectionfont{\color{schrift}}
+
+\pagestyle{fancy}
+\fancyhf{} % sets both header and footer to nothing
+\renewcommand{\headrulewidth}{0pt}
+\cfoot{\thepage}
+\rfoot{\today\ \currenttime}
+\begin{document}
+\title{Messaging Protocol Version 0.4}
+\author{The Waggle Team}
+\date{2014-2016}
+\maketitle
+\noindent
+For all the messages sent using protocol Version 0.4, the following fields will be standard across
+all headers, and across all devices.
+\begin{center}
+    \rowcolors{1}{rahmen!8}{white}
+    \begin{tabular}{ | l | l | p{3cm} | p{5cm} |}
+    \hline
+    \hline
+    \textbf{Byte Field} & \textbf{Field Name} & \textbf{Value} & \textbf{Notes} \\ \hline \hline
+    0 & Protocol Version & $0x04$ & The Current Version of Protocol is Major 0, Minor 4. \\    \hline
+    10 & Extended Header & $0x01$ & Set if \textit{Optional Key} is presented. \\    \hline
+    11 & Optional Keys & $0xzz$ & 8--bit flags. \\    \hline
+    \end{tabular}
+\end{center}
+\begin{framed}
+\textbf{Notes:}
+\\
+\begin{itemize}
+\item This version of protocol provides data transmission between beehive server and nodes. This supports three communication scenarios: 1) data transmission, 
+2) request/response, and 3) potentially a request initiated from the beehive server.
+\item The major differences in this version are --
+\begin{itemize}
+\item The size of message header is 40 Bytes including CRC16 and is reduced by resizing the sender and responder's unique IDs by 2 bytes each.
+\item A plugin in both server and node sides can be revealed by looking at the plugin ID in message.
+\item Additional message types such as response of a request.
+\item Data are serialized and compressed in message body.
+\item Sending a large message exceeding 1 kB is supported using the $Optional\_key$ field.
+\end{itemize}
+\end{itemize}
+\end{framed}
+
+\input{Packet_Format}
+\input{Sensor_Queries}
+\input{Message_Types}
+
+
+
+\end{document}

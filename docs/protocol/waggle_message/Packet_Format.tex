@@ -1,0 +1,112 @@
+\begin{landscape}
+\section{Message Packet}
+\begin{bytefield}[bitwidth=2.2in]{4}
+\bitheader{0,1,2,3} \\
+\begin{rightwordgroup}{40 Byte\\ Packet\\ Header}
+\bitbox{1}{Prot\_Ver: Maj\_N:Min\_N (0)}
+\bitbox{1}{Flag: Dev\_P:Msg\_P:Pref (1)}
+\bitbox{2}{Length of Message Body: Len\_byte 2 (2), Len\_byte 1 (3)}
+\\
+\bitbox{4}{Message Time Stamp: Time 4 (4), Time 3 (5), Time 2 (6), Time 1 (7)}
+\\
+\bitbox{1}{Msg\_Mj\_Type (8)}
+\bitbox{1}{Msg\_Mi\_Type (9)}
+\bitbox{1}{Ext\_header (10) }
+\bitbox{1}{Optional\_Key (11) }
+\\
+\bitbox{4}{S\_UniqID\_byte 8 (12), S\_UniqID\_byte 7 (13), S\_UniqID\_byte 6 (14), S\_UniqID\_byte 5 (15)}
+\\
+\bitbox{4}{S\_UniqID\_byte 4 (16), S\_UniqID\_byte 3 (17), S\_UniqID\_byte 2 (18), S\_UniqID\_byte 1 (19)}
+\\
+\bitbox{4}{R\_UniqID\_byte 8 (20), R\_UniqID\_byte 7 (21), R\_UniqID\_byte 
+6 (22), R\_UniqID\_byte 5 (23)}
+\\
+\bitbox{4}{R\_UniqID\_byte 4 (24), R\_UniqID\_byte 3 (25), R\_UniqID\_byte 2 
+(26), R\_UniqID\_byte 1 (27)}
+\\
+\bitbox{2}{Snd Session Number: Session\_No\_Hi (28), Session\_No\_Lo (29)}
+\bitbox{2}{Resp Session Number: Session\_No\_Hi (30), Session\_No\_Lo (31)}
+\\
+\bitbox{3}{Snd\_Seq 3 (32), Snd\_Seq 2 (33), Snd\_Seq 1 (34)}
+\bitbox{1}{Resp\_Seq 3 (35)}
+\\
+\bitbox{2}{Resp\_Seq 2 (36), Resp\_Seq 1 (37)}
+\bitbox{2}{CRC\_16\_byte1 (38), CRC\_16\_byte2 (39)}
+\end{rightwordgroup}
+\\
+\begin{rightwordgroup}{N Byte\\ Message\\ Payload}
+\\
+\bitbox{4}{Payload}
+\\
+\bitbox{4}{Payload}
+\\
+\bitbox{4}{\vdots }
+\\
+\bitbox{4}{Payload}
+\end{rightwordgroup}
+\\
+\\
+\begin{rightwordgroup}{4 Byte\\ Packet\\ Footer}
+\bitbox{4}{CRC\_32 (39+Len(Data))}
+\end{rightwordgroup}
+\end{bytefield}
+\newpage
+\begin{framed}
+
+\label{parameter_description}
+\textbf{Parameter Description:}
+\begin{itemize}
+\item \textbf{Header:}
+\begin{itemize}
+\item \textit{Prot\_Ver: Maj\_N:Min\_N} --- Major and minor version of the communication protocol used. They can take any value from 0 to 16 $(0xf)$ each.
+\item \textit{Flag: Dev\_P:Msg\_P:Pref} --- Indicator of priorities. Dev\_P represents device priority, Msg\_P indicates message priority, and Pref is a 
+preference. Pref can be set to `True' when the message refers to Msg\_P for priority or `False' when the message priority needs to get the highst priority.
+\item \textit{Length of Message Body} --- Two bytes to describe the length of the payload only. Maximum size limited to 65 KB. However actual message packets 
+will be limited to 1 kB.
+\item \textit{Message Time Stamp} --- 4 byte Epoch time in seconds when the message was created.
+\item \textit{Msg\_Mj\_Type} --- The 1 byte major type of the message. We envision 256 major message types, each with 256 minor types allowed.
+\item \textit{Msg\_Mi\_Type} --- The 1 byte minor type of the message. We envision 256 minor message types, for each of 256 major types allowed.
+\item \textit{Ext\_Header} --- If it is set, refer to the $Optional\_key$ field.
+\item \textit{Optional\_Key} --- When $Ext\_header$ is set this field provides additional information in the message body.
+
+\begin{framed}
+\begin{bytefield}[endianness=big, bitwidth=0.8in]{8}
+\bitheader{0-7} \\
+\bitbox{1}{S\_PUID}
+\bitbox{1}{R\_PUID}
+\bitbox{5}{Reserved for the future use}
+\bitbox{1}{MMSG}
+\end{bytefield}
+
+\begin{itemize}
+\item {S\_PUID: } If set the first four bytes of the message body tell sender's plugin unique identifier (PUID), 4 bytes.
+\item {R\_PUID: } If set the four bytes of the message body tell recipient's plugin unique identifier (PUID), 4 bytes.
+\item {MMSG: } Multiple message (MMSG) provides 6 bytes of chunk information in the message body. When it is set the 6 bytes consists of two parts: 
+the 
+next three bytes (if PUIDs exist; otherwise the first three bytes) provide chunk number of this message, the other three bytes represent the total number of 
+chunks. This supports sending data with a size of up to 16 GB (ideally).
+\end{itemize}
+\end{framed}
+
+\item \textit{S\_UniqID} --- 8 byte unique ID of the sender. The assignment of the S\_UniqID is separately documented. The 8 byte ID uniquely 
+describes every 
+endpoint, including the cloud.
+\item \textit{R\_UniqID} --- 8 byte unique ID of the receiver. The assignment of the R\_UniqID is separately documented. The 8 byte ID uniquely describes every 
+endpoint, including the cloud.
+\item \textit{Session Number} --- 2 byte unique session ID of the sender. This ID changes when the sender goes through a power cycle of if all the 
+sequence numbers of a session are consumed.
+\item \textit{Session Number} --- 2 byte unique session ID of the receiver. This ID changes when the sender goes through a power cycle of if all the 
+sequence numbers of a session are consumed.
+\item \textit{Snd\_Seq} --- 3 byte increasing number identifying the message for the sender-reciever pair, sent from the sender.
+\item \textit{Resp\_Seq} --- 3 byte sequence number if any of the message sent by the receiver to which the current message is a response to.
+\item \textit{CRC\_16} --- 2 byte CRC-16 of the message header.
+\end{itemize}
+\item {Payload}
+\item {Footer}
+\begin{itemize}
+\item CRC\_32 --- 4 byte CRC-32 of the Payload.
+\end{itemize}
+\end{itemize}
+
+\end{framed}
+\end{landscape}

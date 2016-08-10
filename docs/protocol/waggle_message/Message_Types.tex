@@ -1,0 +1,654 @@
+\section{Message Types}
+
+\begin{center}
+    \rowcolors{1}{rahmen!8}{white}
+    \begin{tabular}{ | p{2cm} | p{3cm} | p{4.2cm} | p{5cm} |}
+    \hline
+    \hline
+    \textbf{Major Type} & \textbf{Description} & \textbf{Minor Types} & \textbf{Notes} \\ \hline \hline
+    $0x72$ (`r') & Registration & $0x69$ (`i'), $0x75$ (`u'), $0x72$ (`r'), $0x6e$ (`n'), $0x64$ (`d'), $0x61$ (`a') & This message type will evolve to offer 
+several registration based 
+functions \\ 
+\hline
+    $0x70$ (`p') & Heartbeat / Ping   & $0x72$ (`r'), $0x61$ (`a') &   \\ \hline
+    $0x61$ (`a') & Acknowledgement & Any  &   \\ \hline
+    $0x74$ (`t') & Time   & $0x72$ (`r'), $0x61$ (`a'), $0x75$ (`u') &   \\ \hline
+    $0x73$ (`s') & Sensor Data   &  $0x64$ (`d') &   \\ \hline
+    $0x6c$ (`l') & Location   &  $0x72$ (`r'), $0x6d$ (`m'), $0x65$ (`e'), $0x6c$ (`l'), $0x80$, $0x81$, $0x82$, $0x83$, $0x90$, $0x91$, $0x92$, $0x93$, $0xa0$, 
+$0xa1$ ,$0xa2$ ,$0xa3$ ,$0xb0$ ,$0xb1$ ,$0xb2$ ,$0xb3$  &   \\ \hline
+    $0x64$ (`d') & Command / Response   & $0x63$ (`c'), $0x72$ (`r'), $0x6f$ (`o'), $0x73$ (`s') &   \\ \hline
+    $0x63$ (`c') & Combined Message   & $0x66$ (`f') &   \\ \hline
+    \end{tabular}
+\end{center}
+
+\newpage
+
+\subsection{Registration}
+\subsubsection{Initial Registration Message --- Deprecated}
+\textbf{Header:}
+\begin{center}
+    \rowcolors{1}{rahmen!8}{white}
+    \begin{tabular}{ | l | l | p{3cm} | p{5cm} |}
+    \hline
+    \hline
+    \textbf{Byte Field} & \textbf{Field Name} & \textbf{Value} & \textbf{Notes} \\ \hline \hline
+    8 & Message Major Type & $0x72$ (`r') & This is normally the first message sent by a new instance. \\    \hline
+    9 & Message Minor Type & $0x69$ (`i') &  \\    \hline
+    23--27 & Reference Sequence ID & $0xzz$ $0xzz$ $0xzz$ & Present if sent as a response to `rr' message.\\ \hline
+    \end{tabular}
+\end{center}
+\noindent
+\textbf{Payload:}
+\begin{framed}
+In this protocol version, we will use the current registration message format in the body.
+\end{framed}
+
+
+\subsubsection{Registration Update --- Not Implemented}
+\textbf{Header:}
+\begin{center}
+    \rowcolors{1}{rahmen!8}{white}
+    \begin{tabular}{ | l | l | p{3cm} | p{5cm} |}
+    \hline
+    \hline
+    \textbf{Byte Field} & \textbf{Field Name} & \textbf{Value} & \textbf{Notes} \\ \hline \hline
+    8 & Message Major Type & $0x72$ (`r') & A node can update its Registration with this message. \\    \hline
+    9 & Message Minor Type & $0x75$ (`u') &  \\    \hline
+    \end{tabular}
+\end{center}
+\noindent
+\textbf{Payload:}
+\begin{framed}
+In this protocol version, both initial and updated registrations will contain the full
+registration message. The update only alerts the cloud to look for an existing registration.
+The cloud may update or overwrite the old registration.
+\end{framed}
+
+\subsubsection{Request for Registration}
+\textbf{Header:}
+\begin{center}
+    \rowcolors{1}{rahmen!8}{white}
+    \begin{tabular}{ | l | l | p{3cm} | p{5cm} |}
+    \hline
+    \hline
+    \textbf{Byte Field} & \textbf{Field Name} & \textbf{Value} & \textbf{Notes} \\ \hline \hline
+    8 & Message Major Type & $0x72$ (`r') &  \\    \hline
+    9 & Message Minor Type & $0x72$ (`r') &  \\    \hline
+    \end{tabular}
+\end{center}
+\noindent
+\textbf{Payload:}
+\begin{framed}
+Meta data of the requestor (e.g., name, version, instance, etc.).
+\end{framed}
+
+\subsubsection{Request for Configuration Registration}
+\textbf{Header:}
+\begin{center}
+    \rowcolors{1}{rahmen!8}{white}
+    \begin{tabular}{ | l | l | p{3cm} | p{5cm} |}
+    \hline
+    \hline
+    \textbf{Byte Field} & \textbf{Field Name} & \textbf{Value} & \textbf{Notes} \\ \hline \hline
+    8 & Message Major Type & $0x72$ (`r') &  \\    \hline
+    9 & Message Minor Type & $0x6e$ (`n') &  \\    \hline
+    \end{tabular}
+\end{center}
+\noindent
+\textbf{Payload:}
+\begin{framed}
+Configuration information of the sender.
+\end{framed}
+
+\subsubsection{Request for De-registration}
+\textbf{Header:}
+\begin{center}
+    \rowcolors{1}{rahmen!8}{white}
+    \begin{tabular}{ | l | l | p{3cm} | p{5cm} |}
+    \hline
+    \hline
+    \textbf{Byte Field} & \textbf{Field Name} & \textbf{Value} & \textbf{Notes} \\ \hline \hline
+    8 & Message Major Type & $0x72$ (`r') &  \\    \hline
+    9 & Message Minor Type & $0x64$ (`d') &  \\    \hline
+    \zerolenmessage
+    \end{tabular}
+\end{center}
+\noindent
+\textbf{Payload:}
+\begin{framed}
+None.
+\end{framed}
+
+\subsubsection{Registration Response}
+\textbf{Header:}
+\begin{center}
+    \rowcolors{1}{rahmen!8}{white}
+    \begin{tabular}{ | l | l | p{3cm} | p{5cm} |}
+    \hline
+    \hline
+    \textbf{Byte Field} & \textbf{Field Name} & \textbf{Value} & \textbf{Notes} \\ \hline \hline
+    8 & Message Major Type & $0x72$ (`r') &  \\    \hline
+    9 & Message Minor Type & $0x61$ (`a') &  \\    \hline
+    \end{tabular}
+\end{center}
+\noindent
+\textbf{Payload:}
+\begin{framed}
+Responder's message.
+\end{framed}
+
+\subsection{Alive Heartbeat}
+\subsubsection{Onetime Heartbeat Ping Request}
+\textbf{Header:}
+\begin{center}
+    \rowcolors{1}{rahmen!8}{white}
+    \begin{tabular}{ | l | l | p{3cm} | p{5cm} |}
+    \hline
+    \hline
+    \textbf{Byte Field} & \textbf{Field Name} & \textbf{Value} & \textbf{Notes} \\ \hline \hline
+    8 & Message Major Type & $0x70$ (`p') &  \\    \hline
+    9 & Message Minor Type & $0x72$ (`r') &  \\    \hline
+    \zerolenmessage
+    \end{tabular}
+\end{center}
+\noindent
+\textbf{Payload:}
+\begin{framed}
+None.
+\end{framed}
+
+
+\subsubsection{Onetime Heartbeat Pong}
+\textbf{Header:}
+\begin{center}
+    \rowcolors{1}{rahmen!8}{white}
+    \begin{tabular}{ | l | l | p{3cm} | p{5cm} |}
+    \hline
+    \hline
+    \textbf{Byte Field} & \textbf{Field Name} & \textbf{Value} & \textbf{Notes} \\ \hline \hline
+    8 & Message Major Type & $0x70$ (`p') &  \\    \hline
+    9 & Message Minor Type & $0x61$ (`a') &  \\    \hline
+    2--3 & Length of Message Body & $0x00$ $0x04$ & 4 Byte message. \\ \hline
+    \end{tabular}
+\end{center}
+\noindent
+\textbf{Payload:}
+\begin{framed}
+``Pong''
+\end{framed}
+
+
+\subsection{Acknowledgement}
+\subsubsection{Message Receipt -- Not Implemented}
+\textbf{Header:}
+\begin{center}
+    \rowcolors{1}{rahmen!8}{white}
+    \begin{tabular}{ | l | l | p{3cm} | p{5cm} |}
+    \hline
+    \hline
+    \textbf{Byte Field} & \textbf{Field Name} & \textbf{Value} & \textbf{Notes} \\ \hline \hline
+    8 & Message Major Type & $0x61$ (`a') &  \\    \hline
+    9 & Message Minor Type & $0xzz$ & Type of the message being acknowledged. \\    \hline
+    \zerolenmessage
+    35--37 & Reference Sequence ID & $0xzz$ $0xzz$ $0xzz$ & Sequence number of the message being acknowledged.\\ \hline
+
+    \end{tabular}
+\end{center}
+\noindent
+\textbf{Payload:}
+\begin{framed}
+None.
+\end{framed}
+
+\subsubsection{Completion of Task}
+This message will change on a case by case basis. I am not sure if we will have to classify this under the
+acknowledgement case, but I think we should have some way of Acknowledging that.
+
+\subsection{Time}
+\url{http://tools.ietf.org/html/rfc958}
+\subsubsection{Request Current Time}
+\textbf{Header:}
+\begin{center}
+    \rowcolors{1}{rahmen!8}{white}
+    \begin{tabular}{ | l | l | p{3cm} | p{5cm} |}
+    \hline
+    \hline
+    \textbf{Byte Field} & \textbf{Field Name} & \textbf{Value} & \textbf{Notes} \\ \hline \hline
+    8 & Message Major Type & $0x74$ (`t') &  \\    \hline
+    9 & Message Minor Type & $0x72$ (`r') & \\    \hline
+    \zerolenmessage
+    \end{tabular}
+\end{center}
+\noindent
+\textbf{Payload:}
+\begin{framed}
+None.
+\end{framed}
+
+\subsubsection{Current Time Response}
+\textbf{Header:}
+\begin{center}
+    \rowcolors{1}{rahmen!8}{white}
+    \begin{tabular}{ | l | l | p{3cm} | p{5cm} |}
+    \hline
+    \hline
+    \textbf{Byte Field} & \textbf{Field Name} & \textbf{Value} & \textbf{Notes} \\ \hline \hline
+    8 & Message Major Type & $0x74$ (`t') &  \\    \hline
+    9 & Message Minor Type & $0x61$ (`a') & \\    \hline
+    17--19 & Length of Message Body & $0x00$ $0xzz$ & N--bytes message. \\ \hline
+    \end{tabular}
+\end{center}
+\noindent
+\textbf{Payload:}
+\begin{framed}
+A floatting point number of the current time since the epoch.
+\end{framed}
+
+\subsubsection{Time Update -- Not Implemented}
+\textbf{Header:}
+\begin{center}
+    \rowcolors{1}{rahmen!8}{white}
+    \begin{tabular}{ | l | l | p{3cm} | p{5cm} |}
+    \hline
+    \hline
+    \textbf{Byte Field} & \textbf{Field Name} & \textbf{Value} & \textbf{Notes} \\ \hline \hline
+    23 & Message Major Type & $0x74$ (`t') &  \\    \hline
+    24 & Message Minor Type & $0x75$ (`u') & \\    \hline
+    17--19 & Length of Message Body & $0x00$ $0x00$ $0x04$ & 4 Byte message. \\ \hline
+    \end{tabular}
+\end{center}
+\noindent
+\textbf{Payload:}
+\begin{framed}
+\vskip 0.25 in
+\begin{center}
+\begin{bytefield}[bitwidth=1.5in]{4}
+\bitheader{0,1,2,3} \\
+\bitbox{4}{Time 4 (0), Time 3 (1), Time 2 (2), Time 1 (3)}\\
+\end{bytefield}
+\end{center}
+\end{framed}
+
+\begin{framed}
+\textbf{Time Representation:}
+\\
+Current Epoch Time\_Sec = (Time 4 ${<<}$ 24) + (Time 3 ${<<}$ 16) + (Time 2 ${<<}$ 8) + (Time 1)
+\end{framed}
+
+\subsection{Sensor Data}
+The data is serialized and compressed before sending.
+
+When size of data exceeds the maximum limit of data length (or limit that system designer set) multiple Waggle messages can be used to send the data. For this 
+case, both $Ext\_header$ and $MMSG$ in $Optional\_key$ fields will be set. In addition, there are 6 bytes of information added in the message body of each 
+message (See parameter description in \ref{parameter_description}). $Snd\_Seq$ will be the same for all the sub messages.
+\\
+\textbf{Header:}
+\begin{center}
+    \rowcolors{1}{rahmen!8}{white}
+    \begin{tabular}{ | l | l | p{3cm} | p{5cm} |}
+    \hline
+    \hline
+    \textbf{Byte Field} & \textbf{Field Name} & \textbf{Value} & \textbf{Notes} \\ \hline \hline
+    8 & Message Major Type & $0x73$ (`s') &  \\    \hline
+    9 & Message Minor Type & $0x64$ (`d') & \\    \hline
+    \end{tabular}
+\end{center}
+
+\noindent
+\textbf{Payload:}
+
+\begin{framed}
+Serialized data that are compressed.
+\end{framed}
+
+\subsection{Location}
+\url{http://dev.w3.org/geo/api/spec-source.html#api_description}\\
+\url{http://resources.arcgis.com/en/help/main/10.1/index.html#//009t0000023w000000}\\
+
+
+\subsubsection{Request Current Location -- Not Implemented}
+\textbf{Header:}
+\begin{center}
+    \rowcolors{1}{rahmen!8}{white}
+    \begin{tabular}{ | l | l | p{3cm} | p{5cm} |}
+    \hline
+    \hline
+    \textbf{Byte Field} & \textbf{Field Name} & \textbf{Value} & \textbf{Notes} \\ \hline \hline
+    8 & Message Major Type & $0x6c$ (`l') &  \\    \hline
+    9 & Message Minor Type & $0x72$ (`r') & \\    \hline
+    \zerolenmessage
+    \end{tabular}
+\end{center}
+\noindent
+\textbf{Payload:}
+\begin{framed}
+None.
+\end{framed}
+
+
+\subsubsection{Location Standardized -- Not Implemented}
+
+\begin{framed}
+We will use WGS84 geodetic datum.
+\begin{itemize}
+\item \textbf{Latitude:} Latitude and Longitude of point. Northern latitudes are positive, southern latitudes are negative.
+  eastern longitudes are positive, western longitudes are negative. Valid formats include (Max 16 allowed):
+\begin{itemize}
+  \item N43°38'19.39", W116°14'28.86" - \textbf{LatLon Type:} ${0x00}$
+  \item 43°38'19.39"N, 116°14'28.86"W - \textbf{LatLon Type:} ${0x01}$
+  \item 43 38 19.39, -116 14 28.86 - \textbf{LatLon Type:} ${0x02}$
+  \item 43.63871944444445, -116.2413513485235 - \textbf{LatLon Type:} ${0x03}$
+
+\end{itemize}
+\item \textbf{Altitude:} Elevation of the point. Valid formats include (Max 8 allowed):
+\begin{itemize}
+   \item Orthometric in Meters - \textbf{Elevation Type:} ${0x00}$
+   \item Geoid in Meters - \textbf{Elevation Type:} ${0x01}$
+   \item Ellipsoidal in Meters - \textbf{Elevation Type:} ${0x02}$
+   \item Non-standard (10 m above pedestal) in Meters - \textbf{Elevation Type:} ${0x03}$
+\end{itemize}
+
+\end{itemize}
+
+There are 16 different formats for representation of position, which are derived using a
+combination of the 4 LatLon and 4 Elevation types. The minor type uses the upper nibble to
+state the Latitude and Longitude type and the lower nibble for the Elevation type.
+\\
+
+\center{$Message\ Minor\ Type\ =\ {0x80\ |\ Elevation\ Type}\ << 4\ |\ {LatLon\ Type} $}
+
+\end{framed}
+\textbf{Header:}
+\begin{center}
+    \rowcolors{1}{rahmen!8}{white}
+    \begin{tabular}{ | l | l | p{3cm} | p{5cm} |}
+    \hline
+    \hline
+    \textbf{Byte Field} & \textbf{Field Name} & \textbf{Value} & \textbf{Notes} \\ \hline \hline
+    8 & Message Major Type & $0x6c$ (`l') &  \\    \hline
+    9 & Message Minor Type & $Generated$ & 16 different representations.  \\   \hline
+    \end{tabular}
+\end{center}
+\noindent
+\textbf{Payload:}
+\begin{framed}
+We will have a delimited payload of the following kind -
+\\
+$Latitude\_[0]\_Longitude\_[0]\_Elevation$
+\end{framed}
+
+\subsubsection{Location Meta -- Not Implemented}
+\textbf{Header:}
+\begin{center}
+    \rowcolors{1}{rahmen!8}{white}
+    \begin{tabular}{ | l | l | p{3cm} | p{5cm} |}
+    \hline
+    \hline
+    \textbf{Byte Field} & \textbf{Field Name} & \textbf{Value} & \textbf{Notes} \\ \hline \hline
+    8 & Message Major Type & $0x6c$ (`l') &  \\    \hline
+    9 & Message Minor Type & $0x6d$ (`m') & Meta Data of the location. \\   \hline
+    \end{tabular}
+\end{center}
+\noindent
+\textbf{Payload:}
+\begin{framed}
+The payload of the message will be considered as a text string describing the location.
+This is for human readable description like - Under a tree, In the shade, on the top of
+the HVAC unit and so on.
+\end{framed}
+
+
+\subsubsection{Get Location Estimator Type -- Not Implemented}
+\textbf{Header:}
+\begin{center}
+    \rowcolors{1}{rahmen!8}{white}
+    \begin{tabular}{ | l | l | p{3cm} | p{5cm} |}
+    \hline
+    \hline
+    \textbf{Byte Field} & \textbf{Field Name} & \textbf{Value} & \textbf{Notes} \\ \hline \hline
+    8 & Message Major Type & $0x6c$ (`l') &  \\    \hline
+    9 & Message Minor Type & $0x65$ (`e') & \\    \hline
+    \zerolenmessage
+    \end{tabular}
+\end{center}
+\noindent
+\textbf{Payload:}
+\begin{framed}
+None.
+\end{framed}
+
+\subsubsection{Location Estimator Type -- Not Implemented}
+
+\begin{framed}
+This message will both provide location estimator type and also the error bounds for
+the Latitude, Longitude and Elevation.
+\\
+\\
+Estimator Types:
+\begin{itemize}
+
+\item Preset Static - \textbf{Position Type:} $0x00$
+\item Satellite - \textbf{Position Type:} $0x01$
+\item Dead Reckoning or Software Estimation - \textbf{Position Type:} $0x02$
+\item Ranging - \textbf{Position Type:} $0x03$
+
+\end{itemize}
+Errors Types:
+\begin{itemize}
+\item Linear Error (LE90) in meters - \textbf{Error Type:} $0x00$
+\item Circular Error (CE90) in meters - \textbf{Error Type:} $0x01$
+\end{itemize}
+
+\center{$Estimation\ Type\ =\ Position\ Type\ <<\ 4\ |\ (Error\ Type)$}
+
+\end{framed}
+
+\textbf{Header:}
+
+\begin{center}
+    \rowcolors{1}{rahmen!8}{white}
+    \begin{tabular}{ | l | l | p{3cm} | p{5cm} |}
+    \hline
+    \hline
+    \textbf{Byte Field} & \textbf{Field Name} & \textbf{Value} & \textbf{Notes} \\ \hline \hline
+    8 & Message Major Type & $0x6c$ (`l') &  \\    \hline
+    9 & Message Minor Type & $0x6c$ (`l') &  \\    \hline
+    \end{tabular}
+\end{center}
+\vskip 0.1in
+\noindent
+\textbf{Payload:}
+\begin{framed}
+Delimited payload -
+\\
+$Latitude\_Estimation\_Type\_[1]\_Latitude\_Error\_[0]\_\\
+Longitude\_Estimation\_Type\_[1]\_Longitude\_Error\\
+\_[0]\_Elevation\_Estimation\_Type\_[1]\_Elevation\_Error$
+\end{framed}
+
+
+\subsubsection{Set Location Interrupt}
+\begin{framed}
+\textit{The following will depend on the Location Engine.
+What are the features and facilities we want to include in this
+engine? Can we set location alerts? i.e. alert me when you have
+reached location x,y,z, alert me when you have moved further
+than 10 ft from base (a floating platform?). May not
+be a core waggle feature, but something the particular
+instance will implement.}
+\end{framed}
+\subsubsection{Get Current Location Interrupt}
+\begin{framed}
+\textit{The following will depend on the Location Engine.
+What are the features and facilities we want to include in this
+engine? Can we set location alerts? i.e. alert me when you have
+reached location x,y,z, alert me when you have moved further
+than 10 ft from base (a floating platform?). May not be a
+core waggle feature, but something the particular
+instance will implement.}
+\end{framed}
+
+\subsection{Direct Command Message}
+
+\textbf{Header:}
+\begin{center}
+    \rowcolors{1}{rahmen!8}{white}
+    \begin{tabular}{ | l | l | p{3cm} | p{5cm} |}
+    \hline
+    \hline
+    \textbf{Byte Field} & \textbf{Field Name} & \textbf{Value} & \textbf{Notes} \\ \hline \hline
+    8 & Message Major Type & $0x64$ (`d') &  \\    \hline
+    9 & Message Minor Type & $0x63$ (`c') &  \\    \hline
+    \end{tabular}
+\end{center}
+\noindent
+\textbf{Payload:}
+\begin{framed}
+Specific Payload
+\end{framed}
+
+
+\subsection{Direct Request Message}
+
+\textbf{Header:}
+\begin{center}
+    \rowcolors{1}{rahmen!8}{white}
+    \begin{tabular}{ | l | l | p{3cm} | p{5cm} |}
+    \hline
+    \hline
+    \textbf{Byte Field} & \textbf{Field Name} & \textbf{Value} & \textbf{Notes} \\ \hline \hline
+    8 & Message Major Type & $0x64$ (`d') &  \\    \hline
+    9 & Message Minor Type & $0x72$ (`r') &  \\    \hline
+    \end{tabular}
+\end{center}
+\noindent
+\textbf{Payload:}
+\begin{framed}
+Specific payload.
+\end{framed}
+
+\subsection{Direct OS Specific Request Message}
+
+\textbf{Header:}
+\begin{center}
+    \rowcolors{1}{rahmen!8}{white}
+    \begin{tabular}{ | l | l | p{3cm} | p{5cm} |}
+    \hline
+    \hline
+    \textbf{Byte Field} & \textbf{Field Name} & \textbf{Value} & \textbf{Notes} \\ \hline \hline
+    8 & Message Major Type & $0x64$ (`d') &  \\    \hline
+    9 & Message Minor Type & $0x6f$ (`o') &  \\    \hline
+    \end{tabular}
+\end{center}
+\noindent
+\textbf{Payload:}
+\begin{framed}
+Specific payload.
+\end{framed}
+
+\subsection{Direct Shell Command}
+
+\textbf{Header:}
+\begin{center}
+    \rowcolors{1}{rahmen!8}{white}
+    \begin{tabular}{ | l | l | p{3cm} | p{5cm} |}
+    \hline
+    \hline
+    \textbf{Byte Field} & \textbf{Field Name} & \textbf{Value} & \textbf{Notes} \\ \hline \hline
+    8 & Message Major Type & $0x64$ (`d') &  \\    \hline
+    9 & Message Minor Type & $0x73$ (`s') &  \\    \hline
+    \end{tabular}
+\end{center}
+\noindent
+\textbf{Payload:}
+\begin{framed}
+Specific payload.
+\end{framed}
+
+
+\begin{landscape}
+
+\subsection{Combined Message -- Needs revision...}
+\begin{framed}
+\begin{itemize}
+\item Packet Encapsulation
+\begin{itemize}
+
+\item Check individual messages being forwarded together for integrity.
+\item Arrange individual messages one after another in the forwarding message body.
+\item Compute packet CRC32.
+
+\end{itemize}
+
+\item Packet Decoding
+\begin{itemize}
+\item Check Header and Message CRC.
+\item Read first 32 bytes in body for the header of the first encapsulated message.
+\item Extract first message body and CRC32.
+\item Process the encapsulated message as a regular message.
+\item Continue until the end of all encapsulated messages.
+\end{itemize}
+\end{itemize}
+\end{framed}
+
+\begin{center}
+    \rowcolors{1}{rahmen!8}{white}
+    \begin{tabular}{ | l | l | p{3cm} | p{5cm} |}
+    \hline
+    \hline
+    \textbf{Byte Field} & \textbf{Field Name} & \textbf{Value} & \textbf{Notes} \\ \hline \hline
+    8 & Message Major Type & $0x63$ (`c') &  \\    \hline
+    9 & Message Minor Type & $0x66$ (`f') & \\    \hline
+    \end{tabular}
+\end{center}
+\begin{bytefield}[bitwidth=2.2in]{4}
+\bitheader{0,1,2,3} \\
+\begin{rightwordgroup}{40 Byte\\ Packet\\ Header}
+\bitbox{1}{Prot\_Ver: Maj\_N:Min\_N (0)}
+\bitbox{1}{Flag: Dev\_P:Msg\_P:Pref (1)}
+\bitbox{2}{Length of Message Body: Len\_byte 2 (2), Len\_byte 1 (3)}
+\\
+\bitbox{4}{Message Time Stamp: Time 4 (4), Time 3 (5), Time 2 (6), Time 1 (7)}
+\\
+\bitbox{1}{Msg\_Mj\_Type (8)}
+\bitbox{1}{Msg\_Mi\_Type (9)}
+\bitbox{1}{Ext\_Header (10) }
+\bitbox{1}{Optional Key (11) }
+\\
+\bitbox{4}{S\_UniqID\_byte 8 (12), S\_UniqID\_byte 7 (13), S\_UniqID\_byte 6 (14), S\_UniqID\_byte 5 (15)}
+\\
+\bitbox{4}{S\_UniqID\_byte 4 (16), S\_UniqID\_byte 3 (17), S\_UniqID\_byte 2 (18), S\_UniqID\_byte 1 (19)}
+\\
+\bitbox{4}{R\_UniqID\_byte 8 (20), R\_UniqID\_byte 7 (21), R\_UniqID\_byte 
+6 (22), R\_UniqID\_byte 5 (23)}
+\\
+\bitbox{4}{R\_UniqID\_byte 4 (24), R\_UniqID\_byte 3 (25), R\_UniqID\_byte 2 
+(26), R\_UniqID\_byte 1 (27)}
+\\
+\bitbox{2}{Snd Session Number: Session\_No\_Hi (28), Session\_No\_Lo (29)}
+\bitbox{2}{Resp Session Number: Session\_No\_Hi (30), Session\_No\_Lo (31)}
+\\
+\bitbox{3}{Snd\_Seq 3 (32), Snd\_Seq 2 (33), Snd\_Seq 1 (34)}
+\bitbox{1}{Resp\_Seq 3 (35)}
+\\
+\bitbox{2}{Resp\_Seq 2 (36), Resp\_Seq 1 (37)}
+\bitbox{2}{CRC\_16\_byte1 (38), CRC\_16\_byte2 (39)}
+\end{rightwordgroup}
+\\
+\begin{rightwordgroup}{N Byte\\ Message\\ Payload}
+\\
+\bitbox{4}{[Header1][Body1][Footer1]}
+\\
+\bitbox{4}{[Header2][Body2][Footer2]}
+\\
+\bitbox{4}{\vdots }
+\\
+\bitbox{4}{...}
+\end{rightwordgroup}
+\\
+\\
+\begin{rightwordgroup}{4 Byte\\ Packet\\ Footer}
+\bitbox{4}{CRC\_32 (39+Len(N--Bytes Data))}
+\end{rightwordgroup}
+\end{bytefield}
+\end{landscape}
