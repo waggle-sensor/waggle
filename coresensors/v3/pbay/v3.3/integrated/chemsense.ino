@@ -451,7 +451,7 @@ void Carrier()
         carbon_monoxide[3] = formatted_data_buffer[1];
         carbon_monoxide[4] = formatted_data_buffer[2];
 
-        // flag_CHEM_WHILE = false;
+        flag_CHEM_WHILE = false;
 
 #ifdef SERIAL_DEBUG
         // to check output
@@ -538,7 +538,7 @@ void Carrier()
         CO_LMP_temp[2] = formatted_data_buffer[0];
         CO_LMP_temp[3] = formatted_data_buffer[1];
 
-        flag_CHEM_WHILE = false;
+        //flag_CHEM_WHILE = false;
 
 #ifdef SERIAL_DEBUG
         // to check output

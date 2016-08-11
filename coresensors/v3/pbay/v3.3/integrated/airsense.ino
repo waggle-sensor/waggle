@@ -215,40 +215,63 @@ void airsense_acquire (void)
 
 
 
-// #ifdef SPV1840LR5HB_include
-//     long SPV_1_AMPV[100];
-//     double SPV_1_AMPV_AVG = 0;
+#ifdef SPV1840LR5HB_include
 
-//     for(int i = 0; i < 100; i++)
-//     {
-//         SPV_1_AMPV[i] = 512 - analogRead(SPV_1_AMP);
-//         if (SPV_1_AMPV[i] < 0)
-//         {
-//             SPV_1_AMPV[i] = SPV_1_AMPV[i] * -1;
-//         }
-//         delay(1);
-//     }
+    for (int i = 0; i < 10; i++)
+    {
+        Temp_uint16 = analogRead(PIN_RAW_MIC);
+        SerialUSB.print(Temp_uint16);
+        SerialUSB.print("&");
 
-//     for(int i = 0; i < 100; i++)
-//     {
-//         SPV_1_AMPV_AVG = ((SPV_1_AMPV_AVG * i) + SPV_1_AMPV[i]) / (i+1);
-//     }
+        Temp_uint16 = analogRead(PIN_SPV_AMP);
+        SerialUSB.print(Temp_uint16);
+        SerialUSB.print(" ");
+    }
 
-//     SPV1840LR5HB[1] = (1 << 7) | LENGTH_FORMAT1;
+    format1(Temp_uint16);
 
-//     format1(int(SPV_1_AMPV_AVG * 10));
+    SPV1840LR5HB[1] = (1 << 7) | LENGTH_FORMAT1;
+    SPV1840LR5HB[2] = formatted_data_buffer[0];
+    SPV1840LR5HB[3] = formatted_data_buffer[1];
 
-//     SPV1840LR5HB[2] = formatted_data_buffer[0];
-//     SPV1840LR5HB[3] = formatted_data_buffer[1];
+    // long SPV_1_AMPV[100];
+    // double SPV_1_AMPV_AVG = 0;
 
-//     #ifdef SERIAL_DEBUG
-//     // SerialUSB.print("SPV1840LR5HB: ");
-//     // SerialUSB.println(Temp_uint16);
+    // for(int i = 0; i < 100; i++)
+    // {
+    //     int SPV_temp_PIN_AMP = analogRead(PIN_SPV_AMP);
+    //     SerialUSB.print(SPV_temp_PIN_AMP);
+    //     SerialUSB.print(" ");
 
-//     for (i = 0; i < LENGTH_FORMAT1; i++)
-//         SerialUSB.print(formatted_data_buffer[i],HEX);
-//     #endif
-//     #endif
+    //     SPV_1_AMPV[i] = 512 - analogRead(PIN_SPV_AMP);
+    //     // SPV_1_AMPV[i] = 512 - analogRead(SPV_1_AMP);
+    //     if (SPV_1_AMPV[i] < 0)
+    //     {
+    //         SPV_1_AMPV[i] = SPV_1_AMPV[i] * -1;
+    //     }
+    //     delay(1);
+    // }
+
+    // for(int i = 0; i < 100; i++)
+    // {
+    //     SPV_1_AMPV_AVG = ((SPV_1_AMPV_AVG * i) + SPV_1_AMPV[i]) / (i+1);
+    // }
+
+    // SPV1840LR5HB[1] = (1 << 7) | LENGTH_FORMAT1;
+
+    // format1(int(SPV_1_AMPV_AVG * 10));
+
+    // SPV1840LR5HB[2] = formatted_data_buffer[0];
+    // SPV1840LR5HB[3] = formatted_data_buffer[1];
+
+    // #ifdef SERIAL_DEBUG
+    // // SerialUSB.print("SPV1840LR5HB: ");
+    // // SerialUSB.println(Temp_uint16);
+
+    // for (i = 0; i < LENGTH_FORMAT1; i++)
+    //     SerialUSB.print(formatted_data_buffer[i],HEX);
+    // #endif
+    #endif
 
 
 // #ifdef TSYS01_include
@@ -347,64 +370,63 @@ void airsense_avg()
 #endif
 
 
-#ifdef SPV1840LR5HB_include
-    SPV1840LR5HB[1] = (1 << 7) | LENGTH_FORMAT1;
+// #ifdef SPV1840LR5HB_include
+//     SPV1840LR5HB[1] = (1 << 7) | LENGTH_FORMAT1;
 
-    Temp_uint16 = analogRead(PIN_SPV_AMP);
-    // SerialUSB.println(Temp_uint16);
+//     // Temp_uint16 = analogRead(PIN_SPV_AMP);
+//     // SerialUSB.println(Temp_uint16);
 
-    // Temp_uint16 = analogRead(PIN_SVP_SPL);  // zero always
-    // SerialUSB.println(Temp_uint16);
+//     // Temp_uint16 = analogRead(PIN_SVP_SPL);  // zero always
+//     // SerialUSB.println(Temp_uint16);
 
-    // SerialUSB.println(" ");
+//     // SerialUSB.println(" ");
 
-    format1(Temp_uint16);
-    SPV1840LR5HB[2] = formatted_data_buffer[0];
-    SPV1840LR5HB[3] = formatted_data_buffer[1];
+//     // format1(Temp_uint16);
+//     // SPV1840LR5HB[2] = formatted_data_buffer[0];
+//     // SPV1840LR5HB[3] = formatted_data_buffer[1];
 
-    #ifdef SERIAL_DEBUG
-    SerialUSB.print("SPV1840LR5HB: ");
-    SerialUSB.println(Temp_uint16);
-    #endif
-#endif
-    // long SPV_1_AMPV[100];
-    // double SPV_1_AMPV_AVG = 0;
+//     // #ifdef SERIAL_DEBUG
+//     // SerialUSB.print("SPV1840LR5HB: ");
+//     // SerialUSB.println(Temp_uint16);
+//     // #endif
 
-    // for(int i = 0; i < 100; i++)
-    // {
-    //     SPV_1_AMPV[i] = 512 - analogRead(SPV_1_AMP);
-    //     if (SPV_1_AMPV[i] < 0)
-    //     {
-    //         SPV_1_AMPV[i] = SPV_1_AMPV[i] * -1;
-    //     }
-    //     delay(1);
-    // }
+//     long SPV_1_AMPV[100];
+//     double SPV_1_AMPV_AVG = 0;
 
-    // for(int i = 0; i < 100; i++)
-    //     SPV_1_AMPV_AVG = ((SPV_1_AMPV_AVG * i) + SPV_1_AMPV[i]) / (i + 1);
+//     for(int i = 0; i < 100; i++)
+//     {
+//         SPV_1_AMPV[i] = 512 - analogRead(PIN_SPV_AMP);
+//         if (SPV_1_AMPV[i] < 0)
+//             SPV_1_AMPV[i] = SPV_1_AMPV[i] * -1;
+//         delay(1);
+//     }
 
-    // SPV1840LR5HB[1] = (1 << 7) | LENGTH_FORMAT1;
+//     for(int i = 0; i < 100; i++)
+//         SPV_1_AMPV_AVG = ((SPV_1_AMPV_AVG * i) + SPV_1_AMPV[i]) / (i + 1);
 
-    // if (repeat == 1)
-    //     prev_SPV = int(SPV_1_AMPV_AVG * 10);
-    // else
-    // {
-    //     curr_SPV = (int(SPV_1_AMPV_AVG * 10) + prev_SPV)/2;
-    //     prev_SPV = curr_SPV;
-    // }
+//     SPV1840LR5HB[1] = (1 << 7) | LENGTH_FORMAT1;
 
-    // format1(curr_SPV);
+//     if (repeat == 1)
+//         prev_SPV = int(SPV_1_AMPV_AVG * 10);
+//     else
+//     {
+//         curr_SPV = (int(SPV_1_AMPV_AVG * 10) + prev_SPV)/2;
+//         prev_SPV = curr_SPV;
+//     }
 
-    // SPV1840LR5HB[2] = formatted_data_buffer[0];
-    // SPV1840LR5HB[3] = formatted_data_buffer[1];
+//     format1(curr_SPV);
 
-    // #ifdef SERIAL_DEBUG
-    // // SerialUSB.print("SPV1840LR5HB: ");
-    // // SerialUSB.println(Temp_uint16);
+//     SPV1840LR5HB[2] = formatted_data_buffer[0];
+//     SPV1840LR5HB[3] = formatted_data_buffer[1];
 
-    // for (i = 0; i < LENGTH_FORMAT1; i++)
-    //     SerialUSB.print(formatted_data_buffer[i],HEX);
-    // #endif
+//     #ifdef SERIAL_DEBUG
+//     // SerialUSB.print("SPV1840LR5HB: ");
+//     // SerialUSB.println(Temp_uint16);
+
+//     for (i = 0; i < LENGTH_FORMAT1; i++)
+//         SerialUSB.print(formatted_data_buffer[i],HEX);
+//     #endif
+// #endif
 
 #ifdef TSYS01_include
     TSYS01_read();

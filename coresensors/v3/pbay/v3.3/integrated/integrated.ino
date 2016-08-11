@@ -100,8 +100,8 @@ void loop()
         #endif
         }
 
-    flag_CHEM_WHILE = true;
     #ifdef CHEMSENSE_INCLUDE
+        flag_CHEM_WHILE = true;
         chemsense_acquire();
     #endif
     }

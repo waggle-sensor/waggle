@@ -1,9 +1,9 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2016.7.5)  12 JUL 2016 14:23
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2016.7.5)  11 AUG 2016 13:58
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**sensorStreamFormat.tex
-(./sensorStreamFormat.tex
+**sensorStreamFormat_v2.tex
+(./sensorStreamFormat_v2.tex
 LaTeX2e <2011/06/27>
 Babel <3.9h> and hyphenation patterns for 2 languages loaded.
 (/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
@@ -1234,8 +1234,12 @@ LaTeX Font Info:    Try loading font information for T1+cmss on input line 44.
 (/usr/share/texlive/texmf-dist/tex/latex/base/t1cmss.fd
 File: t1cmss.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
-(./sensorStreamFormat.aux)
-\openout1 = `sensorStreamFormat.aux'.
+(./sensorStreamFormat_v2.aux
+
+LaTeX Warning: Label `ssec:first' multiply defined.
+
+)
+\openout1 = `sensorStreamFormat_v2.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 63.
 LaTeX Font Info:    ... okay on input line 63.
@@ -1419,36 +1423,41 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 \c__siunitx_mathtt_int=\count285
  [1
 
-{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] (./sensorStreamFormat.toc)
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] (./sensorStreamFormat_v2.t
+oc [1])
 \tf@toc=\write4
-\openout4 = `sensorStreamFormat.toc'.
+\openout4 = `sensorStreamFormat_v2.toc'.
 
- [1] [2] (./interfaceImg.tex
+ [2] (./interfaceImg.tex
 <g4353.png, id=22, 292.6935pt x 330.2739pt>
 File: g4353.png Graphic file (type png)
  <use g4353.png>
-Package pdftex.def Info: g4353.png used on input line 5.
+Package pdftex.def Info: g4353.png used on input line 7.
 (pdftex.def)             Requested size: 289.07999pt x 326.2011pt.
 )
 (./packetStructure.tex [3 <./g4353.png>]
-Underfull \hbox (badness 10000) in paragraph at lines 68--86
+Underfull \hbox (badness 10000) in paragraph at lines 69--87
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 68--86
+Underfull \hbox (badness 10000) in paragraph at lines 69--87
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 68--86
+Underfull \hbox (badness 10000) in paragraph at lines 69--87
 
  []
 
-LaTeX Font Info:    Try loading font information for T1+cmtt on input line 86.
+LaTeX Font Info:    Try loading font information for T1+cmtt on input line 87.
 (/usr/share/texlive/texmf-dist/tex/latex/base/t1cmtt.fd
 File: t1cmtt.fd 1999/05/25 v2.5h Standard LaTeX font definitions
-) [4]) (./dataFormat.tex [5]
+)
+Package mdframed Info: Box was splittet wrong
+ starting loop to iterate the splitting point
+(mdframed)              on input line 97.
+ [4]) (./dataFormat.tex [5]
 Underfull \hbox (badness 10000) in paragraph at lines 45--47
 
  []
@@ -1517,32 +1526,41 @@ Overfull \hbox (7.32335pt too wide) in paragraph at lines 1239--1253
  [][] 
  []
 
-[19]) [20] (./sensorStreamFormat.aux) ) 
+[19]) (./sensorDataUnits.tex [20]
+Underfull \vbox (badness 10000) detected at line 67
+ []
+
+[21] [22] [23]) [24] (./sensorStreamFormat_v2.aux)
+
+LaTeX Warning: There were multiply-defined labels.
+
+ ) 
 Here is how much of TeX's memory you used:
- 23370 strings out of 495028
- 457044 string characters out of 6181498
- 526355 words of memory out of 5000000
- 26114 multiletter control sequences out of 15000+600000
- 15334 words of font info for 35 fonts, out of 8000000 for 9000
+ 23382 strings out of 495028
+ 457275 string characters out of 6181498
+ 521358 words of memory out of 5000000
+ 26121 multiletter control sequences out of 15000+600000
+ 16868 words of font info for 37 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 68i,11n,77p,10431b,1335s stack positions out of 5000i,500n,10000p,200000b,80000s
- </home/spark/.texmf-var/fonts/pk/ljfour
-/jknappen/ec/ectt0900.600pk> </home/spark/.texmf-var/fonts/pk/ljfour/jknappen/e
-c/ecbx1200.600pk> </home/spark/.texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1000.
-600pk> </home/spark/.texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1440.600pk> </ho
-me/spark/.texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm1000.600pk> </home/spark/.t
-exmf-var/fonts/pk/ljfour/jknappen/ec/eccc1200.600pk> </home/spark/.texmf-var/fo
-nts/pk/ljfour/jknappen/ec/eccc1440.600pk> </home/spark/.texmf-var/fonts/pk/ljfo
-ur/jknappen/ec/ecxc1440.600pk> </home/spark/.texmf-var/fonts/pk/ljfour/jknappen
-/ec/ecxc2488.600pk></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/c
-m/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr1
-0.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></
-usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/sh
-are/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb>
-Output written on sensorStreamFormat.pdf (21 pages, 1128695 bytes).
+ 68i,12n,77p,10434b,1335s stack positions out of 5000i,500n,10000p,200000b,80000s
+ </home/spark/.texmf-var/fonts/pk/ljfour/jknappen/ec/ectt0900.600pk> </home/s
+park/.texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1200.600pk> </home/spark/.texmf
+-var/fonts/pk/ljfour/jknappen/ec/ecbx1000.600pk> </home/spark/.texmf-var/fonts/
+pk/ljfour/jknappen/ec/ecbx1440.600pk> </home/spark/.texmf-var/fonts/pk/ljfour/j
+knappen/ec/ecrm1000.600pk> </home/spark/.texmf-var/fonts/pk/ljfour/jknappen/ec/
+eccc1200.600pk> </home/spark/.texmf-var/fonts/pk/ljfour/jknappen/ec/eccc1440.60
+0pk> </home/spark/.texmf-var/fonts/pk/ljfour/jknappen/ec/ecxc1440.600pk> </home
+/spark/.texmf-var/fonts/pk/ljfour/jknappen/ec/ecxc2488.600pk></usr/share/texliv
+e/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texm
+f-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist
+/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/
+type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/pu
+blic/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/a
+msfonts/cm/cmsy7.pfb>
+Output written on sensorStreamFormat_v2.pdf (25 pages, 1157343 bytes).
 PDF statistics:
- 454 PDF objects out of 1000 (max. 8388607)
- 103 compressed objects within 2 object streams
+ 480 PDF objects out of 1000 (max. 8388607)
+ 115 compressed objects within 2 object streams
  0 named destinations out of 1000 (max. 500000)
  18 words of extra memory for PDF output out of 10000 (max. 10000000)
 

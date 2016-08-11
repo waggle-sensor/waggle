@@ -50,7 +50,7 @@
 #define PIN_HBT             8               // HBEAT PIN (ON/OFF)
 // #define PIN_GP2Y_OUT        A7
 // #define PIN_GP2Y_IN         A4
-#define PIN_SPV_AMP         A5
+#define PIN_SPV_AMP         A5  // Analog In 5, PA4 @ Atmel
 #define PIN_SVP_SPL         A6
 #define PIN_RAW_MIC         A9
 
@@ -62,7 +62,7 @@
 #define AIRSENSE_INCLUDE 0x01
 #define LIGHTSENSE_INCLUDE 0x01
 #define CHEMSENSE_INCLUDE 0x01
-#define ALPHASENSE_INCLUDE 0x01
+// #define ALPHASENSE_INCLUDE 0x01
 //*************************************************************** IS BEING USED OR NOT
 
 // First byte for every formatted buffers **************************** ARE USED IN AIR/LIGHT/CHEM

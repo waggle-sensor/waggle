@@ -30,7 +30,7 @@
 
 // #ifdef SPV1840LR5HB_include
 // #define SPV_1_SPL 6  // no use
-// #define SPV_1_AMP 5  // airsense
+// #define SPV_1_AMP 5  // airsense, is this a pin number???
 // #endif
 
 #ifdef TSL250RD_1_include
