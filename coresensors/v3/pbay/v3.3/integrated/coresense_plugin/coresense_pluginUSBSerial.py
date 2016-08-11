@@ -6,6 +6,8 @@ import time
 import Queue
 import struct
 
+import numpy
+
 from RTlist import getRT
 
 _preamble = '\xaa'
@@ -26,7 +28,7 @@ __lenFmt6 = 2
 __lenFmt7 = 4
 __lenFmt8 = 3
 
-#sensor_list = ["Board MAC","TMP112","HTU21D","GP2Y1010AU0F","BMP180","PR103J2","TSL250RD","MMA8452Q","SPV1840LR5H-B","TSYS01","HMC5883L","HIH6130","APDS-9006-020","TSL260RD","TSL250RD","MLX75305","ML8511","D6T","MLX90614","TMP421","SPV1840LR5H-B","Total reducing gases","Ethanol (C2H5-OH)","Nitrogen Di-oxide (NO2)","Ozone (03)","Hydrogen Sulphide (H2S)","Total Oxidizing gases","Carbon Monoxide (C0)","Sulfur Dioxide (SO2)","SHT25","LPS25H","Si1145","Intel MAC"]
+# sensor_list = ["Board MAC","TMP112","HTU21D","GP2Y1010AU0F","BMP180","PR103J2","TSL250RD","MMA8452Q","SPV1840LR5H-B","TSYS01","HMC5883L","HIH6130","APDS-9006-020","TSL260RD","TSL250RD","MLX75305","ML8511","D6T","MLX90614","TMP421","SPV1840LR5H-B","Total reducing gases","Ethanol (C2H5-OH)","Nitrogen Di-oxide (NO2)","Ozone (03)","Hydrogen Sulphide (H2S)","Total Oxidizing gases","Carbon Monoxide (C0)","Sulfur Dioxide (SO2)","SHT25","LPS25H","Si1145","Intel MAC"]
 sensor_list = ["Board MAC","TMP112","HTU21D","HIH4030","BMP180","PR103J2","TSL250RD","MMA8452Q","SPV1840LR5H-B","TSYS01","HMC5883L","HIH6130","APDS-9006-020","TSL260RD","TSL250RD","MLX75305","ML8511","D6T","MLX90614","TMP421","SPV1840LR5H-B","Total reducing gases","Ethanol (C2H5-OH)","Nitrogen Di-oxide (NO2)","Ozone (03)","Hydrogen Sulphide (H2S)","Total Oxidizing gases","Carbon Monoxide (C0)","Sulfur Dioxide (SO2)","SHT25","LPS25H","Si1145","Intel MAC","CO ADC temp","IAQ/IRR ADC temp","O3/NO2 ADC temp","SO2/H2S ADC temp","CO LMP temp","Accelerometer","Gyroscope", "alpha histo", "alpha firmware", "alpha conf a", "alpha conf b", "alpha conf c", "alpha conf d"]
 #decoded_output = ['0' for x in range(16)]
 
@@ -208,6 +210,12 @@ def parse_sensor (sensor_id,sensor_data):
         print "{:2.2f}".format(HTU21D_temp), "{:2.2f}".format(HTU21D_compensate_humid)
 #        print  format6(sensor_data[0:0+__lenFmt6]), format6(sensor_data[0+__lenFmt6:0+__lenFmt6+__lenFmt6])
 
+#"GP2Y1010AU0F": REMOVED, NOT IN ANY VERSION
+    # elif sensor_id == '3':
+    #     print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
+    #     print  format6(sensor_data[0:0+__lenFmt6]), format5(sensor_data[0+__lenFmt6:0+__lenFmt6+__lenFmt5])
+
+
 #"HIH4030": how does the date format changed? "GP2Y1010AU0F" has been chaned
     elif sensor_id == '3':
         HIH4030_val = format1(sensor_data)
@@ -250,8 +258,21 @@ def parse_sensor (sensor_id,sensor_data):
 
 #"SPV1840LR5H-B" "SPV1840LR5H-B"
     elif sensor_id == '8':
+        # print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
+        # print  format1(sensor_data)
+
+        try: 
+            SPV_TSL_RAW = format1(sensor_data)   # raw integer [0, 1023] of TSL
+            V_0 = SPV_TSL_RAW * 5.00 / 1023.00         # raw voltage of TSL
+            V_I = (V_0 - 1.75) / 453.33 - 1.75   # raw voltage of SPV
+            SPV_RAW = (-V_I * 1023.00) / 5.00          # raw integer [0, 1023] of SPV
+            ############################################################################ Right till here
+            voltage_level = -numpy.log10(-V_I / 3.3) * 20.00 # sound lever in dB
+        except Exception, e:
+            print str(e)
+
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  format1(sensor_data)
+        print  "{:2.6f}".format(voltage_level), "{:2.6f}".format(V_0), "{:2.6f}".format(V_I), "{:2.6f}".format(SPV_RAW)
 
 #"TSYS01" "TSYS01"
     elif sensor_id == '9':
@@ -328,25 +349,33 @@ def parse_sensor (sensor_id,sensor_data):
         # print format1(sensor_data), "{:5.2f}".format(ML8511_voltage), "{:5.2f}".format(ML8511_val)
         print "{:2.6f}".format(ML8511_voltage), "{:5.2f}".format(ML8511_val)
 
-#"D6T" has been removed
-    # elif sensor_id == '17':
-    #     print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-    #     data = ''
-    #     for i in xrange(len(sensor_data)/2):
-    #         data = data + str(format6(sensor_data[2*i:2*(i+1)])) + ' '
-    #     print  data
-#"MLX90614" "MLX90614"
-    # elif sensor_id == '18':
-    #     print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-    #     print  format6(sensor_data)
+
+# # "D6T" has been removed
+#     elif sensor_id == '17':
+#         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
+#         data = ''
+#         for i in xrange(len(sensor_data)/2):
+#             data = data + str(format6(sensor_data[2*i:2*(i+1)])) + ' '
+#         print  data
+# # "MLX90614" "MLX90614"
+#     elif sensor_id == '18':
+#         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
+#         print  format6(sensor_data)
+
+
 #"TMP421" "TMP421"
     elif sensor_id == '19':
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
         print  format6(sensor_data)
-#"SPV1840LR5H-B" has been removed
-    #elif sensor_id == '20':
-        #print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        #print  format1(sensor_data)
+
+
+# "SPV1840LR5H-B" has been removed
+    elif sensor_id == '20':
+        SPV_2_OUT = (format1(sensor_data) / 32768.0000) * 2.048
+        SPV_2_voltage = SPV_2_OUT * 5.00 / 2.00
+        SPV_2_val = -20 * numpy.log10(SPV_2_voltage/3.3)
+        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
+        print  "{:2.6f}".format(SPV_2_val)
 
 
 #"Total reducing gases" "Total reducing gases"

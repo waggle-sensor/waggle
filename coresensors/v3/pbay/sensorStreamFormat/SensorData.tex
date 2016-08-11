@@ -1,7 +1,7 @@
 \newpage
 \section{Sub-packets}
 
-As shortly explained in document section \ref{ssec:sub-pack}, data sub-packets are generated depending on its designated data format and length. The first byte of the sub-packet is sensor ID for each parameter, and the second byte means validity of the packet and length of the sensor data. The packet validity is initially 0, and it will be changed to 1 when each sub-packet gets sensor value from sensor. And after a transmission packet is trasmitted, the validity becomes 0 again. The form of sub-packet is shown below.
+As shortly explained in document section \ref{ssec:sub-pack}, data sub-packets are generated depending on its designated data format and length. The first byte of the sub-packet is sensor ID for each parameter, and the second byte means validity of the packet and length of the sensor data. The packet validity is initially 0, and it will be changed to 1 when each sub-packet gets data. fter a transmission packet is trasmitted, the validity becomes 0 again. The form of sub-packet is shown below.
 
 \begin{table}[H]
 \centering
@@ -22,8 +22,8 @@ One Byte & One Byte & up to 127 Bytes \\
 \subsection{Parameters}
 
 The sensor boards output a set of parameters which are identified by a unique ID. Each parameter
-has a set of values associated with it which are encoded in an appropriate data format. The table
-below lists the various parameters produced by the sensor boards, the unique source ID used to identify them, the values produced by them and the format in which the value is encoded.
+has a set of values associated with it which are encoded in an designated data format. The table
+below lists the various parameters produced by the sensor boards, the unique source ID used to identify each sensor, the values produced by the sensors, and the format in which each of the value is encoded.
 
 
 \begin{center}
@@ -130,7 +130,7 @@ Byte[0] & Byte[1] & Bytes[2 -- 7]\\
 \subsubsection{ TMP112}
 
 TMP112 is a digital temperature sensor, which provides the temperature values
-in centigrade.
+in Celsius.
 
 \begin{table}[H]
 \centering
@@ -166,7 +166,7 @@ Temperature & $^{\circ}$C & None & None \\
 
 \subsubsection{ HTU21D}
 HTU21D is a digital temperature and humidity sensor, which provides
-relative humidity value (\%RH) and temperature value in centigrade.
+relative humidity value (\%RH) and temperature value in Celsius.
 
 \begin{table}[H]
 \centering
@@ -205,8 +205,8 @@ Relative Humidity & \%RH & Linear Fitting & \%RH \\
 \subsubsection{ HIH4030}
 
 HIH4030 is an analog humidity sensor, which provides an analog voltage representative
-of the relative humidity. The analog voltage is converted and packed into Format 1 using
-a 10-bit ADC.
+of the relative humidity. 
+% The analog voltage is converted and packed into Format 1 using a 10-bit ADC.
 
 \begin{table}[H]
 \centering
@@ -244,7 +244,7 @@ Relative Humidity & raw integer & Bulk Curve Fitting & \%RH \\
 \subsubsection{ BMP180}
 
 BMP180 is an digital temperature and barometric pressure sensor,
-which provides temperature in centigrade and pressure in hectopascals.
+which provides temperature in Celsius and pressure in Pa.
 
 \begin{table}[H]
 \centering
@@ -320,7 +320,7 @@ Temperature & raw integer & Bulk Curve Fitting & $^{\circ}$C \\
 
 \subsubsection{ TSL250RD}
 
-TSL250RD is an analog visible light sensor that produces an analog voltage that is
+TSL250RD is an analog visible light sensor that provides an analog voltage that is
 representative of the irradiance measured in $\mu$W/cm$^2$. The output voltage of the sensor
 is converted and packed into Format 1 using a 10-bit ADC.
 
@@ -447,7 +447,7 @@ Sound Intensity & raw integer & Bulk Curve Fitting & dB \\
 \subsubsection{ TSYS01}
 
 TSYS01 is a digital temperature sensor, which provides the temperature values
-in centigrade.
+in Celsius.
 
 \begin{table}[H]
 \centering
@@ -528,7 +528,7 @@ Mag. Field Z & Gauss & none & none \\
 \subsubsection{ HIH6130}
 
 HIH6130 is a digital temperature and humidity sensor, which provides
-relative humidity value (\%RH) and temperature value in centigrade.
+relative humidity value (\%RH) and temperature value in Celsius.
 
 \begin{table}[H]
 \centering
@@ -790,7 +790,7 @@ UV Light Intensity & raw integer & Bulk Curve Fitting & UV index \\
 
 \subsubsection{ TMP421}
 TMP421 is a digital temperature sensor, which provides the temperature values
-in centigrade.
+in Celsius.
 
 \begin{table}[H]
 \centering

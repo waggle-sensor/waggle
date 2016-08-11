@@ -1,6 +1,12 @@
-\newpage
 \section{Sensor Data Units}\label{section:parameterUnits}
 \subsection { Raw and Processed} 
+
+
+The outputs of sensor boards need various units for each value.
+The table below lists the units for sensor values.
+`Raw Units' in the table means the unit for the packtized data, which you can get directly from the coresense boards, and `Processed Units' means the unit which can be used after data conversion through designated equations.
+The equations will be provided comming subsections.
+
 
 \begin{center}
 \rowcolors{2}{white}{black!5}
@@ -41,7 +47,7 @@
     PR103J2 & integer & \degree C & \\
     TSL250RD & integer & $\mu$w/m$^2$ & \\ % **finalize after discussion with EVS** \\
     MMA8452Q & g, g, g, g & g, g, g, g & \\
-    SPV1840LR5H-B & integer & dB & Pin\#: PA5@Atmel, A5@Arduino Due\\ % integer & dB & \\
+    SPV1840LR5H-B & integer & dB & Pin: PA5(Atmel), A5(Due)\\ % integer & dB & \\
     TSYS01 & \degree C & \degree C & \\
     
     \hline \rowcolor{white} \multicolumn{4}{|c|}{{Lightsense board}} \\ \hline
@@ -58,19 +64,18 @@
 %     SPV1840LR5H-B & integer & dB & \\
 
     \hline \rowcolor{white} \multicolumn{4}{|c|}{{Chemsense board}} \\ \hline
-    Total reducing gases & AFE ADC counts & & data not yet processed \\ % integer & concentration & **finalize after discussion with EVS**\\
+    Total reducing gases & AFE ADC counts & & data not yet processed \\ 
 %     Ethanol & integer & ppm & Quadratic equation with calibrated weights \\
-    Nitrogen dioxide & AFE ADC counts & & data not yet processed \\ % integer & ppm & Quadratic equation with calibrated weights\\
-    Ozone & AFE ADC counts & & data not yet processed \\ % integer & ppm & Quadratic equation with calibrated weights\\
-    Hydrogen sulphide & AFE ADC counts & & data not yet processed \\ % integer & ppm & Quadratic equation with calibrated weights\\
-    Total oxidizing gases & AFE ADC counts & & data not yet processed \\ % integer & concentration & **finalize after discussion with EVS**\\
-    Carbon monoxide & AFE ADC counts & & data not yet processed \\ % integer & ppm & Quadratic equation with calibrated weights\\
-    Sulfur dioxide & AFE ADC counts & & data not yet processed \\ % integer & ppm & Quadratic equation with calibrated weights\\
-    Sensirion (SHT25) & 100ths of \degree C, 100ths of \%RH & \degree C, \%RH & \\ % \degree C, RH \% & \degree C, RH \% & \\
-    LPS25H & 100ths of \degree C, Pa & \degree C, Pa & \\ % \degree C $\times$ 100, RH \% & \degree C, RH \% & \\
+    Nitrogen dioxide & AFE ADC counts & & data not yet processed \\ 
+    Ozone & AFE ADC counts & & data not yet processed \\ 
+    Hydrogen sulphide & AFE ADC counts & & data not yet processed \\ 
+    Total oxidizing gases & AFE ADC counts & & data not yet processed \\
+    Carbon monoxide & AFE ADC counts & & data not yet processed \\
+    Sulfur dioxide & AFE ADC counts & & data not yet processed \\
+    Sensirion (SHT25) & 100ths of \degree C, 100ths of \%RH & \degree C, \%RH & \\
+    LPS25H & 100ths of \degree C, Pa & \degree C, Pa & \\
     Si1145 & fixed value & & firmware is not completed \\
-%     Bosh & hPa& hPa & \\
-    Intel MAC address & No Units & No Units & \\ % 6 Octets in hex notation separated by `:'\\
+    Intel MAC address & No Units & No Units & \\ 
 %     Sensor status (health) & No Units & No Units & 4 bytes of sensor health data\\
     CO ADV temp & 100ths of \degree C & \degree C & \\
     IAQ IRR ADC temp & 100ths of \degree C & \degree C & \\
@@ -97,204 +102,251 @@
 \subsection{ conversion processure}
 
 \subsection{Airsense:}
-\subsubsection{ TMP112} \label{ssec:first}
+\subsubsection{ TMP112, HTU21D, HIH4030, BMP180, MMA8452Q, TSYS01} \label{ssec:first}
 
-Raw ouput of TMP112 is a digital 12-bit value. Coresensor firmware calculates temperature in centigrade using 12-bits of two bytes reading of the sensor output. \\
+Raw outputs from the sensor boards for the sensors (TMP112, HTU21D, HIH4030, BMP180, MMA8452Q, and TSYS01) are the designated sensor value.
 
-{\centering
-  temperature \((\degree C)\) = unsigned integer form of 12-bit digital output $\times$ 0.0625\par
-}
+% Raw ouput of TMP112 is a digital 12-bit value. The 12-bit value is converted to temperature in centigrade using equation below and packetized. \\
 
-\bigbreak
-The equation refers to the resolution for the Temperature ADC in Internal Temperature mode which is 0.0625 \(\degree C/count\).
+% {\centering
+%   temperature \((\degree C)\) = unsigned integer form of 12-bit digital output $\times$ 0.0625\par
+% }
+% 
+% \bigbreak
+% The equation refers to the resolution for the Temperature ADC in Internal Temperature mode which is 0.0625 \(\degree C/count\).
 
-\subsubsection{ HTU21D}
-Raw output values of HTU21D are digital 12-bits / 8-bits (for Temperature / relative humidity) as default. Coresensor firmware calculates  temperature and humidity in centigrade and relative humidity using relevant bits of two bytes reading of the sensor output.
-
-{\centering
- \[ \text{temperature \((\degree C)\)} = \frac{\text{unsigned integer form of digital output}}{2^{16}} \times 175.72 - 46.85 \] 
- \[ \text{humidity \((\%RH)\)} = \frac{\text{unsigned integer form of digital output}}{2^{16}} \times 125 - 6 \]
- \par
- }
-
-\bigbreak
- The calculated humidity is re-calculated in sensor plugin using temperature coefficient compensation equation. \\
-
-{\centering
- humidity \((\%RH)\) = unsigned integer form of  - (25 - temperature) $\times$ 0.15
- \par
-}
-
-\bigbreak
-The equation refers to temperature coefficient of the HTU21D(F) in 0.15 \(\%RH/\degree C\).
-
-\subsubsection{ HIH4030}
-
-Output of HIH4030 is an interger indicating output voltage from the sensor, which is mapped into an integer value between 0 and 1023. Coresensor firmware delivers the two bytes of raw integer value, and equations below can be used to calculate human-readable output value using output voltage from the sensor.
-
-{\centering
- \[ \text{output voltage \((V)\)} = \frac{\text{usinged integer raw output} \times 5}{1023} \] 
- \[ \text{humidity \((\%RH)\)} = (\text{output voltage} - 0.85) \times \frac{100}{3} \]
- \par
- }
-\bigbreak
-The slope term (\(\frac{100}{3}\)) and y-intercept (0.85) are comming from a graph given in the HIH4030 sensor datasheet (figure 4). This slope and y-intercept can be different depending on temperature.
-
-\subsubsection{ BMP180}
-
-Ouput values of BMP180 are 16-bit/24-bit value (temperature/pressure), and the values are post-processed through a library provided by Adafruit Industries. Sensor output values from the coresensor firmware are temperature in centigrade and barometric pressure in pascal.
+% \subsubsection{ HTU21D}
+% Raw output values of HTU21D are digital 12-bits for temperature and 8-bits for relative humidity. The raw values are calculated to temperature in centigrade and relative humidity using equation below and packetized.
+% 
+% {\centering
+%  \[ \text{temperature \((\degree C)\)} = \frac{\text{unsigned integer form of digital output}}{2^{16}} \times 175.72 - 46.85 \] 
+%  \[ \text{humidity \((\%RH)\)} = \frac{\text{unsigned integer form of digital output}}{2^{16}} \times 125 - 6 \]
+%  \par
+%  }
+% 
+% \bigbreak
+%  The calculated humidity is re-calculated in sensor plugin using temperature coefficient compensation equation. \\
+% 
+% {\centering
+%  humidity \((\%RH)\) = unsigned integer form of  - (25 - temperature) $\times$ 0.15
+%  \par
+% }
+% 
+% \bigbreak
+% The equation refers to temperature coefficient of the HTU21D(F) in 0.15 \(\%RH/\degree C\).
+% 
+% \subsubsection{ HIH4030}
+% 
+% Output of HIH4030 is an interger indicating output voltage from the sensor, which is mapped into an integer value between 0 and 1023. Coresensor firmware delivers the two bytes of raw integer value, and equations below can be used to calculate human-readable output value using output voltage from the sensor.
+% 
+% {\centering
+%  \[ \text{output voltage \((V)\)} = \frac{\text{usinged integer raw output} \times 5}{1023} \] 
+%  \[ \text{humidity \((\%RH)\)} = (\text{output voltage} - 0.85) \times \frac{100}{3} \]
+%  \par
+%  }
+% \bigbreak
+% The slope term (\(\frac{100}{3}\)) and y-intercept (0.85) are comming from a graph given in the HIH4030 sensor datasheet (figure 4). This slope and y-intercept can be different depending on temperature.
+% 
+% \subsubsection{ BMP180}
+% 
+% Ouput values of BMP180 are 16-bit/24-bit value (temperature/pressure), and the values are post-processed through a library provided by Adafruit Industries. Sensor output values from the coresensor firmware are temperature in centigrade and barometric pressure in pascal.
 
 
 \subsubsection{ PR103J2}
 
-Output of PR103J2 is an interger indicating output voltage from the sensor, which is mapped into integer values between 0 and 1023. Coresensor firmware delivers the two bytes of raw integer value, and equations below can be used to calculate human-readable output value using output voltage from the sensor and resistance-temperature look-up table (PR103J2 R-T table).
+Output of PR103J2 is an interger indicating output voltage from the sensor, which is mapped into integer values between 0 and 1023. The raw integer value can be converted to resistance value through the equations below. The resistance value is needed to find corresponding temperature in a resistance-temperature look-up table (PR103J2 R-T table).
+
+\bigbreak
+
 
 {\centering
- \[ \text{output voltage } (V) = \frac{\text{usinged integer raw output} \times 5}{1023} \] 
- \[ \text{resistance } (\Omega) = 47000 \times \left(\frac{1023}{\text{voltage}} - 1\right) \]
+ \[ \text{resistance } (\Omega) = 47000 \times \left(\frac{1023}{\text{raw integer}} - 1\right) \]
  \par
  }
 
 
 \subsubsection{ TSL250RD}
 
-What we can get from TSL250RD in airsense board as a raw output is an interger indicating output voltage from the sensor, which is mapped into integer values between 0 and 1023. Coresensor firmware delivers the two bytes of raw integer value, and equations below can be used to calculate human-readable output value as irradiance of visible light in micro-watt per square meter.
+Output of TSL250RD in airsense board is an interger indicating output voltage from the sensor, which is mapped into integer values between 0 and 1023. The raw interger value can be converted to irradiance of visible light in micro-watt per square meter through equations below.
+% The equation refers to irradiance responsivity of TSL250RD which is 0.064 \(mV/(\mu W/cm^2\)), and 0.09 is output voltage of dark condition which is initial offset (without any light -- NEED TO BE CHECKED).
+
+\bigbreak
 
 {\centering
- \[ \text{output voltage }(V) = \frac{\text{usinged integer raw output} \times 5}{1023} \] 
- \[ \text{irradiance } (\mu W/m^2) = \frac{\text{output voltage} - 0.09}{0.064} \]
- \par
- }
- 
-\bigbreak
-The equation refers to irradiance responsivity of TSL250RD which is 0.064 \(mV/(\mu W/cm^2\)), and 0.09 is output voltage of dark condition which is initial offset (without any light -- NEED TO BE CHECKED).
+\[ \text{irradiance } (\mu W/m^2) = \frac{\text{raw integer} \times 5 - 0.09 \times 1023}{0.064 \times 1023} \]
+\par
+}
 
-\subsubsection{ MMA8452Q}
 
-Ouput values of MMA8452Q are actual g value, this depends on scale being set.
+% {\centering
+%  \[ \text{output voltage }(V) = \frac{\text{raw integer} \times 5}{1023} \] \\
+%  \[ \text{irradiance } (\mu W/m^2) = \frac{\text{output voltage} - 0.09}{0.064} \]
+%  \par
+%  }
+
+
+% \subsubsection{ MMA8452Q}
+% 
+% Ouput values of MMA8452Q are actual g value, this depends on scale being set.
 
 \subsubsection{ SPV1840LR5H-B}
 
-Output value of SPV1840LR5H-B is an interger indicating amplified output voltage from the sensor, which is mapped into integer values between 0 and 1023. Coresensor firmware delivers the two bytes of raw integer value, and equations below can be used to calculate human-readable output value as voltage level in decibel (dB).
+Output value of SPV1840LR5H-B is an interger indicating amplified output voltage from the sensor, which is mapped into integer values between 0 and 1023. The raw output can be converted to sound level in decibel (dB) through equations below.
+% The equation refers to external gain as 453.33 which is determined by electric circle design, and input reference voltage as 3.3 (see schematics v3.1). 
+% The equation to calculate sound level is convensional equation for voltage output to decibel (dB).
+
+\bigbreak
 
 {\centering
- \[ \text{amplified output voltage }(V) = \frac{\text{usinged integer raw output} \times 5}{1023} \] 
- \[ \text{output voltage }(V) = \frac{\text{amplified output voltage}}{\text{external Gain}} \] 
- \[ \text{voltage level } (dB) = \log_{10} \frac{\text{output voltage}}{\text{input reference voltage}} \times (-20) \]
+ \[ \text{output voltage }(V) = \frac{\text{raw integer} \times 5 - 1.75 \times 1023 \times 454.33}{453.33 \times 1023} \] \\
+ \[ \text{sound level } (dB) = -20 \times \log_{10} \left( \frac{\text{output voltage}}{3.3}\right) \]
  \par
  }
 
- \bigbreak
- The equation refers to external gain as 450.33 which is determined by electric circle design, and input reference voltage as 3.3 (see schematics v3.1). The equation to calculate voltage level is convensional equation for voltage output to decibel (dB).
- 
-\subsubsection{ TSYS01}
 
-Raw ouput value of TSYS01 is post-processed value through a library provided by  Free Software Foundation, Inc.. Sensor output from the coresensor firmware is temperature in centigrade.
+% {\centering
+%  \[ \text{amplified output voltage }(V) = \frac{\text{usinged integer raw output} \times 5}{1023} \] \\
+%  \[ \text{raw output voltage }(V) = \frac{\text{amplified output voltage} - 1.75}{\text{external Gain}} - 1.75 \] \\
+%  \[ \text{sound level } (dB) = -20 \times \log_{10} \left( \frac{\text{output voltage}}{\text{input reference voltage}}\right) \]
+%  \par
+%  }
 
+%  
+% \subsubsection{ TSYS01}
+% 
+% Raw ouput value of TSYS01 is post-processed value through a library provided by  Free Software Foundation, Inc.. Sensor output from the coresensor firmware is temperature in centigrade.
 
+\bigbreak
 \subsection{Lightsense:}
-\subsubsection{ HMC5883L}
+\subsubsection{ HMC5883L, HIH6130, TMP421}
 
-Ouput values of HMC5883L are post-processed values through a library provided by Adafruit Industries. Sensor output values from the coresensor firmware are acceleration values in Gauss.
+Raw outputs from the sensor boards for the sensors (HMC5883L, HIH6130, and TMP421) are the designated sensor value.
 
-\subsubsection{ HIH6130}
+% Ouput values of HMC5883L are post-processed values through a library provided by Adafruit Industries. Sensor output values from the coresensor firmware are acceleration values in Gauss.
 
-Raw ouput values of HIH6130 are 14-bit temperature and humidity values. Coresensor firmware calculates temperature and humidity in centigrade and relative humidity using 14-bits of two bytes reading of the sensor output.
-
-{\centering
- \[ \text{temperature (\degree C)} = \frac{\text{unsigned integer form of digital output}}{2^{14} - 2} \times 165 - 40 \] 
- \[ \text{humidity (\%RH)} = \frac{\text{unsigned integer form of digital output}}{2^{14} - 2} \times 100 \]
- \par
- }
+% \subsubsection{ HIH6130}
+% 
+% Raw ouput values of HIH6130 are 14-bit temperature and humidity values. Coresensor firmware calculates temperature and humidity in centigrade and relative humidity using 14-bits of two bytes reading of the sensor output.
+% 
+% {\centering
+%  \[ \text{temperature (\degree C)} = \frac{\text{unsigned integer form of digital output}}{2^{14} - 2} \times 165 - 40 \] 
+%  \[ \text{humidity (\%RH)} = \frac{\text{unsigned integer form of digital output}}{2^{14} - 2} \times 100 \]
+%  \par
+%  }
 
 
 \subsubsection[MCP3426]{ APDS-9006-020, TSL260RD, TSL250RD, MLX75305, ML8511 : \\ using MCP3426}
 
-Raw output value of MCP3426 is an digital output which is proportional to the input voltage and programmable gain amplifier (PGA) settings (see schematics v3.1). Default setting of PGA is x1, and we are using 16-bits resolution. Coresensor firmware delivers the two bytes of raw integer value, and coresensor plugin calculates irradiance of light in micro-watt per square meter using voltage output from each sensor. The voltage value need to be calculated regarding to the airsense circuit schematics and output modification equation for MCP3426 circuit. Coresensor firmware delivers the two bytes of raw integer value, and coresensor plugin calculates irradiance of visible light in a designated unit.
+Output value of the ligth sensors (APDS-9006-020, TSL260RD, TSL250RD, MLX75305, and ML8511) are raw integer values which are proportional to the output voltage from the sensor.  The raw integers can be converted to irradiance through equations below. The calculated output voltage is needed to calculate irradiance for each sensor.
+
+\bigbreak
 
 {\centering
- \[ \text{output voltage of MCP3426 }(V) = \frac{\text{unsigned integer form of digital output}}{\text{maximum 16-bit code} + 1} * \text{reference voltage} \]
- \[ \text{input voltage od MCP3426} = \frac{\text{output voltage of MCP3426} * 5}{2} \]
+ \[ \text{output voltage }(V) = \frac{\text{raw integer} \times 2.048 \times 5 }{32767 \times 2}\]
  \par
  }
 
-\bigbreak
-The equation refers to maximum n-bit code which is \( 2^{n - 1} - 1 \), and in case of 16-bit code, the number is 32767. Also reference voltage of MCP3426 is 2.048 \(V\). According to schematics v3.1, the output voltage from each sensor is divided, so the original output voltage can be calculated by the equation given above.
+% Raw output value of MCP3426 is an digital output which is proportional to the input voltage and programmable gain amplifier (PGA) settings (see schematics v3.1). Default setting of PGA is x1, and we are using 16-bits resolution. Coresensor firmware delivers the two bytes of raw integer value, and coresensor plugin calculates irradiance of light in micro-watt per square meter using voltage output from each sensor. The voltage value need to be calculated regarding to the airsense circuit schematics and output modification equation for MCP3426 circuit. Coresensor firmware delivers the two bytes of raw integer value, and coresensor plugin calculates irradiance of visible light in a designated unit.
+% 
+% {\centering
+%  \[ \text{output voltage of MCP3426 }(V) = \frac{\text{unsigned integer form of digital output}}{\text{maximum 16-bit code} + 1} * \text{reference voltage} \]
+%  \[ \text{input voltage od MCP3426} = \frac{\text{output voltage of MCP3426} * 5}{2} \]
+%  \par
+%  }
+% 
+% \bigbreak
+% The equation refers to maximum n-bit code which is \( 2^{n - 1} - 1 \), and in case of 16-bit code, the number is 32767. Also reference voltage of MCP3426 is 2.048 \(V\). According to schematics v3.1, the output voltage from each sensor is divided, so the original output voltage can be calculated by the equation given above.
 
 \paragraph{a. APDS-9006-020}
 
-Raw output value of APDS-9006-020 is an analog current which is proportional to the irradiance. The output current can be converted into voltage value according to the board schematics v3.1.
+Raw output value of APDS-9006-020 is an analog current which is proportional to the irradiance. The output current can be converted irradiance in lux through the equation below.
+
+\bigbreak
 
 {\centering
- \[ \text{output current }(\mu A) = \frac{\text{input voltage to MCP3426}}{0.005} \] 
- \[ \text{irradiance } (lux) = {\text{output current} - 0.000156} * 2.5 \]
+ \[ \text{irradiance } (\text{lux}) = \left( \frac{\text{output voltage}}{0.005} - 0.000156 \right) \times 2.5 \]
  \par
  }
- 
-\bigbreak
-The equation refers to resistance of 5 \(K \Omega \) which is used as 0.005 to calculate current with unit \(\mu A\) as shown in schematics v3.1. Also initial offset of the sensor is applied as 0.000156, and linear relationship factor as 2.5, however these sensor property can be changed base on experiments.
+
+% {\centering
+%  \[ \text{output current }(\mu A) = \frac{\text{output voltage}}{0.005} \] 
+%  \[ \text{irradiance } (lux) = {\text{output current} - 0.000156} * 2.5 \]
+%  \par
+%  }
+%  
+% \bigbreak
+% The equation refers to resistance of 5 \(K \Omega \) which is used as 0.005 to calculate current with unit \(\mu A\) as shown in schematics v3.1. Also initial offset of the sensor is applied as 0.000156, and linear relationship factor as 2.5, however these sensor property can be changed base on experiments.
  
 \paragraph{b. TSL260RD}
 
-Raw output value of TSL260RD is an analog voltage which is inverse proportional to the irradiance. The output voltage from the sensor has been calculated though the equations given in section 5.4.3.
+Raw output value of TSL260RD is an analog voltage which is inverse proportional to the irradiance. The output voltage can be calculated though the equation below.
+
+\bigbreak
 
 {\centering
- \[ \text{irradiance } (\mu W/m^2) = \frac{\text{output current} - 0.005313}{0.058} \]
+ \[ \text{irradiance } (\mu W/m^2) = \frac{\text{output voltage} - 0.005313}{0.058} \]
  \par
  }
  
- \bigbreak
- The equation refers to irradiance responsivity of TSL260RD which is 0.058 \(mV/(\mu W/cm^2\)), and 0.005313 is output voltage of dark condition, which is initial offset (without any light -- NEED TO BE CHECKED).
- 
+%  \bigbreak
+%  The equation refers to irradiance responsivity of TSL260RD which is 0.058 \(mV/(\mu W/cm^2\)), and 0.005313 is output voltage of dark condition, which is initial offset (without any light -- NEED TO BE CHECKED).
+%  
 
 \paragraph{c. TSL250RD}
 
-Raw output value of TSL250RD is an analog voltage which is inverse proportional to the irradiance. The output voltage from the sensor has been calculated though the equations given in section 5.4.3.
+Raw output value of TSL250RD is an analog voltage which is inverse proportional to the irradiance. The output voltage can be calculated though the equation below.
+
+\bigbreak
 
 {\centering
- \[ \text{irradiance } (\mu W/m^2) = \frac{\text{output current} - 0.005313}{0.064} \]
+ \[ \text{irradiance } (\mu W/m^2) = \frac{\text{output voltage} - 0.005313}{0.064} \]
  \par
  }
  
- \bigbreak
- The equation refers to irradiance responsivity of TSL250RD which is 0.064 \(mV/(\mu W/cm^2\)), and 0.005313 is output voltage of dark condition, which is initial offset (without any light -- NEED TO BE CHECKED).
+%  \bigbreak
+%  The equation refers to irradiance responsivity of TSL250RD which is 0.064 \(mV/(\mu W/cm^2\)), and 0.005313 is output voltage of dark condition, which is initial offset (without any light -- NEED TO BE CHECKED).
 
 \paragraph{d. MLX75305}
 
-Raw output value of MLX75305 is an analog voltage which is inverse proportional to the irradiance. The output voltage from the sensor has been calculated though the equations given in section 5.4.3.
+Raw output value of MLX75305 is an analog voltage which is inverse proportional to the irradiance. The output voltage can be calculated though the equation below.
+
+\bigbreak
 
 {\centering
- \[ \text{irradiance } (\mu W/m^2) = \frac{\text{output current} - 0.0996}{0.007} \]
+ \[ \text{irradiance } (\mu W/m^2) = \frac{\text{output voltage} - 0.0996}{0.007} \]
  \par
  }
  
- \bigbreak
- The equation refers to irradiance responsivity of MLX75305 which is 0.007 \(mV/(\mu W/cm^2\)), and 0.0996 is output voltage of dark condition, which is initial offset (without any light -- NEED TO BE CHECKED).
+%  \bigbreak
+%  The equation refers to irradiance responsivity of MLX75305 which is 0.007 \(mV/(\mu W/cm^2\)), and 0.0996 is output voltage of dark condition, which is initial offset (without any light -- NEED TO BE CHECKED).
 
 \paragraph{e. ML8511}
 
-Raw output value of ML8511 is an analog voltage which is proportional to the irradiance. The output voltage from the sensor has been calculated though the equations given in section 5.4.3.
+Raw output value of ML8511 is an analog voltage which is proportional to the irradiance. The output voltage can be calculated though the equation below.
+
+\bigbreak
 
 {\centering
- \[ \text{UV index } = \frac{\text{output current}}{1.489)} * 1.49916 \]
+ \[ \text{UV index } = \frac{\text{output voltage}}{1.489} \times 1.49916 \]
  \par
  }
  
- \bigbreak
- The equation refers to proportional factor which is 1.49916. This factor is calculated regarding UV Index facfor related to solar irradiance spectrum, McKinlay-Differ Erythermal action spectrum (see ML8511 datasheet). And 1.489 is voltage output difference between when the sensor is at dark condition (no light) and at 1 \(mW/m^2\) irradiance (NEED TO BE CHECKED).
+%  \bigbreak
+%  The equation refers to proportional factor which is 1.49916. This factor is calculated regarding UV Index facfor related to solar irradiance spectrum, McKinlay-Differ Erythermal action spectrum (see ML8511 datasheet). And 1.489 is voltage output difference between when the sensor is at dark condition (no light) and at 1 \(mW/m^2\) irradiance (NEED TO BE CHECKED).
 
 %\subsubsection{ MLX90614}
 
-\subsubsection{ TMP421}
-
-Raw ouput value of TMP421 is 16-bit value, and the value is post-processed through a library provided by Free Software Foundation, Inc.. Sensor output from the coresensor firmware is temperature in centigrade.
+% \subsubsection{ TMP421}
+% 
+% Raw ouput value of TMP421 is 16-bit value, and the value is post-processed through a library provided by Free Software Foundation, Inc.. Sensor output from the coresensor firmware is temperature in centigrade.
 
 % \subsubsection{ Lightsense MAC address}
 
+\bigbreak
 \subsection{Chemsense:}
 \subsubsection{ Chemical sensors}
 
-Given values of chemical sensors through chemsense firmware are AFE ADC counts.
+Given values of chemical sensors are AFE ADC counts.
 
 \begin{itemize}
   \item Total reducing gases
@@ -307,9 +359,9 @@ Given values of chemical sensors through chemsense firmware are AFE ADC counts.
 \end{itemize}
 
 
-\subsubsection{ SHT25}
+\subsubsection{ SHT25, LPS25H}
 
-Given values of SHT25 through chemsense firmware are 100ths of temperature in centigrade and 100ths of humidity value.
+Given values of SHT25 and LPS25H are 100ths of temperature in Celsius and 100ths of humidity value.
 
 {\centering
  \[ \text{temperature }(\degree C) = \frac{\text{output value}}{100} \]
@@ -317,21 +369,21 @@ Given values of SHT25 through chemsense firmware are 100ths of temperature in ce
  \par
  }
 
-\subsubsection{ LPS25H}
-
-Given values of LPS25H through chemsense firmware are 100ths of temperature in centigrade and pressure in Pa.
-
-{\centering 
- \[ \text{temperature }(\degree C) = \frac{\text{output value}}{100} \]
-}
+% \subsubsection{ LPS25H}
+% 
+% Given values of LPS25H through chemsense firmware are 100ths of temperature in centigrade and pressure in Pa.
+% 
+% {\centering 
+%  \[ \text{temperature }(\degree C) = \frac{\text{output value}}{100} \]
+% }
 
 \subsubsection{ Si1145}
 
-Si1145 is a light sensor, and Chemsense board firmware is not completed, so the fixed hex values need to be ignored (July 2016).
+Si1145 is a light sensor. Raw values coming from the sensor are three fixed hex integers, however because Chemsense board driver is not completed the values are needed to be ignored (July 2016).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{ ADC Temperatures}
-Chemsense board measures temperature of sensor ADCs. All of them give ADC temperature in 100ths of degree celsious. This includes five parameters which are:
+Chemsense board measures temperature of sensor ADCs. All of them give ADC temperature in 100ths of degree Celsius. This includes five parameters which are:
  
 \begin{itemize}
   \item CO ADC Temp
@@ -350,6 +402,7 @@ Chemsense board measures temperature of sensor ADCs. All of them give ADC temper
 
 \subsubsection{ Gyro}
 
+\bigbreak
 \subsection{Alpha Sensor:}
 \subsubsection{ Histogram}
 

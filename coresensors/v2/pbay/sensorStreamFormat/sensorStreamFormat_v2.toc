@@ -1,6 +1,6 @@
 \contentsline {section}{\numberline {1}Physical Connections and Interfaces}{3}
-\contentsline {section}{\numberline {2}Data Transmission}{3}
-\contentsline {subsection}{\numberline {2.1}Transmission Packet}{3}
+\contentsline {section}{\numberline {2}Data Transmission}{4}
+\contentsline {subsection}{\numberline {2.1}Transmission Packet}{4}
 \contentsline {subsection}{\numberline {2.2}Data Packer CRC}{4}
 \contentsline {subsection}{\numberline {2.3}Data Sub-packets}{5}
 \contentsline {section}{\numberline {3}Data Formats}{6}
@@ -49,3 +49,27 @@
 \contentsline {subsubsection}{\numberline {4.4.12} ADC Temperatures}{19}
 \contentsline {subsubsection}{\numberline {4.4.13} Accelerometer}{19}
 \contentsline {subsubsection}{\numberline {4.4.14} Gyro}{20}
+\contentsline {section}{\numberline {5}Sensor Data Units}{21}
+\contentsline {subsection}{\numberline {5.1} Raw and Processed}{21}
+\contentsline {subsection}{\numberline {5.2} conversion processure}{22}
+\contentsline {subsection}{\numberline {5.3}Airsense:}{22}
+\contentsline {subsubsection}{\numberline {5.3.1} TMP112, HTU21D, BMP180, MMA8452Q, TSYS01}{22}
+\contentsline {subsubsection}{\numberline {5.3.2} PR103J2}{22}
+\contentsline {subsubsection}{\numberline {5.3.3} TSL250RD}{22}
+\contentsline {subsubsection}{\numberline {5.3.4} SPV1840LR5H-B}{22}
+\contentsline {subsection}{\numberline {5.4}Lightsense:}{23}
+\contentsline {subsubsection}{\numberline {5.4.1} HMC5883L, HIH6130, TMP421}{23}
+\contentsline {subsubsection}{\numberline {5.4.2}MCP3426}{23}
+\contentsline {paragraph}{a. APDS-9006-020}{23}
+\contentsline {paragraph}{b. TSL260RD}{23}
+\contentsline {paragraph}{c. TSL250RD}{23}
+\contentsline {paragraph}{d. MLX75305}{23}
+\contentsline {paragraph}{e. ML8511}{23}
+\contentsline {paragraph}{f. SPV1840LR5H-B}{24}
+\contentsline {subsection}{\numberline {5.5}Chemsense:}{24}
+\contentsline {subsubsection}{\numberline {5.5.1} Chemical sensors}{24}
+\contentsline {subsubsection}{\numberline {5.5.2} SHT25, LPS25H}{24}
+\contentsline {subsubsection}{\numberline {5.5.3} Si1145}{24}
+\contentsline {subsubsection}{\numberline {5.5.4} ADC Temperatures}{24}
+\contentsline {subsubsection}{\numberline {5.5.5} Accelerometer}{24}
+\contentsline {subsubsection}{\numberline {5.5.6} Gyro}{24}

@@ -1,6 +1,6 @@
 \contentsline {section}{\numberline {1}Physical Connections and Interfaces}{3}
-\contentsline {section}{\numberline {2}Data Transmission}{3}
-\contentsline {subsection}{\numberline {2.1}Transmission Packet}{3}
+\contentsline {section}{\numberline {2}Data Transmission}{4}
+\contentsline {subsection}{\numberline {2.1}Transmission Packet}{4}
 \contentsline {subsection}{\numberline {2.2}Data Packer CRC}{4}
 \contentsline {subsection}{\numberline {2.3}Data Sub-packets}{5}
 \contentsline {section}{\numberline {3}Data Formats}{6}
@@ -14,22 +14,22 @@
 \contentsline {subsection}{\numberline {3.8}Format 8}{8}
 \contentsline {section}{\numberline {4}Sub-packets}{9}
 \contentsline {subsection}{\numberline {4.1}Parameters}{9}
-\contentsline {subsection}{\numberline {4.2}Airsense:}{11}
-\contentsline {subsubsection}{\numberline {4.2.1} Airsense/Lightsense MAC address}{11}
+\contentsline {subsection}{\numberline {4.2}Airsense:}{10}
+\contentsline {subsubsection}{\numberline {4.2.1} Airsense/Lightsense MAC address}{10}
 \contentsline {subsubsection}{\numberline {4.2.2} TMP112}{11}
 \contentsline {subsubsection}{\numberline {4.2.3} HTU21D}{11}
 \contentsline {subsubsection}{\numberline {4.2.4} HIH4030}{11}
 \contentsline {subsubsection}{\numberline {4.2.5} BMP180}{12}
 \contentsline {subsubsection}{\numberline {4.2.6} PR103J2}{12}
 \contentsline {subsubsection}{\numberline {4.2.7} TSL250RD}{12}
-\contentsline {subsubsection}{\numberline {4.2.8} MMA8452Q}{13}
+\contentsline {subsubsection}{\numberline {4.2.8} MMA8452Q}{12}
 \contentsline {subsubsection}{\numberline {4.2.9} SPV1840LR5H-B}{13}
 \contentsline {subsubsection}{\numberline {4.2.10} TSYS01}{13}
-\contentsline {subsection}{\numberline {4.3}Lightsense:}{14}
-\contentsline {subsubsection}{\numberline {4.3.1} HMC5883L}{14}
+\contentsline {subsection}{\numberline {4.3}Lightsense:}{13}
+\contentsline {subsubsection}{\numberline {4.3.1} HMC5883L}{13}
 \contentsline {subsubsection}{\numberline {4.3.2} HIH6130}{14}
 \contentsline {subsubsection}{\numberline {4.3.3} APDS-9006-020}{14}
-\contentsline {subsubsection}{\numberline {4.3.4} TSL260RD}{15}
+\contentsline {subsubsection}{\numberline {4.3.4} TSL260RD}{14}
 \contentsline {subsubsection}{\numberline {4.3.5} TSL250RD}{15}
 \contentsline {subsubsection}{\numberline {4.3.6} MLX75305}{15}
 \contentsline {subsubsection}{\numberline {4.3.7} ML8511}{15}
@@ -40,7 +40,7 @@
 \contentsline {subsubsection}{\numberline {4.4.3} Ozone}{17}
 \contentsline {subsubsection}{\numberline {4.4.4} Hydrogen sulphide}{17}
 \contentsline {subsubsection}{\numberline {4.4.5} Total oxidizing gases}{17}
-\contentsline {subsubsection}{\numberline {4.4.6} Carbon monoxide}{18}
+\contentsline {subsubsection}{\numberline {4.4.6} Carbon monoxide}{17}
 \contentsline {subsubsection}{\numberline {4.4.7} Sulfur dioxide}{18}
 \contentsline {subsubsection}{\numberline {4.4.8} SHT25}{18}
 \contentsline {subsubsection}{\numberline {4.4.9} LPS25H}{18}
@@ -49,42 +49,34 @@
 \contentsline {subsubsection}{\numberline {4.4.12} ADC Temperatures}{19}
 \contentsline {subsubsection}{\numberline {4.4.13} Accelerometer}{20}
 \contentsline {subsubsection}{\numberline {4.4.14} Gyro}{20}
-\contentsline {subsection}{\numberline {4.5}Alpha Sensor:}{21}
+\contentsline {subsection}{\numberline {4.5}Alpha Sensor:}{20}
 \contentsline {subsubsection}{\numberline {4.5.1} Histogram}{21}
-\contentsline {subsubsection}{\numberline {4.5.2} Firmware}{22}
+\contentsline {subsubsection}{\numberline {4.5.2} Firmware}{21}
 \contentsline {subsubsection}{\numberline {4.5.3} Configuration}{22}
-\contentsline {section}{\numberline {5}Sensor Data Units}{24}
-\contentsline {subsection}{\numberline {5.1} Raw and Processed}{24}
+\contentsline {section}{\numberline {5}Sensor Data Units}{23}
+\contentsline {subsection}{\numberline {5.1} Raw and Processed}{23}
 \contentsline {subsection}{\numberline {5.2} conversion processure}{25}
 \contentsline {subsection}{\numberline {5.3}Airsense:}{25}
-\contentsline {subsubsection}{\numberline {5.3.1} TMP112}{25}
-\contentsline {subsubsection}{\numberline {5.3.2} HTU21D}{25}
-\contentsline {subsubsection}{\numberline {5.3.3} HIH4030}{26}
-\contentsline {subsubsection}{\numberline {5.3.4} BMP180}{26}
-\contentsline {subsubsection}{\numberline {5.3.5} PR103J2}{26}
-\contentsline {subsubsection}{\numberline {5.3.6} TSL250RD}{26}
-\contentsline {subsubsection}{\numberline {5.3.7} MMA8452Q}{26}
-\contentsline {subsubsection}{\numberline {5.3.8} SPV1840LR5H-B}{27}
-\contentsline {subsubsection}{\numberline {5.3.9} TSYS01}{27}
-\contentsline {subsection}{\numberline {5.4}Lightsense:}{27}
-\contentsline {subsubsection}{\numberline {5.4.1} HMC5883L}{27}
-\contentsline {subsubsection}{\numberline {5.4.2} HIH6130}{27}
-\contentsline {subsubsection}{\numberline {5.4.3}MCP3426}{27}
-\contentsline {paragraph}{a. APDS-9006-020}{28}
-\contentsline {paragraph}{b. TSL260RD}{28}
-\contentsline {paragraph}{c. TSL250RD}{28}
-\contentsline {paragraph}{d. MLX75305}{28}
-\contentsline {paragraph}{e. ML8511}{28}
-\contentsline {subsubsection}{\numberline {5.4.4} TMP421}{28}
-\contentsline {subsection}{\numberline {5.5}Chemsense:}{29}
-\contentsline {subsubsection}{\numberline {5.5.1} Chemical sensors}{29}
-\contentsline {subsubsection}{\numberline {5.5.2} SHT25}{29}
-\contentsline {subsubsection}{\numberline {5.5.3} LPS25H}{29}
-\contentsline {subsubsection}{\numberline {5.5.4} Si1145}{29}
-\contentsline {subsubsection}{\numberline {5.5.5} ADC Temperatures}{29}
-\contentsline {subsubsection}{\numberline {5.5.6} Accelerometer}{30}
-\contentsline {subsubsection}{\numberline {5.5.7} Gyro}{30}
-\contentsline {subsection}{\numberline {5.6}Alpha Sensor:}{30}
-\contentsline {subsubsection}{\numberline {5.6.1} Histogram}{30}
-\contentsline {subsubsection}{\numberline {5.6.2} Firmware}{30}
-\contentsline {subsubsection}{\numberline {5.6.3} Configuration}{30}
+\contentsline {subsubsection}{\numberline {5.3.1} TMP112, HTU21D, HIH4030, BMP180, MMA8452Q, TSYS01}{25}
+\contentsline {subsubsection}{\numberline {5.3.2} PR103J2}{25}
+\contentsline {subsubsection}{\numberline {5.3.3} TSL250RD}{25}
+\contentsline {subsubsection}{\numberline {5.3.4} SPV1840LR5H-B}{25}
+\contentsline {subsection}{\numberline {5.4}Lightsense:}{25}
+\contentsline {subsubsection}{\numberline {5.4.1} HMC5883L, HIH6130, TMP421}{25}
+\contentsline {subsubsection}{\numberline {5.4.2}MCP3426}{25}
+\contentsline {paragraph}{a. APDS-9006-020}{26}
+\contentsline {paragraph}{b. TSL260RD}{26}
+\contentsline {paragraph}{c. TSL250RD}{26}
+\contentsline {paragraph}{d. MLX75305}{26}
+\contentsline {paragraph}{e. ML8511}{26}
+\contentsline {subsection}{\numberline {5.5}Chemsense:}{26}
+\contentsline {subsubsection}{\numberline {5.5.1} Chemical sensors}{26}
+\contentsline {subsubsection}{\numberline {5.5.2} SHT25, LPS25H}{27}
+\contentsline {subsubsection}{\numberline {5.5.3} Si1145}{27}
+\contentsline {subsubsection}{\numberline {5.5.4} ADC Temperatures}{27}
+\contentsline {subsubsection}{\numberline {5.5.5} Accelerometer}{27}
+\contentsline {subsubsection}{\numberline {5.5.6} Gyro}{27}
+\contentsline {subsection}{\numberline {5.6}Alpha Sensor:}{27}
+\contentsline {subsubsection}{\numberline {5.6.1} Histogram}{27}
+\contentsline {subsubsection}{\numberline {5.6.2} Firmware}{27}
+\contentsline {subsubsection}{\numberline {5.6.3} Configuration}{27}
