@@ -1,0 +1,9 @@
+.PHONY:	all clean
+
+all: Packet_Comm.tex
+	pdflatex waggle_design_doc.tex
+
+clean: 
+	rm *.aux *.log *.out
+
+

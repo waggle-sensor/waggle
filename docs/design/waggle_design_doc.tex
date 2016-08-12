@@ -1,0 +1,50 @@
+\RequirePackage[l2tabu, orthodox]{nag}
+\documentclass[11pt,letter]{article}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{microtype}
+\usepackage{siunitx}
+\usepackage{booktabs}
+\usepackage[colorlinks=false, pdfborder={0 0 0}]{hyperref}
+\usepackage{cleveref}
+\usepackage{bytefield}
+\usepackage{pdflscape}
+\usepackage[ margin=1in]{geometry}
+\usepackage{framed}
+\usepackage[table]{xcolor}
+\usepackage{fancyhdr}
+\usepackage[yyyymmdd,hhmmss]{datetime}
+\usepackage{xcolor}
+\usepackage{sectsty}
+
+\clubpenalty=10000
+\widowpenalty=10000
+
+\definecolor{rahmen}{RGB}{0,73,114}
+\definecolor{grund}{RGB}{238,241,251}
+\definecolor{schrift}{RGB}{116,45,19}
+\sectionfont{\color{black}}
+\subsectionfont{\color{rahmen}}
+\subsubsectionfont{\color{schrift}}
+
+\pagestyle{fancy}
+\fancyhf{} % sets both header and footer to nothing
+\renewcommand{\headrulewidth}{0pt}
+\cfoot{\thepage}
+\rfoot{\today\ \currenttime}
+\begin{document}
+\title{Waggle communication document 0.1}
+\author{The Waggle Team}
+\date{2016}
+\maketitle
+\noindent
+This document describes all the design requirements of communication in the Waggle project, including component setup, data flow, message specifications. 
+Messaging protocol version 0.4 is considered.
+
+\input{Nodecontroller}
+\input{Payload}
+\input{Beehive}
+
+
+
+\end{document}
