@@ -341,6 +341,12 @@ Raw output value of ML8511 is an analog voltage which is proportional to the irr
 \paragraph{f. SPV1840LR5H-B}
 
 Raw output value of SPV1840LR5H-B is an analog voltage which is proportional to the sound level.
+ 
+\bigbreak
+{\centering
+\[ \text{sound level } (dB) = -20 \times \log_{10} \left( \frac{\text{output voltage}}{3.3}\right) \]
+\par
+}
 
 
 \bigbreak
@@ -364,6 +370,7 @@ Given values of chemical sensors are AFE ADC counts.
 
 Given values of SHT25 and LPS25H are 100ths of temperature in Celsius and 100ths of humidity value.
 
+\bigbreak
 {\centering
  \[ \text{temperature }(\degree C) = \frac{\text{output value}}{100} \]
  \[ \text{humidity }(\% RH) = \frac{\text{output value}}{100} \]
@@ -381,6 +388,7 @@ Given values of SHT25 and LPS25H are 100ths of temperature in Celsius and 100ths
 \subsubsection{ Si1145}
 
 Si1145 is a light sensor. Raw values coming from the sensor are three fixed hex integers, however because Chemsense board driver is not completed the values are needed to be ignored (July 2016).
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{ ADC Temperatures}

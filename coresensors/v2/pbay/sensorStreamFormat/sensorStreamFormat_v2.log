@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2016.7.5)  11 AUG 2016 13:58
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2016.7.5)  11 AUG 2016 15:04
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1557,7 +1557,7 @@ f-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist
 type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/pu
 blic/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/a
 msfonts/cm/cmsy7.pfb>
-Output written on sensorStreamFormat_v2.pdf (25 pages, 1157343 bytes).
+Output written on sensorStreamFormat_v2.pdf (25 pages, 1157513 bytes).
 PDF statistics:
  480 PDF objects out of 1000 (max. 8388607)
  115 compressed objects within 2 object streams
