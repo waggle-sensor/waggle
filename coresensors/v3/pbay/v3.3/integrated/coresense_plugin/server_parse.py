@@ -33,6 +33,22 @@ s_id = 0
 
 pre_index = 0
 
+num_of_info = 0
+nc_hbeat = 0
+gn_hbeat = 0
+cs_hbeat = 0
+count_one_hour = 0
+nc_relay_enable = 0
+gn_relay_enable = 0
+cs_relay_enable = 0
+wagman_result = {}
+for i in range(10):
+	wagman_result[i] = []
+# wagman_count = []
+# nc_hbeat_count = []
+# gn_hbeat_count = []
+# cs_hbeat_count = []
+
 sensor_idx = []
 sensor_name = []
 
@@ -84,9 +100,12 @@ def sensor_data(in_str, s_id, entry):
 		data = element[1:-1].split(':')
 
 		if 24 <= s_id <= 29:
-			data[1] = float(data[1])/100.00
-		if s_id == 30 and 'Temperature' in data[0]:
-			data[1] = float(data[1])/100.00
+			if float(data[1]) > 100:
+				data[1] = float(data[1])/100.00
+		elif s_id == 30 and 'Temperature' in data[0]:
+			if float(data[1]) > 100:
+				data[1] = float(data[1])/100.00
+
 
 		# print data
 
@@ -102,7 +121,14 @@ def sorting_data():
 			data_local_index = 0
 			what_dates[s_id].append(date)
 			for v in inner_vals:
-				data_local_index = data_local_index + 1
+				if 'Temperature' in v:
+					data_local_index = 1
+				elif 'Humidity' in v:
+					data_local_index = 2
+				elif 'Pressure' in v:
+					data_local_index = 3
+				else:
+					data_local_index = data_local_index + 1
 				data_index = s_id * 10 + data_local_index
 				result[data_index].append(inner_vals[v])
 
@@ -126,9 +152,120 @@ def counting_data_hourly():
 					# print result[index_of_sensor_data*10]
 
 			result[index_of_sensor_data * 10].append(num_data_hour)
-			# print what_dates[index_of_sensor_data][length_of_what_dates_index]
+			
 			print result[index_of_sensor_data*10]
 
+
+
+def count_info(input):
+	global nc_hbeat
+	global gn_hbeat
+	global cs_hbeat
+	global count_one_hour
+	global num_of_info
+	global nc_relay_enable
+	global gn_relay_enable
+	global cs_relay_enable
+
+	one = line.split(";")
+	time = one[5].split(".")
+
+	current_time = dt.datetime.strptime(time[0], "%Y-%m-%d %H:%M:%S")
+	if count_one_hour == 0 or current_time >= count_one_hour:
+		count_one_hour = current_time + dt.timedelta(hours=1)
+		# wagman_count.append(num_of_info)
+		# nc_hbeat_count.append(nc_hbeat)
+		# gn_hbeat_count.append(gn_hbeat)
+		# cs_hbeat_count.append(cs_hbeat)
+		wagman_result[0].append(num_of_info)
+		wagman_result[1].append(nc_hbeat)
+		wagman_result[2].append(gn_hbeat)
+		wagman_result[3].append(cs_hbeat)
+		wagman_result[4].append(nc_relay_enable)
+		wagman_result[5].append(gn_relay_enable)
+		wagman_result[6].append(cs_relay_enable)
+		num_of_info = 0
+		nc_hbeat = 0
+		gn_hbeat = 0
+		cs_hbeat = 0
+		nc_relay_enable = 0
+		gn_relay_enable = 0
+		cs_relay_enable = 0
+		# print count_one_hour
+	
+	# print time
+
+	two = one[8].strip()
+	three = two[1:-1].split(",")
+
+	for wagman_info_index in range (0, len(three)):
+		one = three[wagman_info_index].split(":")
+		
+		if "hbeat_nc" in one[0]:
+			value = one[1].split("/")
+			if int(value[0]) == 6:
+				nc_hbeat = nc_hbeat + 1
+		
+		elif "hbeat_gn" in one[0]:
+			value = one[1].split("/")
+			if int(value[0]) == 6:
+				gn_hbeat = gn_hbeat + 1
+		
+		elif "hbeat_cs" in one[0]:
+			value = one[1].split("/")
+			if int(value[0]) == 6:
+				cs_hbeat = cs_hbeat + 1
+
+		elif "enable" in one[0]:
+			value = one[1].split(" ")
+			if int(value[0]) == 1:
+				nc_relay_enable = nc_relay_enable + 1
+			if int(value[1]) == 1:
+				gn_relay_enable = gn_relay_enable + 1
+			if int(value[2]) == 1:
+				cs_relay_enable = cs_relay_enable + 1
+
+			# print value
+
+	num_of_info = num_of_info + 1
+		# print one
+	# print len(three), three
+
+
+def print_wagman_info():
+	# wagman_count.append(num_of_info)
+	# nc_hbeat_count.append(nc_hbeat)
+	# gn_hbeat_count.append(gn_hbeat)
+	# cs_hbeat_count.append(cs_hbeat)
+
+	wagman_result[0].append(num_of_info)
+	wagman_result[1].append(nc_hbeat)
+	wagman_result[2].append(gn_hbeat)
+	wagman_result[3].append(cs_hbeat)
+	wagman_result[4].append(nc_relay_enable)
+	wagman_result[5].append(gn_relay_enable)
+	wagman_result[6].append(cs_relay_enable)
+
+	wagman_result[0][0] = "info_count"
+	wagman_result[1][0] = "nc_hbeat"
+	wagman_result[2][0] = "gn_hbeat"
+	wagman_result[3][0] = "cs_hbeat"
+	wagman_result[4][0] = "nc_enable"
+	wagman_result[5][0] = "gn_enable"
+	wagman_result[6][0] = "cs_enable"
+
+	# print wagman_count
+	# print nc_hbeat_count
+	# print gn_hbeat_count
+	# print cs_hbeat_count
+
+	print wagman_result[0]
+	print wagman_result[1]
+	print wagman_result[2]
+	print wagman_result[3]
+	print wagman_result[4]
+	print wagman_result[5]
+	print wagman_result[6]
 
 
 if __name__ == "__main__":
@@ -150,33 +287,41 @@ if __name__ == "__main__":
 			with open(FILE_NAME) as data_file:
 				for line in data_file:
 
-					# if count < 10030:
-					# 	count = count + 1
+					if count < 8130:
+						count = count + 1
 					
-					if "base64" not in line:  ### NOT CONSIDERING ALPHASENSE
-						
-						if "results" in line:
+
+						if "envsense" in line:
+							one = line.split(";")
+							# print one[6]
+							# print type(sensor_idx[1])
+
+							index = get_time(one[5], pre_index)
+							sensor_id = get_sensor_id(one[6], sensor_id)
+							sensor_data(one[8], sensor_id, index)
+
+						elif "wagman_info" in line:
+							count_info(line)
+							# print nc_hbeat, gn_hbeat, cs_hbeat, num_of_info
+
+
+						elif "results" in line:
 							break
 
-						one = line.split(";")
-						# print one[6]
-						# print type(sensor_idx[1])
 
-						index = get_time(one[5], pre_index)
-						sensor_id = get_sensor_id(one[6], sensor_id)
-						sensor_data(one[8], sensor_id, index)
-
-					# else:
-					# 	break
+					else:
+						break
 
 		except (KeyboardInterrupt, SystemExit):
 			data_file.close()
 			# sub_file.close()
 
+
 	what_time = OrderedDict(sorted(what_time.items()))
 
 	sorting_data()
 	counting_data_hourly()
+	print_wagman_info()
 
 	# for date in what_time:
 	# 	# print(date)
@@ -211,12 +356,12 @@ if __name__ == "__main__":
 	# 		print result[index_of_sensor_data*10]
 
 
-	print len(result[11]), len(result[22]), len(result[42]), len(result[91]),
+	# print len(result[11]), len(result[22]), len(result[42]), len(result[91])
 	# print what_time, result
 	# print len(what_dates)
 
 	# what_dates = matplotlib.dates.date2num(x)
-	three_hours = mdates.MinuteLocator(interval = 60)
+	three_hours = mdates.MinuteLocator(interval = 180)
 	hours = mdates.MinuteLocator(interval = 60)
 	hourFmt = mdates.DateFormatter('%Y-%b-%d %H:%M:%S')
 
@@ -239,101 +384,101 @@ if __name__ == "__main__":
 
 
 
-	#************************************************************ PLOT TEMPERATURE VALUES
-	fig, ax = plt.subplots()
-	fig.autofmt_xdate()			# tilt x date
-	plt.grid(b = True, which = 'both')
+	# #************************************************************ PLOT TEMPERATURE VALUES
+	# fig, ax = plt.subplots()
+	# fig.autofmt_xdate()			# tilt x date
+	# plt.grid(b = True, which = 'both')
 
-	#**** index for the result is sensor_id * 10 + data index (alphabeticall order of key words)
-	ax.plot(what_dates[1], result[11], color = 'black', linewidth = 1.5, label = 'TMP112')
-	ax.plot(what_dates[2], result[22], color = 'firebrick', linewidth = 1.5, label = 'HTU21D')
-	ax.plot(what_dates[4], result[42], color = 'r', linewidth = 1.5, label = 'BMP180')
-	ax.plot(what_dates[5], result[51], color = 'gold', linewidth = 1.5, label = 'PR103J2')
-	ax.plot(what_dates[9], result[91], color = 'olivedrab', linewidth = 1.5, label = 'TSYS01')
-	ax.plot(what_dates[11], result[112], color = 'green', linewidth = 1.5, label = 'HIH6130')
-	ax.plot(what_dates[19], result[191], color = 'c', linewidth = 1.5, label = 'TMP421')
-	ax.plot(what_dates[29], result[292], color = 'dodgerblue', linewidth = 1.5, label = 'SHT25')
-	ax.plot(what_dates[30], result[301], color = 'darkblue', linewidth = 1.5, label = 'LPS25H')
+	# #**** index for the result is sensor_id * 10 + data index (alphabeticall order of key words)
+	# ax.plot(what_dates[1], result[11], color = 'black', linewidth = 1.5, label = 'TMP112')
+	# ax.plot(what_dates[2], result[21], color = 'firebrick', linewidth = 1.5, label = 'HTU21D')
+	# ax.plot(what_dates[4], result[41], color = 'r', linewidth = 1.5, label = 'BMP180')
+	# # ax.plot(what_dates[5], result[51], color = 'gold', linewidth = 1.5, label = 'PR103J2')
+	# ax.plot(what_dates[9], result[91], color = 'olivedrab', linewidth = 1.5, label = 'TSYS01')
+	# ax.plot(what_dates[11], result[111], color = 'green', linewidth = 1.5, label = 'HIH6130')
+	# ax.plot(what_dates[19], result[191], color = 'c', linewidth = 1.5, label = 'TMP421')
+	# ax.plot(what_dates[29], result[291], color = 'dodgerblue', linewidth = 1.5, label = 'SHT25')
+	# ax.plot(what_dates[30], result[301], color = 'darkblue', linewidth = 1.5, label = 'LPS25H')
 
-	plt.xlabel('Time (UTC)', fontsize=18)
-	plt.ylabel('Temperature (Centigrade)', fontsize=16)
-	plt.title('Temperature', fontsize=20)
+	# plt.xlabel('Time (UTC)', fontsize=18)
+	# plt.ylabel('Temperature (Centigrade)', fontsize=16)
+	# plt.title('Temperature', fontsize=20)
 
-	# plt.ylim(0, 30)
-	ax.xaxis.set_major_locator(three_hours)
-	ax.xaxis.set_major_formatter(hourFmt)
+	# # plt.ylim(0, 30)
+	# ax.xaxis.set_major_locator(three_hours)
+	# ax.xaxis.set_major_formatter(hourFmt)
 	# ax.xaxis.set_minor_locator(hours)
-	ax.yaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator())
-	plt.legend(loc='upper right', bbox_to_anchor=(1.0, 0.07), ncol=9)
-	# plt.show()
+	# ax.yaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator())
+	# plt.legend(loc='upper right', bbox_to_anchor=(1.0, 0.07), ncol=9)
+	# # plt.show()
 
 
-	#************************************************************ PLOT HUMIDITY VALUES
-	fig, ax_b = plt.subplots()
-	fig.autofmt_xdate()	
-	plt.grid(b = True, which = 'both')
+	# #************************************************************ PLOT HUMIDITY VALUES
+	# fig, ax_b = plt.subplots()
+	# fig.autofmt_xdate()	
+	# plt.grid(b = True, which = 'both')
 
-	ax_b.plot(what_dates[2], result[21], color = 'firebrick', linewidth = 1.5, label = 'HTU21D')
-	ax_b.plot(what_dates[3], result[31], color = 'r', linewidth = 1.5, label = 'HIH4030')
-	ax_b.plot(what_dates[11], result[111], color = 'green', linewidth = 1.5, label = 'HIH6130')
-	ax_b.plot(what_dates[29], result[291], color = 'c', linewidth = 1.5, label = 'SHT25')
+	# ax_b.plot(what_dates[2], result[22], color = 'firebrick', linewidth = 1.5, label = 'HTU21D')
+	# ax_b.plot(what_dates[3], result[32], color = 'r', linewidth = 1.5, label = 'HIH4030')
+	# ax_b.plot(what_dates[11], result[112], color = 'green', linewidth = 1.5, label = 'HIH6130')
+	# ax_b.plot(what_dates[29], result[292], color = 'c', linewidth = 1.5, label = 'SHT25')
 
-	plt.xlabel('Time (UTC)', fontsize=18)
-	plt.ylabel('Humidity (%RH)', fontsize=16)
-	plt.title('Humidity', fontsize=20)
+	# plt.xlabel('Time (UTC)', fontsize=18)
+	# plt.ylabel('Humidity (%RH)', fontsize=16)
+	# plt.title('Humidity', fontsize=20)
 
-	# plt.ylim(0, 30)
-	ax_b.xaxis.set_major_locator(three_hours)
-	ax_b.xaxis.set_major_formatter(hourFmt)
+	# # plt.ylim(0, 30)
+	# ax_b.xaxis.set_major_locator(three_hours)
+	# ax_b.xaxis.set_major_formatter(hourFmt)
 	# ax_b.xaxis.set_minor_locator(hours)
-	ax_b.yaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator())
-	plt.legend(loc='upper right', bbox_to_anchor=(1.0, 0.07), ncol=9)
+	# ax_b.yaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator())
+	# plt.legend(loc='upper right', bbox_to_anchor=(1.0, 0.07), ncol=9)
 
 
-	#************************************************************ PLOT BAROMATRIC PRESSURE VALUES
-	fig, ax_c = plt.subplots()
-	fig.autofmt_xdate()	
-	plt.grid(b = True, which = 'both')
+	# #************************************************************ PLOT BAROMATRIC PRESSURE VALUES
+	# fig, ax_c = plt.subplots()
+	# fig.autofmt_xdate()	
+	# plt.grid(b = True, which = 'both')
 
-	ax_c.plot(what_dates[4], result[41], color = 'firebrick', linewidth = 1.5, label = 'BMP180')
-	ax_c.plot(what_dates[30], result[302], color = 'c', linewidth = 1.5, label = 'LPS25')
+	# ax_c.plot(what_dates[4], result[43], color = 'firebrick', linewidth = 1.5, label = 'BMP180')
+	# ax_c.plot(what_dates[30], result[303], color = 'c', linewidth = 1.5, label = 'LPS25')
 
-	plt.xlabel('Time (UTC)', fontsize=18)
-	plt.ylabel('Pressure (Pa)', fontsize=16)
-	plt.title('Barometric Pressure', fontsize=20)
+	# plt.xlabel('Time (UTC)', fontsize=18)
+	# plt.ylabel('Pressure (Pa)', fontsize=16)
+	# plt.title('Barometric Pressure', fontsize=20)
 
-	# plt.ylim(0, 30)
-	ax_c.xaxis.set_major_locator(three_hours)
-	ax_c.xaxis.set_major_formatter(hourFmt)
+	# # plt.ylim(0, 30)
+	# ax_c.xaxis.set_major_locator(three_hours)
+	# ax_c.xaxis.set_major_formatter(hourFmt)
 	# ax_c.xaxis.set_minor_locator(hours)
-	ax_c.yaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator())
-	plt.legend(loc='upper right', bbox_to_anchor=(1.0, 0.07), ncol=9)
+	# ax_c.yaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator())
+	# plt.legend(loc='upper right', bbox_to_anchor=(1.0, 0.07), ncol=9)
 
 
 
-	#************************************************************ PLOT BAROMATRIC PRESSURE VALUES
-	fig, ax_d = plt.subplots()
-	fig.autofmt_xdate()	
-	plt.grid(b = True, which = 'both')
+	# #************************************************************ PLOT BAROMATRIC PRESSURE VALUES
+	# fig, ax_d = plt.subplots()
+	# fig.autofmt_xdate()	
+	# plt.grid(b = True, which = 'both')
 
-	ax_d.plot(what_dates[21], result[211], color = 'firebrick', linewidth = 1.5, label = 'Total reducing gases')
-	ax_d.plot(what_dates[23], result[231], color = 'r', linewidth = 1.5, label = 'Nitrogen Di-oxide (NO2)')
-	ax_d.plot(what_dates[24], result[241], color = 'gold', linewidth = 1.5, label = 'Ozone (03)')
-	ax_d.plot(what_dates[25], result[251], color = 'olivedrab', linewidth = 1.5, label = 'Hydrogen Sulphide (H2S)')
-	ax_d.plot(what_dates[26], result[261], color = 'c', linewidth = 1.5, label = 'Total Oxidizing gases')
-	ax_d.plot(what_dates[27], result[271], color = 'dodgerblue', linewidth = 1.5, label = 'Carbon Monoxide (C0)')
-	ax_d.plot(what_dates[28], result[281], color = 'darkblue', linewidth = 1.5, label = 'Sulfur Dioxide (SO2)')
+	# ax_d.plot(what_dates[21], result[211], color = 'firebrick', linewidth = 1.5, label = 'Total reducing gases')
+	# ax_d.plot(what_dates[23], result[231], color = 'r', linewidth = 1.5, label = 'Nitrogen Di-oxide (NO2)')
+	# ax_d.plot(what_dates[24], result[241], color = 'gold', linewidth = 1.5, label = 'Ozone (03)')
+	# ax_d.plot(what_dates[25], result[251], color = 'olivedrab', linewidth = 1.5, label = 'Hydrogen Sulphide (H2S)')
+	# ax_d.plot(what_dates[26], result[261], color = 'c', linewidth = 1.5, label = 'Total Oxidizing gases')
+	# ax_d.plot(what_dates[27], result[271], color = 'dodgerblue', linewidth = 1.5, label = 'Carbon Monoxide (C0)')
+	# ax_d.plot(what_dates[28], result[281], color = 'darkblue', linewidth = 1.5, label = 'Sulfur Dioxide (SO2)')
 
-	plt.xlabel('Time (UTC)', fontsize=18)
-	plt.ylabel('parts-per notation (ppm)', fontsize=16)
-	plt.title('Chemical sensors', fontsize=20)
+	# plt.xlabel('Time (UTC)', fontsize=18)
+	# plt.ylabel('parts-per notation (ppm)', fontsize=16)
+	# plt.title('Chemical sensors', fontsize=20)
 
-	# plt.ylim(0, 30)
-	ax_d.xaxis.set_major_locator(three_hours)
-	ax_d.xaxis.set_major_formatter(hourFmt)
+	# # plt.ylim(0, 30)
+	# ax_d.xaxis.set_major_locator(three_hours)
+	# ax_d.xaxis.set_major_formatter(hourFmt)
 	# ax_d.xaxis.set_minor_locator(hours)
-	ax_d.yaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator())
-	plt.legend(loc='upper right', bbox_to_anchor=(1.0, 0.1), ncol=4)
+	# ax_d.yaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator())
+	# plt.legend(loc='upper right', bbox_to_anchor=(1.0, 0.1), ncol=4)
 
 
 

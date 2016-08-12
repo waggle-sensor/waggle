@@ -97,9 +97,9 @@
 #define ID_TMP421  0x13
 
 //** NO USE but FYI interms of using codes in /coresense_plugin
-//#define ID_D6T  0x11                  // NO USE
-//#define ID_MLX90614  0x12             // NO USE
-//#define ID_SPV1840LR5HB_2  0x14       // NO USE
+//#define ID_D6T  0x11                  // NO USE NOT IN ANY
+//#define ID_MLX90614  0x12             // NO USE NOT IN ANY
+//#define ID_SPV1840LR5HB_2  0x14       // NO USE NOT IN ANY
 
 //Chemsense
 #define ID_CHEMSENSE_MAC  0x20
