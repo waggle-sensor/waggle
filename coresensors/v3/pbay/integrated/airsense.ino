@@ -1,10 +1,10 @@
 
 void airsense_acquire (void)
 {
-// #ifdef SERIAL_DEBUG
-//     SerialUSB.print("\n");
-//     SerialUSB.println("Acquiring AirSense Data.");
-// #endif
+#ifdef SERIAL_DEBUG
+    SerialUSB.print("\n");
+    SerialUSB.println("Acquiring AirSense Data.");
+#endif
 
 #ifdef TMP112_include
     TMP112_read();           //************ From TMP112.ino
@@ -15,10 +15,6 @@ void airsense_acquire (void)
     TMP112[3] = formatted_data_buffer[1];
 
 #ifdef SERIAL_DEBUG
-    // SerialUSB.print("TMP112: ");
-    // SerialUSB.println(Temp_float[0]);
-
-
     for (i = 0; i < LENGTH_FORMAT6; i++)
         SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
@@ -112,13 +108,6 @@ void airsense_acquire (void)
 
     else { BMP180[1] = (0 << 7) | (LENGTH_FORMAT6 + LENGTH_FORMAT5); }
 
-// #ifdef SERIAL_DEBUG
-//     SerialUSB.print("BMP180 temp: ");
-//     SerialUSB.print(Temp_float[0]);
-//     SerialUSB.print("C pressure: ");
-//     SerialUSB.print(Temp_long);
-//     SerialUSB.println("hPa");
-// #endif
 #endif
 
 #ifdef PR103J2_include
@@ -131,9 +120,6 @@ void airsense_acquire (void)
     PR103J2[3] = formatted_data_buffer[1];
     
 #ifdef SERIAL_DEBUG
-    // SerialUSB.print("PR103J2: ");
-    // SerialUSB.println(Temp_uint16);
-
     for (i = 0; i < LENGTH_FORMAT1; i++)
         SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
@@ -149,9 +135,6 @@ void airsense_acquire (void)
     TSL250RD_1[3] = formatted_data_buffer[1];
     
 #ifdef SERIAL_DEBUG
-    // SerialUSB.print("TSL250RD: ");
-    // SerialUSB.println(Temp_uint16);
-
     for (i = 0; i < LENGTH_FORMAT1; i++)
         SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
@@ -200,17 +183,6 @@ void airsense_acquire (void)
     for (i = 0; i < LENGTH_FORMAT6; i++)
         SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
-
-// #ifdef SERIAL_DEBUG
-//     SerialUSB.print("MMA8452Q x: ");
-//     SerialUSB.print(Temp_float[0]);
-//     SerialUSB.print(" y: ");
-//     SerialUSB.print(Temp_float[1]);
-//     SerialUSB.print(" z: ");
-//     SerialUSB.print(Temp_float[2]);
-//     SerialUSB.print(" rms: ");
-//     SerialUSB.println(0);
-// #endif
 #endif
 
 
@@ -222,40 +194,6 @@ void airsense_acquire (void)
     SPV1840LR5HB[1] = (1 << 7) | LENGTH_FORMAT1;
     SPV1840LR5HB[2] = formatted_data_buffer[0];
     SPV1840LR5HB[3] = formatted_data_buffer[1];
-
-
-    // long SPV_1_AMPV[100];
-    // double SPV_1_AMPV_AVG = 0;
-
-    // for(int i = 0; i < 100; i++)
-    // {
-    //     SPV_1_AMPV[i] = 512 - analogRead(SPV_1_AMP);
-    //     if (SPV_1_AMPV[i] < 0)
-    //     {
-    //         SPV_1_AMPV[i] = SPV_1_AMPV[i] * -1;
-    //     }
-    //     delay(1);
-    // }
-
-    // for(int i = 0; i < 100; i++)
-    // {
-    //     SPV_1_AMPV_AVG = ((SPV_1_AMPV_AVG * i) + SPV_1_AMPV[i]) / (i+1);
-    // }
-
-    // SPV1840LR5HB[1] = (1 << 7) | LENGTH_FORMAT1;
-
-    // format1(int(SPV_1_AMPV_AVG * 10));
-
-    // SPV1840LR5HB[2] = formatted_data_buffer[0];
-    // SPV1840LR5HB[3] = formatted_data_buffer[1];
-
-    // #ifdef SERIAL_DEBUG
-    // // SerialUSB.print("SPV1840LR5HB: ");
-    // // SerialUSB.println(Temp_uint16);
-
-    // for (i = 0; i < LENGTH_FORMAT1; i++)
-    //     SerialUSB.print(formatted_data_buffer[i],HEX);
-    // #endif
 #endif
 
 
@@ -267,14 +205,16 @@ void airsense_acquire (void)
     TSYS01[2] = formatted_data_buffer[0];
     TSYS01[3] = formatted_data_buffer[1];
 #ifdef SERIAL_DEBUG
-    // SerialUSB.print("TSYS01: ");
-    // SerialUSB.println(Temp_float[0]);
-
     for (i = 0; i < LENGTH_FORMAT6; i++)
         SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
 #endif
 
-
+#ifdef SERIAL_DEBUG
+    SerialUSB.print("\n");
+    SerialUSB.println("Finished Acquiring AirSense Data.");
+#endif
+    
+    
 }
 

@@ -1,10 +1,10 @@
 
 void lightsense_acquire (void)
 {
-// #ifdef SERIAL_DEBUG
-//     SerialUSB.print("\n");
-//     SerialUSB.println("Acquiring LightSense Data");
-// #endif
+#ifdef SERIAL_DEBUG
+    SerialUSB.print("\n");
+    SerialUSB.println("Acquiring LightSense Data");
+#endif
 
 
 #ifdef HMC5883L_include
@@ -18,8 +18,8 @@ void lightsense_acquire (void)
     HMC5883L[3] = formatted_data_buffer[1];
 
 #ifdef SERIAL_DEBUG
-    for (j = 0; j < LENGTH_FORMAT8; j++)
-        SerialUSB.print(formatted_data_buffer[j],HEX);
+    for (i = 0; i < LENGTH_FORMAT8; i++)
+        SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
 
     format8(event.magnetic.y);
@@ -27,8 +27,8 @@ void lightsense_acquire (void)
     HMC5883L[5] = formatted_data_buffer[1];
 
 #ifdef SERIAL_DEBUG
-    for (j = 0; j < LENGTH_FORMAT8; j++)
-        SerialUSB.print(formatted_data_buffer[j],HEX);
+    for (i = 0; i < LENGTH_FORMAT8; i++)
+        SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
 
     format8(event.magnetic.z);
@@ -36,18 +36,10 @@ void lightsense_acquire (void)
     HMC5883L[7] = formatted_data_buffer[1];
 
 #ifdef SERIAL_DEBUG
-    for (j = 0; j < LENGTH_FORMAT8; j++)
-        SerialUSB.print(formatted_data_buffer[j],HEX);
+    for (i = 0; i < LENGTH_FORMAT8; i++)
+        SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
 
-// #ifdef SERIAL_DEBUG
-//     SerialUSB.print("HMC5883L X:");
-//     SerialUSB.print(event.magnetic.x);
-//     SerialUSB.print(", Y:");
-//     SerialUSB.print(event.magnetic.y);
-//     SerialUSB.print(", Z:");
-//     SerialUSB.println(event.magnetic.z);
-// #endif
 #endif
 
 

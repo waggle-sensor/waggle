@@ -1,25 +1,3 @@
-// the sensor communicates using SPI, so include the library:
-// #include <SPI.h>
-
-// // will use digital pin 33 instead of pin 10 
-// // because of the cirsumstnace of the airsense boards
-// const int select_slave = 33;
-// const int SPI_MAX_speed = 500000;   //2000000;  //250000;
-
-// uint8_t stat1, val1, val2, result;
-
-// byte buff[62];
-// byte SPI_read_byte = 0;
-
-// SPISettings set1(SPI_MAX_speed, MSBFIRST, SPI_MODE1);
-
-// void setup() {
-//     SerialUSB.begin(115200);
-
-//     pinMode(select_slave, OUTPUT);
-//     SPI.begin();
-// }
-
 void alphasense_on() 
 {
 	//** POWER ON

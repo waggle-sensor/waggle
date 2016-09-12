@@ -48,7 +48,7 @@ void Sensors_Setup(void)      // sensor initialization
     TSYS01_CONFIG();
 #endif
 
-#ifdef LIGHTSENSE_INCLUDE
+#ifdef I2C_SENSORS
     mcp3428_1.init(MCP342X::L, MCP342X::L);
     mcp3428_2.init(MCP342X::L, MCP342X::F);
 #endif

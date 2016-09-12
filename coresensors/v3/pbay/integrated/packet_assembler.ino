@@ -15,9 +15,9 @@ void assemble_packet_whole()
 {
     packet_whole_index = 3; // start at 3 to account for header
     
-// #ifdef SERIAL_DEBUG
-//     SerialUSB.println("Packing.");
-// #endif
+#ifdef SERIAL_DEBUG
+    SerialUSB.println("Packing.");
+#endif
 
 #ifdef AIRSENSE_INCLUDE
 
@@ -61,6 +61,7 @@ void assemble_packet_whole()
         else { SerialUSB.println("\r"); }
     }
 #endif
+
 #endif
 
 #ifdef TMP112_include    // Append TMP112
@@ -526,15 +527,7 @@ void assemble_packet_whole()
 #endif
     
 
-    // #ifdef system_health_include
-    // // Append health
-    // for (int i = 0; i < sizeof(sensor_health); i++)
-    // {
-    //     packet_whole[packet_whole_index] = sensor_health[i];
-    //     // Increment index for whole packet
-    //     packet_whole_index++;
-    // }
-    // #endif
+
 
 
     // Length

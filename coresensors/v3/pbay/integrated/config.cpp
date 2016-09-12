@@ -108,6 +108,8 @@
 #define ID_LPS25H 0x1E
 #define ID_Si1145 0x1F
 
+// #define I2C_SENSORS 0x01
+
 //** NO USE but FYI interms of using codes in /coresense_plugin
 // #define ID_ETHANOL  0x16              // NO USE
 
@@ -141,32 +143,35 @@
 #ifdef AIRSENSE_INCLUDE
     #define MAC_ID_include 0x01
 
-    #define TMP112_include 0x01
-    #define HTU21D_include 0x01
-
+    #ifdef I2C_SENSORS
+        #define TMP112_include 0x01
+        #define HTU21D_include 0x01
+        #define BMP180_include 0x01
+        #define MMA8452Q_include 0x01
+        #define TSYS01_include 0x01
+    #endif
+    
     #define HIH4030_include 0x01
-
-    #define BMP180_include 0x01
     #define PR103J2_include 0x01
     #define TSL250RD_1_include 0x01
-
-    #define MMA8452Q_include 0x01
     #define SPV1840LR5HB_include 0x01
-    #define TSYS01_include 0x01
+    
 #endif
 
 // Lightsense board
 #ifdef LIGHTSENSE_INCLUDE
-    #define HMC5883L_include 0x01
-    #define HIH6130_include 0x01
 
-    #define APDS9006020_include 0x01
-    #define TSL260RD_include 0x01
-    #define TSL250RD_2_include 0x01
-
-    #define MLX75305_include 0x01
-    #define ML8511_include 0x01
-    #define TMP421_include 0x01
+    #ifdef I2C_SENSORS
+        #define HMC5883L_include 0x01
+        #define HIH6130_include 0x01
+        #define APDS9006020_include 0x01
+        #define TSL260RD_include 0x01
+        #define TSL250RD_2_include 0x01
+        #define MLX75305_include 0x01
+        #define ML8511_include 0x01
+        #define TMP421_include 0x01
+    #endif
+    
 #endif
 
 #ifdef CHEMSENSE_INCLUDE
@@ -196,8 +201,8 @@
 
 // #define system_health_include 0x01
 //#define RANDOMIZE_VALID 0x01
-//#define PRINT_BUFFER 0x01
-//#define SERIAL_DEBUG 0x01
+// #define PRINT_BUFFER 0x01
+// #define SERIAL_DEBUG 0x01
 // #define PRINT_ADDRESS 0x01
 
 #define USBSERIAL_INTERFACE 0x01
@@ -208,7 +213,7 @@
 #define I2C_SLAVE_ADDRESS 0x03
 #endif 
 
-#ifndef I2C_INTERFACE_CONST_SIZE
+#ifdef I2C_INTERFACE_CONST_SIZE
 #define I2C_PACKET_SIZE 191
 #endif
 
