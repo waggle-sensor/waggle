@@ -25,7 +25,7 @@ The location for the sensor is roughly a rectangular volume of size 45mm x 75mm 
      *-------------------*
 ```
 
-There are four screw holes designed for M3 size screws (3 mm diameter) with the following spacing (*** make diagram ***)
+There are four screw holes available to mount a sensor. They are sized to fit M3 screws (3 mm diameter) with the following spacing (*** make diagram ***)
 
 ```
         25 mm
