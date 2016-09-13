@@ -40,11 +40,18 @@ There are four screw holes with the following spacing (*** make diagram ***)
 
 ### Connectivity
 
-There are a number of options for connecting a sensor so it may be used. The
-preferred option is to use USB (for example, serial over USB) which simplifies
-which allows you to focus solely on software requirements. Available alternatives
-include I2C, SPI and RS232 through our coresense board. The disadvantage with
-these options is that it requires modifications to our firmware to detect
+There are a number of options for connecting a sensor so it may be used including
+USB, I2C, SPI, RS232 as well as connectivity through Ethernet or WiFi.
+
+The preferred option is to use USB (for example, serial over USB) which simplifies
+your task to only writing the node and server plugins described later in this document.
+
+Alternatives to USB include I2C, SPI and RS232 which are connected through our
+Coresense board. The major disadvantage with these options is that it not only
+requires you to write the node and server plugins, but you also must maintain
+firmware adhereing to the rather stringent requirement of transmitting data
+in a Coresense packet. This also means you have less control over what happens
+to your data as it moves through the data pipeline.
 
 ### Power
 
