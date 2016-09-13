@@ -8,7 +8,7 @@ specifications a sensor must satisfy to be integrated into the Waggle platform.
 ### Sizing and Assembly
 
 The location for the sensor is roughly a rectangular volume with base
-45mm x 75mm and height 64mm. (*** check this and make diagram ***)
+45mm x 75mm x 64mm. (*** check this and make diagram ***)
 
 ```
                 64 mm
