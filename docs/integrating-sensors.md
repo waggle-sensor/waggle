@@ -37,7 +37,7 @@ There are four screw holes designed for M3 size screws (3 mm diameter) with the 
     (x)-------(x)
 ```
 
-### Connectivity
+### Interfaces
 
 There are a number of options for connecting a sensor so it may be used including
 USB, I2C, SPI, RS232 as well as connectivity through Ethernet or WiFi.
@@ -46,13 +46,19 @@ The preferred option is to use USB (for example, serial over USB) which simplifi
 your task to only writing the node and server plugins described later in this document.
 
 Alternatives to USB include I2C, SPI and RS232 which are connected through our
-Coresense board. The major disadvantage with these options is that it not only
+coresense board. The major disadvantage with these options is that it not only
 requires you to write the node and server plugins, but you also must maintain
-firmware adhereing to the rather stringent requirement of transmitting data
-in a Coresense packet. This also means you have less control over what happens
+firmware adhering to the rather stringent requirement of transmitting data
+in a coresense packet. This also means you have less control over what happens
 to your data as it moves through the data pipeline.
 
 ### Power
+
+Depending on which interface is used, your sensor must adhere to the following
+power constraints.
+
+* Using USB: 0.5A at 5V ???
+* Using coresense: ... ???
 
 ### Network
 
@@ -74,9 +80,21 @@ provide a real example of what each piece may be responsible for.
 
 ### Example: Coresense
 
-The Coresense is a PCB containing a collection of many different sensors. It
+The coresense is a PCB containing a collection of many different sensors. It
 periodically sends a binary packet over a USB serial port containing readings
 from each of the onboard sensors. The node side plugin reads this packet from
 the serial port, checks it for validity and then sends it as-is to the server.
 The server side plugin takes this packet, decodes the various readings from it
 and forwards it further down the server side data pipeline.
+
+## Plugin Architecture
+
+The Waggle platform expects a node and server side pair of plugins to be
+written. In order to indicate that these form a pair, a common plugin name and
+version are to shared between the two pieces.
+
+...probably better to give a simple new plugin example...
+
+### Node Plugin
+
+The node side plugin is responsible
