@@ -6,7 +6,7 @@ A waggle node consists of following parts:
 
 ### Wagman
  * Wagman </br>
-<img src="../wagman/v3/resources/Wagman.jpg" width=500/>
+<img src="https://github.com/waggle-sensor/wagman/blob/master/v3/resources/Wagman.jpg" width=500/>
  * Power adapter </br>
 <img src="./pictures/Wagman_power_adapter.JPG" width=300/>
  * MicroUSB-USB cable </br>
