@@ -26,7 +26,7 @@ The location for the sensor is roughly a rectangular volume with base
      *-------------------*
 ```
 
-There are four screw holes with the following spacing (*** make diagram ***)
+There are four screw holes designed for M3 size screws (3 mm diameter) with the following spacing (*** make diagram ***)
 
 ```
         25 mm
