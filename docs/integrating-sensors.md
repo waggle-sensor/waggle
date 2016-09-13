@@ -3,7 +3,7 @@
 The purpose of this document is to describe the hardware and software
 specifications a sensor must satisfy to be integrated into the Waggle platform.
 
-## Design Constraints
+## Physical Constraints
 
 ### Sizing and Assembly
 
@@ -71,7 +71,7 @@ when deciding on the both the rate and volume of data intended to be transmitted
 Our suggestion is to restrict the rate to at most one message to be sent every 10
 seconds and that the message size is at most 1K.
 
-## Design Responsibility
+## Software Design
 
 Once a sensor is ready to be used with the Waggle platform, a node and server
 side plugin pair must be written. The node side plugin needs to read data from
