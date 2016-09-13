@@ -25,16 +25,18 @@ The location for the sensor is roughly a rectangular volume of size 45mm x 75mm 
      *-------------------*
 ```
 
-There are four screw holes available to mount a sensor. They are sized to fit M3 screws (3 mm diameter) with the following spacing (*** make diagram ***)
+There is a mounting plate with four holes available to mount a sensor. The holes are sized to fit M3 screws (3 mm diameter) with the spacing indicated by the following diagram. Note that the plate extends outward and intrudes into this region, leaving about 5 mm of head clearance. (*** make diagram ***)
 
 ```
-        25 mm
-    (x)-------(x)
-     |         |
-     |         | 44
-     |         | mm
-     |         |
-    (x)-------(x)
+---------------------
+   5 mm vertical gap
+    (x)--------(x)
+     |  25 mm   |
+     |          | 44
+     |          | mm
+     |          |
+     |          |
+    (x)--------(x)
 ```
 
 ### Interfaces
