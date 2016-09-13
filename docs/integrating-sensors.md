@@ -1,4 +1,4 @@
-# Integrating a Sensor into Waggle Platform
+# Integrating a Sensor into the Waggle Platform
 
 The purpose of this document is to describe the hardware and software
 specifications a sensor must satisfy to be integrated into the Waggle platform.
@@ -8,37 +8,34 @@ specifications a sensor must satisfy to be integrated into the Waggle platform.
 ### Sizing and Assembly
 
 The location for the sensor is roughly a rectangular volume with base
-45mm x 75mm and height 64mm. (*** Check this... ***)
+45mm x 75mm and height 64mm. (*** check this and make diagram ***)
 
 ```
                 64 mm
         *-------------------*
-       /|                   |
-      / |                   |
-     *  |                   |  75
-     |  |                   |  mm
-     |  |                   |
-     |  |                   |
-     |  |                   |
-     |  *-------------------*
-     | /                   / 45
-     |/                   /  mm
+       /|                  /|
+      / |                 / |
+     *-------------------*  |  75
+     |  |                |  |  mm
+     |  |                |  |
+     |  |                |  |
+     |  |                |  |
+     |  *----------------|--*
+     | /                 | / 45
+     |/                  |/  mm
      *-------------------*
 ```
 
-There are four screw holes with the following spacing
+There are four screw holes with the following spacing (*** make diagram ***)
 
 ```
-          |      25 mm
-          |  (x)-------(x)
-          |   |         |
-      up  |   |         | 44
-          |   |         | mm
-          |   |         |
-          |  (x)-------(x)
-          /
-         /
-  front /
+        25 mm
+    (x)-------(x)
+     |         |
+     |         | 44
+     |         | mm
+     |         |
+    (x)-------(x)
 ```
 
 ### Connectivity
@@ -56,8 +53,8 @@ these options is that it requires modifications to our firmware to detect
 A typical Waggle node may have limited network bandwidth. For example, the Array
 of Things nodes are all transmitting over a wireless modem, which is somewhat
 limited in both speed and available data usage. These are important considerations
-when deciding on the both the rate and volume of data intended to be sent. Our
-suggestion is to restrict the rate to at most one message to be sent every 10
+when deciding on the both the rate and volume of data intended to be transmitted.
+Our suggestion is to restrict the rate to at most one message to be sent every 10
 seconds and that the message size is at most 1K.
 
 ## Design Responsibility
@@ -69,7 +66,7 @@ handles any post-processing which needs to occur on the transmitted data from
 the node side plugin. The exact requirements are detailed later, but first we
 provide a real example of what each piece may be responsible for.
 
-Example: Coresense
+### Example: Coresense
 
 The Coresense is a PCB containing a collection of many different sensors. It
 periodically sends a binary packet over a USB serial port containing readings
