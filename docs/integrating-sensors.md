@@ -1,0 +1,79 @@
+# Integrating a Sensor into Waggle Platform
+
+The purpose of this document is to describe the hardware and software
+specifications a sensor must satisfy to be integrated into the Waggle platform.
+
+## Design Constraints
+
+### Sizing and Assembly
+
+The location for the sensor is roughly a rectangular volume with base
+45mm x 75mm and height 64mm. (*** Check this... ***)
+
+```
+                64 mm
+        *-------------------*
+       /|                   |
+      / |                   |
+     *  |                   |  75
+     |  |                   |  mm
+     |  |                   |
+     |  |                   |
+     |  |                   |
+     |  *-------------------*
+     | /                   / 45
+     |/                   /  mm
+     *-------------------*
+```
+
+There are four screw holes with the following spacing
+
+```
+          |      25 mm
+          |  (x)-------(x)
+          |   |         |
+      up  |   |         | 44
+          |   |         | mm
+          |   |         |
+          |  (x)-------(x)
+          /
+         /
+  front /
+```
+
+### Connectivity
+
+There are a number of options for connecting a sensor so it may be used. The
+preferred option is to use USB (for example, serial over USB) which simplifies
+which allows you to focus solely on software requirements. Available alternatives
+include I2C, SPI and RS232 through our coresense board. The disadvantage with
+these options is that it requires modifications to our firmware to detect
+
+### Power
+
+### Network
+
+A typical Waggle node may have limited network bandwidth. For example, the Array
+of Things nodes are all transmitting over a wireless modem, which is somewhat
+limited in both speed and available data usage. These are important considerations
+when deciding on the both the rate and volume of data intended to be sent. Our
+suggestion is to restrict the rate to at most one message to be sent every 10
+seconds and that the message size is at most 1K.
+
+## Design Responsibility
+
+Once a sensor is ready to be used with the Waggle platform, a node and server
+side plugin pair must be written. The node side plugin needs to read data from
+the sensor and prepare it to be pushed to the server. The server side plugin
+handles any post-processing which needs to occur on the transmitted data from
+the node side plugin. The exact requirements are detailed later, but first we
+provide a real example of what each piece may be responsible for.
+
+Example: Coresense
+
+The Coresense is a PCB containing a collection of many different sensors. It
+periodically sends a binary packet over a USB serial port containing readings
+from each of the onboard sensors. The node side plugin reads this packet from
+the serial port, checks it for validity and then sends it as-is to the server.
+The server side plugin takes this packet, decodes the various readings from it
+and forwards it further down the server side data pipeline.
