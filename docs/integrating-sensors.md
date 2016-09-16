@@ -103,7 +103,7 @@ The node side plugin is responsible getting data from the sensor and forwarding
 it to the cloud. To simplify this process, we'll assume that you'll be using
 the pywaggle module we've provided at: https://github.com/waggle-sensor/pywaggle
 
-```
+```python
 import waggle.pipeline
 import time
 
