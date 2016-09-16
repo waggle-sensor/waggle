@@ -100,7 +100,8 @@ version are to shared between the two pieces.
 ### Node Plugin
 
 The node side plugin is responsible getting data from the sensor and forwarding
-it to the cloud. To simplify this process, we've provided a Python module.
+it to the cloud. To simplify this process, we'll assume that you'll be using
+the pywaggle module we've provided at: https://github.com/waggle-sensor/pywaggle
 
 ```
 import waggle.pipeline
