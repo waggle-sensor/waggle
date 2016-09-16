@@ -99,4 +99,20 @@ version are to shared between the two pieces.
 
 ### Node Plugin
 
-The node side plugin is responsible
+The node side plugin is responsible getting data from the sensor and forwarding
+it to the cloud. To simplify this process, we've provided a Python module.
+
+```
+import waggle.pipeline
+import time
+
+class MyPlugin(waggle.pipeline.Plugin):
+
+    plugin_name = 'myplugin'
+    plugin_version = '1.0'
+
+    def run(self):
+        while True:
+            self.send(sensor='mysensor', data='17.38')
+            time.sleep(10)
+```
