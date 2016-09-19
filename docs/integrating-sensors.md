@@ -9,7 +9,7 @@ specifications a sensor must satisfy to be integrated into the Waggle platform.
 
 The available space for a sensor is roughly a rectangular volume of size 45mm x 75mm x 64mm. There is mounting backplate with four M3 sized (3mm diameter) holes available to mount a sensor. The top of the backplate extruds forward slightly leaving about 5 mm of head clearance. This is all indicated in the following figure.
 
-<img src="spec-figure.png" style="width: 400px;"/>
+<img src="spec-figure.png" width="400px" height="400px" />
 
 ### Interfaces
 
