@@ -92,11 +92,17 @@
     interface option was used. The node side plugin needs to read data from
     the sensor and prepare it to be pushed to the server. The server side plugin
     handles any post-processing which needs to occur on the transmitted data from
-    the node side plugin. The exact details are described in more detail in our
-    plugin document but we provide a brief example of what each piece may be
-    responsible for.</p>
+    the node side plugin. In addition, these should be designed with fault tolerance
+    in mind in case a network carrier or server may go down. A node will take care
+    of queuing up data in these circumstances but one should be prepared to handle
+    a delayed data stream correctly.</p>
 
-    <h3 id="example-coresense">Example: Coresense</h3>
+    <p>The exact details are described in more detail in our plugin development
+    document but we provide a brief example of what each piece may be responsible
+    for.</p>
+
+    <h3>Example: Coresense</h3>
+
     <p>The coresense is a PCB containing a collection of many different sensors.
     It periodically sends a binary packet over a USB serial port containing
     readings from each of the onboard sensors. The node side plugin reads this
