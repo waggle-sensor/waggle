@@ -43,7 +43,7 @@
 
     <h2>Size and Assembly</h2>
 
-    <p>Space inside a Waggle node can be limited. For example, an Array of Things
+    <p>Space inside a typical Waggle node may be limited. For example, an Array of Things
     node provides a rectangular volume of size 45mm x 64mm x 75mm inside of the
     outer shield for a sensor. A mounting plate is provided with four M3 sized
     (3mm diameter) holes available for securing a sensor. The top of the backplate
@@ -85,17 +85,24 @@
     at most one message to be sent every 10 seconds and that the message size is
     at most 1K.</p>
 
-<h2>Software</h2>
-<p>Once a sensor is sized and fitted to be used in a node it will need at least
-a node and server side plugin and possibly coresense firmware if a non-USB
-interface option was chosen. The node side plugin needs to read data from
-the sensor and prepare it to be pushed to the server. The server side plugin
-handles any post-processing which needs to occur on the transmitted data from
-the node side plugin. The exact requirements are detailed later, but first we
-provide a real example of what each piece may be responsible for.</p>
+    <h2>Software</h2>
 
-<h3 id="example-coresense">Example: Coresense</h3>
-<p>The coresense is a PCB containing a collection of many different sensors. It periodically sends a binary packet over a USB serial port containing readings from each of the onboard sensors. The node side plugin reads this packet from the serial port, checks it for validity and then sends it as-is to the server. The server side plugin takes this packet, decodes the various readings from it and forwards it further down the server side data pipeline.</p>
+    <p>Once a sensor is sized and fitted to be used in a node it will need at least
+    a node and server side plugin pair and possibly coresense firmware if a non-USB
+    interface option was used. The node side plugin needs to read data from
+    the sensor and prepare it to be pushed to the server. The server side plugin
+    handles any post-processing which needs to occur on the transmitted data from
+    the node side plugin. The exact details are described in more detail in our
+    plugin document but we provide a brief example of what each piece may be
+    responsible for.</p>
 
-</body>
+    <h3 id="example-coresense">Example: Coresense</h3>
+    <p>The coresense is a PCB containing a collection of many different sensors.
+    It periodically sends a binary packet over a USB serial port containing
+    readings from each of the onboard sensors. The node side plugin reads this
+    packet from the serial port, checks it for validity and then sends it as-is
+    to the server. The server side plugin takes this packet, decodes the various
+    readings from it and forwards it further down the server side data pipeline.</p>
+
+  </body>
 </html>
