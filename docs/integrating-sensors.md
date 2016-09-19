@@ -39,7 +39,7 @@ There is a mounting plate with four holes available to mount a sensor. The holes
     (x)--------(x)
 ```
 
-![Size and Mount](spec-figure.pdf)
+![Size and Mount](https://github.com/waggle-sensor/waggle/blob/master/docs/integrating-sensors.md)
 
 ### Interfaces
 
