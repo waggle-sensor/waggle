@@ -39,6 +39,8 @@ There is a mounting plate with four holes available to mount a sensor. The holes
     (x)--------(x)
 ```
 
+![Size and Mount](spec-figure.pdf)
+
 ### Interfaces
 
 There are a number of options for connecting a sensor so it may be used including
