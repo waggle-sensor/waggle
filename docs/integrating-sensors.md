@@ -11,6 +11,7 @@ In an Array of Things node, the available space for an external sensor is a rect
 
 <div align="center">
 <img src="spec-figure.png" width="400px" height="400px" />
+<h5>Size and mounting schematic</h5>
 </div>
 
 ### Interfaces
