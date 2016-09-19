@@ -30,7 +30,14 @@ code > span.er { color: #ff0000; font-weight: bold; }
 </head>
 <body>
 <h2 id="integrated-codes">Integrated codes</h2>
-<p>This folder contains all files to test the airsense, lightsense, and chemsense board together. The boards need to be connected to your computer as shown in the document <a href="../../../docs/sensorStreamFormat/link.pdf">link.pdf</a>. Target file for integrated board test is <a href="integrated_8ino.html">integrated.ino</a>, and this gathers data from <a href="airsense_8ino.html">airsense.ino</a>, <a href="lightsense_8ino.html">lightsense.ino</a>, and <a href="chemsense_8ino.html">chemsense.ino</a>. Each sensor data is cumulated and parsed into designated format as explained in the document, <a href="../../../docs/sensorStreamFormat/sensorStreamFormat.pdf">sensorStreamFormat.pdf</a>. The formatted values will be stored in a sub-packet format which is explained also in the sensorStreamFormat.pdf. Please refer the two domucments.<br />The outcome of this process is a super-packet which contains all sensor values.</p>
+<p>This folder contains all files to test the airsense, lightsense, and chemsense board together (Jun 21, 2016). The boards need to be connected to your computer as shown in the document <a href="../../../docs/sensorStreamFormat/link.pdf">link.pdf</a>.</p>
+<p>Target file for complie and build codes for integrated board test is <a href="integrated_8ino.html">integrated.ino</a>. This file calls all other relative codes to gather data using <a href="airsense_8ino.html">airsense.ino</a>, <a href="lightsense_8ino.html">lightsense.ino</a>, and <a href="chemsense_8ino.html">chemsense.ino</a>. Each sensor data is cumulated and parsed into designated format as explained in the document, <a href="../../../docs/sensorStreamFormat/sensorStreamFormat.pdf">sensorStreamFormat.pdf</a>. All relative codes to get data from lightsense and airsense are in this folder and 'lib' folder.</p>
+<p>The formatted values will be stored in a sub-packet format which is explained also in the sensorStreamFormat.pdf. Please refer the two domucments. The sub-packet are initialized though <a href="initialization_8ino.html">initialization.ino</a>, which put designiated sensor ID, and initialize second buffer of each sub-packets. The outcome of this process is a super-packet which generated from <a href="packet__assembler_8ino.html">packet_assembler.ino</a>, which contains all sensor values.</p>
+<p>When you need to do &quot;serial debug (verbose mode)&quot; or need to test without one or more sensors, the mode can be modified by changing status defined in <a href="./config.cpp">config.cpp</a>.</p>
+<h2 id="coresense_plugin">Coresense_plugin</h2>
+<p>The coresense plugin folder contains python codes which de-parse super-packets into human readable lines. Processes to de-parse super-packets are in <a href="coresense__pluginUSBSerial_8py.html">coresense_pluginUSBSerial.py</a>. To change USB serial port, see <a href="coresense__InotifyKernel_8py.html">coresense_InotifyKernel.py</a> and change &quot;/dev/waggle_coresense&quot; in &quot;newDevice.put('/dev/waggle_coresense')&quot; to what you are using.</p>
+<p>To execute this process, do</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">python</span> coresense.py</code></pre>
 <h2 id="tools-and-equipment-required">Tools and equipment required:</h2>
 <ul>
 <li>One of each Chemsense, Lightsense, and Airsense borads<br /></li>
@@ -41,10 +48,15 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <p>When you test with the files, make sure the sensor boards are connected and powered on. To see the values from the sensor boards, make sure that the SERIAL_DEBUG is set in config.cpp.</p>
 <p>To compile the files, do</p>
 <pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">make</span></code></pre>
-<p>To compile and run the files, do</p>
+<p>To compile, build and upload the codes on the Atmel, do</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">make</span> install</code></pre>
+<p>or</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">make</span>
+<span class="kw">make</span> program</code></pre>
+<p>To compile, build and run the files, do</p>
 <pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">make</span> run</code></pre>
 <p></br><br /><strong>To exit the screen session created for the test, press Control+a, and press k and y afterward.</strong></p>
-<p>To test this and get decoded data with python script, do</p>
+<p>To compile, build the codes and get decoded data with python script, do</p>
 <pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">make</span> install</code></pre>
 <p>and execute <a href="coresense_8py.html">coresense.py</a> in <a href="./coresense_plugin">coresens_plugin</a>.</p>
 <pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">python</span> coresense.py</code></pre>

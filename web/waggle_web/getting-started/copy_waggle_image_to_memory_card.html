@@ -35,10 +35,10 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <p>First, using a web browser, choose an image for your ODROID model (e.g. C1/C1+, XU3, U, X2, X) from our download page:</p>
 <p><a href="http://www.mcs.anl.gov/research/projects/waggle/downloads/">http://www.mcs.anl.gov/research/projects/waggle/downloads/</a></p>
 <p>You do not need to download the image with your browser at this point, just specify the image filename in the variable IMAGE below. The environment variable IMAGE contains the image filename without the url and without the suffix &quot;.xz&quot;! This makes it easier to run other commands later, as they then can simply be copied into the terminal without changes. Now paste these two lines (including your changes to the second line) into your terminal:</p>
-<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">export</span> <span class="ot">URL=</span><span class="st">&quot;http://www.mcs.anl.gov/research/projects/waggle/downloads/waggle_images/nodecontroller/ODROID_MODEL&quot;</span> <span class="co"># for nodecontroller</span>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">export</span> <span class="ot">URL=</span><span class="st">&quot;http://www.mcs.anl.gov/research/projects/waggle/downloads/waggle_images/nodecontroller/odroid-c1/&quot;</span> <span class="co"># for nodecontroller</span>
 <span class="kw">export</span> <span class="ot">IMAGE=</span><span class="st">&quot;waggle-nodecontroller-MODEL-VERSION.img&quot;</span>  <span class="co"># do not include the &quot;.xz&quot; suffix !</span>
 <span class="co"># or</span>
-<span class="kw">export</span> <span class="ot">URL=</span><span class="st">&quot;http://www.mcs.anl.gov/research/projects/waggle/downloads/waggle_images/extension_node/ODROID_MODEL&quot;</span> <span class="co"># for extensionnode</span>
+<span class="kw">export</span> <span class="ot">URL=</span><span class="st">&quot;http://www.mcs.anl.gov/research/projects/waggle/downloads/waggle_images/extension_node/odroid-xu3/&quot;</span> <span class="co"># for extensionnode</span>
 <span class="kw">export</span> <span class="ot">IMAGE=</span><span class="st">&quot;waggle-guestnode-MODEL-VERSION.img&quot;</span>  <span class="co"># do not include the &quot;.xz&quot; suffix !</span></code></pre>
 <p>Alternatively, if you want to use a plain (non-waggle) odroid image:</p>
 <pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">export</span> <span class="ot">URL=</span><span class="st">&quot;http://odroid.in/ubuntu_14.04lts/&quot;</span>
@@ -89,5 +89,6 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <pre class="sourceCode bash"><code class="sourceCode bash"><span class="co"># OSX: </span>
 <span class="kw">sudo</span> diskutil eject /dev/r<span class="ot">${DEVICE_NAME}</span></code></pre>
 <p>You can now safely disconnect the memory card from your computer.</p>
+<h1 id="should-probably-add-a-link-here">should probably add a link here</h1>
 </body>
 </html>
