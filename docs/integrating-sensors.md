@@ -7,9 +7,11 @@ specifications a sensor must satisfy to be integrated into the Waggle platform.
 
 ### Sizing and Assembly
 
-The available space for a sensor is roughly a rectangular volume of size 45mm x 75mm x 64mm. There is mounting backplate with four M3 sized (3mm diameter) holes available to mount a sensor. The top of the backplate extruds forward slightly leaving about 5 mm of head clearance. This is all indicated in the following figure.
+In an Array of Things node, the available space for a sensor is a rectangular volume inside of the shield. A mounting plate is provided with four M3 sized (3mm diameter) holes available for mounting a sensor. The top of the backplate extrudes forward slightly leaving about 5 mm of top clearance.
 
-<div align="center"><img src="spec-figure.png" width="400px" height="400px" /></div>
+<div align="center">
+<img src="spec-figure.png" width="400px" height="400px" />
+</div>
 
 ### Interfaces
 
