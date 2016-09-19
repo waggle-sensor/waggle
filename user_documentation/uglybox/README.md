@@ -12,7 +12,6 @@ B) Mount the C1+ to the Wagman board with the M2 screws, SP? spacers and 440 Hex
 
 C) Mount the Wagman to the pre-cut board on the opposite side of the XU4 using the M4X14, M4 washers, and size 165 spacers.
 
-You should fix this:<br>
 D) Connect the pre cut board with the two legs using the M4X30, SP134 spacers, and the M4 nuts. 
 
 <img src="./Legs.jpg" width=500 />
