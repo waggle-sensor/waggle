@@ -20,7 +20,7 @@ def decode_alphasense(data):
         'pm1': pmvalues[0],
         'pm2.5': pmvalues[1],
         'pm10': pmvalues[2],
-        'error': sum(bincounts) & 0xFF != checksum,
+        'error': sum(bincounts) & 0xFFFF != checksum,
     }
 
     if temperature > 500:
