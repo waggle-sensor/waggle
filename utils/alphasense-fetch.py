@@ -75,6 +75,8 @@ def get_alphasense_data_from_url(url):
 if __name__ == '__main__':
     url = sys.argv[1]
 
+    print('timestamp,pm1,pm2.5,pm10,bin0,bin1,bin2,bin3,bin4,bin5,bin6,bin7,bin8,bin9,bin10,bin11,bin12,bin13,bin14,bin15')
+
     for timestamp, data in get_alphasense_data_from_url(url):
         pm10 = data['pm10']
         pm25 = data['pm2.5']
