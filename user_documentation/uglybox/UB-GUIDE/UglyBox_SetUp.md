@@ -1,6 +1,7 @@
 <img src="setup_pics/Waggle_Banner.jpg" alt="Image Not Available" style="width:860px; height:220px;position:static;float:right;padding-right:200px;" />
+<p style="text-align: center;">
 # Ugly Box Build Guide
-
+</p>
 ## Step by step instruction for assembling the Ugly Box
 
 <a href="UBpartindex.html">Part Index</a>
@@ -11,8 +12,9 @@ Prepare the Wagman and C1+
 <ul>
 <li>
 <img src="setup_pics/wagmanc1+.jpg" alt="Image Unavailable"  style="width:1024px; height:780px;"> 
-<li>
-Using 4 M3x20 screws, 4 440 Hex nuts, and 4 SP3/8 spacers, attach the C1+ to the Wagman. Be sure to line up the header on the C1+ with the pins on the Wagman.
+
+
+  * Using 4 M3x20 screws, 4 440 Hex nuts, and 4 SP3/8 spacers, attach the C1+ to the Wagman. Be sure to line up the header on the C1+ with the pins on the Wagman.
 See the top left blow-up in the image above.
 <li>
 Connect the green wires from pins 27 and 39 on the C1+ to the SRE. The wire with the resistor can connect to either of the SRE pins. See the bottom left blow-up in the image above.
@@ -304,5 +306,7 @@ For a more secure attachment, coat the ends of the screws with a threadlocker co
 </ul>
 </ol>
 </div>
+<p style="text-align: center;">
 ## A finished Node outside 240
+</p>
 <img src="setup_pics/wildnode.jpg" alt="Image Unavailable" style="width:1836; height:1712;">
