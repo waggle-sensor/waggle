@@ -8,7 +8,7 @@
 
 <ol>
 <li>
-<b> Prepare the Wagman and C1+ </b>
+<b> Prepare the Wagman and C1+. </b>
 
 <ul>
 <img src="setup_pics/wagmanc1+.jpg" alt="Image Unavailable"  style="width:1024px; height:780px;"> 
@@ -32,7 +32,7 @@ Attach the RTC battery to the C1+ in the RTC port.
 
 </ul>
 <li>
-Mount the Wagman & C1+ to the acrylic plate.
+<b> Mount the Wagman & C1+ to the acrylic plate. </b>
 
 
 <ul>
@@ -50,7 +50,7 @@ Position the Wagman identical to the right side of the image above.
 </ul>
 
 <li>
-Mount the XU4 to the acrylic plate.
+<b> Mount the XU4 to the acrylic plate. </b>
 <ul>
 
 <img src="setup_pics/xu4toplate1.jpg" alt="Image Unavailable"  style="width:1022px; height:495px;">
@@ -65,7 +65,7 @@ Position the plate and XU4 identical to the right side of the image above.
 Attach the RTC battery to the XU4 in the BT1 / Backup port, right next the the “ODROID XU4” printing.
 </ul>
 <li>
-Attach the acrylic legs.
+<b> Attach the acrylic legs. </b>
 <ul>
 
 <img src="setup_pics/legs2.jpg" alt="Image Unavailable" style="width:859px; height:722;">
@@ -77,7 +77,7 @@ The order is as follows: Screw, acrylic leg, spacer, acylic plate, hex nut.
 The holes in the legs are not symmetric, so make sure to attach properly, with the middle hole closest to the XU4. Consult the image above for assitance.
 </ul>
 <li>
-Prepare the Cameras.
+<b> Prepare the Cameras. </b>
 <ul>
 
 <img src="setup_pics/lightsense75cam1.jpg" alt="Image Unavailable"  style="width:1022px; height:495px;"> 
@@ -132,7 +132,7 @@ Finally, run both of the USB camera cables beneath the acrylic plate and connect
 </ul>
 
 <li>
-Connect Cameras and XU4 to Wagman.
+<b>  Connect Cameras and XU4 to Wagman. </b>
 <ul>
 
 <img src="setup_pics/connections.jpg" alt="Image Unavailable"  style="width:1152px; height:864px;"> 
@@ -155,7 +155,7 @@ See the bottom center blow-up in the image above.
 </ul>
 
 <li>
-Prepare Sensors and Shield.
+<b> Prepare Sensors and Shield. </b>
 
 <ul>
 
@@ -203,7 +203,7 @@ Slide the 3 rods into the corresponding holes in the shield extenders. Once thro
 **There may be other (and/or easier) ways to complete this step. Whichever path is chosen, make sure the CAT6 (and optional USB) cables are running out the top of the shield**
 </ul>
 <li>
-Prepare Power Box
+<b> Prepare Power Box </b>
 <ul>
 <li>
 Using the 2 M3x10 screws, attach the AC/DC converter to the metal riser.
@@ -234,7 +234,7 @@ Gently pull the two-conductor wire through the clamp to get rid of slack inside 
 Once the riser fits snugly, attach it to the box using 4 1/4" phillips thread-forming screws.
 </ul>
 <li>
-Mount the node in the Ugly Box
+<b> Mount the node in the Ugly Box </b>
 
 <ul>
 <img src="setup_pics/ublid.jpg" alt="Image Unavailable" style="width:997px; height:814px;">
@@ -267,7 +267,7 @@ Lastly, connect the power cable to the Wagman power port (see bottom right in th
 </ul>
 
 <li>
-Mount the Ugly Box and Power Box to the Backplate
+<b> Mount the Ugly Box and Power Box to the Backplate. <b>
 </ul>
 <ul>
 
@@ -279,13 +279,13 @@ Mount both the UglyBox and the Power Box to the aluminum back plate using 4 Blue
 When mounting the boxes, make sure the power box is attached to the right of the RJ45 jack on the UglyBox
 </ul>
 <li>
-Mount the Sensor Shield to the Backplate
+<b> Mount the Sensor Shield to the Backplate. </b>
 <ul>
 
 <img src="setup_pics/shieldarm.jpg" alt="Image Unavailable" style="width:1152px; height:864px;">
 
 <li>
-Prepare the arm of the shield using the 8" aluminum rod and brackets.
+<b> Prepare the arm of the shield using the 8" aluminum rod and brackets. </b>
 <li>
 Attach 2 angle brackets to the very end of the rod, sliding the flat nut into the grooves in the rod.
 <li>
@@ -304,7 +304,7 @@ This can be done with a complete shield, or as pictured with only the top.
 <img src="setup_pics/armtoplate.jpg" alt="Image Unavailable" style="width:732px; height:792px;">
 
 <li>
-Mount the arm to the aluminum plate using the screws and flat nuts.
+<b> Mount the arm to the aluminum plate using the screws and flat nuts. </b>
 <li>
 For a more secure attachment, coat the ends of the screws with a threadlocker coating.
 </ul>
