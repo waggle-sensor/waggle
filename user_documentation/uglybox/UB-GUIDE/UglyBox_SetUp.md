@@ -1,7 +1,7 @@
 <img src="setup_pics/Waggle_Banner.jpg" alt="Image Not Available" style="width:860px; height:220px;position:static;float:right;padding-right:200px;" />
-<p style="text-align: center;">
+
 # Ugly Box Build Guide
-</p>
+
 ## Step by step instruction for assembling the Ugly Box
 
 <a href="UBpartindex.html">Part Index</a>
@@ -9,19 +9,28 @@
 <ol>
 <li>
 Prepare the Wagman and C1+
+
+
+
 <ul>
 <li>
 <img src="setup_pics/wagmanc1+.jpg" alt="Image Unavailable"  style="width:1024px; height:780px;"> 
 
 
-  * Using 4 M3x20 screws, 4 440 Hex nuts, and 4 SP3/8 spacers, attach the C1+ to the Wagman. Be sure to line up the header on the C1+ with the pins on the Wagman.
+<li>Using 4 M3x20 screws, 4 440 Hex nuts, and 4 SP3/8 spacers, attach the C1+ to the Wagman. Be sure to line up the header on the C1+ with the pins on the Wagman.
 See the top left blow-up in the image above.
+
+
 <li>
 Connect the green wires from pins 27 and 39 on the C1+ to the SRE. The wire with the resistor can connect to either of the SRE pins. See the bottom left blow-up in the image above.
+
+
 <li>
 Connect the yellow heartbeat cable from pin 3 on the C1+ to the 4th slot from the left in the J9 port of the Wagman.
 Then, connect the C1+ power pigtail to the J9 Wagman port, black wire in the 3rd slot from the left, red wire in the 5th slot from the left.
 See the bottom right blow-up in the image above.
+
+
 <li>
 Attach the RTC battery to the C1+ in the RTC port.
 
@@ -29,6 +38,8 @@ Attach the RTC battery to the C1+ in the RTC port.
 </ul>
 <li>
 Mount the Wagman & C1+ to the acrylic plate.
+
+
 <ul>
 <img src="setup_pics/wagmantoplate1.jpg" alt="Image Unavailable"  style="width:1009px; height:358px;">
 
@@ -306,7 +317,7 @@ For a more secure attachment, coat the ends of the screws with a threadlocker co
 </ul>
 </ol>
 </div>
-<p style="text-align: center;">
+
 ## A finished Node outside 240
-</p>
+
 <img src="setup_pics/wildnode.jpg" alt="Image Unavailable" style="width:1836; height:1712;">
