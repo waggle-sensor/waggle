@@ -22,7 +22,7 @@ See the top left blow-up in the image above.
 
 
 <li>
-Connect the green wires from pins 27 and 39 on the C1+ to the SRE. The wire with the resistor can connect to either of the SRE pins. See the bottom left blow-up in the image above. </br>
+Connect the green wires from pins 27 and 39 on the C1+ to the SRE. The wire with the resistor can connect to either of the SRE pins. See the bottom left blow-up in the image above. <br />
 
 
 <li>
