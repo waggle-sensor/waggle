@@ -268,7 +268,6 @@ Lastly, connect the power cable to the Wagman power port (see bottom right in th
 
 <li>
 <b> Mount the Ugly Box and Power Box to the Backplate. </b>
-</ul>
 <ul>
 
 <img src="setup_pics/boxtoplate.jpg" alt="Image Unavailable" style="width:1132px; height:624px;">
