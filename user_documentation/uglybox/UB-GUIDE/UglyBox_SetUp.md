@@ -11,7 +11,6 @@
 Prepare the Wagman and C1+  
 
 <ul>
-<li>
 <img src="setup_pics/wagmanc1+.jpg" alt="Image Unavailable"  style="width:1024px; height:780px;"> 
 
 
@@ -166,7 +165,6 @@ Prepare Sensors and Shield.
 First attach the senor mounting frame to the shield base plate.
 <li>
 Make sure the flat foot of the sensor frame is facing the side with 2 protruding holes. See the image above for reference.
-<li>
 
 <img src="setup_pics/sensor-mount.jpg" alt="Image Unavailable"  style="width:1152px; height:864px;"> 
 
@@ -226,7 +224,6 @@ Secure the plug by screwing the lock-nut onto the threaded end of the plug.
 <li>
 Connect all the wires to the power converter. With at least 1/4" conductor exposed of each wire, connect the wires in the following order, left to right:
 power plug(Black, White, Green), two-conductor wire(Black, Red). Confirm the connections with the top right blow-up in the image above.
-
 
 <img src="setup_pics/power.jpg" alt="Image Unavailable" style="width:885px; height:498px;">
 
