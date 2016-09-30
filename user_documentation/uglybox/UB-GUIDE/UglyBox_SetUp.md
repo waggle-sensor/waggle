@@ -8,7 +8,7 @@
 
 <ol>
 <li>
-__Prepare the Wagman and C1+__ 
+<b> Prepare the Wagman and C1+ </b>
 
 <ul>
 <img src="setup_pics/wagmanc1+.jpg" alt="Image Unavailable"  style="width:1024px; height:780px;"> 
