@@ -203,7 +203,7 @@ Slide the 3 rods into the corresponding holes in the shield extenders. Once thro
 **There may be other (and/or easier) ways to complete this step. Whichever path is chosen, make sure the CAT6 (and optional USB) cables are running out the top of the shield**
 </ul>
 <li>
-<b> Prepare Power Box </b>
+<b> Prepare Power Box. </b>
 <ul>
 <li>
 Using the 2 M3x10 screws, attach the AC/DC converter to the metal riser.
@@ -267,7 +267,7 @@ Lastly, connect the power cable to the Wagman power port (see bottom right in th
 </ul>
 
 <li>
-<b> Mount the Ugly Box and Power Box to the Backplate. <b>
+<b> Mount the Ugly Box and Power Box to the Backplate. </b>
 </ul>
 <ul>
 
