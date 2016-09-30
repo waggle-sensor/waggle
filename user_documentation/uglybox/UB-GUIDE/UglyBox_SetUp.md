@@ -7,7 +7,8 @@
 <a href="UBpartindex.html">Part Index</a>
 
 <ol>
-### 1. Prepare the Wagman and C1+  
+<li>
+__Prepare the Wagman and C1+__ 
 
 <ul>
 <img src="setup_pics/wagmanc1+.jpg" alt="Image Unavailable"  style="width:1024px; height:780px;"> 
