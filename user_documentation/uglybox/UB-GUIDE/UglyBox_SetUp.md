@@ -284,7 +284,7 @@ When mounting the boxes, make sure the power box is attached to the right of the
 <img src="setup_pics/shieldarm.jpg" alt="Image Unavailable" style="width:1152px; height:864px;">
 
 <li>
-<b> Prepare the arm of the shield using the 8" aluminum rod and brackets. </b>
+Prepare the arm of the shield using the 8" aluminum rod and brackets.
 <li>
 Attach 2 angle brackets to the very end of the rod, sliding the flat nut into the grooves in the rod.
 <li>
@@ -303,7 +303,7 @@ This can be done with a complete shield, or as pictured with only the top.
 <img src="setup_pics/armtoplate.jpg" alt="Image Unavailable" style="width:732px; height:792px;">
 
 <li>
-<b> Mount the arm to the aluminum plate using the screws and flat nuts. </b>
+Mount the arm to the aluminum plate using the screws and flat nuts.
 <li>
 For a more secure attachment, coat the ends of the screws with a threadlocker coating.
 </ul>
