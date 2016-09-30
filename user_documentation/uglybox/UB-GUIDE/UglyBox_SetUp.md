@@ -4,7 +4,7 @@
 
 ## Step by step instruction for assembling the Ugly Box
 
-<a href="UBpartindex.html">Part Index</a>
+<a href="UBPartIndex.md">Part Index</a>
 
 <ol>
 <li>
