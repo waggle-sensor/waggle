@@ -5,13 +5,13 @@
 <col width="350">
 <tr>
 <th>
-## Part
+ Part
 </th>
 <th>
-## Name
+ Name
 </th>
 <th>
-## Description/Usage
+ Description/Usage
 </th>
 </tr>
 <tr>
