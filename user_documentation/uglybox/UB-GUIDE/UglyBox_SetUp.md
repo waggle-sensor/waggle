@@ -35,10 +35,9 @@ Attach the RTC battery to the C1+ in the RTC port.
 
 
 <ul>
-<img src="setup_pics/wagmantoplate1.jpg" alt="Image Unavailable"  style="width:1009px; height:358px;">
+<img src="setup_pics/wagmantoplate1.jpg" alt="Image Unavailable"  style="width:1009px; height:358px;">   
 
-<li>
-Using 4 M3x14 screws, 4 SP100 spacers, and 4 M4 washers, mount the Wagman to the acrylic plate. The M3x14 screws will screw into the M3 heatsets in the plate.
+<li>Using 4 M3x14 screws, 4 SP100 spacers, and 4 M4 washers, mount the Wagman to the acrylic plate. The M3x14 screws will screw into the M3 heatsets in the plate.
 
 <li>
 Make sure to mount in the proper position, with retangular camera mount slots in the same corner as the C1+.
