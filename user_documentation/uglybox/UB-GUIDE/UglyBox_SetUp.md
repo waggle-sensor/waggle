@@ -9,8 +9,8 @@
 <ol>
 <li>
 <b> Prepare the Wagman and C1+. </b>   
+<ul>   
 
-<ul>
 <img src="setup_pics/wagmanc1+.jpg" alt="Image Unavailable"  style="width:1024px; height:780px;">   
 
 <li>Using 4 M3x20 screws, 4 440 Hex nuts, and 4 SP3/8 spacers, attach the C1+ to the Wagman. Be sure to line up the header on the C1+ with the pins on the Wagman.
