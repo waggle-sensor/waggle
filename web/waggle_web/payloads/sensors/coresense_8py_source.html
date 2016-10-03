@@ -59,8 +59,8 @@ $(document).ready(function(){initNavTree('coresense_8py_source.html','');});
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="keyword">from</span> coresense_InotifyKernel <span class="keyword">import</span> *</div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;</div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="keywordflow">if</span> __name__ == <span class="stringliteral">&quot;__main__&quot;</span>:</div>
-<div class="line"><a name="l00007"></a><span class="lineno"><a class="line" href="namespacecoresense.html#acdece9c03c31b8c2bddbd568fc26d7cb">    7</a></span>&#160;    commL = communicatorLoader()</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;    Monitor(<span class="stringliteral">&#39;/dev&#39;</span>)</div>
+<div class="line"><a name="l00007"></a><span class="lineno"><a class="line" href="namespacecoresense.html#acdece9c03c31b8c2bddbd568fc26d7cb">    7</a></span>&#160;    commL = <a class="code" href="classcoresense__InotifyKernel_1_1communicatorLoader.html">communicatorLoader</a>()</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;    <a class="code" href="namespacecoresense__InotifyKernel.html#adab7c8e9b730ed2ad89347b217c35a48">Monitor</a>(<span class="stringliteral">&#39;/dev&#39;</span>)</div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;    <span class="keywordflow">print</span> <span class="stringliteral">&quot;--------------------------------------&quot;</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;    commL.stop()</div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;    <span class="keywordflow">while</span> len(threading.enumerate()) &gt; 1:</div>
@@ -68,13 +68,15 @@ $(document).ready(function(){initNavTree('coresense_8py_source.html','');});
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;        time.sleep(1)</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;        <span class="keywordflow">print</span> <span class="stringliteral">&quot;shutting down...&quot;</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    commands.getoutput(<span class="stringliteral">&quot;rm *.pyc&quot;</span>)</div>
+<div class="ttc" id="classcoresense__InotifyKernel_1_1communicatorLoader_html"><div class="ttname"><a href="classcoresense__InotifyKernel_1_1communicatorLoader.html">coresense_InotifyKernel.communicatorLoader</a></div><div class="ttdef"><b>Definition:</b> <a href="coresense__InotifyKernel_8py_source.html#l00014">coresense_InotifyKernel.py:14</a></div></div>
+<div class="ttc" id="namespacecoresense__InotifyKernel_html_adab7c8e9b730ed2ad89347b217c35a48"><div class="ttname"><a href="namespacecoresense__InotifyKernel.html#adab7c8e9b730ed2ad89347b217c35a48">coresense_InotifyKernel.Monitor</a></div><div class="ttdeci">def Monitor</div><div class="ttdef"><b>Definition:</b> <a href="coresense__InotifyKernel_8py_source.html#l00065">coresense_InotifyKernel.py:65</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_36e8bd0a7f88de2b0239cf6d65de93c9.html">coresensors</a></li><li class="navelem"><a class="el" href="dir_04ae91ba171e81d0e411085ca3e74a84.html">v3</a></li><li class="navelem"><a class="el" href="dir_fe76deaa30acd5582fa6c0aa78250760.html">pbay</a></li><li class="navelem"><a class="el" href="dir_27ca9b6850ea9b56a05e964331360d10.html">integrated</a></li><li class="navelem"><a class="el" href="dir_c3dd570937474ddd080c60a75240db1b.html">coresense_plugin</a></li><li class="navelem"><a class="el" href="coresense_8py.html">coresense.py</a></li>
-    <li class="footer">Generated on Tue Jun 14 2016 11:01:50 for Waggle by
+    <li class="footer">Generated on Mon Sep 19 2016 12:27:41 for Waggle by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>

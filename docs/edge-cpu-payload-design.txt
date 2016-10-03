@@ -1,0 +1,79 @@
+# A simple design overview for the Edge Computing (EC) Payload CPU
+  (currently an XU4)
+
+The design features below are ideals.  They are intended to provide a
+description of the intended architecture.  As is often the case, our
+ideal design must be balanced against software complexity, technology
+available, and costs (manpower, CPU power, response time, etc).
+However the description below accurately describes the intended ideal
+architecture.
+
+
+Overview: A "payload" CPU is any CPU device (usually a single board
+computer) that is added to a Waggle node for sensing or actuating.
+Currently, the Waggle nodes support one Payload Processor, an ODROID
+XU4 for edge computing.  The Edge Computing Payload CPU currently
+handles cameras (upward and horizontal) and the microphone.
+
+Purpose: The Edge Computing board is intened to process images and
+audio and report back an analysis, such as "car horn honks" or "cars
+per minute through intersection", etc.  One key design point is that
+the EC board is agile and programmable.  Approved scientists "users"
+should be able to develop classifiers such as "bike counter" and then
+try the classifier on the EC board.  Therefore, the security and
+management of the EC board is quite distinct from the Node Controller,
+which manages the WAN and is carefully managed. The the software of
+the EC board is buggy or compromised, the operation of the other
+Waggle functions should not be impaired.  This posture translates into
+several (ideal) design features:
+
+Ideal Design Features:
+
+[[High Priority: Data correctness and privacy]]
+
+* Goal: Even a broken or mischievous program on the EC cannot leak
+  data to remote servers. 
+
+  Design: The EC board network connection *only* sees the Node
+  Controller.  The EC can not send or receive any data from any other
+  source. The EC is blind to the planet, except for the NC.
+
+* Goal: The NC can inspect, throttle, and decide which sensor data to
+  forward to beehive, to insure only approved sensor data is pushed
+  off the node to beehive.
+
+  Design: The sensor reporting schema and "whitelist" lives on the NC.
+  Any attempt by the EC to send other sensor values will be noticed
+  and blocked.
+
+* Goal: To keep training data private, the NC will decide the size and
+  frequency of training data to be sent directly to the protected
+  server (not beehive).
+
+  Design: Only NC daemon can move training data to the secure server,
+  based on local admin-controlled configuration.
+
+[[Medium Priority: Protection from errant EC programs]]
+
+* Goal: Even a broken or mischievous program on the EC cannot cause a
+  DOS problem on the node controller
+
+  Design: The NC has a mechanism to easily throttle or ignore heavy
+  traffic from the EC, or better yet, the NC only pulls from EC.
+
+[[Low Priority: If supervisor priviledges are compromised on the EC]]
+
+* Goal: Even if root priviledge is attained by a rogue plugin on the
+  EC, no disruption to the NC is possible.
+
+* Goal: Even if root priviledge is attained by a rogue plugin on the
+  EC, it can be recovered and the basic image restored.
+
+  Design: Network booting off the EC must come before SD/eMMC booting,
+  and net booting cannot be disabled.
+
+
+
+
+
+

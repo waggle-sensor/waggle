@@ -31,3 +31,6 @@ payloads/app_processor/app_processor.html:guestnodes/README.md
 deverlopers/tools/devtools.html:devtools/README.md
 payloads/sensors/SensorTable.html:user_documentation/sensors/SensorTable.html
 payloads/sensors/Coresensor.html:coresensors/v3/pbay/integrated/README.md
+getting-started/uglybox/index.html:user_documentation/uglybox/UB-GUIDE/uglybox_setup.html
+getting-started/uglybox/UBpartindex.html:user_documentation/uglybox/UB-GUIDE/UBpartindex.html
+

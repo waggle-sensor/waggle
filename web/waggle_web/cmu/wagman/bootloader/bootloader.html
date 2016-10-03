@@ -6,31 +6,36 @@
   <meta name="generator" content="pandoc" />
   <title></title>
   <style type="text/css">code{white-space: pre;}</style>
-  <style type="text/css">
-table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
-  margin: 0; padding: 0; vertical-align: baseline; border: none; }
-table.sourceCode { width: 100%; line-height: 100%; }
-td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
-td.sourceCode { padding-left: 5px; }
-code > span.kw { color: #007020; font-weight: bold; }
-code > span.dt { color: #902000; }
-code > span.dv { color: #40a070; }
-code > span.bn { color: #40a070; }
-code > span.fl { color: #40a070; }
-code > span.ch { color: #4070a0; }
-code > span.st { color: #4070a0; }
-code > span.co { color: #60a0b0; font-style: italic; }
-code > span.ot { color: #007020; }
-code > span.al { color: #ff0000; font-weight: bold; }
-code > span.fu { color: #06287e; }
-code > span.er { color: #ff0000; font-weight: bold; }
-  </style>
   <link rel="stylesheet" href="../../../Img/style.css" type="text/css" />
   <link rel="stylesheet" href="../../../Img/doxygen.css" type="text/css" />
 </head>
 <body>
-<h2 id="burning-bootloader-on-to-wagman">Burning Bootloader on to Wagman:</h2>
-<p>To burn the Arduino Micro Caterina bootloader on the Wagman,<br />you will need an AVR ICSP programmer. This instruction has<br />been tested to work with an AVRISP mkII programmer on<br />Ubuntu 14.04 system with avrdude version 6.0.1.<br />(<a href="http://www.atmel.com/tools/AVRISPMKII.aspx">http://www.atmel.com/tools/AVRISPMKII.aspx</a>).</p>
-<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">avrdude</span> -c avrisp2 -P usb -p m32u4 -U flash:w:Caterina-Micro.hex:i</code></pre>
+<h1 id="wagman-bootloader">Wagman Bootloader:</h1>
+<p>The Wagman design is centered around an Atmel [ATmega32U4] (<a href="http://www.atmel.com/Images/Atmel-7766-8-bit-AVR-ATmega16U4-32U4_Datasheet.pdf">http://www.atmel.com/Images/Atmel-7766-8-bit-AVR-ATmega16U4-32U4_Datasheet.pdf</a>) processor, and uses a <a href="https://github.com/waggle-sensor/wagman/tree/master/v3/bootloader/src/caterina">modified version</a> of the <a href="https://github.com/arduino/Arduino/tree/master/hardware/arduino/avr/bootloaders/caterina">Caterina</a> bootloader installed in the <a href="https://www.arduino.cc/en/Main/ArduinoBoardMicro">Arduino Micro</a> class of boards. The bootloader modifications are aimed toward improving the reliability of the in-situ Wagman firmware upgrade process by passing bootloader stage GPIO operation requests from firmware space using the EEPROM storage. This firmware makes the Wagman incompatible with the regular Arduino IDE USB firmware upgrade process due to change in timing-delays to accommodate the additional features.</p>
+<h1 id="wagman-firmware-upgrade">Wagman Firmware Upgrade:</h1>
+<p>The Wagman firmware upgrade is initiated by the Node controller. The Wagman needs to be put in the boot-loader stage for the upgrade process, which can be done in two ways -</p>
+<ol>
+<li>Auto-reset: Initiated by the Node-controller opens and closes the serial port to the Wagman at 1200.<br /></li>
+<li>Forced-reset: Initiated by the Node-controller pulses the reset-line of the Wagman using the SRE board.</li>
+</ol>
+<p>Once reset to the bootloader state where the Wagman stays for a duration of time before jumping into program execution phase, the Wagman firmware is uploaded by the Node-controller through the USB connection using the avrdude application.</p>
+<h1 id="wagman-firmware-upgrade-risk">Wagman Firmware Upgrade Risk:</h1>
+<p>During the upgrade process the Node-controller is kept alive by the latched power supply and Wagman has no firmware beyond a working bootloader (until the new firmware is completely committed to the memory). A power failure at this point leads to a Wagman restricted to only the bootloader state and Node-controller that is permanently turned off, with <strong>no scope for recovery</strong> without physical access to the node, essentially a dead node.</p>
+<h1 id="wagman-firmware-upgrade-with-node-controller-power-on-in-boot-loader-state">Wagman Firmware Upgrade with Node-controller Power-ON in Boot-loader State:</h1>
+<p>To mitigate the above risk, the boot-loader is modified to receive instructions from a working firmware. A working firmware can write instructions (option to power ON Node-controller and choice of eMMC or SD card) into the EEPROM which are preserved across soft/hard resets and also power failures. These instructions are read by the boot-loader and appropriate actions are performed. The new firmware-upgrade process is as follows -</p>
+<ol>
+<li>The working Wagman <a href="https://github.com/waggle-sensor/wagman/blob/master/v3/Wagman/Record.cpp">firmware</a>, on the direction from Node-controller, enables bootloader stage Node-controller power-ON, along with the choice of the appropriate boot-media. This is written to location 0x40 in the EEPROM.<br /></li>
+<li>The Node-controller initiates the firmware-upgrade using the Auto-reset process (1) ( the Forced-reset (2) is used as the backup process).<br /></li>
+<li>The bootloader reads the memory location 0x40 and sets the right relay settings to choose the appropriate boot-media for Node-controller and forces a power ON. If the Node-controller is already powered-ON, this process has no effect on it. Otherwise, the Node-controller is powered-ON with the required boot-media.<br /></li>
+<li>After 5 seconds, the Wagman goes into the standard Arduino-bootloader phase, ready to receive the firmware upgrade over the USB link.<br /></li>
+<li>The Node-controller flashes the Wagman with firmware and the Wagman proceeds to program execution phase onces the firmware upgrade is completed.<br /></li>
+<li>On successful firmware upgrade, the Wagman firmware resets the bootloader stage options in the EEPROM on commands from the Node-controller.</li>
+</ol>
+<h1 id="caveats">Caveats:</h1>
+<p>All risks in firmware-upgrade process are not alleviated by the bootloader improvements. If the power-outage during the firmware upgrade phase wrecks the boot-media of the Node-controller, the bootloader does not have the abilities to sense the situation and try alternate boot-media. The limited bootloader space prevents further expansion of the bootloader features.</p>
+<h1 id="compiling-bootloader">Compiling Bootloader:</h1>
+<p>The bootloader compilation process [requires several software packages] (<a href="http://www.leonardomiliani.com/en/2013/accorciamo-i-tempi-del-bootloader-della-leonardomicroesplora/">http://www.leonardomiliani.com/en/2013/accorciamo-i-tempi-del-bootloader-della-leonardomicroesplora/</a>) including <a href="https://github.com/abcminiuser/lufa">LUFA</a>, and avr-gcc toolchain. The LUFA packages and the appropriate [MakeFile] (<a href="https://github.com/waggle-sensor/wagman/blob/master/v3/bootloader/src/caterina/Makefile">https://github.com/waggle-sensor/wagman/blob/master/v3/bootloader/src/caterina/Makefile</a>) used to compile the code on an x86-64 Ubuntu machine have been included in the <a href="https://github.com/waggle-sensor/wagman/tree/master/v3/bootloader/LUFA-111009">LUFA-111009</a> and <a href="https://github.com/waggle-sensor/wagman/blob/master/v3/bootloader/src/caterina/">src</a> directories. The current binary bootloader can be found in the <a href="https://github.com/waggle-sensor/wagman/tree/master/v3/bootloader/bin">bin</a> directory.</p>
+<h1 id="flashing-the-bootloader">Flashing the Bootloader:</h1>
+<p>The currently suggested bootloader flashing process involves the Arduino IDE and AVRISP mkII programmers. On Linux systems, the bootloader firmware named <strong>Caterina-Micro.hex</strong> found under the <em>arduino-1.6.7/hardware/arduino/avr/bootloaders/caterina/</em> folder is used by the IDE for Arduino-Micro class of devices, including the Wagman. A suggested method is to move this file to a safe location, and create a symbolic link to the bootloader binary provided in the bin folder <em>Caterina-Micro.hex -&gt; wagman/v3/bootloader/bin/Wagman_bootloader.hex</em>. The IDE can now be used to flash the bootloader following the steps in the <a href="https://github.com/waggle-sensor/wagman/tree/master/v3/qa_testing/Wagman_Initialization">Wagman Initialization</a> page.</p>
 </body>
 </html>

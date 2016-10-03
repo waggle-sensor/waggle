@@ -25,4 +25,4 @@ FILE_PATTERNS = *.ino *.py
 EXTENSION_MAPPING = ino=C
 HTML_OUTPUT = tmp
 
-INPUT =  ../coresensors/v3/pbay/integrated/./integrated.ino ../coresensors/v3/pbay/integrated/./airsense.ino ../coresensors/v3/pbay/integrated/./lightsense.ino ../coresensors/v3/pbay/integrated/./chemsense.ino  ../coresensors/v3/pbay/integrated/./coresense_plugin/coresense.py  ../coresensors/v3/pbay/integrated/./coresense_plugin/coresense_pluginUSBSerial.py
+INPUT =  ../coresensors/v3/pbay/integrated/./integrated.ino ../coresensors/v3/pbay/integrated/./airsense.ino ../coresensors/v3/pbay/integrated/./lightsense.ino ../coresensors/v3/pbay/integrated/./chemsense.ino  ../coresensors/v3/pbay/integrated/./initialization.ino ../coresensors/v3/pbay/integrated/./packet_assembler.ino  ../coresensors/v3/pbay/integrated/./coresense_plugin/coresense_pluginUSBSerial.py ../coresensors/v3/pbay/integrated/./coresense_plugin/coresense_InotifyKernel.py ../coresensors/v3/pbay/integrated/./coresense_plugin/coresense.py  ../coresensors/v3/pbay/integrated/./coresense_plugin/coresense_pluginUSBSerial.py
