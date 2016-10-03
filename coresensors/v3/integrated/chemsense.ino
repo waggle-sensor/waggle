@@ -1,404 +1,689 @@
-void chemsense_parse_value (byte pidx)
+/* Chemsesne reader using the Serial "Serial3".
+ * Suppose that the Chemsense is device /dev/ttyACM0 when you connect the board with light and airsense.
+ */
+
+
+void form3_hex_string_to_hex()                     // Hex to hex: form3
 {
-    param_value = 0;
-    for (byte idx = 0; idx < pidx; idx ++)
+    Temp_ulong[0] = 0x000000;
+    Temp_ulong[1] = 0x000000;
+
+    for (int i = 0; i < VAL_NUM_ID; i++)
     {
-        if (parameter[idx] != 0x2d)
-        {
-            parameter[idx] = parameter[idx] - 48;
-            param_value = (param_value * 10) + parameter[idx];
-        }
+        if (VAL[i] > '9')                   // letters
+            VAL[i] = VAL[i] - 'a' + 0x0a;
+        else                                // numbers
+            VAL[i] = VAL[i] - '0';
+
+        if (i < VAL_NUM_ID / 2)
+            Temp_ulong[0] = Temp_ulong[0] | (VAL[i] << (VAL_NUM_ID / 2 - i - 1) * 4);
+        else
+            Temp_ulong[1] = Temp_ulong[1] | (VAL[i] << (VAL_NUM_ID - i - 1) * 4);
     }
 
-    if (parameter[0] == 0x2d)
-    {
-        param_value = param_value * (-1);
-    }
-//     SerialUSB.println(param_value);
-    return;
+    Temp_byte[0] = (Temp_ulong[0] & 0xFF0000) >> 16;
+    Temp_byte[1] = (Temp_ulong[0] & 0x00FF00) >> 8;
+    Temp_byte[2] = (Temp_ulong[0] & 0x0000FF);
+    Temp_byte[3] = (Temp_ulong[1] & 0xFF0000) >> 16;
+    Temp_byte[4] = (Temp_ulong[1] & 0x00FF00) >> 8;
+    Temp_byte[5] = (Temp_ulong[1] & 0x0000FF);
+    format3(Temp_byte);
 }
 
-void chemsense_aquire (void)
+void form1_hex_string_to_unsigned_int()            //hex to uint: form1
 {
-
-//     let us acquire a line of chemsense data
-    while (Serial3.available())
+    Temp_uint16 = 0x0000;
+    for (int i = 0; i < VAL_NUM_ID; i++)
     {
-        // every line of data terminates with a newline and carriage return char, lock to the carriage return,
-        // parse the next line in full, until the newline char is encountered
+        if (VAL[i] > '9')                   // letters
+            VAL[i] = VAL[i] - 'a' + 0x0a;
+        else                                // numbers
+            VAL[i] = VAL[i] - '0';
 
-        //read a byte of data from serial buffer
-        inByte = Serial3.read();
-        SerialUSB.write(inByte);
-
-        //check if we have locked to carriage return - end of previous line.
-        if (inByte == '\r')
-        {
-            cnt = 0;
-            Chemsense_locked = 1;
-        }
-
-        //given that we are locked in, let us proceed to fill the
-        //char buffer with ASCIIs we are receiving
-        if (Chemsense_locked == 1)
-        {
-            // we have seen a newline char, a complete line of data has been acquired
-            if (inByte == '\n')
-            {
-                cnt = cnt + 1;
-                ChemSensed = 1;
-                chemsense_ready = true;
-            }
-            //not a newline char, continue to fill the buffer
-            else
-            {
-                //fill the buffer only if the data received by serial is under the allocated buffer length
-                if ( cnt < BUFFER_SIZE_CHEMSENSE )
-                {
-                    buffer[cnt] = inByte;
-                    cnt = cnt + 1;
-                }
-            }
-        }
+        Temp_uint16 = Temp_uint16 | (VAL[i] << (VAL_NUM_ID - i - 1) * 4);
     }
-    return;
+    format1(Temp_uint16);
 }
 
-// Chemsense line output -
-// 72f1addaffff,25600,29720,6644,1563,-25510,23,4103258,-1238233,-123432,8388606,-58790,-1495769,2432,5739770,-271490
-// 72f1addaffff,25600,29720,6644,1563,-25510,23,4103258,-1224139,-151913,8388606,-58558,-1514697,2425,5741330,-270681
-// 0   MAC - 6 Bytes
-// 1   HDC_Temp - Ignore
-// 2   HDC_RH - Ignore
-// 3   SHT_Temp - 2 Bytes (15 bits + sign) (14 bits raw, encoded as is)
-// 4   SHT_RH - 2 Bytes (15 bits + sign) (12 bits raw, encoded as is)
-// 5   LPS_Temp - 2 Bytes (15 bits + sign) (16 bits raw, encoded after right shifting by 1)
-// 6   UV - 2 Bytes (16 bits) (16 bits raw, encoded as is)
-// 7   Pressure - 3 Bytes (24 bits) (24 bits raw, encoded as is)
-// 8   H2S - 3 Bytes (23 bits + sign) (The AFE produces 23 bits precision output + sign bit)
-// 9   O3 - 3 Bytes (23 bits + sign) (The AFE produces 23 bits precision output + sign bit)
-// 10  NO2 - 3 Bytes (23 bits + sign) (The AFE produces 23 bits precision output + sign bit)
-// 11  CO - 3 Bytes (23 bits + sign) (The AFE produces 23 bits precision output + sign bit)
-// 12  SO2 - 3 Bytes (23 bits + sign) (The AFE produces 23 bits precision output + sign bit)
-// 13  TotalOX - 3 Bytes (23 bits + sign) (The AFE produces 23 bits precision output + sign bit)
-// 14  TotalRed - 3 Bytes (23 bits + sign) (The AFE produces 23 bits precision output + sign bit)
-// 15  ETOH - 3 Bytes (23 bits + sign) (The AFE produces 23 bits precision output + sign bit)
-
-void chemsense_pack (void)
+void form1_int_string_to_unsigned_int()                //form1
 {
-    // if there is data to be packed, acquired earlier using chemsense acquire, then
-    // let us pack the data
-    if (chemsense_ready == true)
+    Temp_uint16 = 0;
+    for (int i = 0; i < VAL_NUM_ID; i++)
     {
-        chemsense_ready = false;
+        if (VAL[i] == '-')
+            continue;
 
-        byte count = 0, pidx = 0;
+        VAL[i] = VAL[i] - '0';
+        Temp_uint16 = (Temp_uint16 * 10) + VAL[i];
+    }
+    format1(Temp_uint16);
+}
 
-        for (byte index = CR_ENABLE; index < cnt; index ++)
+void form4_int_string_to_unsigned_long(int shift_needed)                //form4
+{
+    Temp_ulong[0] = 0;
+    for (int i = 0; i < VAL_NUM_ID; i++)
+    {
+        if (VAL[i] == '-')
+            continue;
+
+        VAL[i] = VAL[i] - '0';
+        Temp_ulong[0] = (Temp_ulong[0] * 10) + VAL[i];
+    }
+    if (shift_needed == 1)
+        Temp_ulong[0] = (Temp_ulong[0] & 0xffffff00) >> 8;
+
+    format4(Temp_ulong[0] & 0xffffff);
+}
+
+void form2_int_string_to_int()                   // form2
+{
+    Temp_int[0] = 0;
+    for (int i = 0; i < VAL_NUM_ID; i++)
+    {
+        if (VAL[i] == '-')
+            continue;
+
+        VAL[i] = VAL[i] - '0';
+        Temp_int[0] = (Temp_int[0] * 10) + VAL[i];
+    }
+    if (VAL[0] == '-')
+        Temp_int[0] *= -1;
+    format2(Temp_int[0]);
+}
+
+void form5_int_string_to_long()    // form5
+{
+    Temp_long = 0;
+    for (int i = 0; i < VAL_NUM_ID; i++)
+    {
+        if (VAL[i] == '-')
+            continue;
+
+        VAL[i] = VAL[i] - '0';
+        Temp_long = (Temp_long * 10) + VAL[i];
+    }
+    if (VAL[0] == '-')
+        Temp_long *= -1;
+    format5(Temp_long);
+}
+
+int compareKey(char k1, char k2, char k3)
+{
+    if (KEY[0] != k1) return -1;
+    if (KEY[1] != k2) return -1;
+    if (KEY[2] != k3) return -1;
+    return 0;
+}
+
+void chemsense_acquire()
+{
+    if (Serial3.available() > 0)
+    {
+        count_chem = count;        
+        while (flag_CHEM_WHILE == true && count < count_chem + 4)
         {
-            // Tokenize the buffer with ',' as the delimiter, count the number of
-            // tokens (count variable) and the length of the MACID field, also
-            // grab the MAC ID field from buffer
+            INPUT_BYTE = Serial3.read();     //read the incoming byte
 
-            if (buffer[index] != ',')
+            if (INPUT_BYTE >= 'a' && INPUT_BYTE <= 'z' ||
+                INPUT_BYTE >= 'A' && INPUT_BYTE <= 'Z' ||
+                INPUT_BYTE >= '0' && INPUT_BYTE <= '9' ||
+                INPUT_BYTE == '-')
             {
-                if ((count == 0) && (pidx < PARAM_SIZE_CHEMSENSE))
+                if (!flag_KEY)
                 {
-                    pidx = pidx + 1;
+                    if (KEY_NUM_ID < 3)
+                    {
+                        KEY[KEY_NUM_ID] = INPUT_BYTE;
+                        KEY_NUM_ID++;
+                    }
+                    else
+                        KEY_NUM_ID = 0;
                 }
-            }
-            else
-            {
-                count = count + 1;
-            }
-        }
-
-        // check if a valid line of data was acquired.
-
-        if ((count == 15) && (pidx == 13))
-        {
-            byte count = 0, pidx = 0;
-            // parse the valid line of data
-            for (byte index = CR_ENABLE + 1; index < cnt; index ++)
-            {
-
-                // segregate every token, one by one.
-                if ((buffer[index] != ',') && (pidx < PARAM_SIZE_CHEMSENSE))
-                {
-                    parameter[pidx] = buffer[index];
-                    pidx = pidx + 1;
-                }
-
-                // a token has been segregated as the next char is the delimiter ','
                 else
                 {
-
-                    if (count == 0)
+                    if (VAL_NUM_ID < 12)
                     {
-                        #ifdef chemsense_MAC_ID_include
-                        // chemsense MAC address (format 3)
-                        valid = 1;
-                        chemsense_MAC_ID[0] = ID_CHEMSENSE_MAC;
-                        chemsense_MAC_ID[1] = (valid << 7) | LENGTH_FORMAT3;
-                        for (byte idx = 0; idx < pidx; idx ++)
-                        {
-                            if ((parameter[idx] > 96) && (parameter[idx] < 103))
-                            {
-                                parameter[idx] = parameter[idx] - 87;
-                            }
-                            else
-                            {
-                                parameter[idx] = parameter[idx] - 48;
-                            }
-
-                            if (idx % 2 == 0)
-                            {
-                                parameter[idx] = parameter[idx] << 4;
-                            }
-                            chemsense_MAC_ID[(idx/2)+2] = chemsense_MAC_ID[(idx/2)+2] | parameter[idx];
-                        }
-                        #ifdef SERIAL_DEBUG
-                        SerialUSB.print("chemsense MAC ID: ");
-                        for (int i = 2; i < (LENGTH_FORMAT3 + 2); i++)
-                            SerialUSB.print(chemsense_MAC_ID[i], HEX);
-                        SerialUSB.println("");
-                        #endif
-
-                        #endif
+                        VAL[VAL_NUM_ID] = INPUT_BYTE;
+                        VAL_NUM_ID++;
                     }
-
-                    #ifdef SHT25_include
-                    else if (count == 3)
+                    else
                     {
-
-                        valid = 1;
-                        chemsense_parse_value(pidx);
-                        format2(int(param_value));
-                        SHT25[0] = ID_SHT25;
-                        SHT25[1] = (valid << 7) | ((LENGTH_FORMAT2) * 2);
-                        SHT25[2] = formatted_data_buffer[0];
-                        SHT25[3] = formatted_data_buffer[1];
-                        #ifdef SERIAL_DEBUG
-                        SerialUSB.print("SHT25 Temperature: ");
-                        SerialUSB.println(int(param_value));
-                        #endif
-
+                        KEY_NUM_ID = 0;
+                        VAL_NUM_ID = 0;
+                        flag_KEY = false;
                     }
-                    else if (count == 4)
-                    {
-                        valid = 1;
-                        chemsense_parse_value(pidx);
-                        format2(int(param_value));
-                        SHT25[0] = ID_SHT25;
-                        SHT25[1] = (valid << 7) | ((LENGTH_FORMAT2) * 2);
-                        SHT25[4] = formatted_data_buffer[0];
-                        SHT25[5] = formatted_data_buffer[1];
-                        #ifdef SERIAL_DEBUG
-                        SerialUSB.print("SHT25 RH: ");
-                        SerialUSB.println(int(param_value));
-                        #endif
-                    }
-                    #endif
-
-                    #ifdef LPS25H_include
-                    else if (count == 5)
-                    {
-                        valid = 1;
-                        chemsense_parse_value(pidx);
-                        format2(int(param_value) >> 1); // have to check if this is needed.
-                        LPS25H[0] = ID_LPS25H;
-                        LPS25H[1] = (valid << 7) | (LENGTH_FORMAT2 + LENGTH_FORMAT4);
-                        LPS25H[2] = formatted_data_buffer[0];
-                        LPS25H[3] = formatted_data_buffer[1];
-                        #ifdef SERIAL_DEBUG
-                        SerialUSB.print("LPS25H Temp: ");
-                        SerialUSB.println(int(param_value));
-                        #endif
-                    }
-
-                   else if (count == 7)
-                   {
-                       valid = 1;
-                       chemsense_parse_value(pidx);
-                       format4(long(param_value));
-                       LPS25H[0] = ID_LPS25H;
-                       LPS25H[1] = (valid << 7) | (LENGTH_FORMAT2 + LENGTH_FORMAT4);
-                       LPS25H[4] = formatted_data_buffer[0];
-                       LPS25H[5] = formatted_data_buffer[1];
-                       LPS25H[6] = formatted_data_buffer[2];
-                       #ifdef SERIAL_DEBUG
-                       SerialUSB.print("LPS25H Pressure: ");
-                       SerialUSB.println(long(param_value));
-                       #endif
-
-                   }
-                   #endif
-
-                    #ifdef Si1145_include
-                    else if (count == 6)
-                    {
-                        valid = 1;
-                        chemsense_parse_value(pidx);
-                        format1(int(param_value));
-                        Si1145[0] = ID_Si1145;
-                        Si1145[1] = (valid << 7) | (LENGTH_FORMAT1);
-                        Si1145[2] = formatted_data_buffer[0];
-                        Si1145[3] = formatted_data_buffer[1];
-                        #ifdef SERIAL_DEBUG
-                        SerialUSB.print("Si1145 UV: ");
-                        SerialUSB.println(int(param_value));
-                        #endif
-                    }
-                    #endif
-
-                    #ifdef hydrogen_sulphide_include
-                    else if (count == 8)
-                    {
-                        valid = 1;
-                        chemsense_parse_value(pidx);
-                        format5(long(param_value));
-                        hydrogen_sulphide[0] = ID_HYDROGEN_SULPHIDE;
-                        hydrogen_sulphide[1] = (valid << 7) | (LENGTH_FORMAT5);
-                        hydrogen_sulphide[2] = formatted_data_buffer[0];
-                        hydrogen_sulphide[3] = formatted_data_buffer[1];
-                        hydrogen_sulphide[4] = formatted_data_buffer[2];
-                        #ifdef SERIAL_DEBUG
-                        SerialUSB.print("H2S: ");
-                        SerialUSB.println(long(param_value));
-                        #endif
-                    }
-                    #endif
-
-                    #ifdef ozone_include
-                    else if (count == 9)
-                    {
-
-                        valid = 1;
-                        chemsense_parse_value(pidx);
-                        format5(long(param_value));
-                        ozone[0] = ID_OZONE;
-                        ozone[1] = (valid << 7) | (LENGTH_FORMAT5);
-                        ozone[2] = formatted_data_buffer[0];
-                        ozone[3] = formatted_data_buffer[1];
-                        ozone[4] = formatted_data_buffer[2];
-                        #ifdef SERIAL_DEBUG
-                        SerialUSB.print("O3: ");
-                        SerialUSB.println(long(param_value));
-                        #endif
-                    }
-                    #endif
-
-                    #ifdef nitrogen_dioxide_include
-                    else if (count == 10)
-                    {
-                        valid = 1;
-                        chemsense_parse_value(pidx);
-                        format5(long(param_value));
-                        nitrogen_dioxide[0] = ID_NITROGEN_DIOXIDE;
-                        nitrogen_dioxide[1] = (valid << 7) | (LENGTH_FORMAT5);
-                        nitrogen_dioxide[2] = formatted_data_buffer[0];
-                        nitrogen_dioxide[3] = formatted_data_buffer[1];
-                        nitrogen_dioxide[4] = formatted_data_buffer[2];
-                        #ifdef SERIAL_DEBUG
-                        SerialUSB.print("NO2: ");
-                        SerialUSB.println(long(param_value));
-                        #endif
-                    }
-                    #endif
-
-                    #ifdef carbon_monoxide_include
-                    else if (count == 11)
-                    {
-                        valid = 1;
-                        chemsense_parse_value(pidx);
-                        format5(long(param_value));
-                        carbon_monoxide[0] = ID_CARBON_MONOXIDE;
-                        carbon_monoxide[1] = (valid << 7) | (LENGTH_FORMAT5);
-                        carbon_monoxide[2] = formatted_data_buffer[0];
-                        carbon_monoxide[3] = formatted_data_buffer[1];
-                        carbon_monoxide[4] = formatted_data_buffer[2];
-                        #ifdef SERIAL_DEBUG
-                        SerialUSB.print("CO: ");
-                        SerialUSB.println(long(param_value));
-                        #endif
-                    }
-                    #endif
-
-                    #ifdef sulfur_dioxide_include
-                    else if (count == 12)
-                    {
-                        valid = 1;
-                        chemsense_parse_value(pidx);
-                        format5(long(param_value));
-                        sulfur_dioxide[0] = ID_SULFUR_DIOXIDE;
-                        sulfur_dioxide[1] = (valid << 7) | (LENGTH_FORMAT5);
-                        sulfur_dioxide[2] = formatted_data_buffer[0];
-                        sulfur_dioxide[3] = formatted_data_buffer[1];
-                        sulfur_dioxide[4] = formatted_data_buffer[2];
-                        #ifdef SERIAL_DEBUG
-                        SerialUSB.print("SO2: ");
-                        SerialUSB.println(long(param_value));
-                        #endif
-                    }
-                    #endif
-
-                    #ifdef total_oxidizing_gases_include
-                    else if (count == 13)
-                    {
-                        valid = 1;
-                        chemsense_parse_value(pidx);
-                        format5(long(param_value));
-                        total_oxidizing_gases[0] = ID_TOTAL_OXIDIZING_GASES;
-                        total_oxidizing_gases[1] = (valid << 7) | (LENGTH_FORMAT5);
-                        total_oxidizing_gases[2] = formatted_data_buffer[0];
-                        total_oxidizing_gases[3] = formatted_data_buffer[1];
-                        total_oxidizing_gases[4] = formatted_data_buffer[2];
-                        #ifdef SERIAL_DEBUG
-                        SerialUSB.print("ToX: ");
-                        SerialUSB.println(long(param_value));
-                        #endif
-                    }
-                    #endif
-
-                    #ifdef total_reducing_gases_include
-                    else if (count == 14)
-                    {
-                        valid = 1;
-                        chemsense_parse_value(pidx);
-                        format5(long(param_value));
-                        total_reducing_gases[0] = ID_TOTAL_REDUCING_GASES;
-                        total_reducing_gases[1] = (valid << 7) | (LENGTH_FORMAT5);
-                        total_reducing_gases[2] = formatted_data_buffer[0];
-                        total_reducing_gases[3] = formatted_data_buffer[1];
-                        total_reducing_gases[4] = formatted_data_buffer[2];
-                        #ifdef SERIAL_DEBUG
-                        SerialUSB.print("ToR: ");
-                        SerialUSB.println(long(param_value));
-                        #endif
-                    }
-                    #endif
-
-                    count = count + 1;
-                    pidx = 0;
                 }
             }
-
-            #ifdef ethanol_include
-            valid = 1;
-            chemsense_parse_value(pidx-1);
-            format5(long(param_value));
-            ethanol[0] = ID_ETHANOL;
-            ethanol[1] = (valid << 7) | (LENGTH_FORMAT5);
-            ethanol[2] = formatted_data_buffer[0];
-            ethanol[3] = formatted_data_buffer[1];
-            ethanol[4] = formatted_data_buffer[2];
-            #ifdef SERIAL_DEBUG
-            SerialUSB.print("ETOH: ");
-            SerialUSB.println(long(param_value));
-            #endif
-            #endif
+            else if (INPUT_BYTE == '=')
+            {
+                flag_KEY = true;
+            }
+            else if (INPUT_BYTE == '\r' || INPUT_BYTE == ' ' || INPUT_BYTE == '\n')
+            {
+                //KEY[KEY_NUM_ID] = '\0';
+                //VAL[VAL_NUM_ID] = '\0';
+                Carrier();
+                KEY_NUM_ID = 0;
+                VAL_NUM_ID = 0;
+            }
         }
-        cnt = 0;
-        ChemSensed = 1;
     }
+}
+
+void Carrier()
+{
+    // transform the data format as it defined
+
+	if (!flag_KEY)
+		return;
+
+    flag_KEY = false;
+    // #ifdef SERIAL_DEBUG
+    //     // to confirm output data
+    //     SerialUSB.print(KEY);
+    //     SerialUSB.print(" ");
+    //     SerialUSB.print(VAL);
+    //     SerialUSB.print(" ");
+    // #endif
+
+	if (compareKey('B', 'A', 'D') == 0)
+	{
+        //Hex_BAD();
+        form3_hex_string_to_hex();
+
+        chemsense_MAC_ID[0] = ID_CHEMSENSE_MAC;
+        chemsense_MAC_ID[1] = (1 << 7) | LENGTH_FORMAT3;
+
+        for (i = 0; i < LENGTH_FORMAT3; i++)
+            chemsense_MAC_ID[2 + i] = formatted_data_buffer[i];
+
+#ifdef SERIAL_DEBUG
+        // to check output
+        for (i = 0; i < LENGTH_FORMAT3; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
+#endif
+	}
+
+	else if (compareKey('S', 'H', 'T') == 0)  // wait SHH
+	{
+        //Int_form2();
+        form2_int_string_to_int();
+
+        formatted_byte_temp[0] = formatted_data_buffer[0];
+        formatted_byte_temp[1] = formatted_data_buffer[1];
+
+#ifdef SERIAL_DEBUG
+        // to check the values
+        for (i = 0; i < LENGTH_FORMAT1; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
+#endif
+    }
+
+    else if (compareKey('S', 'H', 'H') == 0)
+    {
+        //Temp_uint16 = (unsigned int)atoi(VAL);       //char to int
+        //format1(Temp_uint16);
+        form1_int_string_to_unsigned_int();
+
+        SHT25[0] = ID_SHT25;
+        SHT25[1] = (1 << 7) | (LENGTH_FORMAT2 + LENGTH_FORMAT1);
+        SHT25[2] = formatted_byte_temp[0];
+        SHT25[3] = formatted_byte_temp[1];
+        SHT25[4] = formatted_data_buffer[0];
+        SHT25[5] = formatted_data_buffer[1];
+
+#ifdef SERIAL_DEBUG
+        // to check the values
+        for (i = 0; i < LENGTH_FORMAT1; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
+#endif
+    }
+
+	else if (compareKey('L', 'P', 'T') == 0)  // wait LPP
+	{
+        //Int_form2();
+        form2_int_string_to_int();
+
+        formatted_byte_temp[0] = formatted_data_buffer[0];
+        formatted_byte_temp[1] = formatted_data_buffer[1];
+
+#ifdef SERIAL_DEBUG
+        // to check output
+        for (i = 0; i < LENGTH_FORMAT2; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
+#endif
+    }
+
+    else if (compareKey('L', 'P', 'P') == 0)
+    {
+        //Int_form4();
+        form4_int_string_to_unsigned_long(0);
+
+        LPS25H[0] = ID_LPS25H;
+        LPS25H[1] = (1 << 7) | (LENGTH_FORMAT2 + LENGTH_FORMAT4);
+        LPS25H[2] = formatted_byte_temp[0];
+        LPS25H[3] = formatted_byte_temp[1];
+        LPS25H[4] = formatted_data_buffer[0];
+        LPS25H[5] = formatted_data_buffer[1];
+        LPS25H[6] = formatted_data_buffer[2];
+
+#ifdef SERIAL_DEBUG
+        // to check output
+        for (i = 0; i < LENGTH_FORMAT4; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
+#endif
+	}
+
+	else if (compareKey('S', 'U', 'V') == 0)  // wait SVL and SIR
+	{
+        //Hex_form1();
+        form1_hex_string_to_unsigned_int();
+
+        formatted_byte_temp[0] = formatted_data_buffer[0];
+        formatted_byte_temp[1] = formatted_data_buffer[1];
+
+#ifdef SERIAL_DEBUG
+        // to check output
+        for (i = 0; i < LENGTH_FORMAT1; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
+#endif
+    }
+
+	else if (compareKey('S', 'V', 'L') == 0)
+    {
+        //Hex_form1();
+        form1_hex_string_to_unsigned_int();
+
+        formatted_byte_temp[2] = formatted_data_buffer[0];
+        formatted_byte_temp[3] = formatted_data_buffer[1];
+
+#ifdef SERIAL_DEBUG
+        // to check output
+        for (i = 0; i < LENGTH_FORMAT1; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
+#endif
+    }
+
+    else if (compareKey('S', 'I', 'R') == 0)
+    {
+        //Hex_form1();
+        form1_hex_string_to_unsigned_int();
+
+        Si1145[0] = ID_Si1145;
+        Si1145[1] = (1 << 7) | (LENGTH_FORMAT1 * 3);
+        Si1145[2] = formatted_byte_temp[0];
+        Si1145[3] = formatted_byte_temp[1];
+        Si1145[4] = formatted_byte_temp[2];
+        Si1145[5] = formatted_byte_temp[3];
+        Si1145[6] = formatted_data_buffer[0];
+        Si1145[7] = formatted_data_buffer[1];
+
+        flag_CHEM_WHILE = false;
+
+#ifdef SERIAL_DEBUG
+        // to check output
+        for (i = 0; i < LENGTH_FORMAT1; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
+#endif
+    }
+
+	else if (compareKey('I', 'R', 'R') == 0)
+	{
+        //Int_form5();
+        form5_int_string_to_long();
+
+        total_reducing_gases[0] = ID_TOTAL_REDUCING_GASES;
+        total_reducing_gases[1] = (1 << 7) | LENGTH_FORMAT5;
+        total_reducing_gases[2] = formatted_data_buffer[0];
+        total_reducing_gases[3] = formatted_data_buffer[1];
+        total_reducing_gases[4] = formatted_data_buffer[2];
+
+#ifdef SERIAL_DEBUG
+        // to check output
+        for (i = 0; i < LENGTH_FORMAT5; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
+#endif
+    }
+
+	else if (compareKey('I', 'A', 'Q') == 0)
+    {
+        //Int_form5();
+        form5_int_string_to_long();
+
+        total_oxidizing_gases[0] = ID_TOTAL_OXIDIZING_GASES;
+        total_oxidizing_gases[1] = (1 << 7) | LENGTH_FORMAT5;
+        total_oxidizing_gases[2] = formatted_data_buffer[0];
+        total_oxidizing_gases[3] = formatted_data_buffer[1];
+        total_oxidizing_gases[4] = formatted_data_buffer[2];
+
+#ifdef SERIAL_DEBUG
+        // to check output
+        for (i = 0; i < LENGTH_FORMAT5; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
+#endif
+    }
+
+	else if (compareKey('S', 'O', '2') == 0)
+    {
+        //Int_form5();
+        form5_int_string_to_long();
+
+        sulfur_dioxide[0] = ID_SULFUR_DIOXIDE;
+        sulfur_dioxide[1] = (1 << 7) | LENGTH_FORMAT5;
+        sulfur_dioxide[2] = formatted_data_buffer[0];
+        sulfur_dioxide[3] = formatted_data_buffer[1];
+        sulfur_dioxide[4] = formatted_data_buffer[2];
+
+#ifdef SERIAL_DEBUG
+        // to check output
+        for (i = 0; i < LENGTH_FORMAT5; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
+#endif
+    }
+
+	else if (compareKey('H', '2', 'S') == 0)
+	{
+        //Int_form5();
+        form5_int_string_to_long();
+
+        hydrogen_sulphide[0] = ID_HYDROGEN_SULPHIDE;
+        hydrogen_sulphide[1] = (1 << 7) | LENGTH_FORMAT5;
+        hydrogen_sulphide[2] = formatted_data_buffer[0];
+        hydrogen_sulphide[3] = formatted_data_buffer[1];
+        hydrogen_sulphide[4] = formatted_data_buffer[2];
+
+#ifdef SERIAL_DEBUG
+        // to check output
+        for (i = 0; i < LENGTH_FORMAT5; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
+#endif
+    }
+
+	else if (compareKey('O', 'Z', 'O') == 0)
+	{
+        //Int_form5();
+        form5_int_string_to_long();
+
+        ozone[0] = ID_OZONE;
+        ozone[1] = (1 << 7) | LENGTH_FORMAT5;
+        ozone[2] = formatted_data_buffer[0];
+        ozone[3] = formatted_data_buffer[1];
+        ozone[4] = formatted_data_buffer[2];
+
+#ifdef SERIAL_DEBUG
+        // to check output
+        for (i = 0; i < LENGTH_FORMAT5; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
+#endif
+    }
+
+	else if (compareKey('N', 'O', '2') == 0)
+	{
+        //Int_form5();
+        form5_int_string_to_long();
+
+        nitrogen_dioxide[0] = ID_NITROGEN_DIOXIDE;
+        nitrogen_dioxide[1] = (1 << 7) | LENGTH_FORMAT5;
+        nitrogen_dioxide[2] = formatted_data_buffer[0];
+        nitrogen_dioxide[3] = formatted_data_buffer[1];
+        nitrogen_dioxide[4] = formatted_data_buffer[2];
+
+#ifdef SERIAL_DEBUG
+        // to check output
+        for (i = 0; i < LENGTH_FORMAT5; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
+#endif
+    }
+
+	else if (compareKey('C', 'M', 'O') == 0)
+	{
+        //Int_form5();
+        form5_int_string_to_long();
+
+        carbon_monoxide[0] = ID_CARBON_MONOXIDE;
+        carbon_monoxide[1] = (1 << 7) | LENGTH_FORMAT5;
+        carbon_monoxide[2] = formatted_data_buffer[0];
+        carbon_monoxide[3] = formatted_data_buffer[1];
+        carbon_monoxide[4] = formatted_data_buffer[2];
+
+        flag_CHEM_WHILE = false;
+
+#ifdef SERIAL_DEBUG
+        // to check output
+        for (i = 0; i < LENGTH_FORMAT5; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
+#endif
+	}
+
+	else if (compareKey('A', 'T', '0') == 0)
+	{
+        //Int_form2();
+        form2_int_string_to_int();
+
+        CO_ADC_temp[0] = ID_CO_ADC_TEMP;
+        CO_ADC_temp[1] = (1 << 7) | LENGTH_FORMAT2;
+        CO_ADC_temp[2] = formatted_data_buffer[0];
+        CO_ADC_temp[3] = formatted_data_buffer[1];
+
+#ifdef SERIAL_DEBUG
+        // to check output
+        for (i = 0; i < LENGTH_FORMAT2; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
+#endif
+    }
+
+	else if (compareKey('A', 'T', '1') == 0)
+	{
+		//Int_form2();
+        form2_int_string_to_int();
+
+        IAQ_IRR_ADC_temp[0] = ID_IAQ_IRR_ADC_TEMP;
+        IAQ_IRR_ADC_temp[1] = (1 << 7) | LENGTH_FORMAT2;
+        IAQ_IRR_ADC_temp[2] = formatted_data_buffer[0];
+        IAQ_IRR_ADC_temp[3] = formatted_data_buffer[1];
+
+#ifdef SERIAL_DEBUG
+        // to check output
+        for (i = 0; i < LENGTH_FORMAT2; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
+#endif
+    }
+
+	else if (compareKey('A', 'T', '2') == 0)
+	{
+		//Int_form2();
+        form2_int_string_to_int();
+
+        O3_NO2_ADC_temp[0] = ID_O3_NO2_ADC_TEMP;
+        O3_NO2_ADC_temp[1] = (1 << 7) | LENGTH_FORMAT2;
+        O3_NO2_ADC_temp[2] = formatted_data_buffer[0];
+        O3_NO2_ADC_temp[3] = formatted_data_buffer[1];
+
+#ifdef SERIAL_DEBUG
+        // to check output
+        for (i = 0; i < LENGTH_FORMAT2; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
+#endif
+    }
+
+	else if (compareKey('A', 'T', '3') == 0)
+	{
+        //Int_form2();
+        form2_int_string_to_int();
+
+        SO2_H2S_ADC_temp[0] = ID_SO2_H2S_ADC_TEMP;
+        SO2_H2S_ADC_temp[1] = (1 << 7) | LENGTH_FORMAT2;
+        SO2_H2S_ADC_temp[2] = formatted_data_buffer[0];
+        SO2_H2S_ADC_temp[3] = formatted_data_buffer[1];
+
+#ifdef SERIAL_DEBUG
+        // to check output
+        for (i = 0; i < LENGTH_FORMAT2; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
+#endif
+    }
+
+	else if (compareKey('L', 'T', 'M') == 0)
+	{
+		//Int_form2();
+        form2_int_string_to_int();
+
+        CO_LMP_temp[0] = ID_CO_LMP_TEMP;
+        CO_LMP_temp[1] = (1 << 7) | LENGTH_FORMAT2;
+        CO_LMP_temp[2] = formatted_data_buffer[0];
+        CO_LMP_temp[3] = formatted_data_buffer[1];
+
+        // flag_CHEM_WHILE = false;
+
+#ifdef SERIAL_DEBUG
+        // to check output
+        for (i = 0; i < LENGTH_FORMAT2; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
+#endif
+    }
+
+	else if (compareKey('A', 'C', 'X') == 0)  //wait ACY, ACZ, and VIX
+    {
+        //Int_form2();
+        form2_int_string_to_int();
+
+        formatted_byte_temp[0] = formatted_data_buffer[0];
+        formatted_byte_temp[1] = formatted_data_buffer[1];
+
+#ifdef SERIAL_DEBUG
+        // to check output
+        for (i = 0; i < LENGTH_FORMAT2; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
+#endif
+    }
+
+    else if (compareKey('A', 'C', 'Y') == 0)
+    {
+        //Int_form2();
+        form2_int_string_to_int();
+
+        formatted_byte_temp[2] = formatted_data_buffer[0];
+        formatted_byte_temp[3] = formatted_data_buffer[1];
+
+#ifdef SERIAL_DEBUG
+        // to check output
+        for (i = 0; i < LENGTH_FORMAT2; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
+#endif
+    }
+
+    else if (compareKey('A', 'C', 'Z') == 0)
+    {
+        //Int_form2();
+        form2_int_string_to_int();
+
+        formatted_byte_temp[4] = formatted_data_buffer[0];
+        formatted_byte_temp[5] = formatted_data_buffer[1];
+
+#ifdef SERIAL_DEBUG
+        // to check output
+        for (i = 0; i < LENGTH_FORMAT2; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
+#endif
+    }
+
+    else if (compareKey('V', 'I', 'X') == 0)
+    {
+        //Int_form4();
+        form4_int_string_to_unsigned_long(1);
+
+        three_accel_and_vib[0] = ID_THREE_ACCEL_AND_VIB;
+        three_accel_and_vib[1] = (1 << 7) | (LENGTH_FORMAT2 * 3 + LENGTH_FORMAT4);
+        three_accel_and_vib[2] = formatted_byte_temp[0];
+        three_accel_and_vib[3] = formatted_byte_temp[1];
+        three_accel_and_vib[4] = formatted_byte_temp[2];
+        three_accel_and_vib[5] = formatted_byte_temp[3];
+        three_accel_and_vib[6] = formatted_byte_temp[4];
+        three_accel_and_vib[7] = formatted_byte_temp[5];
+        three_accel_and_vib[8] = formatted_data_buffer[0];
+        three_accel_and_vib[9] = formatted_data_buffer[1];
+        three_accel_and_vib[10] = formatted_data_buffer[2];
+
+#ifdef SERIAL_DEBUG
+        // to check output
+        for (i = 0; i < LENGTH_FORMAT4; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
+#endif
+    }
+
+	else if (compareKey('G', 'Y', 'X') == 0)  //wait GYY, GYZ, and OIX
+    {
+        //Int_form2();
+        form2_int_string_to_int();
+
+        formatted_byte_temp[0] = formatted_data_buffer[0];
+        formatted_byte_temp[1] = formatted_data_buffer[1];
+
+#ifdef SERIAL_DEBUG
+        // to check output
+        for (i = 0; i < LENGTH_FORMAT2; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
+#endif
+    }
+
+    else if (compareKey('G', 'Y', 'Y') == 0)
+    {
+        //Int_form2();
+        form2_int_string_to_int();
+
+        formatted_byte_temp[2] = formatted_data_buffer[0];
+        formatted_byte_temp[3] = formatted_data_buffer[1];
+
+#ifdef SERIAL_DEBUG
+        // to check output
+        for (i = 0; i < LENGTH_FORMAT2; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
+#endif
+    }
+
+    else if (compareKey('G', 'Y', 'Z') == 0)
+    {
+        //Int_form2();
+        form2_int_string_to_int();
+
+        formatted_byte_temp[4] = formatted_data_buffer[0];
+        formatted_byte_temp[5] = formatted_data_buffer[1];
+
+#ifdef SERIAL_DEBUG
+        // to check output
+        for (i = 0; i < LENGTH_FORMAT2; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
+#endif
+    }
+
+    else if (compareKey('O', 'I', 'X') == 0)
+    {
+        //Int_form4();
+        form4_int_string_to_unsigned_long(1);
+
+        three_gyro_and_orientation[0] = ID_THREE_GYRO_AND_ORIENTATION;
+        three_gyro_and_orientation[1] = (1 << 7) | (LENGTH_FORMAT2 * 3 + LENGTH_FORMAT4);
+        three_gyro_and_orientation[2] = formatted_byte_temp[0];
+        three_gyro_and_orientation[3] = formatted_byte_temp[1];
+        three_gyro_and_orientation[4] = formatted_byte_temp[2];
+        three_gyro_and_orientation[5] = formatted_byte_temp[3];
+        three_gyro_and_orientation[6] = formatted_byte_temp[4];
+        three_gyro_and_orientation[7] = formatted_byte_temp[5];
+        three_gyro_and_orientation[8] = formatted_byte_temp[6];
+        three_gyro_and_orientation[8] = formatted_data_buffer[0];
+        three_gyro_and_orientation[9] = formatted_data_buffer[1];
+        three_gyro_and_orientation[10] = formatted_data_buffer[2];
+
+        flag_CHEM_WHILE = false;
+
+        OIX_count++;
+
+#ifdef SERIAL_DEBUG
+        // to check output
+        for (i = 0; i < LENGTH_FORMAT4; i++)
+            SerialUSB.print(formatted_data_buffer[i],HEX);
+#endif
+    }
+
 }

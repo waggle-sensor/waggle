@@ -1,14 +1,14 @@
 #ifdef MMA8452Q_include
 
+byte fsr;
+int gCount = 0;
+
 void MMA8452_read()
 {
     readAccelData(Temp_int);
 
-    for (int i = 0 ; i < 3 ; i++)
-    {
-        Temp_float[i] = (float) Temp_int[i] / ((1<<12)/(2*GSCALE));  // get actual g value, this depends on scale being set
-    }
-
+    for (i = 0 ; i < 3 ; i++)
+        Temp_float[i] = (float)(Temp_int[i] / ((1 << 12) / (2 * GSCALE)));  // get actual g value, this depends on scale being set
 }
 
 void readAccelData(int *destination)
@@ -18,16 +18,14 @@ void readAccelData(int *destination)
     MMA8452readRegisters(OUT_X_MSB, 6, rawData);  // Read the six raw data registers into data array
 
     // Loop to calculate 12-bit ADC and g value for each axis
-    for(int i = 0; i < 3 ; i++)
+    for(i = 0; i < 3 ; i++)
     {
-        int gCount = (rawData[i*2] << 8) | rawData[(i*2)+1];  //Combine the two 8 bit registers into one 12-bit number
+        gCount = (rawData[i * 2] << 8) | rawData[(i * 2) + 1];  //Combine the two 8 bit registers into one 12-bit number
         gCount >>= 4; //The registers are left align, here we right align the 12-bit integer
 
         // If the number is negative, we have to make it so manually (no 12-bit data type)
-        if (rawData[i*2] > 0x7F)
-        {
+        if (rawData[i * 2] > 0x7F)
             gCount -= 0x1000;
-        }
 
         destination[i] = gCount; //Record this gCount into the 3 int array
     }
@@ -40,8 +38,10 @@ void MMA8452_CONFIG()
 {
     MMA8452Standby();  // Must be in standby to change registers
     // Set up the full scale range to 2, 4, or 8g.
-    byte fsr = GSCALE;
-    if(fsr > 8) fsr = 8; //Easy error check
+    fsr = GSCALE;
+    if(fsr > 8) 
+        fsr = 8; //Easy error check
+
     fsr >>= 2; // Neat trick, see page 22. 00 = 2G, 01 = 4A, 10 = 8G
     MMA8452writeRegister(XYZ_DATA_CFG, fsr);
     //The default data rate is 800Hz and we don't modify it in this example code
@@ -63,7 +63,7 @@ void MMA8452Active()
 }
 
 // Read bytesToRead sequentially, starting at addressToRead into the dest byte array
-void MMA8452readRegisters(byte addressToRead, int bytesToRead, byte * dest)
+void MMA8452readRegisters(byte addressToRead, int bytesToRead, byte *dest)
 {
     Wire.requestFrom((uint8_t) MMA8452_ADDRESS, (uint8_t) bytesToRead, (uint32_t) addressToRead, (uint8_t) 1, TRUE);
     while(Wire.available() < bytesToRead); //Hang out until we get the # of bytes we expect

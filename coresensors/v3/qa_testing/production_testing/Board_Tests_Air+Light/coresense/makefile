@@ -46,8 +46,8 @@ run:    install
 
 connect:
 	sleep 2
-# 	screen $(LINKPORT) $(SERIALBAUD)
-	gtkterm --port /dev/waggle_coresense --speed 115200
+	screen $(LINKPORT) $(SERIALBAUD)
+#	gtkterm --port /dev/waggle_coresense --speed 115200
 
 test:	program connect
 	make program

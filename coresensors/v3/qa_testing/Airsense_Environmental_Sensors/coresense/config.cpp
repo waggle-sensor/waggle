@@ -96,7 +96,7 @@
     #define BMP180_include 0x01
     #define PR103J2_include 0x01
     #define TSL250RD_1_include 0x01
-    #define MMA8452Q_include 0x01
+//    #define MMA8452Q_include 0x01
     #define SPV1840LR5HB_include 0x01
     #define TSYS01_include 0x01
     #define HIH4030_include 0x01

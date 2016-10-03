@@ -82,7 +82,7 @@ void setup()
 {
     delay(2000);
     Wire.begin();
-    delay(2000);
+    delay(5000);
     SerialUSB.begin(115200);
     initializecoresense();
 }

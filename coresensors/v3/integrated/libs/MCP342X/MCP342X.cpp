@@ -27,11 +27,7 @@ void MCP342X::selectChannel(byte channel, byte gain)
     //configuration register, assuming 16 bit resolution
     // Initiate one shot conversion
     // 16 bits, 66.6 ms later the data should be available.
-	byte reg = 1 << BIT_RDY |
-			channel << BIT_C0 |
-			0 << BIT_OC |
-			1 << BIT_S1 |
-			gain;
+	byte reg = 1 << BIT_RDY | channel << BIT_C0 | 0 << BIT_OC | 1 << BIT_S1 | gain;
 	Wire.beginTransmission(I2C_ADDRESS);
 	Wire.write(reg);
 	Wire.endTransmission();
