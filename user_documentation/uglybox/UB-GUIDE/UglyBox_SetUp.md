@@ -18,7 +18,8 @@
 <li>Using 4 M3x20 screws, 4 440 Hex nuts, and 4 SP3/8 spacers, attach the C1+ to the Wagman. Be sure to line up the header on the C1+ with the pins on the Wagman.
 See the top left blow-up in the image above.  
 
-<li>
+<li>  
+
 Connect the green wires from pins 27 and 39 on the C1+ to the SRE. The wire with the resistor can connect to either of the SRE pins. See the bottom left blow-up in the image above.  
 
 <li>
