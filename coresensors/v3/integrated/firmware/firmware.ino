@@ -8,6 +8,9 @@
 #include "./libs/DueTimer/DueTimer.h"   //** TIMER3 library
 #include <OneWire.h>
 #include "config.cpp"
+#include "pin_config.cpp"
+#include "i2c_address.cpp"
+#include "./subpacket.h"
 #include "./variable.h"     //** byte arrays, variables for all sensors and integrated.ino
 #include "./setsensor.h"    //** add variables for sensors on airsense and lightsense boards 
                             //** depening on its availability 
@@ -129,19 +132,25 @@ void loop()
     
     lightsense_acquire();
     #endif
-    
+
     count = 0;
     
-    while (count < 23)       // every 24 sec
+    #ifdef CHEM_OR_ALPHA
+    while (count < 5)       // every 24 sec
     {
-        #ifdef CHEMSENSE_INCLUDE
+
+        #ifdef SERIAL_DEBUG
+        SerialUSB.println(count);
+        #endif
+
+    #ifdef CHEMSENSE_INCLUDE
         #ifdef SERIAL_DEBUG
         SerialUSB.println("L3. Chemsense Acquire.");
         #endif
     
         flag_CHEM_WHILE = true;
         chemsense_acquire();
-        #endif
+    #endif
 
         #ifdef ALPHASENSE_INCLUDE
         #ifdef SERIAL_DEBUG
@@ -167,6 +176,9 @@ void loop()
         }
 	#endif
     }
+    #endif
+
+    SerialUSB.println("end get data");
     
     #ifdef SERIAL_DEBUG
     SerialUSB.println("L5. Assembling Sensor Data Packet.");

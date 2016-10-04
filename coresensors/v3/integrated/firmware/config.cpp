@@ -45,7 +45,7 @@
 
 // Sensors to include 
 #define I2C_SENSORS 0x01
-#define Analog_SENSORS 0x01
+#define ANALOG_SENSORS 0x01
 
 
 #define USBSERIAL_INTERFACE 0x01
@@ -73,7 +73,7 @@
         
     #endif
     
-    #ifdef Analog_SENSORS
+    #ifdef ANALOG_SENSORS
     
         #define ID_HIH4030  0x03    
         #define ID_PR103J2  0x05
@@ -163,7 +163,8 @@
 
     #define three_accel_and_vib_include 0x01
     #define three_gyro_and_orientation_include 0x01
-    
+
+    #define CHEM_OR_ALPHA 0x01
 #endif
 
 
@@ -183,6 +184,8 @@
     #define ID_ALPHA_CONFIG_B 0x31 
     #define ID_ALPHA_CONFIG_C 0x32
     #define ID_ALPHA_CONFIG_D 0x33
+
+    #define CHEM_OR_ALPHA 0x01
 #endif
 
 

@@ -52,20 +52,20 @@ class PTmp(ProcessEvent):
 
     def process_IN_CREATE(self, event):
         global newDevice
-        if   (event.name[0:6] == "waggle_coresense")  and (event.path == "/dev") :
+        if   (event.name[0:6] == "ttyACM")  and (event.path == "/dev") :
             portInfo = event.path + "/" + event.name
             newDevice.put(portInfo)
 
     def process_IN_DELETE(self, event):
         global deviceDisconnect
-        if  (event.name[0:6] == "waggle_coresense")  and (event.path == "/dev") :
+        if  (event.name[0:6] == "ttyACM")  and (event.path == "/dev") :
             portInfo = event.path + "/" + event.name
             deviceDisconnect.put(portInfo)
 
 def Monitor(path):
     notifier = Notifier(wm, PTmp())
     wdd = wm.add_watch(path, mask, rec=True)
-    newDevice.put('/dev/waggle_coresense')
+    # newDevice.put('/dev/ttyACM')
     while True:
         try:
             notifier.process_events()

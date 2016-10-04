@@ -2,7 +2,7 @@
  * Suppose that the Chemsense is device /dev/ttyACM0 when you connect the board with light and airsense.
  */
 
-
+#ifdef CHEMSENSE_INCLUDE
 void form3_hex_string_to_hex()                     // Hex to hex: form3
 {
     Temp_ulong[0] = 0x000000;
@@ -677,13 +677,11 @@ void Carrier()
 
         flag_CHEM_WHILE = false;
 
-        OIX_count++;
-
 #ifdef SERIAL_DEBUG
         // to check output
         for (i = 0; i < LENGTH_FORMAT4; i++)
             SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
     }
-
 }
+#endif

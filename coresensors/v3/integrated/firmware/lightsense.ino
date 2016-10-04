@@ -1,4 +1,5 @@
-
+#ifdef LIGHTSENSE_INCLUDE
+#ifdef I2C_SENSORS
 void lightsense_acquire (void)
 {
 #ifdef SERIAL_DEBUG
@@ -62,6 +63,7 @@ void lightsense_acquire (void)
     HIH6130[5] = formatted_data_buffer[1];
 
 #ifdef SERIAL_DEBUG
+    SerialUSB.print("HIH6130");
     for (i = 0; i < LENGTH_FORMAT6; i++)
         SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
@@ -84,9 +86,7 @@ void lightsense_acquire (void)
     APDS9006020[3] = formatted_data_buffer[1];
 
 #ifdef SERIAL_DEBUG
-    // SerialUSB.print("APDS9006020: ");
-    // SerialUSB.println(mcp3428_2.readADC());
-
+    SerialUSB.print("APDS9006020");
     for (i = 0; i < LENGTH_FORMAT1; i++)
         SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
@@ -101,9 +101,7 @@ void lightsense_acquire (void)
     TSL260RD[3] = formatted_data_buffer[1];
 
 #ifdef SERIAL_DEBUG
-    // SerialUSB.print("TSL260RD: ");
-    // SerialUSB.println(mcp3428_1.readADC());
-
+    SerialUSB.print("TSL260RD");
     for (i = 0; i < LENGTH_FORMAT1; i++)
         SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
@@ -118,9 +116,7 @@ void lightsense_acquire (void)
     TSL250RD_2[3] = formatted_data_buffer[1];
 
 #ifdef SERIAL_DEBUG
-    // SerialUSB.print("TSL250RD_2: ");
-    // SerialUSB.println(mcp3428_1.readADC());
-
+    SerialUSB.print("TSL250RD_2");
     for (i = 0; i < LENGTH_FORMAT1; i++)
         SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
@@ -136,9 +132,7 @@ void lightsense_acquire (void)
     MLX75305[3] = formatted_data_buffer[1];
 
 #ifdef SERIAL_DEBUG
-    // SerialUSB.print("MLX75305: ");
-    // SerialUSB.println(mcp3428_1.readADC());
-
+    SerialUSB.print("MLX75305");
     for (i = 0; i < LENGTH_FORMAT1; i++)
         SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
@@ -153,9 +147,7 @@ void lightsense_acquire (void)
     ML8511[3] = formatted_data_buffer[1];
 
 #ifdef SERIAL_DEBUG
-    // SerialUSB.print("ML8511: ");
-    // SerialUSB.println(mcp3428_1.readADC());
-
+    SerialUSB.print("ML8511");
     for (i = 0; i < LENGTH_FORMAT1; i++)
         SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
@@ -171,13 +163,12 @@ void lightsense_acquire (void)
     TMP421[3] = formatted_data_buffer[1];
 
 #ifdef SERIAL_DEBUG
-    // SerialUSB.print("TMP421: ");
-    // SerialUSB.println(Temp_float[0]);
-
+    SerialUSB.print("TMP421");
     for (i = 0; i < LENGTH_FORMAT6; i++)
         SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
 #endif
 
 }
-
+#endif
+#endif

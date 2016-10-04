@@ -519,8 +519,6 @@ void assemble_packet_whole()
             packet_whole_index++;
         }
         three_gyro_and_orientation[1] = (0 << 7) | (LENGTH_FORMAT2 * 3 + LENGTH_FORMAT4);
-        
-        OIX_packet_count++;
     }
 #endif
 
