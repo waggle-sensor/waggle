@@ -57,7 +57,7 @@ void sensor_buff_initialization()
 	three_accel_and_vib[0] = ID_THREE_ACCEL_AND_VIB;
 	three_gyro_and_orientation[0] = ID_THREE_GYRO_AND_ORIENTATION;
 
-
+        #ifdef ALPHASENSE_INCLUDE
 	// alpha sensor
 	alpha_firmware[0] = ID_ALPHA_FIRMWARE;
 	alpha_histogram[0] = ID_ALPHA_HISTOGRAM;
@@ -66,7 +66,7 @@ void sensor_buff_initialization()
 	alpha_config_b[0] = ID_ALPHA_CONFIG_B;
 	alpha_config_c[0] = ID_ALPHA_CONFIG_C;
 	alpha_config_d[0] = ID_ALPHA_CONFIG_D;
-
+        #endif
 
 
 	//***************************** SECOND BYTE of the array
@@ -125,13 +125,17 @@ void sensor_buff_initialization()
 	three_accel_and_vib[1] = (0 << 7) | ((LENGTH_FORMAT2 * 3) + LENGTH_FORMAT4);
 	three_gyro_and_orientation[1] = (0 << 7) | ((LENGTH_FORMAT2 * 3) + LENGTH_FORMAT4);
 
+	
+	#ifdef ALPHASENSE_INCLUDE
 
-	// alpha sensor
-	alpha_firmware[1] = (0 << 7) | LENGTH_ALPHA_FIRMWARE;
-	alpha_histogram[1] = (0 << 7) | LENGTH_ALPHA_HISTOGRAM;
+            // alpha sensor
+            alpha_firmware[1] = (0 << 7) | LENGTH_ALPHA_FIRMWARE;
+            alpha_histogram[1] = (0 << 7) | LENGTH_ALPHA_HISTOGRAM;
 
-	alpha_config_a[1] = (0 << 7) | LENGTH_ALPHA_CONFIG_A;
-	alpha_config_b[1] = (0 << 7) | LENGTH_ALPHA_CONFIG_B;
-	alpha_config_c[1] = (0 << 7) | LENGTH_ALPHA_CONFIG_C;
-	alpha_config_d[1] = (0 << 7) | LENGTH_ALPHA_CONFIG_D;
+            alpha_config_a[1] = (0 << 7) | LENGTH_ALPHA_CONFIG_A;
+            alpha_config_b[1] = (0 << 7) | LENGTH_ALPHA_CONFIG_B;
+            alpha_config_c[1] = (0 << 7) | LENGTH_ALPHA_CONFIG_C;
+            alpha_config_d[1] = (0 << 7) | LENGTH_ALPHA_CONFIG_D;
+	
+	#endif
 }

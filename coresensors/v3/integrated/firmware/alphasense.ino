@@ -1,3 +1,4 @@
+#ifdef ALPHASENSE_INCLUDE
 void alphasense_on() 
 {
 	//** POWER ON
@@ -146,4 +147,4 @@ void alphasense_config()
 #endif
 }
 
-
+#endif

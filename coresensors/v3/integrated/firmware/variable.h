@@ -108,6 +108,7 @@ byte CO_LMP_temp[LENGTH_FORMAT2 + 2];
 byte three_accel_and_vib[(LENGTH_FORMAT2 * 3) + LENGTH_FORMAT4 + 2];
 byte three_gyro_and_orientation[(LENGTH_FORMAT2 * 3) + LENGTH_FORMAT4 + 2];
 
+#ifdef ALPHASENSE_INCLUDE
 //** alphasensor
 byte alpha_firmware[LENGTH_ALPHA_FIRMWARE + 2];
 byte alpha_histogram[LENGTH_ALPHA_HISTOGRAM + 2];
@@ -116,7 +117,7 @@ byte alpha_config_a[LENGTH_ALPHA_CONFIG_A + 2];
 byte alpha_config_b[LENGTH_ALPHA_CONFIG_B + 2];
 byte alpha_config_c[LENGTH_ALPHA_CONFIG_C + 2];
 byte alpha_config_d[LENGTH_ALPHA_CONFIG_D + 2];
-
+#endif
 
 
 //** Whole packet

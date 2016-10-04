@@ -3,21 +3,25 @@
  ** integrated.ino V3 (pbay)
  **/
 
-#include <SPI.h>
+#include <SPI.h> // Shall we move the version of the libraries that work for us inside lib?
 #include <Wire.h> 
 #include "./libs/DueTimer/DueTimer.h"   //** TIMER3 library
-extern TwoWire Wire1;
 #include <OneWire.h>
 #include "config.cpp"
-
 #include "./variable.h"     //** byte arrays, variables for all sensors and integrated.ino
-#include "./setsensor.h"    //** add variables for sensors on airsense and lightsense boards depening on its availability 
+#include "./setsensor.h"    //** add variables for sensors on airsense and lightsense boards 
+                            //** depening on its availability 
+
+
+#ifndef USBSERIAL_INTERFACE
+extern TwoWire Wire1;
+#endif
+
 
 void setup()
 {
     //** Let us wait for the processor and the sensors to settle down
     delay(2000);
-    
     
     #ifdef USBSERIAL_INTERFACE 
     SerialUSB.begin(USBSERIAL_INTERFACE_DATARATE); // Serial data line to the host computer
@@ -31,6 +35,7 @@ void setup()
     //** and sub-packets
     //** sensors_setup.ino, set pinMode and put MACID of airsense
     assemble_packet_empty();
+    
     #ifdef SERIAL_DEBUG
     SerialUSB.println("1. Empty Packet Assembled.");
     #endif

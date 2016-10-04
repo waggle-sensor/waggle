@@ -1,16 +1,15 @@
 ARD_HOME = $(ARDUINO_DIR)
-TARGET = integrated
+TARGET = firmware
 PACKAGE = arduino
 ARCH = sam
 BOARD = arduino_due_x
 TYPE =
 FLASHER_BAUD_RATE = 115200
-PORT = ttyACM0
+PORT = waggle_coresense
 BOARD_FLASH = $(PACKAGE):$(ARCH):$(BOARD)
 BOOT_LOADER_TYPE = wiring
 PRE_FLASH_COMMAND = stty -F /dev/$(PORT) 1200 hupcl; sleep 2
-#FLASHER = $(ARD_HOME)/Atmel_SAM/packages/arduino/tools/bossac/1.6.1-arduino/bossac
-FLASHER = ./libs/bossac
+FLASHER = bossac
 FLASH_BOARD = $(FLASHER) -i -d --port=$(PORT) -U true -e -w -v -b $(BIN_DIR)/$(TARGET).ino.bin -R
 BUILD_COMPLETE = mv $(BUILD_DIR)/$(TARGET).ino.bin $(BIN_DIR)/
 LINKPORT = /dev/$(PORT)
@@ -58,4 +57,3 @@ test:	program connect
 
 do:	install
 	sleep 2
-	python coresense_plugin/coresense.py

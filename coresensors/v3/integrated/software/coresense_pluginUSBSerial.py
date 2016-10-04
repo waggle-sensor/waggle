@@ -493,7 +493,7 @@ class usbSerial ( threading.Thread ):
                                     packetmismatch = 0
 
                                     for i in range(_preambleLoc + _datLenFieldDelta + 0x01, _postscriptLoc):
-                                        print ord(self.data[i]),
+                                        #print ord(self.data[i]),
                                         _packetCRC = ord(self.data[i]) ^ _packetCRC
                                         for j in range(8):
                                             if (_packetCRC & 0x01):
@@ -506,7 +506,7 @@ class usbSerial ( threading.Thread ):
                                         #ideally we should be able to throw the whole packet out, but purging just a byte for avoiding corner cases.
                                         del self.data[0]
                                     else:
-                                        print self.data
+                                        #print self.data
                                         print '-------------'
                                         print time.asctime(), _msg_seq_num, _postscriptLoc
                                         
