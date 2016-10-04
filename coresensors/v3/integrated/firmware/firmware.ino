@@ -1,5 +1,5 @@
 /**
- ** /coresensors/v3/pbay/v3.1/integrated
+ * * /coresensors/v3/pbay/v3.1/integrated
  ** integrated.ino V3 (pbay)
  **/
 
@@ -13,7 +13,7 @@
 #include "./subpacket.h"
 #include "./variable.h"     //** byte arrays, variables for all sensors and integrated.ino
 #include "./setsensor.h"    //** add variables for sensors on airsense and lightsense boards 
-                            //** depening on its availability 
+//** depening on its availability 
 
 
 #ifndef USBSERIAL_INTERFACE
@@ -29,7 +29,7 @@ void setup()
     #ifdef USBSERIAL_INTERFACE 
     SerialUSB.begin(USBSERIAL_INTERFACE_DATARATE); // Serial data line to the host computer
     #endif
-
+    
     #ifdef SERIAL_DEBUG
     SerialUSB.println("0. This firmware has ASCII USB debug info turned ON.");
     #endif
@@ -70,7 +70,7 @@ void setup()
     SerialUSB.println("5. Chemsense enabled and Turned ON.");
     #endif
     #endif
-
+    
     //** sensors_setup.ino, initialize sensors in airsense and lightsense boards
     Sensors_Setup();    // TMP112 config(); Chemsense turned off, This has to come later than chemsense digital write
     #ifdef SERIAL_DEBUG
@@ -87,7 +87,7 @@ void setup()
     #endif
     
     #endif
-
+    
     #ifdef ALPHASENSE_INCLUDE
     #ifdef SERIAL_DEBUG
     SerialUSB.println("8. Alphasense enabled.");
@@ -98,12 +98,12 @@ void setup()
     alphasense_on();
     SerialUSB.print("on");
     delay(10000);
-
+    
     alphasense_firmware();
     alphasense_config();
-//     Serial.print("configuration");
+    //     Serial.print("configuration");
     delay(1000);
-
+    
     flag_alpha = true;
     #endif
     
@@ -132,34 +132,35 @@ void loop()
     
     lightsense_acquire();
     #endif
-
+    
     count = 0;
     
-    #ifdef CHEM_OR_ALPHA
+    
     while (count < 5)       // every 24 sec
     {
-
+        
         #ifdef SERIAL_DEBUG
         SerialUSB.println(count);
         #endif
-
-    #ifdef CHEMSENSE_INCLUDE
+        
+        #ifdef CHEMSENSE_INCLUDE
         #ifdef SERIAL_DEBUG
         SerialUSB.println("L3. Chemsense Acquire.");
         #endif
-    
+        
         flag_CHEM_WHILE = true;
         chemsense_acquire();
-    #endif
-
+        #endif
+        
         #ifdef ALPHASENSE_INCLUDE
+        
         #ifdef SERIAL_DEBUG
         SerialUSB.println("L4. Alphasense Acquire.");
         #endif
         
         alphasense_histo();
         delay(100);
-
+        
         if (count == 23)        //every 23 sec
         {
             count_conf++;
@@ -169,18 +170,20 @@ void loop()
                 delay(100);
                 alphasense_firmware();
                 delay(100);
-
+                
                 flag_alpha = true;
                 count_conf = 0;
             }
         }
-	#endif
+        #endif
+        
+        delay(5);
     }
-    #endif
-
-    SerialUSB.println("end get data");
+    
+    
     
     #ifdef SERIAL_DEBUG
+    
     SerialUSB.println("L5. Assembling Sensor Data Packet.");
     #endif
     
@@ -200,23 +203,23 @@ void loop()
     #endif
     
     
-	alpha_packet_whole();           //******** packetize histo/firmware/config(part)
-	for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
-	    SerialUSB.write(packet_whole[i]);
-
-	if (flag_alpha == true)
-	{
-	    alpha_packet_config();       //******** packetize config(part)
-
-	    for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
-		SerialUSB.write(packet_whole[i]);
-	}
-
-	flag_alpha = false;
+    alpha_packet_whole();           //******** packetize histo/firmware/config(part)
+    for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
+        SerialUSB.write(packet_whole[i]);
+    
+    if (flag_alpha == true)
+    {
+        alpha_packet_config();       //******** packetize config(part)
+        
+        for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
+            SerialUSB.write(packet_whole[i]);
+    }
+    
+    flag_alpha = false;
     #endif
     
     count = 0;
-
+    
 }
 
 #ifdef I2C_INTERFACE
@@ -224,13 +227,13 @@ void requestEvent()
 {
     #ifdef I2C_INTERFACE_CONST_SIZE
     Wire1.write(packet_whole, I2C_PACKET_SIZE);
-
+    
     #else
     char bytes_to_send;
     bytes_to_send = packet_whole[0x02] + 0x05;
     Wire1.write(packet_whole, bytes_to_send );
     #endif
-
+    
     I2C_READ_COMPLETE = true;
     assemble_packet_empty();
 }

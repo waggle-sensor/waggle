@@ -113,18 +113,6 @@ def format8 (input):
         value = value * -1
     return value
 
-def parse_sensor (sensor_id,sensor_data):
-#"Board MAC" "Board MAC"
-    if sensor_id == '0':
-        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        data = ''
-        for i in range(len(sensor_data)):
-            data = data + str(format3(sensor_data[i]))
-        print  data
-        pass
-
-
-
 def decode17(data):
 
     data = bytearray(data)

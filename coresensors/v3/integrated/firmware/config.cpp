@@ -39,7 +39,7 @@
 // Sensor boards to include
 #define AIRSENSE_INCLUDE 0x01
 #define LIGHTSENSE_INCLUDE 0x01
-#define CHEMSENSE_INCLUDE 0x01
+//#define CHEMSENSE_INCLUDE 0x01
 // #define ALPHASENSE_INCLUDE 0x01
 
 
