@@ -136,7 +136,7 @@ void loop()
     count = 0;
     
     
-    while (count < 5)       // every 24 sec
+    while (count < 24)       // every 24 sec
     {
         
         #ifdef SERIAL_DEBUG
