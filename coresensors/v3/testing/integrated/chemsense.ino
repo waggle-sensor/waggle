@@ -1,7 +1,7 @@
 /* Chemsesne reader using the Serial "Serial3".
  * Suppose that the Chemsense is device /dev/ttyACM0 when you connect the board with light and airsense.
  */
-
+#ifdef CHEMSENSE_INCLUDE
 
 void form3_hex_string_to_hex()                     // Hex to hex: form3
 {
@@ -681,26 +681,11 @@ void Carrier()
 
         flag_CHEM_WHILE = false;
 
-        OIX_count++;
-
 #ifdef SERIAL_DEBUG
         // to check output
         for (i = 0; i < LENGTH_FORMAT4; i++)
             SerialUSB.print(formatted_data_buffer[i],HEX);
 #endif
     }
-#ifdef OIX_DEBUG
-    else
-    {
-        SerialUSB.print("SH ");
-        SerialUSB.print(KEY[0]);
-        SerialUSB.print(KEY[1]);
-        SerialUSB.print(KEY[2]);
-
-        for (int i = 0; i < VAL_NUM_ID; i++)
-            SerialUSB.print(VAL[i], HEX);
-
-        SerialUSB.println("HH ");
-    }
-#endif
 }
+#endif

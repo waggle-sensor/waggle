@@ -1,3 +1,4 @@
+#ifdef AIRSENSE_INCLUDE
 
 void airsense_acquire (void)
 {
@@ -454,3 +455,4 @@ void airsense_avg()
 #endif
 #endif
 }
+#endif

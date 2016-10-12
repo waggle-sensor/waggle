@@ -6,12 +6,17 @@
 #include <SPI.h>
 #include <Wire.h> 
 #include "./libs/DueTimer/DueTimer.h"   //** TIMER3 library
-extern TwoWire Wire1;
 #include <OneWire.h>
 #include "config.cpp"
 
+#include "./subpacket.h"
 #include "./variable.h"     //** byte arrays, variables for all sensors and integrated.ino
 #include "./setsensor.h"    //** add variables for sensors on airsense and lightsense boards depening on its availability 
+
+#ifdef USBSERIAL_INTERFACE
+extern TwoWire Wire1;
+#endif
+
 
 void setup()
 {
@@ -26,12 +31,18 @@ void setup()
     initializeSensorBoard();
 
     //** begin communication lines
-    Wire.begin(); // Sensors are on the first I2C Bus, air and light sensor boards
+#ifdef USBSERIAL_INTERFACE
     SerialUSB.begin(USBSERIAL_INTERFACE_DATARATE); // Serial data line to the host computer
-    Serial3.begin(CHEMSENSE_DATARATE); // data from the Chemsense board arrives here.
-    SPI.begin(); // data from the ****************************************************** alphasensor
+#endif
+
+#ifdef I2C_SENSORS
+    Wire.begin(); // Sensors are on the first I2C Bus, air and light sensor boards
+#endif
+
+    delay(1000);
 
 #ifdef CHEMSENSE_INCLUDE
+    Serial3.begin(CHEMSENSE_DATARATE); // data from the Chemsense board arrives here.
     digitalWrite(PIN_CHEMSENSE_POW, LOW);  //** Power on the Chemsense board
 #endif
 
@@ -46,21 +57,30 @@ void setup()
     Wire1.onRequest(requestEvent);
 #endif
     
-    Timer3.attachInterrupt(handler).setPeriod(1000000 * 1).start();
 
 #ifdef ALPHASENSE_INCLUDE
+    SPI.begin(); // data from the ****************************************************** alphasensor
+    delay(15000);
     alphasense_on();
     SerialUSB.print("on");
+    delay(10000);
 
     alphasense_firmware();
     alphasense_config();
 
     flag_alpha = true;
 #endif
+
+#ifdef VERSION_INCLUDE
+    version_info();
+#endif
+
+    Timer3.attachInterrupt(handler).setPeriod(1000000 * 1).start();
 }
 
 void loop()
 {
+    SerialUSB.print("HELLNO");
 #ifdef AIRSENSE_INCLUDE
     airsense_acquire();
 #endif
@@ -91,7 +111,9 @@ void loop()
                 if (count_conf == 13)       // every 598 secs, about 10 min
                 {
                     alphasense_config();
+                    delay(100);
                     alphasense_firmware();
+                    delay(100);
 
                     flag_alpha = true;
                     count_conf = 0;
@@ -104,6 +126,7 @@ void loop()
         flag_CHEM_WHILE = true;
         chemsense_acquire();
     #endif
+        delay(5);
     }
 
     // #ifdef ALPHASENSE_INCLUDE
@@ -134,27 +157,6 @@ void loop()
     
     count = 0;
     repeat = 0;
-
-#ifdef OIX_DEBUG
-    //************************** test OIX sub-packet
-    SerialUSB.print("OIX_count ");
-    SerialUSB.print(OIX_count);
-    SerialUSB.print(" OIX_packet_count ");
-    SerialUSB.println(OIX_packet_count);
-
-    for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
-    {
-        SerialUSB.print(packet_whole[i], HEX);
-        if (i < packet_whole[0x02] + 0x04)
-            SerialUSB.print(":");
-    }
-    SerialUSB.print("\n");
-#endif
-
-    OIX_count = 0;
-    OIX_packet_count = 0;
-    //************************** test OIX sub-packet
-
 }
 
 #ifdef I2C_INTERFACE

@@ -9,7 +9,7 @@
 
 // Debug configs
 // #define PRINT_BUFFER 0x01
-// #define SERIAL_DEBUG 0x01
+#define SERIAL_DEBUG 0x01
 // #define PRINT_ADDRESS 0x01
 
 
@@ -25,6 +25,9 @@
 #define LENGTH_FORMAT8  2
 #define MAX_FMT_SIZE 6
 
+#define LENGTH_BUILD_TIME 4
+#define LENGTH_BUILD_GIT 2
+
 
 // Waggle Protocol Header, Footer and Framing.
 #define START_BYTE 0xAA
@@ -37,6 +40,7 @@
 
 
 // Sensor boards to include
+#define VERSION_INCLUDE 0x01
 #define AIRSENSE_INCLUDE 0x01
 #define LIGHTSENSE_INCLUDE 0x01
 //#define CHEMSENSE_INCLUDE 0x01
@@ -52,6 +56,10 @@
 
 
 //** include each sensor
+#ifdef VERSION_INCLUDE
+    #define ID_FIRMWARE_VERSION 0xFD
+#endif
+
 #ifdef AIRSENSE_INCLUDE
     #define ID_MAC  0x00
     #define MAC_ID_include 0x01

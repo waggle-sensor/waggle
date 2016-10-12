@@ -111,7 +111,10 @@ void setup()
     #ifdef SERIAL_DEBUG
     SerialUSB.println("9. Interrupt for heartbeat enabled.");
     #endif
-    
+
+    #ifdef VERSION_INCLUDE
+    version_info();
+    #endif
 }
 
 void loop()
@@ -137,8 +140,7 @@ void loop()
     
     
     while (count < 5)       // every 24 sec
-    {
-        
+    {        
         #ifdef SERIAL_DEBUG
         SerialUSB.println(count);
         #endif

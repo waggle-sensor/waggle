@@ -19,6 +19,7 @@
 //     pinMode(select_slave, OUTPUT);
 //     SPI.begin();
 // }
+#ifdef ALPHASENSE_INCLUDE
 
 void alphasense_on() 
 {
@@ -180,5 +181,4 @@ void alphasense_config()
         SerialUSB.print(alpha_config_d[i], HEX);
 #endif
 }
-
-
+#endif
