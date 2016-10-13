@@ -65,7 +65,7 @@ class PTmp(ProcessEvent):
 def Monitor(path):
     notifier = Notifier(wm, PTmp())
     wdd = wm.add_watch(path, mask, rec=True)
-    # newDevice.put('/dev/ttyACM')
+    newDevice.put('/dev/ttyACM0')
     while True:
         try:
             notifier.process_events()

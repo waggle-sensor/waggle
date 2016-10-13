@@ -1,3 +1,4 @@
+#ifdef LIGHTSENSE_INCLUDE
 
 void lightsense_acquire ()
 {
@@ -252,4 +253,4 @@ void lightsense_avg()
 #endif
 #endif
 }
-
+#endif

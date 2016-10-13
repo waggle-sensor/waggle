@@ -18,47 +18,46 @@ void assemble_packet_whole()
 // #ifdef SERIAL_DEBUG
 //     SerialUSB.println("Packing.");
 // #endif
+#ifdef VERSION_INCLUDE
+    for (i = 0; i < sizeof(FIRMWARE_VERSION); i++)
+        packet_whole[packet_whole_index++] = FIRMWARE_VERSION[i];
+#endif
+
 
 #ifdef AIRSENSE_INCLUDE
 
 #ifdef MAC_ID_include    // Append MAC_ID
 
     for (i = 0; i < sizeof(MAC_ID); i++)
-    {
-        packet_whole[packet_whole_index] = MAC_ID[i];
-        // Increment index for whole packet
-        packet_whole_index++;
-    }
+        packet_whole[packet_whole_index++] = MAC_ID[i];
 
 #ifdef PRINT_ADDRESS
     SerialUSB.print("Airsense-");
    for (unsigned char a = 0x02; a < 0x08; a++)
     {
         if ((MAC_ID[a] & 0xF0) == 0x00)
-        {
-
-            SerialUSB.print('0');            
-        }
+            SerialUSB.print('0');      
 
         SerialUSB.print(MAC_ID[a],HEX);
 
-        if (a < 0x07) { SerialUSB.print(":"); }
-        else { SerialUSB.println("\r"); }
+        if (a < 0x07)
+            SerialUSB.print(":");
+        else
+            SerialUSB.println("\r");
     }
 
     SerialUSB.print("Lightsense-");
     for (unsigned char a = 0x02; a < 0x08; a++)
     {
         if ((MAC_ID[a] & 0xF0) == 0x00)
-        {
-
-            SerialUSB.print('0');            
-        }
+            SerialUSB.print('0');      
 
         SerialUSB.print(MAC_ID[a],HEX);
 
-        if (a < 0x07) { SerialUSB.print(":"); }
-        else { SerialUSB.println("\r"); }
+        if (a < 0x07)
+            SerialUSB.print(":");
+        else 
+            SerialUSB.println("\r");
     }
 #endif
 #endif
@@ -67,11 +66,8 @@ void assemble_packet_whole()
     if ((TMP112[1] & 0x80) == 0x80)
     {
         for (i = 0; i < sizeof(TMP112); i++)
-        {
-            packet_whole[packet_whole_index] = TMP112[i];
-            // Increment index for whole packet
-            packet_whole_index++;
-        }
+            packet_whole[packet_whole_index++] = TMP112[i];
+
         TMP112[1] = (0 << 7) | LENGTH_FORMAT6;
     }
 #endif
@@ -80,11 +76,8 @@ void assemble_packet_whole()
     if((HTU21D_array[1] & 0x80) == 0x80)
     {
         for (i = 0; i < sizeof(HTU21D_array); i++)
-        {
-            packet_whole[packet_whole_index] = HTU21D_array[i];
-            // Increment index for whole packet
-            packet_whole_index++;
-        }
+            packet_whole[packet_whole_index++] = HTU21D_array[i];
+
         HTU21D_array[1] = (0 << 7) | LENGTH_FORMAT6;
     }
 #endif
@@ -93,11 +86,8 @@ void assemble_packet_whole()
     if((HIH4030[1] & 0x80) == 0x80)
     {
         for (i = 0; i < sizeof(HIH4030); i++)
-        {
-            packet_whole[packet_whole_index] = HIH4030[i];
-            // Increment index for whole packet
-            packet_whole_index++;
-        }
+            packet_whole[packet_whole_index++] = HIH4030[i];
+
         HIH4030[1] = (0 << 7) | LENGTH_FORMAT1;
     }
 #endif
@@ -107,11 +97,8 @@ void assemble_packet_whole()
     if ((BMP180[1] & 0x80) == 0x80)
     {
         for (i = 0; i < sizeof(BMP180); i++)
-        {
-            packet_whole[packet_whole_index] = BMP180[i];
-            // Increment index for whole packet
-            packet_whole_index++;
-        }
+            packet_whole[packet_whole_index++] = BMP180[i];
+
         BMP180[1] = (0 << 7) | (LENGTH_FORMAT5 + LENGTH_FORMAT6);
     }
 #endif
@@ -120,11 +107,8 @@ void assemble_packet_whole()
     if ((PR103J2[1] & 0x80) == 0x80)
     {
         for (i = 0; i < sizeof(PR103J2); i++)
-        {
-            packet_whole[packet_whole_index] = PR103J2[i];
-            // Increment index for whole packet
-            packet_whole_index++;
-        }
+            packet_whole[packet_whole_index++] = PR103J2[i];
+
         PR103J2[1] = (0 << 7) | LENGTH_FORMAT1;
     }
 #endif
@@ -133,11 +117,8 @@ void assemble_packet_whole()
     if ((TSL250RD_1[1] & 0x80) == 0x80)
     {
         for (i = 0; i < sizeof(TSL250RD_1); i++)
-        {
-            packet_whole[packet_whole_index] = TSL250RD_1[i];
-            // Increment index for whole packet
-            packet_whole_index++;
-        }
+            packet_whole[packet_whole_index++] = TSL250RD_1[i];
+
         TSL250RD_1[1] = (0 << 7) | LENGTH_FORMAT1;
     }
 #endif
@@ -146,11 +127,8 @@ void assemble_packet_whole()
     if ((MMA8452Q[1] & 0x80) == 0x80)
     {
         for (i = 0; i < sizeof(MMA8452Q); i++)
-        {
-            packet_whole[packet_whole_index] = MMA8452Q[i];
-            // Increment index for whole packet
-            packet_whole_index++;
-        }
+            packet_whole[packet_whole_index++] = MMA8452Q[i];
+
         MMA8452Q[1] = (0 << 7) | (LENGTH_FORMAT6 * 4);
     }
 #endif
@@ -159,11 +137,8 @@ void assemble_packet_whole()
     if ((SPV1840LR5HB[1] & 0x80) == 0x80)
     {
         for (i = 0; i < sizeof(SPV1840LR5HB); i++)  //********************was SPV1840LR5HB_2
-        {
-            packet_whole[packet_whole_index] = SPV1840LR5HB[i]; //********************was SPV1840LR5HB_2
-            // Increment index for whole packet
-            packet_whole_index++;
-        }
+            packet_whole[packet_whole_index++] = SPV1840LR5HB[i]; //********************was SPV1840LR5HB_2
+
         SPV1840LR5HB[1] = (0 << 7) | LENGTH_FORMAT1;
     }
 #endif
@@ -172,11 +147,8 @@ void assemble_packet_whole()
     if ((TSYS01[1] & 0x80) == 0x80)
     {
         for (i = 0; i < sizeof(TSYS01); i++)
-        {
-            packet_whole[packet_whole_index] = TSYS01[i];
-            // Increment index for whole packet
-            packet_whole_index++;
-        }
+            packet_whole[packet_whole_index++] = TSYS01[i];
+
         TSYS01[1] = (0 << 7) | LENGTH_FORMAT6;
     }
 #endif
@@ -187,11 +159,8 @@ void assemble_packet_whole()
     if ((HMC5883L[1] & 0x80) == 0x80)
     {
         for (i = 0; i < sizeof(HMC5883L); i++)
-        {
-            packet_whole[packet_whole_index] = HMC5883L[i];
-            // Increment index for whole packet
-            packet_whole_index++;
-        }
+            packet_whole[packet_whole_index++] = HMC5883L[i];
+
         HMC5883L[1] = (0 << 7) | (LENGTH_FORMAT8 * 3);
     }
 #endif
@@ -200,11 +169,8 @@ void assemble_packet_whole()
     if ((HIH6130[1] & 0x80) == 0x80)
     {
         for (i = 0; i < sizeof(HIH6130); i++)
-        {
-            packet_whole[packet_whole_index] = HIH6130[i];
-            // Increment index for whole packet
-            packet_whole_index++;
-        }
+            packet_whole[packet_whole_index++] = HIH6130[i];
+
         HIH6130[1] = (0 << 7) | (LENGTH_FORMAT6 * 2);
     }
 #endif
@@ -213,11 +179,8 @@ void assemble_packet_whole()
     if ((APDS9006020[1] & 0x80) == 0x80)
     {
         for (i = 0; i < sizeof(APDS9006020); i++)
-        {
-            packet_whole[packet_whole_index] = APDS9006020[i];
-            // Increment index for whole packet
-            packet_whole_index++;
-        }
+            packet_whole[packet_whole_index++] = APDS9006020[i];
+
         APDS9006020[1] = (0 << 7) | LENGTH_FORMAT1;
     }
 #endif
@@ -226,11 +189,8 @@ void assemble_packet_whole()
     if ((TSL250RD_2[1] & 0x80) == 0x80)
     {
         for (i = 0; i < sizeof(TSL260RD); i++)
-        {
-            packet_whole[packet_whole_index] = TSL260RD[i];
-            // Increment index for whole packet
-            packet_whole_index++;
-        }
+            packet_whole[packet_whole_index++] = TSL260RD[i];
+
         TSL260RD[1] = (0 << 7) | LENGTH_FORMAT1;
     }
 #endif
@@ -239,11 +199,8 @@ void assemble_packet_whole()
     if ((TSL250RD_2[1] & 0x80) == 0x80)
     {
         for (i = 0; i < sizeof(TSL250RD_2); i++)
-        {
-            packet_whole[packet_whole_index] = TSL250RD_2[i];
-            // Increment index for whole packet
-            packet_whole_index++;
-        }
+            packet_whole[packet_whole_index++] = TSL250RD_2[i];
+
         TSL250RD_2[1] = (0 << 7) | LENGTH_FORMAT1;
     }
 #endif
@@ -252,11 +209,8 @@ void assemble_packet_whole()
     if ((MLX75305[1] & 0x80) == 0x80)
     {
         for (i = 0; i < sizeof(MLX75305); i++)
-        {
-            packet_whole[packet_whole_index] = MLX75305[i];
-            // Increment index for whole packet
-            packet_whole_index++;
-        }
+            packet_whole[packet_whole_index++] = MLX75305[i];
+
         MLX75305[1] = (0 << 7) | LENGTH_FORMAT1;
     }
 #endif
@@ -266,11 +220,8 @@ void assemble_packet_whole()
     if ((ML8511[1] & 0x80) == 0x80)
     {
         for (i = 0; i < sizeof(ML8511); i++)
-        {
-            packet_whole[packet_whole_index] = ML8511[i];
-            // Increment index for whole packet
-            packet_whole_index++;
-        }
+            packet_whole[packet_whole_index++] = ML8511[i];
+
         ML8511[1] = (0 << 7) | LENGTH_FORMAT1;
     }
 #endif
@@ -279,11 +230,8 @@ void assemble_packet_whole()
     if ((TMP421[1] & 0x80) == 0x80)
     {
         for (i = 0; i < sizeof(TMP421); i++)
-        {
-            packet_whole[packet_whole_index] = TMP421[i];
-            // Increment index for whole packet
-            packet_whole_index++;
-        }
+            packet_whole[packet_whole_index++] = TMP421[i];
+
         TMP421[1] = (0 << 7) | LENGTH_FORMAT6;
     }
 #endif
@@ -296,10 +244,8 @@ void assemble_packet_whole()
     if ((chemsense_MAC_ID[1] & 0x80) == 0x80)
     {
         for (i = 0; i < sizeof(chemsense_MAC_ID); i++)
-        {
-            packet_whole[packet_whole_index] = chemsense_MAC_ID[i];
-            packet_whole_index++;
-        }
+            packet_whole[packet_whole_index++] = chemsense_MAC_ID[i];
+
         chemsense_MAC_ID[1] = (0 << 7) | LENGTH_FORMAT3;
     }
     
@@ -311,8 +257,10 @@ void assemble_packet_whole()
             if ((chemsense_MAC_ID[i] & 0xf0) == 0x00)
                 SerialUSB.print('0');
             SerialUSB.print(chemsense_MAC_ID[i],HEX);
-            if (i < LENGTH_FORMAT3 + 1) { SerialUSB.print(":"); }
-            else { SerialUSB.println("\r"); }
+            if (i < LENGTH_FORMAT3 + 1)
+                SerialUSB.print(":");
+            else
+                SerialUSB.println("\r");
         }
 #endif
 #endif
@@ -321,10 +269,8 @@ void assemble_packet_whole()
     if ((SHT25[1] & 0x80) == 0x80)
     {
         for (i = 0; i <  sizeof(SHT25); i++)
-        {
-            packet_whole[packet_whole_index] = SHT25[i];
-            packet_whole_index++;
-        }
+            packet_whole[packet_whole_index++] = SHT25[i];
+
         SHT25[1] = (0 << 7) | (LENGTH_FORMAT2 + LENGTH_FORMAT1);
 
     }
@@ -334,10 +280,8 @@ void assemble_packet_whole()
     if ((LPS25H[1] & 0x80) == 0x80)
     {
         for (i = 0; i <  sizeof(LPS25H); i++)
-        {
-            packet_whole[packet_whole_index] = LPS25H[i];
-            packet_whole_index++;
-        }
+            packet_whole[packet_whole_index++] = LPS25H[i];
+
         LPS25H[1] = (0 << 7) | (LENGTH_FORMAT2 + LENGTH_FORMAT4);
     }
 #endif
@@ -346,10 +290,8 @@ void assemble_packet_whole()
     if ((Si1145[1] & 0x80) == 0x80)
     { 
         for (i = 0; i <  sizeof(Si1145); i++)
-        {
-            packet_whole[packet_whole_index] = Si1145[i];
-            packet_whole_index++;
-        }
+            packet_whole[packet_whole_index++] = Si1145[i];
+
         Si1145[1] = (0 << 7) | (LENGTH_FORMAT1 * 3);
     }   
 #endif
@@ -358,10 +300,8 @@ void assemble_packet_whole()
     if ((total_reducing_gases[1] & 0x80) == 0x80)
     {
         for (i = 0; i <  sizeof(total_reducing_gases); i++)
-        {
-            packet_whole[packet_whole_index] = total_reducing_gases[i];
-            packet_whole_index++;
-        }
+            packet_whole[packet_whole_index++] = total_reducing_gases[i];
+
         total_reducing_gases[1] = (0 << 7) | LENGTH_FORMAT5;
     }
 #endif
@@ -370,10 +310,8 @@ void assemble_packet_whole()
     if ((total_oxidizing_gases[1] & 0x80) == 0x80)
     {
         for (i = 0; i <  sizeof(total_oxidizing_gases); i++)
-        {
-            packet_whole[packet_whole_index] = total_oxidizing_gases[i];
-            packet_whole_index++;
-        }
+            packet_whole[packet_whole_index++] = total_oxidizing_gases[i];
+
         total_oxidizing_gases[1] = (0 << 7) | LENGTH_FORMAT5;
     }
 #endif
@@ -382,10 +320,8 @@ void assemble_packet_whole()
     if ((sulfur_dioxide[1] & 0x80) == 0x80)
     {
         for (i = 0; i <  sizeof(sulfur_dioxide); i++)
-        {
-            packet_whole[packet_whole_index] = sulfur_dioxide[i];
-            packet_whole_index++;
-        }
+            packet_whole[packet_whole_index++] = sulfur_dioxide[i];
+
         sulfur_dioxide[1] = (0 << 7) | LENGTH_FORMAT5;
     }
 #endif
@@ -394,10 +330,8 @@ void assemble_packet_whole()
     if ((hydrogen_sulphide[1] & 0x80) == 0x80)
     {
         for (i = 0; i <  sizeof(hydrogen_sulphide); i++)
-        {
-            packet_whole[packet_whole_index] = hydrogen_sulphide[i];
-            packet_whole_index++;
-        }
+            packet_whole[packet_whole_index++] = hydrogen_sulphide[i];
+
         hydrogen_sulphide[1] = (0 << 7) | LENGTH_FORMAT5;
     }
 #endif
@@ -406,10 +340,8 @@ void assemble_packet_whole()
     if ((ozone[1] & 0x80) == 0x80)
     {
         for (i = 0; i <  sizeof(ozone); i++)
-        {
-            packet_whole[packet_whole_index] = ozone[i];
-            packet_whole_index++;
-        }
+            packet_whole[packet_whole_index++] = ozone[i];
+
         ozone[1] = (0 << 7) | LENGTH_FORMAT5;
     }
 #endif
@@ -418,10 +350,8 @@ void assemble_packet_whole()
     if ((nitrogen_dioxide[1] & 0x80) == 0x80)
     {
         for (i = 0; i <  sizeof(nitrogen_dioxide); i++)
-        {
-            packet_whole[packet_whole_index] = nitrogen_dioxide[i];
-            packet_whole_index++;
-        }
+            packet_whole[packet_whole_index++] = nitrogen_dioxide[i];
+
         nitrogen_dioxide[1] = (0 << 7) | LENGTH_FORMAT5;
     }
 #endif
@@ -430,10 +360,8 @@ void assemble_packet_whole()
     if ((carbon_monoxide[1] & 0x80) == 0x80)
     {
         for (i = 0; i <  sizeof(carbon_monoxide); i++)
-        {
-            packet_whole[packet_whole_index] = carbon_monoxide[i];
-            packet_whole_index++;
-        }
+            packet_whole[packet_whole_index++] = carbon_monoxide[i];
+
         carbon_monoxide[1] = (0 << 7) | LENGTH_FORMAT5;
     }
 #endif
@@ -442,10 +370,8 @@ void assemble_packet_whole()
     if ((CO_ADC_temp[1] & 0x80) == 0x80)
     {
         for (i = 0; i <  sizeof(CO_ADC_temp); i++)
-        {
-            packet_whole[packet_whole_index] = CO_ADC_temp[i];
-            packet_whole_index++;
-        }
+            packet_whole[packet_whole_index++] = CO_ADC_temp[i];
+
         CO_ADC_temp[1] = (0 << 7) | LENGTH_FORMAT2;
     }
 #endif
@@ -454,10 +380,8 @@ void assemble_packet_whole()
     if ((IAQ_IRR_ADC_temp[1] & 0x80) == 0x80)
     {
         for (i = 0; i <  sizeof(IAQ_IRR_ADC_temp); i++)
-        {
-            packet_whole[packet_whole_index] = IAQ_IRR_ADC_temp[i];
-            packet_whole_index++;
-        }
+            packet_whole[packet_whole_index++] = IAQ_IRR_ADC_temp[i];
+
         IAQ_IRR_ADC_temp[1] = (0 << 7) | LENGTH_FORMAT2;
     }
 #endif
@@ -466,10 +390,8 @@ void assemble_packet_whole()
     if ((O3_NO2_ADC_temp[1] & 0x80) == 0x80)
     {
         for (i = 0; i <  sizeof(O3_NO2_ADC_temp); i++)
-        {
-            packet_whole[packet_whole_index] = O3_NO2_ADC_temp[i];
-            packet_whole_index++;
-        }
+            packet_whole[packet_whole_index++] = O3_NO2_ADC_temp[i];
+
         O3_NO2_ADC_temp[1] = (0 << 7) | LENGTH_FORMAT2;
     }
 #endif
@@ -478,10 +400,8 @@ void assemble_packet_whole()
     if ((SO2_H2S_ADC_temp[1] & 0x80) == 0x80)
     {
         for (i = 0; i <  sizeof(SO2_H2S_ADC_temp); i++)
-        {
-            packet_whole[packet_whole_index] = SO2_H2S_ADC_temp[i];
-            packet_whole_index++;
-        }
+            packet_whole[packet_whole_index++] = SO2_H2S_ADC_temp[i];
+
         SO2_H2S_ADC_temp[1] = (0 << 7) | LENGTH_FORMAT2;
     }
 #endif
@@ -490,10 +410,8 @@ void assemble_packet_whole()
     if ((CO_LMP_temp[1] & 0x80) == 0x80)
     { 
         for (i = 0; i <  sizeof(CO_LMP_temp); i++)
-        {
-            packet_whole[packet_whole_index] = CO_LMP_temp[i];
-            packet_whole_index++; 
-        }
+            packet_whole[packet_whole_index++] = CO_LMP_temp[i];
+
         CO_LMP_temp[1] = (0 << 7) | LENGTH_FORMAT2;
     }   
 #endif
@@ -502,10 +420,8 @@ void assemble_packet_whole()
     if ((three_accel_and_vib[1] & 0x80) == 0x80)
     {
         for (i = 0; i <  sizeof(three_accel_and_vib); i++)
-        {
-            packet_whole[packet_whole_index] = three_accel_and_vib[i];
-            packet_whole_index++;
-        }
+            packet_whole[packet_whole_index++] = three_accel_and_vib[i];
+
         three_accel_and_vib[1] = (0 << 7) | (LENGTH_FORMAT2 * 3 + LENGTH_FORMAT4);
     }
 #endif
@@ -514,13 +430,9 @@ void assemble_packet_whole()
     if ((three_gyro_and_orientation[1] & 0x80) == 0x80)
     {
         for (i = 0; i <  sizeof(three_gyro_and_orientation); i++)
-        {
-            packet_whole[packet_whole_index] = three_gyro_and_orientation[i];
-            packet_whole_index++;
-        }
+            packet_whole[packet_whole_index++] = three_gyro_and_orientation[i];
+
         three_gyro_and_orientation[1] = (0 << 7) | (LENGTH_FORMAT2 * 3 + LENGTH_FORMAT4);
-        
-        OIX_packet_count++;
     }
 #endif
 

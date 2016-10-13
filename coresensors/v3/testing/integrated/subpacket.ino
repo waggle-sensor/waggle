@@ -1,3 +1,4 @@
+// #include "./subpacket.h"
 
 void sensor_buff_initialization()
 {
@@ -5,7 +6,7 @@ void sensor_buff_initialization()
 	FIRMWARE_VERSION[0] = ID_FIRMWARE_VERSION;
 	FIRMWARE_VERSION[1] = (1 << 7) | (LENGTH_FORMAT1 + LENGTH_BUILD_TIME + LENGTH_BUILD_GIT);
 #endif
-	
+
 #ifdef AIRSENSE_INCLUDE
 	// initialize FIRST BYTE of the array
 	MAC_ID[0] = ID_MAC;

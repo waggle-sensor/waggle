@@ -29,7 +29,7 @@ __lenFmt7 = 4
 __lenFmt8 = 3
 
 # sensor_list = ["Board MAC","TMP112","HTU21D","GP2Y1010AU0F","BMP180","PR103J2","TSL250RD","MMA8452Q","SPV1840LR5H-B","TSYS01","HMC5883L","HIH6130","APDS-9006-020","TSL260RD","TSL250RD","MLX75305","ML8511","D6T","MLX90614","TMP421","SPV1840LR5H-B","Total reducing gases","Ethanol (C2H5-OH)","Nitrogen Di-oxide (NO2)","Ozone (03)","Hydrogen Sulphide (H2S)","Total Oxidizing gases","Carbon Monoxide (C0)","Sulfur Dioxide (SO2)","SHT25","LPS25H","Si1145","Intel MAC"]
-sensor_list = ["Board MAC","TMP112","HTU21D","HIH4030","BMP180","PR103J2","TSL250RD","MMA8452Q","SPV1840LR5H-B","TSYS01","HMC5883L","HIH6130","APDS-9006-020","TSL260RD","TSL250RD","MLX75305","ML8511","D6T","MLX90614","TMP421","SPV1840LR5H-B","Total reducing gases","Ethanol (C2H5-OH)","Nitrogen Di-oxide (NO2)","Ozone (03)","Hydrogen Sulphide (H2S)","Total Oxidizing gases","Carbon Monoxide (C0)","Sulfur Dioxide (SO2)","SHT25","LPS25H","Si1145","Intel MAC","CO ADC temp","IAQ/IRR ADC temp","O3/NO2 ADC temp","SO2/H2S ADC temp","CO LMP temp","Accelerometer","Gyroscope", "alpha histo", "alpha firmware", "alpha conf a", "alpha conf b", "alpha conf c", "alpha conf d"]
+sensor_list = ["Board_MAC","TMP112","HTU21D","HIH4030","BMP180","PR103J2","TSL250RD","MMA8452Q","SPV1840LR5H-B","TSYS01","HMC5883L","HIH6130","APDS-9006-020","TSL260RD","TSL250RD","MLX75305","ML8511","D6T","MLX90614","TMP421","SPV1840LR5H-B","Total reducing gases","Ethanol (C2H5-OH)","Nitrogen Di-oxide (NO2)","Ozone (03)","Hydrogen Sulphide (H2S)","Total Oxidizing gases","Carbon Monoxide (C0)","Sulfur Dioxide (SO2)","SHT25","LPS25H","Si1145","Intel MAC","CO ADC temp","IAQ/IRR ADC temp","O3/NO2 ADC temp","SO2/H2S ADC temp","CO LMP temp","Accelerometer","Gyroscope", "alpha histo", "alpha firmware", "alpha conf a", "alpha conf b", "alpha conf c", "alpha conf d"]
 #decoded_output = ['0' for x in range(16)]
 
 #### alpha        
@@ -162,6 +162,33 @@ def alphasense_histo(raw_data):
     print(repr(raw_data))
 
 
+def firmware_version(input):
+    byte1 = ord(input[0])
+    byte2 = ord(input[1])
+
+    hw_maj_version = byte1 >> 5
+    hw_min_version = (byte1 & 0x1C) >> 2
+
+    fw_maj_version = ((byte1 & 0x03) << 2) | ((byte2 & 0xC0) >> 6)
+    fw_min_version = byte2 & 0x3F
+
+    if fw_min_version < 10:
+        values = ((hw_maj_version * 10 + hw_min_version) * 10 + fw_maj_version) * 100 + fw_min_version
+    else:
+        values = ((hw_maj_version * 10 + hw_min_version) * 10 + fw_maj_version) * 10 + fw_min_version
+
+    return values
+
+def build_info_time(input):
+    byte1 = ord(input[0])
+    byte2 = ord(input[1])
+    byte3 = ord(input[2])
+    byte4 = ord(input[3])
+
+    value = byte1 << 24 | byte2 << 16 | byte3 << 8 | byte4
+
+    return value
+
 def parse_sensor (sensor_id,sensor_data):
 #"Board MAC" "Board MAC"
     if sensor_id == '0':
@@ -169,8 +196,21 @@ def parse_sensor (sensor_id,sensor_data):
         data = ''
         for i in range(len(sensor_data)):
             data = data + str(format3(sensor_data[i]))
-        # print  data
+        # print  dataa =
         pass
+
+#firmware version
+    elif sensor_id == "253":
+        hw_sw_version = firmware_version(sensor_data[0:2])
+        hw_ver = (hw_sw_version / 1000) / 10.
+        fw_ver = (hw_sw_version - hw_ver * 10000) / 100.
+
+        build_time = build_info_time(sensor_data[2:6])
+        build_git = '{0:02x}'.format(format1(sensor_data[6:8]))
+
+        print "Sensor:", sensor_id, "Firmware_version", '@ ',
+        print hw_ver, fw_ver, build_time, build_git
+
 
 #alpha histo
     elif sensor_id == '40':
@@ -596,7 +636,7 @@ class usbSerial ( threading.Thread ):
                                     packetmismatch = 0
 
                                     for i in range(_preambleLoc + _datLenFieldDelta + 0x01, _postscriptLoc):
-                                        #print ord(self.data[i]),
+                                        print ord(self.data[i]),
                                         _packetCRC = ord(self.data[i]) ^ _packetCRC
                                         for j in range(8):
                                             if (_packetCRC & 0x01):
