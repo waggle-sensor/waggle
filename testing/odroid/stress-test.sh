@@ -45,3 +45,5 @@ else
   echo "success" > /run/stress.log
 fi
 
+./print_status.sh
+
