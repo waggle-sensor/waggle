@@ -6,6 +6,15 @@
 # on success, it will execute print_mac.sh script, which prints the barcode label
 #
 
+if [ ! -e /run/stress.log ]; then
+  if [ -e /etc/udev/rules.d/70-persistent-net.rules ]; then
+    rm /etc/udev/rules.d/70-persistent-net.rules
+  fi
+  if [ -e /var/log/upstart/stress-test.log]; then
+    rm /var/log/upstart/stress-test.log
+  fi
+fi
+
 set -e
 
 
@@ -33,4 +42,15 @@ if [ "${RESULT}x" == "errorx" ] ; then
 
   echo 0
 fi
+
+rm /run/stress.log
+if [ -e /etc/udev/rules.d/70-persistent-net.rules ]; then
+  rm /etc/udev/rules.d/70-persistent-net.rules
+fi
+if [ -e /var/log/upstart/stress-test.log ]; then
+  rm /var/log/upstart/stress-test.log
+fi
+
+sleep 10
+shutdown -h now
 

@@ -10,10 +10,14 @@ Disable waggle services:
 waggle-service stop waggle-init
 rm -f /recovery_p*
 touch /recovery_p1.tar.gz /recovery_p2.tar.gz
-ls -1 /etc/init/waggle-* | grep -v epoch | grep -v init | xargs -i rm {}
+ls -1 /etc/init/waggle-* | grep -v epoch | xargs -i rm {}
 ```
 
-
+Change some configurations:
+```bash
+echo "stress_test_image" > /etc/hostname
+echo -e "auto lo\niface lo inet loopback" > /etc/network/interfaces
+```
 
 Install files:
 
@@ -28,7 +32,6 @@ done
 chmod +x install.sh install-stress-ng.sh stress-test.sh
 
 ./install.sh
-
 ```
 
 ## QA testing instructions
