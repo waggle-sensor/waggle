@@ -1,3 +1,4 @@
 #!/bin/bash
-mkdir build
-mkdir bin
+rm -rf build bin
+mkdir build >> /dev/null
+mkdir bin >> /dev/null

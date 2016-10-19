@@ -9,7 +9,7 @@
 
 // Debug configs
 // #define PRINT_BUFFER 0x01
-#define SERIAL_DEBUG 0x01
+// #define SERIAL_DEBUG 0x01
 // #define PRINT_ADDRESS 0x01
 
 
