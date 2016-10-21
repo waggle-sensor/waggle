@@ -179,7 +179,7 @@ void loop()
         }
         #endif
         
-        delay(5);
+        delay(5); // we have a 5ms delay here to yeild, else the processor gets struck in this loop. 
     }
     
     
