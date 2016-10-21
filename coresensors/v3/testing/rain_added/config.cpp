@@ -43,7 +43,7 @@
 // Sensor boards to include
 #define VERSION_INCLUDE 0x01
 #define AIRSENSE_INCLUDE 0x01
-// #define LIGHTSENSE_INCLUDE 0x01
+#define LIGHTSENSE_INCLUDE 0x01
 #define CHEMSENSE_INCLUDE 0x01
 // #define ALPHASENSE_INCLUDE 0x01
 #define RAIN_GAUGER_INCLUDE 0x01
@@ -51,8 +51,8 @@
 
 
 // Sensors to include 
-// #define I2C_SENSORS 0x01
-// #define ANALOG_SENSORS 0x01
+#define I2C_SENSORS 0x01
+#define ANALOG_SENSORS 0x01
 
 
 #define USBSERIAL_INTERFACE 0x01
