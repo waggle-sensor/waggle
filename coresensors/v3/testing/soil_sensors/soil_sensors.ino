@@ -3,7 +3,7 @@
  **/
 
 // const byte ledPin = 13;
-const byte interruptPin = 40;
+const byte interruptPin = 39;
 volatile byte state = LOW;
 
 volatile int pin_sinal = 0;
@@ -44,3 +44,5 @@ void blink()
     // state != state;
     // Serial.print("Hello world");
 }
+
+// Another interrupt, a timer, if the tip has not been moved for 30 mins, reset count as 0

@@ -7,6 +7,7 @@ import Queue
 import struct
 
 import numpy
+import math
 
 from RTlist import getRT
 
@@ -210,6 +211,25 @@ def parse_sensor (sensor_id,sensor_data):
 
         print "Sensor:", sensor_id, "Firmware_version", '@ ',
         print hw_ver, fw_ver, build_time, build_git
+
+    elif sensor_id == "252":
+        tip_count = format1(sensor_data)
+        rain_inches = float(tip_count) * 0.01
+
+        print "Sensor:", sensor_id, "Rain_Gauger", ' @',
+        print rain_inches
+
+    elif sensor_id == "251":
+        dielectric = format6(sensor_data[0:2])
+        conductivity = format6(sensor_data[2:4])
+        temperature = format6(sensor_data[4:6])
+
+        volumetric_water_content = 4.3 * math.pow(10, -6) * math.pow(dielectric, 3) - 5.5 * math.pow(10, -4) * math.pow(dielectric, 2) + 2.92 * math.pow(10, -2) * dielectric - 5.3 * math.pow(10, -2)
+        vwc = '{:2.4f}'.format(volumetric_water_content)
+
+        print "Sensor:", sensor_id, "Decagon", ' @',
+        print vwc, dielectric, conductivity, temperature
+
 
 
 #alpha histo
