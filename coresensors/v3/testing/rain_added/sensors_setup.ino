@@ -34,6 +34,7 @@ void initializeSensorBoard()
 
 void Sensors_Setup(void)      // sensor initialization
 {
+#ifdef AIRSENSE_INCLUDE
 #ifdef TMP112_include
     TMP112_CONFIG();
 #endif
@@ -49,7 +50,9 @@ void Sensors_Setup(void)      // sensor initialization
 #ifdef TSYS01_include
     TSYS01_CONFIG();
 #endif
+#endif
 
+#ifdef LIGHTSENSE_INCLUDE
 #ifdef I2C_SENSORS
     mcp3428_1.init(MCP342X::L, MCP342X::L);
     mcp3428_2.init(MCP342X::L, MCP342X::F);
@@ -57,6 +60,7 @@ void Sensors_Setup(void)      // sensor initialization
 
 #ifdef HMC5883L_include
     HMC5883_Magnetometer.begin();
+#endif
 #endif
     return;
 }
