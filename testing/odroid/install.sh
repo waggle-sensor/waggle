@@ -6,8 +6,8 @@ set -e
 CURRENT_DIR=$(pwd)
 
 
-if [ ! -e ${CURRENT_DIR}/stress-test.sh ] ; then
-  echo "${CURRENT_DIR}/stress-test.sh not found"
+if [ ! -e ${CURRENT_DIR}/stress-test.sh_tmpl ] ; then
+  echo "${CURRENT_DIR}/stress-test.sh_tmpl not found"
   echo "please run install.sh in the same directory where stress-test.sh is installed."
   exit 1
 fi
