@@ -18,7 +18,7 @@ Purpose of this test is to verify that the replaced heatsink is functional, i.e.
 
 ## Error codes
 
-If you see one of the following numbers on QR code sticker underneath the MAC address, then the stress test has failed with the corresponding reason.
+If you see one of the following numbers (along with ERR) on QR code sticker underneath the MAC address, then the stress test has failed with the corresponding reason.
 
 * 404: No model name found
 * 405: Model name is unknown

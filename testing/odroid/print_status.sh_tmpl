@@ -53,11 +53,11 @@ if [ "${RESULT}x" == "errorx" ] ; then
   else
     ERR_CODE=$(cat /run/stress-fail.log)
     # print error label
-    [% SCRIPT %] ${ERR_CODE}
+    [% SCRIPT %] ERR${ERR_CODE}
     echo 0
 
       # print error label
-    [% SCRIPT %] ${ERR_CODE}
+    [% SCRIPT %] ERR${ERR_CODE}
     echo 0
   fi
 fi
