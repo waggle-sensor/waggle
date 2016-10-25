@@ -1,9 +1,15 @@
 #!/bin/bash
 
+if [ -e /run/stress-fail.log ] ; then
+  echo "/run/stress-fail.log already exists."
+  rm /run/stress-fail.log
+fi
+
 MODEL_REPORTED=$(cat /proc/cpuinfo | grep Hardware | grep -o "[^ ]*$")
 
 if [ "${MODEL_REPORTED}x" == "x" ] ; then
   echo "no model detected"
+  echo "404" > /run/stress-fail.log
   exit 1
 fi
 
@@ -16,6 +22,7 @@ elif [ "${MODEL_REPORTED}x" == "ODROID-XU3x" ] ; then
   CPU_COUNT=8
 else
   echo "Model ${MODEL_REPORTED} unknown."
+  echo "405" > /run/stress-fail.log
   exit 1
 fi
 
@@ -29,17 +36,18 @@ set -x
 
 if [ -e /run/stress.log ] ; then
   echo "/run/stress.log already exists."
-  exit 1
+  rm /run/stress.log
 fi
 
 
 
 
-/usr/local/bin/stress-ng --cpu ${CPU_COUNT} --io 2 --vm 1 --vm-bytes 500M --timeout 180s --metrics-brief
+/usr/local/bin/stress-ng --cpu ${CPU_COUNT} --io 2 --vm 1 --vm-bytes 500M --timeout [% RUN_DURATION %]s --metrics-brief
 STRESS_RESULT=$?
 
 if [ ${STRESS_RESULT} -ne 0 ] ; then
   echo "Error: Error code: ${STRESS_RESULT}"
+  echo "500${STRESS_RESULT}" > /run/stress-fail.log
   echo "error" > /run/stress.log
 else
   echo "success" > /run/stress.log
