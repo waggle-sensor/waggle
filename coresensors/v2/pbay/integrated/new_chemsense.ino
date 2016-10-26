@@ -2,6 +2,8 @@
  * Suppose that the Chemsense is device /dev/ttyACM0 when you connect the board with light and airsense.
  */
 
+#ifdef CHEMSENSE_INCLUDE
+
 int j = 0;
 int valid = 1;
 
@@ -603,10 +605,13 @@ void Carrier()
         three_accel_and_vib[1] = (valid << 7) | (LENGTH_FORMAT2 * 3 + LENGTH_FORMAT4);
         three_accel_and_vib[2] = formatted_byte_temp[0];
         three_accel_and_vib[3] = formatted_byte_temp[1];
+
         three_accel_and_vib[4] = formatted_byte_temp[2];
         three_accel_and_vib[5] = formatted_byte_temp[3];
+
         three_accel_and_vib[6] = formatted_byte_temp[4];
         three_accel_and_vib[7] = formatted_byte_temp[5];
+        
         three_accel_and_vib[8] = formatted_data_buffer[0];
         three_accel_and_vib[9] = formatted_data_buffer[1];
         three_accel_and_vib[10] = formatted_data_buffer[2];
@@ -672,12 +677,14 @@ void Carrier()
         three_gyro_and_orientation[1] = (valid << 7) | (LENGTH_FORMAT2 * 3 + LENGTH_FORMAT4);
         three_gyro_and_orientation[2] = formatted_byte_temp[0];
         three_gyro_and_orientation[3] = formatted_byte_temp[1];
+
         three_gyro_and_orientation[4] = formatted_byte_temp[2];
         three_gyro_and_orientation[5] = formatted_byte_temp[3];
+
         three_gyro_and_orientation[6] = formatted_byte_temp[4];
         three_gyro_and_orientation[7] = formatted_byte_temp[5];
-        three_gyro_and_orientation[8] = formatted_byte_temp[6];
-        three_gyro_and_orientation[8] = formatted_data_buffer[0];
+
+        three_gyro_and_orientation[8] = formatted_byte_temp[0];
         three_gyro_and_orientation[9] = formatted_data_buffer[1];
         three_gyro_and_orientation[10] = formatted_data_buffer[2];
 
@@ -738,3 +745,4 @@ void Carrier()
 // }
 
 
+#endif

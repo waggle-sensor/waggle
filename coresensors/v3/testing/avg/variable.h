@@ -1,0 +1,157 @@
+
+//** integrated.ino
+#ifdef I2C_INTERFACE
+	byte I2C_READ_COMPLETE = true;
+#endif
+OneWire ds2401(PIN_DS2401);  //DS2401 PIN
+bool TIMER = true;		// TIMER FOR 24sec period of getting data from chemsense
+bool UP_DOWN = false; 	//which is zero!!!!!!!
+bool RAIN_CHECK = false;
+
+int count = 0;
+int count_conf = 0;
+
+
+//************ common variables air, light, chem, TMP112, TSYS01, MMA84521, HIH, sensor_setup
+uint16_t Temp_uint16;
+int Temp_int[3];
+long Temp_long; 
+unsigned long Temp_ulong[2];
+float Temp_float[3]; 
+byte Temp_byte[8];
+int i = 0;			//** CRC, air, light, chemsense, packet_assembler, MMA
+
+//************ airsense
+float TMP112_float;
+float HTU21D_float[2];
+float BMP180_float;
+long BMP180_long;
+float MMA_float[4];
+float TSYS_float;
+uint16_t HIH4030_uint16;
+uint16_t PR_uint16;
+uint16_t TSL250_1_uint16;
+uint16_t SPV_uint16;
+
+//************ lightsense
+float HMC_float[3];
+float HIH6130_float[2];
+uint16_t APDS_uint16;
+uint16_t TSL260_uint16;
+uint16_t TSL250_2_uint16;
+uint16_t MLX753_uint16;
+uint16_t ML8511_uint16;
+float TMP421_float;
+
+
+
+//** chemsense
+#ifdef CHEMSENSE_INCLUDE
+unsigned char INPUT_BYTE;
+char KEY[4];
+char VAL[13];
+char first[6], second[6];
+byte formatted_byte_temp[8];
+int KEY_NUM_ID = 0;
+int VAL_NUM_ID = 0;
+bool flag_KEY = false;
+bool flag_CHEM_WHILE = false;
+int count_chem = 0;
+#endif
+
+//** alphasensor
+#ifdef ALPHASENSE_INCLUDE
+byte SPI_read_byte = 0;
+SPISettings set1(SPI_MAX_speed, MSBFIRST, SPI_MODE1);
+//** alphasensor which will be moved to down there and initialization (Jun 30)
+uint8_t val1, val2;
+//** alpha_packet
+bool flag_alpha= false;
+#endif
+
+//** packet_assembler
+int packet_whole_index = 0;
+byte packet_seq_number = 0x00;
+
+
+//** store formatted values, dataFormat.ino ************** FORMATS FOR VALUES
+//** Whole packet
+byte packet_whole[LENGTH_WHOLE];
+byte formatted_data_buffer[MAX_FMT_SIZE];
+// byte sensor_health[SENSOR_HEALTH_SIZE+2];
+
+
+
+
+// // Sub-packets for each format
+// #ifdef AIRSENSE_INCLUDE
+// byte MAC_ID[LENGTH_FORMAT3 + 2]; // MAC address
+
+// #ifdef I2C_SENSORS
+// byte TMP112[LENGTH_FORMAT6 + 2]; // ambient temp
+// byte HTU21D_array[(LENGTH_FORMAT6 * 2) + 2]; // ambient RH & temp
+// byte HIH4030[LENGTH_FORMAT1 + 2]; // humidity 
+// byte MMA8452Q[(LENGTH_FORMAT6 * 4) + 2]; // 3-axis accel for traffic flow
+// byte TSYS01[LENGTH_FORMAT6 + 2]; // ambient temp
+// #endif
+
+// #ifdef ANALOG_SENSORS
+// byte BMP180[LENGTH_FORMAT5 + LENGTH_FORMAT6 + 2]; // atmospheric pressure
+// byte PR103J2[LENGTH_FORMAT1 + 2]; // light
+// byte TSL250RD_1[LENGTH_FORMAT1 + 2]; // ambient light (400-950nm)
+// byte SPV1840LR5HB[LENGTH_FORMAT1 + 2]; // sound pressure
+// #endif
+// #endif
+
+
+// #ifdef LIGHTSENSE_INCLUDE
+// #ifdef I2C_SENSORS
+// byte HMC5883L[(LENGTH_FORMAT8 * 3) + 2]; // magnetic field strength for traffic flow
+// byte HIH6130[(LENGTH_FORMAT6 * 2) + 2]; // temp and RH inside transparent box
+
+// byte APDS9006020[LENGTH_FORMAT1 + 2]; // ambient light inside cavity
+// byte TSL260RD[LENGTH_FORMAT1 + 2]; // solar near IR
+// byte TSL250RD_2[LENGTH_FORMAT1 + 2]; // solar visible light
+
+// byte MLX75305[LENGTH_FORMAT1 + 2]; // solar visible light
+// byte ML8511[LENGTH_FORMAT1 + 2]; // solar UV
+// byte TMP421[LENGTH_FORMAT6 + 2]; // temp inside transparent box
+// #endif
+// #endif
+
+
+// #ifdef CHEMSENSE_INCLUDE
+// byte chemsense_MAC_ID[LENGTH_FORMAT3 + 2] = {0,0,0,0,0,0,0,0}; // MAC address of chemsense board
+
+// byte SHT25[LENGTH_FORMAT2 + LENGTH_FORMAT1 + 2]; // ambient temp and RH
+// byte LPS25H[LENGTH_FORMAT2 + LENGTH_FORMAT4 + 2]; // atmospheric temperature and pressure
+// byte Si1145[(LENGTH_FORMAT1 * 3) + 2]; // UV
+
+// byte total_reducing_gases[LENGTH_FORMAT5 + 2]; // ambient concentration
+// byte total_oxidizing_gases[LENGTH_FORMAT5 + 2]; // ambient concentration
+// byte sulfur_dioxide[LENGTH_FORMAT5 + 2]; // ambient concentration
+// byte hydrogen_sulphide[LENGTH_FORMAT5 + 2]; // ambient concentration
+// byte ozone[LENGTH_FORMAT5 + 2]; // ambient concentration
+// byte nitrogen_dioxide[LENGTH_FORMAT5 + 2]; // ambient concentration
+// byte carbon_monoxide[LENGTH_FORMAT5 + 2]; // ambient concentration
+
+// byte CO_ADC_temp[LENGTH_FORMAT2 + 2];
+// byte IAQ_IRR_ADC_temp[LENGTH_FORMAT2 + 2];
+// byte O3_NO2_ADC_temp[LENGTH_FORMAT2 + 2];
+// byte SO2_H2S_ADC_temp[LENGTH_FORMAT2 + 2];
+// byte CO_LMP_temp[LENGTH_FORMAT2 + 2];
+
+// byte three_accel_and_vib[(LENGTH_FORMAT2 * 3) + LENGTH_FORMAT4 + 2];
+// byte three_gyro_and_orientation[(LENGTH_FORMAT2 * 3) + LENGTH_FORMAT4 + 2];
+// #endif
+
+// #ifdef ALPHASENSE_INCLUDE
+// //** alphasensor
+// byte alpha_firmware[LENGTH_ALPHA_FIRMWARE + 2];
+// byte alpha_histogram[LENGTH_ALPHA_HISTOGRAM + 2];
+
+// byte alpha_config_a[LENGTH_ALPHA_CONFIG_A + 2];
+// byte alpha_config_b[LENGTH_ALPHA_CONFIG_B + 2];
+// byte alpha_config_c[LENGTH_ALPHA_CONFIG_C + 2];
+// byte alpha_config_d[LENGTH_ALPHA_CONFIG_D + 2];
+// #endif
