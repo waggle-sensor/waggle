@@ -21,6 +21,7 @@ void assemble_packet_whole()
     #ifdef SERIAL_DEBUG
     SerialUSB.println("Packing.");
     #endif
+
     
     #ifdef MAC_ID_include
     // Append MAC_ID
@@ -32,6 +33,7 @@ void assemble_packet_whole()
     }
     #endif
     
+#ifdef AIRSENSE_INCLUDE
     #ifdef TMP112_include
     // Append TMP112
     if (TMP112[1] > 10)
@@ -165,6 +167,10 @@ void assemble_packet_whole()
         TSYS01[1] = (chg_valid << 7) | LENGTH_FORMAT6;
     }
     #endif
+
+#endif
+
+#ifdef LIGHTSENSE_INCLUDE
 
     #ifdef HMC5883L_include
     if (HMC5883L[1] > 10)
@@ -331,6 +337,7 @@ void assemble_packet_whole()
     }
     #endif
 
+#endif
 
 #ifdef CHEMSENSE_INCLUDE
     if (chemsense_MAC_ID[1] > 10)

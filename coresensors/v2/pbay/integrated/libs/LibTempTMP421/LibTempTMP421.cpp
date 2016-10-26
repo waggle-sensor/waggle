@@ -65,6 +65,7 @@ float LibTempTMP421::GetTemperature(void) {
     in[1] = getRegisterValue();
     in[1] >>=4;                     //shift-off the unused bits
 
+
     /* Assemble the fraction */
     bit = in[1] & 0x01;
     frac += (bit * 0.5) * (bit * 0.5) * (bit * 0.5) * (bit * 0.5);
@@ -99,11 +100,11 @@ float LibTempTMP421::GetTemperature(void) {
 uint8_t LibTempTMP421::getRegisterValue(void) {
 
     Wire1.requestFrom(TMP421_ADDRESS, 1);
-    while(Wire1.available() <= 0) {
-      ; //wait
-    }
 
-    return Wire1.read();
+    if (Wire1.available() <= 0)
+      return 0x7F;
+    else
+      return Wire1.read();
 }
 
 /**********************************************************

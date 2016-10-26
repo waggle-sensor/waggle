@@ -193,12 +193,11 @@ def build_info_time(input):
 def parse_sensor (sensor_id,sensor_data):
 #"Board MAC" "Board MAC"
     if sensor_id == '0':
-    #     print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
+        print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
         data = ''
         for i in range(len(sensor_data)):
             data = data + str(format3(sensor_data[i]))
-        # print  dataa =
-        pass
+        print  data
 
 #firmware version
     elif sensor_id == "253":
@@ -548,10 +547,10 @@ class usbSerial ( threading.Thread ):
         self.packetmismatch = 0
         self.keepAlive = 1
 
-        self.failCount = 0
-        self.file = open('failed.txt', 'w+')
-        self.cumulativeCount = 0
-        self.failBuffer = Queue.Queue()
+        # self.failCount = 0
+        # self.file = open('failed.txt', 'w+')
+        # self.cumulativeCount = 0
+        # self.failBuffer = Queue.Queue()
 
     def run (self):
         print time.asctime()
@@ -673,20 +672,20 @@ class usbSerial ( threading.Thread ):
                                         print '-------------'
                                         print time.asctime(), _msg_seq_num, _postscriptLoc
                                         
-                                        # SH put data into buffer to store into a file
-                                        try:
-                                            self.failBuffer.put(self.data[0:_postscriptLoc])
-                                            if self.failBuffer.qsize() > 20:
-                                                if self.failCount > 0:
-                                                    self.file.write(self.failBuffer.get())
-                                                    self.file.write("\r\n")
-                                                    self.failCount = self.failCount - 1
-                                                else:
-                                                    self.failBuffer.get()
-                                        except:
-                                            print "Error while writing file"
-                                            print "failcount was ", self.failCount
-                                            pass
+                                        # # SH put data into buffer to store into a file
+                                        # try:
+                                        #     self.failBuffer.put(self.data[0:_postscriptLoc])
+                                        #     if self.failBuffer.qsize() > 20:
+                                        #         if self.failCount > 0:
+                                        #             self.file.write(self.failBuffer.get())
+                                        #             self.file.write("\r\n")
+                                        #             self.failCount = self.failCount - 1
+                                        #         else:
+                                        #             self.failBuffer.get()
+                                        # except:
+                                        #     print "Error while writing file"
+                                        #     print "failcount was ", self.failCount
+                                        #     pass
 
                                         #extract the data bytes alone, exclude preamble, prot version, len, crc and postScript
                                         extractedData = self.data[_preambleLoc+3:_postscriptLoc-1]
@@ -713,15 +712,15 @@ class usbSerial ( threading.Thread ):
                                                 print "consume_ptr: ", consume_ptr, " len(extractedData): ", len(extractedData)
                                                 pass
                                             
-                                            if This_id == '16':
-                                                if format1(This_id_msg) == 0xffff:
-                                                    # ERROR FOUND~!!!!!!!!!!!!!!!!!!!
-                                                    self.failCount = 20
-                                                    self.cumulativeCount = self.cumulativeCount + 1
-                                                    if self.cumulativeCount > 50:
-                                                        # I do not want to see any more.... Get me out of here!
-                                                        self.stop()
-                                                        break
+                                            # if This_id == '16':
+                                            #     if format1(This_id_msg) == 0xffff:
+                                            #         # ERROR FOUND~!!!!!!!!!!!!!!!!!!!
+                                            #         self.failCount = 20
+                                            #         self.cumulativeCount = self.cumulativeCount + 1
+                                            #         if self.cumulativeCount > 50:
+                                            #             # I do not want to see any more.... Get me out of here!
+                                            #             self.stop()
+                                            #             break
 
 
 

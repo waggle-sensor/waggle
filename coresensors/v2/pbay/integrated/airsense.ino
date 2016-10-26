@@ -3,6 +3,7 @@
  * airsense.ino V2 (including NEW INTEL CHEMSENSE BOARD)
  */
 
+#ifdef AIRSENSE_INCLUDE
 
 void airsense_acquire (void)
 {
@@ -195,3 +196,4 @@ void airsense_acquire (void)
     #endif
 }
 
+#endif
