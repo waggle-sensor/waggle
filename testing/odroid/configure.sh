@@ -8,7 +8,7 @@ if [ ! -e ${CURRENT_DIR}/label_printing/print_mac.sh ] ; then
   exit 1
 fi
 
-RUNNING_TIME=180
+RUNNING_TIME=180s
 sed -e "s:\[% RUN_DURATION %\]:${RUNNING_TIME}:" stress-test.sh_tmpl > stress-test.sh
 chmod +x stress-test.sh
 
