@@ -684,7 +684,7 @@ void Carrier()
         three_gyro_and_orientation[6] = formatted_byte_temp[4];
         three_gyro_and_orientation[7] = formatted_byte_temp[5];
 
-        three_gyro_and_orientation[8] = formatted_byte_temp[0];
+        three_gyro_and_orientation[8] = formatted_data_buffer[0];
         three_gyro_and_orientation[9] = formatted_data_buffer[1];
         three_gyro_and_orientation[10] = formatted_data_buffer[2];
 
