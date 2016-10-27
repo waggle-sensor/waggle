@@ -28,7 +28,7 @@ void assemble_packet_whole()
     for (i = 0; i < sizeof(DECAGON); i++)
         packet_whole[packet_whole_index++] = DECAGON[i];
 
-    // DECAGON[1] = (0 << 7) | (LENGTH_FORMAT6 * 3);
+    DECAGON[1] = (0 << 7) | (LENGTH_FORMAT6 * 3);
 #endif
 
 #ifdef RAIN_GAUGER_INCLUDE

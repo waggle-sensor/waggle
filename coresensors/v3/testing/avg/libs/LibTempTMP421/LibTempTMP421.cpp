@@ -99,11 +99,11 @@ float LibTempTMP421::GetTemperature(void) {
 uint8_t LibTempTMP421::getRegisterValue(void) {
 
     Wire.requestFrom(TMP421_ADDRESS, 1);
-    while(Wire.available() <= 0) {
-      ; //wait
-    }
 
-    return Wire.read();
+    if (Wire.available() <= 0)
+      return 0x7F;
+    else
+      return Wire.read();
 }
 
 /**********************************************************

@@ -128,6 +128,8 @@ class HMC5883_Sensor : public Adafruit_Sensor
     void write8(byte address, byte reg, byte value);
     byte read8(byte address, byte reg);
     void read(void);
+
+    bool able;
 };
 
 #endif

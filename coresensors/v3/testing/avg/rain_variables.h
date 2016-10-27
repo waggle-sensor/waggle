@@ -9,6 +9,8 @@ int pin_signal = 0;
 int count_num = 0;
 
 int tip_count = 0;
+
+uint16_t rain_monitor = 500;
 #endif
 
 
