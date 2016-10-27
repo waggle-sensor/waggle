@@ -114,8 +114,19 @@ void HMC5883_Sensor::read()
   _wire->endTransmission();
   _wire->requestFrom((byte)HMC5883_ADDRESS_MAG, (byte)6);
 
-  // Wait around until enough data is available
-  while (_wire->available() < 6);
+
+  if (able == false)
+  {
+    able = true;
+    begin();
+  }
+
+
+  if (_wire->available() <= 0)
+  {
+    able = false;
+  }
+
 
   // Note high before low (different than accel)
   #if ARDUINO >= 100
@@ -138,6 +149,14 @@ void HMC5883_Sensor::read()
   _magData.x = (int16_t)(xlo | ((int16_t)xhi << 8));
   _magData.y = (int16_t)(ylo | ((int16_t)yhi << 8));
   _magData.z = (int16_t)(zlo | ((int16_t)zhi << 8));
+
+
+  if (able == false)
+  {
+    _magData.x = 65535;
+    _magData.y = 65535;
+    _magData.z = 65535;
+  }
 
   // ToDo: Calculate orientation
   _magData.orientation = 0.0;
@@ -255,10 +274,20 @@ bool HMC5883_Sensor::getEvent(sensors_event_t *event) {
     event->sensor_id = _sensorID;
     event->type      = SENSOR_TYPE_MAGNETIC_FIELD;
     event->timestamp = 0;
-    event->magnetic.x = _magData.x / _hmc5883_Gauss_LSB_XY;
-    event->magnetic.y = _magData.y / _hmc5883_Gauss_LSB_XY;
-    event->magnetic.z = _magData.z / _hmc5883_Gauss_LSB_Z;
 
+    if (able == false)
+    {
+      event->magnetic.x = 127.44;
+      event->magnetic.y = 127.44;
+      event->magnetic.z = 127.44;
+    }
+    else
+    {
+      event->magnetic.x = _magData.x / _hmc5883_Gauss_LSB_XY;
+      event->magnetic.y = _magData.y / _hmc5883_Gauss_LSB_XY;
+      event->magnetic.z = _magData.z / _hmc5883_Gauss_LSB_Z;
+    }
+    
     return true;
 }
 

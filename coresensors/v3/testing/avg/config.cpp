@@ -1,4 +1,3 @@
-#include "i2c_address.cpp"
 #include "pin_config.cpp"
 
 // Communication Data Rates
@@ -7,6 +6,8 @@
 #define SPI_MAX_speed 500000
 #define DECAGON_DATARATE 1200
 
+// I2C address
+#define EEPROM_ADDRESS      0x50    //Address of 24LC256 EEPROM
 
 // Debug configs
 // #define PRINT_BUFFER 0x01
@@ -89,7 +90,7 @@
         #define TMP112_include 0x01
         #define HTU21D_include 0x01
         #define BMP180_include 0x01
-        #define MMA8452Q_include 0x01
+        // #define MMA8452Q_include 0x01
         #define TSYS01_include 0x01
         
     #endif

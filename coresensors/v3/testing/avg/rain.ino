@@ -33,11 +33,21 @@ void acquire_rain()
 
 	tip_count = count_num;
 
-	format1(tip_count);
 
-	RAIN_GAUGER[1] = (1 << 7) | LENGTH_FORMAT1;
-	RAIN_GAUGER[2] = formatted_data_buffer[0];
-	RAIN_GAUGER[3] = formatted_data_buffer[1];
+	rain_monitor = analogRead(RAIN_MONITOR_PIN);
+
+	SerialUSB.print("analogRead rain monitor");
+	SerialUSB.print("\t");
+	SerialUSB.println(rain_monitor);
+
+	if (rain_monitor == 0)
+	{
+		format1(tip_count);
+
+		RAIN_GAUGER[1] = (1 << 7) | LENGTH_FORMAT1;
+		RAIN_GAUGER[2] = formatted_data_buffer[0];
+		RAIN_GAUGER[3] = formatted_data_buffer[1];
+	}
 }
 
 void rain_initialization()

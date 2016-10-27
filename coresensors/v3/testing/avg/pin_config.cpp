@@ -7,6 +7,7 @@
 
 // rain gauger 3 variables
 #define RAIN_INTERRUPT_PIN	39
+#define RAIN_MONITOR_PIN	A2
 // 5TE sensor variables
 #define TRIDENT_POWER		38 // one of any ditial pins
 // #define TRIDENT_DATA		19 // Serial RX1 to use Serial1 communication --> automatically detected

@@ -114,7 +114,12 @@ void HMC5883_Sensor::read()
   _wire->endTransmission();
   _wire->requestFrom((byte)HMC5883_ADDRESS_MAG, (byte)6);
 
-  able = true;
+
+  if (able == false)
+  {
+    able = true;
+    begin();
+  }
 
   if (_wire->available() <= 0)
   {

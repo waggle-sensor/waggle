@@ -125,7 +125,7 @@ void acquire_trident()
 			data_string[input_num] = data_char;
 			input_num++;
 
-			SerialUSB.println(data_string);
+			// SerialUSB.println(data_string);
 			
 
 			if (data_int == 32)
@@ -159,8 +159,8 @@ void acquire_trident()
 		// Then send this as a subpacket
 		fill_subpacket();
 
-		// SerialUSB.println("MATCH");
-		// SerialUSB.println(" ");
+		SerialUSB.println("MATCH");
+		SerialUSB.println(" ");
 	}
 
 

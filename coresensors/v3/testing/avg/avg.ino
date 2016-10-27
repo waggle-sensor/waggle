@@ -10,7 +10,6 @@
 
 #include "config.cpp"
 #include "pin_config.cpp"
-#include "i2c_address.cpp"
 
 #include "./subpacket.h"
 #include "./setsensor.h"    //** add variables for sensors on airsense and lightsense boards 
@@ -157,8 +156,7 @@ void loop()
     #ifdef RAIN_GAUGER_INCLUDE  
     acquire_rain();
     #endif
-
-    
+  
         
     assemble_packet_whole();        //******** packetize air/light/chem
     for (byte i = 0x00; i < packet_whole[0x02] + 0x05; i++)
@@ -181,7 +179,6 @@ void loop()
     #endif
     
     count = 0;
-    
 }
 
 #ifdef I2C_INTERFACE
