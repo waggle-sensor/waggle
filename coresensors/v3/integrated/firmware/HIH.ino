@@ -7,6 +7,11 @@ void HIH_fetch_humidity_temperature()
 
     Wire.requestFrom((int)HIH_ADDRESS, (int) 4);
 
+
+    bool able = true;
+    if (Wire.available() <= 0)
+        able = false;
+
     Temp_byte[1] = Wire.read();
     Temp_byte[2] = Wire.read();
     Temp_byte[3] = Wire.read();
@@ -24,5 +29,11 @@ void HIH_fetch_humidity_temperature()
 
     Temp_float[1] = (float) Temp_int[0] * 6.10e-3;
     Temp_float[0] = (float) Temp_int[1] * 1.007e-2 - 40.0;
+
+    if (able == false)
+    {
+        Temp_float[0] = 255.9;
+        Temp_float[1] = 255.9;
+    }
 }
 #endif

@@ -21,6 +21,7 @@ void TMP112_CONFIG()
     Temp_byte[0] = Wire1.read(); // receive DATA
     Temp_byte[1] = Wire1.read();// receive DATA
     Wire1.endTransmission(); // end transmission
+
 }
 
 void TMP112_read()
@@ -31,6 +32,12 @@ void TMP112_read()
     delay(100);
     Wire1.beginTransmission(I2C_TMP112); // start transmission to device
     Wire1.requestFrom(I2C_TMP112, 2);// send data n-bytes read
+
+    bool able = true;
+
+    if (Wire.available() <= 0)
+        able = false;
+
     Temp_byte[0] = Wire1.read(); // receive DATA
     Temp_byte[1] = Wire1.read();// receive DATA
     Wire1.endTransmission(); // end transmission
@@ -41,7 +48,7 @@ void TMP112_read()
         Temp_uint16 = Temp_byte[0];
         Temp_uint16 = Temp_uint16 << 5;
         Temp_uint16 = Temp_uint16 | (Temp_byte[1] >> 3);
-        Temp_float[0] = (Temp_uint16 & 0x0FFF)*0.0625;
+        Temp_float[0] = (Temp_uint16 & 0x0FFF) * 0.0625;
     }
     else
     {
@@ -51,6 +58,11 @@ void TMP112_read()
         Temp_uint16 = Temp_uint16 << 5;
         Temp_uint16 = Temp_uint16 | (Temp_byte[1] >> 3);
         Temp_float[0] = (Temp_uint16 & 0x0FFF)*-0.0625;
+    }
+
+    if (able == false)
+    {
+        Temp_float[0] = 255.9;
     }
 }
 

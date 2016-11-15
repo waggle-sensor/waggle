@@ -42,9 +42,18 @@ unsigned int MCP342X::readADC()
     delay(80);
     unsigned int t;
   	wirex->requestFrom(I2C_ADDRESS, (byte) 3);
+
+  	bool able = true;
+    if (wirex->available() <= 0)
+    	able = false;
+
 	byte h = wirex->read();
   	byte l = wirex->read();
   	byte r = wirex->read();
     t = (h << 8) |  l;
+
+    if (able == false)
+    	t = 65535;
+
     return t;
 }

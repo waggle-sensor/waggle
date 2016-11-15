@@ -15,32 +15,31 @@ void sensor_buff_initialization()
 
 #ifdef I2C_SENSORS
 	// initialize FIRST BYTE of the arrays
+    BMP180[0] = ID_BMP180;
     TMP112[0] = ID_TMP112;
     HTU21D_array[0] = ID_HTU21D;
-    HIH4030[0] = ID_HIH4030;
     MMA8452Q[0] = ID_MMA8452Q;
     TSYS01[0] = ID_TSYS01;
 
 
 	// initialize SECOND BYTE of the arrays
+    BMP180[1] = (0 << 7) | (LENGTH_FORMAT5 + LENGTH_FORMAT6);
     TMP112[1] = (0 << 7) | LENGTH_FORMAT6;
     HTU21D_array[1] = (0 << 7) | LENGTH_FORMAT6;
-    HIH4030[1] = (0 << 7) | LENGTH_FORMAT1;
-
     MMA8452Q[1] = (0 << 7) | (LENGTH_FORMAT6 * 4);
     TSYS01[1] = (0 << 7) | LENGTH_FORMAT6;
 #endif
 
 #ifdef ANALOG_SENSORS
 	// initialize FIRST BYTE of the arrays
-    BMP180[0] = ID_BMP180;
+    HIH4030[0] = ID_HIH4030;
     PR103J2[0] = ID_PR103J2;
     TSL250RD_1[0] = ID_TSL250RD_1;
     SPV1840LR5HB[0] = ID_SPV1840LR5HB;
 
 
 	// initialize SECOND BYTE of the arrays
-    BMP180[1] = (0 << 7) | (LENGTH_FORMAT5 + LENGTH_FORMAT6);
+    HIH4030[1] = (0 << 7) | LENGTH_FORMAT1;
     PR103J2[1] = (0 << 7) | LENGTH_FORMAT1;
     TSL250RD_1[1] = (0 << 7) | LENGTH_FORMAT1;
     SPV1840LR5HB[1] = (0 << 7) | LENGTH_FORMAT1;

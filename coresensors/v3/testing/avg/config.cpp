@@ -90,7 +90,7 @@
         #define TMP112_include 0x01
         #define HTU21D_include 0x01
         #define BMP180_include 0x01
-        // #define MMA8452Q_include 0x01
+        #define MMA8452Q_include 0x01
         #define TSYS01_include 0x01
         
     #endif

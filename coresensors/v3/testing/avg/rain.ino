@@ -36,9 +36,9 @@ void acquire_rain()
 
 	rain_monitor = analogRead(RAIN_MONITOR_PIN);
 
-	SerialUSB.print("analogRead rain monitor");
-	SerialUSB.print("\t");
-	SerialUSB.println(rain_monitor);
+	// SerialUSB.print("analogRead rain monitor");
+	// SerialUSB.print("\t");
+	// SerialUSB.println(rain_monitor);
 
 	if (rain_monitor == 0)
 	{

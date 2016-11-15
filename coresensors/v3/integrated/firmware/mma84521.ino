@@ -8,7 +8,9 @@ void MMA8452_read()
     readAccelData(Temp_int);
 
     for (i = 0 ; i < 3 ; i++)
-        Temp_float[i] = (float)(Temp_int[i] / ((1 << 12) / (2 * GSCALE)));  // get actual g value, this depends on scale being set
+        Temp_float[i] = (float)Temp_int[i] / ((1 << 12) / (2 * GSCALE));  // get actual g value, this depends on scale being set
+
+    Temp_float[3] = sqrt(pow(Temp_float[0], 2) + pow(Temp_float[1], 2) + pow(Temp_float[2], 2));
 }
 
 void readAccelData(int *destination)
@@ -65,10 +67,20 @@ void MMA8452Active()
 // Read bytesToRead sequentially, starting at addressToRead into the dest byte array
 void MMA8452readRegisters(byte addressToRead, int bytesToRead, byte *dest)
 {
+    bool able = true;
+
     Wire.requestFrom((uint8_t) MMA8452_ADDRESS, (uint8_t) bytesToRead, (uint32_t) addressToRead, (uint8_t) 1, TRUE);
-    while(Wire.available() < bytesToRead); //Hang out until we get the # of bytes we expect
+    if(Wire.available() <= 0)
+        able = false; //Hang out until we get the # of bytes we expect
+
     for(int x = 0 ; x < bytesToRead ; x++)
         dest[x] = Wire.read();
+
+    if(able == false)
+    {
+        for(int x = 0 ; x < bytesToRead ; x++)
+            dest[x] = 0;
+    }
 }
 
 // Read a single byte from addressToRead and return it as a byte

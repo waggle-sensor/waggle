@@ -75,3 +75,7 @@
     LibTempTMP421 TMP421_Sensor = LibTempTMP421();
     #endif
 #endif
+
+#ifdef CHEMSENSE_INCLUDE
+    #define PIN_CHEMSENSE_POW   47
+#endif

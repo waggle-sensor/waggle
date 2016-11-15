@@ -65,13 +65,16 @@ void setup()
 
     #ifdef USBSERIAL_INTERFACE
     SerialUSB.begin(115200);
-    #endif
+    #endif 
 
     #ifdef SERIAL_DEBUG
     SerialUSB.println("Starting...");
     #endif
 
+    #ifdef CHEMSENSE_INCLUDE
     Serial3.begin(19200);
+    #endif
+
     //     Setup the I2C buffer
     for (byte i=0x00; i<LENGTH_WHOLE; i++)
     {
@@ -154,4 +157,3 @@ void loop()
 #endif
 
 }
-

@@ -34,6 +34,7 @@
 
 static bmp085_calib_data _bmp085_coeffs;   // Last read accelerometer data will be available here
 static uint8_t           _bmp085Mode;
+static bool able;
 
 #define BMP085_USE_DATASHEET_VALS (0) /* Set to 1 for sanity check */
 
@@ -97,6 +98,10 @@ static void read16(byte reg, uint16_t *value)
   #endif
   Wire.endTransmission();
   Wire.requestFrom((uint8_t)BMP085_ADDRESS, (byte)2);
+
+  if (Wire.available() <= 0)
+    able = false;
+
   #if ARDUINO >= 100
     *value = (Wire.read() << 8) | Wire.read();
   #else
@@ -466,6 +471,7 @@ void Adafruit_BMP085_Unified::getSensor(sensor_t *sensor)
 bool Adafruit_BMP085_Unified::getEvent(sensors_event_t *event)
 {
   float pressure_kPa;
+  able = true;
 
   /* Clear the event */
   memset(event, 0, sizeof(sensors_event_t));
@@ -477,6 +483,9 @@ bool Adafruit_BMP085_Unified::getEvent(sensors_event_t *event)
   getPressure(&pressure_kPa);
 //   event->pressure = pressure_kPa / 100.0F;
   event->pressure = long(pressure_kPa);
+
+  if (able == false)
+    event->pressure = 16777215;
 
   return true;
 }

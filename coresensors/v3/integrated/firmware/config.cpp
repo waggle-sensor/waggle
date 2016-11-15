@@ -1,4 +1,3 @@
-#include "i2c_address.cpp"
 #include "pin_config.cpp"
 
 // Communication Data Rates
@@ -6,6 +5,8 @@
 #define CHEMSENSE_DATARATE 19200
 #define SPI_MAX_speed 500000
 
+// I2C address
+#define EEPROM_ADDRESS      0x50    //Address of 24LC256 EEPROM
 
 // Debug configs
 // #define PRINT_BUFFER 0x01
@@ -45,6 +46,8 @@
 #define LIGHTSENSE_INCLUDE 0x01
 #define CHEMSENSE_INCLUDE 0x01
 // #define ALPHASENSE_INCLUDE 0x01
+#define RAIN_GAUGER_INCLUDE 0x01
+#define DECAGON_INCLUDE 0x01
 
 
 // Sensors to include 

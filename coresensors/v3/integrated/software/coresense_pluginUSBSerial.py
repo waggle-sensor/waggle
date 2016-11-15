@@ -190,6 +190,57 @@ def build_info_time(input):
 
     return value
 
+def calc_input_voltage(input):
+    # calc value before voltage divider, unit: V
+    # MCP output code transform factor 0.065 mV/(uW/cm^2): MCP mux
+    in_voltage = input * 0.0000625
+    # voltage divider factor 5/2 to calc input voltage: voltage divider circuit
+    out_from_sensor = (in_voltage * 5.00) / 2.00
+    return out_from_sensor
+
+def TSL260_irrad(input):
+    # b = math.log10(0.06)
+    # irrad = 10**(math.log10(input) - b)
+    # print irrad
+
+    # input unit: V, irrad unit: uW/cm^2
+    irrad = (input - 0.006250) / 0.058
+    # print irrad 
+
+    return irrad
+
+def TSL250_irrad_air(input):
+    # a = (math.log10(0.04)-math.log10(0.6))/(math.log10(0.6)-1)
+    # b = math.log10(3)/(a*math.log10(50))
+    # irrad = 10**((math.log10(input) - b)/a)
+    # print irrad
+
+    # input unit: V, irrad unit: uW/cm^2
+    irrad = input / 0.064
+    # print irrad
+
+    return irrad
+
+def TSL250_irrad(input):
+    # a = (math.log10(0.04)-math.log10(0.6))/(math.log10(0.6)-1)
+    # b = math.log10(3)/(a*math.log10(50))
+    # irrad = 10**((math.log10(input) - b)/a)
+    # print irrad
+
+    # input unit: V, irrad unit: uW/cm^2
+    irrad = (input - 0.005781) / 0.064
+    # print irrad
+
+    return irrad
+
+def APDS_irrad(input):
+    # the unit for current result is mA
+    # cause APDS calc irrad according to current
+    APDS_current = input / 5.00  # unit: mA
+    irrad = APDS_current / 405.1   # 405.1 unit: mA/lux
+    return irrad
+
+
 def parse_sensor (sensor_id,sensor_data):
 #"Board MAC" "Board MAC"
     if sensor_id == '0':
@@ -278,7 +329,7 @@ def parse_sensor (sensor_id,sensor_data):
 #"HIH4030": how does the date format changed? "GP2Y1010AU0F" has been chaned
     elif sensor_id == '3':
         HIH4030_val = format1(sensor_data)
-        HIH4030_voltage = (HIH4030_val * 5.00) / 1023.00    # extended exposure to > 90% RH causes a reversible shift of 3% RH
+        HIH4030_voltage = (HIH4030_val * 5.0) / 1023.00    # extended exposure to > 90% RH causes a reversible shift of 3% RH
         HIH4030_humidity = (HIH4030_voltage - 0.85) * 100.00 / 3.00 # PUT DARK LEVEL VOLTAGE 0.85 FOR NOW
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
         print "{:2.2f}".format(HIH4030_humidity)
@@ -302,13 +353,11 @@ def parse_sensor (sensor_id,sensor_data):
         # print "{:10.2f}".format(47000*(1023.00/PR103J2_val - 1))
 
 # #"TSL250RD" "TSL250RD"
-    elif sensor_id == '6':
-        TSL250RD_1_val = format1(sensor_data)
-        TSL250RD_1_voltage = (TSL250RD_1_val * 5)/1023.00
-        TSL250RD_1_irradiance = (TSL250RD_1_voltage - 0.09)/0.064
+    elif sensor_id == '6':        
+        TSL250RD_1_voltage = (format1(sensor_data) * 3.3) / 1023.00
+        TSL250RD_1_val = TSL250_irrad_air(TSL250RD_1_voltage)
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print "{:2.2f}".format(TSL250RD_1_val), "{:2.2f}".format(TSL250RD_1_voltage),
-        print "{:2.2f}".format(TSL250RD_1_irradiance)
+        print "{:5.2f}".format(TSL250RD_1_val)
 
 #"MMA8452Q" "MMA8452Q"
     elif sensor_id == '7':
@@ -320,18 +369,15 @@ def parse_sensor (sensor_id,sensor_data):
         # print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
         # print  format1(sensor_data)
 
-        try: 
-            SPV_TSL_RAW = format1(sensor_data)   # raw integer [0, 1023] of TSL
-            V_0 = SPV_TSL_RAW * 5.00 / 1023.00         # raw voltage of TSL
-            V_I = (V_0 - 1.75) / 453.33 - 1.75   # raw voltage of SPV
-            SPV_RAW = (-V_I * 1023.00) / 5.00          # raw integer [0, 1023] of SPV
-            ############################################################################ Right till here
-            voltage_level = -numpy.log10(-V_I / 3.3) * 20.00 # sound lever in dB
-        except Exception, e:
-            print str(e)
+        SPV_TSL_RAW = format1(sensor_data) * 3.3 / 1023.00         # raw voltage of TSL
+        raw = SPV_TSL_RAW / 453.3333 - 1.65
+        # V_I = (SPV_TSL_RAW - 1.75) / 453.33 - 1.75   # raw voltage of SPV
+        # SPV_RAW = (-V_I * 1023.00) / 5.00          # raw integer [0, 1023] of SPV
+        ############################################################################ Right till here
+        # voltage_level = -numpy.log10(-V_I / 3.3) * 20.00 # sound lever in dB
 
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print  "{:2.6f}".format(voltage_level), "{:2.6f}".format(V_0), "{:2.6f}".format(V_I), "{:2.6f}".format(SPV_RAW)
+        print SPV_TSL_RAW, "{:2.6f}".format(raw)
 
 #"TSYS01" "TSYS01"
     elif sensor_id == '9':
@@ -351,49 +397,57 @@ def parse_sensor (sensor_id,sensor_data):
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
         print  format6(sensor_data[0:2]), format6(sensor_data[2:4])
 
+
+
+
+
 # ######## Dark voltages of ADPS, MLX75305, TSL260 and TSL250s are needed to be measured!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #"APDS-9006-020" "APDS-9006-020"  480 - 6400 nm wave
-    elif sensor_id == '12':
-        APDS_OUT = (format1(sensor_data) / 32768.0000) * 2.048
-        APDS_voltage = APDS_OUT * 5.00 / 2.00
-        APDS_current = APDS_voltage / 0.005   # the unit for current result is uA
-        APDS_lux = (APDS_current - 0.000156) * 2.5 #/ 0.002 # * 0.147
+    elif sensor_id == '12':        
+        APDS_voltage = calc_input_voltage(format1(sensor_data))
+        APDS_lux = APDS_irrad(APDS_voltage)
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print format1(sensor_data), "{:5.2f}".format(APDS_voltage), "{:5.2f}".format(APDS_lux)
+        # print "{:8.6f}".format(APDS_voltage), 
+        print "{:5.2f}".format(format1(sensor_data)), "{:5.2f}".format(APDS_lux)
 
 ######## Dark voltages of ADPS, MLX75305, TSL260 and TSL250s are needed to be measured!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #"TSL260RD" "TSL260RD"  940 nm wave
     elif sensor_id == '13':
-        TSL260RD_OUT = (format1(sensor_data) / 32768.0000) * 2.048
-        TSL260RD_voltage = TSL260RD_OUT * 5.00 / 2.00
-        TSL260RD_val = (TSL260RD_voltage - 0.005313) / 0.058
+        TSL260RD_voltage = calc_input_voltage(format1(sensor_data))
+        TSL260RD_val = TSL260_irrad(TSL260RD_voltage)
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print format1(sensor_data), "{:5.2f}".format(TSL260RD_voltage), "{:5.2f}".format(TSL260RD_val)
+        # print "{:9.8f}".format(TSL260RD_voltage), 
+        print "{:5.2f}".format(format1(sensor_data)), "{:5.2f}".format(TSL260RD_val)
 
 ######## Dark voltages of ADPS, MLX75305, TSL260 and TSL250s are needed to be measured!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #"TSL250RD" "TSL250RD" 640 nm wave
     elif sensor_id == '14':
-        TSL250RD_2_OUT = (format1(sensor_data) / 32768.0000) * 2.048
-        TSL250RD_2_voltage = TSL250RD_2_OUT * 5.00 / 2.00
-        TSL250RD_2_val = (TSL250RD_2_voltage - 0.005313) / 0.064
+        TSL250RD_2_voltage = calc_input_voltage(format1(sensor_data))
+        TSL250RD_2_val = TSL250_irrad(TSL250RD_2_voltage)
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print format1(sensor_data), "{:5.2f}".format(TSL250RD_2_voltage), "{:5.2f}".format(TSL250RD_2_val)
+        # print "{:10.9f}".format(TSL250RD_2_voltage),
+        print "{:5.2f}".format(format1(sensor_data)), "{:5.2f}".format(TSL250RD_2_val)
 
 ######## Dark voltages of ADPS, MLX75305, TSL260 and TSL250s are needed to be measured!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #"MLX75305" "MLX75305" 500 - 1000 nm wave
     elif sensor_id == '15':
-        MLX75305_OUT = (format1(sensor_data) / 32768.0000) * 2.048
-        MLX75305_voltage = MLX75305_OUT * 5.00 / 2.00
-        MLX75305_val = (MLX75305_voltage - 0.0996) / 0.007
+        MLX75305_voltage = calc_input_voltage(format1(sensor_data))
+        MLX75305_val = (MLX75305_voltage - 0.09234) / 0.007   #with gain 1, the factor is 7mA/(uW/cm^2)
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print format1(sensor_data), "{:5.2f}".format(MLX75305_voltage), "{:5.2f}".format(MLX75305_val)
+        # print "{:8.6f}".format(MLX75305_voltage),
+        print "{:5.2f}".format(format1(sensor_data)), "{:5.2f}".format(MLX75305_val)
 
 ######## Offset term related to climate, geographic condition!!!!!!!!!!!!!!!!!!!!!
 #"ML8511" "ML8511"  typically 365 nm wave (300 - 380 nm wave)
     elif sensor_id == '16':
-        ML8511_OUT = (format1(sensor_data) / 32768.0000) * 2.048
-        ML8511_voltage = ML8511_OUT * 5.00 / 2.00
-        ML8511_val = (ML8511_voltage / 1.489) * 1.49916
+        ML8511_voltage = calc_input_voltage(format1(sensor_data))
+
+        # ML8511_val = ML8511_voltage * 12.49 - 14.735
+        # ML8511_val = ML8511_voltage * 12.49 - 17.72
+        #### voltage difference btw dark/10,000 mW/m^2: 1.2V --> 0.12
+        #### subtranct 1.49916 / 0.12 - dark diff (cf. datasheet)
+        ML8511_val = ML8511_voltage * 1.49916 / 0.12 - 18.71
+
         if 2.5 <= ML8511_val <= 3.0:
             ML8511_val = ML8511_val - 0.3
         elif 3.0 <= ML8511_val <= 4.0:
@@ -402,11 +456,9 @@ def parse_sensor (sensor_id,sensor_data):
             ML8511_val = ML8511_val - 0.4
         elif 4.5 < ML8511_val:
             ML8511_val = ML8511_val + 0.25
-        # offset term which will be determined by climate, geographic condition
-        # which is 1.49 in the lab, when the sensor is in a Fedex box
+
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        # print format1(sensor_data), "{:5.2f}".format(ML8511_voltage), "{:5.2f}".format(ML8511_val)
-        print "{:2.6f}".format(ML8511_voltage), "{:5.2f}".format(ML8511_val)
+        print "{:5.2f}".format(format1(sensor_data)), "{:5.2f}".format(ML8511_val)
 
 
 # # "D6T" has been removed

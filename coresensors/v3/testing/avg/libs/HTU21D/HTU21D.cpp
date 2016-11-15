@@ -57,6 +57,12 @@ float HTU21D::readHumidity(void)
 	//Comes back in three bytes, data(MSB) / data(LSB) / Checksum
 	Wire.requestFrom(HTDU21D_ADDRESS, 3);
 
+	//**** SHSHSHSHSHSHSH
+	// bool able = true;
+	// if (Wire.available() <= 0)
+	// 	able = false;
+	//**** SHSHSHSHSHSHSH
+
 	//Wait for data to become available
 	int counter = 0;
 	while(Wire.available() < 3)
@@ -87,6 +93,11 @@ float HTU21D::readHumidity(void)
 	//Given the raw humidity data, calculate the actual relative humidity
 	float tempRH = rawHumidity / (float)65536; //2^16 = 65536
 	float rh = -6 + (125 * tempRH); //From page 14
+
+	//**** SHSHSHSHSHSHSH
+	// if (able == false)
+	// 	rh = 0;
+	//**** SHSHSHSHSHSHSH
 
 	return(rh);
 }
