@@ -1,15 +1,15 @@
 #ifdef HIH6130_include
 void HIH_fetch_humidity_temperature()
 {
-    Wire.beginTransmission(HIH_ADDRESS);
-    Wire.endTransmission();
+    Wire1.beginTransmission(HIH_ADDRESS);
+    Wire1.endTransmission();
     delay(100);
 
-    Wire.requestFrom((int)HIH_ADDRESS, (int) 4);
+    Wire1.requestFrom((int)HIH_ADDRESS, (int) 4);
 
 
     bool able = true;
-    if (Wire.available() <= 0)
+    if (Wire1.available() <= 0)
         able = false;
 
     Temp_byte[1] = Wire.read();
@@ -17,7 +17,7 @@ void HIH_fetch_humidity_temperature()
     Temp_byte[3] = Wire.read();
     Temp_byte[4] = Wire.read();
     
-    Wire.endTransmission();
+    Wire1.endTransmission();
 
     Temp_byte[0] = (Temp_byte[1] >> 6) & 0x03;
 

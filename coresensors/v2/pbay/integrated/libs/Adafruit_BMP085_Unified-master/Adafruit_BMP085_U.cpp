@@ -21,8 +21,8 @@
 #endif
 
 #ifdef __AVR_ATtiny85__
- #include "TinyWire1M.h"
- #define Wire1 TinyWire1M
+ #include "TinyWireM.h"
+ #define Wire1 TinyWireM
 #else
  #include <Wire.h>
  extern TwoWire Wire1;
