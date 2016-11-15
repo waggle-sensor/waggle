@@ -22,7 +22,7 @@
 
 #ifdef __AVR_ATtiny85__
  #include "TinyWireM.h"
- #define Wire1 TinyWireM
+ #define Wire TinyWireM
 #else
  #include <Wire.h>
  extern TwoWire Wire1;
