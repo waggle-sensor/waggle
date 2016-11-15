@@ -19,13 +19,13 @@ byte MAC_ID[LENGTH_FORMAT3 + 2]; // MAC address
 #ifdef I2C_SENSORS
 byte TMP112[LENGTH_FORMAT6 + 2]; // ambient temp
 byte HTU21D_array[(LENGTH_FORMAT6 * 2) + 2]; // ambient RH & temp
-byte HIH4030[LENGTH_FORMAT1 + 2]; // humidity 
+byte BMP180[LENGTH_FORMAT5 + LENGTH_FORMAT6 + 2]; // atmospheric pressure
 byte MMA8452Q[(LENGTH_FORMAT6 * 4) + 2]; // 3-axis accel for traffic flow
 byte TSYS01[LENGTH_FORMAT6 + 2]; // ambient temp
 #endif
 
 #ifdef ANALOG_SENSORS
-byte BMP180[LENGTH_FORMAT5 + LENGTH_FORMAT6 + 2]; // atmospheric pressure
+byte HIH4030[LENGTH_FORMAT1 + 2]; // humidity 
 byte PR103J2[LENGTH_FORMAT1 + 2]; // light
 byte TSL250RD_1[LENGTH_FORMAT1 + 2]; // ambient light (400-950nm)
 byte SPV1840LR5HB[LENGTH_FORMAT1 + 2]; // sound pressure

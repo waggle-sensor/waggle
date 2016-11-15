@@ -65,9 +65,20 @@ void TSYS01GetTemp()
     Wire.endTransmission();
 
     Wire.requestFrom(TSYS01Address,3); //read in 24 bit output
+
+    bool able = true;
+    if (Wire.available() <= 0)
+        able = false;
+
     Temp_byte[0] = Wire.read();
     Temp_byte[1] = Wire.read();
     Temp_byte[2] = Wire.read(); //not used but necessary if 24bit conversion method is found (shifts below return 24bit output / 256 per TSYS01 datasheet conversion equations
+
+    if (able == false)
+    {
+        for (int i = 0; i < 3; i++)
+            Temp_byte[i] = 255;
+    }
 
     Temp_float[0] = TSYS_ScaleTemp_C((((unsigned long)Temp_byte[0] << 8) | ((unsigned long)Temp_byte[1]))); //convert and cast to Temp with scaling equation
 }

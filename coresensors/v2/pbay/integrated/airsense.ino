@@ -15,7 +15,15 @@ void airsense_acquire (void)
     #ifdef TMP112_include
     TMP112_read();
 
-    TMP112[1] = (1 << 7) | LENGTH_FORMAT6;
+    
+    if (Temp_float[0] > 255) 
+        {
+            TMP112[1] = (0 << 7) | LENGTH_FORMAT6;
+            SerialUSB.println("TMP112: I2C not available");
+        }
+        else
+            TMP112[1] = (1 << 7) | LENGTH_FORMAT6;
+
 
     format6(Temp_float[0]);  // Put it into format 1
     TMP112[2] = formatted_data_buffer[0];
@@ -31,7 +39,13 @@ void airsense_acquire (void)
     Temp_float[1] = myHumidity.readHumidity();
     Temp_float[0] = myHumidity.readTemperature();
 
-    HTU21D[1] = (1 << 7) | (LENGTH_FORMAT6 * 2);
+    if (Temp_float[1] < 1)
+    {
+        HTU21D[1] = (0 << 7) | (LENGTH_FORMAT6 * 2);
+        SerialUSB.println("HTU21D: I2C not available");
+    }
+    else
+        HTU21D[1] = (1 << 7) | (LENGTH_FORMAT6 * 2);
 
     format6(Temp_float[0]);  // Put it into format 1
     HTU21D[2] = formatted_data_buffer[0];
@@ -116,7 +130,13 @@ void airsense_acquire (void)
     #ifdef MMA8452Q_include
     MMA8452_read();
 
-    MMA8452Q[1] = (1 << 7) | (LENGTH_FORMAT6 * 4);
+    if (Temp_float[3] <= 0.0)
+    {
+        MMA8452Q[1] = (0 << 7) | (LENGTH_FORMAT6 * 4);
+        SerialUSB.println("MMA8452Q: I2C not available");
+    }
+    else
+        MMA8452Q[1] = (1 << 7) | (LENGTH_FORMAT6 * 4);
 
     format6(Temp_float[0]);  // Put it into format 1
     MMA8452Q[2] = formatted_data_buffer[0];
@@ -132,7 +152,7 @@ void airsense_acquire (void)
     MMA8452Q[7] = formatted_data_buffer[1];
 
 
-    format6(0);  // Put it into format 1
+    format6(Temp_float[3]);  // Put it into format 1
     MMA8452Q[8] = formatted_data_buffer[0];
     MMA8452Q[9] = formatted_data_buffer[1];
 
@@ -184,7 +204,14 @@ void airsense_acquire (void)
     #ifdef TSYS01_include
     TSYS01_read();
 
-    TSYS01[1] = (1 << 7) | LENGTH_FORMAT6;
+    if (Temp_float[0] > 213)
+    {
+        TSYS01[1] = (0 << 7) | LENGTH_FORMAT6;
+        SerialUSB.println("TSYS01: I2C not available");
+    }
+    else
+        TSYS01[1] = (1 << 7) | LENGTH_FORMAT6;
+
     format6(Temp_float[0]);  // Put it into format 2
     TSYS01[2] = formatted_data_buffer[0];
     TSYS01[3] = formatted_data_buffer[1];

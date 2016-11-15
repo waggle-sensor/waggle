@@ -5,7 +5,7 @@ void initializeSensorBoard()
 
     pinMode(PIN_HBT, OUTPUT);
     pinMode(PIN_SPV_AMP,INPUT);         // MODE ON?????????? WHERE????????????? HOW???????????? WHEN???????????
-    pinMode(PIN_SVP_SPL,INPUT);
+    pinMode(PIN_SPV_SPL,INPUT);
     pinMode(PIN_RAW_MIC,INPUT);
     pinMode(PIN_ALPHASENSE_SLAVE, OUTPUT);
     pinMode(PIN_CHEMSENSE_POW, OUTPUT); // ON/OFF sensor, OUTPUT:LOW = ON
@@ -13,6 +13,7 @@ void initializeSensorBoard()
     digitalWrite(PIN_CHEMSENSE_POW, HIGH); // Power OFF the Chemsense board
     digitalWrite(PIN_HBT, UP_DOWN); // send signal 0
 
+    #ifdef AIRSENSE_INCLUDE 
     if (ds2401.reset() == TRUE)
     {
         ds2401.write(0x33);
@@ -28,10 +29,12 @@ void initializeSensorBoard()
         else { MAC_ID[3] = 0xff; }
     }
     else { MAC_ID[3] = 0xaa; } //Nothing is connected in the bus
+    #endif
 }
 
 void Sensors_Setup(void)      // sensor initialization
 {
+#ifdef AIRSENSE_INCLUDE
 #ifdef TMP112_include
     TMP112_CONFIG();
 #endif
@@ -47,7 +50,9 @@ void Sensors_Setup(void)      // sensor initialization
 #ifdef TSYS01_include
     TSYS01_CONFIG();
 #endif
+#endif
 
+#ifdef LIGHTSENSE_INCLUDE
 #ifdef I2C_SENSORS
     mcp3428_1.init(MCP342X::L, MCP342X::L);
     mcp3428_2.init(MCP342X::L, MCP342X::F);
@@ -55,6 +60,7 @@ void Sensors_Setup(void)      // sensor initialization
 
 #ifdef HMC5883L_include
     HMC5883_Magnetometer.begin();
+#endif
 #endif
     return;
 }

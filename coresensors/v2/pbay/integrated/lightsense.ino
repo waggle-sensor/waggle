@@ -41,8 +41,15 @@
 
     #ifdef HIH6130_include
     HIH_fetch_humidity_temperature();
+    
+    if (Temp_float[0] > 255)
+    {
+        HIH6130[1] = (0 << 7) | (LENGTH_FORMAT6 * 2);
+        SerialUSB.println("HIH6130: I2C not available");
+    }
+    else
+        HIH6130[1] = (1 << 7) | (LENGTH_FORMAT6 * 2);
 
-    HIH6130[1] = (1 << 7) | (LENGTH_FORMAT6 * 2);
     format6(Temp_float[0]);
     HIH6130[2] = formatted_data_buffer[0];
     HIH6130[3] = formatted_data_buffer[1];

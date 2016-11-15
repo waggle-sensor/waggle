@@ -18,6 +18,7 @@ void assemble_packet_whole()
 // #ifdef SERIAL_DEBUG
 //     SerialUSB.println("Packing.");
 // #endif
+
 #ifdef VERSION_INCLUDE
     for (i = 0; i < sizeof(FIRMWARE_VERSION); i++)
         packet_whole[packet_whole_index++] = FIRMWARE_VERSION[i];

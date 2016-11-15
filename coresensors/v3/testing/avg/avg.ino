@@ -100,6 +100,15 @@ void loop()
 {
     count = 0;
 
+
+    while(count < 10)
+    {    
+        #ifdef CHEMSENSE_INCLUDE        
+        flag_CHEM_WHILE = true;
+        chemsense_acquire();
+        #endif
+    }
+
     #ifdef AIRSENSE_INCLUDE
     airsense_initial();
     #endif
@@ -108,13 +117,8 @@ void loop()
     lightsense_initial();
     #endif
 
-    while (count < 5)       // every 24 sec
+    while (count < 24)       // every 24 sec
     {
-        #ifdef CHEMSENSE_INCLUDE        
-        flag_CHEM_WHILE = true;
-        chemsense_acquire();
-        #endif
-
         #ifdef AIRSENSE_INCLUDE    
         airsense_acquire();
         #endif

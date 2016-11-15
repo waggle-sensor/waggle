@@ -22,8 +22,6 @@ void Sensors_Setup(void)
     #endif
 #endif
 
-
-
 #ifdef LIGHTSENSE_INCLUDE
     mcp3428_1.init(MCP342X::L, MCP342X::L);
     mcp3428_2.init(MCP342X::L, MCP342X::F);
@@ -32,6 +30,6 @@ void Sensors_Setup(void)
     HMC5883_Magnetometer.begin();
     #endif
 #endif
-
+    
     return;
 }
