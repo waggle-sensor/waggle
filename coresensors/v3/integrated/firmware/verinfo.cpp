@@ -5,3 +5,5 @@
 #define CORESENSE_KERNEL_MIN 0 // 4 bits
 #define CORESENSE_KERNEL_SUB 2 // 4 bits
 
+// 3.1 1.01 --> chemsense not included
+// 3.1 1.02 --> chemsense included
