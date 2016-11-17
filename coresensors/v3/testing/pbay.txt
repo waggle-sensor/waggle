@@ -1,9 +1,3 @@
-** subs
-Ignore it
-This is just for shpark
-
-** coresense
-Get data from chemsense, through lightsense and airsense.
 
 ** integrated
 Integrated version 3.2, using 24sec timer to get data from the chemsese board
@@ -52,8 +46,17 @@ Loaded on the nodes
 testing/integrated no specific version number (20 Oct. 2016)
 The version of v3.3 explained above
 
-rain_added 3.1 3.02 (20 Oct. 2016)
+rain_added (20 Oct. 2016)
 Rain gauger and one of soil sensor (I call trident sensor) are added
 
 avg 3.1 3.02 (25 Oct. 2016)
 Take average
+
+
+
+
+
+** firmware (15 Nov. 2016)
+Copy avg --> resolve I2C hang out problem (v2 also)
+air/lightsense averaged
+

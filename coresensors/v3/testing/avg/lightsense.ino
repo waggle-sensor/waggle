@@ -147,7 +147,7 @@ void lightsense_acquire (void)
     mcp3428_2.selectChannel(MCP342X::CHANNEL_0, MCP342X::GAIN_1);
     Temp_uint16 = mcp3428_2.readADC();
 
-    APDS_uint16 = (APDS_uint16 + Temp_uint16) / 2;
+    // APDS_uint16 = (APDS_uint16 + Temp_uint16) / 2;
 
     if (Temp_uint16 == 65535)
     {
@@ -158,7 +158,8 @@ void lightsense_acquire (void)
         APDS9006020[1] = (1 << 7) | LENGTH_FORMAT1;
     
 
-    format1(APDS_uint16);
+    // format1(APDS_uint16);
+    format1(Temp_uint16);
     APDS9006020[2] = formatted_data_buffer[0];
     APDS9006020[3] = formatted_data_buffer[1];
 

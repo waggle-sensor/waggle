@@ -129,6 +129,13 @@ void loop()
 
 
         #ifdef ALPHASENSE_INCLUDE        
+
+        //******* NEED TO ADD!!
+        //** ask to alpha sensor if laser and fan are turned on
+        //** if not, absolutely need to on, and wait 10 secs
+        //** if alpha sensor is not physically connected but include in terms of software
+        //** --> Not sure what will be the SPI reply (Nov. 16 2016)
+
         alphasense_histo();
         delay(100);
         

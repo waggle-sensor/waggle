@@ -9,7 +9,7 @@ PORT = waggle_coresense
 BOARD_FLASH = $(PACKAGE):$(ARCH):$(BOARD)
 BOOT_LOADER_TYPE = wiring
 PRE_FLASH_COMMAND = stty -F /dev/$(PORT) 1200 hupcl; sleep 2
-FLASHER = bossac
+FLASHER = ./bin/bossac
 FLASH_BOARD = $(FLASHER) -i -d --port=$(PORT) -U true -e -w -v -b $(BIN_DIR)/$(TARGET).ino.bin -R
 BUILD_COMPLETE = mv $(BUILD_DIR)/$(TARGET).ino.bin $(BIN_DIR)/
 LINKPORT = /dev/$(PORT)
