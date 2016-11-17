@@ -35,21 +35,21 @@ void MCP342X::selectChannel(byte channel, byte gain)
 
 unsigned int MCP342X::readADC()
 {
-    delay(80);
-    unsigned int t;
-  	Wire.requestFrom(I2C_ADDRESS, (byte) 3);
+  delay(80);
+  unsigned int t;
+  Wire.requestFrom(I2C_ADDRESS, (byte) 3);
 
-  	bool able = true;
-  	if (Wire.available() <= 0)
-  		able = false;
+  bool able = true;
+  if (Wire.available() <= 0)
+  	able = false;
 
-	byte h = Wire.read();
-  	byte l = Wire.read();
-  	byte r = Wire.read();
-    t = (h << 8) |  l;
+  byte h = Wire.read();
+  byte l = Wire.read();
+  byte r = Wire.read();
+  t = (h << 8) |  l;
 
-    if (able == false)
-    	t = 65535;
-    
-    return t;
+  if (able == false)
+  	t = 65535;
+
+  return t;
 }

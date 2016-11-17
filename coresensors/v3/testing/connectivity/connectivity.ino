@@ -135,7 +135,7 @@ void loop()
         SerialUSB.println("FAIL");
 
     SerialUSB.println(" ");
-    SerialUSB.print("4. Unique Board ID - ");
+    SerialUSB.print("4. Metsense Unique Board ID - ");
 
     for (byte i=2; i<8; i++)
     {
@@ -148,7 +148,7 @@ void loop()
     }
 
     SerialUSB.println(" ");
-    SerialUSB.print("5. Airsense-Lightsense Connectivity Test : ");
+    SerialUSB.print("5. Metsense-Lightsense Connectivity Test : ");
     
     if (Wire.requestFrom(0x27,1) == 0x01) // we are checking if we can read the HIH6130 chip present on the Lightsense board from the Airsense.
         SerialUSB.println("PASS.");
@@ -156,7 +156,7 @@ void loop()
         SerialUSB.println("FAIL");
 
     SerialUSB.println(" ");
-    SerialUSB.print("6. Airsense-Lightsense Heartbeat Test : ");
+    SerialUSB.print("6. Metsense Heartbeat Test : ");
 
     bool heartbeat = digitalRead(PIN_HBT);
     
@@ -170,7 +170,7 @@ void loop()
 
 
     SerialUSB.println(" ");
-    SerialUSB.print("7. Airsense-Chemsense Serial Connectivity Test : ");
+    SerialUSB.print("7. Metsense-Chemsense Serial Connectivity Test : ");
 
     if (Serial3.available() != 0)
     {
@@ -185,24 +185,29 @@ void loop()
     SerialUSB.println("8. Powercontrol Test : The test has PASSED if the LED on the ACHEM breakout board should keep blinking");
 
 
-    SerialUSB.println(" ");
-    SerialUSB.print("9. Rain Gauge Connectivity Test : ");
+	SerialUSB.println(" ");
+    SerialUSB.println("9. Alpha sensor : Alpha sensor is connected directly to the nodecontroller for now (11/17/2016), if it is included in the node");
 
-    if (analogRead(RAIN_MONITOR_PIN) == 0)
-    {
-        rain = true;
-        SerialUSB.println("PASS");
-    }
-    else
-        SerialUSB.println("FAIL");
+    
 
-    SerialUSB.println(" ");
-    SerialUSB.print("10. Soil Conductivity Sensor Connectivity Test : ");
+    // SerialUSB.println(" ");
+    // SerialUSB.print("9. Rain Gauge Connectivity Test : ");
 
-    if (Serial1.available() != 0)
-        SerialUSB.println("PASS");
-    else
-        SerialUSB.println("FAIL");
+    // if (analogRead(RAIN_MONITOR_PIN) == 0)
+    // {
+    //     rain = true;
+    //     SerialUSB.println("PASS");
+    // }
+    // else
+    //     SerialUSB.println("FAIL");
+
+    // SerialUSB.println(" ");
+    // SerialUSB.print("10. Soil Conductivity Sensor Connectivity Test : ");
+
+    // if (Serial1.available() != 0)
+    //     SerialUSB.println("PASS");
+    // else
+    //     SerialUSB.println("FAIL");
     
 
     SerialUSB.println(" ");

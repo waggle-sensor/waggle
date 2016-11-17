@@ -234,10 +234,7 @@ def TSL250_irrad(input):
     return irrad
 
 def APDS_irrad(input):
-    # the unit for current result is mA
-    # cause APDS calc irrad according to current
-    APDS_current = input / 5.00  # unit: mA
-    irrad = APDS_current / 405.1   # 405.1 unit: mA/lux
+    irrad = input / 0.001944   # 405.1 unit: mA/lux
     return irrad
 
 
@@ -357,7 +354,7 @@ def parse_sensor (sensor_id,sensor_data):
         TSL250RD_1_voltage = (format1(sensor_data) * 3.3) / 1023.00
         TSL250RD_1_val = TSL250_irrad_air(TSL250RD_1_voltage)
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
-        print "{:5.2f}".format(TSL250RD_1_val)
+        print "{:5.2f}".format(TSL250RD_1_voltage), "{:5.2f}".format(TSL250RD_1_val)
 
 #"MMA8452Q" "MMA8452Q"
     elif sensor_id == '7':
@@ -426,7 +423,7 @@ def parse_sensor (sensor_id,sensor_data):
         TSL250RD_2_val = TSL250_irrad(TSL250RD_2_voltage)
         print "Sensor:", sensor_id,sensor_list[int(sensor_id)],'@ ',
         # print "{:10.9f}".format(TSL250RD_2_voltage),
-        print "{:5.2f}".format(format1(sensor_data)), "{:5.2f}".format(TSL250RD_2_val)
+        print format1(sensor_data), "{:5.2f}".format(TSL250RD_2_voltage), "{:5.2f}".format(TSL250RD_2_val)
 
 ######## Dark voltages of ADPS, MLX75305, TSL260 and TSL250s are needed to be measured!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #"MLX75305" "MLX75305" 500 - 1000 nm wave
