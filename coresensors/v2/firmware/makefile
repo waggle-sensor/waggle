@@ -1,5 +1,5 @@
 ARD_HOME = $(ARDUINO_DIR)
-TARGET = integrated
+TARGET = firmware
 PACKAGE = arduino
 ARCH = sam
 BOARD = arduino_due_x
