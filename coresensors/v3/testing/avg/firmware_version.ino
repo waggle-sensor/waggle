@@ -3,8 +3,8 @@
 //**
 #ifdef VERSION_INCLUDE
 
-#include "verinfo.cpp"
-#include "buildinfo.cpp"
+#include "./header/verinfo.cpp"
+#include "./header/buildinfo.cpp"
 
 void hw_sw_version_buffer(void)
 {

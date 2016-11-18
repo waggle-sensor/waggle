@@ -49,12 +49,12 @@
 // #define ALPHASENSE_INCLUDE 0x01
 #define RAIN_GAUGER_INCLUDE 0x01
 #define DECAGON_INCLUDE 0x01
+#define HEALTH_INCLUDE 0x01
 
 
 // Sensors to include 
 #define I2C_SENSORS 0x01
 #define ANALOG_SENSORS 0x01
-
 
 #define USBSERIAL_INTERFACE 0x01
 

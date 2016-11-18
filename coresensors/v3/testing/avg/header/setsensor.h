@@ -7,13 +7,13 @@
     #endif
 
     #ifdef HTU21D_include
-        #include "./libs/HTU21D/HTU21D.h"
+        #include "../libs/HTU21D/HTU21D.h"
         HTU21D myHumidity = HTU21D();
     #endif
 
     #ifdef  BMP180_include
-        #include "./libs/Adafruit_Sensor-master/Adafruit_Sensor.h"
-        #include "./libs/Adafruit_BMP085_Unified-master/Adafruit_BMP085_U.h"
+        #include "../libs/Adafruit_Sensor-master/Adafruit_Sensor.h"
+        #include "../libs/Adafruit_BMP085_Unified-master/Adafruit_BMP085_U.h"
         Adafruit_BMP085_Unified bmp = Adafruit_BMP085_Unified(10085);
         sensors_event_t event;
     #endif
@@ -65,13 +65,13 @@
 #ifdef LIGHTSENSE_INCLUDE
 
     #ifdef I2C_SENSORS
-        #include "./libs/MCP342X/MCP342X.h"
+        #include "../libs/MCP342X/MCP342X.h"
         MCP342X mcp3428_1;
         MCP342X mcp3428_2;
     #endif
 
     #ifdef HMC5883L_include
-        #include "./libs/HMC5883L_waggle/HMC5883L_waggle.h"
+        #include "../libs/HMC5883L_waggle/HMC5883L_waggle.h"
         HMC5883_Sensor HMC5883_Magnetometer = HMC5883_Sensor(&Wire);
     #endif
 
@@ -80,7 +80,7 @@
     #endif
 
     #ifdef TMP421_include
-        #include "./libs/LibTempTMP421/LibTempTMP421.h"
+        #include "../libs/LibTempTMP421/LibTempTMP421.h"
         LibTempTMP421 TMP421_Sensor = LibTempTMP421();
     #endif
     
