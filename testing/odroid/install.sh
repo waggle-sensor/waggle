@@ -6,14 +6,15 @@ set -e
 CURRENT_DIR=$(pwd)
 
 
-if [ ! -e ${CURRENT_DIR}/stress-test.sh ] ; then
-  echo "${CURRENT_DIR}/stress-test.sh not found"
+if [ ! -e ${CURRENT_DIR}/stress-test.sh_tmpl ] ; then
+  echo "${CURRENT_DIR}/stress-test.sh_tmpl not found"
   echo "please run install.sh in the same directory where stress-test.sh is installed."
   exit 1
 fi
 
 
 sed -e 's:\[location\]:'${CURRENT_DIR}'/:' stress-test.conf_tmpl > /etc/init/stress-test.conf
+sed -e 's:\[location\]:'${CURRENT_DIR}'/:' stress-timeout.conf_tmpl > /etc/init/stress-timeout.conf
 
 ./install-stress-ng.sh
 
@@ -32,13 +33,5 @@ fi
 
 cd ${CURRENT_DIR}
 
-# reconfigure udev rules
+./configure.sh
 
-#sed -e "s:\[% SCRIPT %\]:`pwd`/print_status.sh:" label_printing/75-Dymo-LabelWriter-450.rules_template > /etc/udev/rules.d/75-Dymo-LabelWriter-450.rules
-
-
-sed -e "s:\[% SCRIPT %\]:`pwd`/label_printing/print_mac.sh:" print_status.sh_tmpl > print_status.sh
-chmod +x print_status.sh
-
-
-### TODO: write print_status.sh

@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# Wait until stress-test timeout comes
+sleep [% WAIT_DURATION %]
+
+# Something went wrong, print error code and shut down the system
+if [ ! -e /run/stress-fail.log ] ; then
+  echo "/run/stress-fail.log does not exists."
+  # print error label
+  [% SCRIPT %] FAILED
+  echo 0
+
+  # print error label
+  [% SCRIPT %] FAILED
+  echo 0
+else
+  ERR_CODE=$(cat /run/stress-fail.log)
+  # print error label
+  [% SCRIPT %] ERR${ERR_CODE}
+  echo 0
+
+    # print error label
+  [% SCRIPT %] ERR${ERR_CODE}
+  echo 0
+fi
+
+if [ -e /run/stress.log ]; then
+  rm /run/stress.log
+fi
+if [ -e /run/stress-fail.log ]; then
+  rm /run/stress-fail.log
+fi
+if [ -e /etc/udev/rules.d/70-persistent-net.rules ]; then
+  rm /etc/udev/rules.d/70-persistent-net.rules
+fi
+if [ -e /var/log/upstart/stress-test.log ]; then
+  rm /var/log/upstart/stress-test.log
+fi
+
+sleep 3
+shutdown -h now

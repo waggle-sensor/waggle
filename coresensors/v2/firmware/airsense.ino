@@ -21,8 +21,8 @@ void airsense_acquire (void)
             TMP112[1] = (0 << 7) | LENGTH_FORMAT6;
             SerialUSB.println("TMP112: I2C not available");
         }
-        else
-            TMP112[1] = (1 << 7) | LENGTH_FORMAT6;
+    else
+        TMP112[1] = (1 << 7) | LENGTH_FORMAT6;
 
 
     format6(Temp_float[0]);  // Put it into format 1

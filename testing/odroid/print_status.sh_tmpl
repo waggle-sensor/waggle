@@ -20,6 +20,7 @@ set -e
 
 if [ ! -e /run/stress.log ] ; then
   echo "/run/stress.log not found."
+  echo "600" > /run/stress-fail.log
   exit 1
 fi
 
@@ -32,15 +33,33 @@ if [ "${RESULT}x" == "successx" ] ; then
 
   # print label !!
   [% SCRIPT %]
+  echo 0
 
+  # print label !!
+  [% SCRIPT %]
   echo 0
 fi 
 
 if [ "${RESULT}x" == "errorx" ] ; then
-  # print error label
-  [% SCRIPT %] ERROR
 
-  echo 0
+  if [ ! -e /run/stress-fail.log ] ; then
+    # print error label
+    [% SCRIPT %] FAILED
+    echo 0
+
+    # print error label
+    [% SCRIPT %] FAILED
+    echo 0
+  else
+    ERR_CODE=$(cat /run/stress-fail.log)
+    # print error label
+    [% SCRIPT %] ERR${ERR_CODE}
+    echo 0
+
+      # print error label
+    [% SCRIPT %] ERR${ERR_CODE}
+    echo 0
+  fi
 fi
 
 rm /run/stress.log

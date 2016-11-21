@@ -24,7 +24,6 @@
  */
 
 #include <Wire.h>
-// extern TwoWire Wire1;
 #include "HTU21D.h"
 
 HTU21D::HTU21D()
@@ -58,6 +57,11 @@ float HTU21D::readHumidity(void)
 	//Comes back in three bytes, data(MSB) / data(LSB) / Checksum
 	Wire1.requestFrom(HTDU21D_ADDRESS, 3);
 
+	bool able = true;
+
+	if (Wire1.available() <= 0)
+		able = false;
+
 	//Wait for data to become available
 	int counter = 0;
 	while(Wire1.available() < 3)
@@ -88,6 +92,9 @@ float HTU21D::readHumidity(void)
 	//Given the raw humidity data, calculate the actual relative humidity
 	float tempRH = rawHumidity / (float)65536; //2^16 = 65536
 	float rh = -6 + (125 * tempRH); //From page 14
+
+	if (able == false)
+		rh = 0;
 
 	return(rh);
 }
