@@ -47,24 +47,24 @@ void HTU21D::begin(void)
 float HTU21D::readHumidity(void)
 {
 	//Request a humidity reading
-	Wire.beginTransmission(HTDU21D_ADDRESS);
-	Wire.write(TRIGGER_HUMD_MEASURE_NOHOLD); //Measure humidity with no bus holding
-	Wire.endTransmission();
+	Wire1.beginTransmission(HTDU21D_ADDRESS);
+	Wire1.write(TRIGGER_HUMD_MEASURE_NOHOLD); //Measure humidity with no bus holding
+	Wire1.endTransmission();
 
 	//Hang out while measurement is taken. 50mS max, page 4 of datasheet.
 	delay(55);
 
 	//Comes back in three bytes, data(MSB) / data(LSB) / Checksum
-	Wire.requestFrom(HTDU21D_ADDRESS, 3);
+	Wire1.requestFrom(HTDU21D_ADDRESS, 3);
 
 	bool able = true;
 
-	if (Wire.available() <= 0)
+	if (Wire1.available() <= 0)
 		able = false;
 
 	//Wait for data to become available
 	int counter = 0;
-	while(Wire.available() < 3)
+	while(Wire1.available() < 3)
 	{
 		counter++;
 		delay(1);
@@ -72,9 +72,9 @@ float HTU21D::readHumidity(void)
 	}
 
 	byte msb, lsb, checksum;
-	msb = Wire.read();
-	lsb = Wire.read();
-	checksum = Wire.read();
+	msb = Wire1.read();
+	lsb = Wire1.read();
+	checksum = Wire1.read();
 
 	/* //Used for testing
 	byte msb, lsb, checksum;
@@ -107,19 +107,19 @@ float HTU21D::readHumidity(void)
 float HTU21D::readTemperature(void)
 {
 	//Request the temperature
-	Wire.beginTransmission(HTDU21D_ADDRESS);
-	Wire.write(TRIGGER_TEMP_MEASURE_NOHOLD);
-	Wire.endTransmission();
+	Wire1.beginTransmission(HTDU21D_ADDRESS);
+	Wire1.write(TRIGGER_TEMP_MEASURE_NOHOLD);
+	Wire1.endTransmission();
 
 	//Hang out while measurement is taken. 50mS max, page 4 of datasheet.
 	delay(55);
 
 	//Comes back in three bytes, data(MSB) / data(LSB) / Checksum
-	Wire.requestFrom(HTDU21D_ADDRESS, 3);
+	Wire1.requestFrom(HTDU21D_ADDRESS, 3);
 
 	//Wait for data to become available
 	int counter = 0;
-	while(Wire.available() < 3)
+	while(Wire1.available() < 3)
 	{
 		counter++;
 		delay(1);
@@ -127,9 +127,9 @@ float HTU21D::readTemperature(void)
 	}
 
 	unsigned char msb, lsb, checksum;
-	msb = Wire.read();
-	lsb = Wire.read();
-	checksum = Wire.read();
+	msb = Wire1.read();
+	lsb = Wire1.read();
+	checksum = Wire1.read();
 
 	/* //Used for testing
 	byte msb, lsb, checksum;
@@ -169,10 +169,10 @@ void HTU21D::setResolution(byte resolution)
   userRegister |= resolution; //Mask in the requested resolution bits
 
   //Request a write to user register
-  Wire.beginTransmission(HTDU21D_ADDRESS);
-  Wire.write(WRITE_USER_REG); //Write to the user register
-  Wire.write(userRegister); //Write the new resolution bits
-  Wire.endTransmission();
+  Wire1.beginTransmission(HTDU21D_ADDRESS);
+  Wire1.write(WRITE_USER_REG); //Write to the user register
+  Wire1.write(userRegister); //Write the new resolution bits
+  Wire1.endTransmission();
 }
 
 //Read the user register
@@ -181,14 +181,14 @@ byte HTU21D::read_user_register(void)
   byte userRegister;
 
   //Request the user register
-  Wire.beginTransmission(HTDU21D_ADDRESS);
-  Wire.write(READ_USER_REG); //Read the user register
-  Wire.endTransmission();
+  Wire1.beginTransmission(HTDU21D_ADDRESS);
+  Wire1.write(READ_USER_REG); //Read the user register
+  Wire1.endTransmission();
 
   //Read result
-  Wire.requestFrom(HTDU21D_ADDRESS, 1);
+  Wire1.requestFrom(HTDU21D_ADDRESS, 1);
 
-  userRegister = Wire.read();
+  userRegister = Wire1.read();
 
   return(userRegister);
 }
