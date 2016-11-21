@@ -45,7 +45,7 @@
     if (Temp_float[0] > 255)
     {
         HIH6130[1] = (0 << 7) | (LENGTH_FORMAT6 * 2);
-        SerialUSB.println("HIH6130: I2C not available");
+        // SerialUSB.println("HIH6130: I2C not available");
     }
     else
         HIH6130[1] = (1 << 7) | (LENGTH_FORMAT6 * 2);

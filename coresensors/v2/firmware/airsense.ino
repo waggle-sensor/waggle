@@ -19,11 +19,10 @@ void airsense_acquire (void)
     if (Temp_float[0] > 255) 
         {
             TMP112[1] = (0 << 7) | LENGTH_FORMAT6;
-            SerialUSB.println("TMP112: I2C not available");
+            // SerialUSB.println("TMP112: I2C not available");
         }
     else
         TMP112[1] = (1 << 7) | LENGTH_FORMAT6;
-
 
     format6(Temp_float[0]);  // Put it into format 1
     TMP112[2] = formatted_data_buffer[0];
@@ -42,7 +41,7 @@ void airsense_acquire (void)
     if (Temp_float[1] < 1)
     {
         HTU21D[1] = (0 << 7) | (LENGTH_FORMAT6 * 2);
-        SerialUSB.println("HTU21D: I2C not available");
+        // SerialUSB.println("HTU21D: I2C not available");
     }
     else
         HTU21D[1] = (1 << 7) | (LENGTH_FORMAT6 * 2);
@@ -133,7 +132,7 @@ void airsense_acquire (void)
     if (Temp_float[3] <= 0.0)
     {
         MMA8452Q[1] = (0 << 7) | (LENGTH_FORMAT6 * 4);
-        SerialUSB.println("MMA8452Q: I2C not available");
+        // SerialUSB.println("MMA8452Q: I2C not available");
     }
     else
         MMA8452Q[1] = (1 << 7) | (LENGTH_FORMAT6 * 4);
@@ -207,7 +206,7 @@ void airsense_acquire (void)
     if (Temp_float[0] > 213)
     {
         TSYS01[1] = (0 << 7) | LENGTH_FORMAT6;
-        SerialUSB.println("TSYS01: I2C not available");
+        // SerialUSB.println("TSYS01: I2C not available");
     }
     else
         TSYS01[1] = (1 << 7) | LENGTH_FORMAT6;
