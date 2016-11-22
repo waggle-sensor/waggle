@@ -54,8 +54,8 @@
 #define ID_MLX75305  0x0F
 #define ID_ML8511  0x10
 
-#define ID_D6T  0x11            // WHERE DOES IT COME FROM?????
-#define ID_MLX90614  0x12       // WHERE DOES IT COME FROM?????
+// #define ID_D6T  0x11            // WHERE DOES IT COME FROM?????
+// #define ID_MLX90614  0x12       // WHERE DOES IT COME FROM?????
 
 #define ID_TMP421  0x13 
 #define ID_SPV1840LR5HB_2  0x14

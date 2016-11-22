@@ -37,8 +37,8 @@ void sensor_buff_initialization()
 	MLX75305[0] = ID_MLX75305;
 	ML8511[0] = ID_ML8511;
 
-	D6T[0] = ID_D6T;
-	MLX90614[0] = ID_MLX90614;
+	// D6T[0] = ID_D6T;
+	// MLX90614[0] = ID_MLX90614;
 
 	TMP421[0] = ID_TMP421;
 	SPV1840LR5HB_2[0] = ID_SPV1840LR5HB_2;
@@ -78,7 +78,7 @@ void sensor_buff_initialization()
 	// airsense initialization
 	#ifdef AIRSENSE_INCLUDE
 	TMP112[1] = (sensor_initial << 7) | LENGTH_FORMAT6;
-	HTU21D[1] = (sensor_initial << 7) | LENGTH_FORMAT6;
+	HTU21D[1] = (sensor_initial << 7) | LENGTH_FORMAT6 * 2;
 
 	BMP180[1] = (sensor_initial << 7) | (LENGTH_FORMAT5 + LENGTH_FORMAT6);
 	PR103J2[1] = (sensor_initial << 7) | LENGTH_FORMAT1;
@@ -102,8 +102,8 @@ void sensor_buff_initialization()
 	MLX75305[1] = (sensor_initial << 7) | LENGTH_FORMAT1;
 	ML8511[1] = (sensor_initial << 7) | LENGTH_FORMAT1;
 
-	D6T[1] = (sensor_initial << 7) | (LENGTH_FORMAT6 * 17);
-	MLX90614[1] = (sensor_initial << 7 ) | LENGTH_FORMAT1;
+	// D6T[1] = (sensor_initial << 7) | (LENGTH_FORMAT6 * 17);
+	// MLX90614[1] = (sensor_initial << 7 ) | LENGTH_FORMAT1;
 
 	TMP421[1] = (sensor_initial << 7) | LENGTH_FORMAT6;
 	SPV1840LR5HB_2[1] = (sensor_initial << 7) | LENGTH_FORMAT1;

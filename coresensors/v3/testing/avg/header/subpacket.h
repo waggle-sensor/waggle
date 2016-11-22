@@ -8,7 +8,6 @@ byte DECAGON[(LENGTH_FORMAT6 * 3) + 2];  // three float data
 byte RAIN_GAUGER[LENGTH_FORMAT1 + 2]; // one int data (2 bytes)
 #endif
 
-
 #ifdef VERSION_INCLUDE
 byte FIRMWARE_VERSION[LENGTH_FORMAT1 + LENGTH_BUILD_TIME + LENGTH_BUILD_GIT + 2];
 #endif

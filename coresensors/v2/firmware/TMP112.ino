@@ -35,7 +35,7 @@ void TMP112_read()
 
     bool able = true;
 
-    if (Wire.available() <= 0)
+    if (Wire1.available() <= 0)
         able = false;
 
     Temp_byte[0] = Wire1.read(); // receive DATA

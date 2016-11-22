@@ -8,14 +8,14 @@
 #include "./libs/DueTimer/DueTimer.h"   //** TIMER3 library
 #include <OneWire.h>
 
-#include "config.cpp"
-#include "pin_config.cpp"
+#include "./header/config.cpp"
+#include "./header/pin_config.cpp"
 
-#include "./subpacket.h"
-#include "./setsensor.h"    //** add variables for sensors on airsense and lightsense boards 
+#include "./header/subpacket.h"
+#include "./header/setsensor.h"    //** add variables for sensors on airsense and lightsense boards 
 
-#include "./variable.h"     //** byte arrays, variables for all sensors and integrated.ino
-#include "./rain_variables.h"
+#include "./header/variables.h"     //** byte arrays, variables for all sensors and integrated.ino
+#include "./header/rain_variables.h"
 //** depening on its availability 
 
 
