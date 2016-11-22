@@ -12,10 +12,10 @@ void HIH_fetch_humidity_temperature()
     if (Wire1.available() <= 0)
         able = false;
 
-    Temp_byte[1] = Wire.read();
-    Temp_byte[2] = Wire.read();
-    Temp_byte[3] = Wire.read();
-    Temp_byte[4] = Wire.read();
+    Temp_byte[1] = Wire1.read();
+    Temp_byte[2] = Wire1.read();
+    Temp_byte[3] = Wire1.read();
+    Temp_byte[4] = Wire1.read();
     
     Wire1.endTransmission();
 
