@@ -88,6 +88,9 @@ class usbSerial ( threading.Thread ):
         bufferLength = len(self.data)
         while self.keepAlive:
 
+            print(_dataNew)
+            print("DATA_NEW")
+
             try:
                 #lock header
                 del self.data[:self.data.index(_preamble)]
