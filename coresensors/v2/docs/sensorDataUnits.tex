@@ -10,7 +10,7 @@ The equations will be provided comming subsections.
 
 
 \begin{center}
-\rowcolors{2}{white}{black!5}
+\rowcolors{2}{white}{black!8}
 \begin{longtable}{|l|l|l|l|}
 \caption{Sensor units both in raw and processed format}
 \label{table:parameterUnits} \\
@@ -27,24 +27,13 @@ The equations will be provided comming subsections.
 \hline \rowcolor{white} \multicolumn{4}{|r|}{{Continued on next page}} \\ \hline
 \endfoot
 
-\hline \hline
+\hline
 \endlastfoot
-
-% 
-% \begin{table}[H]
-%     \centering
-%     {\rowcolors{2}{black!8}{black!2}
-%     \begin{tabular}{|l l l l|}
-%         \hline
-%         \textbf{Sensor/Parameter} & \textbf{Raw Units} & \textbf{Processed Units} & \textbf{Comments}\\
-%         \hline
-%         \hline
-    \hline \rowcolor{white} \multicolumn{4}{|c|}{{Airsense board}} \\ \hline
+ 
+     \rowcolor{white} \multicolumn{4}{|c|}{{Airsense board}} \\ \hline
     Air/Lightsense MAC & No Units & No Units & \\ 
     TMP112 & \degree C & \degree C & \\
     HTU21D & \degree C, \%RH & \degree C, \%RH & \\
-%     GP2Y1010AU0F & integer & ppm & \\  %%%%% NOT IN ANY VERSION
-    %HIH4030 & \%RH & \%RH & \\  %%%% NOT IN V2
     BMP180 & \degree C, Pa & \degree C, Pa & \\
     PR103J2 & integer & \degree C & \\
     TSL250RD & integer & $\mu$w/m$^2$ & \\ 
@@ -60,14 +49,11 @@ The equations will be provided comming subsections.
     TSL250RD & integer & $\mu$w/m$^2$ & \\ 
     MLX75305 & integer & $\mu$w/m$^2$ & \\ 
     ML8511 & integer & UV index & \\ 
-%     D6T & \textit{Seventeen} \degree C values & \textit{Seventeen} \degree C values & \\ %%% NOT IN ANY VERSION
-%     MLX90614 & \degree F & \degree C & \\ %%% NOT IN ANY VERSION
     TMP421 & \degree C & \degree C & \\
     SPV1840LR5H-B & integer & dB & \\
 
     \hline \rowcolor{white} \multicolumn{4}{|c|}{{Chemsense board}} \\ \hline
     Total reducing gases & AFE ADC counts & & data not yet processed \\ 
-%     Ethanol & integer & ppm & Quadratic equation with calibrated weights \\
     Nitrogen dioxide & AFE ADC counts & & data not yet processed \\ 
     Ozone & AFE ADC counts & & data not yet processed \\ 
     Hydrogen sulphide & AFE ADC counts & & data not yet processed \\ 
@@ -78,7 +64,6 @@ The equations will be provided comming subsections.
     LPS25H & 100ths of \degree C, Pa & \degree C, Pa & \\
     Si1145 & fixed value & & firmware is not completed \\
     Intel MAC address & No Units & No Units & \\ 
-%     Sensor status (health) & No Units & No Units & 4 bytes of sensor health data\\
     CO ADV temp & 100ths of \degree C & \degree C & \\
     IAQ IRR ADC temp & 100ths of \degree C & \degree C & \\
     O3 NO2 ADC temp & 100ths of \degree C & \degree C & \\
@@ -87,86 +72,29 @@ The equations will be provided comming subsections.
     Accelerometer & Raw register & & data not yet processed \\
     Gyro & Raw register & & data not yet processed \\
     \hline
-%     \end{tabular}
-%     }
-%     \caption{Sensor and Parameter units both in raw and processed format.}
-%     \label{table:parameterUnits}
-% \end{table}
+
 \end{longtable}
 \end{center}
 
 
-\subsection{ conversion processure}
-\subsection{Airsense:}
-\subsubsection{ TMP112, HTU21D, BMP180, MMA8452Q, TSYS01} \label{ssec:first}
+\subsection{conversion processure}
+\subsubsection{Airsense:}
+\paragraph{$\bullet$ TMP112, HTU21D, BMP180, MMA8452Q, TSYS01:} \label{ssec:first}
+Raw outputs from the sensor boards for the sensors (TMP112, HTU21D, HIH4030, BMP180, MMA8452Q, and TSYS01) are the designated type of sensor value.
 
-Raw outputs from the sensor boards for the sensors (TMP112, HTU21D, HIH4030, BMP180, MMA8452Q, and TSYS01) are the designated sensor value.
-
-% Raw ouput of TMP112 is a digital 12-bit value. The 12-bit value is converted to temperature in centigrade using equation below and packetized. \\
-
-% {\centering
-%   temperature \((\degree C)\) = unsigned integer form of 12-bit digital output $\times$ 0.0625\par
-% }
-% 
-% \bigbreak
-% The equation refers to the resolution for the Temperature ADC in Internal Temperature mode which is 0.0625 \(\degree C/count\).
-
-% \subsubsection{ HTU21D}
-% Raw output values of HTU21D are digital 12-bits for temperature and 8-bits for relative humidity. The raw values are calculated to temperature in centigrade and relative humidity using equation below and packetized.
-% 
-% {\centering
-%  \[ \text{temperature \((\degree C)\)} = \frac{\text{unsigned integer form of digital output}}{2^{16}} \times 175.72 - 46.85 \] 
-%  \[ \text{humidity \((\%RH)\)} = \frac{\text{unsigned integer form of digital output}}{2^{16}} \times 125 - 6 \]
-%  \par
-%  }
-% 
-% \bigbreak
-%  The calculated humidity is re-calculated in sensor plugin using temperature coefficient compensation equation. \\
-% 
-% {\centering
-%  humidity \((\%RH)\) = unsigned integer form of  - (25 - temperature) $\times$ 0.15
-%  \par
-% }
-% 
-% \bigbreak
-% The equation refers to temperature coefficient of the HTU21D(F) in 0.15 \(\%RH/\degree C\).
-% 
-% \subsubsection{ HIH4030}
-% 
-% Output of HIH4030 is an interger indicating output voltage from the sensor, which is mapped into an integer value between 0 and 1023. Coresensor firmware delivers the two bytes of raw integer value, and equations below can be used to calculate human-readable output value using output voltage from the sensor.
-% 
-% {\centering
-%  \[ \text{output voltage \((V)\)} = \frac{\text{usinged integer raw output} \times 5}{1023} \] 
-%  \[ \text{humidity \((\%RH)\)} = (\text{output voltage} - 0.85) \times \frac{100}{3} \]
-%  \par
-%  }
-% \bigbreak
-% The slope term (\(\frac{100}{3}\)) and y-intercept (0.85) are comming from a graph given in the HIH4030 sensor datasheet (figure 4). This slope and y-intercept can be different depending on temperature.
-% 
-% \subsubsection{ BMP180}
-% 
-% Ouput values of BMP180 are 16-bit/24-bit value (temperature/pressure), and the values are post-processed through a library provided by Adafruit Industries. Sensor output values from the coresensor firmware are temperature in centigrade and barometric pressure in pascal.
-
-
-\subsubsection{ PR103J2}
-
-Output of PR103J2 is an interger indicating output voltage from the sensor, which is mapped into integer values between 0 and 1023. The raw integer value can be converted to resistance value through the equations below. The resistance value is needed to find corresponding temperature in a resistance-temperature look-up table (PR103J2 R-T table).
-
-\bigbreak
-
+\paragraph{$\bullet$ PR103J2:}
+Output of PR103J2 is an interger indicating output voltage from the sensor, which is mapped into integer values between 0 and 1023 with voltage range 0 to 3.3V. The raw integer value can be converted to resistance value through the equations below. The resistance value is needed to find corresponding temperature in a resistance-temperature look-up table (PR103J2 R-T table).
 
 {\centering
  \[ \text{resistance } (\Omega) = 47000 \times \left(\frac{1023}{\text{raw integer}} - 1\right) \]
  \par
  }
 
+\paragraph{$\bullet$ TSL250RD:}
 
-\subsubsection{ TSL250RD}
-
-Output of TSL250RD in airsense board is an interger indicating output voltage from the sensor, which is mapped into integer values between 0 and 1023. The raw interger value can be converted to irradiance of visible light in micro-watt per square meter through equations below.
+Output of TSL250RD in airsense board is an interger indicating output voltage from the sensor, which is mapped into integer values between 0 and 1023 with voltage range 0 to 3.3V. The raw interger value can be converted to irradiance of visible light in micro-watt per square meter through equations below.
 % The equation refers to irradiance responsivity of TSL250RD which is 0.064 \(mV/(\mu W/cm^2\)), and 0.09 is output voltage of dark condition which is initial offset (without any light -- NEED TO BE CHECKED).
 
-\bigbreak
 
 {\centering
 \[ \text{irradiance } (\mu W/m^2) = \frac{\text{raw integer} \times 5 - 0.09 \times 1023}{0.064 \times 1023} \]
