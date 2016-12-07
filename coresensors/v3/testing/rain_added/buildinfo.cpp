@@ -1,2 +1,0 @@
-#define BUILD_TIME 1477067708
-#define BUILD_GIT "db05"

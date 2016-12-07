@@ -1,0 +1,14 @@
+To flash coresense firmware with a binary file, which is in ./bin,
+DO:
+$ make program
+or
+$ make
+
+The bin is coresense version2 (Nov 29, 2016)
+
+== Included:
+* Metsense
+* Lightsense
+* Chemsense
+
+* Transfer packet to nodecontroller every 30 sec

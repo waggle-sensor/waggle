@@ -49,7 +49,7 @@
 // #define ALPHASENSE_INCLUDE 0x01
 #define RAIN_GAUGER_INCLUDE 0x01
 #define DECAGON_INCLUDE 0x01
-#define HEALTH_INCLUDE 0x01
+// #define HEALTH_INCLUDE 0x01
 
 
 // Sensors to include 

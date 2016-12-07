@@ -1,39 +1,89 @@
 \newpage
 \section{Data Transmission} \label{section:overall}
 
-The data from the sensor boards is sent as a formatted unit of data --- a transmission
+The data from the sensor boards is sent as a formatted unit of data -- a transmission
 packet. A transmission packet is composed of several data sub-packets, each
-of which carries information pertaining to the parameter listed in the sub-packet.
+of which carries information pertaining to the parameter.
 The transmission packet format and the data sub-packets are described here.
 
 \subsection{Transmission Packet}
-A transmission packet can be broken down into 6 segments.
-The structure of the transmission packet (and the data sub-packet) relies on
-byte positions and predefined values for some segments. The first segment
-is the start byte or
-the preamble. The preamble is followed by the packet sequence number and protocol
+A transmission packet can be separated into 6 segments.
+The structure of the transmission packet relies on positions of Bytes and predefined values for those Byte segments. 
+Table 1 below illustrates how the segments are organized in a transmission packet.
+\\
+
+\begin{table}[h!]
+    \centering
+    \caption{Transmission Packet structure}
+    \label{table:tran}
+    \begin{tabular}{|c|c|c|c|c|c|}
+        \hline
+        \rowcolor{black!8}
+        \textbf{Preamble} & \textbf{Seq. | Prot. Ver.} & \textbf{Data Length} & \textbf{Data} & \textbf{CRC} & \textbf{Postscript}\\
+        \hline
+        \multirow{2}{*}{1st Byte} & \multirow{2}{*}{2nd Byte} & \multirow{2}{*}{3rd Byte} & next Bytes & \multirow{2}{*}{Penultimate Byte} & \multirow{2}{*}{Final Byte} \\ 
+        & & & up to 251 Bytes & & \\ \hline
+    \end{tabular}
+\end{table}
+
+
+The first segment is the start byte, or the preamble. The preamble is followed by the packet sequence number and protocol
 version, each of which are 4 bits long and are together packed into a single byte.
-Next, a one byte field that reports the length of the data which follows it
-immediately. The data segment is
-followed by a single CRC byte, and finally the packet ends with a one byte
-postscript. The table below lists the packet and the static values, if any,
-for each of the segments.
+Next, one byte field that reports the length of the data which follows it
+immediately. The data segment is followed by a single CRC byte, and finally the packet ends with a one byte
+postscript. Table \ref{table:seg} lists the packet and the static values, if any, for each of the segments.
+\\
+
 
 \begin{table}[H]
     \centering
-    {\rowcolors{2}{black!8}{black!2}
+    {
     \begin{tabular}{|c|c|c|c|}
         \hline
+        \rowcolor{black!8}
         \textbf{Field} & \textbf{Value} & \textbf{Segment} & \textbf{Length}\\
         \hline
+        Preamble & 0xAA & 1 & 1 Byte\\ \hline
+        Packet Sequence Number & Variable & \multirow{2}{*}{2} & 1 Nibble\\ \cline{1-2} \cline{4-4}
+        Protocol version & 0x00 &  & 1 Nibble\\ \hline
+        Length of data (not whole packet) & Variable & 3 & 1 Byte\\ \hline
+        Data & Variable & 4 & Variable \\ \hline
+        CRC of data (not whole packet) & Variable & 5 & 1 Byte\\ \hline
+        Postscript & 0x55 & 6 & 1 Byte\\ \hline
+    \end{tabular}
+    }
+    \caption{Transmission Packet Segments}
+    \label{table:seg}
+\end{table}
+
+
+\subsection{Data Sub-packets} \label{ssec:sub-pack}
+
+The data segment of the transmission packet is further separated into many
+sub-packets. Table \ref{table:packsegments} below shows the organization
+of a sub-packet.
+The sub-packet starts with a source identifier. One bit
+validity field and seven bits ``length of the sub-packet'' field
+are packed together as the next byte. The length field counts the number of
+bytes following it which make up the sub-packet, and also counts Bytes of a source identifier and the length field. 
+The validity bit is set to 1 if the sensor reading is valid and set to 0 if the sensor
+is dead, disabled, unconnected, unresponsive or if data could not be collected
+from the sensor in the time window. The size of the sub-packet is restricted to 127 Bytes by the seven bits length field.
+\par
+The packet validity is initially 0, and it will be changed to 1 when each sub-packet gets sensor value from sensor. 
+And after a transmission packet is trasmitted, the validity becomes 0 again. 
+When validity is set to 0, if the sensor is dead, disabled, unconnected, unresponsive or data could not be collected,
+the particular invalid sub-packet is not packed into a transmission packet.
+\\
+
+\begin{table}[H]
+    \centering
+    {
+    \begin{tabular}{|c|c|c|}
         \hline
-        Preamble & 0xAA & 1 & 1 Byte\\
-        Packet Sequence Number & Variable & 2 & 1 Nibble\\
-        Protocol version & 0x00 & 2 & 1 Nibble\\
-        Length of data (not whole packet) & Variable & 3 & 1 Byte\\
-        Data & Variable & 4 & Variable \\
-        CRC of data (not whole packet) & Variable & 5 & 1 Byte\\
-        Postscript & 0x55 & 6 & 1 Byte\\
+        \rowcolor{black!8}
+        \textbf{Source ID} & \bf{1-bit Validity [0: invalid, 1: valid]| 7-bits Data Length} & \textbf{Data} \\ \hline
+        1 Byte & 1 Byte & up to 127 Bytes \\
         \hline
     \end{tabular}
     }
@@ -41,28 +91,8 @@ for each of the segments.
     \label{table:packsegments}
 \end{table}
 
-The table below illustrates how the segments are organized in a transmission
-packet.
 
-\begin{table}[H]
-\centering
-\begin{tabular}{|c|c|c|c|c|c|}
-\hline
-% column1a & column2a \\
-\noalign{\hrule height 2pt}
-\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Preamble} &
-\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Seq. Number | Prot. Ver.} &
-\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Data Length} &
-\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Data} &
-\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{CRC} &
-\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Postscript}\\
-\noalign{\hrule height 2pt}
-1st Byte & 2nd Byte & 3rd Byte & up to 255 Bytes & Penultimate Byte & Final Byte \\
-\hline
-\end{tabular}
-\caption{Transmission Packet structure}
-    \label{table:packstruct}
-\end{table}
+
 
 \subsection{Data Packer CRC} \label{ssec:crc-calc}
 
@@ -71,22 +101,23 @@ calculated and transmitted as part of the data packet. The Maxim 1-Wire
 CRC polynomial is used for calculating the CRC.  On receiving the data packet, the CRC
 of the data packet is recalculated and compared with the value transmitted as part of
 the packet. If the two CRC values match, the transmission is error-free.
-The equivalent polynomial function of the CRC is:
-\newline
-\newline
-$CRC = x^8 + x^5 + x^4 + 1. $
-\newline
-\newline
+The equivalent polynomial function of the CRC is shown in Equation \ref{eq:CRC}.
+
+\begin{equation}
+\label{eq:CRC}
+CRC = x^8 + x^5 + x^4 + 1
+\end{equation}
+
 Further description of the Maxim 1-Wire CRC is available in Maxim Application Note 27. Below are
 the Python and C implementations of the CRC calculator. The CRC implementations below take a
-data byte and the previous CRC as inputs, and return the new CRC as return value.
-\newline
-\newline
+data Byte and the previous CRC as inputs, and return the new CRC as return value.
+\\
+
 \textbf{Python Code:}
 \begin{mdframed}
 \begin{lstlisting}
-def calc_crc (data_byte,CRC_Value)
-    CRC_Value = ord(data_byte) ^ CRC_Value
+def calc_crc (data_Byte,CRC_Value)
+    CRC_Value = ord(data_Byte) ^ CRC_Value
     for j in range(8):
     if (CRC_Value  & 0x01):
         CRC_Value  = (CRC_Value  >> 0x01) ^ 0x8C
@@ -100,57 +131,16 @@ return CRC_Value
 \textbf{C Code:}
 \begin{mdframed}
 \begin{lstlisting}
-unsigned char  CRC_CALC (unsigned char data, unsigned char crc)
-{
+unsigned char  CRC_CALC (unsigned char data, unsigned char crc) 
+{ 
         unsigned char i;
         crc ^= data;
         for (i=0x00; i < 0x08; i++)
         {
-                if (crc & 0x01)
-                        crc = (crc >> 0x01) ^ 0x8C;
-                else
-                        crc =  crc >> 0x01;
+                if (crc & 0x01) { crc = (crc >> 0x01)^0x8C; }
+                else { crc =  crc >> 0x01; }
         }
-
         return(crc);
 }
 \end{lstlisting}
 \end{mdframed}
-
-
-\subsection{Data Sub-packets} \label{ssec:sub-pack}
-
-The data segment of the transmission packet is further broken down into many
-sub-packets. The sub-packet starts with a source identifier. One bit
-validity field and seven bits ``length of the sub-packet'' field
-are packed together as the next byte. The length field counts the number of
-bytes following it which make up the sub-packet. The table below shows the organization
-of a sub-packet. The validity bit is set to 0 if the sensor represented in the sub-packet
-is dead, disabled, unconnected, unresponsive or if data could not be collected
-from the sensor in the time window. Instead of recreating the full packet in
-the buffer, the particular sub-packet which is the sensor segment is marked as invalid is not packed into a whole packet.
-If the field is set to 1, it indicates a valid measurement/reading. The seven bits length
-field restricts the size of the sub-packet to 127 bytes.
-
-
-
-
-\begin{table}[H]
-\centering
-\begin{tabular}{|c|c|c|}
-\hline
-% column1a & column2a \\
-\noalign{\hrule height 2pt}
-\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Source ID} &
-\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{1-bit Validity [0: invalid, 1: valid]| 7-bits Data Length} &
-\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Data} \\
-\noalign{\hrule height 2pt}
-One Byte & One Byte & up to 127 Bytes \\
-\hline
-\end{tabular}
-\end{table}
-
-
-
-
-%%%%%%%%%%%%%%%%%%%%

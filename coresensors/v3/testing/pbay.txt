@@ -25,7 +25,7 @@ USE ONLY ALPHASENSOR
 --> This is the one success with alpha sensor
 >>>config.cpp: Alphasense_include need to be commented
 
-**v3.3
+**the latest version (Nov.15, 2016)
 Copy of integrated
 Average Air/Lightsense sensor values using repeat variable
 Change the condition of while loop on chemsense.ino
@@ -44,10 +44,6 @@ The version of integrated explained above
 Loaded on the nodes
 
 testing/integrated no specific version number (20 Oct. 2016)
-The version of v3.3 explained above
-
-rain_added (20 Oct. 2016)
-Rain gauger and one of soil sensor (I call trident sensor) are added
 
 avg 3.1 3.02 (25 Oct. 2016)
 Take average
@@ -56,7 +52,7 @@ Take average
 
 
 
-** firmware (15 Nov. 2016)
+** firmware in v3/integrated/firmware (15 Nov. 2016)
 Copy avg --> resolve I2C hang out problem (v2 also)
 air/lightsense averaged
 

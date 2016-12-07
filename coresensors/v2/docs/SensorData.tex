@@ -1,22 +1,7 @@
 \newpage
 \section{Sub-packets}
 
-As shortly explained in document section \ref{ssec:sub-pack}, data sub-packets are generated depending on its designated data format and length. The first byte of the sub-packet is sensor ID for each parameter, and the second byte means validity of the packet and length of the sensor data. The packet validity is initially 0, and it will be changed to 1 when each sub-packet gets sensor value from sensor. And after a transmission packet is trasmitted, the validity becomes 0 again. The form of sub-packet is shown below.
-
-\begin{table}[H]
-\centering
-\begin{tabular}{|c|c|c|}
-\hline
-% column1a & column2a \\
-\noalign{\hrule height 2pt}
-\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Source ID} &
-\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{1-bit Validity | 7-bits Sensor Data Length} &
-\multicolumn{1}{!{\vrule width 2pt}c!{\vrule width 1pt}}{Data} \\
-\noalign{\hrule height 2pt}
-One Byte & One Byte & up to 127 Bytes \\
-\hline
-\end{tabular}
-\end{table}
+As shortly explained in document section \ref{ssec:sub-pack}, data sub-packets are generated depending on its designated data format and length when data reading from each sensor if valid. The first byte of the sub-packet is sensor ID for each parameter, and the second byte means validity of the packet and length of the sensor data as shown in Table \ref{table:packsegments}. Detail of sub-packet and sensor data will be explined in this section.
 
 
 \subsection{Parameters}
@@ -27,26 +12,26 @@ below lists the various parameters produced by the sensor boards, the unique sou
 
 
 \begin{center}
-\rowcolors{2}{white}{black!5}
-\begin{longtable}{|l|c|l|}
+\rowcolors{2}{white}{black!8}
+\begin{longtable}{|l|c|c|l|}
 \caption{Data sub-packet structure (each row is a "chunk")} \label{tab:dataChunk} \\
 
-\hline \rowcolor{white} \multicolumn{1}{|c|}{\textbf{Parameter}} & \multicolumn{1}{c|}{\textbf{Source ID}} & \multicolumn{1}{c|}{\textbf{Values and Formats}} \\ \hline
+\hline \rowcolor{white} \multicolumn{1}{|c|}{\textbf{Parameter}} & \multicolumn{1}{c|}{\textbf{Source ID}} & \multicolumn{1}{c|}{\textbf{Values}} & \multicolumn{1}{c|}{\textbf{Formats}} \\ \hline
 \endfirsthead
 
-\multicolumn{3}{c}%
-{{\bfseries \tablename\ \thetable{} -- continued from previous page}} \\
-\hline \rowcolor{white} \multicolumn{1}{|c|}{\textbf{Parameter}} & \multicolumn{1}{c|}{\textbf{Source ID}} & \multicolumn{1}{c|}{\textbf{Values and Formats}} \\ \hline 
+\multicolumn{4}{c}%
+{{\bfseries \tablename \thetable{} -- continued from previous page}} \\
+\hline \rowcolor{white} \multicolumn{1}{|c|}{\textbf{Parameter}} & \multicolumn{1}{c|}{\textbf{Source ID}} & \multicolumn{1}{c|}{\textbf{Values}} & \multicolumn{1}{c|}{\textbf{Formats}} \\ \hline 
 \endhead
 
-\hline \rowcolor{white} \multicolumn{3}{|r|}{{Continued on next page}} \\ \hline
+\hline \rowcolor{white} \multicolumn{4}{|r|}{{Continued on next page}} \\ \hline
 \endfoot
 
-\hline \hline
+\hline
 \endlastfoot
 
-     \hline \rowcolor{white} \multicolumn{3}{|c|}{{Airsense board}} \\ \hline
-        Airsense/Lightsense MAC address & 0x00 & MAC Address -- Format 3 \\
+      \rowcolor{white} \multicolumn{4}{|c|}{{Airsense board}} \\ \hline
+        Airsense/Lightsense MAC address & 0x00 & MAC Address & Format 3 \\
         TMP112 & 0x01 & Temperature -- Format 6\\
         HTU21D & 0x02 & Temperature and Humidity -- Format 6\\
         BMP180 & 0x04 & Temperature -- Format 6 \& Pressure -- Format 4\\
@@ -55,7 +40,8 @@ below lists the various parameters produced by the sensor boards, the unique sou
         MMA8452Q & 0x07 & Three Accelerations and Vibration -- Format 6\\
         SPV1840LR5H-B & 0x08 & RMS Sound Level -- Format 1\\
         TSYS01 & 0x09 & Temperature -- Format 6\\
-     \hline \rowcolor{white} \multicolumn{3}{|c|}{{Lightsense board}} \\ \hline
+
+     \hline \rowcolor{white} \multicolumn{4}{|c|}{{Lightsense board}} \\ \hline
         HMC5883L & 0x0A & Three Magnetic Fields -- Format 8\\
         HIH6130 & 0x0B & Temperature and Humidity -- Format 6\\
         APDS-9006-020 & 0x0C & Visible Light -- Format 1\\
@@ -65,8 +51,8 @@ below lists the various parameters produced by the sensor boards, the unique sou
         ML8511 & 0x10 & Light -- Format 1\\
         TMP421 & 0x13 & Temperature -- Format 6\\
         SPV1840LR5H-B & 0x14 & RMS Sound Level -- Format 1\\
-%       Lightsense MAC address & 0x14 & MAC Address -- Format 3 \\
-     \hline \rowcolor{white} \multicolumn{3}{|c|}{{Chemsense board}} \\ \hline
+
+     \hline \rowcolor{white} \multicolumn{4}{|c|}{{Chemsense board}} \\ \hline
         Total reducing gases & 0x15 & Raw Concentration -- Format 5\\
         Nitrogen dioxide & 0x17 & Raw Concentration -- Format 5\\
         Ozone & 0x18 & Raw Concentration -- Format 5\\
@@ -88,16 +74,15 @@ below lists the various parameters produced by the sensor boards, the unique sou
 \end{longtable}
 \end{center}
 
-
 Each parameter and its values are composed into a sub-packet based on
 the format described in document section \ref{ssec:sub-pack}.
 In the case of parameters with 2 or more values, the encoded values are
-arranged in the sub-packets sequentially. The context of each parameter,
-its utility and the arrangement of its values is described below. In all
+arranged in the sub-packets sequentially. 
+\par
+The context of each parameter, its utility and the arrangement of its values is described below. In all
 the tables below, the validity bit is set to 1. The parameter descriptions
 below are aggregated based on the sensor-board they are situated on -
-Airsense, Lightsense and Chemsense.
-% document subsections \ref{ssec:first} to \ref{ssec:last}.
+Metsense, Lightsense and Chemsense.
 
 \subsection{Airsense:}
 \subsubsection{ Airsense/Lightsense MAC address} \label{ssec:first}
