@@ -32,3 +32,35 @@ $ ls /path/to/patch/archive
 ```
 
 Generated patch files will be used by __waggle-update__ service running on Waggle nodes.
+
+# Update for Internet-disabled devices
+* For Internet-disabled devices (XU4s) they can be patched if they get commits from git. To make commits do
+```bash
+# make patch files on update server
+$ cd /path/to/repo
+$ git checkout TARGET_VERSION
+$ git format-patch BASE_VERSION -o ../patch
+$ ls -l ../patch
+-rw-rw-r-- 1 theone theone  938 Dec 14 10:22 0001-Allow-waggle-init-to-finish-when-booted-off-the-eMMC.patch
+-rw-rw-r-- 1 theone theone  737 Dec 14 10:22 0002-change-default-heartbeat-mode.patch
+-rw-rw-r-- 1 theone theone  780 Dec 14 10:22 0003-enable-persistent-systemd-journaling.patch
+-rw-rw-r-- 1 theone theone  645 Dec 14 10:22 0004-allow-root-logins.patch
+-rw-rw-r-- 1 theone theone 1776 Dec 14 10:22 0005-Wagman-firmware-update-scripts.patch
+-rw-rw-r-- 1 theone theone  896 Dec 14 10:22 0006-Progress-on-Wagman-update-script.patch
+-rw-rw-r-- 1 theone theone 4878 Dec 14 10:22 0007-add-waggle-update-service-in-progress.patch
+-rw-rw-r-- 1 theone theone 3800 Dec 14 10:22 0008-add-systemd-script-improve-waggle-update.patch
+-rw-rw-r-- 1 theone theone 2745 Dec 14 10:22 0009-fix-bug.patch
+-rw-rw-r-- 1 theone theone 2609 Dec 14 10:22 0010-update-waggle-update-script.patch
+
+# update the patch files on devices that need update
+# ASSUMPTION: the device already got the patch files somehow (e.g., file transfer via C1+)
+$ cd /path/to/repo
+# clean up the repo
+# WARNING: any changes already made in the repo will be deleted!
+$ git reset --hard
+$ git clean -f
+$ git am < /path/to/patch/folder
+```
+* There are two issues that can occur during update.
+  + One issue is that ```git am``` may fail to apply commits when the changes of the commit cannot happen in the repository. We may skip the commit but should thoroughly examine that we can skip the commit to reach to target version.
+  + The other issue is that ```git am``` put newly generated commit-ids on each commit. This results in having the same content for both the repository in the device and the repository in git server, but having different commit logs between them. 
