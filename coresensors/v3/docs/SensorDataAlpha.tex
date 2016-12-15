@@ -1,0 +1,157 @@
+
+\subsubsection{Alpha Sensor:}
+In this document, concise Alpha sensor information is provided. For more information, refer to `Firmware commands version 18.xls' and `OPC-N2 Manual Issue December 2015.pdf' at `waggle/docs/alphasense-opc-n2'.
+
+\paragraph{$\bullet$ Histogram}
+This parameter provides various information as listed below. \textbf{All data from the alpha sensor is LSB first}. 
+
+
+\begin{table}[h!]
+    \centering
+    \caption{Sub-packet Alpha sensor histogram}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        \rowcolor{black!8}
+        \textbf{0x28} & \textbf{0xBE} & \textbf{Various sensor information as listed above}\\
+        \hline
+        Byte[0] & Byte[1] & Bytes[2 -- 61] \\ \hline
+    \end{tabular}
+\end{table}
+
+
+\begin{itemize}
+\setlength\itemsep{0em}
+\item[$\circ$] Bin Counts (Bin0 - Bin15) are unsinged 16 bit integer variables (Bytes[2 -- 33]).
+\item[$\circ$] An unsigned 8-bit integer represents the average amount of time that particles sized in the stated bin took cross the laser beam of the sensor. Value 10 represents 3.33 $\mu$s (Bytes[34 -- 37]).
+\item[$\circ$] The sample flow rate in ml/s is provided as a float variable (Bytes[38 -- 41]).
+\item[$\circ$] Temperature and Pressure alternating. Temperature is an unsigned 32-bit integer that represents temperature in Celsious multiplied by 10. Pressure is an unsigned 32-bit integer that represents pressure in pascals (Bytes[42 -- 43]).
+\item[$\circ$] Actual sampling period of a measure of the historgam in seconds provided as 4 bytes of float variables (Bytes[44 -- 47]).
+\item[$\circ$] The least significat 16-bit of the sum of the counts in all the histogram bins is provided by unsigned 16bit integers (Bytes[48 -- 49]).
+\item[$\circ$] A float variable occupying 4 bytes for PM1. Unit is $\mu$g/m$^3$ (Bytes[50 -- 53]).
+\item[$\circ$] A float variable occupying 4 bytes for PM2.5. Unit is $\mu$g/m$^3$ (Bytes[54 -- 57]).
+\item[$\circ$] A float variable occupying 4 bytes for PM10. Unit is $\mu$g/m$^3$ (Bytes[58 -- 61]).\\
+\end{itemize}
+
+
+\begin{table}[h!]
+    \centering
+    \caption{Detail sub-packet of Alpha sensor histogram}
+    \begin{tabular}{|>{\centering\arraybackslash}p{0.3\textwidth}|>{\centering\arraybackslash}p{0.2\textwidth}|}
+        \hline
+        \rowcolor{black!8}
+        \textbf{Parameter} & \textbf{Data location}\\ \hline
+        Bin Count (32 Bytes) & Bytes[2 - 33] \\ \hline
+        Average Time (4 Bytes) & Bytes[34 -- 37] \\ \hline
+        Sample flow rate (4 Bytes) & Bytes[38 -- 41] \\ \hline
+        Temp/Pressure(alter) (2 Bytes) & Bytes[42 -- 43] \\ \hline
+        Sampling period (4 Bytes) & Bytes[44 -- 47] \\ \hline
+        Sum of the counts (2 Bytes) & Bytes[48 -- 49] \\ \hline
+        PM1 (4 Bytes) & Bytes[50 -- 53] \\ \hline
+        PM2.5 (4 Bytes) & Bytes[54 -- 57] \\ \hline
+        PM10 (4 Bytes) & Bytes[58 -- 61] \\ \hline
+    \end{tabular}
+\end{table}
+
+
+\paragraph{$\bullet$ Firmware}
+This parameter provides the Firmware version of the alpha sensor by unsigned 8-bit integer.\\
+
+
+\begin{table}[h!]
+    \centering
+    \caption{Sub-packet of Alpha sensor firmware}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        \rowcolor{black!8}
+        \textbf{0x29} & \textbf{0x82} & \textbf{Raw values}\\
+        \hline
+        Byte[0] & Byte[1] & Bytes[2 -- 3] \\ \hline
+    \end{tabular}
+\end{table}
+
+
+\paragraph{$\bullet$ Configuration}
+This parameter provides various information as listed below.
+Since this configuration data is too long to fit into a sub-packet, the data seperated into four sections to be packed into four sub-packets. Thus each of sub-packet takes 64 Bytes in length.
+
+
+\begin{table}[h!]
+    \centering
+    \caption{Sub-packet of Alpha sensor configuration}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        \rowcolor{black!8}
+        \textbf{Source ID} (0x30 $\sim$ 0x33) & \textbf{0xC0} & \textbf{Various sensor raw values as listed above}\\
+        \hline
+        Byte[0] & Byte[1] & Bytes[2 -- 65] \\ \hline
+    \end{tabular}
+\end{table}
+
+
+\begin{itemize}
+\setlength\itemsep{0em}
+\item[$\circ$] Bin Boundaries (BB0 - BB14) are unsinged 16 bit integer variables, and two spare bytes \\
+(Bytes[0 -- 31] from Alpha sensor, Bytes[2 -- 33] on sub-packet A).
+\item[$\circ$] Bin Particle Volumes (BPV0 - BPV15) are float variables occupyting 4 bytes each \\
+(Bytes[32 -- 95] from Alpha sensor, Bytes[34 -- 65] on sub-packet A and Bytes[2 -- 33] on sub-packet B).
+\item[$\circ$] Bin Particle Densities (BPD0 -- BPD15) are float variables occupying 4 bytes each \\
+(Bytes[96 -- 159] from Alpha sensor, Bytes[34 -- 65] on sub-packet B and Bytes[2 -- 33] on sub-packet C).
+\item[$\circ$] Bin Sample Volume Weightings (BSVW0 -- BSVW15) are float variables occupying 4 bytes each \\
+(Bytes[160 -- 223] from Alpha sensor, Bytes[34 -- 65] on sub-packet C and Bytes[2 -- 33] on sub-packet D).
+\item[$\circ$] Gain Scaling Coefficient (GSC) is float variable occupying 4 bytes \\
+(Bytes[224 -- 227] from Alpha sensor, Bytes[34 -- 37] on sub-packet D).
+\item[$\circ$] Sample flow rate is a float variable occupying 4 bytes \\
+(Bytes[228 -- 231] from Alpha sensor, Bytes[38 -- 41] on sub-packet D).
+\item[$\circ$] Laser DAC value is unsigned 8bit interger variable
+(Byte[232] from Alpha sensor, Byte[42] on sub-packet D).
+\item[$\circ$] Fan DAC value is unsigned 8bit integer variable
+(Byte[233] from Alpha sensor, Byte[43] on sub-packet D).
+\item[$\circ$] Time of Flight to Sample Flow Rate conversion factor is unsigned 8bit integer variable \\
+(Byte[234] from Alpha sensor, Byte[44] on sub-packet D).
+\item[$\circ$] 21 spare bytes follow Configuration variables \\
+(Bytes[235 -- 255] from Alpha sensor, Bytes[45 -- 65] on sub-packet D).
+\end{itemize}
+
+
+\makeatletter
+\setlength{\@fptop}{0pt}
+\makeatother
+
+
+\begin{table}[h!]
+    \centering
+    \caption{Detail sub-packet of Alpha sensor configuration}
+    \begin{tabular}{|>{\centering\arraybackslash}p{0.5\textwidth}|>{\centering\arraybackslash}p{0.2\textwidth}|}
+    % \begin{tabular}{|c|c|}
+        \hline
+        \rowcolor{black!8}
+        \textbf{Parameter} & \textbf{Data location}\\ \hline
+        
+        \rowcolor{black!5}
+        \multicolumn{2}{|c|}{Configuration packet A (Sensor ID 0x30)} \\ \hline
+        Bin Boundaries (32 Bytes) & Bytes[2 -- 33] \\ \hline
+        Bin Particle Volumes A (32 Bytes) & Bytes[34 -- 65] \\ \hline
+        
+        \rowcolor{black!5}
+        \multicolumn{2}{|c|}{Configuration packet B (Sensor ID 0x31)} \\ \hline
+        Bin Particle Volumes B (32 Bytes) & Bytes[2 -- 33] \\ \hline
+        Bin Particle Densities A (32 Bytes) & Bytes[34 -- 65] \\ \hline
+        
+        \rowcolor{black!5}
+        \multicolumn{2}{|c|}{Configuration packet C (Sensor ID 0x32)} \\ \hline
+        Bin Particle Densities B (32 Bytes) & Bytes[2 -- 33] \\ \hline
+        Bin Sample Volume Weightings A (32 Bytes) & Bytes[34 -- 65] \\ \hline
+        
+        \rowcolor{black!5}
+        \multicolumn{2}{|c|}{Configuration packet D (Sensor ID 0x33)} \\ \hline
+        Bin Sample Volume Weightings B (32 Bytes) & Bytes[2 -- 33] \\ \hline
+        Gain Scaling Coefficient (4 Bytes) & Bytes[34 -- 37] \\ \hline
+        Sample Flow Rate (4 Bytes) & Bytes[38 -- 41] \\ \hline
+        Laser DAC (1 Byte) & Byte[42] \\ \hline
+        Fan DAC (1 Byte) & Byte[43] \\ \hline
+        Conversion factor (1 Byte) & Byte[44] \\ \hline
+        Spare Bytes & Bytes[45 -- 65] \\ \hline
+    \end{tabular}
+\end{table}
+
+\clearpage

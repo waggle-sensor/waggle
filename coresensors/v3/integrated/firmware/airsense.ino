@@ -240,7 +240,7 @@ void airsense_acquire (void)
             SerialUSB.print(formatted_data_buffer[i],HEX);
     #endif
             
-            format5(BMP180_long);
+            format4(BMP180_long);
             BMP180[4] = formatted_data_buffer[0];
             BMP180[5] = formatted_data_buffer[1];
             BMP180[6] = formatted_data_buffer[2];

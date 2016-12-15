@@ -1,0 +1,147 @@
+
+\subsubsection{Chemsense:}
+
+\paragraph{$\bullet$ Chemical sensors -- Total reducing gases, Nitrogen dioxide, Ozone, Hydrogen sulphide, Total oxidizing gases, Carbon monoxide, and Sulfur dioxide:}
+These parameters provide the current output of the electrochemical ToR, NO$_2$, O$_3$, H$_2$S, ToX, CO, and SO$_2$ sensor.
+Each of the cell current is quantified using an AFE that uses a
+24-bit ADC to convert it into a signed digital value. This value is
+represented in Format 5.
+
+\begin{table}[h!]
+    \centering
+    \caption{Sub-packet of a temperature sensor, TMP421}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        \rowcolor{black!8}
+        \textbf{Sensor ID} (0x15 $\sim$ 0x1C) & \textbf{0x83} & \textbf{Raw concentartion in Format 5}\\
+        \hline
+        Byte[0] & Byte[1] & Bytes[2 -- 4] \\ \hline
+    \end{tabular}
+\end{table}
+
+
+\paragraph{$\bullet$ SHT25:}
+
+SHT25 is a temperature and relative humidity sensor. 100th of temperature and relative humidity are
+encoded in Format 2.
+
+\begin{table}[h!]
+    \centering
+    \caption{Sub-packet of a temperature and relative humidity sensor, SHT25}
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        \rowcolor{black!8}
+        \textbf{0x1D} & \textbf{0x84} & \textbf{100th of Temperature in Format 2} & \textbf{100th of Relative humidity in Format 2}\\
+        \hline
+        Byte[0] & Byte[1] & Bytes[2 -- 4] & Bytes[5 -- 6] \\ \hline
+    \end{tabular}
+\end{table}
+
+
+
+\paragraph{$\bullet$ LPS25H:}
+
+LPS25H is a temperature and barometric pressure sensor. 100th of temperature and barometric pressureare
+encoded in Format 2 and Format 4 respectively.
+
+\begin{table}[h!]
+    \centering
+    \caption{Sub-packet of a temperature and barometric pressure sensor, LPS25H}
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        \rowcolor{black!8}
+        \textbf{0x1E} & \textbf{0x85} & \textbf{100th of Temperature in Format 2} & \textbf{barometric pressure in Format 4}\\
+        \hline
+        Byte[0] & Byte[1] & Bytes[2 -- 4] & Bytes[5 -- 6] \\ \hline
+    \end{tabular}
+\end{table}
+
+
+\paragraph{$\bullet$ Si1145:}
+Si1145 is a light sensor for three factors; ultra-violet, visible, and infrared. 
+The raw output from the sensor is encoded Format 1.
+
+\begin{table}[h!]
+    \centering
+    \caption{Sub-packet of an ultra-violet sensor, Si1145}
+    \begin{tabular}{|c|c|c|c|c|}
+        \hline
+        \rowcolor{black!8}
+        \textbf{0x1F} & \textbf{0x86} & \textbf{Raw UV in Format 1} & \textbf{Raw visible light in Format 1} & \textbf{Raw IR in Format 1}\\
+        \hline
+        Byte[0] & Byte[1] & Bytes[2 -- 4] & Bytes[5 -- 6] & Bytes[7 -- 8] \\ \hline
+    \end{tabular}
+\end{table}
+
+
+\paragraph{$\bullet$ Chemsense MAC address:}
+
+This is a six byte ID that uniquely identifies each Chemsense board. The Unique ID uses Format 3
+for encoding and the arrangement is listed below.
+
+
+\begin{table}[h!]
+    \centering
+    \caption{Sub-packet of Chemsense MAC address}
+    \begin{tabular}{|c|c|c|c|c|c|c|c|}
+        \hline
+        \rowcolor{black!8}
+        \textbf{0x20} & \textbf{0x86} & \textbf{Chemsense board MAC address in Format 3}\\
+        \hline
+        Byte[0] & Byte[1] & Bytes[2 -- 7] \\ \hline
+    \end{tabular}
+\end{table}
+
+
+\paragraph{$\bullet$ ADC Temperatures -- CO ADC Temp, IAQ/IRR ADC Temp, O3/NO2 ADC Temp, SO2/H2S ADC Temp, and CO LMT Temp:}
+Chemsense board measures temperature of sensor ADCs. This includes five parameters and 
+all of them give ADC temperature in 100ths of degree celsious. Format 2 is used for encoding and the arrangement is listed below. 
+
+
+\begin{table}[h!]
+    \centering
+    \caption{Sub-packet of ADC Temperatures}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        \rowcolor{black!8}
+        \textbf{Sensor ID} (0x21 $\sim$ 0x25) & \textbf{0x82} & \textbf{Temperature in Format 2}\\
+        \hline
+        Byte[0] & Byte[1] & Bytes[2 -- 3] \\ \hline
+    \end{tabular}
+\end{table}
+
+
+\paragraph{$\bullet$ Accelerometer:}
+The accelerations in three orthogonal directions, x, y and z, as a multiple of acceleration are obtained from the sensor, and a vibration index is calculated. 
+Acceleration data are encoded in Format 2, and vibration index is encoded in Format 4. 
+
+\begin{table}[h!]
+    \centering
+    \caption{Sub-packet of Accelerometer}
+    \begin{tabular}{|c|c|c|c|c|c|}
+        \hline
+        \rowcolor{black!8}
+        \textbf{0x26} & \textbf{0x89} & \textbf{A(x) in Format 2} & \textbf{A(y) in Format 2} & \textbf{A(z) in Format 2}& \textbf{Vib. in Format 4}\\
+        \hline
+        Byte[0] & Byte[1] & Bytes[2 -- 3] & Bytes[4 -- 5] & Bytes[6 -- 7] & Bytes[8 -- 10] \\ \hline
+    \end{tabular}
+\end{table}
+
+
+\paragraph{$\bullet$ Gyro:}
+The gyro in three orthogonal directions, x, y and z, as a multiple of acceleration are obtained from the sensor, and a orientation index is calculated. 
+Gyro data are encoded in Format 2, and orientation index is encoded in Format 4.
+
+\begin{table}[h!]
+    \centering
+    \caption{Sub-packet of Gyro}
+    \begin{tabular}{|c|c|c|c|c|c|}
+        \hline
+        \rowcolor{black!8}
+        \textbf{0x27} & \textbf{0x89} & \textbf{O(x) in Format 2} & \textbf{O(y) in Format 2} & \textbf{O(z) in Format 2}& \textbf{Index in Format 4}\\
+        \hline
+        Byte[0] & Byte[1] & Bytes[2 -- 3] & Bytes[4 -- 5] & Bytes[6 -- 7] & Bytes[8 -- 10] \\ \hline
+    \end{tabular}
+\end{table}
+
+

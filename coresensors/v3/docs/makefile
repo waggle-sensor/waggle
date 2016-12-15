@@ -1,4 +1,4 @@
-filename=sensorStreamFormat_v3
+filename=v3dataExchange
 
 pdf:	clean
 	pdflatex ${filename}.tex

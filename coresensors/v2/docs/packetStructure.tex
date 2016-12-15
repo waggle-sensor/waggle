@@ -65,7 +65,7 @@ of a sub-packet.
 The sub-packet starts with a source identifier. One bit
 validity field and seven bits ``length of the sub-packet'' field
 are packed together as the next byte. The length field counts the number of
-bytes following it which make up the sub-packet, and also counts Bytes of a source identifier and the length field. 
+bytes following it which make up the sub-packet. 
 The validity bit is set to 1 if the sensor reading is valid and set to 0 if the sensor
 is dead, disabled, unconnected, unresponsive or if data could not be collected
 from the sensor in the time window. The size of the sub-packet is restricted to 127 Bytes by the seven bits length field.

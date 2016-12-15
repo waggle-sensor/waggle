@@ -1,0 +1,9 @@
+\contentsline {section}{\numberline {1}Physical Connections and Interfaces}{2}
+\contentsline {section}{\numberline {2}Data Transmission}{4}
+\contentsline {subsection}{\numberline {2.1}Data Sub-packets}{4}
+\contentsline {subsubsection}{\numberline {2.1.1}Rain Gauge}{4}
+\contentsline {subsubsection}{\numberline {2.1.2}Soil Moisture Sensor}{4}
+\contentsline {subsection}{\numberline {2.2}Data Formats}{5}
+\contentsline {section}{\numberline {3}Sensor Data Units}{6}
+\contentsline {subsection}{\numberline {3.1}Rain Gauge}{6}
+\contentsline {subsection}{\numberline {3.2}Soil Moisture Sensor}{6}

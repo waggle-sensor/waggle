@@ -73,7 +73,7 @@ void lightsense_acquire (void)
     if (event.magnetic.z > 127 || event.magnetic.z > 30)
     {
         HMC5883L[1] = (0 << 7) | (LENGTH_FORMAT8 * 3);
-        SerialUSB.println("HMC5883L: I2C not available");
+        // SerialUSB.println("HMC5883L: I2C not available");
     }
     else
         HMC5883L[1] = (1 << 7) | (LENGTH_FORMAT8 * 3);
@@ -117,7 +117,7 @@ void lightsense_acquire (void)
     if (Temp_float[0] > 255 || Temp_float[1] < 0)
     {
         HIH6130[1] = (0 << 7) | (LENGTH_FORMAT6 * 2);
-        SerialUSB.println("HIH6130: I2C not available");
+        // SerialUSB.println("HIH6130: I2C not available");
     }
     else
         HIH6130[1] = (1 << 7) | (LENGTH_FORMAT6 * 2);
@@ -152,7 +152,7 @@ void lightsense_acquire (void)
     if (Temp_uint16 == 65535)
     {
         APDS9006020[1] = (0 << 7) | LENGTH_FORMAT1;
-        SerialUSB.println("APDS9006020: I2C not available");
+        // SerialUSB.println("APDS9006020: I2C not available");
     }
     else
         APDS9006020[1] = (1 << 7) | LENGTH_FORMAT1;
@@ -180,7 +180,7 @@ void lightsense_acquire (void)
     if (Temp_uint16 == 65535)
     {
         TSL260RD[1] = (0 << 7) | LENGTH_FORMAT1;
-        SerialUSB.println("TSL260RD: I2C not available");
+        // SerialUSB.println("TSL260RD: I2C not available");
     }
     else
         TSL260RD[1] = (1 << 7) | LENGTH_FORMAT1;
@@ -206,7 +206,7 @@ void lightsense_acquire (void)
     if (Temp_uint16 == 65535)
     {
         TSL250RD_2[1] = (0 << 7) | LENGTH_FORMAT1;
-        SerialUSB.println("TSL250RD_2: I2C not available");
+        // SerialUSB.println("TSL250RD_2: I2C not available");
     }
     else
         TSL250RD_2[1] = (1 << 7) | LENGTH_FORMAT1;
@@ -232,7 +232,7 @@ void lightsense_acquire (void)
     if (Temp_uint16 == 65535)
     {
         MLX75305[1] = (0 << 7) | LENGTH_FORMAT1;
-        SerialUSB.println("MLX75305: I2C not available");
+        // SerialUSB.println("MLX75305: I2C not available");
     }
     else
         MLX75305[1] = (1 << 7) | LENGTH_FORMAT1;
@@ -257,7 +257,7 @@ void lightsense_acquire (void)
     if (Temp_uint16 == 65535)
     {
         ML8511[1] = (0 << 7) | LENGTH_FORMAT1;
-        SerialUSB.println("ML8511: I2C not available");
+        // SerialUSB.println("ML8511: I2C not available");
     }
     else
         ML8511[1] = (1 << 7) | LENGTH_FORMAT1;
@@ -281,7 +281,7 @@ void lightsense_acquire (void)
     if (abs(Temp_float[0]) > 127)
     {
         TMP421[1] = (0 << 7) | LENGTH_FORMAT6;
-        SerialUSB.println("TMP421: I2C not available");
+        // SerialUSB.println("TMP421: I2C not available");
     }
     else
         TMP421[1] = (1 << 7) | LENGTH_FORMAT6;
