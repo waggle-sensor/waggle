@@ -12,19 +12,19 @@ The eight formats, and the encoding schemes are listed below in Table \ref{table
 
 \begin{table}[H]
     \centering
-    {\rowcolors{2}{black!8}{black!2}
+    {
     \begin{tabular}{|c|c|c|c|}
         \hline
+        \rowcolor{black!8}
         \textbf{Format} & \textbf{Number of Bytes Used} & \textbf{Value Represented} & \textbf{Value Range} \\ \hline
-        1 & 2 & unsigned int\_16 input & [0, 65535] \\
-        2 & 2 & int\_16 input & [$-$32767, 32767] \\
-        3 & 6 & byte input[6] & [0x00, 0xFFFFFFFFFFFF] \\
-        4 & 3 & unsigned long\_24 input & [0, 16777215] \\
-        5 & 3 & long\_24 input & [$-$8388607, 8388607] \\
-        6 & 2 & float input & [$-$127.99, 127.99] \\
-        7 & 4 & byte input[4] & [0x00, 0xFFFFFFFF] \\
-        8 & 2 & float input & [$-$0 -- 31.999] \\
-        \hline
+        1 & 2 & unsigned int\_16 input & [0, 65535] \\ \hline
+        2 & 2 & int\_16 input & [$-$32767, 32767] \\ \hline
+        3 & 6 & byte input[6] & [0x00, 0xFFFFFFFFFFFF] \\ \hline
+        4 & 3 & unsigned long\_24 input & [0, 16777215] \\ \hline
+        5 & 3 & long\_24 input & [$-$8388607, 8388607] \\ \hline
+        6 & 2 & float input & [$-$127.99, 127.99] \\ \hline
+        7 & 4 & byte input[4] & [0x00, 0xFFFFFFFF] \\ \hline
+        8 & 2 & float input & [$-$0 -- 31.999] \\ \hline
     \end{tabular}
     }
     \caption{Data formats}

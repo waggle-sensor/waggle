@@ -1,5 +1,0 @@
-\contentsline {section}{\numberline {1}Physical Connections and Interfaces}{2}
-\contentsline {section}{\numberline {2}Data Transmission}{4}
-\contentsline {subsection}{\numberline {2.1}Rain gauge Data Sub-packets}{4}
-\contentsline {subsection}{\numberline {2.2}Data Formats}{4}
-\contentsline {section}{\numberline {3}Sensor Data Units}{5}

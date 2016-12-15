@@ -443,7 +443,7 @@ def parse_sensor (sensor_id,sensor_data):
         # ML8511_val = ML8511_voltage * 12.49 - 17.72
         #### voltage difference btw dark/10,000 mW/m^2: 1.2V --> 0.12
         #### subtranct 1.49916 / 0.12 - dark diff (cf. datasheet)
-        ML8511_val = ML8511_voltage * 1.49916 / 0.12 - 18.71
+        ML8511_val = (ML8511_voltage - 1) * 14.9916 / 0.12 - 18.71
 
         if 2.5 <= ML8511_val <= 3.0:
             ML8511_val = ML8511_val - 0.3

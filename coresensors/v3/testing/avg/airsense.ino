@@ -155,7 +155,7 @@ void airsense_acquire (void)
         if (Temp_float[0] > 255 || Temp_float[0] < -63) 
         {
             TMP112[1] = (0 << 7) | LENGTH_FORMAT6;
-            SerialUSB.println("TMP112: I2C not available");
+            // SerialUSB.println("TMP112: I2C not available");
         }
         else
             TMP112[1] = (1 << 7) | LENGTH_FORMAT6;
@@ -180,7 +180,7 @@ void airsense_acquire (void)
         if ((Temp_float[1] == 998 && HTU21D_float[0] == 998) || HTU21D_float[1] < 0 || HTU21D_float[1] > 100)
         {
             HTU21D_array[1] = (0 << 7) | (LENGTH_FORMAT6 * 2);
-            SerialUSB.println("HTU21D: I2C not available");
+            // SerialUSB.println("HTU21D: I2C not available");
         }
         else
             HTU21D_array[1] = (1 << 7) | (LENGTH_FORMAT6 * 2);
@@ -217,7 +217,7 @@ void airsense_acquire (void)
             if (Temp_long == 16777215 || BMP180_long > 110000)   // pressure, if pressure is 16777215, then I2C is diconnected
             {
                 BMP180[1] = (0 << 7) | (LENGTH_FORMAT6 + LENGTH_FORMAT5);
-                SerialUSB.println("BMP180: I2C not available");
+                // SerialUSB.println("BMP180: I2C not available");
             }
             else
                 BMP180[1] = (1 << 7) | (LENGTH_FORMAT6 + LENGTH_FORMAT5);
@@ -260,7 +260,7 @@ void airsense_acquire (void)
         if (Temp_float[3] <= 0 || MMA_float[3] < 0.9)
         {
             MMA8452Q[1] = (0 << 7) | (LENGTH_FORMAT6 * 4);
-            SerialUSB.println("MMA8452Q: I2C not available");
+            // SerialUSB.println("MMA8452Q: I2C not available");
         }
         else
             MMA8452Q[1] = (1 << 7) | (LENGTH_FORMAT6 * 4);
@@ -313,7 +313,7 @@ void airsense_acquire (void)
         if (Temp_float[0] > 213)
         {
             TSYS01[1] = (0 << 7) | LENGTH_FORMAT6;
-            SerialUSB.println("TSYS01: I2C not available");
+            // SerialUSB.println("TSYS01: I2C not available");
         }
         else
             TSYS01[1] = (1 << 7) | LENGTH_FORMAT6;

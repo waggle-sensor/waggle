@@ -9,8 +9,8 @@
 void hw_sw_version_buffer(void)
 {
 	uint16_t version_int = 0;
-	uint8_t first_byte = CORESENSE_HW_VER_MAJ << 5 | CORESENSE_HW_VER_MIN << 2 | CORESENSE_KERNEL_MAJ >> 2;
-	uint8_t second_byte = CORESENSE_KERNEL_MAJ << 6 | (CORESENSE_KERNEL_MIN * 10 + CORESENSE_KERNEL_SUB);
+	uint8_t first_byte = CORESENSE_HW_VER_MAJ << 5 | (CORESENSE_HW_VER_MIN & 0x07) << 2 | (CORESENSE_KERNEL_MAJ & 0x0F) >> 2;
+	uint8_t second_byte = (CORESENSE_KERNEL_MAJ & 0x0F) << 6 | (CORESENSE_KERNEL_MIN * 10 + CORESENSE_KERNEL_SUB) & 0x3F;
 	// uint8_t second_byte = CORESENSE_KERNEL_MAJ << 5 | 0 << 4 | 1 << 3 | 1 << 2 | 1 << 1
 
 	version_int = first_byte << 8 | second_byte & 0xff;
