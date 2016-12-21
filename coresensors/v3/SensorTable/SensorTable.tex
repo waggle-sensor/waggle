@@ -1,0 +1,73 @@
+\documentclass{article}
+
+\usepackage{longtable}
+\usepackage{pdflscape}
+
+\usepackage{indentfirst}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{fancyhdr}
+\usepackage{geometry}
+\usepackage{array}
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+\usepackage{multirow}
+\usepackage{morefloats}
+\usepackage{float}
+\usepackage{soul}
+\usepackage{color}
+\usepackage{seqsplit}
+\usepackage{gensymb}
+\usepackage{siunitx}
+\usepackage{graphicx}
+\usepackage{pdfpages}
+\usepackage[framemethod=TikZ]{mdframed}
+\setcounter{secnumdepth}{3}
+
+\usepackage[procnames]{listings}
+\usepackage{color}
+
+\definecolor{keywords}{RGB}{255,0,90}
+\definecolor{comments}{RGB}{0,0,113}
+\definecolor{red}{RGB}{160,0,0}
+\definecolor{green}{RGB}{0,150,0}
+
+\lstset{language=Python,
+        basicstyle=\ttfamily\small,
+        keywordstyle=\color{keywords},
+        commentstyle=\color{comments},
+        stringstyle=\color{red},
+        % showstringspaces=false,
+        identifierstyle=\color{green},
+        procnamekeys={def,class}}
+
+
+\restylefloat{table}
+
+\fontfamily{cmss}\selectfont
+
+\geometry{top = 1in, bottom = 1in, left = 0.5in, right = 0.5in}
+
+\setlength{\parindent}{4em}
+\setlength{\parskip}{1em}
+\renewcommand{\baselinestretch}{1.5}
+
+\pagestyle{fancy}
+\renewcommand{\footrulewidth}{1pt}
+\lhead{Waggle Sensor Array}
+\chead{Sensors}
+\rhead{Version 0.1 alpha 1}
+\lfoot{Waggle Group}
+\rfoot{park708@purdue.edu}
+
+\setlength{\tabcolsep}{10pt}
+\renewcommand{\arraystretch}{1.0}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\input{SensorData.tex}
+\input{DataUnits.tex}
+\input{TheTable.tex}
+\end{document}

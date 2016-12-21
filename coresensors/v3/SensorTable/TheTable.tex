@@ -1,0 +1,114 @@
+\section{Sensor Data}
+
+\begin{landscape}
+  \begin{longtable}{l|c|c|c|c}
+  \caption{Deta units for both raw and processed} \\  \hline
+    
+    \rowcolor{black!8} \multicolumn{1}{l|}{\textbf{Parameter}} & \multicolumn{1}{c|}{\textbf{ID}} & \multicolumn{1}{c|}{\textbf{Values}}
+     & \multicolumn{1}{c|}{\textbf{FW Output}} & \multicolumn{1}{c}{\textbf{Comments}} \\ \hline
+    \endfirsthead
+
+    \multicolumn{5}{c}{\tablename\ \thetable\ -- \textit{Continued from previous page}} \\ \hline
+
+    \rowcolor{black!8} \multicolumn{1}{l|}{\textbf{Parameter}} & \multicolumn{1}{c|}{\textbf{ID}} & \multicolumn{1}{c|}{\textbf{Values}}
+     & \multicolumn{1}{c|}{\textbf{FW Output}} & \multicolumn{1}{c}{\textbf{Comments}} \\ \hline
+    \endhead
+
+    \multicolumn{5}{r}{\textit{Continued on next page}} \\
+    \endfoot
+
+    \hline
+    \endlastfoot
+
+    \multirow{3}{*}{Firmware version} & \multirow{3}{*}{0xFD} & Firmware version (HW/SW) & \multirow{3}{*}{No Units} & \\ \cline{3-3}
+    & & Build time & & \\ \cline {3-3} 
+    & & Build git & & \\ \hline
+
+\rowcolor{black!5} \multicolumn{5}{c}{{Airsense board}} \\ \hline
+    Metsense MAC ID & 0x00 & MAC Address & No Unit & \\ \hline
+    TMP112 & 0x01 & Temperature & \degree C & \\ \hline
+    \multirow{2}{*}{HTU21D} & \multirow{2}{*}{0x02} & Temperature & \degree C & \\ \cline{3-4}
+    & & relative humidity & \%RH & \\ \hline
+    \multirow{2}{*}{BMP180} & \multirow{2}{*}{0x04} & Temperature & \degree C & \\ \cline{3-4}
+    & & Pressure & Pa & \\ \hline
+    PR103J2 & 0x05 & Temperature & \degree C & \\ \hline
+    TSL250RD & 0x06 & Visible Light & $\mu$W/m$^2$ & \\ \hline
+    \multirow{4}{*}{MMA8452Q} & \multirow{4}{*}{0x07} & Acceleration in X & \multirow{4}{*}{g} & \\ \cline{3-3}
+    & & Acceleration in Y & & \\ \cline{3-3}
+    & & Acceleration in Z & & \\ \cline{3-3}
+    & & Vibration & & \\ \hline
+    SPV1840LR5H-B & 0x08 & RMS Sound Level & \bf{N/A} & \\ \hline
+    TSYS01 & 0x09 & Temperature & \degree C & \\ \hline
+    
+\rowcolor{black!8} \multicolumn{5}{c}{{Lightsense board}} \\ \hline
+    \multirow{3}{*}{HMC5883L} & \multirow{3}{*}{0x0A} & Magnetic Field in Z & \multirow{3}{*}{G} & \\ \cline{3-3}
+    & & Magnetic Field in Y & & \\ \cline{3-3}
+    & & Magnetic Field in Z & & \\ \hline
+    \multirow{2}{*}{HIH6130} & \multirow{2}{*}{0x0B} & Temperature & \degree C & \\ \cline{3-4}
+    & & relative humidity & \%RH & \\ \hline
+    APDS-9006-020 & 0x0C & Ambient light intensity & Lux & \\ \hline
+    TSL260RD & 0x0D & IR intensity & $\mu$W/m$^2$ & \\ \hline
+    TSL250RD & 0x0E & Visible light intensity & $\mu$W/m$^2$ & \\ \hline
+    MLX75305 & 0x0F & Light & $\mu$W/m$^2$ & \\ \hline 
+    ML8511 & 0x10 & UV intensity & UV index & \\ \hline
+    TMP421 & 0x13 & Temperature & \degree C & \\ \hline
+
+\rowcolor{black!8} \multicolumn{5}{c}{{Chemsense board}} \\ \hline
+    Total reducing gases & 0x15 & \multirow{7}{*}{Raw Concentration} & \multirow{7}{*}{\bf{N/A}} & \\ \cline{1-2}
+    Nitrogen dioxide & 0x17 & & & \\ \cline{1-2}
+    Ozone & 0x18 & & \\ \cline{1-2}
+    Hydrogen sulphide & 0x19 & & & \\ \cline{1-2}
+    Total oxidizing gases & 0x1A & & & \\ \cline{1-2}
+    Carbon monoxide & 0x1B & & & \\ \cline{1-2}
+    Sulfur dioxide & 0x1C & & & \\ \hline
+    \multirow{2}{*}{SHT25} & \multirow{2}{*}{0x1D} & Temperature & \multirow{2}{*}{Format 2} & \\ \cline{3-3}
+    & & relative humidity & & \\ \hline
+    \multirow{2}{*}{LPS25H} & \multirow{2}{*}{0x1E} & Temperature & Format 2 & \\ \cline{3-4}
+    & & Pressure & Format 4 & \\ \hline
+    \multirow{3}{*}{Si1145} & \multirow{3}{*}{0x1F} & UV intensity & \multirow{3}{*}{Format 1} & \\ \cline{3-3}
+    & & Visible light intensity & & \\ \cline{3-3}
+    & & IR intensity & & \\ \hline
+    Chemsense MAC ID & 0x20 & MAC Address & Format 3 & \\ \hline
+    CO ADC temp & 0x21 & \multirow{2}{*}{ADC temperature} &  \multirow{2}{*}{Format 2} & \\ \cline{1-2}
+    IAQ IRR ADC temp & 0x22 & & & \\ \hline
+    O3 NO2 ADC temp & 0x23 & \multirow{3}{*}{ADC temperature} &  \multirow{3}{*}{Format 2} & \\ \cline{1-2}
+    SO2 H2S ADC temp & 0x24 & & & \\ \cline{1-2}
+    CO LMP temp & 0x25 & & & \\ \hline 
+
+    \multirow{2}{*}{Accelerometer} & \multirow{2}{*}{0x26} & Acceleration in X & \multirow{2}{*}{Format 2} & \\ \cline{3-3}
+    & & Acceleration in Y & & \\ \hline
+    \multirow{2}{*}{Accelerometer} & \multirow{2}{*}{0x26} & Acceleration in X & Format 2 & \\ \cline{3-4}
+    & & Vibration & Format 4 & \\ \hline
+    \multirow{4}{*}{Gyro} & \multirow{4}{*}{0x27} & Orientation in X & \multirow{3}{*}{Format 2} & \\ \cline{3-3}
+    & & Orientation in Y & & \\ \cline{3-3}
+    & & Orientation in Z & & \\ \cline {3-4}
+    & & Orientation Index & Format 4 & \\ \hline
+
+    \multirow{9}{*}{Histogram} & \multirow{9}{*}{0x28} & Bin count & \multirow{20}{*}{Raw reading} \\ \cline{3-3}
+    & & Average Time & & \\ \cline{3-3}
+    & & Sample flow rate & & \\ \cline{3-3}
+    & & Temp/Pressure(alter) & & \\ \cline{3-3}
+    & & Sampling period & & \\ \cline{3-3}
+    & & Sum of the counts & & \\ \cline{3-3}
+    & & PM 1 & & \\ \cline{3-3}
+    & & PM 2.5 & & \\ \cline{3-3}
+    & & PM 10 & & \\ \cline{1-3}
+    Firmware & 0x29 & Firmware version & & \\ \cline{1-3}
+    \multirow{2}{*}{Configuration A} & \multirow{2}{*}{0x30} & Bin Boundaries & & \\ \cline{3-3}
+    & & Bin Particle Volumes A & & \\ \cline{1-3}
+    \multirow{2}{*}{Configuration B} & \multirow{2}{*}{0x31} & Bin Particle Volumes B & & \\ \cline{3-3}
+    & & Bin Particle Densities A & & \\ \cline{1-3}
+    \multirow{2}{*}{Configuration C} & \multirow{2}{*}{0x32} & Bin Particle Densities B & & \\ \cline{3-3}
+    & & Bin Sample Vol Weightings A & & \\ \cline{1-3}
+    
+    \multirow{3}{*}{Configuration D} & \multirow{3}{*}{0x33} & Bin Sample Vol Weightings B & & \\ \cline{3-3}
+    & & Gain Scaling Coefficient & & \\ \cline{3-3}
+    & & Sample Flow Rate & & \\ \hline
+
+    \multirow{3}{*}{Configuration D} & \multirow{3}{*}{0x33} & Laser DAC and Fan DAC & & \\ \cline{3-3}
+    & & Conversion factor & & \\ \cline{3-3}
+    & & Space Bytes & & \\ 
+
+    \end{longtable}
+\end{landscape}
+
