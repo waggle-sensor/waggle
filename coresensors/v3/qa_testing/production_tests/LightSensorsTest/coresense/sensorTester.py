@@ -7,7 +7,13 @@ TEMP_MIN = 20
 HUMID_MAX = 20
 HUMID_MIN = 60
 
-LOG_PATH = "/tmp/"
+LOG_PATH = "../../log_files/"
+
+fudge_humi_counts = 30
+fudge_humi_percent = 2
+fudge_temp_C = 2
+fudge_temp_counts = 5
+
 
 #SEQ_NO:52
 #HIH6130:25.82,26.49
@@ -41,7 +47,8 @@ while (1):
     elif (line.startswith("SEQ_NO:")):
         SEQ_NO.append(int(line.split(':')[1].split('\r')[0]))
         if (FileName <> ' '):
-            print FileName
+            print MAC_ADDR
+            print ""
             break
     time.sleep(0.001)
 
@@ -70,14 +77,20 @@ for i in range (9):
         TSL260RD.append(int(line.split(':')[1].split('\r')[0]))
     time.sleep(0.001)
 
-#print SEQ_NO, MLX75305, TMP421, HIH6130, APDS9006020, TSL250RD, HMC5883L, MLX90614, TSL260RD
+print ""
 print "Gathered pre-stimulus readings."
-s = raw_input('Press enter after putting the lightsense in the black sleeve and starting the heater:')
+print ""
+print " ------------------------------- "
+s = raw_input('Press press ENTER after putting the lightsense board in the black sleeve and starting the heater:')
+print " ------------------------------- "
+print ""
 
 while (port.inWaiting() > 0):
     port.readline()
 
+print ""
 print "Proceeding..."
+print ""
 
 while (1):
     line = port.readline()
@@ -111,47 +124,51 @@ for i in range (9):
         TSL260RD.append(int(line.split(':')[1].split('\r')[0]))
     time.sleep(0.001)
 
-print "SEQ_NO, MLX75305, TMP421, HIH6130, APDS9006020, TSL250RD, HMC5883L, MLX90614, TSL260RD"
-print SEQ_NO, MLX75305, TMP421, HIH6130, APDS9006020, TSL250RD, HMC5883L, MLX90614, TSL260RD
+#print "SEQ_NO, MLX75305, TMP421, HIH6130, APDS9006020, TSL250RD, HMC5883L, MLX90614, TSL260RD, ML8511"
+#print SEQ_NO, MLX75305, TMP421, HIH6130, APDS9006020, TSL250RD, HMC5883L, MLX90614, TSL260RD, ML8511
 
+print ""
+print "===================================" 
 print "Test Results:"
+print "-----------------------------------" 
+print " "
 #test passing criteria
-if (TMP421[1] > TMP421[0]) :
+if (TMP421[1] > TMP421[0] + fudge_temp_C) :
     print "1. TMP421: PASS"
 else:
     print "1. TMP421: FAIL"
 
-if (HIH6130[2] < HIH6130[0]) and (HIH6130[1] < HIH6130 [3]):
+if (HIH6130[2] + fudge_humi_percent < HIH6130[0]) and (HIH6130[1] + fudge_temp_C < HIH6130 [3]):
     print "2. HIH6130: PASS"
 else:
     print "2. HIH6130: FAIL"
 
-if (TSL260RD[0] > TSL260RD[1]):
+if (TSL260RD[0] > TSL260RD[1] + fudge_humi_counts):
     print "3. TSL260RD: PASS"
 else:
     print "3. TSL260RD: FAIL"
 
-if (APDS9006020[0] > APDS9006020[1]):
+if (APDS9006020[0] > APDS9006020[1] + fudge_humi_counts ):
     print "4. APDS9006020: PASS"
 else:
     print "4. APDS9006020: FAIL"
 
-if (ML8511[0] > ML8511[1]):
+if (ML8511[0] > ML8511[1] + fudge_humi_counts):
     print "5. ML8511: PASS"
 else:
     print "5. ML8511: FAIL"
 
-if (TSL250RD[0] > TSL250RD[1]):
+if (TSL250RD[0] > TSL250RD[1] + fudge_humi_counts):
     print "6. TSL250RD: PASS"
 else:
     print "6. TSL250RD: FAIL"
 
-if (HMC5883L[0] <> HMC5883L[3]) and (HMC5883L[1] <> HMC5883L[4]) and (HMC5883L[2] <> HMC5883L[5]):
+if (HMC5883L[0] <> HMC5883L[3]) or (HMC5883L[1] <> HMC5883L[4]) or (HMC5883L[2] <> HMC5883L[5]):
     print "7. HMC5883L: PASS"
 else:
     print "7. HMC5883L: FAIL"
 
-if (MLX75305[0] > MLX75305[1]):
+if (MLX75305[0] > MLX75305[1] + fudge_humi_counts):
     print "8. MLX75305: PASS"
 else:
     print "8. MLX75305: FAIL"
@@ -167,4 +184,6 @@ except:
 filethis = open(FileName, 'w+')
 filethis.write("".join(str([TMP421]+[HIH6130]+[TSL260RD]+[APDS9006020]+[ML8511]+[TSL250RD]+[HMC5883L]+[MLX75305]+[MLX90614])))
 filethis.close()
+print "===================================" 
 
+time.sleep(45)

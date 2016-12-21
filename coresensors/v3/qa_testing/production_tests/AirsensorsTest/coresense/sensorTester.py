@@ -6,7 +6,12 @@ TEMP_MAX = 35
 TEMP_MIN = 20
 HUMID_MAX = 0
 HUMID_MIN = 100
-LOG_PATH = "/tmp/"
+LOG_PATH = "../../log_files/"
+
+fudge_humi_counts = 10
+fudge_humi_percent = 2
+fudge_temp_C = 2
+fudge_temp_counts = 5
 
 SEQ_NO = []
 SPV1840LR5HB = []
@@ -19,6 +24,7 @@ MMA8452Q = []
 TSYS01 = []
 HIH4030 = []
 FileName = ' '
+
 port = serial.Serial('/dev/waggle_coresense', 115200)
 print "Starting test, gathering sensor readings..."
 while (1):
@@ -29,7 +35,8 @@ while (1):
     elif (line.startswith("SEQ_NO:")):
         SEQ_NO.append(int(line.split(':')[1].split('\r')[0]))
         if (FileName <> ' '):
-            print FileName
+            print ""
+            #print FileName
             break
     time.sleep(0.1)
 
@@ -58,14 +65,17 @@ for i in range (9):
     elif (line.startswith("HIH4030:")):
         HIH4030.append(int(line.split(':')[1].split('\r')[0]))
 
-print SEQ_NO, SPV1840LR5HB, TMP112, HTU21D, BMP180, TSL250RD, MMA8452Q, TSYS01, HIH4030, PR103J2
+#print SEQ_NO, SPV1840LR5HB, TMP112, HTU21D, BMP180, TSL250RD, MMA8452Q, TSYS01, HIH4030, PR103J2
 print "Gathered pre-stimulus readings."
+print " ------------------------------- "
 s = raw_input('Press enter after turning the board upside down and starting the heater:')
+print " ------------------------------- "
 
 while (port.inWaiting() > 0):
     port.readline()
-
+print "" 
 print "Proceeding..."
+print "" 
 
 while (1):
     line = port.readline()
@@ -100,32 +110,35 @@ for i in range (9):
         HIH4030.append(int(line.split(':')[1].split('\r')[0]))
     time.sleep(0.001)
 
-print "SEQ_NO, SPV1840LR5HB, TMP112, HTU21D, BMP180, TSL250RD, MMA8452Q, TSYS01, HIH4030, PR103J2"
-print SEQ_NO, SPV1840LR5HB, TMP112, HTU21D, BMP180, TSL250RD, MMA8452Q, TSYS01, HIH4030, PR103J2
-
+#print "SEQ_NO, SPV1840LR5HB, TMP112, HTU21D, BMP180, TSL250RD, MMA8452Q, TSYS01, HIH4030, PR103J2"
+#print SEQ_NO, SPV1840LR5HB, TMP112, HTU21D, BMP180, TSL250RD, MMA8452Q, TSYS01, HIH4030, PR103J2
+print ""
+print "===================================" 
 print "Test Results:"
+print "-----------------------------------" 
+print " "
 #test passing criteria
-if (TMP112[1] > TMP112[0]) :
+if (TMP112[1] > TMP112[0] + fudge_temp_C) :
     print "1. TMP112: PASS"
 else:
     print "1. TMP112: FAIL"
 
-if (HTU21D[2] > HTU21D[0]) and (HTU21D[1] > HTU21D [3]):
+if (HTU21D[2] > HTU21D[0] + fudge_temp_C) and (HTU21D[1] > HTU21D [3] + fudge_humi_percent):
     print "2. HTU21D: PASS"
 else:
     print "2. HTU21D: FAIL"
 
-if (HIH4030[0] > HIH4030[1]):
+if (HIH4030[0] > HIH4030[1] + fudge_humi_counts ):
     print "3. HIH4030: PASS"
 else:
     print "3. HIH4030: FAIL"
 
-if (BMP180[2] > BMP180[0]) and (BMP180[1] > 98000) and (BMP180[1] < 120000) and (BMP180[3] > 98000) and (BMP180[3] < 120000):
+if (BMP180[2] > BMP180[0] + fudge_temp_C) and (BMP180[1] > 98000) and (BMP180[1] < 120000) and (BMP180[3] > 98000) and (BMP180[3] < 120000):
     print "4. BMP180: PASS"
 else:
     print "4. BMP180: FAIL"
 
-if (PR103J2[0] < PR103J2[1]):
+if (PR103J2[0] < PR103J2[1] - fudge_temp_counts):
     print "5. PR103J2: PASS"
 else:
     print "5. PR103J2: FAIL"
@@ -145,7 +158,7 @@ if (SPV1840LR5HB[0] > 200):
 else:
     print "8. SPV1840LR5HB: FAIL"
 
-if (TSYS01[1] > TSYS01[0]):
+if (TSYS01[1] > TSYS01[0] + fudge_temp_C):
     print "9. TSYS01: PASS"
 else:
     print "9. TSYS01: FAIL"
@@ -154,4 +167,8 @@ filethis = open(FileName, 'w+')
 filethis.write("".join(str([TMP112]+[HTU21D]+[HIH4030]+[BMP180]+[PR103J2]+[TSL250RD]+[MMA8452Q]+[SPV1840LR5HB]+[TSYS01])))
 filethis.close()
 
+print "===================================" 
+print ""
+
+time.sleep(45)
 

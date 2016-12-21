@@ -1,4 +1,4 @@
-ARD_HOME = /home/rajesh/WaggleGIT/arduino-1.6.7
+ARD_HOME = $(ARDUINO_DIR)
 TARGET = coresense
 PACKAGE = arduino
 ARCH = sam
@@ -9,7 +9,7 @@ PORT = ttyACM0
 BOARD_FLASH = $(PACKAGE):$(ARCH):$(BOARD)
 BOOT_LOADER_TYPE = wiring
 PRE_FLASH_COMMAND = stty -F /dev/$(PORT) 1200 hupcl; sleep 2
-FLASHER = $(ARD_HOME)/Atmel_SAM/packages/arduino/tools/bossac/1.6.1-arduino/bossac
+FLASHER = bossac
 FLASH_BOARD = $(FLASHER) -i -d --port=$(PORT) -U true -e -w -v -b $(BIN_DIR)/$(TARGET).ino.bin -R
 BUILD_COMPLETE = mv $(BUILD_DIR)/$(TARGET).ino.bin $(BIN_DIR)/
 LINKPORT = /dev/$(PORT)
@@ -45,8 +45,8 @@ run:    install
 	#screen $(LINKPORT) $(SERIALBAUD)
 
 connect:
+	clear
 	sleep 2
-# 	screen $(LINKPORT) $(SERIALBAUD)
 	python sensorTester.py
 
 test:	program	connect
