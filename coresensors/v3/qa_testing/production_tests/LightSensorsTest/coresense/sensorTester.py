@@ -186,4 +186,4 @@ filethis.write("".join(str([TMP421]+[HIH6130]+[TSL260RD]+[APDS9006020]+[ML8511]+
 filethis.close()
 print "===================================" 
 
-time.sleep(45)
+time.sleep(20)

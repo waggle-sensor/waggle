@@ -68,7 +68,7 @@ for i in range (9):
 #print SEQ_NO, SPV1840LR5HB, TMP112, HTU21D, BMP180, TSL250RD, MMA8452Q, TSYS01, HIH4030, PR103J2
 print "Gathered pre-stimulus readings."
 print " ------------------------------- "
-s = raw_input('Press enter after turning the board upside down and starting the heater:')
+s = raw_input('Press press ENTER after turning the board upside down and starting the heater:')
 print " ------------------------------- "
 
 while (port.inWaiting() > 0):
@@ -170,5 +170,5 @@ filethis.close()
 print "===================================" 
 print ""
 
-time.sleep(45)
+time.sleep(20)
 
