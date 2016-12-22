@@ -55,7 +55,7 @@ def get_three_digits(db, mac, three_digits=-1):
     else:
         # something is wrong
         if len(ret) != 1:
-            return -1
+            return -1, ''
 
         return -1, ret[0]['mac']
 
