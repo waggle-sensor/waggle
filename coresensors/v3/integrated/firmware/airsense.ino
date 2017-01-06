@@ -177,7 +177,7 @@ void airsense_acquire (void)
         HTU21D_float[1] = (Temp_float[1] + HTU21D_float[1]) / 2;
         HTU21D_float[0] = (Temp_float[0] + HTU21D_float[0]) / 2;
 
-        if ((Temp_float[1] == 998 && HTU21D_float[0] == 998) || HTU21D_float[1] < 0 || HTU21D_float[1] > 100)
+        if (Temp_float[1] == 998 && HTU21D_float[0] == 998)
         {
             HTU21D_array[1] = (0 << 7) | (LENGTH_FORMAT6 * 2);
 

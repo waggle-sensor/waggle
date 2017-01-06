@@ -9,7 +9,6 @@ As shortly explained in document section \ref{ssec:sub-pack}, data sub-packets a
 The sensor boards output a set of parameters which are identified by a unique ID. Each parameter
 has a set of values associated with it which are encoded in an appropriate data format. The table
 below lists the various parameters produced by the sensor boards, the unique source ID used to identify them, the values produced by them and the format in which the value is encoded.
-\par
 Each parameter and its values are composed into a sub-packet based on
 the format described in document section \ref{ssec:sub-pack}.
 In the case of parameters with 2 or more values, the encoded values are
@@ -28,7 +27,7 @@ arranged in the sub-packets sequentially.
 \hline \rowcolor{black!8} \multicolumn{1}{|c|}{\textbf{Parameter}} & \multicolumn{1}{c|}{\textbf{Source ID}} & \multicolumn{1}{c|}{\textbf{Values}} & \multicolumn{1}{c|}{\textbf{Formats}} \\ \hline 
 \endhead
 
-% \rowcolor{black!8} \multicolumn{4}{|r|}{{Continued on next page}} \\ \hline
+\rowcolor{black!8} \multicolumn{4}{|r|}{{Continued on next page}} \\ \hline
 \endfoot
 
 \hline
@@ -84,9 +83,10 @@ arranged in the sub-packets sequentially.
         & & Visible light intensity & \\ \cline{3-3}
         & & IR intensity & \\ \hline
         Chemsense MAC address & 0x20 & MAC Address & Format 3\\ \hline
-        CO ADC temp & 0x21 & \multirow{2}{*}{ADC temperature} &  \multirow{2}{*}{Format 2}\\ \cline{1-2}
-        IAQ IRR ADC temp & 0x22 & &\\ \hline
-        O3 NO2 ADC temp & 0x23 & \multirow{3}{*}{ADC temperature} &  \multirow{3}{*}{Format 2} \\ \cline{1-2}
+
+        CO ADC temp & 0x21 & ADC temperature & Format 2 \\ \hline
+        IAQ IRR ADC temp & 0x22 & \multirow{4}{*}{ADC temperature} & \multirow{4}{*}{Format 2} \\ \cline{1-2}
+        O3 NO2 ADC temp & 0x23 & & \\ \cline{1-2}
         SO2 H2S ADC temp & 0x24 & & \\ \cline{1-2}
         CO LMP temp & 0x25 & &\\ \hline
         \multirow{4}{*}{Accelerometer} & \multirow{4}{*}{0x26} & Acceleration in X & \multirow{3}{*}{Format 2} \\ \cline{3-3}
@@ -108,17 +108,18 @@ arranged in the sub-packets sequentially.
         & & PM 1 &\\ \cline{3-3}
         & & PM 2.5 &\\ \cline{3-3}
         & & PM 10 &\\ \cline{1-3}
-        Firmware & 0x29 & Firmware version & \\ \cline{1-3}
-        \multirow{2}{*}{Configuration A} & \multirow{2}{*}{0x30} & Bin Boundaries &\\ \cline{3-3}
+        Serial & 0x29 & Serial Number & \\ \cline{1-3}
+        Firmware & 0x30 & Firmware version & \\ \cline{1-3}
+        \multirow{2}{*}{Configuration A} & \multirow{2}{*}{0x31} & Bin Boundaries &\\ \cline{3-3}
         & & Bin Particle Volumes A &\\ \cline{1-3}
-        \multirow{2}{*}{Configuration B} & \multirow{2}{*}{0x31} & Bin Particle Volumes B &\\ \cline{3-3}
+        \multirow{2}{*}{Configuration B} & \multirow{2}{*}{0x32} & Bin Particle Volumes B &\\ \cline{3-3}
         & & Bin Particle Densities A &\\ \cline{1-3}
-        \multirow{2}{*}{Configuration C} & \multirow{2}{*}{0x32} & Bin Particle Densities B &\\ \cline{3-3}
+        \multirow{2}{*}{Configuration C} & \multirow{2}{*}{0x33} & Bin Particle Densities B &\\ \cline{3-3}
         & & Bin Sample Volume Weightings A &\\ \cline{1-3}
-        \multirow{6}{*}{Configuration D} & \multirow{6}{*}{0x33} & Bin Sample Volume Weightings B &\\ \cline{3-3}
+        \multirow{3}{*}{Configuration D} & \multirow{3}{*}{0x34} & Bin Sample Volume Weightings B &\\ \cline{3-3}
         & & Gain Scaling Coefficient & \\ \cline{3-3}
-        & & Sample Flow Rate & \\ \cline{3-3}
-        & & Laser DAC and Fan DAC & \\ \cline{3-3}
+        & & Sample Flow Rate & \\
+        \multirow{3}{*}{Configuration D} & \multirow{3}{*}{0x34} & Laser DAC and Fan DAC & \\ \cline{3-3}
         & & Conversion factor & \\ \cline{3-3}
         & & Space Bytes & \\ 
 

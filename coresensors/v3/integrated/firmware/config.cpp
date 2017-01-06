@@ -178,22 +178,23 @@
 
 //** alphasensor
 #ifdef ALPHASENSE_INCLUDE
-    #define LENGTH_ALPHA_FIRMWARE 2
     #define LENGTH_ALPHA_HISTOGRAM 62
+    #define LENGTH_ALPHA_SERIAL 20
+    #define LENGTH_ALPHA_FIRMWARE 2
+
     #define LENGTH_ALPHA_CONFIG_A 64
     #define LENGTH_ALPHA_CONFIG_B 64
     #define LENGTH_ALPHA_CONFIG_C 64
     #define LENGTH_ALPHA_CONFIG_D 64
 
     #define ID_ALPHA_HISTOGRAM 0x28
-    #define ID_ALPHA_FIRMWARE 0x29
+    #define ID_ALPHA_SERIAL 0x29
+    #define ID_ALPHA_FIRMWARE 0x30
 
-    #define ID_ALPHA_CONFIG_A 0x30
-    #define ID_ALPHA_CONFIG_B 0x31 
-    #define ID_ALPHA_CONFIG_C 0x32
-    #define ID_ALPHA_CONFIG_D 0x33
-
-    #define CHEM_OR_ALPHA 0x01
+    #define ID_ALPHA_CONFIG_A 0x31
+    #define ID_ALPHA_CONFIG_B 0x32 
+    #define ID_ALPHA_CONFIG_C 0x33
+    #define ID_ALPHA_CONFIG_D 0x34
 #endif
 
 

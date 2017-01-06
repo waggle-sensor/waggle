@@ -23,7 +23,7 @@ The equations will be provided comming subsections.
 \hline \rowcolor{black!8} \multicolumn{1}{|l|}{\textbf{Sensor/Parameter}} & \multicolumn{1}{c|}{\textbf{Raw Units}} & \multicolumn{1}{c|}{\textbf{Processed Units}} & \multicolumn{1}{c|}{\textbf{Comments}} \\ \hline
 \endhead
 
-% \rowcolor{black!8} \multicolumn{4}{|r|}{{Continued on next page}} \\ \hline
+\rowcolor{black!8} \multicolumn{4}{|r|}{{Continued on next page}} \\ \hline
 \endfoot
 
 \hline
@@ -84,23 +84,26 @@ The equations will be provided comming subsections.
     PM2.5 & $\mu$g/m$^3$ & & \\ \hline
     PM10 & $\mu$g/m$^3$ & & \\ \hline
  
+ \rowcolor{black!2} \multicolumn{4}{|c|}{{Serial Number}} \\ \hline
+    Serial & raw register & & \\ \hline
+ 
  \rowcolor{black!2} \multicolumn{4}{|c|}{{Firmware}} \\ \hline
     Firmware & raw integer & & \\ \hline
  
  \rowcolor{black!2} \multicolumn{4}{|c|}{{Configuration}} \\ \hline
-    \rowcolor{white} \multicolumn{4}{|c|}{{Configuration Packet A (Source ID 0x30)}} \\ \hline
+    \rowcolor{white} \multicolumn{4}{|c|}{{Configuration Packet A (Source ID 0x31)}} \\ \hline
     Bin boundaries & raw integer & & \\ \hline 
     Bin particle Volumes A & raw float & & \\ \hline
     
-    \rowcolor{white} \multicolumn{4}{|c|}{{Configuration Packet B (Source ID 0x31)}} \\ \hline
+    \rowcolor{white} \multicolumn{4}{|c|}{{Configuration Packet B (Source ID 0x32)}} \\ \hline
     Bin particle Volumes B & \multirow{2}{*}{raw float} & & \\ \cline{1-1} \cline{3-4}
     Bin particle Densities A & & & \\ \hline
 
-    \rowcolor{white} \multicolumn{4}{|c|}{{Configuration Packet C (Source ID 0x32)}} \\ \hline
+    \rowcolor{white} \multicolumn{4}{|c|}{{Configuration Packet C (Source ID 0x33)}} \\ \hline
     Bin particle Densities B & \multirow{2}{*}{raw float} & & \\ \cline{1-1} \cline{3-4}
     Bin sample Volume Weightings A & & & \\ \hline
 
-    \rowcolor{white} \multicolumn{4}{|c|}{{Configuration Packet D (Source ID 0x33)}} \\ \hline
+    \rowcolor{white} \multicolumn{4}{|c|}{{Configuration Packet D (Source ID 0x34)}} \\ \hline
     Bin sample Volume Weightings B & \multirow{3}{*}{raw float} & & \\ \cline{1-1} \cline{3-4}
     Gain scaling Coefficient & & & \\ \cline{1-1} \cline{3-4}
     Sample flow Rate & & & \\ \hline

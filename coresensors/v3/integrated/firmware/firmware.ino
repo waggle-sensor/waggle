@@ -62,15 +62,13 @@ void setup()
     #endif
 
     #ifdef ALPHASENSE_INCLUDE    
-    SPI.begin(); // data from the ****************************************************** alphasensor
+    SPI.begin(); // data from the ****************************************************** alpha sensor
     delay(15000);
-    alphasense_on();
-    SerialUSB.print("on");
+    alphasense_on();    // power on laser and fan: Laser and fan must be on to get correct data
     delay(10000);
 
     alphasense_firmware();
     alphasense_config();
-    //     Serial.print("configuration");
     delay(1000);
 
     flag_alpha = true;
@@ -87,6 +85,13 @@ void loop()
 {
     count = 0;
 
+    #ifdef AIRSENSE_INCLUDE
+    airsense_initial();
+    #endif
+
+    #ifdef LIGHTSENSE_INCLUDE    
+    lightsense_initial();
+    #endif
 
     while(count < 10)
     {    
@@ -96,27 +101,20 @@ void loop()
         #endif
     }
 
-    #ifdef AIRSENSE_INCLUDE
-    airsense_initial();
+    #ifdef AIRSENSE_INCLUDE    
+    airsense_acquire();
     #endif
 
     #ifdef LIGHTSENSE_INCLUDE    
-    lightsense_initial();
+    lightsense_acquire();
     #endif
 
     while (count < 24)       // every 24 sec
     {
-        #ifdef AIRSENSE_INCLUDE    
-        airsense_acquire();
-        #endif
-
-        #ifdef LIGHTSENSE_INCLUDE    
-        lightsense_acquire();
-        #endif
-
-
         #ifdef ALPHASENSE_INCLUDE        
         alphasense_histo();
+        delay(100);
+        alphasense_serial();
         delay(100);
         
         if (count == 23)        //every 23 sec
