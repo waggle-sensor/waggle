@@ -204,6 +204,16 @@ class usbSerial ( threading.Thread ):
                                             consume_ptr = consume_ptr + 2 + This_id_msg_size
                                             if (This_id_msg_valid == 1):
 
+                                                if int(This_id) == 0 or int(This_id) == 32:
+                                                    data = ''
+                                                    for i in range(len(This_id_msg)):
+                                                        data = data + str(hex(This_id_msg[i]))[2:].zfill(2)
+
+                                                    if int(This_id) == 0:
+                                                        print("Met Mac Address: ", data)
+                                                    else:
+                                                        print("Chem Mac Address: ", data)
+
                                                 if int(This_id) >= 0 and int(This_id) <= 9:
                                                     if sensors['met'] == True:
                                                         continue

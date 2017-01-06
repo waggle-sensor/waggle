@@ -41,6 +41,34 @@ void alphasense_off()
 #endif
 }
 
+void alphasense_serial()
+{
+    alpha_serial[1] = (1 << 7) | LENGTH_ALPHA_SERIAL;
+
+    //** Get serial
+    SPI.beginTransaction(set1);
+    digitalWrite(PIN_ALPHASENSE_SLAVE, LOW);
+    delay(100);
+    
+    SPI.transfer(0x10);    // 0xF3
+    delay(100);
+
+    for (i = 0; i < 20; i++)
+    {
+        alpha_firmware[i + 2] = SPI.transfer(0x10);
+        delay(100);
+    }
+
+    digitalWrite(PIN_ALPHASENSE_SLAVE, HIGH);
+    SPI.endTransaction();
+
+#ifdef ALPHA_DEBUG
+    for (i = 0; i < 20; i++)
+        SerialUSB.write(alpha_firmware[i]);
+#endif
+}
+
+
 void alphasense_firmware()
 {
     alpha_firmware[1] = (1 << 7) | LENGTH_ALPHA_FIRMWARE;

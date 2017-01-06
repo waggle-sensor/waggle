@@ -75,8 +75,9 @@ byte three_gyro_and_orientation[(LENGTH_FORMAT2 * 3) + LENGTH_FORMAT4 + 2];
 
 #ifdef ALPHASENSE_INCLUDE
 //** alphasensor
-byte alpha_firmware[LENGTH_ALPHA_FIRMWARE + 2];
 byte alpha_histogram[LENGTH_ALPHA_HISTOGRAM + 2];
+byte alpha_firmware[LENGTH_ALPHA_FIRMWARE + 2];
+byte alpha_serial[LENGTH_ALPHA_SERIAL + 2];
 
 byte alpha_config_a[LENGTH_ALPHA_CONFIG_A + 2];
 byte alpha_config_b[LENGTH_ALPHA_CONFIG_B + 2];

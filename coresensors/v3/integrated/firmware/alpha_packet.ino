@@ -16,6 +16,16 @@ void alpha_packet_whole()
         alpha_histogram[1] = (0 << 7) | LENGTH_ALPHA_HISTOGRAM;
     }
 
+    if ((alpha_serial[1] & 0x80) == 0x80)
+    {
+        for (i = 0; i < sizeof(alpha_serial); i++)
+        {
+            packet_whole[packet_whole_index] = alpha_serial[i];
+            packet_whole_index++;
+        }
+        alpha_serial[1] = (0 << 7) | LENGTH_ALPHA_SERIAL;
+    }
+
     if (flag_alpha == true)
     {
         if ((alpha_firmware[1] & 0x80) == 0x80)

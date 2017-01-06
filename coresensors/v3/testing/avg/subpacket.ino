@@ -142,8 +142,9 @@ void sensor_buff_initialization()
 
 #ifdef ALPHASENSE_INCLUDE
 	// initialize FIRST BYTE of the arrays
-	alpha_firmware[0] = ID_ALPHA_FIRMWARE;
 	alpha_histogram[0] = ID_ALPHA_HISTOGRAM;
+	alpha_serial[0] = ID_ALPHA_SERIAL;
+	alpha_firmware[0] = ID_ALPHA_FIRMWARE;
 
 	alpha_config_a[0] = ID_ALPHA_CONFIG_A;
 	alpha_config_b[0] = ID_ALPHA_CONFIG_B;
@@ -152,8 +153,9 @@ void sensor_buff_initialization()
 
 
 	// initialize SECOND BYTE of the arrays
-	alpha_firmware[1] = (0 << 7) | LENGTH_ALPHA_FIRMWARE;
 	alpha_histogram[1] = (0 << 7) | LENGTH_ALPHA_HISTOGRAM;
+	alpha_serial[1] = (0 << 7) | LENGTH_ALPAH_SERIAL;
+	alpha_firmware[1] = (0 << 7) | LENGTH_ALPHA_FIRMWARE;
 
 	alpha_config_a[1] = (0 << 7) | LENGTH_ALPHA_CONFIG_A;
 	alpha_config_b[1] = (0 << 7) | LENGTH_ALPHA_CONFIG_B;
