@@ -20,7 +20,7 @@ echo "Run test using only CPUs" >> result.log
 ./logger.py &
 logger_pid=$!
 sleep 1
-./cout_mat
+./test_program
 
 kill -9 $logger_pid
 
@@ -32,7 +32,7 @@ sleep 3
 #./logger.py &
 #logger_pid=$!
 #sleep 1
-#./cout_mat -cl
+#./test_program -cl
 
 #kill -9 $logger_pid
 

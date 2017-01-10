@@ -28,7 +28,3 @@ This procedure describes how the GPU on XU4 works and measures performance of th
 ```
 
 2.Wait for a couple of minutes (by default the code runs with/without GPU takes 30 seconds each and there are some ```sleep``` between execution of the test program). After the script finishes __result.log__ will be generated and will contain result of the execution.
-
-2. 
-
-cat /sys/devices/11800000.mali/utilization
