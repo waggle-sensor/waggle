@@ -1,0 +1,40 @@
+#!/bin/bash
+
+set +x
+
+# Set library paths
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/arm-linux-gnueabihf/mali-egl/:/usr/local/lib
+export current_dir="$(pwd)"
+
+gpu="$(ls /dev/mali* | wc -l)"
+if [ $gpu -eq 0 ]; then
+  echo "no gpu detected"
+  exit
+fi
+opencl="$(ls /usr/lib/arm-linux-gnueabihf/mali-egl/libOpenCL.so | wc -l)"
+
+# install openCL library
+if [ $opencl -eq 0 ]; then
+  cd $current_dir
+  git clone https://github.com/mdrjr/5422_mali.git
+  cd 5422_mali
+  # change the version to r9 because the 10.1 version of the kernel driver is not compatible with r14, which is the latest
+  git checkout r9p0
+  cd fbdev
+  make
+  cd $current_dir
+fi
+
+# install openCV binaries
+cp -r include/* /usr/local/include
+cp -r libs/* /usr/local/lib
+
+# make the program
+make clean
+make
+
+# check version of openCV and openCL
+./openCV_CL_ver
+
+echo "Installation done"
+

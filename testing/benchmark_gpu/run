@@ -1,0 +1,43 @@
+#!/bin/bash
+
+set +x
+
+# Set library paths
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/arm-linux-gnueabihf/mali-egl/:/usr/local/lib
+
+echo "Test start" > result.log
+
+echo "Measure baseline" >> result.log
+
+./logger.py &
+logger_pid=$!
+sleep 30
+
+kill -9 $logger_pid
+
+echo "Run test using only CPUs" >> result.log
+
+./logger.py &
+logger_pid=$!
+sleep 1
+./cout_mat
+
+kill -9 $logger_pid
+
+echo "wait 3 sec" >> result.log
+sleep 3
+
+#echo "Run test using GPU" >> result.log
+
+#./logger.py &
+#logger_pid=$!
+#sleep 1
+#./cout_mat -cl
+
+#kill -9 $logger_pid
+
+#echo "wait 3 sec" >> result.log
+#sleep 3
+
+echo "Done" >> result.log
+echo "Done"
