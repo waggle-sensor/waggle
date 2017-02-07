@@ -3,7 +3,7 @@
 set -e
 set -x
 
-VERSION="0.06.05"
+VERSION="0.07.18"
 
 apt-get install -y libattr1-dev libkeyutils-dev libbsd-dev
 
