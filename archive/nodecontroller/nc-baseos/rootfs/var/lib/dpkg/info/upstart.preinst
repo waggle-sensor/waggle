@@ -1,8 +1,0 @@
-#!/bin/sh
-set -e
-# Automatically added by dh_installdeb
-dpkg-maintscript-helper rm_conffile /etc/init/dbus-reconnect.conf 0.6.3-7 -- "$@"
-# End automatically added section
-# Automatically added by dh_installdeb
-dpkg-maintscript-helper rm_conffile /etc/init/upstart-dbus-bridge.conf 1.9.1-0ubuntu4 -- "$@"
-# End automatically added section

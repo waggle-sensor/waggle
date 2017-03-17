@@ -1,2 +1,0 @@
-ucf: no-debconf-config
-ucf: debconf-is-not-a-registry usr/bin/ucf

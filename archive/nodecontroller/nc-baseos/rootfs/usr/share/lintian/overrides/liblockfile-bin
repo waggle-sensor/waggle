@@ -1,1 +1,0 @@
-liblockfile-bin binary: setgid-binary usr/bin/dotlockfile 2755 root/mail

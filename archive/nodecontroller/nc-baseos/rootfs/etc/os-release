@@ -1,9 +1,0 @@
-NAME="Linaro"
-VERSION="14.04"
-ID=linaro
-ID_LIKE=debian
-PRETTY_NAME="Linaro 14.04"
-VERSION_ID="14.04"
-HOME_URL="http://www.linaro.org/"
-SUPPORT_URL="http://linaro.zendesk.com/"
-BUG_REPORT_URL="http://bugs.launchpad.net/linaro-ubuntu"

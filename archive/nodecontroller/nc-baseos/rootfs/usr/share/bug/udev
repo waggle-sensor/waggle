@@ -1,7 +1,0 @@
-#!/bin/sh
-
-echo "--------------" >&3
-echo "udev database:" >&3
-echo "--------------" >&3
-
-udevadm info --export-db >&3

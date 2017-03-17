@@ -1,15 +1,3 @@
-[submodule "beehive-server"]
-	path = beehive-server
-	url = https://github.com/waggle-sensor/beehive-server.git
-[submodule "nodecontroller"]
-	path = nodecontroller
-	url = https://github.com/waggle-sensor/nodecontroller.git
-[submodule "guestnodes"]
-	path = guestnodes
-	url = https://github.com/waggle-sensor/guestnodes.git
 [submodule "wagman"]
 	path = wagman
 	url = https://github.com/waggle-sensor/wagman
-[submodule "devtools/waggle_protocol"]
-	path = devtools/waggle_protocol
-	url = https://github.com/waggle-sensor/waggle-protocol.git

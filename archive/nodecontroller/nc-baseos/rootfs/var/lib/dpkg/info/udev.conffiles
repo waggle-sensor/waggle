@@ -1,9 +1,0 @@
-/etc/init.d/udev
-/etc/udev/rules.d/README
-/etc/udev/udev.conf
-/etc/init/udev-finish.conf
-/etc/init/udev-fallback-graphics.conf
-/etc/init/udevmonitor.conf
-/etc/init/udev.conf
-/etc/init/udevtrigger.conf
-/etc/modprobe.d/fbdev-blacklist.conf

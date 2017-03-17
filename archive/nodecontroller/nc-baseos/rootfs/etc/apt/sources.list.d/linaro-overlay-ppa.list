@@ -1,3 +1,0 @@
-# Linaro Overlay PPA
-deb http://ppa.launchpad.net/linaro-maintainers/overlay/ubuntu trusty main
-deb-src http://ppa.launchpad.net/linaro-maintainers/overlay/ubuntu trusty main

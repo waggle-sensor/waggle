@@ -1,5 +1,0 @@
-setenv initrd_high "0xffffffff"
-setenv fdt_high "0xffffffff"
-setenv bootcmd "ext4load mmc 0:1 0x40008000 uImage; bootm 0x40008000"
-setenv bootargs "console=tty1 console=ttySAC1,115200n8 root=/dev/mmcblk0p2 rootwait rw mem=2047M debug"
-boot

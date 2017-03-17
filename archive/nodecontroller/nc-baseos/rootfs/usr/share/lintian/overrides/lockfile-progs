@@ -1,3 +1,0 @@
-lockfile-progs binary: setgid-binary usr/bin/mail-lock 2755 root/mail
-lockfile-progs binary: setgid-binary usr/bin/mail-unlock 2755 root/mail
-lockfile-progs binary: setgid-binary usr/bin/mail-touchlock 2755 root/mail

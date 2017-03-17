@@ -1,9 +1,0 @@
-#!/bin/sh -e
-
-dpkg-maintscript-helper rm_conffile /etc/init.d/module-init-tools 3.16-1 -- "$@"
-dpkg-maintscript-helper rm_conffile /etc/modprobe.d/aliases.conf 3.16-1 -- "$@"
-dpkg-maintscript-helper rm_conffile /etc/init/module-init-tools.conf 9-2ubuntu5 -- "$@"
-
-
-
-exit 0

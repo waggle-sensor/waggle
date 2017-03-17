@@ -1,6 +1,0 @@
-The waggle develoment environment is slightly complex since there are
-many microprocessors and CPUs that run software stacks. To make this
-easier, when each component is built, it is put here, so it can be
-transferred to the correct location (wagman, envsense, nodecontroller,
-cloud).
-
