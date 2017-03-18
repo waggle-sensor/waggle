@@ -9,9 +9,7 @@ This github repository holds the source code of the Waggle project. The Waggle p
 node.  Currently, we are using a hardkernel.com ODROID C1+ single-board
 computer to be the Node Controller.  In addition to a mostly stock
 Linux, the Node Controller has waggle's communication libraries, extra
-resilience features, and support for in-situ processing.
-
-[Node-controller Code Repository](https://github.com/waggle-sensor/sensors)
+resilience features, and support for in-situ processing. [Node-controller Code Repository](https://github.com/waggle-sensor/sensors)
 
 
 2. **The WagMan system management board** for managing a sensor node.
