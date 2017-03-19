@@ -1,4 +1,4 @@
-WAGGLE SOFTWARE LICENSE (BSD 3-clause): 
+WAGGLE SOFTWARE LICENSE (BSD 3-clause):
 
 Copyright (c) 2013-2016 UChicago Argonne, LLC, operator of Argonne
 National Laboratory. All rights reserved.
