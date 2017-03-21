@@ -1,0 +1,574 @@
+#!/usr/bin/perl
+
+# Pete Beckman
+# Original: 1999
+#     Advanced Computing Laboratory
+#     Los Alamos National Laboratory
+# Edited: 2017
+
+# See the subroutine print_usage() for information about this script.
+
+#######################################################################
+#######################################################################
+
+use Getopt::Long;
+use File::Find;
+use File::Copy;
+
+#######################################################################
+# Important Constants:
+
+@filetags = ('// ANL:', '/* ANL:', '# ANL:');   # Special tags
+@comment = ('// ', ' * ', '#  ');               # prefix for comment line
+
+
+#######################################################################
+# Global Variables, Per Execution
+
+$ignore = 0;                     # ignore the current file 
+$i = 0;                          # misc
+$outfile = "/tmp/aclsrcfix.$$";  # temporary output file
+@insfile_cache = ();             # cache if the comment block to insert
+@dummy = ();
+$mode = 0;
+$retval = 0;        # return value for system() calls
+$curperms = 0;      # current perms of the file
+
+
+#######################################################################
+# Modified by command line arguments
+
+$tail_option = 0;     # insert the comments into the head if a no label block
+$quiet_option = 0;    # print info by default
+$delete_option = 0;   # delete label, and everything between
+$help_option = 0;     # print help information
+$label_option = "";   # label to use for comment block
+$strip_option = 0;    # Strip out *all* labels
+$insfile = "";        # file to insert as comment block
+
+#######################################################################
+# Global Variables, Per File
+
+$filetype = -1;       # array index for @filetags
+$in_insert = 0;       # Currently inside a replacement section
+$after_insert = 0;    # Done... just copy lines
+
+
+#######################################################################
+# MAIN()
+
+# Parse the command line options:
+
+&GetOptions("help", \$help_option, 
+            "quiet", \$quiet_option, 
+            "delete", \$delete_option,
+            "tail", \$tail_option,
+            "strip", \$strip_option, 
+            "label=s", \$label_option, 
+            "insert=s", \$insfile);
+
+# After options, there should be two arguments:
+if (($#ARGV != 0) || ($help_option)) {
+  &print_usage();
+  exit 0;
+}
+
+if ((! $label_option) && (! $strip_option)) {
+  die("ERROR: You must specify either --label=LABEL or --strip\n");
+}
+
+# check for conflicts
+if (($delete_option) && ($insfile)) {
+  die("ERROR:  --delete and --insert options are mutually exclusive\n");
+}
+
+if ((! $delete_option) && (! $insfile) && (! $strip_option)) {
+  die("ERROR:  --delete, --insert, or --strip must be specified, or program is useless\n");
+}
+
+$srcfile = $ARGV[0];
+
+# Read in and cache the comments to be inserted (if we are inserting)
+&cache_insertfile("$insfile") if ($insfile);
+
+# if the <source> is a file, do the simple thing, otherwise traverse
+# the direcotory
+
+if (-d $srcfile) {
+  # traverse the directory with find()
+
+  # Find all the files to act on:
+  find(\&doit,"$srcfile");
+}
+
+else {
+  $curfile = $srcfile;
+  # simple file
+  if ($strip_option) {
+    &strip_file();
+  } 
+  else {
+    &modify_file();
+  }
+}
+
+exit 0;
+
+
+#######################################################################
+# Modify the current source file
+
+sub modify_file {
+
+  # The global variable argument is: $curfile
+
+  local($i,$j);
+
+# State Machine Variables:
+$in_insert = 0;             # Currently inside a replacement section
+$after_insert = 0;          # Done... just copy lines
+$filetype = -1;             # No filetype yet...
+$ignore = 0;                # Something was not kosher, ignore this file
+
+open(CURFILE,"<$curfile") || cleanup("Cound not open $curfile for read");
+open(OUTFILE,">$outfile") || cleanup("Could not open $outfile for write");
+
+while (<CURFILE>) {
+    chop;
+
+    # State Machine Stuff
+
+    ########################################################
+    # Am I on the tail, after the insert?
+    if ($after_insert) {
+	# Simply copy out the rest of the file
+        print OUTFILE "$_\n";
+	next;
+    }
+
+    ########################################################
+    # Is this the beginning of an insert section?
+
+    if ($in_insert == 0) {    # we have not started a section yet
+  
+      # for the first match, try and determine the filetype simultaneously
+      $j = 0;
+      foreach $i (@filetags) {
+        $x = quotemeta($i);
+        if (/^$x$label_option/) {
+          $filetype = $j;
+        }
+        $j++;
+      }
+
+      # did I find a label (thereby setting the filetype?)
+      if ($filetype >= 0) {
+        # YES!!! Start inserting the file here (or delete everything)
+
+        $in_insert = 1;
+
+        if (! $delete_option) {
+          print OUTFILE "$_\n"; # write the label back out
+          &do_insert();              # insert the file
+        }
+  
+        # Now we basically continue skipping stuff (the current insert) until
+        # the finish marker is found
+        next;
+      }
+    } 
+
+    ########################################################
+    # Am I skipping an old comment block, looking for the finish marker?
+    if ($in_insert) {
+
+      $x = quotemeta($filetags[$filetype]);
+
+      if (/^$x$label_option/) {
+        # I found the trailing marker, the section is closed
+
+        if (! $delete_option) {
+          # Spit back out the trailing marker
+          print OUTFILE "$_\n";
+        }
+
+	$after_insert = 1;
+        next;
+      }
+    else {
+      # This is just a line to skip... you have been replaced
+      next;
+      }
+
+    }
+
+    ########################################################
+    # Default, just echo the line back out
+    print OUTFILE "$_\n";
+
+}
+
+close(CURFILE);
+close(OUTFILE);
+
+#######################################################################
+ 
+
+# Ok, some status checking.
+
+if (($in_insert) && ($after_insert) && (! $quiet_option)) {
+  if ($delete_option) {
+    print "$curfile: comment block '$label_option' deleted\n";
+  }
+  else {
+    print "$curfile: comment block '$label_option' replaced\n";
+  }
+}
+
+if (($in_insert == 0) && ($after_insert == 0)) {
+
+  # Ok, we have to insert a labeled comment block for the file, this
+  # means reopening it, and then putting it into the head or tail,
+  # depending on the option flag
+
+  if (($delete_option) && (! $quiet_option)) {
+    print "$curfile: nothing deleted, no block labeled '$label_option'\n";
+  } 
+  else {
+    insert_block_into();
+  }
+}  
+
+if (($in_insert) && ($after_insert == 0)) {
+  print "$curfile: Problem! No trailing comment block for '$label_option' found\n";
+}
+
+if (($in_insert == 0) && ($after_insert)) {
+ cleanup("$curfile: BIZARRE ERROR!!! I have no idea what happened");
+}
+
+if (! $ignore) {
+  # If I am here, all was fine, and I can replace the input file with
+  # the output file.
+
+# COMMENT OUT THIS SECTION
+#  # Find the current perms on the file, so they can be reproduced
+#  @dummy = stat($curfile);
+#  # A great big hack that Curt Canada taught me
+#  $mode = $dummy[2] & 07777;
+
+# move over top of the existing file
+move($outfile,$curfile);
+
+# COMMENT OUT THIS SECTION
+#  #restore the permissions
+#  chmod $mode, $curfile;
+
+
+}
+else {
+  system("/bin/rm $outfile");
+}
+
+}
+
+
+##############################################################################
+sub cleanup {
+  # If there was a problem, try to clean up the mess
+
+  local($exitstring) = @_;
+
+  # If these were not open yet, there is no problem trying to close them
+  close(OUTFILE);
+  close(CURFILE);
+
+  # remove the temporary outfile
+  system("/bin/rm $outfile") if (-f $outfile);
+
+  die("ERROR: $exitstring\n");
+
+}
+
+##############################################################################
+# Rather than open/close the file to be inserted **EACH** time for
+# each source code file, I cache the insert file into an array
+sub cache_insertfile {
+
+  local($i) = @_;
+
+  local($j);
+
+  open(INSFILE,"<$i") || &cleanup("Could not open the insert file $i");
+
+  $j = 0;
+  while (<INSFILE>) {
+    chop;
+
+    $insfile_cache[$j] = $_;
+    $j++;
+  }
+  close(INSFILE);
+}
+
+
+##############################################################################
+# Paste the cached 'insertfile' lines into the outfile file, prefixing
+# each line with the appripriate comment character for this filetype
+
+sub do_insert {
+
+  local($first);
+  $first = 1;
+
+  foreach (@insfile_cache) {
+
+    # Check if this is the first line (something special for C-style)
+    if ($first) {
+      $first = 0;
+
+      if ($filetype == 1) {
+        # C style before/after comments, so lead off with a C prefix
+        print OUTFILE "/* $_\n";
+        next;
+      }
+    }
+
+    # Just spit stuff out with the appropriate prefix
+    print OUTFILE "$comment[$filetype]$_\n";
+  }
+
+  # Do I need to wrap up a C-style comment block with an extra line?
+  if ($filetype == 1) { # C Style comments
+    print OUTFILE " */\n";
+  }
+
+}
+
+#######################################################################
+# The target file has **NO** labeled block, so I must insert one
+# myself The tricky part, is that I have no idea what kind of file
+# this is... What is the filetype?  I will try and guess using the
+# first line of the file.  If not, I will print a warning and punt
+
+sub insert_block_into {
+
+  local($first,$x);
+  $first = 1; 
+
+  open(CURFILE,"<$curfile") || cleanup("Cound not open $curfile for read");
+  open(OUTFILE,">$outfile") || cleanup("Could not open $outfile for write");
+
+  while (<CURFILE>) {
+    chop;
+
+    # Is this the first line?
+    if ($first) {
+      $first = 0;
+      
+      # take this opportunity to guess at the file type:
+      if (/^\/\//) {
+        # Guessing this is a C++ file
+        $filetype = 0;
+      }       
+      if (/^\/\*/) {
+        # Guessing this is a C file
+	$filetype = 1;
+      }  
+      if (/^\#!|^\# /) {
+	# Guessing this is a script or makefile 
+        $filetype = 2;
+      }      
+      if (($filetype < 0) && ($curfile =~ /.*\.py/)) {
+	# No filetype guessed by looking at first line, so guessing file is python based on filename.
+        $filetype = 2;
+      }      
+   
+      if ($filetype < 0) {
+        print "WARNING:  could not determine file type for $curfile,";
+        print " file ignored\n";
+        close(CURFILE);
+        close(OUTFILE);
+        $ignore = 1;
+        return;
+      }
+         
+      # prepare label for printing
+      $x = "$filetags[$filetype]$label_option";
+      if ($filetype == 1) {  # C-Style, must append */
+      $x = $x . " */";
+      }
+
+      # Am I inserting at the head, after the first line?
+      if (! $tail_option) {
+        
+        print OUTFILE "$_\n";    # spit back out that first line
+
+        print OUTFILE "$x\n";
+        &do_insert();  # insert the comment block
+        print OUTFILE "$x\n";
+        next;
+      }
+    }
+
+    # Ok, we are not the first line, do nothing
+    print OUTFILE "$_\n";
+  }
+
+  # If I did not insert it at the head, I must insert it here
+  if ($tail_option) {
+    
+    print OUTFILE "$x\n";
+    &do_insert();  # insert the comment block
+    print OUTFILE "$x\n";
+  }
+
+  close(OUTFILE);
+  close(CURFILE);
+
+  if (! $quiet_option) {
+    print "$curfile: no exisiting comment block, one was added\n";
+  }
+}
+
+#######################################################################
+# Print Usage
+
+sub print_usage {
+
+print <<EOF;
+ 
+NAME
+    aclsrcfix - A program to manage comment blocks for source distributions
+
+SYNOPSIS
+    aclsrcfix [--help] [--delete] [--quiet] [--tail] [--strip]
+            [ --label=LABEL ] [ --insert=<insert-file> ] <source>
+
+DESCRIPTION
+    This program modifies source code, allowing a block of comments to
+    be added, modified, or deleted.  The most common use of this
+    script is to modify a source code file to replace the license,
+    distribution, or common information at the top with a more current
+    version, or to insert a block of RCS variables at the bottom of a
+    file that has none.  It can also be used to delete certain comment
+    section for source code being packaged and distributed.
+
+    To find the block of comments to be modified, structured 'labels'
+    are used.  There are three types of labels, and comment styles:
+
+    // ANL:<label>
+    /* ANL:<label> */
+    # ANL:<label>
+
+    Those label tags must occur in the first column of the file to be
+    seen by this program.  Furthermore, there must be two labels, one
+    marks the beginning, and one marks the end of the comment block.
+
+    Below is an example using C++ style comments
+
+    // some regular stuff
+     
+    // ANL:license
+    // This is ANL license information, it can be block replaced
+    // more information
+    // ANL:license
+
+OPTIONS
+    --label=LABEL 
+                Defines the comment block label to use
+    --insert=<insert-file>
+                The file used to replace/insert the comment block
+    <source> 
+                The file or directory (recursive decent) to be modified
+
+    --strip     Remove all labels.  Use *ONLY* for final distribution of src
+    --help      print this usage information
+    --delete    delete the labeled block, AND the label markers
+    --quiet     Quiet operation
+    --tail      Insert comment block at the end of the source file.  By 
+	        default, new sections are inserted *after* the first line.
+
+AUTHOR
+    Pete Beckman
+    beckman\@anl.gov
+
+EOF
+
+}
+    
+#######################################################################
+# Strip out all comment labels
+
+sub strip_file {
+
+  # The global variable argument is: $curfile
+
+  local($i,$j);
+
+  open(CURFILE,"<$curfile") || cleanup("Cound not open $curfile for read");
+  open(OUTFILE,">$outfile") || cleanup("Could not open $outfile for write");
+
+  while (<CURFILE>) {
+    chop;
+
+    $j = 0;
+    foreach $i (@filetags) {
+      $x = quotemeta($i);
+      # Skip this line if it is a label
+      $j = 1 if (/^$x/);
+    }
+
+    next if ($j);   # skip printing the comment label line
+
+    print OUTFILE "$_\n";
+  }
+
+  close(CURFILE);
+  close(OUTFILE);
+
+  # If I am here, all was fine, and I can replace the input file with
+  # the output file.
+
+# COMMENT OUT THIS SECTION
+#  # Find the current perms on the file, so they can be reproduced
+#  @dummy = stat($curfile);
+#  # A great big hack that Curt Canada taught me
+#  $mode = $dummy[2] & 07777;
+
+move($outfile,$curfile);
+
+# COMMENT OUT THIS SECTION
+#  #restore the permissions
+#  chmod $mode, $curfile;
+
+  print "$curfile: all comment labels stripped\n" if (! $quiet_option);
+
+}
+
+
+#######################################################################
+# use for find()
+
+sub doit {
+
+  local($x);
+
+  $x = $File::Find::name;
+
+  # skip if the is not a file
+  return if (! -f $x);
+
+  $curfile = $x;
+
+  # Process it!
+  if ($strip_option) {
+    &strip_file();
+  } 
+  else {
+    &modify_file();
+  }
+
+}
+
+
