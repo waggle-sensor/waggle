@@ -74,7 +74,7 @@ if (($#ARGV != 0) || ($help_option)) {
 }
 
 if ((! $label_option) && (! $strip_option)) {
-  die("ERROR: You must specify either --label=LABEL or --strip\n");
+  die("ERROR: You must decide to do something.  Maybe --insert ?\n");
 }
 
 # check for conflicts
@@ -450,9 +450,8 @@ DESCRIPTION
     be added, modified, or deleted.  The most common use of this
     script is to modify a source code file to replace the license,
     distribution, or common information at the top with a more current
-    version, or to insert a block of RCS variables at the bottom of a
-    file that has none.  It can also be used to delete certain comment
-    section for source code being packaged and distributed.
+    version. It can also be used to delete certain comment section for
+    source code being packaged and distributed.
 
     To find the block of comments to be modified, structured 'labels'
     are used.  There are three types of labels, and comment styles:
@@ -482,9 +481,9 @@ OPTIONS
     <source> 
                 The file or directory (recursive decent) to be modified
 
-    --strip     Remove all labels.  Use *ONLY* for final distribution of src
-    --help      print this usage information
-    --delete    delete the labeled block, AND the label markers
+    --strip     Remove all labels. Dangerous.  Use with caution.
+    --help      Print this usage information
+    --delete    Delete the labeled block, *AND* the label markers
     --quiet     Quiet operation
     --tail      Insert comment block at the end of the source file.  By 
 	        default, new sections are inserted *after* the first line.
