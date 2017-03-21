@@ -12,8 +12,8 @@ every waggle-based software repository should have the file
 directory, and if changes are made to the version here, the file
 should be pushed out to all the repos.
 
-2. ** Source code authored by a Waggle contributor must include a
-license reference ** This is the Linux-based brain for a sensor node.
+2. **Source code authored by a Waggle contributor must include a
+license reference** This is the Linux-based brain for a sensor node.
 Currently, we are using a hardkernel.com ODROID C1+ single-board
 computer to be the Node Controller.  In addition to a mostly stock
 Linux, the Node Controller has waggle's communication libraries, extra
