@@ -6,7 +6,7 @@ Waggle is a research project at Argonne National Laboratory to design, develop, 
 You can explore the following sub categories to be familarized yourself with Waggle and potentially contribute to the future Waggle environment.
 
 ## Getting started
-* [Installation](./user_documentation/getting-started-waggle-node.md) </br>
+* [Installation](./user_documentation/getting-started-waggle-node.md)
     Check part lists of a Waggle and see how they are connected.
 
 * [Assembly](./user_documentation/assemble.md) </br>
