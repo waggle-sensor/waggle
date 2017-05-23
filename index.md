@@ -7,6 +7,7 @@ You can explore the following sub categories to be familarized yourself with Wag
 
 ## Getting started
 * [Installation](./user_documentation/getting-started-waggle-node.md)
+
     Check part lists of a Waggle and see how they are connected.
 
 * [Assembly](./user_documentation/assemble.md) </br>
