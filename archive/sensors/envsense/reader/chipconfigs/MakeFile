@@ -1,3 +1,14 @@
+ARD_HOME = /home/max/repos/github/waggle//devtools/arduino/compilers/arduino-1.6.5-linux/arduino_64
+TARGET = chipconfigs
+PACKAGE = arduino
+ARCH = avr
+BOARD = mega
+TYPE = atmega2560
+FLASHER_BAUD_RATE = 115200
+PORT = /dev/ttyACM0
+BOARD_FLASH = $(PACKAGE):$(ARCH):$(BOARD):cpu=$(TYPE)
+BOOT_LOADER_TYPE = wiring
+PRE_FLASH_COMMAND = #
 CC = $(ARD_HOME)/arduino
 BUILD_DIR = ./build
 BIN_DIR = ./bin
