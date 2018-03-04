@@ -18,6 +18,15 @@ three different ports on `beehive1.mcs.anl.gov (140.221.47.66)`-
   - Management Console: Port 20022, SSH connection
   - Web: Port 80, HTTP
   
+## Simple Data Access
+
+The sensor data generated and trasmitted by the Ugly Nodes can be obtained from the [central data repository](http://www.mcs.anl.gov/research/projects/waggle/downloads/beehive1/). A simple set of handy scripts to download, convert and plot the data are provided at 
+the this link - [Documentation](https://github.com/waggle-sensor/sensors/tree/develop/v3/reports#documentation). 
+
+## Local Node Access Using Console
+
+
+  
   
 
 
