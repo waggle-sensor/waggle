@@ -16,7 +16,7 @@ three different ports on `beehive1.mcs.anl.gov (140.221.47.66)`-
   - Management Console: Port 20022, SSH connection
   - Web: Port 80, HTTP
   
-  If a node connected to the network is not shown as online within 10 min at [Link](http://www.mcs.anl.gov/research/projects/waggle/downloads/beehive1/live-nodes.txt), please check the local network firewall rules and make sure the above outgoing 
+  If a node connected to the network is not shown as online within 10 min at [live-nodes link](http://www.mcs.anl.gov/research/projects/waggle/downloads/beehive1/live-nodes.txt), please check the local network firewall rules and make sure the above outgoing 
   ports are not blocked. 
   
 ## Simple Data Access
