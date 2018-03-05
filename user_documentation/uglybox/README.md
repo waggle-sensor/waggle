@@ -36,7 +36,7 @@ The Serial-console is password protected and in nodes which are set to *develope
 
 In Linux/Mac OS X Systems, we recommend the [GNU Screen](https://www.gnu.org/software/screen/) program for connecting to the serial console. Here are the steps for connecting to the console: 
 
-  - Connect the UART part of the console to the NC in the (Serial console port)[http://dn.odroid.com/homebackup/201412042046401584.jpg].
+  - Connect the UART part of the console to the NC in the [Serial console port](http://dn.odroid.com/homebackup/201412042046401584.jpg).
   
   - Connect the UART Console to the user machine, and identify the port using the Termninal program of your choice. The device comes up as a `ttyUSBx` port on Linux systems and  similar tty port under `/dev` in OS X. `dmesg` and `ls -ltr /dev/` are useful commands to identify the device. Below is an example - 
   ```
