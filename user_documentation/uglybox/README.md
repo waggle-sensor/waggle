@@ -30,7 +30,7 @@ Waggle platform incorporates security as a core design feature. The node is henc
 The nodes do not host any network-based services (SSH, HTTP or others) that other devices can connect to, and only make outbound 
 connections to specific IP address themselves. However, in order to allow local interaction with the node for debugging and development, 
 the physical Serial-console port is made available for developer use. This port both on the Node Controller and Edge Processor can be 
-accessed using [UART Console](http://www.hardkernel.com/main/products/prdt_info.php?g_code=G134111883934). This devices uses [USB-UART](https://www.silabs.com/products/development-tools/software/usb-to-uart-bridge-vcp-drivers) 
+accessed using [UART Console](http://www.hardkernel.com/main/products/prdt_info.php?g_code=G134111883934). This devices uses (USB-UART)[https://www.silabs.com/products/development-tools/software/usb-to-uart-bridge-vcp-drivers] 
 bridge from Silicon Labs. 
 
 The Serial-console is password protected and in nodes which are set to *developer mode*, the user accounts *waggle* and *root*, accept *waggle* as the password. 
