@@ -66,7 +66,7 @@ $dmesg
  ```
  ### Getting a RW root:
  
- The NC in the nodes have a **RO /** FS during regular operation. However, the NC can be put in a **RW /** FS operation mode for changing  configs and installing updates etc. During this process, the NC will operate in a reduced functionality (no RabbitMQ service, no plugins and no data sent to Beehive) defined under the *waggle-core target* level. The NC can be put back in **RO /** FS which will enable the full operation mode set by *waggle-platform target* level.
+ The NC in the nodes have a **RO /** FS during regular operation. However, the NC can be put in a **RW /** FS operation mode for changing  configs and installing updates etc. During this process, the NC will operate in a reduced functionality (no RabbitMQ service, no plugins and no data sent to Beehive. Reverse tunnel, heartbeat and time-update services remain active) defined under the *waggle-core target* level. The NC can be put back in **RO /** FS which will enable the full operation mode set by *waggle-platform target* level.
  
  To put the Odroid in **RW /** FS: 
  ```
