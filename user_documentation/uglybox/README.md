@@ -64,6 +64,22 @@ $dmesg
  ```
  NC$/usr/lib/waggle/nodecontroller/scripts/eplogin
  ```
+ ### Getting a RW root:
+ 
+ The NC in the nodes have a **RO /** FS during regular operation. However, the NC can be put in a **RW /** FS operation mode for changing  configs and installing updates etc. During this process, the NC will operate in a reduced functionality defined under the *waggle-core target* level. The NC can be put back in **RO /** FS which will enable the full operation mode set by *waggle-platform target* level.
+ 
+ To put the Odroid in **RW /** FS: 
+ ```
+ NC$waggle-switch-to-safe-mode
+ ```
+ 
+ To put the NC in **RO /** FS: 
+ 
+ ```
+ NC$waggle-switch-to-operation-mode
+ ```
+ 
+Follow the same process above for setting the / of EP in RW and RO modes.  
  
 ## Edge-computing Remote Access
 
