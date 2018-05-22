@@ -9,7 +9,7 @@ following naming convention,
 <projectID>.latest.tar
 ```
 
-The links for downloading the dataset are given below, at the end of the page. 
+The links for downloading the datasets are provided in the next section. 
 
 Untaring the archive produces a folder - 
 
@@ -18,9 +18,8 @@ Untaring the archive produces a folder -
 ```
 
 Here, YYYY-MM-DD is the UTC date when the tar archive was produced. 
-
-Inside the folder the sensor data in compressed `gz` archive and the 
-following other meta data are provided - 
+Inside the folder a `gz` archive of sensor data and the following 
+other meta-info are provided - 
 
 ```
 data.csv.gz
