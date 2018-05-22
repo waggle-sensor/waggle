@@ -61,7 +61,7 @@ $ wget http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/AoT_Ch
 $ tar -xf AoT_Chicago.complete.latest.tar
 ```
 
-3. It should produce the directory - 
+3. It should produce a directory - 
 ```
 $ ls 
 AoT_Chicago.complete.2018-05-22
