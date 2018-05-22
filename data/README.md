@@ -1,4 +1,8 @@
-### 1. Sensor Data Sets:
+<!--
+waggle_topic=/data_analysis/datasets,"Sensor Datasets"
+-->
+
+### 1. Sensor Datasets:
 
 The data aggregated by the Waggle based sensor nodes (AoT nodes, uglyboxes) are 
 publicly available for download and use. The sensor datasets are updated and made 
