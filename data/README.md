@@ -42,16 +42,16 @@ All data is stored in [CSV form](https://en.wikipedia.org/wiki/Comma-separated_v
 
 ## Available Datasets
 
-#### 2.1 AoT Chicago Public:
+### AoT Chicago Public:
 [http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/AoT_Chicago.public.latest.tar](http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/AoT_Chicago.public.latest.tar)
 <br />
-#### 2.2 AoT Chicago Complete:
+### AoT Chicago Complete:
 [http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/AoT_Chicago.complete.latest.tar](http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/AoT_Chicago.complete.latest.tar)
 <br />
-#### 2.3 GASP Complete:
+### GASP Complete:
 [http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/GASP.complete.latest.tar](http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/GASP.complete.latest.tar)
 <br />
-#### 2.4 NUCWR-MUGS Complete: 
+### NUCWR-MUGS Complete: 
 [http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/NUCWR-MUGS.complete.latest.tar](http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/NUCWR-MUGS.complete.latest.tar)
 <br />
 
