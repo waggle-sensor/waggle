@@ -36,9 +36,7 @@ size of the `gz` archive.
 ### 2. Available Datasets: 
 
 #### 2.1 AoT Chicago Public:
-<br>
-http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/AoT_Chicago.public.latest.tar
-</br>
+`http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/AoT_Chicago.public.latest.tar`
 #### 2.2 AoT Chicago Complete:
 ```
 http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/AoT_Chicago.complete.latest.tar
