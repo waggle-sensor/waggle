@@ -5,7 +5,7 @@ This github repository holds the source code of the Waggle project. The Waggle p
 
 ## A very high level view of the pieces of this project are:
 
-1. **A Node Controller.**  This is the Linux-based brain for a sensor 
+1. **Node Controller.**  This is the Linux-based brain for a sensor 
 node.  Currently, we are using a hardkernel.com ODROID C1+ single-board
 computer to be the Node Controller.  In addition to a mostly stock
 Linux, the Node Controller has waggle's communication libraries, extra
@@ -23,6 +23,6 @@ detect when the waggle node is too hot, etc.
 4. **The Cloud-based software** (Beehive)
 [Beehive Code Repository](https://github.com/waggle-sensor/beehive-server)
 
-5. **The In-situ Computing payload** (Edge Processor)
+5. **The In-situ Computing** (Edge Processor)
 [Edge Processor Code Repository](https://github.com/waggle-sensor/edge_processor)
 
