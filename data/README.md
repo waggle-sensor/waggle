@@ -84,7 +84,7 @@ data.csv.gz nodes.csv  provenance.csv   README.md  sensors.csv
 CSV text file about 10 times its size -  
 
 ```
-$gzip -d --keep data.csv.gz
+$ gzip -d --keep data.csv.gz
 $ ls 
 data.csv data.csv.gz nodes.csv  provenance.csv   README.md  sensors.csv 
 ```
@@ -93,7 +93,7 @@ This process can take several minutes and can be sped up by using
 parallel gzip (https://zlib.net/pigz/) -
 
 ```
-$pigz -d --keep data.csv.gz
+$ pigz -d --keep data.csv.gz
 $ ls 
 data.csv data.csv.gz nodes.csv  provenance.csv   README.md  sensors.csv 
 ```
