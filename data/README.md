@@ -29,7 +29,7 @@ sensors.csv
 provenance.csv
 ```
 
-The sensor data uncompresses into CSV form, roughly about 10 times the 
+The sensor data uncompresses into [CSV form](https://en.wikipedia.org/wiki/Comma-separated_values), roughly about 10 times the 
 size of the `gz` archive. 
 
 
