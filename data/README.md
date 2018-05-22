@@ -1,8 +1,8 @@
 ### 1. Sensor Data Sets:
 
-The data aggregated by the Waggle bases sensors (AoT nodes, uglyboxes) are publicly 
-available for download and use. The sensor datasets are updated and made available 
-everday at midnight CST. A sensor dataset is provide as a tar ball, with the 
+The data aggregated by the Waggle based sensor nodes (AoT nodes, uglyboxes) are 
+publicly available for download and use. The sensor datasets are updated and made 
+available everday at midnight CST. A sensor dataset is provide as a tarball, with the 
 following naming convention, 
 
 ```
