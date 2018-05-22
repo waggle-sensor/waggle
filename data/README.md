@@ -2,58 +2,61 @@
 waggle_topic=/data_analysis/datasets,"Sensor Datasets"
 -->
 
-### 1. Sensor Datasets:
+# Sensor Datasets
 
-The data aggregated by the Waggle based sensor nodes (AoT nodes, uglyboxes) are 
-publicly available for download and use. The sensor datasets are updated and made 
-available everday at midnight CST. A sensor dataset is provide as a tarball, with the 
-following naming convention, 
+Data from Waggle-based sensor nodes (AoT nodes, Waggle uglyboxes, Nano-Waggle lightweight sensors) are available for download and analysis. 
+
+Data is assembled and exported daily, and made available via an archive published every day at midnight CST.  
+
+## Archive Format
+
+Waggle-based nodes used by several projects, so archives are organized by Waggle *ProjectID*.  Each archive is stored as a single [tar](https://en.wikipedia.org/wiki/Tar_(computing)) file. 
+
+Files in the archive use this naming convention:
 
 ```
-<projectID>.latest.tar
+<ProjectID>.latest.tar
 ```
 
-The links for downloading the datasets are provided in the next section. 
-
-Untaring the archive produces a folder - 
+Untarring an archive will create a date-specfic directory:
 
 ```    
-<projectID>.YYYY-MM-DD
+<ProjectID>.YYYY-MM-DD
 ```
 
 Here, YYYY-MM-DD is the UTC date when the tar archive was produced. 
-Inside the folder a `gz` archive of sensor data and the following 
-other meta-info are provided - 
+
+Inside the archive directory are the following files:
 
 ```
-data.csv.gz
-nodes.csv  
-README.md  
-sensors.csv
-provenance.csv
+data.csv.gz		# compressed file of all data values
+nodes.csv		# list of nodes in the dataset and their metadata
+README.md		# An explaination of the database fields 
+sensors.csv		# A list of sensors and their metadata
+provenance.csv	# Metadata on the entire dataset archive.
 ```
 
-The sensor data uncompresses into [CSV form](https://en.wikipedia.org/wiki/Comma-separated_values), roughly about 10 times the 
-size of the `gz` archive. 
+The sensor data is compressed, and must be uncompressed to be used.  It will expand roughly 10X in size after being uncompressed.
 
+All data is stored in [CSV form](https://en.wikipedia.org/wiki/Comma-separated_values) format.
 
-### 2. Available Datasets: 
+## Available Datasets
 
 #### 2.1 AoT Chicago Public:
-http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/AoT_Chicago.public.latest.tar
+[http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/AoT_Chicago.public.latest.tar](http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/AoT_Chicago.public.latest.tar)
 <br />
 #### 2.2 AoT Chicago Complete:
-http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/AoT_Chicago.complete.latest.tar
+[http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/AoT_Chicago.complete.latest.tar](http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/AoT_Chicago.complete.latest.tar)
 <br />
 #### 2.3 GASP Complete:
-http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/GASP.complete.latest.tar
+[http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/GASP.complete.latest.tar](http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/GASP.complete.latest.tar)
 <br />
 #### 2.4 NUCWR-MUGS Complete: 
-http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/NUCWR-MUGS.complete.latest.tar
+[http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/NUCWR-MUGS.complete.latest.tar](http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/NUCWR-MUGS.complete.latest.tar)
 <br />
 
 
-### 3. Usage Example: 
+## Usage Example 
 
 1. Download the archive - 
 ```
