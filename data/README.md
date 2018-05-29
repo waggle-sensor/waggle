@@ -38,7 +38,7 @@ provenance.csv	# Metadata on the entire dataset archive.
 
 The sensor data is compressed, and must be uncompressed to be used.  It will expand roughly 10X in size after being uncompressed.
 
-All data is stored in [CSV form](https://en.wikipedia.org/wiki/Comma-separated_values) format.
+All data is stored in [CSV](https://en.wikipedia.org/wiki/Comma-separated_values) format.
 
 ## Available Datasets
 
