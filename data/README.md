@@ -29,10 +29,10 @@ Here, YYYY-MM-DD is the UTC date when the tar archive was produced.
 Inside the archive directory are the following files:
 
 ```
-data.csv.gz		# compressed file of all data values
-nodes.csv		# list of nodes in the dataset and their metadata
-README.md		# An explaination of the database fields 
-sensors.csv		# A list of sensors and their metadata
+data.csv.gz	# compressed file of all data values
+nodes.csv	# list of nodes in the dataset and their metadata
+README.md	# An explaination of the database fields 
+sensors.csv	# A list of sensors and their metadata
 provenance.csv	# Metadata on the entire dataset archive.
 ```
 
