@@ -2,11 +2,6 @@
 waggle_topic=/waggle/introduction,"Waggle System"
 -->
 
-
-![waggle banner](http://www.mcs.anl.gov/research/projects/waggle/docs/Img/banner.png)
-
-This github repository holds the source code of the Waggle project. The Waggle project webpage can be found here: www.wa8.gl
-
 ## A very high level view of the pieces of this project are:
 
 1. **Node Controller.**  This is the Linux-based brain for a sensor 
