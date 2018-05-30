@@ -1,8 +1,3 @@
-![waggle banner](./wagview/node_pages/banner.png)
-<img src="web/waggle_web/Img/banner.png" alt="waggle banner" />
-
-Waggle is a research project at Argonne National Laboratory to design, develop, and deploy a novel wireless sensor platform to enable a new breed of sensor-driven environmental science and smart city research.
-
 You can explore the following sub categories to be familarized yourself with Waggle and potentially contribute to the future Waggle environment.
 
 ## Getting started
