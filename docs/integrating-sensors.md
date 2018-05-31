@@ -1,3 +1,7 @@
+<!--
+waggle_topic=/sensors
+-->
+
 # Integrating a Sensor into the Waggle Platform
 
 The purpose of this document is to describe the hardware and software
