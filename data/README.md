@@ -6,7 +6,7 @@ waggle_topic=/data_analysis/datasets,"Sensor Datasets"
 
 Data from Waggle-based sensor nodes (AoT nodes, Waggle uglyboxes, Nano-Waggle lightweight sensors) are available for download and analysis. 
 
-Data is assembled and exported daily, and made available via an archive published every day at midnight CST.  
+Data ( [ontology](https://github.com/waggle-sensor/beehive-server/blob/newformat/publishing-tools/projects/AoT_Chicago.complete/sensors.csv)) is assembled and exported daily, and made available via an archive published every day at midnight CST.  
 
 ## Archive Format
 
@@ -36,8 +36,7 @@ sensors.csv	# A list of sensors and their metadata
 provenance.csv	# Metadata on the entire dataset archive.
 ```
 
-The sensor data is compressed, and must be uncompressed to be used.  It will expand roughly 10X in size after being uncompressed. A
-ontology of the sensors is available [here](https://github.com/waggle-sensor/beehive-server/blob/newformat/publishing-tools/projects/AoT_Chicago.complete/sensors.csv).
+The sensor data is compressed, and must be uncompressed to be used.  It will expand roughly 10X in size after being uncompressed.
 
 All data is stored in [CSV](https://en.wikipedia.org/wiki/Comma-separated_values) format.
 
