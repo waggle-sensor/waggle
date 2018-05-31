@@ -1,3 +1,7 @@
+<!--
+waggle_topic=/plugins_and_code
+-->
+
 # Designing a Waggle Plugin
 
 The purpose of this document is to guide the user through the design of a node
