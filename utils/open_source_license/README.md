@@ -1,5 +1,5 @@
 <!--
-waggle_topic=/waggle/organization
+waggle_topic=/operations/licenses, How to Apply Licenses to Code and Documents
 -->
 
 ![waggle banner](http://www.mcs.anl.gov/research/projects/waggle/docs/Img/banner.png)
