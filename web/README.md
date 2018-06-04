@@ -1,3 +1,7 @@
+<!--
+waggle_topic=IGNORE
+-->
+
 # Documentation for web publishing
 
 Web pages that describe about Waggle are necessary in order to provide information of the latest stable version of Waggle to users. Github markdown files placed in our github repositories are used to generate such web pages. This means that contents of the web pages come from the corresponding markdown files. This allows developers to maintain their web site by just editing the markdown files and compiling them to make updated web pages.
