@@ -1,5 +1,5 @@
 <!--
-waggle_topic=/waggle/introduction
+waggle_topic=/waggle
 -->
 
 # Getting Started
