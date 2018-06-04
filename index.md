@@ -6,7 +6,8 @@ waggle_topic=/waggle/introduction
 
 You can explore the following sub categories to be familarized yourself with Waggle and potentially contribute to the future Waggle environment.
 
-## Getting started
+## Setup
+
 * [Installation](./user_documentation/getting-started-waggle-node.md)
 
     Check part lists of a Waggle and see how they are connected.
@@ -18,6 +19,7 @@ You can explore the following sub categories to be familarized yourself with Wag
     Download and install firmware to the Waggle node.
 
 ## Wagman
+
 * [Introduction](./wagman/v3/README.md) </br>
     Wagman that manage power systems and sustainability.
 
@@ -28,6 +30,7 @@ You can explore the following sub categories to be familarized yourself with Wag
     Show how Wagman actually manages Waggle node.
 
 ## Nodecontroller
+
 * [Setup](./user_documentation/getting_started.md) </br>
     Instructions on how to setup nodecontroller and send data to beehive server.
 
@@ -41,6 +44,7 @@ You can explore the following sub categories to be familarized yourself with Wag
     Communication to beehive server and its [protocol](./guestnodes/waggle_protocol/README.md).
 
 ## Payload
+
 * [App processor](./guestnodes/README.md) </br>
     App processor that interacts with connected sensors.
 
@@ -54,6 +58,7 @@ You can explore the following sub categories to be familarized yourself with Wag
     Extend plugins as additional sensors attached to Waggle node.
 
 ## Beehive server
+
 * [Introduction](./beehive-server/README.md) </br>
     Structures and configuration of the server.
 
@@ -64,6 +69,7 @@ You can explore the following sub categories to be familarized yourself with Wag
     Messaging protocol between Beehive server and Waggle nodes.
 
 ## Developers
+
 * [How to create a waggle image](./nodecontroller/docs/create_waggle_image.md) </br>
     Instructions on how to create a Waggle image.
 
