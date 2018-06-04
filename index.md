@@ -1,3 +1,9 @@
+<!--
+waggle_topic=/waggle/introduction
+-->
+
+# Getting Started
+
 You can explore the following sub categories to be familarized yourself with Waggle and potentially contribute to the future Waggle environment.
 
 ## Getting started
