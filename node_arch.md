@@ -2,6 +2,11 @@
 waggle_topic=/nodes/introduction, Waggle Architecture
 -->
 
+# Introduction and Design:
+
+Waggle is designed around the idea that sensor nodes can be smart and attentive — they can compute, they are cyber-physical systems .  New algorithms can be dynamically loaded into Waggle.  In-situ computation allows Waggle nodes to analyze incoming data, find key features, spawn specialized computation, or energize actuators.  Hundreds or thousands of Waggle nodes form a distributed sensor supercomputer.
+
+Over the last several years, Single Board Computers (SBC) and System-on-a-Chip (SoC) platforms have become incredibly capable.  Vendors are building fast, yet low-power CPUs with embedded memory management and interconnect support.  Since Waggle is built on Linux, it is compatible with almost any lightweight computing board.  We have have explored, tinkered, and benchmarked codes with the Raspberry Pi, the Beaglebone Black, the Intel Edison, the NVIDIA Tegra platform, and a couple types of ODROID.  Currently, we are comfortable with the Linux toolchain, robustness, fault tolerance, security, speed, power consumption, size, and of course price of the ODROID-U3. Of course since all of the platforms can support Linux, with the sufficient effort, the Waggle software stack could be moved to other platforms.
 
 # Waggle Architecture:
 Waggle has a modular and scalable architecture.  Waggle Nodes have several key components:
