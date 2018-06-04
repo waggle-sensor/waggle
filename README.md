@@ -2,6 +2,8 @@
 waggle_topic=/waggle/introduction,"Waggle System"
 -->
 
+# Waggle System
+
 ## A very high level view of the pieces of this project are:
 
 1. **Node Controller.**  This is the Linux-based brain for a sensor 
@@ -24,4 +26,3 @@ detect when the waggle node is too hot, etc.
 
 5. **The In-situ Computing** (Edge Processor)
 [Edge Processor Code Repository](https://github.com/waggle-sensor/edge_processor)
-
