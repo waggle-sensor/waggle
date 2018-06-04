@@ -1,3 +1,8 @@
+<!--
+waggle_topic=/nodes/introduction, Waggle Architecture
+-->
+
+
 # Waggle Architecture:
 Waggle has a modular and scalable architecture.  Waggle Nodes have several key components:
   * Node Controller: The brain that controls a Waggle node has two components:
