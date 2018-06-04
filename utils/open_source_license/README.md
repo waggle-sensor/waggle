@@ -1,3 +1,6 @@
+<!--
+waggle_topic=/waggle/organization
+-->
 
 ![waggle banner](http://www.mcs.anl.gov/research/projects/waggle/docs/Img/banner.png)
 
