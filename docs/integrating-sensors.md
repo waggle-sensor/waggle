@@ -1,5 +1,5 @@
 <!--
-waggle_topic=/sensors
+waggle_topic=/sensors/introduction
 -->
 
 # Integrating a Sensor into the Waggle Platform
