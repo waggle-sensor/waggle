@@ -99,7 +99,7 @@ data.csv data.csv.gz nodes.csv  provenance.csv   README.md  sensors.csv
 We have a few simple tools for convenient data products and analysis.
 
 ### wg_datatool:  Simple slice/dice data tool for CSV archives:
-[https://github.com/waggle-sensor/beehive-server/tree/newformat/publishing-tools/utils/data_manipulator](wg_datatool)
+[wg_datatool] (https://github.com/waggle-sensor/beehive-server/tree/newformat/publishing-tools/utils/data_manipulator)
 <br />
 
 ### Averaging tool:
