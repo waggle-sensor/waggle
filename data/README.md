@@ -98,21 +98,9 @@ $ ls
 data.csv data.csv.gz nodes.csv  provenance.csv   README.md  sensors.csv 
 ```
 
-# Analyzing the Data
-We have a few simple tools for convenient data products and analysis.
-
-### wg_datatool:  Simple slice/dice data tool for CSV archives:
-(https://github.com/waggle-sensor/beehive-server/tree/newformat/publishing-tools/utils/data_manipulator)
-<br />
-
-### Averaging tool:
-<coming soon>
-<br />
-
-### Graphing tool:
-<coming soon>
-<br />
-
+# Working with the Data
+We have a few simple tools for to manipulate, extract, create convenient data products and analyze (plot) data. These 
+tools can be found in the [Waggle data-tools](https://github.com/waggle-sensor/data-tools) repository. 
 
 
 
