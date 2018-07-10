@@ -6,7 +6,7 @@ waggle_topic=/data_analysis/datasets,"Sensor Datasets"
 
 Data from Waggle-based sensor nodes (AoT nodes, Waggle uglyboxes, Nano-Waggle lightweight sensors) are available for download and analysis. 
 
-Data ([ontology](https://github.com/waggle-sensor/beehive-server/blob/master/publishing-tools/projects/AoT_Chicago.complete/sensors.csv)) is assembled and exported daily, and made available via an archive published every day at midnight CST.  
+Data ([ontology](https://github.com/waggle-sensor/beehive-server/blob/master`/publishing-tools/projects/AoT_Chicago.complete/sensors.csv)) is assembled and exported daily, and made available via an archive published every day at midnight CST.  
 
 ## Archive Format
 
@@ -40,27 +40,9 @@ The sensor data is compressed, and must be uncompressed to be used.  It will exp
 
 All data is stored in [CSV](https://en.wikipedia.org/wiki/Comma-separated_values) format.
 
-## Available Datasets
+## Available Datasets: 
 
-### AoT Chicago Public:
-[http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/AoT_Chicago.public.latest.tar](http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/AoT_Chicago.public.latest.tar)
-<br />
-### AoT Chicago Complete:
-[http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/AoT_Chicago.complete.latest.tar](http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/AoT_Chicago.complete.latest.tar)
-<br />
-### AoT Portland Complete:
-[http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/AoT_Portland.complete.latest.tar](http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/AoT_Portland.complete.latest.tar)
-<br />
-### AoT Stanford Complete:
-[http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/AoT_Stanford.complete.latest.tar](http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/AoT_Stanford.complete.latest.tar)
-<br />
-### GASP Complete:
-[http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/GASP.complete.latest.tar](http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/GASP.complete.latest.tar)
-<br />
-### NUCWR-MUGS Complete: 
-[http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/NUCWR-MUGS.complete.latest.tar](http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/NUCWR-MUGS.complete.latest.tar)
-<br />
-
+Several datasets split based on projects are available at this [link](http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/index.php)
 
 ## Usage Example 
 
