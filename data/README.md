@@ -42,7 +42,7 @@ All data is stored in [CSV](https://en.wikipedia.org/wiki/Comma-separated_values
 
 ## Available Datasets: 
 
-Several datasets split based on projects are available at this [link](http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/index.php)
+Several datasets split based on projects are available at this [link](http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/index.php).
 
 ## Usage Example 
 
