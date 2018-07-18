@@ -33,7 +33,8 @@ data.csv.gz	# compressed file of all data values
 nodes.csv	# list of nodes in the dataset and their metadata
 README.md	# An explaination of the database fields 
 sensors.csv	# A list of sensors and their metadata
-provenance.csv	# Metadata on the entire dataset archive.
+provenance.csv	# Metadata on the entire dataset archive
+offsets.csv # data.csv.gz file byte offsets
 ```
 
 The sensor data is compressed, and must be uncompressed to be used.  It will expand roughly 10X in size after being uncompressed.
