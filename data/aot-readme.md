@@ -7,4 +7,4 @@ There are two applications available to access AoT data:
 
 The following chart can be used to illustrate when data is available and from which application.
 
-![data/time illustration](aot-data-timeline.svg)
+![data/time illustration](./aot-data-timeline.svg)
