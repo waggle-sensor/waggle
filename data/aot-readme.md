@@ -7,7 +7,7 @@ There are two applications available to access AoT data:
 
 The following chart can be used to illustrate when data is available and from which application.
 
-<img alt="data/time illustration" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABwcAAAFSCAYAAAAXXdCgAAAABGdBTUEAALGPC/xhBQAAACBjSFJN
+<img alt="data/time illustration" src="data:image/svg;base64,iVBORw0KGgoAAAANSUhEUgAABwcAAAFSCAYAAAAXXdCgAAAABGdBTUEAALGPC/xhBQAAACBjSFJN
 AAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QA/wD/AP+gvaeTAACA
 AElEQVR42uzdeXhN1/7H8XcGEZEQEkGExFxDCKG0So3VakuLVqjQotWfIi3KpYr21lC05qGGmLnm
 as3zcEmQmGdJJEQUpeYQSfbvj9ycikwnEaLyeT1PHrL3WmuvtfY6O/uc71lrWxiGYSAiIiIiIiIi
