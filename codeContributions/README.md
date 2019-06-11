@@ -2,18 +2,12 @@
 
 ## Internal Contributors
 
-who why and when? 
-
-
 You are an internal contributor if you - 
 
-1. Produced the artifact when employed by UChicago Argonne LLC.
+* Produced the artifact when employed by UChicago Argonne LLC or when funded by an Argonne sub-contract. 
 
 
 ## External Contributors
-
-who why and whe?
-
 
 
 To make a contribution to a Waggle project, please follow these steps.
