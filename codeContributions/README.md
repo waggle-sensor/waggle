@@ -1,5 +1,21 @@
 # Code Contributions
 
+## Internal Contributors
+
+who why and when? 
+
+
+You are an internal contributor if you - 
+
+1. Produced the artifact when employed by UChicago Argonne LLC.
+
+
+## External Contributors
+
+who why and whe?
+
+
+
 To make a contribution to a Waggle project, please follow these steps.
 
 1. Create a change description in the format specified below to
