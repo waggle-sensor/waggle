@@ -28,8 +28,8 @@ To make a contribution to a Waggle project, please follow these steps.
    The Waggle License file and project description can be found in the 
    following locations
    
-   * [License]()
-   * [Description]()
+   * [License](https://raw.githubusercontent.com/waggle-sensor/waggle/master/codeContributions/waggle-license.txt)
+   * [Description](https://raw.githubusercontent.com/waggle-sensor/waggle/master/codeContributions/waggle-readme.txt)
 
 # Developer Certificate of Origin
 
