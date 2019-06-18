@@ -36,6 +36,12 @@ data time, node id, controlling device, sensor name, parameter name, raw data, h
 2019/06/11 16:49:45,001e06117b41,nc,audio,spl,NA,"46.24, 35.12, 35.25, 35.26, 36.46, 47.57, 35.35, 45.37, 46.74, 35.45"
 ```
 
+### Log
+#### sensor_id: 900
+spl.plugin version 1: reshape the length of the measurement data into 10 (1/1 octave)
+#### sensor_id: 901
+spl.plugin version 2: don't reshape the length of the measurement and send the result as it is (1/1 or 1/3 octave, or whatever)
+
 #### Center, lower, and upper frequencies for standard set of octave and 1/3 octave bands covering the audible frequency range.
 <table>
   <tr>
