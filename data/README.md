@@ -17,7 +17,7 @@ There are two applications available to access AoT data:
 
 The following chart illustrates the data availability across all the AoT applications - 
 
-![](./aot-data-timeline.svg)
+![](./aot-data-timeline.png)
 
 ## Archive Format
 
