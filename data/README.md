@@ -8,7 +8,7 @@ Data from Waggle-based sensor nodes (AoT nodes, Waggle uglyboxes, Nano-Waggle li
 
 Data ([ontology](https://github.com/waggle-sensor/beehive-server/blob/master/publishing-tools/projects/AoT_Chicago.complete/sensors.csv)) is assembled and exported daily, and made available via an archive published every day at midnight CST.  
 
-## Are there alternate avenues to get Array of Things aata?
+## Are there alternate avenues to get Array of Things data?
 
 There are two applications available to access AoT data:
 
