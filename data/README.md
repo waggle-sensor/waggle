@@ -2,11 +2,22 @@
 waggle_topic=/data_analysis/datasets,"Sensor Datasets"
 -->
 
-# Sensor Datasets
+# Bulk Sensor Datasets
 
 Data from Waggle-based sensor nodes (AoT nodes, Waggle uglyboxes, Nano-Waggle lightweight sensors) are available for download and analysis. 
 
 Data ([ontology](https://github.com/waggle-sensor/beehive-server/blob/master/publishing-tools/projects/AoT_Chicago.complete/sensors.csv)) is assembled and exported daily, and made available via an archive published every day at midnight CST.  
+
+# Where do I get Array of Things Data in other forms?
+
+There are two applications available to access AoT data:
+
+1. [The AoT File Browser](https://aot-file-browser.plenar.io/) to download bulk volumes of data
+2. [The AoT API](https://api-of-things.plenar.io/) to programmatically access _recent_ data
+
+The following chart illustrates the data availability across all the AoT applications - 
+
+![](./aot-data-timeline.svg)
 
 ## Archive Format
 
