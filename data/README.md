@@ -60,7 +60,7 @@ Several datasets split based on projects are available at this [link](http://www
 
 1. Download the archive - 
 ```
-$ wget http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/AoT_Chicago.complete.latest.tar
+$ wget https://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/AoT_Chicago.complete.latest.tar
 ```
 
 2. Untar the archive - 
