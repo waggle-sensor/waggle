@@ -8,17 +8,6 @@ Data from Waggle-based sensor nodes (AoT nodes, Waggle uglyboxes, Nano-Waggle li
 
 Data ([ontology](https://github.com/waggle-sensor/beehive-server/blob/master/publishing-tools/projects/AoT_Chicago.complete/sensors.csv)) is assembled and exported daily, and made available via an archive published every day at midnight CST.  
 
-## Are there alternate avenues to get Array of Things data?
-
-There are two applications available to access AoT data:
-
-1. [The AoT File Browser](https://aot-file-browser.plenar.io/) to download bulk volumes of data
-2. [The AoT API](https://api-of-things.plenar.io/) to programmatically access _recent_ data
-
-The following chart illustrates the data availability across all the AoT applications - 
-
-![](./aot-data-timeline.png)
-
 ## Archive Format
 
 Waggle-based nodes used by several projects, so archives are organized by Waggle *ProjectID*.  Each archive is stored as a single [tar](https://en.wikipedia.org/wiki/Tar_(computing)) file. 
