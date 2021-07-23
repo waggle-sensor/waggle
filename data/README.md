@@ -4,7 +4,7 @@ waggle_topic=/data_analysis/datasets,"Sensor Datasets"
 
 ## Bulk Sensor Datasets
 
-Data from Waggle-based sensor nodes (AoT nodes, Waggle uglyboxes, Nano-Waggle lightweight sensors) are available for download and analysis. 
+Historic Data from Waggle-based sensor nodes (AoT nodes, Waggle uglyboxes, Nano-Waggle lightweight sensors) are available for download and analysis. The data will not be updated anymore as the projects are EOL.
 
 Data ([ontology](https://github.com/waggle-sensor/beehive-server/blob/master/publishing-tools/projects/AoT_Chicago.complete/sensors.csv)) is assembled and exported daily, and made available via an archive published every day at midnight CST.  
 
