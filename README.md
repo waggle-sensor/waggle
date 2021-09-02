@@ -2,9 +2,9 @@
 waggle_topic=/waggle/introduction,"Waggle System"
 -->
 
-# Waggle System
+# [Waggle AI@Edge](https://github.com/orgs/waggle-sensor/repositories)
 
-The Waggle Platform is a research project at Argonne National Laboratory to design, develop, and deploy a novel wireless sensor platform with advanced edge computing capabilities to enable a new breed of sensor-driven environmental science and smart city research.
+The Waggle Platform is a research project at [Argonne National Laboratory](https://www.anl.gov/) to design, develop, and deploy a novel wireless sensor platform with advanced edge computing capabilities to enable a new breed of sensor-driven environmental science and smart city research.
 
 The innovative architecture leverages emerging technology in low-power processors, sensors, and cloud computing to build powerful and reliable sensor nodes that can actively analyze and respond to data. Cloud computing provides elastic resources for storing and computing on data.
 
