@@ -2,9 +2,9 @@
 waggle_topic=/data_analysis/datasets,"Sensor Datasets"
 -->
 
-## Bulk Sensor Datasets
+## AoT Data Archive
 
-Historic Data from Waggle-based sensor nodes (AoT nodes, Waggle uglyboxes, Nano-Waggle lightweight sensors) are available for download and analysis. The data will not be updated anymore as the projects are EOL.
+Historic Data from the Chicago AoT nodes are available for download and analysis. The data *will not be updated anymore* as the Chicago [AoT project has reached EOL](http://arrayofthings.github.io/). The final archive can be obtained from this [link](http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/index.php). More information on the data bundle can be obtained from the [data README](https://github.com/waggle-sensor/waggle/blob/master/data/README.md).
 
 Data ([ontology](https://github.com/waggle-sensor/beehive-server/blob/master/publishing-tools/projects/AoT_Chicago.complete/sensors.csv)) is assembled and exported daily, and made available via an archive published every day at midnight CST.  
 
