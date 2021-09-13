@@ -37,7 +37,12 @@ All data is stored in [CSV](https://en.wikipedia.org/wiki/Comma-separated_values
 
 ## Available Datasets: 
 
-Several datasets split based on projects are available at this [link](http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/index.php).
+The following AoT Datasets are available - 
+* [Complete](http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/index.php)
+* [Temperature - set 1](https://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/slices/AoT_Chicago.complete.temp1.tar.gz)
+* [Temperature - set 2](https://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/slices/AoT_Chicago.complete.temp2.tar.gz)
+* [Relative Humidity](https://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/slices/AoT_Chicago.complete.humidity.tar.gz)
+* [Atmospheric Pressure](https://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/slices/AoT_Chicago.complete.pressure.tar.gz])
 
 ## Usage Example 
 
