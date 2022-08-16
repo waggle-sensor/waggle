@@ -2,8 +2,6 @@
 
 Historic Data from the Chicago AoT nodes are available for download and analysis. The data *will not be updated anymore* as the Chicago [AoT project has reached EOL](http://arrayofthings.github.io/).
 
-Historic Data from the Chicago AoT nodes are available for download and analysis. The data *will not be updated anymore* as the Chicago [AoT project has reached EOL](http://arrayofthings.github.io/). The final archive can be obtained from this [link](http://www.mcs.anl.gov/research/projects/waggle/downloads/datasets/index.php). 
-
 Data ([ontology](https://github.com/waggle-sensor/beehive-server/blob/master/publishing-tools/projects/AoT_Chicago.complete/sensors.csv)) is assembled and exported daily, and made available via an archive published every day at midnight CST.  
 
 ## Archive Format
